@@ -12,3 +12,5 @@
 /Invert.uFrame.Editor/bin
 /Invert.uFrame.Editor.UnitTests/obj
 /Invert.uFrame.Editor.UnitTests/bin
+obj
+bin
