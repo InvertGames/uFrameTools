@@ -44,20 +44,6 @@ public class ElementsDiagram : ICommandHandler
 
     public IDiagramNode CurrentMouseOverNode { get; set; }
 
-    //public ISelectable CurrentMouseOverNodeItem
-    //{
-    //    get
-    //    {
-    //        var node = MouseOverViewData;
-    //        if (node == null)
-    //            return null;
-
-    //        return node.Items.OfType<ISelectable>()
-    //             .FirstOrDefault(p => p.Position.Scale(Scale).Contains(Event.current.mousePosition));
-
-    //    }
-    //}
-
     public IElementDesignerData Data
     {
         get { return _data; }

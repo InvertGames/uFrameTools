@@ -44,3 +44,12 @@ D:\Invert\uFrameSVN2\Invert.uFrame.Editor\bin\Debug\UnityEngine.xml
 D:\Invert\uFrameSVN2\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameSVN2\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.dll
 D:\Invert\uFrameSVN2\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.uFrame.Editor.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.uFrame.Editor.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Common.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.MVVM.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Common.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.MVVM.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.pdb

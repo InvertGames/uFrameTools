@@ -8,7 +8,7 @@ using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 using ViewModel = Invert.uFrame.Editor.ViewModels.ViewModel;
 
-public class UFDiagramViewModel : ViewModel
+public class DiagramViewModel : ViewModel
 {
     private ModelCollection<GraphItemViewModel> _graphItems = new ModelCollection<GraphItemViewModel>();
 
@@ -55,7 +55,7 @@ public class UFDiagramViewModel : ViewModel
     //}
 
 
-    public UFDiagramViewModel(IElementDesignerData data)
+    public DiagramViewModel(IElementDesignerData data)
     {
         DataObject = data;
     }

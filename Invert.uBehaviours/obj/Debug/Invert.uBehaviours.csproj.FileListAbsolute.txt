@@ -14,3 +14,9 @@ D:\Invert\uFrameSVN2\Invert.uBehaviours\bin\Debug\UnityEngine.xml
 D:\Invert\uFrameSVN2\Invert.uBehaviours\obj\Debug\Invert.uBehaviours.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameSVN2\Invert.uBehaviours\obj\Debug\Invert.uBehaviours.dll
 D:\Invert\uFrameSVN2\Invert.uBehaviours\obj\Debug\Invert.uBehaviours.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours\bin\Debug\Invert.uBehaviours.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours\bin\Debug\Invert.uBehaviours.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours\bin\Debug\UBehaviours.XML
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours\obj\Debug\Invert.uBehaviours.csprojResolveAssemblyReference.cache
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours\obj\Debug\Invert.uBehaviours.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours\obj\Debug\Invert.uBehaviours.pdb

@@ -1,6 +1,4 @@
-﻿using System.Text;
-using Invert.MVVM;
-using Invert.uFrame.Code.Bindings;
+﻿using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
 using System;
@@ -11,180 +9,10 @@ using UnityEngine;
 
 namespace Invert.uFrame.Editor
 {
-    public interface IKeyBinding
-    {
-        bool RequireShift { get; set; }
-        bool RequireAlt { get; set; }
-        bool RequireControl { get; set; }
-        KeyCode Key { get; set; }
-        string Name { get; set; }
-        Type CommandType { get; }
-        IEditorCommand Command { get; }
-    }
-
-    public class SimpleKeyBinding : KeyBinding<IEditorCommand>
-    {
-
-        public SimpleKeyBinding(Action<ElementsDiagram> command, KeyCode key, bool requireControl = false, bool requireAlt = false, bool requireShift = false)
-            : base(key, requireControl, requireAlt, requireShift)
-        {
-            _command = new SimpleEditorCommand<ElementsDiagram>(command);
-        }
-
-        public SimpleKeyBinding(Action<ElementsDiagram> command, string name, KeyCode key, bool requireControl = false, bool requireAlt = false, bool requireShift = false)
-            : base(name, key, requireControl, requireAlt, requireShift)
-        {
-            _command = new SimpleEditorCommand<ElementsDiagram>(command);
-        }
-        public SimpleKeyBinding(IEditorCommand command, KeyCode key, bool requireControl = false, bool requireAlt = false, bool requireShift = false)
-            : base(key, requireControl, requireAlt, requireShift)
-        {
-            _command = command;
-        }
-
-        public SimpleKeyBinding(IEditorCommand command, string name, KeyCode key, bool requireControl = false, bool requireAlt = false, bool requireShift = false)
-            : base(name, key, requireControl, requireAlt, requireShift)
-        {
-            _command = command;
-        }
-
-
-    }
-    public class KeyBinding<TCommandType> : IKeyBinding where TCommandType : class
-    {
-        public bool RequireShift { get; set; }
-        public bool RequireAlt { get; set; }
-        public bool RequireControl { get; set; }
-        public KeyCode Key { get; set; }
-
-        public string Name { get; set; }
-
-        public KeyBinding(KeyCode key, bool requireControl = false, bool requireAlt = false, bool requireShift = false)
-            : this(null, key, requireControl, requireAlt, requireShift)
-        {
-
-        }
-
-        public KeyBinding(string name, KeyCode key, bool requireControl = false, bool requireAlt = false, bool requireShift = false)
-        {
-            Name = name;
-            Key = key;
-            RequireControl = requireControl;
-            RequireAlt = requireAlt;
-            RequireShift = requireShift;
-        }
-
-        public Type CommandType
-        {
-            get { return typeof(TCommandType); }
-        }
-
-        protected IEditorCommand _command;
-
-        public virtual TCommandType CommandAsT
-        {
-            get
-            {
-                return (Command as TCommandType) ?? uFrameEditor.Container.Resolve<TCommandType>(Name);
-            }
-        }
-
-        public IEditorCommand Command
-        {
-            get { return _command ?? uFrameEditor.Container.Resolve<TCommandType>(Name) as IEditorCommand; }
-            set { _command = value; }
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            if (RequireControl)
-            {
-                sb.Append("Ctrl + ");
-            }
-            if (RequireAlt)
-            {
-                sb.Append("Alt + ");
-            }
-            if (RequireShift)
-            {
-                sb.Append("Shift + ");
-            }
-            sb.Append(Key.ToString());
-            return sb.ToString();
-        }
-    }
-
-    public interface IUFrameTypeProvider
-    {
-        Type ViewModel { get; }
-        Type Controller { get; }
-        Type SceneManager { get; }
-        Type GameManager { get; }
-        Type ViewComponent { get; }
-        Type ViewBase { get; }
-
-        Type UFToggleGroup { get; }
-        Type UFGroup { get; }
-        Type UFRequireInstanceMethod { get; }
-
-        Type DiagramInfoAttribute { get; }
-
-        Type UpdateProgressDelegate { get; }
-
-        Type CommandWithSenderT { get; }
-        Type CommandWith { get; }
-        Type CommandWithSenderAndArgument { get; }
-        Type YieldCommandWithSenderT { get; }
-        Type YieldCommandWith { get; }
-        Type YieldCommandWithSenderAndArgument { get; }
-        Type YieldCommand { get; }
-        Type Command { get; }
-        Type ICommand { get; }
-        Type ListOfViewModel { get; }
-
-        Type ISerializerStream { get; }
-
-        Type P { get; }
-        Type ModelCollection { get; }
-        Type Computed { get; }
-    }
     public static class uFrameEditor
     {
-
-        public static ElementsDesigner DesignerWindow
-        {
-            get
-            {
-                return EditorWindow.GetWindow<ElementsDesigner>();
-            }
-        }
-
-        public static ElementsDiagram CurrentDiagram
-        {
-            get
-            {
-                return DesignerWindow.Diagram;
-            }
-        }
-        public static IUFrameTypeProvider uFrameTypes { get; set; }
-
-        public static Type FindType(string name)
-        {
-            //if (string.IsNullOrEmpty(name)) return null;
-
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                var t = assembly.GetType(name);
-                if (t != null)
-                {
-                    return t;
-                }
-            }
-            return null;
-        }
-        public static IKeyBinding[] KeyBindings { get; set; }
         private static IEditorCommand[] _commands;
+
         private static uFrameContainer _container;
 
         private static IEnumerable<CodeGenerator> _generators;
@@ -192,7 +20,6 @@ namespace Invert.uFrame.Editor
         private static IDiagramPlugin[] _plugins;
 
         private static IToolbarCommand[] _toolbarCommands;
-        //private static UFrameApplicationViewModel _application;
 
         public static IEditorCommand[] Commands
         {
@@ -202,6 +29,7 @@ namespace Invert.uFrame.Editor
             }
         }
 
+        //private static UFrameApplicationViewModel _application;
         public static uFrameContainer Container
         {
             get
@@ -214,10 +42,24 @@ namespace Invert.uFrame.Editor
             set { _container = value; }
         }
 
-        public static void RegisterKeyBinding(IEditorCommand command, string name, KeyCode code, bool control = false, bool alt = false, bool shift = false)
+        public static ElementsDiagram CurrentDiagram
         {
-            Container.RegisterInstance<IKeyBinding>(new SimpleKeyBinding(command, name, code, control, alt, shift), name);
+            get
+            {
+                return DesignerWindow.Diagram;
+            }
         }
+
+        public static ElementsDesigner DesignerWindow
+        {
+            get
+            {
+                return EditorWindow.GetWindow<ElementsDesigner>();
+            }
+        }
+
+        public static IKeyBinding[] KeyBindings { get; set; }
+
         public static IDiagramPlugin[] Plugins
         {
             get
@@ -227,29 +69,34 @@ namespace Invert.uFrame.Editor
             set { _plugins = value; }
         }
 
-        private static IBindingGenerator[] BindingGenerators { get; set; }
-
-        public static IEnumerable<IBindingGenerator> GetBindingGeneratorsFor(ElementData element, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
+        public static bool ShowHelp
         {
-            IEnumerable<IViewModelItem> items = element.ViewModelItems;
-            if (includeBaseItems)
+            get
             {
-                items = new[] { element }.Concat(element.AllBaseTypes).SelectMany(p => p.ViewModelItems);
+                return EditorPrefs.GetBool("UFRAME_ShowHelp", true);
             }
-            //var vmItems = new[] {element}.Concat(element.AllBaseTypes).SelectMany(p => p.ViewModelItems);
-            foreach (var viewModelItem in items)
+            set
             {
-                var bindingGenerators = Container.ResolveAll<IBindingGenerator>();
-                foreach (var bindingGenerator in bindingGenerators)
-                {
-                    bindingGenerator.IsOverride = isOverride;
-                    bindingGenerator.Item = viewModelItem;
-                    bindingGenerator.GenerateDefaultImplementation = generateDefaultBindings;
-                    if (bindingGenerator.IsApplicable)
-                        yield return bindingGenerator;
-                }
+                EditorPrefs.SetBool("UFRAME_ShowHelp", value);
             }
         }
+
+        public static bool ShowInfoLabels
+        {
+            get
+            {
+                return EditorPrefs.GetBool("UFRAME_ShowInfoLabels", true);
+            }
+            set
+            {
+                EditorPrefs.SetBool("UFRAME_ShowInfoLabels", value);
+            }
+        }
+
+        public static IUFrameTypeProvider uFrameTypes { get; set; }
+
+        private static IBindingGenerator[] BindingGenerators { get; set; }
+
         public static IEnumerable<IEditorCommand> CreateCommandsFor<T>()
         {
             var commands = Container.ResolveAll<T>();
@@ -279,7 +126,7 @@ namespace Invert.uFrame.Editor
             {
                 Debug.Log("Data is null.");
             }
-            var drawer = Container.ResolveRelation<INodeDrawer>(data.GetType(),data,diagram);
+            var drawer = Container.ResolveRelation<INodeDrawer>(data.GetType(), data, diagram);
             if (drawer == null)
             {
                 Debug.Log("Couldn't Create drawer for.");
@@ -308,6 +155,20 @@ namespace Invert.uFrame.Editor
             }
         }
 
+        public static Type FindType(string name)
+        {
+            //if (string.IsNullOrEmpty(name)) return null;
+
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var t = assembly.GetType(name);
+                if (t != null)
+                {
+                    return t;
+                }
+            }
+            return null;
+        }
 
         public static IEnumerable<CodeGenerator> GetAllCodeGenerators(ICodePathStrategy pathStrategy, IElementDesignerData diagramData)
         {
@@ -327,7 +188,6 @@ namespace Invert.uFrame.Editor
                         codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                         yield return codeGenerator;
                     }
-
                 }
                 // If its a generator for a specific node type
                 else
@@ -345,7 +205,6 @@ namespace Invert.uFrame.Editor
                         }
                     }
                 }
-
             }
         }
 
@@ -361,6 +220,28 @@ namespace Invert.uFrame.Editor
                     Generators = @group.ToArray()
                 };
                 yield return generator;
+            }
+        }
+
+        public static IEnumerable<IBindingGenerator> GetBindingGeneratorsFor(ElementData element, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
+        {
+            IEnumerable<IViewModelItem> items = element.ViewModelItems;
+            if (includeBaseItems)
+            {
+                items = new[] { element }.Concat(element.AllBaseTypes).SelectMany(p => p.ViewModelItems);
+            }
+            //var vmItems = new[] {element}.Concat(element.AllBaseTypes).SelectMany(p => p.ViewModelItems);
+            foreach (var viewModelItem in items)
+            {
+                var bindingGenerators = Container.ResolveAll<IBindingGenerator>();
+                foreach (var bindingGenerator in bindingGenerators)
+                {
+                    bindingGenerator.IsOverride = isOverride;
+                    bindingGenerator.Item = viewModelItem;
+                    bindingGenerator.GenerateDefaultImplementation = generateDefaultBindings;
+                    if (bindingGenerator.IsApplicable)
+                        yield return bindingGenerator;
+                }
             }
         }
 
@@ -400,6 +281,17 @@ namespace Invert.uFrame.Editor
             }
         }
 
+        public static void HookCommand<TFor>(string name, IEditorCommand hook) where TFor : class, IEditorCommand
+        {
+            var command = Container.Resolve<TFor>(name);
+            command.Hooks.Add(hook);
+        }
+
+        public static void RegisterKeyBinding(IEditorCommand command, string name, KeyCode code, bool control = false, bool alt = false, bool shift = false)
+        {
+            Container.RegisterInstance<IKeyBinding>(new SimpleKeyBinding(command, name, code, control, alt, shift), name);
+        }
+
         private static void InitializeContainer(uFrameContainer container)
         {
             // Repositories
@@ -411,7 +303,6 @@ namespace Invert.uFrame.Editor
             //container.RegisterInstance<ElementDesignerViewModel>(new ElementDesignerViewModel());
             //container.RegisterInstance<UFrameApplicationViewModel>(new UFrameApplicationViewModel());
 
-
             container.Register<NodeItemHeader, NodeItemHeader>();
 
             container.RegisterInstance<IUFrameContainer>(container);
@@ -420,11 +311,9 @@ namespace Invert.uFrame.Editor
             // Register the diagram type
             container.Register<ElementsDiagram, ElementsDiagram>();
 
-    
             // Command Drawers
             container.Register<ToolbarUI, ToolbarUI>();
             container.Register<ContextMenuUI, ContextMenuUI>();
-
 
             container.RegisterInstance(new AddElementCommandCommand());
             container.RegisterInstance(new AddElementCollectionCommand());
@@ -451,7 +340,6 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<AddNewCommand>(new AddNewEnumCommand(), "AddNewEnumCommand");
             container.RegisterInstance<AddNewCommand>(new AddNewViewCommand(), "AddNewViewCommand");
             container.RegisterInstance<AddNewCommand>(new AddNewViewComponentCommand(), "AddNewViewComponentCommand");
-
 
             // For no selection diagram context menu
             container.RegisterInstance<IDiagramContextCommand>(new AddNewSceneManagerCommand(), "AddNewSceneManagerCommand");
@@ -521,29 +409,6 @@ namespace Invert.uFrame.Editor
             Debug.Log(uFrameTypes.ToString());
 #endif
             uFrameTypes = new uFrameStringTypeProvider();
-
-        }
-        public static bool ShowHelp
-        {
-            get
-            {
-                return EditorPrefs.GetBool("UFRAME_ShowHelp", true);
-            }
-            set
-            {
-                EditorPrefs.SetBool("UFRAME_ShowHelp", value);
-            }
-        }
-        public static bool ShowInfoLabels
-        {
-            get
-            {
-                return EditorPrefs.GetBool("UFRAME_ShowInfoLabels", true);
-            }
-            set
-            {
-                EditorPrefs.SetBool("UFRAME_ShowInfoLabels", value);
-            }
         }
 
         //public static UFrameApplicationViewModel Application
@@ -557,11 +422,5 @@ namespace Invert.uFrame.Editor
         //    }
         //    set { _application = value; }
         //}
-
-        public static void HookCommand<TFor>(string name, IEditorCommand hook) where TFor : class, IEditorCommand
-        {
-            var command = Container.Resolve<TFor>(name);
-            command.Hooks.Add(hook);
-        }
     }
 }
