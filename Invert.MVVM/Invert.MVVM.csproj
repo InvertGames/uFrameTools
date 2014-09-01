@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CB024A98-EE90-4497-8AF3-2C574D665A8A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Invert.MVVM</RootNamespace>
+    <AssemblyName>Invert.MVVM</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DLL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;DLL UNITY_DLL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\Library\UnityAssemblies\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Assets\uFrameComplete\uFrame\Base\Bindings\IBinding.cs">
+      <Link>IBinding.cs</Link>
+    </Compile>
+    <Compile Include="..\Assets\uFrameComplete\uFrame\Base\Bindings\ITwoWayBinding.cs">
+      <Link>ITwoWayBinding.cs</Link>
+    </Compile>
+    <Compile Include="..\Assets\uFrameComplete\uFrame\Base\Bindings\ModelPropertyBinding.cs">
+      <Link>ModelPropertyBinding.cs</Link>
+    </Compile>
+    <Compile Include="..\assets\uframecomplete\uframe\base\commands\ICommand.cs">
+      <Link>ICommand.cs</Link>
+    </Compile>
+    <Compile Include="..\assets\uframecomplete\uframe\base\controllers\GameContainer.cs">
+      <Link>GameContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\assets\uframecomplete\uframe\base\controllers\IGameContainer.cs">
+      <Link>IGameContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\assets\uframecomplete\uframe\base\controllers\InjectAttribute.cs">
+      <Link>InjectAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Assets\uFrameComplete\uFrame\Base\IJsonSerializable.cs">
+      <Link>IJsonSerializable.cs</Link>
+    </Compile>
+    <Compile Include="..\Assets\uFrameComplete\uFrame\Base\SimpleJSON.cs">
+      <Link>SimpleJSON.cs</Link>
+    </Compile>
+    <Compile Include="..\assets\uframecomplete\uframe\base\viewmodels\ModelCollection.cs">
+      <Link>ModelCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\assets\uframecomplete\uframe\base\viewmodels\ModelPropertyBase.cs">
+      <Link>ModelPropertyBase.cs</Link>
+    </Compile>
+    <Compile Include="..\assets\uframecomplete\uframe\base\viewmodels\P.cs">
+      <Link>P.cs</Link>
+    </Compile>
+    <Compile Include="..\assets\uframecomplete\uframe\base\viewmodels\ViewModel.cs">
+      <Link>ViewModel.cs</Link>
+    </Compile>
+    <Compile Include="Binding.cs" />
+    <Compile Include="Controller.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\uFrame\Editor\ /Y
+copy $(TargetPath) C:\Users\micah\Documents\uFrame1GettingStarted\Assets\uFrameComplete\uFrame\Editor\ /Y
+IF EXIST $(TargetDir)$(TargetName).pdb copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\uFrame\Editor\ /Y</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

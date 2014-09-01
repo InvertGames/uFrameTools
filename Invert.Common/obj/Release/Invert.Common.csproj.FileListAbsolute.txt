@@ -1,0 +1,17 @@
+D:\Invert\Git\uFrame\Invert.Common\bin\Release\Invert.Common.dll
+D:\Invert\Git\uFrame\Invert.Common\bin\Release\Invert.Common.pdb
+D:\Invert\Git\uFrame\Invert.Common\bin\Release\UnityEditor.dll
+D:\Invert\Git\uFrame\Invert.Common\bin\Release\UnityEngine.dll
+D:\Invert\Git\uFrame\Invert.Common\bin\Release\UnityEditor.xml
+D:\Invert\Git\uFrame\Invert.Common\bin\Release\UnityEngine.xml
+D:\Invert\Git\uFrame\Invert.Common\obj\Release\Invert.Common.dll
+D:\Invert\Git\uFrame\Invert.Common\obj\Release\Invert.Common.pdb
+D:\Invert\Git\uFrame\Invert.Common\obj\Release\Invert.Common.csprojResolveAssemblyReference.cache
+D:\Invert\uFrameSVN2\Invert.Common\bin\Release\Invert.Common.dll
+D:\Invert\uFrameSVN2\Invert.Common\bin\Release\Invert.Common.pdb
+D:\Invert\uFrameSVN2\Invert.Common\bin\Release\UnityEditor.dll
+D:\Invert\uFrameSVN2\Invert.Common\bin\Release\UnityEngine.dll
+D:\Invert\uFrameSVN2\Invert.Common\bin\Release\UnityEditor.xml
+D:\Invert\uFrameSVN2\Invert.Common\bin\Release\UnityEngine.xml
+D:\Invert\uFrameSVN2\Invert.Common\obj\Release\Invert.Common.dll
+D:\Invert\uFrameSVN2\Invert.Common\obj\Release\Invert.Common.pdb

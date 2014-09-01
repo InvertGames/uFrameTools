@@ -1,0 +1,7 @@
+D:\Invert\uFrameSVN2\Invert.MVVM\bin\Release\Invert.MVVM.dll
+D:\Invert\uFrameSVN2\Invert.MVVM\bin\Release\Invert.MVVM.pdb
+D:\Invert\uFrameSVN2\Invert.MVVM\bin\Release\UnityEngine.dll
+D:\Invert\uFrameSVN2\Invert.MVVM\bin\Release\UnityEngine.xml
+D:\Invert\uFrameSVN2\Invert.MVVM\obj\Release\Invert.MVVM.dll
+D:\Invert\uFrameSVN2\Invert.MVVM\obj\Release\Invert.MVVM.pdb
+D:\Invert\uFrameSVN2\Invert.MVVM\obj\Release\Invert.MVVM.csprojResolveAssemblyReference.cache

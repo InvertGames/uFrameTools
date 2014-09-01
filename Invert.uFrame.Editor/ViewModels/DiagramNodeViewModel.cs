@@ -1,0 +1,221 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Invert.Common;
+using Invert.MVVM;
+using Invert.uFrame.Editor.ElementDesigner;
+using UnityEngine;
+
+namespace Invert.uFrame.Editor.ViewModels
+{
+    public class ViewModel<TData> : ViewModel
+    {
+        public TData Data { get; set; }
+    }
+
+    public abstract class GraphItemViewModel<TData> : GraphItemViewModel
+    {
+        public TData Data
+        {
+            get { return (TData)DataObject; }
+        }
+    }
+    public abstract class GraphItemViewModel : ViewModel
+    {
+        public abstract Vector2 Position { get; set; }
+        //public bool Dirty { get; set; }
+    }
+    public class DiagramNodeViewModel<TData> : DiagramNodeViewModel where TData : IDiagramNode
+    {
+        protected DiagramNodeViewModel()
+        {
+        }
+
+        public DiagramNodeViewModel(TData graphItemObject) : base(graphItemObject)
+        {
+        }
+
+        public TData GraphItem
+        {
+            get { return (TData)GraphItemObject; }
+        }
+    }
+
+
+    public class ItemViewModel<TData> : ItemViewModel
+    {
+        public TData Data
+        {
+            get { return (TData)DataObject; }
+            set { DataObject = value; }
+        }
+    }
+    public class ItemViewModel : GraphItemViewModel
+    {
+        public IDiagramNodeItem NodeItem
+        {
+            get { return (IDiagramNodeItem) DataObject; }
+        }
+
+        public virtual string Name
+        {
+            get { return NodeItem.Name; }
+            set { NodeItem.Name = value; }
+        }
+
+        public override Vector2 Position { get; set; }
+
+        public bool IsEditing
+        {
+            get { return NodeItem.IsEditing; }
+            set { NodeItem.IsEditing = value; }
+        }
+
+        public bool IsSelected
+        {
+            get { return NodeItem.IsSelected; }
+            set { NodeItem.IsSelected = value; }
+        }
+
+        public bool IsSelectable
+        {
+            get { return true; }
+        }
+
+        public IEditorCommand RemoveItemCommand { get; set; }
+        public string Highlighter { get; set; }
+
+        public void Rename(string newName)
+        {
+            NodeItem.Rename(NodeItem.Node,newName);
+        }
+    }
+
+    public class DiagramNodeViewModel : GraphItemViewModel
+    {
+
+
+        public IDiagramNode GraphItemObject
+        {
+            get { return DataObject as IDiagramNode; }
+            set { DataObject = value; }
+        }
+
+        public DiagramNodeViewModel(IDiagramNode graphItemObject) : this()
+        {
+            GraphItemObject = graphItemObject;
+
+        }
+
+        protected DiagramNodeViewModel()
+        {
+            
+        }
+
+        public ModelCollection<GraphItemViewModel> PropertyViewModels { get; set; }
+
+        public override Vector2 Position
+        {
+            get { return GraphItemObject.Location; }
+            set { GraphItemObject.Location = value; }
+        }
+
+        //public bool Dirty { get; set; }
+       
+
+        public float Scale
+        {
+            get { return ElementDesignerStyles.Scale; }
+        }
+
+        public bool IsCollapsed
+        {
+            get
+            {
+                if (AllowCollapsing)
+                    return GraphItemObject.IsCollapsed;
+                return true;
+                
+            }
+            set { GraphItemObject.IsCollapsed = value; }
+        }
+
+        public virtual bool ShowSubtitle { get { return false; } }
+
+        public virtual float HeaderSize
+        {
+            get
+            {
+                return 27;
+            }
+        }
+
+        public virtual bool AllowCollapsing
+        {
+            get { return true; }
+        }
+
+        public Rect HeaderPosition { get; set; }
+
+        public bool IsEditing
+        {
+            get { return GraphItemObject.IsEditing; }
+            set { GraphItemObject.IsEditing = value; }
+        }
+
+        public string FullLabel
+        {
+            get { return GraphItemObject.FullLabel; }
+        }
+
+        public IEnumerable<IDiagramNodeItem> Items
+        {
+            get { return GraphItemObject.Items; }
+        }
+
+        public string SubTitle
+        {
+            get { return GraphItemObject.SubTitle; }
+        }
+
+        public string Name
+        {
+            get { return GraphItemObject.Name; }
+            set { 
+                GraphItemObject.Name = value;
+                OnPropertyChanged("Name");
+            }
+        }
+
+        public IEnumerable<IDiagramNodeItem> ContainedItems
+        {
+            get { return GraphItemObject.ContainedItems; }
+        }
+
+        public string InfoLabel
+        {
+            get { return GraphItemObject.InfoLabel; }
+        }
+
+        private bool _isSelected = false;
+        public const string IsSelectedProperty = "IsSelected";
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                SetProperty(ref _isSelected, value, IsSelectedProperty);
+            }
+        }
+
+        public string Label
+        {
+            get { return Name; }
+        }
+
+        public void Rename(string newText)
+        {
+            GraphItemObject.Rename(newText);
+        }
+    }
+}
