@@ -22,12 +22,9 @@ public class SubSystemDrawer : DiagramNodeDrawer<SubSystemViewModel>
     {
     }
 
-    public SubSystemDrawer(SubSystemData data, ElementsDiagram diagram)
-        : base(diagram)
+    public SubSystemDrawer(SubSystemViewModel viewModel)
     {
-        ViewModel = new SubSystemViewModel(data);
-        Diagram = diagram;
-
+        ViewModel = viewModel;
     }
 
     public override GUIStyle ItemStyle

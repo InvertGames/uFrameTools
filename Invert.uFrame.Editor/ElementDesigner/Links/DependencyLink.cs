@@ -14,7 +14,7 @@ public class DependencyLink : BeizureLink
     public override ISelectable Source { get { return Item; } }
 
     public override ISelectable Target { get { return To; } }
-    public override Color GetColor(ElementsDiagram diagram)
+    public override Color GetColor(DiagramViewModel diagram)
     {
         return Color.black;
     }

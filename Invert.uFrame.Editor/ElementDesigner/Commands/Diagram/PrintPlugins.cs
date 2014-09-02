@@ -9,7 +9,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
             get { return "Print Json"; }
         }
 
-        public override void Perform(ElementsDiagram node)
+        public override void Perform(DiagramViewModel node)
         {
             Debug.Log(uFrameEditor.uFrameTypes);
             //Type T = typeof(GUIUtility);

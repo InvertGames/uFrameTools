@@ -19,10 +19,10 @@ public class DiagramEnumDrawer : DiagramNodeDrawer<EnumNodeViewModel>
     {
     }
 
-    public DiagramEnumDrawer(EnumData data, ElementsDiagram diagram)
-        : base(diagram)
+    public DiagramEnumDrawer(EnumNodeViewModel viewModel)
+
     {
-        ViewModel = new EnumNodeViewModel(data);
+        ViewModel = viewModel;
     }
 
     public NodeItemHeader ItemsHeader
@@ -32,7 +32,7 @@ public class DiagramEnumDrawer : DiagramNodeDrawer<EnumNodeViewModel>
 
             if (_itemsHeader == null)
             {
-                _itemsHeader = Container.Resolve<NodeItemHeader>();
+                _itemsHeader = Container.Resolve<NodeItemHeader>(null,false,ViewModel);
                 _itemsHeader.Label = "Items";
                 _itemsHeader.HeaderType = typeof(EnumData);
                 _itemsHeader.AddCommand = Container.Resolve<AddEnumItemCommand>();

@@ -4,9 +4,9 @@ namespace Invert.uFrame.Editor.ElementDesigner
     {
         
 
-        public override void Perform(ElementsDiagram node)
+        public override void Perform(DiagramViewModel node)
         {
-            ElementDiagramSettingsWindow.ShowWindow(node.Data);
+            ElementDiagramSettingsWindow.ShowWindow(node);
         }
     }
 }

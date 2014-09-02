@@ -8,18 +8,16 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         public override void Execute(object item)
         {
             base.Execute(item);
-            var node = item as ElementsDiagram;
+            var node = item as DiagramViewModel;
             if (node == null) return;
 
             var data = node.Data.AllDiagramItems.LastOrDefault();
-            
-            node.Refresh();
-            
+       
             if (data == null) return;
             data.BeginEditing();
         }
 
-        public override string CanPerform(ElementsDiagram node)
+        public override string CanPerform(DiagramViewModel node)
         {
             if (node == null) return "Diagram must be loaded first.";
 

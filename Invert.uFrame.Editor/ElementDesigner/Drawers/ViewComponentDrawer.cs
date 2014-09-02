@@ -9,9 +9,9 @@ public class ViewComponentDrawer : DiagramNodeDrawer<ViewComponentNodeViewModel>
     private NodeItemHeader _additiveScenesHeader;
 
 
-    public ViewComponentDrawer(ViewComponentData data)
+    public ViewComponentDrawer(ViewComponentNodeViewModel viewModel)
     {
-        ViewModel = new ViewComponentNodeViewModel(data);
+        ViewModel = viewModel;
     }
 
     protected override GUIStyle HeaderStyle
@@ -19,17 +19,10 @@ public class ViewComponentDrawer : DiagramNodeDrawer<ViewComponentNodeViewModel>
         get { return ElementDesignerStyles.NodeHeader7; }
     }
 
-    public ViewComponentDrawer(ViewComponentData data, ElementsDiagram diagram)
-        : base( diagram)
-    {
-        ViewModel = new ViewComponentNodeViewModel(data);
-        Diagram = diagram;
-    }
-
    
     public NodeItemHeader AdditiveScenesHeader
     {
-        get { return _additiveScenesHeader ?? (_additiveScenesHeader = new NodeItemHeader() { Label = "Additive Scenes", HeaderType = typeof(AdditiveSceneData) }); }
+        get { return _additiveScenesHeader ?? (_additiveScenesHeader = new NodeItemHeader(ViewModel) { Label = "Additive Scenes", HeaderType = typeof(AdditiveSceneData) }); }
         set { _additiveScenesHeader = value; }
     }
 

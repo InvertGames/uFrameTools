@@ -55,7 +55,7 @@ public class AddBindingWindow : SearchableScrollWindow
         if (_ViewData == null)
         {
 
-            if (ElementsDesigner != null && ElementsDesigner.Diagram != null)
+            if (ElementsDesigner != null && ElementsDesigner.DiagramDrawer != null)
             {
 
                 _ViewData = uFrameEditor.CurrentDiagramViewModel.SelectedNode as ViewNodeViewModel;
@@ -100,7 +100,7 @@ public class AddBindingWindow : SearchableScrollWindow
         GUIHelpers.DoToolbar(_ViewData.Name + " Preview",true,null,null,null,null,null,false);
         _previewScrollPosition = EditorGUILayout.BeginScrollView(_previewScrollPosition);
         if (LastSelected != null)
-            EditorGUILayout.TextArea(GetViewPreview(),GUILayout.Height(Screen.height - 50f));
+            EditorGUILayout.TextArea(_ViewData.Preview, GUILayout.Height(Screen.height - 50f));
 
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
@@ -125,7 +125,7 @@ public class AddBindingWindow : SearchableScrollWindow
                 {
                     LastSelected = item.Tag as IBindingGenerator;
                     _ViewData.AddNewBinding(LastSelected);
-                    ElementsDesigner.Diagram.Refresh();
+                    ElementsDesigner.DiagramDrawer.Refresh();
                     ElementsDesigner.Repaint();
                 }
             }
@@ -136,8 +136,8 @@ public class AddBindingWindow : SearchableScrollWindow
             if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.MethodName, IsWindow = true,FullWidth = true}))
             {
                 LastSelected = item;
-                _ViewData.NewBindings.Remove(item);
-                ElementsDesigner.Diagram.Refresh();
+                _ViewData.RemoveBinding(item);
+                ElementsDesigner.DiagramDrawer.Refresh();
                 ElementsDesigner.Repaint();
             }
         }
@@ -153,20 +153,12 @@ public class AddBindingWindow : SearchableScrollWindow
 
     }
 
-    public string GetViewPreview()
-    {
-        
-        var refactorContext = new RefactorContext(_ViewData.BindingInsertMethodRefactorer);
-        var settings = ElementsDesigner.Diagram.Data.Settings;
-        var pathStrategy = settings.CodePathStrategy;
-        var viewFilePath = System.IO.Path.Combine(settings.CodePathStrategy.AssetPath, pathStrategy.GetEditableViewFilename(_ViewData));
-        return refactorContext.RefactorFile(viewFilePath, false);
-    }
+    
     protected override void ApplySearch()
     {
         if (_ViewData == null) return;
         _MemberMethods = _ViewData.BindingMethods.ToArray();
-        Generators = uFrameEditor.GetBindingGeneratorsFor(_ViewData.ViewForElement,true,false,true,false);
+        Generators = _ViewData.BindingGenerators;
         
         //Where(p => _MemberMethods.FirstOrDefault(x => x.Name == p.MethodName) != null)
         Items = Generators.Select(p => new UFStyle()

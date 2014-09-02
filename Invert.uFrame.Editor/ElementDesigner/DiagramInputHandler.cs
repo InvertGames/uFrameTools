@@ -33,7 +33,7 @@
 //    public Vector2 LastMouseDownPosition { get; set; }
 //    public Vector2 LastMouseUpPosition { get; set; }
 
-//    public INodeDrawer MouseOverViewData
+//    public INodeDrawer NodeDrawerAtMouse
 //    {
 //        get
 //        {
@@ -81,7 +81,7 @@
 //            {
 //                if (_elementsDiagram.UfDiagramViewModel.SelectedItem == null)
 //                {
-//                    var mouseOver = MouseOverViewData;
+//                    var mouseOver = NodeDrawerAtMouse;
 //                    var canCreateLink = _elementsDiagram.UfDiagramViewModel.SelectedData.CanCreateLink(mouseOver == null
 //                        ? null
 //                        : (mouseOver.ViewModelObject as DiagramNodeViewModel).GraphItemObject);
@@ -100,7 +100,7 @@
 //                {
 //                    try
 //                    {
-//                        var mouseOver = MouseOverViewData;
+//                        var mouseOver = NodeDrawerAtMouse;
 //                        var canCreateLink = _elementsDiagram.UfDiagramViewModel.SelectedItem.CanCreateLink(mouseOver == null
 //                            ? null
 //                            : (mouseOver.ViewModelObject as DiagramNodeViewModel).GraphItemObject);
@@ -203,7 +203,7 @@
 
 //    private void OnMouseDown()
 //    {
-//        var selected = MouseOverViewData;
+//        var selected = NodeDrawerAtMouse;
 //        if (selected != null)
 //        {
 //            if (DiagramViewModel.Selected != null)

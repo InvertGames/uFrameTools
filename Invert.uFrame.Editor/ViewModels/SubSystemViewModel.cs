@@ -2,7 +2,7 @@ using Invert.uFrame.Editor.ViewModels;
 
 public class SubSystemViewModel : DiagramNodeViewModel
 {
-    public SubSystemViewModel(SubSystemData data) : base(data)
+    public SubSystemViewModel(SubSystemData data,DiagramViewModel diagramViewModel) : base(data,diagramViewModel)
     {
         
     }

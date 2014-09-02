@@ -10,7 +10,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
             get { return "Add New"; }
         }
 
-        public override void Perform(ElementsDiagram node)
+        public override void Perform(DiagramViewModel node)
         {
             // No implementation
         }

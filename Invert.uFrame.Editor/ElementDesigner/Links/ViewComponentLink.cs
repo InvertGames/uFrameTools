@@ -23,7 +23,7 @@ public class ViewComponentLink : BeizureLink
     //    get { return base.StartStyle; }
     //}
 
-    public override Color GetColor(ElementsDiagram diagram)
+    public override Color GetColor(DiagramViewModel diagram)
     {
         return diagram.Data.Settings.SceneManagerLinkColor;
     }

@@ -14,7 +14,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
             get { return ToolbarPosition.BottomRight; }
         }
 
-        public override void Perform(ElementsDiagram node)
+        public override void Perform(DiagramViewModel node)
         {
             var x = 0f;
             var y = 20f;
@@ -22,9 +22,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
             {
                 viewModelData.Location = new Vector2(x, y);
                 x += viewModelData.Position.width + 10f;
-                //y += viewModelData.Position.height + 10f;
             }
-            node.Refresh();
         }
     }
 }

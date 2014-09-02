@@ -4,7 +4,7 @@ public interface IDiagramLink
 
     ISelectable Target { get; }
 
-    void Draw(ElementsDiagram diagram);
+    void Draw(DiagramViewModel diagram);
 
-    void DrawPoints(ElementsDiagram diagram);
+    void DrawPoints(DiagramViewModel diagram);
 }

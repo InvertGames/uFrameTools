@@ -1,8 +1,11 @@
+using System;
+
 namespace Invert.uFrame.Editor.ViewModels
 {
-    public class SceneManagerViewModel : DiagramNodeViewModel
+    public class SceneManagerViewModel : DiagramNodeViewModel<SceneManagerData>
     {
-        public SceneManagerViewModel(SceneManagerData data) : base(data)
+        public SceneManagerViewModel(SceneManagerData data, DiagramViewModel diagramViewModel)
+            : base(data,diagramViewModel)
         {
         
         }
@@ -11,5 +14,12 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return true; }
         }
 
+        public Type CurrentType
+        {
+            get
+            {
+                return this.GraphItem.CurrentType;
+            }
+        }
     }
 }

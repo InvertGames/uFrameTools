@@ -84,7 +84,7 @@ public abstract class BeizureLink : IDiagramLink
         indexB = i2;
     }
 
-    public virtual void Draw(ElementsDiagram diagram)
+    public virtual void Draw(DiagramViewModel diagram)
     {
         try
         {
@@ -151,9 +151,9 @@ public abstract class BeizureLink : IDiagramLink
     {
         get { return true; }
     }
-    public abstract Color GetColor(ElementsDiagram diagram);
+    public abstract Color GetColor(DiagramViewModel diagram);
 
-    public virtual void DrawPoints(ElementsDiagram diagram)
+    public virtual void DrawPoints(DiagramViewModel diagram)
     {
         if (StartStyle == NodeCurvePointStyle.Circle)
         {

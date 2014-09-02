@@ -10,7 +10,7 @@ public class InheritanceLink : BeizureLink
 
     public override ISelectable Target { get { return Base; } }
 
-    public override Color GetColor(ElementsDiagram diagram)
+    public override Color GetColor(DiagramViewModel diagram)
     {
         return diagram.Data.Settings.InheritanceLinkColor;
     }

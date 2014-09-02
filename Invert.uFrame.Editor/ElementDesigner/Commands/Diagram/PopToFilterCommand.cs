@@ -5,16 +5,14 @@ namespace Invert.uFrame.Editor.ElementDesigner
     public class PopToFilterCommand : ElementsDiagramToolbarCommand, IDynamicOptionsCommand
     {
 
-        public override void Perform(ElementsDiagram node)
+        public override void Perform(DiagramViewModel node)
         {
-
             node.Data.PopToFilter(SelectedOption.Name);
-            node.Refresh();
         }
 
         public IEnumerable<UFContextMenuItem> GetOptions(object arg)
         {
-            var item = arg as ElementsDiagram;
+            var item = arg as DiagramViewModel;
             if (item == null)
             {
                 yield break;

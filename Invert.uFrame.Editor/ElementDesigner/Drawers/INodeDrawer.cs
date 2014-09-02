@@ -9,7 +9,10 @@ public interface IDrawer
     GraphItemViewModel ViewModelObject { get; }
     Rect Bounds { get; set; }
     bool IsSelected { get; set; }
+    bool Dirty { get; set; }
+    string ShouldFocus { get; set; }
     void Draw(float scale);
+    void Refresh();
     void Refresh(Vector2 position);
 }
 
@@ -32,10 +35,29 @@ public class Drawer<TViewModel> : Drawer where TViewModel : GraphItemViewModel
 }
 public class Drawer : IDrawer
 {
+    private object _dataContext;
+
     public Drawer()
     {
     }
-    public object DataContext { get; set; }
+
+    public object DataContext
+    {
+        get { return _dataContext; }
+        set
+        {
+            _dataContext = value;
+            if (_dataContext != null)
+            {
+                DataContextChanged();
+            }
+        }
+    }
+
+    protected virtual void DataContextChanged()
+    {
+        
+    }
 
     public GraphItemViewModel ViewModelObject
     {
@@ -45,6 +67,8 @@ public class Drawer : IDrawer
 
     public Rect Bounds { get; set; }
     public virtual bool IsSelected { get; set; }
+    public bool Dirty { get; set; }
+    public string ShouldFocus { get; set; }
 
     public Drawer(GraphItemViewModel viewModelObject)
     {
@@ -54,6 +78,11 @@ public class Drawer : IDrawer
     public virtual void Draw(float scale)
     {
         
+    }
+
+    public void Refresh()
+    {
+        Refresh(Bounds.position);
     }
 
     public virtual void Refresh(Vector2 position)
@@ -69,17 +98,16 @@ public interface INodeDrawer : IDrawer
     
     ElementsDiagram Diagram { get; set; }
     //Type CommandsType { get; }
-    bool Dirty { get; set; }
     DiagramNodeViewModel ViewModel { get; set; }
     IDrawer[] Children { get; set; }
     void DoubleClicked();
-    void OnDeselecting(InputManager inputManager);
-    void OnSelecting(InputManager inputManager);
-    void OnDeselected(InputManager inputManager);
-    void OnSelected(InputManager inputManager);
-    void OnMouseExit(InputManager inputManager);
-    void OnMouseEnter(InputManager inputManager);
-    void OnMouseMove(InputManager inputManager);
-    void OnDrag(InputManager inputManager);
+    void OnDeselecting();
+    void OnSelecting();
+    void OnDeselected();
+    void OnSelected();
+    void OnMouseExit();
+    void OnMouseEnter();
+    void OnMouseMove();
+    void OnDrag();
     void OnMouseUp();
 }

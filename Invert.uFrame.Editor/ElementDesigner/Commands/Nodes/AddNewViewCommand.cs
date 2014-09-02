@@ -8,7 +8,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             get { return "Add New View"; }
         }
-        public override void Perform(ElementsDiagram node)
+        public override void Perform(DiagramViewModel node)
         {
             var data = new ViewData()
             {
@@ -24,7 +24,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                 element.CreateLink(null, data);
             }
             
-            data.Location = node.LastMouseDownPosition;
+            //data.Location = node.LastMouseDownPosition;
          
         }
     }

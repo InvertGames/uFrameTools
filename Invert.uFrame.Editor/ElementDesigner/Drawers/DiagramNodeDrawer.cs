@@ -15,11 +15,6 @@ public abstract class DiagramNodeDrawer<TViewModel> : DiagramNodeDrawer where TV
     {
     }
 
-    protected DiagramNodeDrawer(ElementsDiagram diagram) :base(diagram)
-    {
-         
-    }
-
     public TViewModel NodeViewModel
     {
         get { return ViewModel as TViewModel; }
@@ -39,11 +34,6 @@ public abstract class DiagramNodeDrawer : INodeDrawer
     protected DiagramNodeDrawer()
     {
 
-    }
-
-    protected DiagramNodeDrawer(ElementsDiagram diagram)
-    {
-        Diagram = diagram;
     }
 
     public float Scale
@@ -118,6 +108,7 @@ public abstract class DiagramNodeDrawer : INodeDrawer
     }
 
     public bool Dirty { get; set; }
+    string IDrawer.ShouldFocus { get; set; }
 
     public Rect CalculateItemBounds(float width, float localY)
     {
@@ -287,12 +278,10 @@ public abstract class DiagramNodeDrawer : INodeDrawer
             if (GUI.Button(rect.Scale(Scale), string.Empty,
                 ViewModel.IsCollapsed ? ElementDesignerStyles.NodeExpand : ElementDesignerStyles.NodeCollapse))
             {
-                Diagram.ExecuteCommand((item) =>
+                uFrameEditor.ExecuteCommand((item) =>
                 {
                     ViewModel.IsCollapsed = !ViewModel.IsCollapsed;
                     Dirty = true;
-                    Diagram.Dirty = true;
-                    //CalculateBounds();
                 });
             }
 
@@ -319,6 +308,11 @@ public abstract class DiagramNodeDrawer : INodeDrawer
 
         foreach (var item in Children)
         {
+            if (item.Dirty)
+            {
+                Refresh();
+                item.Dirty = false;
+            }
             item.Draw(scale);
         }
         if (ViewModel.IsSelected)
@@ -328,7 +322,12 @@ public abstract class DiagramNodeDrawer : INodeDrawer
 
         //if (!ViewModel.IsCollapsed)
         //    DrawContent(diagram, false);
-    } 
+    }
+
+    public void Refresh()
+    {
+        Refresh(Vector2.zero);
+    }
 
     protected virtual GUIStyle HeaderStyle
     {
@@ -396,7 +395,7 @@ public abstract class DiagramNodeDrawer : INodeDrawer
         if (GUILayout.Button(string.Empty, UBStyles.RemoveButtonStyle.Scale(Scale)))
         {
             //this.ExecuteCommand(new SimpleEditorCommand<DiagramNodeItem>(p => nodeItem.Rename(Data, newName)));
-            Diagram.ExecuteCommand(RemoveItemCommand);
+            uFrameEditor.ExecuteCommand(RemoveItemCommand);
         }
     }
 
@@ -410,7 +409,7 @@ public abstract class DiagramNodeDrawer : INodeDrawer
             {
                 //Undo.RecordObject(diagram.Data, "Rename");
                 //Diagram.ExecuteCommand(RemoveItemCommand);
-                Diagram.ExecuteCommand(p => nodeItem.Rename(ViewModel.GraphItemObject, newName));
+                uFrameEditor.ExecuteCommand(p => nodeItem.Rename(ViewModel.GraphItemObject, newName));
                 //EditorUtility.SetDirty(diagram.Data);
             }
         }
@@ -423,7 +422,7 @@ public abstract class DiagramNodeDrawer : INodeDrawer
 
     public virtual void Refresh(Vector2 position)
     {
-
+        
         //var location = ViewModel.Position;
         //var width = Width;
         var startY = ViewModel.Position.y;
@@ -467,10 +466,10 @@ public abstract class DiagramNodeDrawer : INodeDrawer
         foreach (var cachedDrawer in Children)
         {
             cachedDrawer.Bounds = new Rect(cachedDrawer.Bounds) { width = maxWidth };
+            cachedDrawer.Dirty = false;
         }
         
         _cachedLabel = ViewModel.Label;
-        
         
         if (!ViewModel.IsCollapsed)
         {
@@ -514,42 +513,42 @@ public abstract class DiagramNodeDrawer : INodeDrawer
 
     }
 
-    public void OnDeselecting(InputManager inputManager)
+    public void OnDeselecting()
     {
         
     }
 
-    public void OnSelecting(InputManager inputManager)
+    public void OnSelecting()
     {
         
     }
 
-    public void OnDeselected(InputManager inputManager)
+    public void OnDeselected()
     {
         
     }
 
-    public void OnSelected(InputManager inputManager)
+    public void OnSelected()
     {
         
     }
 
-    public void OnMouseExit(InputManager inputManager)
+    public void OnMouseExit()
     {
         
     }
 
-    public void OnMouseEnter(InputManager inputManager)
+    public void OnMouseEnter()
     {
         
     }
 
-    public void OnMouseMove(InputManager inputManager)
+    public void OnMouseMove()
     {
         
     }
 
-    public void OnDrag(InputManager inputManager)
+    public void OnDrag()
     {
         
     }
@@ -578,13 +577,5 @@ public abstract class DiagramNodeDrawer : INodeDrawer
     //    return sy;
     //}
 
-    public void CommandExecuted(IEditorCommand command)
-    {
-        Diagram.CommandExecuting(command);
-    }
-
-    public void CommandExecuting(IEditorCommand command)
-    {
-        Diagram.CommandExecuting(command);
-    }
+ 
 }

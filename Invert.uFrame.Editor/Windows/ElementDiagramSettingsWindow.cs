@@ -13,7 +13,7 @@ public class ElementDiagramSettingsWindow : EditorWindow
 
     private Rect _MainAreaRect = new Rect(4, 48, 512, 345);
 
-    public IElementDesignerData DesignerData { get; set; }
+    public DiagramViewModel DesignerData { get; set; }
 
     private bool _ViewingReadme;
     private ElementsDesigner _designerWindow;
@@ -24,12 +24,12 @@ public class ElementDiagramSettingsWindow : EditorWindow
         set { _designerWindow = value; }
     }
 
-    internal static void ShowWindow(IElementDesignerData designerData)
+    internal static void ShowWindow(DiagramViewModel diagram)
     {
         var window = GetWindow<ElementDiagramSettingsWindow>();
         window.title = "Settings";
         //window.minSize = window.maxSize = new Vector2(400, 400);
-        window.DesignerData = designerData;
+        window.DesignerData = diagram;
         window.Show();
     }
 
@@ -54,19 +54,18 @@ public class ElementDiagramSettingsWindow : EditorWindow
             if (DesignerData == null)
             {
 
-                if (DesignerWindow != null && DesignerWindow.Diagram != null && DesignerWindow.Diagram.Data != null)
+                if (DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
                 {
-                    DesignerData = DesignerWindow.Diagram.Data;
+                    DesignerData = DesignerWindow.DiagramViewModel;
                 }
                 else
                 {
                     EditorGUILayout.HelpBox("Reopen this window.", MessageType.Info);
                     return;
                 }
-
             }
 
-            DrawTitleBar(DesignerData.Name);
+            DrawTitleBar(DesignerData.Title);
             GUILayout.BeginArea(new Rect(5, 50, position.width - 10, this.position.height - 55), GUI.skin.box);
 
 
@@ -123,16 +122,6 @@ public class ElementDiagramSettingsWindow : EditorWindow
                 }
             }
             GUILayout.EndScrollView();
-
-            //GUILayout.BeginVertical();
-
-            //GUILayout.FlexibleSpace();
-
-            //if (GUILayout.Button("Done", GUILayout.Height(22)))
-            //    this.Close();
-
-            //GUILayout.FlexibleSpace();
-            //GUILayout.EndVertical();
 
             GUILayout.EndArea();
         }

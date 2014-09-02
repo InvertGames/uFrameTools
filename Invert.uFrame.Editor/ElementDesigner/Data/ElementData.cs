@@ -424,12 +424,7 @@ public class ElementData : ElementDataBase, IDiagramFilter
         }
     }
 
-
-  
-
     public string BaseIdentifier { get; set; }
-
-
 
 
     public override void Serialize(JSONClass cls)

@@ -4,6 +4,7 @@ using Invert.uFrame.Editor.ElementDesigner.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
@@ -51,7 +52,7 @@ namespace Invert.uFrame.Editor
         {
             get
             {
-                return DesignerWindow.Diagram;
+                return DesignerWindow.DiagramDrawer;
             }
         }
 
@@ -125,22 +126,28 @@ namespace Invert.uFrame.Editor
             return (TCommandUI)ui;
         }
 
-        public static INodeDrawer CreateDrawer(IDiagramNode data, ElementsDiagram diagram)
+        public static IDrawer CreateDrawer(ViewModel viewModel)
         {
-            if (data == null)
+            if (viewModel == null)
             {
-                Debug.Log("Data is null.");
+                Debug.LogError("Data is null.");
+                return null;
             }
-            var drawer = Container.ResolveRelation<INodeDrawer>(data.GetType(), data, diagram);
+            var drawer = Container.ResolveRelation<IDrawer>(viewModel.GetType(), viewModel);
             if (drawer == null)
             {
-                Debug.Log("Couldn't Create drawer for.");
+                Debug.Log(string.Format("Couldn't Create drawer for {0}.", viewModel.GetType()));
             }
-            //drawer.Diagram = diagram;
-            //drawer.Model = data;
             return drawer;
         }
-
+        public static void ExecuteCommand(IEditorCommand action)
+        {
+            DesignerWindow.ExecuteCommand(action);
+        }
+        public static void ExecuteCommand(Action<DiagramViewModel> action)
+        {
+            DesignerWindow.ExecuteCommand(new SimpleEditorCommand<DiagramViewModel>(action));
+        }
         public static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command)
         {
             var objs = handler.ContextObjects.ToArray();
@@ -375,16 +382,21 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveDownCommand(), "MoveItemDown");
 
             // Drawers
-            container.RegisterRelation<ViewData, INodeDrawer, ViewDrawer>();
+            RegisterNode<SceneManagerData,SceneManagerViewModel,SceneManagerDrawer>();
+            RegisterNode<SubSystemData,SubSystemViewModel,SubSystemDrawer>();
+            RegisterNode<ElementData,ElementNodeViewModel,ElementDrawer>();
+            RegisterNode<EnumData,EnumNodeViewModel,DiagramEnumDrawer>();
+            RegisterNode<ViewData,ViewNodeViewModel,ViewDrawer>();
+            RegisterNode<ViewComponentData,ViewComponentNodeViewModel,ViewComponentDrawer>();
 
-            container.RegisterRelation<ViewData, INodeDrawer, ViewDrawer>();
-            container.RegisterRelation<ViewComponentData, INodeDrawer, ViewComponentDrawer>();
-            container.RegisterRelation<ElementData, INodeDrawer, ElementDrawer>();
-            container.RegisterRelation<ElementDataBase, INodeDrawer, ElementDrawer>();
-            //container.RegisterRelation<ImportedElementData, INodeDrawer, ElementDrawer>();
-            container.RegisterRelation<SubSystemData, INodeDrawer, SubSystemDrawer>();
-            container.RegisterRelation<SceneManagerData, INodeDrawer, SceneManagerDrawer>();
-            container.RegisterRelation<EnumData, INodeDrawer, DiagramEnumDrawer>();
+            //container.RegisterRelation<ViewNodeViewModel, INodeDrawer, ViewDrawer>();
+            //container.RegisterRelation<ViewComponentNodeViewModel, INodeDrawer, ViewComponentDrawer>();
+            //container.RegisterRelation<ViewComponentNodeViewModel, INodeDrawer, ElementDrawer>();
+            //container.RegisterRelation<ElementDataBase, INodeDrawer, ElementDrawer>();
+            ////container.RegisterRelation<ImportedElementData, INodeDrawer, ElementDrawer>();
+            //container.RegisterRelation<SubSystemData, INodeDrawer, SubSystemDrawer>();
+            //container.RegisterRelation<SceneManagerData, INodeDrawer, SceneManagerDrawer>();
+            //container.RegisterRelation<EnumData, INodeDrawer, DiagramEnumDrawer>();
 
             //container.RegisterInstance<IEditorCommand>(,"Show/Hide This Help"),"ShowHideHelp");
 
@@ -414,6 +426,12 @@ namespace Invert.uFrame.Editor
             Debug.Log(uFrameTypes.ToString());
 #endif
             uFrameTypes = new uFrameStringTypeProvider();
+        }
+
+        public static void RegisterNode<TModel, TViewModel, TDrawer>()
+        {
+            Container.RegisterRelation<TModel, ViewModel, TViewModel>();
+            Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
         }
 
     }

@@ -9,7 +9,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             get { return "Add New Enum"; }
         }
 
-        public override void Perform(ElementsDiagram node)
+        public override void Perform(DiagramViewModel node)
         {
             var data = new EnumData()
             {
@@ -18,7 +18,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                 Location = new Vector2(15, 15)
             };
             node.Data.AddNode(data);
-            data.Location = node.LastMouseDownPosition;
+            //data.Location = node.LastMouseDownPosition;
         }
     }
 }

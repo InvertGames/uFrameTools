@@ -7,7 +7,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             get { return "Add New Element"; }
         }
 
-        public override void Perform(ElementsDiagram node)
+        public override void Perform(DiagramViewModel node)
         {
             var data = new ElementData
             {
@@ -16,7 +16,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                 //BaseTypeName = typeof(ViewModel).FullName,
                 Dirty = true
             };
-            data.Location = node.LastMouseDownPosition;
+            //data.Location = node.LastMouseDownPosition;
             data.Filter.Locations[data] = data.Location;
             node.Data.AddNode(data);
         }

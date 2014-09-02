@@ -15,19 +15,19 @@ namespace Invert.uFrame.Editor.ElementDesigner
             get { return "Save & Compile"; }
         }
 
-        public override void Perform(ElementsDiagram node)
+        public override void Perform(DiagramViewModel diagram)
         {
             // Go ahead and process any code refactors
-            ProcessRefactorings(node);
+            ProcessRefactorings(diagram);
 
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
 
-            var fileGenerators = uFrameEditor.GetAllFileGenerators(node.Data).ToArray();
+            var fileGenerators = uFrameEditor.GetAllFileGenerators(diagram.Data).ToArray();
             
             foreach (var codeFileGenerator in fileGenerators)
             {
                 // Grab the information for the file
-                var fileInfo = new FileInfo(System.IO.Path.Combine(node.Data.Settings.CodePathStrategy.AssetPath, codeFileGenerator.Filename));
+                var fileInfo = new FileInfo(System.IO.Path.Combine(diagram.Data.Settings.CodePathStrategy.AssetPath, codeFileGenerator.Filename));
                 // Make sure we are allowed to generate the file
                 if (!codeFileGenerator.CanGenerate(fileInfo)) continue;
                 // Get the path to the directory
@@ -42,23 +42,22 @@ namespace Invert.uFrame.Editor.ElementDesigner
                 //Debug.Log("Created file: " + fileInfo.FullName);
 
             }
-            foreach (var allDiagramItem in node.Data.AllDiagramItems)
+            foreach (var allDiagramItem in diagram.Data.AllDiagramItems)
             {
                 allDiagramItem.IsNewNode = false;
             }
-            RefactorApplied(node.Data);
+            RefactorApplied(diagram.Data);
             AssetDatabase.Refresh();
             
-            node.Save();
-            node.DeselectAll();
-            node.Refresh();
+            diagram.Save();
+            diagram.DeselectAll();
 
         }
 
         /// <summary>
         /// Execute all the refactorings queued in the diagram
         /// </summary>
-        public void ProcessRefactorings(ElementsDiagram diagram)
+        public void ProcessRefactorings(DiagramViewModel diagram)
         {
             var refactorer = new RefactorContext(diagram.Data.GetRefactorings());
             

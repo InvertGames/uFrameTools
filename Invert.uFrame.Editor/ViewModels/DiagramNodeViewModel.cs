@@ -1,6 +1,8 @@
 using System;
+using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Invert.Common;
 using Invert.MVVM;
 using Invert.uFrame.Editor.ElementDesigner;
@@ -28,7 +30,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
 
 
-        public bool IsSelected
+        public virtual bool IsSelected
         {
             get { return _isSelected; }
             set
@@ -36,6 +38,9 @@ namespace Invert.uFrame.Editor.ViewModels
                 SetProperty(ref _isSelected, value, IsSelectedProperty);
             }
         }
+
+        
+
         //public bool Dirty { get; set; }
    
     }
@@ -45,7 +50,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
         }
 
-        public DiagramNodeViewModel(TData graphItemObject) : base(graphItemObject)
+        public DiagramNodeViewModel(TData graphItemObject, DiagramViewModel diagramViewModel) : base(graphItemObject,diagramViewModel)
         {
         }
 
@@ -103,6 +108,21 @@ namespace Invert.uFrame.Editor.ViewModels
         }
     }
 
+    public class ElementItemViewModel : ItemViewModel<IViewModelItem>
+    {
+        public string RelatedType
+        {
+            get
+            {
+                return Data.RelatedType;
+            }
+            set
+            {
+                Data.RelatedType = value;
+            }
+        }
+    }
+
     public class DiagramNodeViewModel : GraphItemViewModel
     {
         private bool _isSelected = false;
@@ -114,10 +134,11 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return DataObject as IDiagramNode; }
             set { DataObject = value; }
         }
-
-        public DiagramNodeViewModel(IDiagramNode graphItemObject) : this()
+        public DiagramViewModel DiagramViewModel { get; set; }
+        public DiagramNodeViewModel(IDiagramNode graphItemObject, DiagramViewModel diagramViewModel) : this()
         {
             GraphItemObject = graphItemObject;
+            DiagramViewModel = diagramViewModel;
 
         }
 
@@ -131,11 +152,29 @@ namespace Invert.uFrame.Editor.ViewModels
         public override Vector2 Position
         {
             get { return GraphItemObject.Location; }
-            set { GraphItemObject.Location = value; }
+            set
+            {
+               
+                Debug.Log("Setting Position");
+                GraphItemObject.Location = value;
+                DiagramViewModel.MarkDirty();
+            }
         }
 
         //public bool Dirty { get; set; }
-       
+        public override bool IsSelected
+        {
+            get
+            {
+                return base.IsSelected;
+            }
+            set
+            {
+                if (value == false)
+                    IsEditing = false;
+                base.IsSelected = value;
+            }
+        }
 
         public float Scale
         {
@@ -174,7 +213,13 @@ namespace Invert.uFrame.Editor.ViewModels
         public bool IsEditing
         {
             get { return GraphItemObject.IsEditing; }
-            set { GraphItemObject.IsEditing = value; }
+            set
+            {
+                GraphItemObject.IsEditing = value;
+                if (value == false)
+                    EndEditing();
+                
+            }
         }
 
         public string FullLabel
@@ -255,10 +300,34 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return DataObject is IDiagramFilter; }
         }
 
+        public IEnumerable<CodeGenerator> CodeGenerators
+        {
+            get
+            {
+                return DiagramViewModel.CodeGenerators.Where(p => p.ObjectData == DataObject);
+            }
+        }
+
+        public bool HasFilterItems
+        {
+            get
+            {
+                var filter = GraphItemObject as IDiagramFilter;
+                if (filter == null) return false;
+
+                return filter.Locations.Keys.Count > 1;
+            }
+        }
+
 
         public void BeginEditing()
         {
             GraphItemObject.BeginEditing();
+        }
+
+        public void Remove()
+        {
+            GraphItemObject.RemoveFromDiagram();
         }
     }
 }

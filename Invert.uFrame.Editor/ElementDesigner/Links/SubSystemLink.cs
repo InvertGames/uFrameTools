@@ -9,7 +9,7 @@ public class SubSystemLink : BeizureLink
     public  ISubSystemData Start { get; set; }
 
     public override ISelectable Target { get { return Finish; } }
-    public override Color GetColor(ElementsDiagram diagram)
+    public override Color GetColor(DiagramViewModel diagram)
     {
         return diagram.Data.Settings.SubSystemLinkColor;
     }

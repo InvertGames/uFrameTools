@@ -24,13 +24,10 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
     }
 
 
-    public ViewDrawer(ViewData data, ElementsDiagram diagram)
-        : base( diagram)
+    public ViewDrawer(ViewNodeViewModel viewModel)
     {
-        ViewModel = new ViewNodeViewModel(data);
+        ViewModel = viewModel;
     }
-
-   
 
     private NodeItemHeader _behavioursHeader;
     private NodeItemHeader _propertiesHeader;
@@ -127,7 +124,7 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
         base.DoubleClicked();
         if (DoubleClickCommand != null)
         {
-            Diagram.ExecuteCommand(DoubleClickCommand);
+            uFrameEditor.ExecuteCommand(DoubleClickCommand);
         }
     }
 

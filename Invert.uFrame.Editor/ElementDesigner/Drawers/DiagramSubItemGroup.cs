@@ -91,12 +91,12 @@ public class ItemDrawer : Drawer
             var newName = EditorGUILayout.TextField(ItemViewModel.Name, ElementDesignerStyles.ClearItemStyle);
             if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
             {
-                uFrameEditor.DesignerWindow.Diagram.ExecuteCommand(p => ItemViewModel.Rename(newName));
+                uFrameEditor.ExecuteCommand(p => ItemViewModel.Rename(newName));
             }
 
             if (GUILayout.Button(string.Empty, UBStyles.RemoveButtonStyle.Scale(scale)))
             {
-                uFrameEditor.DesignerWindow.ExecuteCommand(ItemViewModel.RemoveItemCommand);
+                uFrameEditor.ExecuteCommand(ItemViewModel.RemoveItemCommand);
             }
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
@@ -165,7 +165,7 @@ public class HeaderDrawer : Drawer
     {
         base.Refresh(position);
         TextSize = TextStyle.CalcSize(new GUIContent(NodeViewModel.Label));
-        var width = TextSize.x + (Padding * 2);
+        var width = Mathf.Max(TextSize.x + (Padding * 2),Bounds.width);
         
         if (NodeViewModel.IsCollapsed)
         {
@@ -221,7 +221,7 @@ public class HeaderDrawer : Drawer
             if (EditorGUI.EndChangeCheck())
             {
                 NodeViewModel.Rename(newText);
-                Refresh(Vector2.zero);
+                Dirty = true;
             }
 
 

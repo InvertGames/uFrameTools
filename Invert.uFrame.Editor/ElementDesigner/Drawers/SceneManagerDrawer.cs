@@ -10,9 +10,9 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
 
 
 
-    public SceneManagerDrawer(SceneManagerData data,ElementsDiagram diagram) : base(diagram)
+    public SceneManagerDrawer(SceneManagerViewModel viewModel) : base()
     {
-        ViewModel = new SceneManagerViewModel(data);
+        ViewModel = viewModel;
     }
 
     protected override GUIStyle HeaderStyle
@@ -23,7 +23,7 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
 
     public NodeItemHeader TransitionsHeader
     {
-        get { return _transitionsHeader ?? (_transitionsHeader = new NodeItemHeader() { Label = "Transitions", HeaderType = typeof(SceneManagerData) }); }
+        get { return _transitionsHeader ?? (_transitionsHeader = new NodeItemHeader(ViewModel) { Label = "Transitions", HeaderType = typeof(SceneManagerData) }); }
         set { _transitionsHeader = value; }
     }
 

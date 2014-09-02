@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class DeleteCommand : EditorCommand<IDiagramNode>, IDiagramNodeCommand,IKeyBindable
+    public class DeleteCommand : EditorCommand<DiagramViewModel>, IDiagramNodeCommand,IKeyBindable
     {
         public override string Group
         {
@@ -19,22 +20,23 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             get { return 3; }
         }
 
-        public override void Perform(IDiagramNode node)
+        public override void Perform(DiagramViewModel node)
         {
 
             if (node == null) return;
-            var pathStrategy = EditorWindow.GetWindow<ElementsDesigner>().Diagram.Data.Settings.CodePathStrategy;
-   
-            var generators = uFrameEditor.GetAllCodeGenerators(pathStrategy, node.Data)
-                .Where(p => !p.IsDesignerFile && p.ObjectData == node).ToArray();
+            var selected = node.SelectedNode;
+
+            var pathStrategy = node.Settings.CodePathStrategy;
+
+            var generators = selected.CodeGenerators.Where(p => !p.IsDesignerFile).ToArray();
 
             var customFiles = generators.Select(p=>p.Filename).ToArray();
             var customFileFullPaths = generators.Select(p=>System.IO.Path.Combine(pathStrategy.AssetPath, p.Filename)).Where(File.Exists).ToArray();
 
-            if (node is IDiagramFilter)
+            if (selected.IsFilter)
             {
-                var filter = node as IDiagramFilter;
-                if (filter.Locations.Keys.Count > 1)
+                
+                if (selected.HasFilterItems)
                 {
                     EditorUtility.DisplayDialog("Delete sub items first.",
                         "There are items defined inside this item please hide or delete them before removing this item.", "OK");
@@ -43,7 +45,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             }
             if (EditorUtility.DisplayDialog("Confirm", "Are you sure you want to delete this?", "Yes", "No"))
             {
-                node.RemoveFromDiagram();
+                selected.Remove();
                 if (customFileFullPaths.Length > 0)
                 {
                     if (EditorUtility.DisplayDialog("Confirm",
@@ -62,9 +64,9 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             }
         }
 
-        public override string CanPerform(IDiagramNode node)
+        public override string CanPerform(DiagramViewModel diagram)
         {
-            return null;
+            return diagram.SelectedNode != null ? null : "Select something first.";
         }
     }
 }

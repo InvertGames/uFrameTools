@@ -37,10 +37,9 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     }
 
 
-    public ElementDrawer(ElementData data, ElementsDiagram diagram)
-        : base(diagram)
+    public ElementDrawer(ElementNodeViewModel viewModel)
     {
-        ViewModel = new ElementNodeViewModel(data); 
+        ViewModel = viewModel;
     }
 
 
@@ -225,7 +224,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
             }
             else
             {
-                Diagram.ExecuteCommand(command);
+                uFrameEditor.ExecuteCommand(command);
             }
          
 

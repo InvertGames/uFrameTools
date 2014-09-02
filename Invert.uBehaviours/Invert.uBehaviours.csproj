@@ -158,7 +158,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\ /Y
-IF EXIST $(TargetDir)$(TargetName).pdb copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\ /Y</PostBuildEvent>
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\ /Y</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

@@ -40,7 +40,7 @@ namespace Invert.uFrame.Editor
         {
             get
             {
-                return (Command as TCommandType) ?? uFrameEditor.Container.Resolve<TCommandType>(Name);
+                return (Command as TCommandType) ?? uFrameEditor.Container.Resolve<TCommandType>( Name);
             }
         }
 
