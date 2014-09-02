@@ -34,6 +34,6 @@ D:\Invert\uFrameSVN2\Invert.Common\obj\Debug\Invert.Common.dll
 D:\Invert\uFrameSVN2\Invert.Common\obj\Debug\Invert.Common.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.Common\bin\Debug\Invert.Common.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.Common\bin\Debug\Invert.Common.pdb
-D:\Invert\uFrameGit\uFrameTools\Invert.Common\obj\Debug\Invert.Common.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit\uFrameTools\Invert.Common\obj\Debug\Invert.Common.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.Common\obj\Debug\Invert.Common.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.Common\obj\Debug\Invert.Common.csprojResolveAssemblyReference.cache

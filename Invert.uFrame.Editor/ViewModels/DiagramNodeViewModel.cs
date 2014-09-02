@@ -23,7 +23,21 @@ namespace Invert.uFrame.Editor.ViewModels
     public abstract class GraphItemViewModel : ViewModel
     {
         public abstract Vector2 Position { get; set; }
+        private bool _isSelected = false;
+        public const string IsSelectedProperty = "IsSelected";
+
+
+
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                SetProperty(ref _isSelected, value, IsSelectedProperty);
+            }
+        }
         //public bool Dirty { get; set; }
+   
     }
     public class DiagramNodeViewModel<TData> : DiagramNodeViewModel where TData : IDiagramNode
     {
@@ -71,12 +85,6 @@ namespace Invert.uFrame.Editor.ViewModels
             set { NodeItem.IsEditing = value; }
         }
 
-        public bool IsSelected
-        {
-            get { return NodeItem.IsSelected; }
-            set { NodeItem.IsSelected = value; }
-        }
-
         public bool IsSelectable
         {
             get { return true; }
@@ -89,10 +97,16 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             NodeItem.Rename(NodeItem.Node,newName);
         }
+        public void Remove()
+        {
+            NodeItem.Remove(((IDiagramNodeItem)DataObject).Node);
+        }
     }
 
     public class DiagramNodeViewModel : GraphItemViewModel
     {
+        private bool _isSelected = false;
+        private ModelCollection<GraphItemViewModel> _contentItems;
 
 
         public IDiagramNode GraphItemObject
@@ -197,25 +211,54 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return GraphItemObject.InfoLabel; }
         }
 
-        private bool _isSelected = false;
-        public const string IsSelectedProperty = "IsSelected";
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                SetProperty(ref _isSelected, value, IsSelectedProperty);
-            }
-        }
+    
 
         public string Label
         {
             get { return Name; }
         }
 
+        //public bool IsSelected
+        //{
+        //    get { return _isSelected; }
+        //    set
+        //    {
+        //        SetProperty(ref _isSelected, value, IsSelectedProperty);
+        //    }
+        //}
+        public virtual Type CommandsType
+        {
+            get { return typeof(IDiagramNode); }
+        }
+
+        public ModelCollection<GraphItemViewModel> ContentItems
+        {
+            get { return _contentItems ?? (_contentItems = new ModelCollection<GraphItemViewModel>()); }
+            set { _contentItems = value; }
+        }
+
         public void Rename(string newText)
         {
             GraphItemObject.Rename(newText);
+        }
+
+        public void EndEditing()
+        {
+            GraphItemObject.EndEditing();
+            Dirty = true;
+        }
+
+        public bool Dirty { get; set; }
+
+        public bool IsFilter
+        {
+            get { return DataObject is IDiagramFilter; }
+        }
+
+
+        public void BeginEditing()
+        {
+            GraphItemObject.BeginEditing();
         }
     }
 }

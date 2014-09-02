@@ -60,6 +60,10 @@ namespace Invert.uFrame.Editor
             }
         }
 
+        public DiagramViewModel DiagramViewModel 
+        {
+            get { return Diagram.DiagramViewModel; }
+        }
         public float InspectorWidth
         {
             get
@@ -317,17 +321,20 @@ namespace Invert.uFrame.Editor
                 }
                // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));
             }
+
             var evt = Event.current;
             if (evt != null && evt.isKey && evt.type == EventType.KeyUp && Diagram != null)
             {
               
-                if (Diagram.SelectedData == null || !Diagram.SelectedData.IsEditing)
+                if (DiagramViewModel.SelectedNode == null || !DiagramViewModel.SelectedNode.IsEditing)
                 {
-                    
                     Diagram.HandleKeyEvent(evt,ModifierKeyStates);
                     evt.Use();
                 }
             }
+
+
+
             if (Event.current.type == EventType.ValidateCommand &&
           Event.current.commandName == "UndoRedoPerformed")
             {
@@ -504,7 +511,7 @@ namespace Invert.uFrame.Editor
                 LastLoadedDiagram = path;
                 Diagram.Dirty = true;
                 Diagram.Data.ApplyFilter();
-                Diagram.Refresh(true);
+                Diagram.Refresh();
                 this.Repaint();
             }
             catch (Exception ex)

@@ -207,10 +207,6 @@ public abstract class DiagramNodeDrawer : INodeDrawer
 
     public ElementsDiagram Diagram { get; set; }
 
-    public virtual Type CommandsType
-    {
-        get { return typeof(IDiagramNode); }
-    }
 
     protected virtual void GetContentDrawers(List<IDrawer> drawers)
     {
@@ -435,6 +431,12 @@ public abstract class DiagramNodeDrawer : INodeDrawer
         // Get our content drawers
         var drawers = new List<IDrawer>();
         GetContentDrawers(drawers);
+
+        ViewModel.ContentItems.Clear();
+        foreach (var drawer in drawers)
+        {
+            ViewModel.ContentItems.Add(drawer.ViewModelObject);
+        }
         // Cache them as we only want to pre-calculate their positions
         if (ViewModel.IsCollapsed)
         {
@@ -446,10 +448,10 @@ public abstract class DiagramNodeDrawer : INodeDrawer
         }
       
 
-        foreach (var cachedDrawer in Children)
+        foreach (var child in Children)
         {
-            cachedDrawer.Refresh(new Vector2(ViewModel.Position.x,startY));
-            startY += cachedDrawer.Bounds.height;
+            child.Refresh(new Vector2(ViewModel.Position.x,startY));
+            startY += child.Bounds.height;
         }
         // Now lets stretch all the content drawers to the maximum width
         var maxWidth = 0f;

@@ -35,8 +35,14 @@ public class Drawer : IDrawer
     public Drawer()
     {
     }
+    public object DataContext { get; set; }
 
-    public GraphItemViewModel ViewModelObject { get; set; }
+    public GraphItemViewModel ViewModelObject
+    {
+        get { return DataContext as GraphItemViewModel; }
+        set { DataContext = value; }
+    }
+
     public Rect Bounds { get; set; }
     public virtual bool IsSelected { get; set; }
 
@@ -62,7 +68,7 @@ public interface INodeDrawer : IDrawer
 
     
     ElementsDiagram Diagram { get; set; }
-    Type CommandsType { get; }
+    //Type CommandsType { get; }
     bool Dirty { get; set; }
     DiagramNodeViewModel ViewModel { get; set; }
     IDrawer[] Children { get; set; }

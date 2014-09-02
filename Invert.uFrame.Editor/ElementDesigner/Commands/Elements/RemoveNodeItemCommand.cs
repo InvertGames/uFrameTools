@@ -1,6 +1,8 @@
+using Invert.uFrame.Editor.ViewModels;
+
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class RemoveNodeItemCommand : EditorCommand<ElementsDiagram>, IDiagramNodeItemCommand
+    public class RemoveNodeItemCommand : EditorCommand<DiagramViewModel>, IDiagramNodeItemCommand
     {
         public override string Name
         {
@@ -8,20 +10,19 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         }
 
 
-        public override bool IsChecked(ElementsDiagram arg)
+        public override bool IsChecked(DiagramViewModel arg)
         {
             return false;
         }
 
-        public override void Perform(ElementsDiagram arg)
+        public override void Perform(DiagramViewModel arg)
         {
- 
-            var diagramNodeItem = arg.SelectedItem as IDiagramNodeItem;
+            var diagramNodeItem = arg.SelectedNodeItem as ItemViewModel;
             if (diagramNodeItem != null)
-                diagramNodeItem.Remove(arg.SelectedData);
+                diagramNodeItem.Remove();
         }
 
-        public override string CanPerform(ElementsDiagram node)
+        public override string CanPerform(DiagramViewModel node)
         {
             return null;
         }

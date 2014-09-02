@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Invert.MVVM;
 using Invert.uFrame.Editor;
+using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 using ViewModel = Invert.uFrame.Editor.ViewModels.ViewModel;
@@ -12,6 +13,35 @@ public class DiagramViewModel : ViewModel
 {
     private ModelCollection<GraphItemViewModel> _graphItems = new ModelCollection<GraphItemViewModel>();
 
+    public IEnumerable<GraphItemViewModel> SelectedGraphItems
+    {
+        get { return GraphItems.Where(p => p.IsSelected); }
+    }
+    public GraphItemViewModel SelectedGraphItem
+    {
+        get { return SelectedGraphItems.FirstOrDefault(); }
+    }
+
+    public DiagramNodeViewModel SelectedNode
+    {
+        get { return SelectedGraphItems.OfType<DiagramNodeViewModel>().FirstOrDefault(); }
+    }
+
+    public IEnumerable<GraphItemViewModel> SelectedNodeItems
+    {
+        get
+        {
+            return GraphItems.OfType<DiagramNodeViewModel>().SelectMany(p => p.ContentItems).Where(p => p.IsSelected);
+        }
+    }
+    public GraphItemViewModel SelectedNodeItem
+    {
+        get
+        {
+            return SelectedNodeItems.FirstOrDefault();
+        }
+    }
+    
     public IElementDesignerData Data
     {
         get
@@ -34,30 +64,34 @@ public class DiagramViewModel : ViewModel
 
     //private void GraphItemsChanged(ModelCollectionChangeEventWith<GraphItemViewModel> changeArgs)
     //{
-    //    foreach (var changeArg in changeArgs.NewItemsOfT)
+    //    foreach (var graphItem in changeArgs.NewItemsOfT)
     //    {
-    //        GraphItemAdded(changeArg);
+    //        GraphItemAdded(graphItem);
     //    }
-    //    foreach (var graphItemViewModel in changeArgs.OldItemsOfT)
+    //    foreach (var graphItem in changeArgs.OldItemsOfT)
     //    {
-    //        GraphItemRemoved(graphItemViewModel);
+    //        GraphItemRemoved(graphItem);
     //    }
     //}
 
-    //private void GraphItemAdded(GraphItemViewModel changeArg)
+    //private void GraphItemAdded(GraphItemViewModel graphItem)
     //{
-    //    throw new NotImplementedException();
+    
     //}
 
-    //private void GraphItemRemoved(GraphItemViewModel graphItemViewModel)
+
+
+    //private void GraphItemRemoved(GraphItemViewModel graphItem)
     //{
-    //    throw new NotImplementedException();
+        
     //}
 
+    
 
     public DiagramViewModel(IElementDesignerData data)
     {
         DataObject = data;
+        
     }
 
 
@@ -65,5 +99,21 @@ public class DiagramViewModel : ViewModel
     {
         get { return _graphItems; }
         set { _graphItems = value; }
+    }
+
+    public void Navigate()
+    {
+        if (SelectedNode == null) return;
+        if (SelectedNode.IsFilter)
+        {
+            if (SelectedNode.GraphItemObject == Data.CurrentFilter)
+            {
+                Data.PopFilter(null);
+            }
+            else
+            {
+                Data.PushFilter(SelectedNode.GraphItemObject as IDiagramFilter);
+            }
+        }
     }
 }

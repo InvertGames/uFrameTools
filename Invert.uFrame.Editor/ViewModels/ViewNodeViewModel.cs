@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Invert.MVVM;
+using Invert.uFrame.Code.Bindings;
 
 namespace Invert.uFrame.Editor.ViewModels
 {
@@ -21,7 +22,15 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return true; }
         }
 
+        public bool HasElement
+        {
+            get { return GraphItem.ViewForElement != null; }
+        }
 
+        public void AddNewBinding(IBindingGenerator lastSelected)
+        {
+            GraphItem.NewBindings.Add(lastSelected);
+        }
     }
 
     public class EnumItemViewModel : ItemViewModel<EnumItem>

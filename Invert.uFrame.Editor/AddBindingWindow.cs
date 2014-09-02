@@ -6,12 +6,14 @@ using Invert.Common.UI;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
 public class AddBindingWindow : SearchableScrollWindow
 {
-    private ViewData _ViewData;
+    private ViewNodeViewModel _ViewData;
+
     private MethodInfo[] _MemberMethods;
     private List<UFStyle> _addedGenerators = new List<UFStyle>();
     private Vector2 _previewScrollPosition = new Vector2();
@@ -28,7 +30,7 @@ public class AddBindingWindow : SearchableScrollWindow
     //    set { _addedGenerators = value; }
     //}
 
-    public static void Init(string title, ViewData data)
+    public static void Init(string title, ViewNodeViewModel data)
     {
         // Get existing open window or if none, make a new one:
         var window = (AddBindingWindow)GetWindow(typeof(AddBindingWindow));
@@ -45,7 +47,7 @@ public class AddBindingWindow : SearchableScrollWindow
 
     public override void OnGUI()
     {
-        if (_ViewData != null && _ViewData.Data == null)
+        if (_ViewData != null)
         {
             this.Close();
             return;
@@ -56,7 +58,7 @@ public class AddBindingWindow : SearchableScrollWindow
             if (ElementsDesigner != null && ElementsDesigner.Diagram != null)
             {
 
-                _ViewData = ElementsDesigner.Diagram.SelectedData as ViewData;
+                _ViewData = uFrameEditor.CurrentDiagramViewModel.SelectedNode as ViewNodeViewModel;
             }
             if (_ViewData == null)
             {
@@ -74,7 +76,7 @@ public class AddBindingWindow : SearchableScrollWindow
 
 
         }
-        if (_ViewData != null && _ViewData.ViewForElement == null)
+        if (_ViewData.HasElement)
         {
             EditorGUILayout.HelpBox("This view must be associated with an element in order to add bindings.",
                 MessageType.Error);
@@ -82,7 +84,6 @@ public class AddBindingWindow : SearchableScrollWindow
         else if (_ViewData != null)
         {
             CallOnGui();
-            
         }
 
 
@@ -123,8 +124,7 @@ public class AddBindingWindow : SearchableScrollWindow
                 if (GUIHelpers.DoTriggerButton(item))
                 {
                     LastSelected = item.Tag as IBindingGenerator;
-                
-                    _ViewData.NewBindings.Add(LastSelected);
+                    _ViewData.AddNewBinding(LastSelected);
                     ElementsDesigner.Diagram.Refresh();
                     ElementsDesigner.Repaint();
                 }

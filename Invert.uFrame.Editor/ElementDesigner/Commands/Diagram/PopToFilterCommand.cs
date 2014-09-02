@@ -9,7 +9,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
         {
 
             node.Data.PopToFilter(SelectedOption.Name);
-            node.Refresh(true);
+            node.Refresh();
         }
 
         public IEnumerable<UFContextMenuItem> GetOptions(object arg)

@@ -12,15 +12,13 @@ using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
-public class ElementsDiagram : ICommandHandler
+public class ElementsDiagram : Drawer, ICommandHandler
 {
     public delegate void SelectionChangedEventArgs(IDiagramNode oldData, IDiagramNode newData);
 
     public delegate void ViewModelDataEventHandler(ElementData data);
 
-
     public event SelectionChangedEventArgs SelectionChanged;
-
 
     private IElementDesignerData _data;
 
@@ -56,7 +54,7 @@ public class ElementsDiagram : ICommandHandler
                 _data.Prepare();
                 //_data.ReloadFilterStack();
             }
-            Refresh(true);
+            Refresh();
         }
     }
 
@@ -150,24 +148,19 @@ public class ElementsDiagram : ICommandHandler
 
     protected IElementsDataRepository Repository { get; set; }
 
-    public IDiagramNode SelectedData
-    {
-        get
-        {
-            if (Selected == null) return null;
-            return Selected.ViewModel.GraphItemObject;
-        }
-        //set
-        //{
-        //    Selected = NodeDrawers.FirstOrDefault(p => p.ViewModel.GraphItemObject == value);
-        //}
-    }
+    //public IDiagramNode SelectedData
+    //{
+    //    get
+    //    {
+    //        if (Selected == null) return null;
+    //        return Selected.ViewModel.GraphItemObject;
+    //    }
+    //}
 
-
-    public INodeDrawer Selected
-    {
-        get { return SelectedDrawers.OfType<INodeDrawer>().FirstOrDefault();  }
-    }
+    //public INodeDrawer Selected
+    //{
+    //    get { return SelectedDrawers.OfType<INodeDrawer>().FirstOrDefault(); }
+    //}
 
     public IEnumerable<IDrawer> SelectedDrawers
     {
@@ -193,32 +186,6 @@ public class ElementsDiagram : ICommandHandler
     {
         get { return SelectedItems.First(); }
     }
-
-
-    //public ISelectable SelectedItem
-    //{
-    //    get { return _selectedItem; }
-    //    set
-    //    {
-    //        foreach (var item in NodeDrawers.SelectMany(p => p.Items))
-    //            item.IsSelected = false;
-
-    //        var old = _selectedItem;
-    //        //Data.DiagramItems.ToList().ForEach(p => p.IsSelected = false);
-    //        GUI.FocusControl("");
-
-    //        _selectedItem = value;
-    //        if (old != value)
-    //        {
-
-    //            OnSelectionChanged(SelectedData, SelectedData);
-    //        }
-    //        if (_selectedItem != null)
-    //        {
-    //            _selectedItem.IsSelected = true;
-    //        }
-    //    }
-    //}
 
     public Vector2 SelectionOffset { get; set; }
 
@@ -250,7 +217,7 @@ public class ElementsDiagram : ICommandHandler
 
             Repository = elementsDataRepository;
             Data = diagram;
-
+            DiagramViewModel = new DiagramViewModel(Data);
             break;
         }
 
@@ -358,14 +325,17 @@ public class ElementsDiagram : ICommandHandler
             EditorGUI.FocusTextInControl(focusItem);
         }
 
-        if (IsMouseDown && SelectedData != null && SelectedItem == null && !CurrentEvent.control)
+        if (IsMouseDown)
         {
+            var items = DiagramViewModel.SelectedGraphItems.ToArray();
+            var allSelected = items;
+
             var newPosition = DragDelta;//CurrentMousePosition - SelectionOffset;
-            var allSelected = AllSelected.ToArray();
+            
             foreach (var diagramItem in allSelected)
             {
-                diagramItem.Location += (newPosition * (1f / Scale));
-                diagramItem.Location = new Vector2(Mathf.Round((diagramItem.Location.x) / SnapSize) * SnapSize, Mathf.Round(diagramItem.Location.y / SnapSize) * SnapSize);
+                diagramItem.Position += (newPosition * (1f / Scale));
+                diagramItem.Position = new Vector2(Mathf.Round((diagramItem.Position.x) / SnapSize) * SnapSize, Mathf.Round(diagramItem.Position.y / SnapSize) * SnapSize);
             }
 
             foreach (var viewModelDrawer in NodeDrawers.Where(p => p.IsSelected))
@@ -375,9 +345,9 @@ public class ElementsDiagram : ICommandHandler
             DidDrag = true;
             LastDragPosition = CurrentMousePosition;
         }
-        else 
+        else
         {
-            SelectionRect = IsMouseDown ? CreateSelectionRect(LastMouseDownPosition, CurrentMousePosition) : new Rect(0f,0f,0f,0f);
+            SelectionRect = IsMouseDown ? CreateSelectionRect(LastMouseDownPosition, CurrentMousePosition) : new Rect(0f, 0f, 0f, 0f);
         }
 
 
@@ -409,7 +379,7 @@ public class ElementsDiagram : ICommandHandler
     {
         if (uFrameEditor.ShowHelp)
         {
-            var rect = new Rect(Screen.width - 275f, 10f, 250f, uFrameEditor.KeyBindings.Length*20f);
+            var rect = new Rect(Screen.width - 275f, 10f, 250f, uFrameEditor.KeyBindings.Length * 20f);
             GUI.Box(rect, string.Empty);
 
             GUILayout.BeginArea(rect);
@@ -510,41 +480,49 @@ public class ElementsDiagram : ICommandHandler
         }
         if (CurrentEvent.keyCode == KeyCode.Return)
         {
-            if (SelectedData != null && SelectedData.IsEditing)
+            if (DiagramViewModel.SelectedNode != null && DiagramViewModel.SelectedNode.IsEditing)
             {
-                SelectedData.EndEditing();
-                //e.Use();
-                this.Dirty = true;
+                DiagramViewModel.SelectedNode.EndEditing();
+                
             }
         }
         if (CurrentEvent.keyCode == KeyCode.F2)
         {
-            if (SelectedData != null)
+            if (DiagramViewModel.SelectedNode != null)
             {
-                SelectedData.BeginEditing();
+                DiagramViewModel.SelectedNode.BeginEditing();
                 e.Use();
             }
         }
     }
 
-    public void Refresh(bool refreshDrawers = true)
+    public DiagramViewModel DiagramViewModel
     {
-        if (refreshDrawers)
-            NodeDrawers.Clear();
+        get { return this.DataContext as DiagramViewModel; }
+        set { this.DataContext = value; }
+    }
+
+    public void Refresh()
+    {
+        // Eventually it will all be viewmodels
+        if (DiagramViewModel == null) return;
+        DiagramViewModel.GraphItems.Clear();
+        NodeDrawers.Clear();
 
         foreach (var diagramItem in Data.GetDiagramItems())
         {
-            diagramItem.Data = Data;
+            //diagramItem.Data = Data;
             diagramItem.Dirty = true;
+
             var drawer = CreateDrawerFor(diagramItem);
             if (drawer == null) continue;
 
+            // Add to drawers and collection
+            DiagramViewModel.GraphItems.Add(drawer.ViewModelObject);
             NodeDrawers.Add(drawer);
 
-            if (refreshDrawers)
-            {
-                drawer.Refresh(Vector2.zero);
-            }
+            drawer.Refresh(Vector2.zero);
+
         }
         Data.UpdateLinks();
         Dirty = true;
@@ -559,7 +537,7 @@ public class ElementsDiagram : ICommandHandler
     public void ShowContextMenu()
     {
 
-        var menu = uFrameEditor.CreateCommandUI<ContextMenuUI>(this, typeof(IDiagramNodeCommand), Selected.CommandsType);
+        var menu = uFrameEditor.CreateCommandUI<ContextMenuUI>(this, typeof(IDiagramNodeCommand), DiagramViewModel.SelectedNode.CommandsType);
         menu.Go();
 
     }
@@ -576,36 +554,11 @@ public class ElementsDiagram : ICommandHandler
         if (handler != null) handler(olddata, newdata);
     }
 
-
     private void OnDoubleClick()
     {
-
-        if (SelectedData != null)
-        {
-            if (SelectedItem == null)
-            {
-                if (SelectedData is IDiagramFilter)
-                {
-                    if (SelectedData == Data.CurrentFilter)
-                    {
-                        Data.PopFilter(null);
-                    }
-                    else
-                    {
-                        Data.PushFilter(SelectedData as IDiagramFilter);
-                    }
-
-                    Refresh(true);
-                    Refresh(true);
-                }
-                else
-                {
-                    Selected.DoubleClicked();
-                }
-            }
-
-        }
-
+        DiagramViewModel.Navigate();
+        Refresh();
+        Refresh();
     }
 
     private void OnMouseDown()
@@ -613,7 +566,7 @@ public class ElementsDiagram : ICommandHandler
         var selected = MouseOverViewData;
         if (selected != null)
         {
-            if (Selected != null)
+            if (DiagramViewModel.SelectedNode != null)
             {
                 if (CurrentEvent.shift)
                 {
@@ -650,7 +603,7 @@ public class ElementsDiagram : ICommandHandler
         }
 
         if (selected != null)
-        selected.IsSelected = true;
+            selected.IsSelected = true;
         //Selected = selected;
     }
 
@@ -668,7 +621,7 @@ public class ElementsDiagram : ICommandHandler
             {
                 ShowItemContextMenu(SelectedItem);
             }
-            else if (SelectedData != null)
+            else if (DiagramViewModel.SelectedNode != null)
             {
                 ShowContextMenu();
             }
@@ -749,7 +702,7 @@ public class ElementsDiagram : ICommandHandler
         get
         {
             yield return this;
-            
+
 
 
             //yield return SelectedItem;

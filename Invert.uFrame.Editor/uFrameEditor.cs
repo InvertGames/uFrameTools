@@ -42,6 +42,11 @@ namespace Invert.uFrame.Editor
             set { _container = value; }
         }
 
+        public static DiagramViewModel CurrentDiagramViewModel
+        {
+            get { return CurrentDiagram.DiagramViewModel; }
+        }
+
         public static ElementsDiagram CurrentDiagram
         {
             get
@@ -411,16 +416,5 @@ namespace Invert.uFrame.Editor
             uFrameTypes = new uFrameStringTypeProvider();
         }
 
-        //public static UFrameApplicationViewModel Application
-        //{
-        //    get
-        //    {
-        //        return _application ?? (_application = new UFrameApplicationViewModel(new ElementDesignerViewModel()
-        //            {
-        //                ToolbarCommands = Container.ResolveAll<IToolbarCommand>().ToArray()
-        //            }));
-        //    }
-        //    set { _application = value; }
-        //}
     }
 }
