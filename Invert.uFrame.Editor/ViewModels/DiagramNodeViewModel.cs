@@ -69,6 +69,7 @@ namespace Invert.uFrame.Editor.ViewModels
             set { DataObject = value; }
         }
     }
+
     public class ItemViewModel : GraphItemViewModel
     {
         public IDiagramNodeItem NodeItem
@@ -155,7 +156,7 @@ namespace Invert.uFrame.Editor.ViewModels
             set
             {
                
-                Debug.Log("Setting Position");
+                Debug.Log(GraphItemObject.Filter.Name);
                 GraphItemObject.Location = value;
                 DiagramViewModel.MarkDirty();
             }
@@ -208,7 +209,7 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return true; }
         }
 
-        public Rect HeaderPosition { get; set; }
+        
 
         public bool IsEditing
         {
@@ -218,7 +219,6 @@ namespace Invert.uFrame.Editor.ViewModels
                 GraphItemObject.IsEditing = value;
                 if (value == false)
                     EndEditing();
-                
             }
         }
 
@@ -255,8 +255,6 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get { return GraphItemObject.InfoLabel; }
         }
-
-    
 
         public string Label
         {

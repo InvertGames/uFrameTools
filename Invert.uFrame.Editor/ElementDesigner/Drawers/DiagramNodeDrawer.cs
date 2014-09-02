@@ -110,91 +110,9 @@ public abstract class DiagramNodeDrawer : INodeDrawer
     public bool Dirty { get; set; }
     string IDrawer.ShouldFocus { get; set; }
 
-    public Rect CalculateItemBounds(float width, float localY)
-    {
-        if (ViewModel.IsCollapsed) 
-            return ViewModel.HeaderPosition;
 
-        var location = ViewModel.Position;
-
-        var itemRect = new Rect
-        {
-            x = location.x + Padding,
-            width = width - (Padding * 2),
-            height = ItemHeight,
-            y = location.y + localY
-        };
-        return itemRect;
-    }
     public  Rect Bounds { get; set; }
-    //protected virtual void DrawHeader(ElementsDiagram diagram, bool importOnly)
-    //{
-    //    if (ViewModel.AllowCollapsing)
-    //    {
-    //        var rect = new Rect((Bounds.x + (Bounds.width / 2f)) - (ElementDesignerStyles.NodeCollapse.fixedWidth / 2f),
-    //            Bounds.y + Bounds.height - 9, 42f, 18f);
-
-    //        if (GUI.Button(rect.Scale(Scale), string.Empty,
-    //            ViewModel.IsCollapsed  ? ElementDesignerStyles.NodeExpand : ElementDesignerStyles.NodeCollapse))
-    //        {
-    //            Diagram.ExecuteCommand((item) =>
-    //            {
-    //                ViewModel.IsCollapsed = !ViewModel.IsCollapsed;
-    //                Dirty = true;
-    //                diagram.Dirty = true;
-    //                //CalculateBounds();
-    //            });
-    //        }
-
-    //    }
-
-
-    //    var style = new GUIStyle(ElementDesignerStyles.ViewModelHeaderStyle);
-    //    style.normal.textColor = BackgroundStyle.normal.textColor;
-    //    style.alignment = TextAnchor.MiddleCenter;
-    //    var position = new Rect(ViewModel.HeaderPosition);
-    //    position.y += (ViewModel.IsCollapsed || !ViewModel.AllowCollapsing ? (Bounds.height - 7) * ViewModel.Scale : ViewModel.HeaderSize) / 2f;
-    //    position.y -= (12.5f * Scale);
-
-    //    if (ViewModel.IsEditing && !importOnly)
-    //    {
-    //        GUI.SetNextControlName(ViewModel.Name);
-
-    //        EditorGUI.BeginChangeCheck();
-    //        var newText = GUI.TextField(position.Scale(Scale), ViewModel.Name, style);
-
-    //        if (EditorGUI.EndChangeCheck())
-    //        {
-
-    //            //Undo.RecordObject(diagram.Data, "Set Element Name");
-    //            ViewModel.Rename(newText);
-    //            Refresh(Vector2.zero);
-    //            //EditorUtility.SetDirty(diagram.Data);
-    //        }
-
-         
-    //        position.y += (8f * Scale);
-    //        style = new GUIStyle(EditorStyles.miniLabel);
-    //        style.fontSize = Mathf.RoundToInt(10 * Scale);
-    //        style.alignment = TextAnchor.MiddleCenter;
-    //        GUI.Label(position.Scale(Scale), ViewModel.SubTitle, style);
-
-    //    }
-    //    else
-    //    {
-    //        //if (!AllowCollapsing)
-    //        //{
-    //        //    style.alignment = TextAnchor.MiddleCenter;
-    //        //}
-
-    //        GUI.Label(position.Scale(Scale), _cachedLabel ?? string.Empty, style);
-    //        position.y += (8f * Scale);
-    //        style = new GUIStyle(EditorStyles.miniLabel);
-    //        style.fontSize = Mathf.RoundToInt(8 * Scale);
-    //        style.alignment = TextAnchor.MiddleCenter;
-    //        GUI.Label(position.Scale(Scale), ViewModel.SubTitle, style);
-    //    }
-    //}
+    
 
     public ElementsDiagram Diagram { get; set; }
 
@@ -209,43 +127,6 @@ public abstract class DiagramNodeDrawer : INodeDrawer
         });
     }
 
-    protected virtual void DrawContent(ElementsDiagram diagram, bool importOnly)
-    {
-        
-        //foreach (var diagramSubItemGroup in CachedItemGroups)
-        //{
-        //    diagramSubItemGroup.Draw(Diagram);
-        //    foreach (var item in diagramSubItemGroup.Items)
-        //    {
-        //        DrawItem(item, diagram, importOnly);
-        //    }
-        //}
-
-        //PropertiesHeader.Draw();
-        //foreach (var viewModelPropertyData in Data.Properties.ToArray())
-        //{
-        //    DrawItem(viewModelPropertyData, diagram, importOnly);
-        //}
-        //CollectionsHeader.Draw();
-        //var collections = Data.Collections.ToArray();
-        //foreach (var viewModelCollectionData in collections)
-        //{
-        //    DrawItem(viewModelCollectionData, diagram, importOnly);
-        //}
-        //CommandsHeader.Draw();
-        //foreach (var viewModelCommandData in Data.Commands.ToArray())
-        //{
-        //    DrawItem(viewModelCommandData, diagram, importOnly);
-        //}
-        //if (Data.CurrentViewModelType != null)
-        //{
-        //    BehavioursHeader.Draw();
-        //    foreach (var behaviour in Behaviours)
-        //    {
-        //        DrawItem(behaviour, diagram, importOnly);
-        //    }
-        //}
-    }
 
     public string ShouldFocus { get { return ViewModel.IsEditing ? ViewModel.Name : ViewModel.ContainedItems.Where(p => p.IsSelected).Select(p => p.Name).FirstOrDefault(); } }
 
@@ -287,24 +168,6 @@ public abstract class DiagramNodeDrawer : INodeDrawer
 
         }
 
-        //if (ViewModel.IsCollapsed || !ViewModel.AllowCollapsing)
-        //{
-        //    ElementDesignerStyles.DrawExpandableBox(Bounds.Scale(Scale), ElementDesignerStyles.NodeBackground, string.Empty, 20);
-        //    ElementDesignerStyles.DrawExpandableBox(Bounds.Scale(Scale), HeaderStyle, string.Empty, 20);    
-        //}
-        //else
-        //{
-        //    var rect = new Rect(Bounds);
-        //    rect.height = ViewModel.HeaderSize;
-        //    ElementDesignerStyles.DrawExpandableBox(Bounds.Scale(Scale), ElementDesignerStyles.NodeBackground, string.Empty, 20);
-        //    ElementDesignerStyles.DrawExpandableBox(rect.Scale(Scale), HeaderStyle, string.Empty, new RectOffset(20,20,27,0));
-        //}
-        
-        //DrawHeader(diagram, false);
-
-      
-        //else if (Data.Equals(diagram.CurrentMouseOverNode))
-        //    ElementDesignerStyles.DrawExpandableBox(Bounds.Scale(Scale), ElementDesignerStyles.BoxHighlighter1, string.Empty);
 
         foreach (var item in Children)
         {
@@ -319,9 +182,6 @@ public abstract class DiagramNodeDrawer : INodeDrawer
         {
             ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(Scale), ElementDesignerStyles.BoxHighlighter2, string.Empty, 20);
         }
-
-        //if (!ViewModel.IsCollapsed)
-        //    DrawContent(diagram, false);
     }
 
     public void Refresh()
@@ -422,9 +282,6 @@ public abstract class DiagramNodeDrawer : INodeDrawer
 
     public virtual void Refresh(Vector2 position)
     {
-        
-        //var location = ViewModel.Position;
-        //var width = Width;
         var startY = ViewModel.Position.y;
 
         // Get our content drawers
@@ -502,11 +359,6 @@ public abstract class DiagramNodeDrawer : INodeDrawer
         get { return Children.Where(p => p.IsSelected); }
     }
     public IDrawer[] Children { get; set; }
-
-    //public IEnumerable<IDiagramNodeItem> Items
-    //{
-    //    get { return CachedItemGroups.SelectMany(p => p.Items); }
-    //}
 
     public virtual void DoubleClicked()
     {

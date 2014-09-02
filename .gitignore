@@ -14,3 +14,4 @@
 /Invert.uFrame.Editor.UnitTests/bin
 obj
 bin
+*.dll

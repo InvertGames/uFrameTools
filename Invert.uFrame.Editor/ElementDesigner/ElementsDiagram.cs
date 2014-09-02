@@ -21,43 +21,12 @@ public class ElementsDiagram : Drawer, ICommandHandler
 
     public event SelectionChangedEventArgs SelectionChanged;
 
-    private IElementDesignerData _data;
-
     private List<IDrawer> _nodeDrawers = new List<IDrawer>();
 
-    private INodeDrawer _selected;
-
-    private ISelectable _selectedItem;
-
-    private SerializedObject _serializedObject;
     private Event _currentEvent;
-    private SerializedObject _o;
-
-    //public IEnumerable<IDiagramNode> AllSelected
-    //{
-    //    get
-    //    {
-    //        return Data.GetDiagramItems().Where(p => p.IsSelected);
-    //    }
-    //}
+    
 
     public IDiagramNode CurrentMouseOverNode { get; set; }
-
-    //public IElementDesignerData Data
-    //{
-    //    get { return _data; }
-    //    set
-    //    {
-    //        _data = value;
-
-    //        if (_data != null)
-    //        {
-    //            _data.Prepare();
-    //            //_data.ReloadFilterStack();
-    //        }
-    //        Refresh();
-    //    }
-    //}
 
     public Rect DiagramSize
     {
@@ -104,8 +73,6 @@ public class ElementsDiagram : Drawer, ICommandHandler
     }
 
     public bool DidDrag { get; set; }
-
-    public bool Dirty { get; set; }
 
     public Vector2 DragDelta
     {

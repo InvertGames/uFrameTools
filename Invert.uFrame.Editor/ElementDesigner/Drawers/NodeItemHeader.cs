@@ -10,6 +10,7 @@ public class NodeItemHeader : Drawer<DiagramNodeViewModel>
 {
     public NodeItemHeader(GraphItemViewModel viewModelObject) : base(viewModelObject)
     {
+
     }
 
     public NodeItemHeader(DiagramNodeViewModel viewModelObject) : base(viewModelObject)
@@ -29,30 +30,48 @@ public class NodeItemHeader : Drawer<DiagramNodeViewModel>
         AddItemClickedEventHandler handler = OnAddItem;
         if (handler != null) handler();
     }
-
-    public void Draw( float scale)
+    
+    public override void Refresh(Vector2 position)
     {
-        var style = ElementDesignerStyles.HeaderStyle;//.Scale(scale);
+        base.Refresh(position);
+     
+
+        
+
+        Bounds = new Rect(position.x, position.y,100,25);
+    }
+
+    public Rect _AddButtonRect;
+
+    public override void Draw( float scale)
+    {
+        base.Draw(scale);
+        var style = ElementDesignerStyles.HeaderStyle;
+        _AddButtonRect = new Rect
+        {
+            y = Bounds.y + ((Bounds.height/2) - 8),
+            x = Bounds.x + Bounds.width - 18,
+            width = 16,
+            height = 16
+        };
+
+        //.Scale(scale);
         //style.normal.textColor = textColorStyle.normal.textColor;
         style.fontStyle = FontStyle.Bold;
 
-        GUI.Box(Position.Scale(scale), Label, style);
-        var btnRect = new Rect();
-        btnRect.y = Position.y + ((Position.height / 2) - 8);
-        btnRect.x = Position.x + Position.width - 18;
-        btnRect.width = 16;
-        btnRect.height = 16;
-        if (AddCommand != null)
-        {
-            if (GUI.Button(btnRect.Scale(scale), string.Empty, ElementDesignerStyles.AddButtonStyle))
+        GUI.Box(Bounds.Scale(scale), Label, style);
+       
+        //if (AddCommand != null)
+        //{
+            if (GUI.Button(_AddButtonRect.Scale(scale), string.Empty, ElementDesignerStyles.AddButtonStyle))
             {
                 uFrameEditor.ExecuteCommand(AddCommand);
             }    
-        }
+        //}
         
     }
 
-    public Rect Position { get; set; }
+    
     public Type HeaderType { get; set; }
 
 

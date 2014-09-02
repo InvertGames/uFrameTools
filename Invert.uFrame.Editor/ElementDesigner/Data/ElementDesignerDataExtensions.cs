@@ -239,10 +239,6 @@ public static class ElementDesignerDataExtensions
             {
                 designerData.Links.AddRange(diagramItem.GetLinks(diagramFilterItems));
             }
-            //foreach (var diagramFilterItem in diagramFilterItems)
-            //{
-            //    Links.AddRange(diagramFilterItem.GetLinks(diagramItems));
-            //}
         }
 
         var models = designerData.GetDiagramItems().ToArray();
