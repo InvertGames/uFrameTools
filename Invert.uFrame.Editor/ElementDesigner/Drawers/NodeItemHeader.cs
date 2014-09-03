@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class NodeItemHeader : Drawer<DiagramNodeViewModel>
 {
+
     public NodeItemHeader(GraphItemViewModel viewModelObject) : base(viewModelObject)
     {
 
@@ -16,7 +17,7 @@ public class NodeItemHeader : Drawer<DiagramNodeViewModel>
     public NodeItemHeader(DiagramNodeViewModel viewModelObject) : base(viewModelObject)
     {
     }
-
+    
     public string Label { get; set; }
 
     public delegate void AddItemClickedEventHandler();

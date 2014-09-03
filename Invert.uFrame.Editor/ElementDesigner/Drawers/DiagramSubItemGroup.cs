@@ -1,3 +1,4 @@
+using System;
 using Invert.Common;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
@@ -32,6 +33,12 @@ public class EnumItemDrawer : ItemDrawer
 
 public class ItemDrawer : Drawer
 {
+    public override Rect Bounds
+    {
+        get { return ViewModelObject.Bounds; }
+        set { ViewModelObject.Bounds = value; }
+    }
+
     private GUIStyle _textStyle;
     private GUIStyle _backgroundStyle;
     private GUIStyle _selectedItemStyle;
@@ -174,6 +181,7 @@ public class HeaderDrawer : Drawer
     {
         get { return 12; }
     }
+
     public GUIStyle BackgroundStyle
     {
         get { return _backgroundStyle ?? (_backgroundStyle = ElementDesignerStyles.ItemStyle); }
@@ -221,15 +229,15 @@ public class HeaderDrawer : Drawer
         }
         else
         {
-            AdjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, 27);
+            AdjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, 27 * scale);
         }
         if (NodeViewModel.IsCollapsed)
         {
-            ElementDesignerStyles.DrawExpandableBox(AdjustedBounds.Scale(scale), BackgroundStyle, string.Empty, 20);
+            ElementDesignerStyles.DrawExpandableBox(AdjustedBounds.Scale(scale), BackgroundStyle, string.Empty, 20 * scale);
         }
         else
         {
-            ElementDesignerStyles.DrawExpandableBox(AdjustedBounds.Scale(scale), BackgroundStyle, string.Empty, new RectOffset(20, 20, 27, 0));
+            ElementDesignerStyles.DrawExpandableBox(AdjustedBounds.Scale(scale), BackgroundStyle, string.Empty, new RectOffset(Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(20 * scale),Mathf.RoundToInt( 27 * scale), 0));
         }
 
         var style = new GUIStyle(TextStyle)
@@ -269,7 +277,7 @@ public class HeaderDrawer : Drawer
             titleStyle.alignment = TextAnchor.MiddleCenter;
            
 
-            GUI.Label(textBounds, NodeViewModel.Label ?? string.Empty, titleStyle);
+            GUI.Label(textBounds.Scale(scale), NodeViewModel.Label?? string.Empty, titleStyle);
             textBounds.x+=TextSize.y / 2f;
 
             GUI.Label(Bounds.Scale(scale), NodeViewModel.SubTitle, ElementDesignerStyles.ViewModelHeaderStyle);

@@ -3,8 +3,10 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Invert.Common;
 using Invert.MVVM;
+using Invert.uFrame.Editor.Connections;
 using Invert.uFrame.Editor.ElementDesigner;
 using UnityEngine;
 
@@ -25,10 +27,10 @@ namespace Invert.uFrame.Editor.ViewModels
     public abstract class GraphItemViewModel : ViewModel
     {
         public abstract Vector2 Position { get; set; }
+        public Rect Bounds { get; set; }
         private bool _isSelected = false;
+
         public const string IsSelectedProperty = "IsSelected";
-
-
 
         public virtual bool IsSelected
         {
@@ -39,9 +41,22 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
 
-        
+        public bool IsMouseOver { get; set; }
 
-        //public bool Dirty { get; set; }
+        //public void GetConnectors(List<ConnectorViewModel> list)
+        //{
+        //    var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        //    foreach (var property in properties)
+        //    {
+        //        if (typeof (ConnectorViewModel).IsAssignableFrom(property.PropertyType))
+        //        {
+        //            var value = property.GetValue(this, null) as ConnectorViewModel;
+        //            if (value == null) continue;
+        //            list.Add(value);
+        //        }
+        //    }
+        //}
    
     }
     public class DiagramNodeViewModel<TData> : DiagramNodeViewModel where TData : IDiagramNode
@@ -60,6 +75,127 @@ namespace Invert.uFrame.Editor.ViewModels
         }
     }
 
+    public class ConnectorViewModel : GraphItemViewModel
+    {
+
+        public ConnectorViewModel(IConnectionStrategy strategy)
+        {
+            Strategy = strategy;
+        }
+
+        public IConnectionStrategy Strategy { get; set; }
+
+        public override Vector2 Position { get; set; }
+
+        public Action<ConnectionViewModel> ApplyConnection { get; set; }
+
+        public ConnectorDirection Direction { get; set; }
+        
+        public GraphItemViewModel ConnectorFor { get; set; }
+
+
+        public ConnectorSide Side { get; set; }
+
+        /// <summary>
+        /// A percentage value from 0-1f on which to calculate the position
+        /// </summary>
+        public float SidePercentage { get; set; }
+    }
+
+    public enum ConnectorSide
+    {
+        Left,
+        Right,
+        Top,
+        Bottom,
+    }
+    public enum ConnectorDirection
+    {
+        Input,
+        Output,
+        TwoWay
+    }
+    public interface IConnectionStrategy
+    {
+        /// <summary>
+        /// Gets the connectors for a given graph item.
+        /// </summary>
+        /// <param name="list">The list this method should append the connectors to.</param>
+        /// <param name="graphItem"></param>
+        void GetConnectors(List<ConnectorViewModel> list, GraphItemViewModel graphItem);
+
+        /// <summary>
+        /// Try and connect a to b.  If it can't connect return null
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>The connection created if any. Null if no connection can be made</returns>
+        ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b);
+
+        /// <summary>
+        /// Iterate through connectors and find decorate the connections list with any found connections.
+        /// </summary>
+        /// <param name="connections"></param>
+        /// <param name="connectors"></param>
+        void GetConnections(List<ConnectionViewModel> connections, List<ConnectorViewModel> connectors);
+    }
+
+    public abstract class DefaultConnectionStrategy : IConnectionStrategy
+    {
+        public virtual void GetConnectors(List<ConnectorViewModel> list, GraphItemViewModel graphItem)
+        {
+           
+        }
+
+        public ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
+        {
+            return null;
+        }
+
+        public void GetConnections(List<ConnectionViewModel> connections, List<ConnectorViewModel> connectors)
+        {
+            
+        }
+    }
+
+    public class ElementInheritanceConnectionStrategy : DefaultConnectionStrategy
+    {
+        public override void GetConnectors(List<ConnectorViewModel> list, GraphItemViewModel graphItem)
+        {
+            base.GetConnectors(list, graphItem);
+            var elementViewModel = graphItem as ElementNodeViewModel;
+            if (elementViewModel != null)
+            {
+                list.Add(new ConnectorViewModel(this)
+                {
+                    DataObject = elementViewModel.GraphItem,
+                    Direction = ConnectorDirection.Input,
+                    ConnectorFor = elementViewModel,
+                    Side = ConnectorSide.Left,
+                    SidePercentage = 0.5f,
+                });
+
+                list.Add(new ConnectorViewModel(this)
+                {
+                    Side = ConnectorSide.Right,
+                    SidePercentage = 0.5f,
+                    DataObject = elementViewModel.GraphItem,
+                    Direction = ConnectorDirection.Output,
+                    ConnectorFor = elementViewModel
+                });
+            }
+        }
+    }
+    public class ConnectionViewModel
+    {
+        public ConnectorViewModel ConnectorA { get; set; }
+        public ConnectorViewModel ConnectorB { get; set; }
+
+
+
+        public Action<ConnectionViewModel> Apply { get; set; }
+        public Action<ConnectionViewModel> Remove { get; set; }
+    }
 
     public class ItemViewModel<TData> : ItemViewModel
     {
@@ -111,6 +247,11 @@ namespace Invert.uFrame.Editor.ViewModels
 
     public class ElementItemViewModel : ItemViewModel<IViewModelItem>
     {
+        public ElementItemViewModel(IViewModelItem viewModelItem)
+        {
+            DataObject = viewModelItem;
+        }
+
         public string RelatedType
         {
             get
@@ -156,7 +297,7 @@ namespace Invert.uFrame.Editor.ViewModels
             set
             {
                
-                Debug.Log(GraphItemObject.Filter.Name);
+                
                 GraphItemObject.Location = value;
                 DiagramViewModel.MarkDirty();
             }

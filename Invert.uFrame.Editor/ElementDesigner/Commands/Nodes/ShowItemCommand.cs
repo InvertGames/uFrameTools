@@ -3,16 +3,17 @@ using UnityEngine;
 
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class ShowItemCommand : EditorCommand<IElementDesignerData>,
+    public class ShowItemCommand : EditorCommand<DiagramViewModel>,
         IToolbarCommand, IDiagramContextCommand, IDynamicOptionsCommand
     {
-        public override void Perform(IElementDesignerData node)
+        public override void Perform(DiagramViewModel node)
         {
             var diagramItem = SelectedOption.Value as IDiagramNode;
-            node.CurrentFilter.Locations[diagramItem] = new Vector2(0f, 0f);
+
+            node.Data.CurrentFilter.Locations[diagramItem] = new Vector2(0f, 0f);
         }
 
-        public override string CanPerform(IElementDesignerData node)
+        public override string CanPerform(DiagramViewModel node)
         {
             if (node == null) return "Designer Data must not be null";
             return null;
@@ -28,7 +29,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
         public IEnumerable<UFContextMenuItem> GetOptions(object item)
         {
-            var designerData = item as IElementDesignerData;
+            var designerData = item as DiagramViewModel;
             foreach (var importable in designerData.GetImportableItems())
             {
                 yield return new UFContextMenuItem()

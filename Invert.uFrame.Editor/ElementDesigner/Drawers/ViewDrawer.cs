@@ -119,15 +119,8 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
     [Inject("ViewDoubleClick")]
     public IEditorCommand DoubleClickCommand { get; set; }
 
-    public override void DoubleClicked()
+    public override void OnMouseDoubleClick(MouseEvent mouseEvent)
     {
-        base.DoubleClicked();
-        if (DoubleClickCommand != null)
-        {
-            uFrameEditor.ExecuteCommand(DoubleClickCommand);
-        }
+        base.OnMouseDoubleClick(mouseEvent);
     }
-
-    
-
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor.ElementDesigner
@@ -11,11 +13,20 @@ namespace Invert.uFrame.Editor.ElementDesigner
 
         public override void Perform(DiagramViewModel node)
         {
-            Debug.Log(uFrameEditor.uFrameTypes);
-            //Type T = typeof(GUIUtility);
-            //PropertyInfo systemCopyBufferProperty = T.GetProperty("systemCopyBuffer", BindingFlags.Static | BindingFlags.NonPublic);
-            //systemCopyBufferProperty.SetValue(null, JsonElementDesignerData.Serialize(node.Data).ToString(), null);
-            //Debug.Log("Json copied to clipboard.");
+            var diagram = uFrameEditor.CurrentDiagramViewModel.Data;
+            if (diagram.CurrentFilter == null)
+            {
+                Debug.Log("CURRENT FILTER NULL");
+            }
+            else if (diagram.FilterState == null)
+            {
+                Debug.Log("FILTER STATE IS NULL");
+            }
+            //Debug.Log(uFrameEditor.uFrameTypes);
+            Type T = typeof(GUIUtility);
+            PropertyInfo systemCopyBufferProperty = T.GetProperty("systemCopyBuffer", BindingFlags.Static | BindingFlags.NonPublic);
+            systemCopyBufferProperty.SetValue(null, JsonElementDesignerData.Serialize(node.Data).ToString(), null);
+            Debug.Log("Json copied to clipboard.");
         }
     }
 }

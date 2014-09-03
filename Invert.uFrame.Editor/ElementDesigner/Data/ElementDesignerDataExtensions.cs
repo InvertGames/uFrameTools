@@ -107,6 +107,7 @@ public static class ElementDesignerDataExtensions
 
     public static void ApplyFilter(this IElementDesignerData designerData)
     {
+        
         designerData.UpdateLinks();
         //foreach (var item in designerData.AllDiagramItems)
         //{

@@ -49,7 +49,7 @@ public class DiagramViewModel : ViewModel
             return SelectedNodeItems.FirstOrDefault();
         }
     }
-    
+
     public IElementDesignerData Data
     {
         get
@@ -71,7 +71,7 @@ public class DiagramViewModel : ViewModel
         GraphItems.Clear();
         foreach (var item in Data.GetDiagramItems())
         {
-            uFrameEditor.Container.ResolveRelation(item.GetType(), typeof (ViewModel));
+            uFrameEditor.Container.ResolveRelation(item.GetType(), typeof(ViewModel));
         }
         //_graphItems.CollectionChangedWith += GraphItemsChanged;
 
@@ -91,24 +91,25 @@ public class DiagramViewModel : ViewModel
 
     //private void GraphItemAdded(GraphItemViewModel graphItem)
     //{
-    
+
     //}
 
 
 
     //private void GraphItemRemoved(GraphItemViewModel graphItem)
     //{
-        
+
     //}
 
     public IElementsDataRepository Repository
     {
-        get; set;
+        get;
+        set;
     }
 
     public DiagramViewModel(string assetPath)
     {
-       
+
         var fileExtension = Path.GetExtension(assetPath);
         if (string.IsNullOrEmpty(fileExtension)) fileExtension = ".asset";
         var repositories = uFrameEditor.Container.ResolveAll<IElementsDataRepository>();
@@ -138,17 +139,29 @@ public class DiagramViewModel : ViewModel
 
     public void Load()
     {
-
+        var connectors = new List<ConnectorViewModel>();
         foreach (var item in Data.GetDiagramItems())
         {
             // Get the ViewModel for the data
             var vm = uFrameEditor.Container.ResolveRelation<ViewModel>(item.GetType(), item, this) as GraphItemViewModel;
             if (vm == null)
                 Debug.Log(string.Format("Couldn't find view-model for {0}", item.GetType()));
+            
             GraphItems.Add(vm);
+
+            foreach (var strategy in uFrameEditor.ConnectionStrategies)
+            {
+                strategy.GetConnectors(connectors, vm);
+            }
+            
+        }
+        foreach (var item in connectors)
+        {
+            GraphItems.Add(item);
         }
 
     }
+
     public ModelCollection<GraphItemViewModel> GraphItems
     {
         get { return _graphItems; }
@@ -192,7 +205,7 @@ public class DiagramViewModel : ViewModel
         get
         {
             var jsonElementDesignerData = (Data) as JsonElementDesignerData;
-            if (jsonElementDesignerData != null) 
+            if (jsonElementDesignerData != null)
                 return jsonElementDesignerData.Error;
             return null;
         }
@@ -214,10 +227,12 @@ public class DiagramViewModel : ViewModel
             if (SelectedNode.GraphItemObject == Data.CurrentFilter)
             {
                 Data.PopFilter(null);
+                Data.UpdateLinks();
             }
             else
             {
                 Data.PushFilter(SelectedNode.GraphItemObject as IDiagramFilter);
+                Data.UpdateLinks();
             }
         }
     }
@@ -234,7 +249,7 @@ public class DiagramViewModel : ViewModel
 
     public void RecordUndo(string title)
     {
-        Repository.RecordUndo(Data,title);
+        Repository.RecordUndo(Data, title);
     }
 
     public void DeselectAll()
@@ -256,7 +271,7 @@ public class DiagramViewModel : ViewModel
 
     public void NothingSelected()
     {
-       DeselectAll();
+        DeselectAll();
     }
 
     public void Select(GraphItemViewModel viewModelObject)
@@ -266,6 +281,9 @@ public class DiagramViewModel : ViewModel
 
         viewModelObject.IsSelected = true;
     }
-    
 
+    public IEnumerable<IDiagramNode> GetImportableItems()
+    {
+        return Data.GetImportableItems();
+    }
 }

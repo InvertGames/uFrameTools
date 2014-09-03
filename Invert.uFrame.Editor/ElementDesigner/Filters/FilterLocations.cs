@@ -22,7 +22,7 @@ public class FilterLocations
                 return Values[indexOf];
             }
 
-            return node.Location;
+            return node.DefaultLocation;
         }
         set
         {

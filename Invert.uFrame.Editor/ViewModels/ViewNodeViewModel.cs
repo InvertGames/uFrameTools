@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using Invert.MVVM;
 using Invert.uFrame.Code.Bindings;
+using Invert.uFrame.Editor.Connections;
+using Invert.uFrame.Editor.ElementDesigner;
+using Invert.uFrame.Editor.ElementDesigner.Commands;
 using Invert.uFrame.Editor.Refactoring;
+using UnityEngine;
 
 namespace Invert.uFrame.Editor.ViewModels
 {
@@ -117,11 +121,16 @@ namespace Invert.uFrame.Editor.ViewModels
 
     public class ElementNodeViewModel : DiagramNodeViewModel<ElementData>
     {
+
+
         public ElementNodeViewModel(ElementData data, DiagramViewModel diagramViewModel)
             : base(data,diagramViewModel)
         {
-
+            
         }
+
+        public ConnectorViewModel InheritanceOutput { get; set; }
+        
 
         public override bool ShowSubtitle
         {
@@ -161,7 +170,28 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return GraphItem.Collections; }
         }
 
-        
+        public void AddProperty()
+        {
+            var property = new ViewModelPropertyData()
+            {
+                Node = GraphItem,
+                DefaultValue = string.Empty,
+                Name = GraphItem.Data.GetUniqueName("String1"),
+                Type = typeof(string)
+            };
 
+            this.GraphItem.Properties.Add(property);
+
+            var contentItem = uFrameEditor.Container.ResolveRelation<ViewModel>(property.GetType(), property) as GraphItemViewModel;
+            if (contentItem != null)
+            {
+                ContentItems.Add(contentItem);
+            }
+        }
+
+        public IEditorCommand AddPropertyCommand { get; set; }
+        public IEditorCommand AddCommandCommand { get; set; }
+        public IEditorCommand AddElementCollectionCommand { get; set; }
     }
 }
+

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
@@ -14,6 +15,20 @@ public interface IDrawer
     void Draw(float scale);
     void Refresh();
     void Refresh(Vector2 position);
+    int ZOrder { get; }
+    List<IDrawer> Children { get; set; }
+   
+    void OnDeselecting();
+    void OnSelecting();
+    void OnDeselected();
+    void OnSelected();
+    void OnMouseExit();
+    void OnMouseEnter(
+);
+    void OnMouseMove(MouseEvent e);
+    void OnDrag(MouseEvent e);
+    void OnMouseUp(MouseEvent e);
+    void OnMouseDoubleClick(MouseEvent mouseEvent);
 }
 
 public class Drawer<TViewModel> : Drawer where TViewModel : GraphItemViewModel
@@ -32,13 +47,67 @@ public class Drawer<TViewModel> : Drawer where TViewModel : GraphItemViewModel
     {
         get { return (TViewModel)ViewModelObject; }
     }
-}
-public class Drawer : IDrawer
-{
-    private object _dataContext;
 
-    public Drawer()
+
+    public override void OnDeselecting()
     {
+        base.OnDeselecting();
+    }
+
+    public override void OnSelecting()
+    {
+        base.OnSelecting();
+    }
+
+    public override void OnDeselected()
+    {
+        base.OnDeselected();
+    }
+
+    public override void OnSelected()
+    {
+        base.OnSelected();
+    }
+
+    public override void OnMouseExit()
+    {
+        base.OnMouseExit();
+    }
+
+    public override void OnMouseEnter()
+    {
+        base.OnMouseEnter();
+    }
+
+    public override void OnMouseMove(MouseEvent e)
+    {
+        base.OnMouseMove(e);
+    }
+
+    public override void OnDrag(MouseEvent e)
+    {
+        base.OnDrag(e);
+    }
+
+    public override void OnMouseUp(MouseEvent e)
+    {
+        base.OnMouseUp(e);
+    }
+
+    public override void OnMouseDoubleClick(MouseEvent mouseEvent)
+    {
+        base.OnMouseDoubleClick(mouseEvent);
+    }
+}
+public abstract class Drawer : IDrawer
+{
+
+    private object _dataContext;
+    private List<IDrawer> _children;
+
+    protected Drawer()
+    {
+
     }
 
     public object DataContext
@@ -65,12 +134,18 @@ public class Drawer : IDrawer
         set { DataContext = value; }
     }
 
-    public Rect Bounds { get; set; }
-    public virtual bool IsSelected { get; set; }
+    public virtual Rect Bounds { get; set; }
+
+    public virtual bool IsSelected
+    {
+        get { return ViewModelObject.IsSelected; }
+        set { ViewModelObject.IsSelected = value; }
+    }
+
     public bool Dirty { get; set; }
     public string ShouldFocus { get; set; }
 
-    public Drawer(GraphItemViewModel viewModelObject)
+    protected Drawer(GraphItemViewModel viewModelObject)
     {
         ViewModelObject = viewModelObject;
     }
@@ -80,12 +155,79 @@ public class Drawer : IDrawer
         
     }
 
-    public void Refresh()
+    public virtual void Refresh()
     {
-        Refresh(Bounds.position);
+        if (ViewModelObject == null)
+        {
+            Refresh(Vector3.zero);
+        }
+        else
+        {
+            Refresh(Bounds.position);
+        }
+        
     }
 
     public virtual void Refresh(Vector2 position)
+    {
+        
+    }
+
+    public virtual int ZOrder { get { return 0; } }
+
+    public List<IDrawer> Children
+    {
+        get { return _children ?? (_children = new List<IDrawer>()); }
+        set { _children = value; }
+    }
+
+
+    public virtual void OnDeselecting()
+    {
+       
+    }
+
+    public virtual void OnSelecting()
+    {
+    
+    }
+
+    public virtual void OnDeselected()
+    {
+      
+        
+    }
+
+    public virtual void OnSelected()
+    {
+    }
+
+    public virtual void OnMouseExit()
+    {
+        ViewModelObject.IsMouseOver = false;
+    }
+
+    public virtual void OnMouseEnter()
+    {
+        ViewModelObject.IsMouseOver = true;
+    }
+
+    public virtual void OnMouseMove(MouseEvent e)
+    {
+      
+    }
+
+    public virtual void OnDrag(MouseEvent e)
+    {
+     
+    }
+
+    public virtual void OnMouseUp(MouseEvent e)
+    {
+   
+    }
+
+    public virtual void OnMouseDoubleClick(MouseEvent mouseEvent)
     {
         
     }
@@ -93,21 +235,7 @@ public class Drawer : IDrawer
 
 public interface INodeDrawer : IDrawer
 {
-    string ShouldFocus { get; }
-
-    
     ElementsDiagram Diagram { get; set; }
     //Type CommandsType { get; }
     DiagramNodeViewModel ViewModel { get; set; }
-    IDrawer[] Children { get; set; }
-    void DoubleClicked();
-    void OnDeselecting();
-    void OnSelecting();
-    void OnDeselected();
-    void OnSelected();
-    void OnMouseExit();
-    void OnMouseEnter();
-    void OnMouseMove();
-    void OnDrag();
-    void OnMouseUp();
 }

@@ -76,6 +76,11 @@ public interface IDiagramNode : ISelectable,IDiagramNodeItem
     bool IsNewNode { get; set; }
     bool IsExternal { get; }
 
+    /// <summary>
+    /// The location that is used when entering a new filter or sub-diagram.
+    /// </summary>
+    Vector2 DefaultLocation { get; }
+
 
     /// <summary>
     /// Begin the rename process

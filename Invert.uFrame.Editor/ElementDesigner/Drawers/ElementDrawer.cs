@@ -50,7 +50,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         {
             if (_propertiesHeader == null)
             {
-                _propertiesHeader = Container.Resolve<NodeItemHeader>();
+                _propertiesHeader = Container.Resolve<NodeItemHeader>(null,false,ElementViewModel);
 
                 _propertiesHeader.Label = "Properties";
                 _propertiesHeader.HeaderType = typeof (ViewModelPropertyData);
@@ -66,7 +66,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         {
             if (_computedHeader == null)
             {
-                _computedHeader = Container.Resolve<NodeItemHeader>();
+                _computedHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
                 _computedHeader.Label = "Computed";
                 _computedHeader.HeaderType = typeof(ViewModelPropertyData);
             }
@@ -81,7 +81,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
             
              if (_collectionsHeader == null)
             {
-                _collectionsHeader = Container.Resolve<NodeItemHeader>();
+                _collectionsHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
                 _collectionsHeader.Label = "Collections";
                 _collectionsHeader.HeaderType = typeof (ViewModelCollectionData);
                 _collectionsHeader.AddCommand = Container.Resolve<AddElementCollectionCommand>();
@@ -97,7 +97,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         {
             if (_commandsHeader == null)
             {
-                _commandsHeader = Container.Resolve<NodeItemHeader>();
+                _commandsHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
                 _commandsHeader.Label = "Commands";
                 _commandsHeader.HeaderType = typeof(ViewModelCommandData);
                 _commandsHeader.AddCommand = Container.Resolve<AddElementCommandCommand>();
@@ -291,7 +291,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         drawers.Add(PropertiesHeader);
         foreach (var item in ElementViewModel.Properties)
         {
-            drawers.Add(new ElementItemDrawer(new ElementItemViewModel(){DataObject = item}));
+            drawers.Add(new ElementItemDrawer(new ElementItemViewModel(item)));
         }
         drawers.Add(ComputedHeader);
         drawers.Add(CollectionsHeader);

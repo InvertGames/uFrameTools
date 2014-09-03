@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Common;
+using Invert.MVVM;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ElementDesigner;
@@ -15,12 +16,18 @@ public abstract class DiagramNodeDrawer<TViewModel> : DiagramNodeDrawer where TV
     {
     }
 
+    public override Rect Bounds
+    {
+        get { return ViewModelObject.Bounds; }
+        set { ViewModelObject.Bounds = value; }
+    }
+
     public TViewModel NodeViewModel
     {
         get { return ViewModel as TViewModel; }
     }
 }
-public abstract class DiagramNodeDrawer : INodeDrawer
+public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
 {
     private static GUIStyle _itemStyle;
     
@@ -29,11 +36,26 @@ public abstract class DiagramNodeDrawer : INodeDrawer
     [Inject]
     public IUFrameContainer Container { get; set; }
 
-    public DiagramNodeViewModel ViewModel { get; set; }
+    public DiagramNodeViewModel ViewModel
+    {
+        get { return DataContext as DiagramNodeViewModel; }
+        set { DataContext = value; }
+    }
 
     protected DiagramNodeDrawer()
     {
 
+    }
+
+    protected override void DataContextChanged()
+    {
+        base.DataContextChanged();
+        ViewModel.ContentItems.CollectionChangedWith += ContentItemsOnCollectionChangedWith;
+    }
+
+    private void ContentItemsOnCollectionChangedWith(ModelCollectionChangeEventWith<GraphItemViewModel> changeArgs)
+    {
+        this.RefreshContent();
     }
 
     public float Scale
@@ -54,7 +76,7 @@ public abstract class DiagramNodeDrawer : INodeDrawer
     {
         get { return ElementDesignerStyles.SelectedItemStyle; }
     }
-
+    
     public virtual float Width
     {
         get
@@ -107,11 +129,8 @@ public abstract class DiagramNodeDrawer : INodeDrawer
         get { return 0; }
     }
 
-    public bool Dirty { get; set; }
     string IDrawer.ShouldFocus { get; set; }
 
-
-    public  Rect Bounds { get; set; }
     
 
     public ElementsDiagram Diagram { get; set; }
@@ -119,20 +138,18 @@ public abstract class DiagramNodeDrawer : INodeDrawer
 
     protected virtual void GetContentDrawers(List<IDrawer> drawers)
     {
-        drawers.Add(new HeaderDrawer()
+      
+        foreach (var item in ViewModel.ContentItems)
         {
-            BackgroundStyle = HeaderStyle,
-            TextStyle = ElementDesignerStyles.ViewModelHeaderStyle,
-            ViewModelObject = ViewModelObject
-        });
+            var drawer = uFrameEditor.CreateDrawer(item);
+            if (drawer == null) Debug.Log("Drawer is null");
+            drawers.Add(drawer);
+        }
     }
 
 
-    public string ShouldFocus { get { return ViewModel.IsEditing ? ViewModel.Name : ViewModel.ContainedItems.Where(p => p.IsSelected).Select(p => p.Name).FirstOrDefault(); } }
 
- 
-
-    public virtual void Draw(float scale)
+    public override void Draw(float scale)
     {
         var offsetPosition = new Rect(Bounds);
 
@@ -178,16 +195,20 @@ public abstract class DiagramNodeDrawer : INodeDrawer
             }
             item.Draw(scale);
         }
+        if (ViewModel.IsMouseOver)
+        {
+            ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(Scale), ElementDesignerStyles.BoxHighlighter3, string.Empty, 20);
+        }
         if (ViewModel.IsSelected)
         {
             ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(Scale), ElementDesignerStyles.BoxHighlighter2, string.Empty, 20);
         }
     }
 
-    public void Refresh()
-    {
-        Refresh(Vector2.zero);
-    }
+    //public override void Refresh()
+    //{
+    //    Refresh(ViewModel.Position);
+    //}
 
     protected virtual GUIStyle HeaderStyle
     {
@@ -279,31 +300,34 @@ public abstract class DiagramNodeDrawer : INodeDrawer
     {
         get { return uFrameEditor.Container.Resolve<IEditorCommand>("RemoveNodeItem"); }
     }
-
-    public virtual void Refresh(Vector2 position)
+    
+    public virtual void RefreshContent()
     {
+        var drawers = new List<IDrawer>();
+        drawers.Add(new HeaderDrawer()
+        {
+            BackgroundStyle = HeaderStyle,
+            TextStyle = ElementDesignerStyles.ViewModelHeaderStyle,
+            ViewModelObject = ViewModelObject
+        });
+        if (!ViewModel.IsCollapsed)
+        {
+            GetContentDrawers(drawers);
+        }
+        Children = drawers.ToList();
+    }
+
+    public override void Refresh(Vector2 position)
+    {
+
+        if (Children == null || Children.Count < 1)
+        {
+            RefreshContent();
+        }
+
         var startY = ViewModel.Position.y;
 
         // Get our content drawers
-        var drawers = new List<IDrawer>();
-        GetContentDrawers(drawers);
-
-        ViewModel.ContentItems.Clear();
-        foreach (var drawer in drawers)
-        {
-            ViewModel.ContentItems.Add(drawer.ViewModelObject);
-        }
-        // Cache them as we only want to pre-calculate their positions
-        if (ViewModel.IsCollapsed)
-        {
-            Children = drawers.Take(1).ToArray();
-        }
-        else
-        {
-            Children = drawers.ToArray();
-        }
-      
-
         foreach (var child in Children)
         {
             child.Refresh(new Vector2(ViewModel.Position.x,startY));
@@ -339,76 +363,13 @@ public abstract class DiagramNodeDrawer : INodeDrawer
         //ViewModel.HeaderPosition = new Rect(ViewModel.Position.x, ViewModel.Position.y, maxWidth, ViewModel.HeaderSize);
     }
 
-    public bool IsSelected
-    {
-        get { return ViewModel.IsSelected; }
-        set { ViewModel.IsSelected = value; }
-    }
-
-    public GraphItemViewModel ViewModelObject
-    {
-        get { return ViewModel; }
-   
-    }
-
-
     public bool IsExternal { get; set; }
 
     public IEnumerable<IDrawer> SelectedChildren
     {
         get { return Children.Where(p => p.IsSelected); }
     }
-    public IDrawer[] Children { get; set; }
-
-    public virtual void DoubleClicked()
-    {
-
-    }
-
-    public void OnDeselecting()
-    {
-        
-    }
-
-    public void OnSelecting()
-    {
-        
-    }
-
-    public void OnDeselected()
-    {
-        
-    }
-
-    public void OnSelected()
-    {
-        
-    }
-
-    public void OnMouseExit()
-    {
-        
-    }
-
-    public void OnMouseEnter()
-    {
-        
-    }
-
-    public void OnMouseMove()
-    {
-        
-    }
-
-    public void OnDrag()
-    {
-        
-    }
-
-    public void OnMouseUp()
-    {
-        
-    }
+   
 
     //private float CalculateGroupBounds(IDrawer group, float width, float startY)
     //{
@@ -429,5 +390,118 @@ public abstract class DiagramNodeDrawer : INodeDrawer
     //    return sy;
     //}
 
- 
+
+    public void Dispose()
+    {
+        ViewModel.ContentItems.CollectionChangedWith -= ContentItemsOnCollectionChangedWith;
+    }
+}
+
+public class ConnectorDrawer : Drawer<ConnectorViewModel>
+{
+    public override int ZOrder
+    {
+        get { return 1; }
+    }
+
+    public ConnectorDrawer(ConnectorViewModel viewModelObject) : base(viewModelObject)
+    {
+    }
+
+    public Texture2D Texture
+    {
+        get
+        {
+            if (ViewModel.Direction == ConnectorDirection.Input)
+            {
+                switch (ViewModel.Side)
+                {
+                    case ConnectorSide.Left:
+                        return ElementDesignerStyles.ArrowRightTexture;
+                        break;
+                    case ConnectorSide.Right:
+                        return ElementDesignerStyles.ArrowLeftTexture;
+                        break;
+                    case ConnectorSide.Bottom:
+                        return ElementDesignerStyles.ArrowUpTexture;
+                    case ConnectorSide.Top:
+                        return ElementDesignerStyles.ArrowDownTexture;
+                }
+            }
+            else
+            {
+                switch (ViewModel.Side)
+                {
+                    case ConnectorSide.Left:
+                        return ElementDesignerStyles.ArrowLeftTexture;
+                        break;
+                    case ConnectorSide.Right:
+                        return ElementDesignerStyles.ArrowRightTexture;
+                        break;
+                    case ConnectorSide.Bottom:
+                        return ElementDesignerStyles.ArrowDownTexture;
+                    case ConnectorSide.Top:
+                        return ElementDesignerStyles.ArrowUpTexture;
+                }
+            }
+            return ElementDesignerStyles.ArrowLeftTexture;
+        }
+    }
+
+    public override void Refresh(Vector2 position)
+    {
+        base.Refresh(position);
+      
+    }
+    public override Rect Bounds
+    {
+        get { return ViewModelObject.Bounds; }
+        set { ViewModelObject.Bounds = value; }
+    }
+    public override void Draw(float scale)
+    {
+        base.Draw(scale);
+        var nodePosition = ViewModel.ConnectorFor.Bounds;
+        var texture = Texture;
+        var pos = new Vector2(0f, 0f);
+
+        if (ViewModel.Side == ConnectorSide.Left)
+        {
+            pos.x = nodePosition.x;
+            pos.y = nodePosition.y + (nodePosition.height * ViewModel.SidePercentage);
+            pos.y -= (texture.height/2f);
+            pos.x -= texture.width;
+        }
+        else if (ViewModel.Side == ConnectorSide.Right)
+        {
+            pos.x = nodePosition.x + nodePosition.width;
+            pos.y = nodePosition.y + (nodePosition.height * ViewModel.SidePercentage);
+            pos.y -= (texture.height / 2f);
+            //pos.x += texture.width;
+        }
+        else if (ViewModel.Side == ConnectorSide.Bottom)
+        {
+            pos.x = nodePosition.x + (nodePosition.width * ViewModel.SidePercentage);
+            pos.y = nodePosition.y + nodePosition.height;
+            pos.x -= (texture.width / 2f);
+            //pos.y += texture.height;
+        }
+        else if (ViewModel.Side == ConnectorSide.Top)
+        {
+            pos.x = nodePosition.x + (nodePosition.width * ViewModel.SidePercentage);
+            pos.y = nodePosition.y;
+            pos.x -= (texture.width / 2f);
+            pos.y -= texture.height;
+        }
+
+        Bounds = new Rect(pos.x, pos.y, texture.width, texture.height);
+        if (ViewModelObject.IsMouseOver)
+        {
+            EditorGUI.DrawRect(Bounds.Scale(scale), Color.black);
+        }
+        GUI.DrawTexture(Bounds.Scale(scale), texture, ScaleMode.StretchToFill, true);
+        
+    }
+
+    
 }

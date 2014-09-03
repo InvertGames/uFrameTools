@@ -43,6 +43,7 @@ namespace Invert.uFrame.Editor
         private Vector2 _scrollPosition;
         private ICommandUI _toolbar;
         private ModifierKeyState _modifierKeyStates;
+        private MouseEvent _mouseEvent;
 
 
         public static IElementDesignerData SelectedElementDiagram
@@ -199,7 +200,7 @@ namespace Invert.uFrame.Editor
         }
         public void OnGUI()
         {
-         
+
             if ((DiagramViewModel == null) && !string.IsNullOrEmpty(LastLoadedDiagram))
             {
                 DiagramDrawer = null;
@@ -280,7 +281,16 @@ namespace Invert.uFrame.Editor
                 }
                 //BeginGUI();
                 DiagramDrawer.Draw(ElementDesignerStyles.Scale);
+                HandleInput();
 
+#if DEBUG
+                GUILayout.BeginArea(new Rect(10f, 70f, 500f, 500f));
+                GUILayout.Label(string.Format("Mouse Position: x = {0}, y = {1}", MouseEvent.MousePosition.x, MouseEvent.MousePosition.y));
+                GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
+                GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
+                GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
+                GUILayout.EndArea();
+#endif
                 //EndGUI();
                 GUI.EndScrollView();
                 GUILayout.Space(diagramRect.height);
@@ -327,6 +337,7 @@ namespace Invert.uFrame.Editor
                // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));
             }
 
+         
             var evt = Event.current;
             if (evt != null && evt.isKey && evt.type == EventType.KeyUp && DiagramDrawer != null)
             {
@@ -357,6 +368,8 @@ namespace Invert.uFrame.Editor
         {
             if (DiagramViewModel != null)
             DiagramViewModel.DeselectAll();
+
+            MouseEvent.IsMouseDown = false;
         }
 
         //public virtual void OpenDiagramByAttribute(Type type)
@@ -375,9 +388,54 @@ namespace Invert.uFrame.Editor
               
             //    Diagram.Dirty = false;
             //}
+
             Repaint();
+           
         }
 
+        public MouseEvent MouseEvent
+        {
+            get { return _mouseEvent ?? (_mouseEvent = new MouseEvent(ModifierKeyStates)); }
+            set { _mouseEvent = value; }
+        }
+
+        private Vector2 _mousePosition;
+
+        public void HandleInput()
+        {
+            if (DiagramDrawer == null) return;
+            var e = Event.current;
+            if (e == null) return;
+
+            MouseEvent.MousePositionDelta = e.mousePosition - _mousePosition;
+            if (e.type == EventType.MouseDown)
+            {
+                MouseEvent.MouseDownPosition = MouseEvent.MousePosition;
+                MouseEvent.IsMouseDown = true;
+                DiagramDrawer.OnMouseDown(MouseEvent);
+                if (e.clickCount > 1)
+                {
+                    DiagramDrawer.OnMouseDoubleClick(MouseEvent);
+               }
+            }
+            else if (e.type == EventType.MouseUp)
+            {
+                MouseEvent.MouseUpPosition = MouseEvent.MousePosition;
+                MouseEvent.IsMouseDown = false;
+                DiagramDrawer.OnMouseUp(MouseEvent);
+            }
+            else
+            {
+                var mp = (_scrollPosition + e.mousePosition) * (1f / ElementsDiagram.Scale);
+            
+                MouseEvent.MousePosition = mp;
+                MouseEvent.MousePositionDelta = MouseEvent.MousePosition - MouseEvent.LastMousePosition;
+
+                DiagramDrawer.OnMouseMove(MouseEvent);
+                MouseEvent.LastMousePosition = mp;
+            }
+            _mousePosition = e.mousePosition;
+        }
 
         //public void HandleInput()
         //{
@@ -606,345 +664,26 @@ namespace Invert.uFrame.Editor
     }
 }
 
+public class MouseEvent
+{
+    public ModifierKeyState ModifierKeyStates { get; set; }
+
+    public MouseEvent(ModifierKeyState modifierKeyStates)
+    {
+        ModifierKeyStates = modifierKeyStates;
+    }
+
+    public Vector2 MousePosition { get; set; }
+    public bool IsMouseDown { get; set; }
+    public Vector2 LastMousePosition { get; set; }
+    public Vector2 MouseDownPosition { get; set; }
+    public Vector2 MouseUpPosition { get; set; }
+    public Vector2 MousePositionDelta { get; set; }
+}
+
 public class ModifierKeyState
 {
     public bool Shift { get; set; }
     public bool Alt { get; set; }
     public bool Ctrl { get; set; }
 }
-//public class InputManager
-//{
-//    //private Stack<IInputHandler> _inputHandlerStack = new Stack<IInputHandler>();
-
-//    private INodeDrawer[] _selected;
-
-//    //public IInputHandler CurrentHandler
-//    //{
-//    //    get
-//    //    {
-//    //        return InputHandlerStack.Peek();
-//    //    }
-//    //}
-
-//    public ElementsDiagram Diagram { get; set; }
-
-//    public INodeDrawer DrawerAtMouse { get; set; }
-
-//    public bool IsMouseDown { get; set; }
-
-//    public bool IsMultiSelecting
-//    {
-//        get;
-//        set;
-//    }
-
-//    public Vector2 LastMouseDownPosition { get; set; }
-
-//    public ModifierKeyState ModifierKeyState { get; set; }
-
-//    public Vector2 MousePosition { get; set; }
-
-//    public Vector2 MousePositionDelta { get; set; }
-
-//    public ICommandHandler CommandHandler { get; set; }
-
-//    public INodeDrawer[] Selected
-//    {
-//        get { return _selected; }
-//        set
-//        {
-//            if (_selected != null)
-//                foreach (var item in value)
-//                    item.OnDeselecting(this);
-
-//            if (value != null)
-//                foreach (var item in value)
-//                    item.OnSelecting(this);
-
-//            var old = _selected;
-//            _selected = value;
-
-//            if (old != null)
-//                foreach (var item in old)
-//                    item.OnDeselected(this);
-
-//            if (value != null)
-//                foreach (var item in value)
-//                {
-//                    item.IsSelected = true;
-//                    item.OnSelected(this);
-//                }
-//        }
-//    }
-//    public Rect SelectionRect { get; set; }
-//    public bool CancelBubble { get; set; }
-
-//    //public IEnumerable<ListItemControl> SelectedListItems
-//    //{
-//    //    get { return Selected.OfType<ListItemControl>(); }
-//    //}
-
-//    //public IEnumerable<IDiagramNodeItem> SelectedItemDatas
-//    //{
-//    //    get { return SelectedListItems.Select(p => p.NodeItemData); }
-//    //}
-
-//    //public IDiagramNodeItem SelectedItemData
-//    //{
-//    //    get { return SelectedItemDatas.FirstOrDefault(); }
-//    //}
-
-
-//    //protected Stack<IInputHandler> InputHandlerStack
-//    //{
-//    //    get { return _inputHandlerStack; }
-//    //    set { _inputHandlerStack = value; }
-//    //}
-
-//    public virtual void BubbleMouseEvent(Action<INodeDrawer> eventAction)
-//    {
-        
-//        //CancelBubble = false;
-//        //var controls = GetControlsAtMouse(Diagram.Children);
-//        //foreach (var control in controls)
-//        //{
-//        //    if (CancelBubble) break;
-//        //    eventAction(control);
-//        //}
-
-//    }
-
-//    public virtual void KeyPressed(KeyCode keyCode)
-//    {
-//        var bindings = uFrameEditor.KeyBindings;
-//        var keyStates = ModifierKeyState;
-//        foreach (var keyBinding in bindings)
-//        {
-//            if (keyBinding.Key != keyCode)
-//            {
-
-//                continue;
-//            }
-//            if (keyBinding.RequireAlt && !keyStates.Alt)
-//            {
-//#if DEBUG
-//                Debug.Log("Skipping because of alt");
-//#endif
-//                continue;
-//            }
-//            if (keyBinding.RequireShift && !keyStates.Shift)
-//            {
-//#if DEBUG
-//                Debug.Log("Skipping because of shift");
-//#endif
-//                continue;
-//            }
-//            if (keyBinding.RequireControl && !keyStates.Ctrl)
-//            {
-//#if DEBUG
-//                Debug.Log("Skipping because of ctrl");
-//#endif
-//                continue;
-//            }
-
-//            var command = keyBinding.Command;
-//            if (command != null)
-//            {
-//                var acceptableArguments = CommandHandler.ContextObjects.Where(p => command.For.IsAssignableFrom(p.GetType())).ToArray();
-//                foreach (var argument in acceptableArguments)
-//                {
-//                    if (command.CanPerform(argument) == null)
-//                    {
-//#if DEBUG
-//                        UnityEngine.Debug.Log("Key Command Executed: " + command.GetType().Name);
-//#endif
-//                        CommandHandler.ExecuteCommand(command);
-//                        return;
-//                    }
-//                }
-
-//            }
-//        }
-//    }
-//    public virtual void MouseDoubleClick()
-//    {
-
-//        var control = GetControlAtMouse() as INodeDrawer;
-
-//        if (control != null && control.ViewModelObject.DataObject is IDiagramFilter)
-//        {
-//            var selectedData = control.ViewModelObject.DataObject;
-
-//            if (selectedData == Diagram.Data.CurrentFilter)
-//            {
-//                Diagram.Data.PopFilter(null);
-//                Diagram.Refresh();
-//            }
-//            else
-//            {
-//                Diagram.Data.PushFilter(selectedData as IDiagramFilter);
-//                Diagram.Refresh();
-//            }
-//        }
-//    }
-
-//    public INodeDrawer GetControlAtMouse()
-//    {
-//        return Diagram.NodeDrawers.FirstOrDefault(p => p.Bounds.Contains(MousePosition));
-//        //return GetControlsAtMouse(Diagram.NodeDrawers).FirstOrDefault();
-//    }
-
-//    //public IEnumerable<INodeDrawer> GetControlsAtMouse(IEnumerable<INodeDrawer> controls)
-//    //{
-//    //    foreach (var control in controls)
-//    //    {
-//    //        if (control.Bounds.Contains(MousePosition))
-//    //        {
-//    //            return control;
-//    //            var container = control as IUFContainerControl;
-//    //            // If its a container control then search its children
-//    //            if (container != null)
-//    //            {
-//    //                var result = GetControlsAtMouse(container.Children);
-//    //                foreach (var item in result)
-//    //                    yield return item;
-
-
-//    //            }
-//    //            yield return control;
-//    //        }
-//    //    }
-//    //}
-
-//    public virtual void MouseDown()
-//    {
-//        IsMouseDown = true;
-
-//        //ConnectableAtMouse = Diagram.Connectables.FirstOrDefault(p => p.Position().Contains(MousePosition));
-
-//        // Make sure we update the drawer that is at the mouse position
-//        DrawerAtMouse = GetControlAtMouse();
-
-//        var selected = DrawerAtMouse as INodeDrawer;
-
-//        // If we've clicked on something and there isn't a current selection
-//        if (selected != null && Selected.Length <= 1)
-//        {
-//            Selected = new[] { selected };
-//        }
-//        else if (DrawerAtMouse == null) // If we hit a empty area
-//        {
-//            Selected = new INodeDrawer[] { };
-//            IsMultiSelecting = true;
-//        }
-//        if (DrawerAtMouse != null)
-//        {
-
-//            //BubbleMouseEvent((c) => c.OnMouseDown(this));
-//        }
-//        LastMouseDownPosition = MousePosition;
-//    }
-
-//    public virtual void MouseMove()
-//    {
-//        var oldDrawerAtMouse = DrawerAtMouse;
-//        DrawerAtMouse = GetControlAtMouse();
-
-//        // Handle Mouse Enter & Mouse Exit
-//        if (oldDrawerAtMouse != DrawerAtMouse)
-//        {
-//            if (oldDrawerAtMouse != null)
-//                oldDrawerAtMouse.OnMouseExit(this);
-
-//            //BubbleMouseEvent(p=>p.OnMouseExit(this));
-//        }
-//        if (DrawerAtMouse != oldDrawerAtMouse)
-//        {
-//            if (DrawerAtMouse != null)
-//                DrawerAtMouse.OnMouseEnter(this);
-//            //BubbleMouseEvent(p => p.OnMouseEnter(this));
-//        }
-//        if (DrawerAtMouse != null)
-//            DrawerAtMouse.OnMouseMove(this);
-//        //BubbleMouseEvent(p => p.OnMouseMove(this));
-
-//        if (IsMultiSelecting)
-//        {
-//            HandleSelectionRect();
-//        }
-//        else if (IsMouseDown && Selected != null && Selected.Length > 0)
-//        {
-//            //Debug.Log("Moving");
-//            foreach (var item in Selected)
-//            {
-//                //(delta * (1f / ElementsDiagram.Scale));
-//                item.OnDrag(this);
-//            }
-//        }
-//    }
-
-//    public virtual void MouseUp()
-//    {
-//        DrawerAtMouse = GetControlAtMouse();
-
-//        if (IsMultiSelecting)
-//        {
-//            Selected =
-//                Diagram.NodeDrawers.Where(p => SelectionRect.Overlaps(p.Bounds)).ToArray();
-//        }
-//        else
-//        {
-//            if (DrawerAtMouse != null && IsMouseDown)
-//            {
-//                DrawerAtMouse.OnMouseUp();
-//            }
-//            //BubbleMouseEvent(_ => _.OnMouseUp(this));
-//        }
-
-//        IsMouseDown = false;
-//        IsMultiSelecting = false;
-//        SelectionRect = new Rect(0f, 0f, 0f, 0f);
-//    }
-
-//    private void HandleSelectionRect()
-//    {
-//        var cur = MousePosition;
-//        if (cur.x > LastMouseDownPosition.x)
-//        {
-//            if (cur.y > LastMouseDownPosition.y)
-//            {
-//                SelectionRect = new Rect(LastMouseDownPosition.x, LastMouseDownPosition.y,
-//                    cur.x - LastMouseDownPosition.x, cur.y - LastMouseDownPosition.y);
-//            }
-//            else
-//            {
-//                SelectionRect = new Rect(
-//                    LastMouseDownPosition.x, cur.y, cur.x - LastMouseDownPosition.x, LastMouseDownPosition.y - cur.y);
-//                //SelectionRect = new Rect(LastMouseDownPosition.x, LastMouseDownPosition.y,
-//                //    cur.x - LastMouseDownPosition.x, cur.y - LastMouseDownPosition.y);
-//            }
-//        }
-//        else
-//        {
-//            if (cur.y > LastMouseDownPosition.y)
-//            {
-//                // x is less and y is greater
-//                SelectionRect = new Rect(
-//                    cur.x, LastMouseDownPosition.y, LastMouseDownPosition.x - cur.x, cur.y - LastMouseDownPosition.y);
-//            }
-//            else
-//            {
-//                // both are less
-//                SelectionRect = new Rect(
-//                    cur.x, cur.y, LastMouseDownPosition.x - cur.x, LastMouseDownPosition.y - cur.y);
-//            }
-//            //SelectionRect = new Rect(LastMouseDownPosition.x, LastMouseDownPosition.y,
-//            //   LastMouseDownPosition.x - cur.x, LastMouseDownPosition.y - cur.y);
-//        }
-//    }
-
-//    public void DeselectAll()
-//    {
-//        Selected = new INodeDrawer[] { };
-//    }
-//}

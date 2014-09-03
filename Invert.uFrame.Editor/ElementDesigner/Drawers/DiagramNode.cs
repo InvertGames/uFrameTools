@@ -44,6 +44,11 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         }
     }
 
+    public Vector2 DefaultLocation
+    {
+        get { return _location; }
+    }
+
     public virtual void Serialize(JSONClass cls)
     {
         cls.Add("Name", new JSONData(_name));
@@ -256,16 +261,17 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
             //{
             //    return new Vector2((Screen.width / 2f) - (Position.width / 2f), (Screen.height / 2f) - (Position.height / 2f));
             //}
-            return _location;
+            return Filter.Locations[this];
         }
         set
         {
             _location = value;
-            Filter.Locations[this] = value;
+         
             if (_location.x < 0)
                 _location.x = 0;
             if (_location.y < 0)
                 _location.y = 0;
+            Filter.Locations[this] = _location;
             Dirty = true;
         }
     }
@@ -275,6 +281,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         get { return _name; }
         set
         {
+            if (value == null) return;
             _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
             Dirty = true;
         }

@@ -315,6 +315,10 @@ namespace Invert.uFrame.Editor
             //container.RegisterInstance<ElementDesignerViewModel>(new ElementDesignerViewModel());
             //container.RegisterInstance<UFrameApplicationViewModel>(new UFrameApplicationViewModel());
 
+#if DEBUG
+            container.RegisterInstance<IToolbarCommand>(new PrintPlugins(),"Print Plugins");
+#endif
+
             container.Register<NodeItemHeader, NodeItemHeader>();
 
             container.RegisterInstance<IUFrameContainer>(container);
@@ -381,24 +385,27 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveUpCommand(), "MoveItemUp");
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveDownCommand(), "MoveItemDown");
 
-            // Drawers
-            RegisterNode<SceneManagerData,SceneManagerViewModel,SceneManagerDrawer>();
-            RegisterNode<SubSystemData,SubSystemViewModel,SubSystemDrawer>();
-            RegisterNode<ElementData,ElementNodeViewModel,ElementDrawer>();
-            RegisterNode<EnumData,EnumNodeViewModel,DiagramEnumDrawer>();
-            RegisterNode<ViewData,ViewNodeViewModel,ViewDrawer>();
-            RegisterNode<ViewComponentData,ViewComponentNodeViewModel,ViewComponentDrawer>();
-
-            //container.RegisterRelation<ViewNodeViewModel, INodeDrawer, ViewDrawer>();
-            //container.RegisterRelation<ViewComponentNodeViewModel, INodeDrawer, ViewComponentDrawer>();
-            //container.RegisterRelation<ViewComponentNodeViewModel, INodeDrawer, ElementDrawer>();
-            //container.RegisterRelation<ElementDataBase, INodeDrawer, ElementDrawer>();
-            ////container.RegisterRelation<ImportedElementData, INodeDrawer, ElementDrawer>();
-            //container.RegisterRelation<SubSystemData, INodeDrawer, SubSystemDrawer>();
-            //container.RegisterRelation<SceneManagerData, INodeDrawer, SceneManagerDrawer>();
-            //container.RegisterRelation<EnumData, INodeDrawer, DiagramEnumDrawer>();
-
             //container.RegisterInstance<IEditorCommand>(,"Show/Hide This Help"),"ShowHideHelp");
+
+            // Drawers
+            RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
+
+            RegisterGraphItem<SceneManagerData,SceneManagerViewModel,SceneManagerDrawer>();
+            RegisterGraphItem<SubSystemData,SubSystemViewModel,SubSystemDrawer>();
+            RegisterGraphItem<ElementData,ElementNodeViewModel,ElementDrawer>();
+            RegisterGraphItem<EnumData,EnumNodeViewModel,DiagramEnumDrawer>();
+            RegisterGraphItem<ViewData,ViewNodeViewModel,ViewDrawer>();
+            RegisterGraphItem<ViewComponentData,ViewComponentNodeViewModel,ViewComponentDrawer>();
+
+            RegisterGraphItem<ViewModelPropertyData,ElementItemViewModel,ElementItemDrawer>();
+            RegisterGraphItem<ViewModelCommandData,ElementItemViewModel,ElementItemDrawer>();
+            RegisterGraphItem<ViewModelCollectionData,ElementItemViewModel,ElementItemDrawer>();
+
+            //RegisterGraphItem<EnumData,EnumItemViewModel,EnumItemDrawer>();
+
+            container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritance");
+
+            
 
 #if DEBUG
             //External Nodes
@@ -419,6 +426,7 @@ namespace Invert.uFrame.Editor
                 if (diagramPlugin.Enabled)
                     diagramPlugin.Initialize(Container);
             }
+            ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
             KeyBindings = Container.ResolveAll<IKeyBinding>().ToArray();
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
             uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
@@ -428,10 +436,16 @@ namespace Invert.uFrame.Editor
             uFrameTypes = new uFrameStringTypeProvider();
         }
 
-        public static void RegisterNode<TModel, TViewModel, TDrawer>()
+        public static IConnectionStrategy[] ConnectionStrategies { get; set; }
+
+        public static void RegisterDrawer<TViewModel, TDrawer>()
+        {
+            Container.RegisterRelation<TViewModel,IDrawer,TDrawer>();
+        }
+        public static void RegisterGraphItem<TModel, TViewModel, TDrawer>()
         {
             Container.RegisterRelation<TModel, ViewModel, TViewModel>();
-            Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
+            RegisterDrawer<TViewModel,TDrawer>();
         }
 
     }
