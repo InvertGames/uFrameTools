@@ -91,13 +91,12 @@ namespace Invert.uFrame.Editor
 
         public void DoCommand(IEditorCommand command)
         {
+            
             var obj = Handler.ContextObjects.FirstOrDefault(p => command.For.IsAssignableFrom(p.GetType()));
             GUI.enabled = command.CanPerform(obj) == null;
             if (command is IDynamicOptionsCommand)
             {
                 var cmd = command as IDynamicOptionsCommand;
-                
-
                 foreach (var ufContextMenuItem in cmd.GetOptions(obj))
                 {
                     if (GUILayout.Button(new GUIContent(ufContextMenuItem.Name), EditorStyles.toolbarButton))

@@ -81,6 +81,8 @@ public interface IDiagramNode : ISelectable,IDiagramNodeItem
     /// </summary>
     Vector2 DefaultLocation { get; }
 
+    
+
 
     /// <summary>
     /// Begin the rename process

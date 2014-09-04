@@ -22,6 +22,8 @@ public class ElementDesignerData : ScriptableObject,  IElementDesignerData
         }
     }
 
+    public IElementsDataRepository Repository { get; set; }
+
     private string _identifier;
 
     public List<string> ExternalReferences { get; set; }

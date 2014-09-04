@@ -75,7 +75,7 @@ public class ElementData : ElementDataBase, IDiagramFilter
     {
         get
         {
-            return _baseType ?? UFrameAssetManager.DesignerVMAssemblyName;
+            return _baseType ?? uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName;
         }
         set
         {

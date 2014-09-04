@@ -32,6 +32,8 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         }
     }
 
+    public IElementsDataRepository Repository { get; set; }
+
     public List<IDiagramNode> Nodes
     {
         get { return _nodes; }
@@ -61,7 +63,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         // Store the root filter
         root.AddObject("SceneFlow", data.SceneFlowFilter);
         // Nodes
-        root.AddObjectArray("Nodes", data.AllDiagramItems);
+        root.AddObjectArray("Nodes", data.LocalNodes);
         return root;
     }
 
@@ -100,25 +102,6 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
     {
         get { return _filterState; }
         set { _filterState = value; }
-    }
-
-    public List<string> ExternalReferences
-    {
-        get { return _externalReferences ?? (_externalReferences = new List<string>()); }
-        set { _externalReferences = value; }
-    }
-
-    public IEnumerable<IElementDesignerData> ExternalDesignerDatas
-    {
-        get
-        {
-            return UFrameAssetManager.Diagrams.Where(p => ExternalReferences.Contains(p.Identifier));
-        }
-    }
-
-    public IEnumerable<IDiagramNode> AllDiagramItems
-    {
-        get { return this.Nodes.Concat(ExternalDesignerDatas.OfType<JsonElementDesignerData>().SelectMany(p => p.Nodes)); }
     }
 
     private List<Refactorer> _refactorings = new List<Refactorer>();

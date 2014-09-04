@@ -14,7 +14,7 @@ public static class SubsystemExtensions
 {
     public static IEnumerable<ISubSystemData> GetAllImportedSubSystems(this ISubSystemData subsystem,IElementDesignerData data)
     {
-        var subSystem = data.AllDiagramItems.OfType<SubSystemData>()
+        var subSystem = data.LocalNodes.OfType<SubSystemData>()
             .Where(p => subsystem.Imports.Contains(p.Identifier));
 
         foreach (var subSystemData in subSystem)
@@ -32,7 +32,7 @@ public static class SubsystemExtensions
     }
     public static IEnumerable<IDiagramNodeItem> GetIncludedItems(this ISubSystemData subsystem)
     {
-        foreach (var allDiagramItem in subsystem.OwnerData.AllDiagramItems.OfType<ISubSystemData>())
+        foreach (var allDiagramItem in subsystem.OwnerData.LocalNodes.OfType<ISubSystemData>())
         {
             if (subsystem.Imports.Contains(allDiagramItem.Identifier))
             {
@@ -46,7 +46,7 @@ public static class SubsystemExtensions
     public static IEnumerable<IDiagramNodeItem> GetSubItems(this ISubSystemData subsystem)
     {
         var items =
-            subsystem.OwnerData.AllDiagramItems.OfType<ISubSystemType>()
+            subsystem.OwnerData.LocalNodes.OfType<ISubSystemType>()
                 .Where(p => subsystem.Locations.Keys.Contains(p.Identifier))
                 .Cast<IDiagramNodeItem>();
 
@@ -64,7 +64,7 @@ public static class SubsystemExtensions
         {
             list.Add(diagramSubItem);
         }
-        foreach (var allDiagramItem in subsystem.OwnerData.AllDiagramItems.OfType<SubSystemData>())
+        foreach (var allDiagramItem in subsystem.OwnerData.LocalNodes.OfType<SubSystemData>())
         {
             if (subsystem.Imports.Contains(allDiagramItem.Identifier))
             {

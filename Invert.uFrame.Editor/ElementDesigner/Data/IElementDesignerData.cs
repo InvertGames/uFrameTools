@@ -6,8 +6,7 @@ public interface IElementFileData
     string Identifier { get; set; }
     int RefactorCount { get; set; }
     IDiagramFilter CurrentFilter { get; }
-    
-    IEnumerable<IDiagramNode> AllDiagramItems { get; }
+    IElementsDataRepository Repository { get; }
     
 
     /// <summary>
@@ -24,8 +23,6 @@ public interface IElementFileData
 
 public interface IElementDesignerData : IElementFileData
 {
-    // External Diagram support
-    List<string> ExternalReferences { get; set; }
     // Settings
     ElementDiagramSettings Settings { get; }
 

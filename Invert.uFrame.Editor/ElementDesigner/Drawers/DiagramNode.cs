@@ -169,7 +169,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     {
         get
         {
-            return UFrameAssetManager.DesignerVMAssemblyName.Replace("ViewModel", Name);
+            return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name);
         }
     }
 
@@ -352,7 +352,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     {
         IsEditing = false;
 
-        if (Data.GetDiagramItems().Count(p => p.Name == Name) > 1)
+        if (Data.LocalNodes.Count(p => p.Name == Name) > 1)
         {
             Name = OldName;
             return false;

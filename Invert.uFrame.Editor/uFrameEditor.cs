@@ -204,7 +204,7 @@ namespace Invert.uFrame.Editor
                 // If its a generator for a specific node type
                 else
                 {
-                    var items = diagramData.AllDiagramItems.Where(p => p.GetType() == generator.DiagramItemType);
+                    var items = diagramData.LocalNodes.Where(p => p.GetType() == generator.DiagramItemType);
 
                     foreach (var item in items)
                     {
@@ -307,9 +307,9 @@ namespace Invert.uFrame.Editor
         private static void InitializeContainer(uFrameContainer container)
         {
             // Repositories
-            container.RegisterInstance<IElementsDataRepository>(new DefaultElementsRepository(), ".asset");
+            //container.RegisterInstance<IElementsDataRepository>(new DefaultElementsRepository(), ".asset");
 
-            container.RegisterInstance<IElementsDataRepository>(new JsonRepository(), ".json");
+            container.RegisterInstance<IElementsDataRepository>(new JsonRepository());
 
             //// 2.0 stuff
             //container.RegisterInstance<ElementDesignerViewModel>(new ElementDesignerViewModel());
@@ -365,7 +365,6 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IDiagramContextCommand>(new AddNewViewCommand(), "AddNewViewCommand");
             container.RegisterInstance<IDiagramContextCommand>(new AddNewViewComponentCommand(), "AddNewViewComponentCommand");
             container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
-            container.RegisterInstance<IDiagramContextCommand>(new AddReferenceCommand(), "AddReference");
 
             // For node context menu
             container.RegisterInstance<IDiagramNodeCommand>(new OpenCommand(), "OpenCode");
@@ -389,6 +388,7 @@ namespace Invert.uFrame.Editor
 
             // Drawers
             RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
+            RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
 
             RegisterGraphItem<SceneManagerData,SceneManagerViewModel,SceneManagerDrawer>();
             RegisterGraphItem<SubSystemData,SubSystemViewModel,SubSystemDrawer>();
@@ -404,7 +404,7 @@ namespace Invert.uFrame.Editor
             //RegisterGraphItem<EnumData,EnumItemViewModel,EnumItemDrawer>();
 
             container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritance");
-
+            container.RegisterInstance<IUFrameTypeProvider>(new uFrameStringTypeProvider());
             
 
 #if DEBUG
@@ -420,22 +420,20 @@ namespace Invert.uFrame.Editor
             container.InjectAll();
             foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority))
             {
-                //#if DEBUG
-                //                Debug.Log("Loaded Plugin: " + diagramPlugin);
-                //#endif
                 if (diagramPlugin.Enabled)
                     diagramPlugin.Initialize(Container);
             }
+
             ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
             KeyBindings = Container.ResolveAll<IKeyBinding>().ToArray();
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
             uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
-#if DEBUG
-            Debug.Log(uFrameTypes.ToString());
-#endif
-            uFrameTypes = new uFrameStringTypeProvider();
+            Repository = Container.Resolve<IElementsDataRepository>();
+            uFrameTypes = container.Resolve<IUFrameTypeProvider>();
+
         }
 
+        public static IElementsDataRepository Repository { get; set; }
         public static IConnectionStrategy[] ConnectionStrategies { get; set; }
 
         public static void RegisterDrawer<TViewModel, TDrawer>()

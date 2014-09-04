@@ -42,7 +42,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
                 //Debug.Log("Created file: " + fileInfo.FullName);
 
             }
-            foreach (var allDiagramItem in diagram.Data.AllDiagramItems)
+            foreach (var allDiagramItem in diagram.Data.LocalNodes)
             {
                 allDiagramItem.IsNewNode = false;
             }
@@ -78,8 +78,8 @@ namespace Invert.uFrame.Editor.ElementDesigner
         public void RefactorApplied(IElementDesignerData data)
         {
             data.RefactorCount = 0;
-            var refactorables = data.AllDiagramItems.OfType<IRefactorable>()
-                .Concat(data.AllDiagramItems.SelectMany(p => p.Items).OfType<IRefactorable>());
+            var refactorables = data.LocalNodes.OfType<IRefactorable>()
+                .Concat(data.LocalNodes.SelectMany(p => p.Items).OfType<IRefactorable>());
             foreach (var refactorable in refactorables)
             {
                 refactorable.RefactorApplied();

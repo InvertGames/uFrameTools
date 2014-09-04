@@ -25,50 +25,7 @@ public class UFrameAssetManager : AssetPostprocessor
         uFrameEditor.Container.Resolve<IElementsDataRepository>(".json").CreateNewDiagram();
     }
 
-    private static List<IElementDesignerData> _diagrams;
 
-    public static IAssemblyNameProvider AssemblyNameProvider { get; set; }
-    private static string _designerVMAssemblyName = null;
-    private static string[] _diagramNames;
-
-    public static string DesignerVMAssemblyName
-    {
-        get
-        {
-            return VM_ASSEMBLY_NAME;
-            //if (AssemblyNameProvider == null)
-            //{
-            //    return VM_ASSEMBLY_NAME;
-            //}
-            //return _designerVMAssemblyName ?? (_designerVMAssemblyName = AssemblyNameProvider.AssemblyName.Replace("AssemblyNameProvider", "ViewModel"));
-        }
-    }
-
-    public static string[] DiagramNames
-    {
-        get
-        {
-            if (_diagramNames == null)
-            {
-                Refresh();
-            }
-            return _diagramNames;
-        }
-        set { _diagramNames = value; }
-    }
-
-    public static List<IElementDesignerData> Diagrams
-    {
-        get
-        {
-            if (_diagrams == null)
-            {
-                Refresh();
-            }
-            return _diagrams;
-        }
-        set { _diagrams = value; }
-    }
 
 
     static UFrameAssetManager()
@@ -109,47 +66,13 @@ public class UFrameAssetManager : AssetPostprocessor
         String[] movedAssets,
         String[] movedFromAssetPaths)
     {
-        var yes = false;
 
-
-        foreach (var str in importedAssets)
-        {
-            yes = str.EndsWith(".asset");
-            var name = Path.GetFileNameWithoutExtension(str);
-            if (DiagramNames.Any(p => p.ToUpper() == name.ToUpper()))
-            {
-                yes = false;
-            }
-
-
-        }
-
-
-        if (!yes)
-            foreach (var str in deletedAssets)
-                if (str.EndsWith(".asset"))
-                    yes = true;
-        //if (!yes)
-        //    for (var i = 0; i < movedAssets.Length; i++)
-        //        if (movedAssets[i].EndsWith(".asset") || movedAssets[i].EndsWith(".prefab"))
-        //            yes = true;
-
-        if (yes)
-        {
-            Refresh();
-        }
     }
 
 
 
     private static void Refresh()
     {
-        var repos = uFrameEditor.Container.ResolveAll<IElementsDataRepository>().OfType<DefaultElementsRepository>();
 
-        Diagrams = repos.SelectMany(p => p.GetAssets()).OfType<IElementDesignerData>().ToList();
-#if DEBUG
-        Debug.Log(string.Join(Environment.NewLine, Diagrams.Select(p=>p.Name + ":" + p.Identifier).ToArray()));
-#endif
-        DiagramNames = Diagrams.Select(p => p.Name).ToArray();
     }
 }

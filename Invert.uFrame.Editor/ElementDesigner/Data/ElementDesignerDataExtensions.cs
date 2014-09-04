@@ -5,14 +5,12 @@ using Invert.uFrame.Editor.Refactoring;
 
 public static class ElementDesignerDataExtensions
 {
-    public static IEnumerable<IDiagramNode> GetImportableItems(this IElementDesignerData t)
+    public static IEnumerable<IDiagramNode> GetImportableItems(this IElementsDataRepository t, IDiagramFilter filter)
     {
-        //return AllowedDiagramItems;
         return
-            t.GetAllowedDiagramItems()
-                .Where(p => !t.CurrentFilter.Locations.Keys.Contains(p.Identifier))
+            t.GetAllowedDiagramItems(filter)
+                .Where(p => !filter.Locations.Keys.Contains(p.Identifier))
                 .ToArray();
-        //return items.Where(p => !Filters.Any(x => x.Locations.Keys.Contains(p.Identifier)));
     }
     public static IEnumerable<ElementData> GetAllElements(this IElementDesignerData t)
     {
@@ -20,20 +18,20 @@ public static class ElementDesignerDataExtensions
         {
             throw new Exception("Designer data can't be null.");
         }
-        if (t.AllDiagramItems == null)
+        if (t.LocalNodes == null)
         {
             throw new Exception("All diagram items is null.");
         }
-        return t.AllDiagramItems.OfType<ElementData>();
+        return t.LocalNodes.OfType<ElementData>();
     }
 
-    public static IEnumerable<IDiagramNode> GetAllowedDiagramItems(this IElementDesignerData t)
+    public static IEnumerable<IDiagramNode> GetAllowedDiagramItems(this IElementsDataRepository t, IDiagramFilter filter)
     {
-        return t.AllDiagramItems.Where(p => t.CurrentFilter.IsAllowed(p, p.GetType()));
+        return t.AllNodes.Where(p => filter.IsAllowed(p, p.GetType()));
     }
-    public static IEnumerable<IDiagramNode> GetDiagramItems(this IElementDesignerData t)
+    public static IEnumerable<IDiagramNode> GetDiagramItems(this IElementsDataRepository t, IDiagramFilter filter)
     {
-        return t.FilterItems(t.AllDiagramItems);
+        return filter.FilterItems(t.AllNodes);
     }
 
     //public static IEnumerable<ElementDataBase> GetElements(this IElementDesignerData t)
@@ -48,50 +46,51 @@ public static class ElementDesignerDataExtensions
 
     public static IEnumerable<IDiagramFilter> GetFilters(this IElementDesignerData t)
     {
-        return t.AllDiagramItems.OfType<IDiagramFilter>();
+        return t.LocalNodes.OfType<IDiagramFilter>();
     }
+
     public static IEnumerable<SceneManagerData> GetSceneManagers(this IElementDesignerData t)
     {
-        return t.AllDiagramItems.OfType<SceneManagerData>();
+        return t.LocalNodes.OfType<SceneManagerData>();
     }
 
     public static IEnumerable<ISubSystemData> GetSubSystems(this IElementDesignerData t)
     {
-        return t.AllDiagramItems.OfType<ISubSystemData>();
+        return t.LocalNodes.OfType<ISubSystemData>();
     }
 
     public static IEnumerable<ViewComponentData> GetViewComponents(this IElementDesignerData t)
     {
-        return t.AllDiagramItems.OfType<ViewComponentData>();
+        return t.LocalNodes.OfType<ViewComponentData>();
     }
 
     public static IEnumerable<ElementData> GetElements(this IElementDesignerData t)
     {
-        return t.AllDiagramItems.OfType<ElementData>();
+        return t.LocalNodes.OfType<ElementData>();
     }
 
     public static IEnumerable<ViewData> GetViews(this IElementDesignerData t)
     {
-        return t.AllDiagramItems.OfType<ViewData>();
+        return t.LocalNodes.OfType<ViewData>();
     }
 
     public static IEnumerable<EnumData> GetEnums(this IElementDesignerData t)
     {
-        return t.AllDiagramItems.OfType<EnumData>();
+        return t.LocalNodes.OfType<EnumData>();
     }
 
     public static List<Refactorer> GetRefactorings(this IElementDesignerData data)
     {
         return
-            data.AllDiagramItems.OfType<IRefactorable>()
+            data.LocalNodes.OfType<IRefactorable>()
                 .SelectMany(p => p.Refactorings)
-                .Concat(data.AllDiagramItems.SelectMany(p => p.Items).OfType<IRefactorable>().SelectMany(p => p.Refactorings))
+                .Concat(data.LocalNodes.SelectMany(p => p.Items).OfType<IRefactorable>().SelectMany(p => p.Refactorings))
                 .ToList();
     }
     public static void Prepare(this IElementDesignerData designerData)
     {
         designerData.RefactorCount = 0;
-        foreach (var allDiagramItem in designerData.AllDiagramItems)
+        foreach (var allDiagramItem in designerData.LocalNodes)
         {
             allDiagramItem.Data = designerData;
         }
@@ -99,7 +98,7 @@ public static class ElementDesignerDataExtensions
     }
     public static IEnumerable<IDiagramNode> FilterItems(this IElementDesignerData designerData, IEnumerable<IDiagramNode> allDiagramItems)
     {
-        return designerData.FilterItems(designerData.CurrentFilter, allDiagramItems);
+        return designerData.CurrentFilter.FilterItems(allDiagramItems);
     }   
     public static void FilterLeave(this IElementDesignerData data)
     {
@@ -119,7 +118,7 @@ public static class ElementDesignerDataExtensions
 
     public static void CleanUpFilters(this IElementDesignerData designerData)
     {
-        var diagramItems = designerData.AllDiagramItems.Select(p => p.Identifier);
+        var diagramItems = designerData.LocalNodes.Select(p => p.Identifier);
 
         foreach (var diagramFilter in designerData.GetFilters())
         {
@@ -136,7 +135,7 @@ public static class ElementDesignerDataExtensions
     {
         var tempName = name;
         var index = 1;
-        while (designerData.AllDiagramItems.Any(p => p.Name.ToUpper() == tempName.ToUpper()))
+        while (designerData.LocalNodes.Any(p => p.Name.ToUpper() == tempName.ToUpper()))
         {
             tempName = name + index;
             index++;
@@ -144,7 +143,7 @@ public static class ElementDesignerDataExtensions
         return tempName;
     }
 
-    public static IEnumerable<IDiagramNode> FilterItems(this IElementDesignerData designerData,IDiagramFilter filter, IEnumerable<IDiagramNode> allDiagramItems)
+    public static IEnumerable<IDiagramNode> FilterItems(this IDiagramFilter filter, IEnumerable<IDiagramNode> allDiagramItems)
     {
         
         foreach (var item in allDiagramItems)
@@ -222,33 +221,33 @@ public static class ElementDesignerDataExtensions
 
     public static void UpdateLinks(this IElementDesignerData designerData)
     {
-        designerData.CleanUpFilters();
-        designerData.Links.Clear();
+        //designerData.CleanUpFilters();
+        //designerData.Links.Clear();
 
-        var items = designerData.GetDiagramItems().SelectMany(p => p.Items).Where(p => designerData.CurrentFilter.IsItemAllowed(p, p.GetType())).ToArray();
-        var diagramItems = designerData.GetDiagramItems().ToArray();
-        foreach (var item in items)
-        {
-            designerData.Links.AddRange(item.GetLinks(diagramItems));
-        }
+        //var items = designerData.GetDiagramItems().SelectMany(p => p.Items).Where(p => designerData.CurrentFilter.IsItemAllowed(p, p.GetType())).ToArray();
+        //var diagramItems = designerData.GetDiagramItems().ToArray();
+        //foreach (var item in items)
+        //{
+        //    designerData.Links.AddRange(item.GetLinks(diagramItems));
+        //}
 
-        var diagramFilter = designerData.CurrentFilter as IDiagramNode;
-        if (diagramFilter != null)
-        {
-            var diagramFilterItems = diagramFilter.Items.OfType<IDiagramNode>().ToArray();
-            foreach (var diagramItem in diagramItems)
-            {
-                designerData.Links.AddRange(diagramItem.GetLinks(diagramFilterItems));
-            }
-        }
+        //var diagramFilter = designerData.CurrentFilter as IDiagramNode;
+        //if (diagramFilter != null)
+        //{
+        //    var diagramFilterItems = diagramFilter.Items.OfType<IDiagramNode>().ToArray();
+        //    foreach (var diagramItem in diagramItems)
+        //    {
+        //        designerData.Links.AddRange(diagramItem.GetLinks(diagramFilterItems));
+        //    }
+        //}
 
-        var models = designerData.GetDiagramItems().ToArray();
+        //var models = designerData.GetDiagramItems().ToArray();
 
-        foreach (var viewModelData in models)
-        {
-            //viewModelData.Filter = CurrentFilter;
-            designerData.Links.AddRange(viewModelData.GetLinks(diagramItems));
-        }
+        //foreach (var viewModelData in models)
+        //{
+        //    //viewModelData.Filter = CurrentFilter;
+        //    designerData.Links.AddRange(viewModelData.GetLinks(diagramItems));
+        //}
     }
     public static IEnumerable<ElementDataBase> GetAssociatedElementsInternal(this IElementDesignerData designerData, ElementDataBase data)
     {
@@ -267,9 +266,9 @@ public static class ElementDesignerDataExtensions
             }
         }
     }
-    public static IEnumerable<IDiagramNode> FilterItems(this IElementDesignerData designerData, IDiagramFilter filter)
+    public static IEnumerable<IDiagramNode> FilterItems(this IElementsDataRepository designerData, IDiagramFilter filter)
     {
-        return FilterItems(designerData, filter, designerData.AllDiagramItems);
+        return filter.FilterItems(designerData.AllNodes);
     }
 
     public static IEnumerable<IViewModelItem> GetAllBaseItems(this IElementDesignerData designerData, ElementDataBase data)
@@ -296,7 +295,7 @@ public static class ElementDesignerDataExtensions
 
     public static IDiagramNode RelatedNode(this IViewModelItem item)
     {
-        return item.Node.Data.AllDiagramItems.FirstOrDefault(p=>p.Name == item.RelatedTypeName);
+        return item.Node.Data.LocalNodes.FirstOrDefault(p => p.Name == item.RelatedTypeName);
     }
     public static ElementDataBase GetElement(this IElementDesignerData designerData, IViewModelItem item)
     {
@@ -308,16 +307,16 @@ public static class ElementDesignerDataExtensions
         return designerData.GetAllElements().FirstOrDefault(p =>p!=null && p.Name == item.RelatedTypeName);
     }
 
-    public static IEnumerable<IDiagramFilter> GetFilters(this IElementDesignerData designerData, IDiagramFilter filter)
-    {
-        //yield return DefaultFilter;
-        //yield return SceneFlowFilter;
+    //public static IEnumerable<IDiagramFilter> GetFilters(this IElementDesignerData designerData, IDiagramFilter filter)
+    //{
+    //    //yield return DefaultFilter;
+    //    //yield return SceneFlowFilter;
 
-        foreach (var allDiagramItem in designerData.FilterItems(filter).OfType<IDiagramFilter>())
-        {
-            yield return allDiagramItem;
-        }
-    }
+    //    foreach (var allDiagramItem in designerData.FilterItems(filter).OfType<IDiagramFilter>())
+    //    {
+    //        yield return allDiagramItem;
+    //    }
+    //}
 
     //public static string GetUniqueName(this IElementDesignerData designerData, string name)
     //{

@@ -289,6 +289,11 @@ namespace Invert.uFrame.Editor
                 GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
                 GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
                 GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
+                if (DiagramDrawer != null)
+                {
+                    
+                    GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
+                }
                 GUILayout.EndArea();
 #endif
                 //EndGUI();
@@ -395,34 +400,48 @@ namespace Invert.uFrame.Editor
 
         public MouseEvent MouseEvent
         {
-            get { return _mouseEvent ?? (_mouseEvent = new MouseEvent(ModifierKeyStates)); }
+            get { return _mouseEvent ?? (_mouseEvent = new MouseEvent(ModifierKeyStates,DiagramDrawer)); }
             set { _mouseEvent = value; }
         }
 
         private Vector2 _mousePosition;
 
+        
         public void HandleInput()
         {
             if (DiagramDrawer == null) return;
-            var e = Event.current;
-            if (e == null) return;
 
-            MouseEvent.MousePositionDelta = e.mousePosition - _mousePosition;
+            var e = Event.current;
+            if (e == null)
+            {
+                Debug.Log("Event is null");
+                return;
+            }
+            var handler = MouseEvent.CurrentHandler;
+
+         
             if (e.type == EventType.MouseDown)
             {
                 MouseEvent.MouseDownPosition = MouseEvent.MousePosition;
                 MouseEvent.IsMouseDown = true;
-                DiagramDrawer.OnMouseDown(MouseEvent);
+                MouseEvent.MouseButton = e.button;
+                handler.OnMouseDown(MouseEvent);
+                if (e.button == 1)
+                {
+                    handler.OnRightClick(MouseEvent);
+                }
+ 
                 if (e.clickCount > 1)
                 {
-                    DiagramDrawer.OnMouseDoubleClick(MouseEvent);
+                    handler.OnMouseDoubleClick(MouseEvent);
                }
+                LastMouseDownEvent = e;
             }
-            else if (e.type == EventType.MouseUp)
+            if (e.rawType == EventType.MouseUp)
             {
                 MouseEvent.MouseUpPosition = MouseEvent.MousePosition;
                 MouseEvent.IsMouseDown = false;
-                DiagramDrawer.OnMouseUp(MouseEvent);
+                handler.OnMouseUp(MouseEvent);
             }
             else
             {
@@ -431,10 +450,10 @@ namespace Invert.uFrame.Editor
                 MouseEvent.MousePosition = mp;
                 MouseEvent.MousePositionDelta = MouseEvent.MousePosition - MouseEvent.LastMousePosition;
 
-                DiagramDrawer.OnMouseMove(MouseEvent);
+                handler.OnMouseMove(MouseEvent);
                 MouseEvent.LastMousePosition = mp;
             }
-            _mousePosition = e.mousePosition;
+          
         }
 
         //public void HandleInput()
@@ -568,7 +587,8 @@ namespace Invert.uFrame.Editor
                 //Undo.undoRedoPerformed = UndoRedoPerformed;
                 Undo.undoRedoPerformed += UndoRedoPerformed;
                 //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
-                DiagramDrawer = new ElementsDiagram(new DiagramViewModel(path));
+                DiagramDrawer = new ElementsDiagram(new DiagramViewModel(path, uFrameEditor.Repository));
+                MouseEvent = new MouseEvent(ModifierKeyStates,DiagramDrawer);
                 //Diagram.SelectionChanged += DiagramOnSelectionChanged;
                 LastLoadedDiagram = path;
                 DiagramDrawer.Dirty = true;
@@ -610,9 +630,9 @@ namespace Invert.uFrame.Editor
 
         private void SelectDiagram()
         {
-            var repositories = uFrameEditor.Container.ResolveAll<IElementsDataRepository>().ToArray();
-            var diagramNames = repositories.SelectMany(p => p.GetProjectDiagrams().Keys).ToArray();
-            var diagramPaths = repositories.SelectMany(p => p.GetProjectDiagrams().Values).ToArray();
+            var projectDiagrams = uFrameEditor.Repository.GetProjectDiagrams();
+            var diagramNames = projectDiagrams.Keys.ToArray();
+            var diagramPaths = projectDiagrams.Values.ToArray();
 
 
             var menu = new GenericMenu();
@@ -647,7 +667,7 @@ namespace Invert.uFrame.Editor
         }
 
         public Event LastEvent { get; set; }
-
+        public Event LastMouseDownEvent { get; set; }
         public void CommandExecuted(IEditorCommand command)
         {
             if (DiagramDrawer != null)
@@ -666,11 +686,40 @@ namespace Invert.uFrame.Editor
 
 public class MouseEvent
 {
+    private Stack<IInputHandler> _inputHandlers;
     public ModifierKeyState ModifierKeyStates { get; set; }
 
-    public MouseEvent(ModifierKeyState modifierKeyStates)
+    public MouseEvent(ModifierKeyState modifierKeyStates,IInputHandler defaultHandler)
     {
         ModifierKeyStates = modifierKeyStates;
+        DefaultHandler = defaultHandler;
+    }
+
+    public void Begin(IInputHandler handler)
+    {
+        if (handler != null)
+        {
+            InputHandlers.Push(handler);
+        }
+    }
+    public void Cancel()
+    {
+        if (this.InputHandlers.Count > 0)
+            this.InputHandlers.Pop();
+    }
+    public IInputHandler CurrentHandler
+    {
+        get
+        {
+            if (InputHandlers.Count < 1)
+                return DefaultHandler;
+            return InputHandlers.Peek();
+        }
+    }
+    public Stack<IInputHandler> InputHandlers
+    {
+        get { return _inputHandlers ?? (_inputHandlers = new Stack<IInputHandler>()); }
+        set { _inputHandlers = value; }
     }
 
     public Vector2 MousePosition { get; set; }
@@ -679,6 +728,9 @@ public class MouseEvent
     public Vector2 MouseDownPosition { get; set; }
     public Vector2 MouseUpPosition { get; set; }
     public Vector2 MousePositionDelta { get; set; }
+
+    public IInputHandler DefaultHandler { get; set; }
+    public int MouseButton { get; set; }
 }
 
 public class ModifierKeyState

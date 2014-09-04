@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Invert.uFrame.Editor;
 using Microsoft.SqlServer.Server;
 using UnityEditor;
 using UnityEngine;
@@ -10,43 +12,39 @@ public class JsonRepository : DefaultElementsRepository
     {
         get { return typeof (JsonElementDesignerData); }
     }
+
     public override void CreateNewDiagram()
     {
-        UFrameAssetManager.CreateAsset<JsonElementDesignerData>();
+        _diagrams.Add(UFrameAssetManager.CreateAsset<JsonElementDesignerData>());
     }
-    //public IElementDesignerData LoadDiagram(string path)
-    //{
-    //    if (string.IsNullOrEmpty(path)) throw new NullReferenceException("Path can't be null.");
-    //    var asset = AssetDatabase.LoadAssetAtPath(path, RepositoryFor) as JsonElementDesignerData;
-    //    if (asset == null)
-    //    {
-    //        return null;
-    //    }
-    //    return asset;
-    //}
 
-    //public void SaveDiagram(IElementDesignerData data)
-    //{
-    //    throw new NotImplementedException();
-    //}
 
-    //public void RecordUndo(IElementDesignerData data, string title)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    protected override void Refresh()
+    {
+        Diagrams = GetAssets().OfType<JsonElementDesignerData>().ToList();
 
-    //public void MarkDirty(IElementDesignerData data)
-    //{
-    //    throw new NotImplementedException();
-    //}
+        foreach (var diagram in Diagrams)
+        {
+            diagram.Prepare();
+        }
+#if DEBUG
+        Debug.Log(string.Join(Environment.NewLine, Diagrams.Select(p => p.Name + ":" + p.Identifier).ToArray()));
+#endif
+        DiagramNames = Diagrams.Select(p => p.Name).ToArray();
+    }
 
-    //public Dictionary<string, string> GetProjectDiagrams()
-    //{
-    //    throw new NotImplementedException();
-    //}
+    public override IEnumerable<IDiagramNode> AllNodes
+    {
+        get
+        {
+            foreach (var item in Diagrams)
+            {
+                foreach (var node in item.LocalNodes)
+                {
+                    yield return node;
+                }
+            }
+        }
+    }
 
-    //public void CreateNewDiagram()
-    //{
-    //    throw new NotImplementedException();
-    //}
 }

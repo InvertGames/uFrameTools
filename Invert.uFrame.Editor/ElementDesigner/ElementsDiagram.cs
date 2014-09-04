@@ -10,7 +10,17 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class ElementsDiagram : Drawer, ICommandHandler
+public interface IInputHandler
+{
+    void OnMouseDoubleClick(MouseEvent mouseEvent);
+    void OnMouseDown(MouseEvent mouseEvent);
+    void OnMouseMove(MouseEvent e);
+    void OnMouseUp(MouseEvent mouseEvent);
+    void OnRightClick(MouseEvent mouseEvent);
+}
+
+
+public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
 {
     public delegate void SelectionChangedEventArgs(IDiagramNode oldData, IDiagramNode newData);
 
@@ -20,6 +30,7 @@ public class ElementsDiagram : Drawer, ICommandHandler
 
     private Event _currentEvent;
     private IDrawer _nodeDrawerAtMouse;
+    private SelectionRectHandler _selectionRectHandler;
 
     public static float Scale
     {
@@ -30,51 +41,25 @@ public class ElementsDiagram : Drawer, ICommandHandler
     {
         get
         {
-            yield return this;
 
-            //yield return SelectedItem;
-            //var selectedItem = SelectedItem;
-            //if (selectedItem != null)
-            //{
-            //    yield return selectedItem;
-            //}
-            //else
-            //{
-            //    //if (CurrentMousePosition == null)
+          
 
-            //}
-            //if (Data != null)
-            //{
-            //    yield return Data;
-            //}
-            yield return DiagramViewModel;
-            foreach (var item in DiagramViewModel.GraphItems)
+       
+            if (CurrentMouseOverNode != null && !CurrentMouseOverNode.IsSelected)
             {
-                yield return item;
+                CurrentMouseOverNode.IsSelected = true;
+
             }
-            //var allSelected = AllSelected.ToArray();
-
-            //foreach (var diagramItem in allSelected)
-            //{
-            //    yield return diagramItem;
-            //    if (diagramItem.Data != null)
-            //    {
-            //        yield return diagramItem.Data;
-            //    }
-            //}
-            //if (allSelected.Length < 1)
-            //{
-            //    var mouseOverViewData = NodeDrawerAtMouse;
-            //    if (mouseOverViewData != null)
-            //    {
-            //        var mouseOverDataModel = NodeDrawerAtMouse.ViewModelObject;
-            //        if (mouseOverDataModel != null)
-            //        {
-            //            yield return mouseOverDataModel;
-            //        }
-            //    }
-
-            //}
+            if (DiagramViewModel != null)
+            {
+                yield return DiagramViewModel;
+                foreach (var item in DiagramViewModel.SelectedGraphItems)
+                {
+                    yield return item;
+                    
+                }    
+            }
+            
         }
     }
 
@@ -402,14 +387,15 @@ public class ElementsDiagram : Drawer, ICommandHandler
         if (selected == null)
         {
             DiagramViewModel.NothingSelected();
+
+            mouseEvent.Begin(SelectionRectHandler);
         }
         else
         {
-            // Keep up with the drag position offset
-            if (Event.current.button != 2)
+            if (selected is ConnectorDrawer && mouseEvent.MouseButton == 0)
             {
-                SelectionOffset = LastMouseDownPosition - new Vector2(selected.Bounds.x, selected.Bounds.y);
-                LastDragPosition = LastMouseDownPosition;
+                mouseEvent.Begin(new ConnectionHandler(DiagramViewModel,selected.ViewModelObject as ConnectorViewModel));
+                return;
             }
 
             DiagramViewModel.Select(selected.ViewModelObject);
@@ -420,7 +406,7 @@ public class ElementsDiagram : Drawer, ICommandHandler
     {
         base.OnMouseMove(e);
         
-        if (e.IsMouseDown)
+        if (e.IsMouseDown && e.MouseButton == 0)
         {
             foreach (var item in Children.OfType<DiagramNodeDrawer>())
             {
@@ -443,11 +429,23 @@ public class ElementsDiagram : Drawer, ICommandHandler
     public override void OnMouseUp(MouseEvent mouseEvent)
     {
 
-        //NodeDrawerAtMouse.OnMouseUp(mouseEvent);
-        if (CurrentEvent.button == 1)
+        
+    }
+
+    public override void OnRightClick(MouseEvent mouseEvent)
+    {
+        Debug.Log("RIGHT CLICKED");
+        if (DiagramViewModel.SelectedNodeItem != null)
         {
-            OnRightClick();
-            return;
+            ShowItemContextMenu(DiagramViewModel.SelectedNodeItem);
+        }
+        else if (DiagramViewModel.SelectedNode != null)
+        {
+            ShowContextMenu();
+        }
+        else
+        {
+            ShowAddNewContextMenu(true);
         }
     }
 
@@ -458,6 +456,7 @@ public class ElementsDiagram : Drawer, ICommandHandler
         if (DiagramViewModel == null) return;
         Children.Clear();
         DiagramViewModel.Load();
+        Children.Add(SelectionRectHandler);
         Dirty = true;
     }
 
@@ -484,17 +483,6 @@ public class ElementsDiagram : Drawer, ICommandHandler
         menu.Go();
     }
 
-    //        }
-    //    }
-    //    if (CurrentEvent.keyCode == KeyCode.F2)
-    //    {
-    //        if (DiagramViewModel.SelectedNode != null)
-    //        {
-    //            DiagramViewModel.SelectedNode.BeginEditing();
-    //            e.Use();
-    //        }
-    //    }
-    //}
     protected override void DataContextChanged()
     {
         base.DataContextChanged();
@@ -543,6 +531,12 @@ public class ElementsDiagram : Drawer, ICommandHandler
         }
     }
 
+    public SelectionRectHandler SelectionRectHandler
+    {
+        get { return _selectionRectHandler ?? (_selectionRectHandler = new SelectionRectHandler(DiagramViewModel)); }
+        set { _selectionRectHandler = value; }
+    }
+
     //    if (CurrentEvent.keyCode == KeyCode.Return)
     //    {
     //        if (DiagramViewModel.SelectedNode != null && DiagramViewModel.SelectedNode.IsEditing)
@@ -579,21 +573,6 @@ public class ElementsDiagram : Drawer, ICommandHandler
     //    //    OnMouseUp();
     //    //    e.Use();
     //    //}
-    private void OnRightClick()
-    {
-        if (DiagramViewModel.SelectedNodeItem != null)
-        {
-            ShowItemContextMenu(DiagramViewModel.SelectedNodeItem);
-        }
-        else if (DiagramViewModel.SelectedNode != null)
-        {
-            ShowContextMenu();
-        }
-        else
-        {
-            ShowAddNewContextMenu(true);
-        }
-    }
 
     private bool UpgradeOldProject()
     {
@@ -617,4 +596,228 @@ public class ElementsDiagram : Drawer, ICommandHandler
     //public void HandleInput()
     //{
     //    //var e = Event.current;
+}
+
+public class SelectionRectHandler : Drawer, IInputHandler
+{
+    public override int ZOrder
+    {
+        get { return 100; }
+    }
+
+    public DiagramViewModel ViewModel
+    {
+        get { return DataContext as DiagramViewModel; }
+        set { DataContext = value; }
+    }
+
+    public SelectionRectHandler(DiagramViewModel diagram)
+    {
+        ViewModel = diagram;
+    }
+
+    public override void OnMouseDoubleClick(MouseEvent mouseEvent)
+    {
+        mouseEvent.Cancel();
+    }
+
+    public void OnMouseDown(MouseEvent mouseEvent)
+    {
+        mouseEvent.Cancel();
+    }
+
+    public override void OnMouseMove(MouseEvent e)
+    {
+        if (e.IsMouseDown && e.MouseButton == 0)
+        SelectionRect = CreateSelectionRect(e.MouseDownPosition, e.MousePosition);
+    }
+
+    public Rect SelectionRect { get; set; }
+
+    public static Rect CreateSelectionRect(Vector2 start, Vector2 current)
+    {
+        if (current.x > start.x)
+        {
+            if (current.y > start.y)
+            {
+                return new Rect(start.x, start.y,
+                    current.x - start.x, current.y - start.y);
+            }
+            else
+            {
+                return new Rect(
+                    start.x, current.y, current.x - start.x, start.y - current.y);
+            }
+        }
+        else
+        {
+            if (current.y > start.y)
+            {
+                // x is less and y is greater
+                return new Rect(
+                    current.x, start.y, start.x - current.x, current.y - start.y);
+            }
+            else
+            {
+                // both are less
+                return new Rect(
+                    current.x, current.y, start.x - current.x, start.y - current.y);
+            }
+        }
+    }
+
+    public override void OnMouseUp(MouseEvent mouseEvent)
+    {
+        SelectionRect = new Rect(0f,0f,0f,0f);
+        mouseEvent.Cancel();
+    }
+
+
+
+
+    public override void Draw(float scale)
+    {
+        base.Draw(scale);
+        if (ViewModel == null) return;
+        if (ViewModel.GraphItems == null) return;
+        if (SelectionRect.width > 20 && SelectionRect.height > 20)
+        {
+            foreach (var item in ViewModel.GraphItems.OfType<DiagramNodeViewModel>())
+            {
+                item.IsSelected = SelectionRect.Scale(scale).Overlaps(item.Bounds.Scale(scale));
+            }
+            ElementDesignerStyles.DrawExpandableBox(SelectionRect.Scale(scale), ElementDesignerStyles.BoxHighlighter4, string.Empty);
+        }
+    }
+}
+
+public class DiagramInputHander : IInputHandler
+{
+    public GraphItemViewModel ViewModelAtMouse { get; set; }
+    public DiagramViewModel ViewModel { get; set; }
+
+    public DiagramInputHander(DiagramViewModel viewModel)
+    {
+        ViewModel = viewModel;
+    }
+
+    public virtual void OnMouseDoubleClick(MouseEvent e)
+    {
+        
+    }
+
+    public virtual void OnMouseDown(MouseEvent e)
+    {
+        
+    }
+
+    public virtual void OnMouseMove(MouseEvent e)
+    {
+        ViewModelAtMouse = ViewModel.GraphItems.FirstOrDefault(p => p.Bounds.Contains(e.MousePosition));
+
+
+    }
+
+    public virtual void OnMouseUp(MouseEvent e)
+    {
+        
+    }
+
+    public void OnRightClick(MouseEvent mouseEvent)
+    {
+        
+    }
+}
+public class ConnectionHandler : DiagramInputHander
+{
+    public ConnectorViewModel StartConnector { get; set; }
+    public ConnectionViewModel CurrentConnection { get; set; }
+
+    public ConnectionHandler(DiagramViewModel viewModel, ConnectorViewModel startConnector) : base(viewModel)
+    {
+        StartConnector = startConnector;
+    }
+
+
+    public override void OnMouseDown(MouseEvent mouseEvent)
+    {
+        mouseEvent.Cancel();
+    }
+
+    public override void OnMouseMove(MouseEvent e)
+    {
+        base.OnMouseMove(e);
+        var _startPos = StartConnector.Bounds.center;
+
+        var _endPos = e.MousePosition;
+
+        var endViewModel = ViewModelAtMouse as ConnectorViewModel;
+        var color = Color.green;
+        if (endViewModel == null)
+        {
+            var nodeAtMouse = ViewModelAtMouse as DiagramNodeViewModel;
+            if (nodeAtMouse != null)
+            {
+                // Try and find a default connector
+                endViewModel = nodeAtMouse.Connectors.FirstOrDefault(p => p.Strategy.Connect(StartConnector, p) != null);
+
+                if (endViewModel != null)
+                {
+                    // Grab the default connector
+                    var adjustedBounds = new Rect(nodeAtMouse.Bounds.x - 9, nodeAtMouse.Bounds.y + 1, nodeAtMouse.Bounds.width + 19, nodeAtMouse.Bounds.height + 9);
+                    ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(ElementDesignerStyles.Scale), ElementDesignerStyles.NodeBackground, string.Empty, 20);    
+                }
+                
+                
+
+            }
+
+        }
+        if (endViewModel != null)
+        {
+            
+            CurrentConnection = endViewModel.Strategy.Connect(StartConnector, endViewModel);
+
+            if (CurrentConnection == null)
+            {
+                color = Color.red;
+            }
+            else
+            {
+                _endPos = endViewModel.Bounds.center;
+
+            }
+        }
+
+        var _startRight = StartConnector.Direction == ConnectorDirection.Output;
+        var _endRight = false;
+
+        var startTan = _startPos + (_endRight ? -Vector2.right * 3 : Vector2.right * 3) * 30;
+
+        var endTan = _endPos + (_startRight ? -Vector2.right * 3 : Vector2.right * 3) * 30;
+
+        var shadowCol = new Color(0, 0, 0, 0.1f);
+
+        for (int i = 0; i < 3; i++) // Draw a shadow
+            UnityEditor.Handles.DrawBezier(_startPos * ElementDesignerStyles.Scale, _endPos * ElementDesignerStyles.Scale, startTan * ElementDesignerStyles.Scale, endTan * ElementDesignerStyles.Scale, shadowCol, null, (i + 1) * 5);
+
+        UnityEditor.Handles.DrawBezier(_startPos * ElementDesignerStyles.Scale, _endPos * ElementDesignerStyles.Scale, startTan * ElementDesignerStyles.Scale, endTan * ElementDesignerStyles.Scale, color, null, 3);
+        
+    }
+
+    public override void OnMouseUp(MouseEvent e)
+    {
+        base.OnMouseUp(e);
+        if (CurrentConnection != null)
+        {
+            uFrameEditor.ExecuteCommand((v) =>
+            {
+                CurrentConnection.Apply(CurrentConnection);
+            });
+            
+            
+        }
+        e.Cancel();
+    }
+
 }

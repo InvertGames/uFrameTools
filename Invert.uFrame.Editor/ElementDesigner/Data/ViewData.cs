@@ -118,7 +118,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public override string AssemblyQualifiedName
     {
-        get { return UFrameAssetManager.DesignerVMAssemblyName.Replace("ViewModel", NameAsView); }
+        get { return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsView); }
     }
     public override IEnumerable<Refactorer> Refactorings
     {
@@ -219,7 +219,7 @@ public class ViewData : DiagramNode, ISubSystemType
     {
         get
         {
-            return UFrameAssetManager.DesignerVMAssemblyName.Replace("ViewModel", NameAsView);
+            return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsView);
         }
     }
 
@@ -230,7 +230,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public IDiagramNode BaseNode
     {
-        get { return Data.AllDiagramItems.FirstOrDefault(p => p.AssemblyQualifiedName == ForAssemblyQualifiedName); }
+        get { return Data.LocalNodes.FirstOrDefault(p => p.AssemblyQualifiedName == ForAssemblyQualifiedName); }
     }
 
     public ElementData ViewForElement

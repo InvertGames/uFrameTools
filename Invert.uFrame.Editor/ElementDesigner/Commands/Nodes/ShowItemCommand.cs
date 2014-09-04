@@ -15,7 +15,8 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
         public override string CanPerform(DiagramViewModel node)
         {
-            if (node == null) return "Designer Data must not be null";
+            Debug.Log("Checking ShowItemCommand");
+            //if (node == null) return "Designer Data must not be null";
             return null;
         }
 
@@ -29,6 +30,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
         public IEnumerable<UFContextMenuItem> GetOptions(object item)
         {
+            Debug.Log("GET OPTIONS CALLED ON SHOW ITEM");
             var designerData = item as DiagramViewModel;
             foreach (var importable in designerData.GetImportableItems())
             {

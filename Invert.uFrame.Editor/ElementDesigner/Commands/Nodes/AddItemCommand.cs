@@ -11,7 +11,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             var node = item as DiagramViewModel;
             if (node == null) return;
 
-            var data = node.Data.AllDiagramItems.LastOrDefault();
+            var data = node.Data.LocalNodes.LastOrDefault();
        
             if (data == null) return;
             data.BeginEditing();

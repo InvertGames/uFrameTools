@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.uFrame.Editor;
 using UnityEngine;
 
 public abstract class ElementDataBase : DiagramNode, ISubSystemType
@@ -48,7 +49,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         {
             if (string.IsNullOrEmpty(BaseTypeName))
             {
-                return UFrameAssetManager.DesignerVMAssemblyName.Split(',').FirstOrDefault();
+                return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Split(',').FirstOrDefault();
             }
             return BaseTypeName.Split(',').FirstOrDefault();
         }
@@ -64,9 +65,9 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         {
             if (IsDerived)
             {
-                return Type.GetType(UFrameAssetManager.DesignerVMAssemblyName.Replace("ViewModel", BaseTypeShortName.Replace("ViewModel", "") + "ControllerBase"));
+                return Type.GetType(uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", BaseTypeShortName.Replace("ViewModel", "") + "ControllerBase"));
             }
-            return Type.GetType(UFrameAssetManager.DesignerVMAssemblyName.Replace("ViewModel", Name.Replace("ViewModel", "") + "ControllerBase"));
+            return Type.GetType(uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name.Replace("ViewModel", "") + "ControllerBase"));
         }
     }
 
@@ -77,14 +78,14 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
 
     public Type ControllerType
     {
-        get { return Type.GetType(UFrameAssetManager.DesignerVMAssemblyName.Replace("ViewModel", Name.Replace("ViewModel", "") + "Controller")); }
+        get { return Type.GetType(uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name.Replace("ViewModel", "") + "Controller")); }
     }
 
     public Type CurrentViewModelType
     {
         get
         {
-            var name = UFrameAssetManager.DesignerVMAssemblyName.Replace("ViewModel", Name.Replace("ViewModel", "") + "ViewModel");
+            var name = uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name.Replace("ViewModel", "") + "ViewModel");
             return Type.GetType(name);
         }
     }
@@ -115,7 +116,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         get
         {
             return
-                Data.AllDiagramItems.OfType<ElementDataBase>()
+                Data.LocalNodes.OfType<ElementDataBase>()
                     .SelectMany(p => p.Collections)
                     .Any(p => p.RelatedTypeName == Name) || AllBaseTypes.Any(p => p.IsMultiInstance);
         }
@@ -219,7 +220,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
     {
         get
         {
-            return UFrameAssetManager.DesignerVMAssemblyName.Replace("ViewModel", NameAsViewModel);
+            return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsViewModel);
         }
     }
 

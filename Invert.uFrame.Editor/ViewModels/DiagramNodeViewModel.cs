@@ -29,6 +29,7 @@ namespace Invert.uFrame.Editor.ViewModels
         public abstract Vector2 Position { get; set; }
         public Rect Bounds { get; set; }
         private bool _isSelected = false;
+        private List<ConnectorViewModel> _connectors;
 
         public const string IsSelectedProperty = "IsSelected";
 
@@ -42,6 +43,12 @@ namespace Invert.uFrame.Editor.ViewModels
         }
 
         public bool IsMouseOver { get; set; }
+
+        public List<ConnectorViewModel> Connectors
+        {
+            get { return _connectors ?? (_connectors = new List<ConnectorViewModel>()); }
+            set { _connectors = value; }
+        }
 
         //public void GetConnectors(List<ConnectorViewModel> list)
         //{
@@ -57,7 +64,6 @@ namespace Invert.uFrame.Editor.ViewModels
         //        }
         //    }
         //}
-   
     }
     public class DiagramNodeViewModel<TData> : DiagramNodeViewModel where TData : IDiagramNode
     {
@@ -147,12 +153,12 @@ namespace Invert.uFrame.Editor.ViewModels
            
         }
 
-        public ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
+        public virtual ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
         {
             return null;
         }
 
-        public void GetConnections(List<ConnectionViewModel> connections, List<ConnectorViewModel> connectors)
+        public virtual void GetConnections(List<ConnectionViewModel> connections, List<ConnectorViewModel> connectors)
         {
             
         }
@@ -185,8 +191,63 @@ namespace Invert.uFrame.Editor.ViewModels
                 });
             }
         }
+
+        public override ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
+        {
+            if (a.ConnectorFor is ElementNodeViewModel && b.ConnectorFor is ElementNodeViewModel)
+            {
+                if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
+                {
+                    return new ConnectionViewModel()
+                    {
+                        ConnectorA = a,
+                        ConnectorB = b,
+                        Apply = Apply
+                    };
+                }
+                
+            }
+            return null;
+        }
+
+        public override void GetConnections(List<ConnectionViewModel> connections, List<ConnectorViewModel> connectors)
+        {
+            base.GetConnections(connections, connectors);
+            var outputs = connectors.Where(p => p.Direction == ConnectorDirection.Output).ToArray();
+            var inputs = connectors.Where(p => p.Direction == ConnectorDirection.Input).ToArray();
+            foreach (var output in outputs)
+            {
+                var outputElement = output.DataObject as ElementData;
+                if (outputElement == null) continue;
+
+                foreach (var input in inputs)
+                {
+                    var inputElement = input.DataObject as ElementData;
+                    if (inputElement == null) continue;
+                    if (inputElement.BaseTypeShortName == outputElement.Name)
+                    {
+                        connections.Add(new ConnectionViewModel()
+                        {
+                            ConnectorA = output,
+                            ConnectorB = input
+                        });
+                    }
+
+                }
+
+
+            }
+        }
+
+        private void Apply(ConnectionViewModel connectionViewModel)
+        {
+            var baseElement = connectionViewModel.ConnectorA.DataObject as ElementData;
+            var derivedEelement = connectionViewModel.ConnectorB.DataObject as ElementData;
+            if (baseElement != null)
+                baseElement.CreateLink(baseElement,derivedEelement);
+        }
     }
-    public class ConnectionViewModel
+    public class ConnectionViewModel : GraphItemViewModel
     {
         public ConnectorViewModel ConnectorA { get; set; }
         public ConnectorViewModel ConnectorB { get; set; }
@@ -195,6 +256,8 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public Action<ConnectionViewModel> Apply { get; set; }
         public Action<ConnectionViewModel> Remove { get; set; }
+
+        public override Vector2 Position { get; set; }
     }
 
     public class ItemViewModel<TData> : ItemViewModel
@@ -467,6 +530,11 @@ namespace Invert.uFrame.Editor.ViewModels
         public void Remove()
         {
             GraphItemObject.RemoveFromDiagram();
+        }
+
+        public void Hide()
+        {
+            DiagramViewModel.Data.CurrentFilter.Locations.Remove(GraphItemObject.Identifier);
         }
     }
 }

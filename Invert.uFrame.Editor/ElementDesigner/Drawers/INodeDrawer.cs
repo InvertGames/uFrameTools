@@ -29,6 +29,7 @@ public interface IDrawer
     void OnDrag(MouseEvent e);
     void OnMouseUp(MouseEvent e);
     void OnMouseDoubleClick(MouseEvent mouseEvent);
+    void OnRightClick(MouseEvent mouseEvent);
 }
 
 public class Drawer<TViewModel> : Drawer where TViewModel : GraphItemViewModel
@@ -122,7 +123,7 @@ public abstract class Drawer : IDrawer
             }
         }
     }
-
+    
     protected virtual void DataContextChanged()
     {
         
@@ -228,6 +229,11 @@ public abstract class Drawer : IDrawer
     }
 
     public virtual void OnMouseDoubleClick(MouseEvent mouseEvent)
+    {
+        
+    }
+
+    public virtual void OnRightClick(MouseEvent mouseEvent)
     {
         
     }

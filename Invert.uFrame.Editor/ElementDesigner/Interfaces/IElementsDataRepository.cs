@@ -13,4 +13,5 @@ public interface IElementsDataRepository
     Dictionary<string, string> GetProjectDiagrams();
     void CreateNewDiagram();
     Type RepositoryFor { get; }
+    IEnumerable<IDiagramNode> AllNodes { get; }
 }

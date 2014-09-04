@@ -61,7 +61,6 @@
     <Compile Include="ElementDesigner\Commands\Elements\AddViewPropertyCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Elements\MarkIsTemplateCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Elements\RemoveNodeItemCommand.cs" />
-    <Compile Include="ElementDesigner\Commands\Nodes\AddReferenceCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Nodes\ComputedPropertyCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Nodes\MoveDownCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Nodes\MoveUpCommand.cs" />
@@ -105,7 +104,6 @@
     <Compile Include="ElementDesigner\Data\ConvertToJSON.cs" />
     <Compile Include="ElementDesigner\Data\ElementDesignerDataExtensions.cs" />
     <Compile Include="ElementDesigner\Data\ElementDiagramSettings.cs" />
-    <Compile Include="ElementDesigner\Data\ExternalNode.cs" />
     <Compile Include="ElementDesigner\Data\FilterState.cs" />
     <Compile Include="ElementDesigner\Data\IDiagramPlugin.cs" />
     <Compile Include="ElementDesigner\Data\IElementDesignerData.cs" />

@@ -11,172 +11,9 @@ using UnityEditor;
 using UnityEngine;
 using Object = System.Object;
 
-public class DefaultElementsRepository : IElementsDataRepository
+public abstract class DefaultElementsRepository : IElementsDataRepository
 {
-    //#region Paths
-
-    //public string AssetPath
-    //{
-    //    get
-    //    {
-    //        return AssetDatabase.GetAssetPath(Diagram).Replace(string.Format("{0}.asset", Diagram.name), "");
-    //    }
-    //}
-
-    //public string BehavioursPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(AssetPath, "Behaviours");
-    //    }
-    //}
-
-    //public string CreatePath(string name)
-    //{
-    //    var path = Path.Combine(AssetPath, "Behaviours");
-    //    if (!Directory.Exists(path))
-    //    {
-    //        Directory.CreateDirectory(path);
-    //        AssetDatabase.Refresh();
-    //    }
-    //    return path;
-    //}
-    //public string ControllersDesignerFileFullPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(RootPath, ControllersDesignerFilename);
-    //    }
-    //}
-
-    //public string ControllersDesignerFilename
-    //{
-    //    get
-    //    {
-    //        return AssetPath + string.Format("{0}Controllers.designer.cs", Diagram.Name);
-    //    }
-    //}
-
-    //public string ControllersPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(AssetPath, "Controllers");
-    //    }
-    //}
-
-    //public FileInfo DiagramFileInfo
-    //{
-    //    get
-    //    {
-    //        return new FileInfo(Path.Combine(RootPath, DiagramPath));
-    //    }
-    //}
-
-    //public string DiagramPath
-    //{
-    //    get { return AssetDatabase.GetAssetPath(Diagram); }
-    //}
-
-    //public string RootPath
-    //{
-    //    get
-    //    {
-    //        return Application.dataPath.Substring(0, Application.dataPath.Length - "Assets".Length);
-    //    }
-    //}
-
-    //public string SceneManagersPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(AssetPath, "SceneManagers");
-    //    }
-    //}
-
-    //public string ScenesPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(AssetPath, "Scenes");
-    //    }
-    //}
-
-    //public string ViewComponentsPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(AssetPath, "Components");
-    //    }
-    //}
-
-    //public string ViewModelsDesignerFileFullPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(RootPath, ViewModelsDesignerFilename);
-    //    }
-    //}
-
-    //public string ViewModelsDesignerFilename
-    //{
-    //    get
-    //    {
-    //        return AssetPath + string.Format("{0}.designer.cs", Diagram.Name);
-    //    }
-    //}
-
-    //public string ViewModelsPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(AssetPath, "ViewModels");
-    //    }
-    //}
-
-    //public string ViewsDesignerFileFullPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(RootPath, ViewsDesignerFilename);
-    //    }
-    //}
-
-    //public string ViewsDesignerFilename
-    //{
-    //    get
-    //    {
-    //        return AssetPath + string.Format("{0}Views.designer.cs", Diagram.Name);
-    //    }
-    //}
-
-    //public string ViewsPath
-    //{
-    //    get
-    //    {
-    //        return Path.Combine(AssetPath, "Views");
-    //    }
-    //}
-
-
-
-    //public ElementDesignerData GetData()
-    //{
-    //    //Diagram.ImportedElements.RemoveAll(p => Type.GetType(p.TypeAssemblyName) == null);
-    //    //foreach (var importedElementData in Diagram.ImportedElements)
-    //    //{
-    //    //    importedElementData.Properties.Clear();
-    //    //    importedElementData.Collections.Clear();
-    //    //    importedElementData.Commands.Clear();
-    //    //    var type = Type.GetType(importedElementData.TypeAssemblyName);
-    //    //    FillElementData(type, importedElementData);
-    //    //}
-
-    //    return Diagram;
-    //}
-
-    //#endregion Paths
-
+  
     [Inject]
     public IUFrameContainer Container { get; set; }
 
@@ -188,6 +25,8 @@ public class DefaultElementsRepository : IElementsDataRepository
     }
 
     private UnityEngine.Object[] _Assets;
+    protected string[] _diagramNames;
+    protected List<JsonElementDesignerData> _diagrams;
 
     public void RecacheAssets()
     {
@@ -235,9 +74,11 @@ public class DefaultElementsRepository : IElementsDataRepository
     public Dictionary<string, string> GetProjectDiagrams()
     {
         var items = new Dictionary<string, string>();
-        foreach (var elementDesignerData in UFrameAssetManager.Diagrams.Where(p=>p.GetType() == RepositoryFor))
+        foreach (var elementDesignerData in Diagrams.Where(p=>p.GetType() == RepositoryFor))
         {
-            items.Add(elementDesignerData.Name, AssetDatabase.GetAssetPath(elementDesignerData as UnityEngine.Object));
+            var asset = AssetDatabase.GetAssetPath(elementDesignerData as UnityEngine.Object);
+            
+            items.Add(elementDesignerData.Name, asset);
         }
         return items;
     }
@@ -250,6 +91,42 @@ public class DefaultElementsRepository : IElementsDataRepository
     public virtual Type RepositoryFor
     {
         get { return typeof (ElementDesignerData); }
+    }
+
+    public virtual IEnumerable<IDiagramNode> AllNodes
+    {
+        get { return null; }
+    }
+
+    public List<JsonElementDesignerData> Diagrams
+    {
+        get
+        {
+            if (_diagrams == null)
+            {
+                Refresh();
+            }
+            return _diagrams;
+        }
+        set { _diagrams = value; }
+    }
+
+    public IElementDesignerData CurrentDiagram
+    {
+        get; set;
+    }
+
+    public virtual string[] DiagramNames
+    {
+        get
+        {
+            if (_diagramNames == null)
+            {
+                Refresh();
+            }
+            return _diagramNames;
+        }
+        set { _diagramNames = value; }
     }
 
     public IElementDesignerData LoadDiagram(string path)
@@ -283,6 +160,8 @@ public class DefaultElementsRepository : IElementsDataRepository
     {
 
     }
+
+    protected abstract void Refresh();
 }
 
 public interface ICodePathStrategy

@@ -69,10 +69,11 @@ public class DiagramViewModel : ViewModel
     {
         base.DataObjectChanged();
         GraphItems.Clear();
-        foreach (var item in Data.GetDiagramItems())
-        {
-            uFrameEditor.Container.ResolveRelation(item.GetType(), typeof(ViewModel));
-        }
+
+        //foreach (var item in Data.GetDiagramItems())
+        //{
+        //    uFrameEditor.Container.ResolveRelation(item.GetType(), typeof(ViewModel));
+        //}
         //_graphItems.CollectionChangedWith += GraphItemsChanged;
 
     }
@@ -107,29 +108,22 @@ public class DiagramViewModel : ViewModel
         set;
     }
 
-    public DiagramViewModel(string assetPath)
+    public DiagramViewModel(string assetPath, IElementsDataRepository repository)
     {
-
         var fileExtension = Path.GetExtension(assetPath);
-        if (string.IsNullOrEmpty(fileExtension)) fileExtension = ".asset";
-        var repositories = uFrameEditor.Container.ResolveAll<IElementsDataRepository>();
-        foreach (var elementsDataRepository in repositories)
-        {
-            var diagram = elementsDataRepository.LoadDiagram(assetPath);
+        var diagram = repository.LoadDiagram(assetPath);
 
-            if (diagram == null) continue;
-            Repository = elementsDataRepository;
-            DataObject = diagram;
-            break;
-        }
-
-
+        if (diagram == null) throw new Exception("Diagram not found");
+        Repository = repository;
+        DataObject = diagram;
         Data.Settings.CodePathStrategy =
              uFrameEditor.Container.Resolve<ICodePathStrategy>(Data.Settings.CodePathStrategyName ?? "Default");
+
         if (Data.Settings.CodePathStrategy == null)
         {
             Data.Settings.CodePathStrategy = uFrameEditor.Container.Resolve<ICodePathStrategy>("Default");
         }
+
         Data.Settings.CodePathStrategy.Data = Data;
         Data.Settings.CodePathStrategy.AssetPath =
             assetPath.Replace(string.Format("{0}{1}", Path.GetFileNameWithoutExtension(assetPath), fileExtension), "").Replace("/", Path.DirectorySeparatorChar.ToString());
@@ -137,30 +131,57 @@ public class DiagramViewModel : ViewModel
 
     }
 
+
+
     public void Load()
     {
+        GraphItems.Clear();
         var connectors = new List<ConnectorViewModel>();
-        foreach (var item in Data.GetDiagramItems())
+
+        CurrentNodes = Data.CurrentFilter.FilterItems(Repository.AllNodes).ToArray();
+
+        foreach (var item in CurrentNodes)
         {
             // Get the ViewModel for the data
             var vm = uFrameEditor.Container.ResolveRelation<ViewModel>(item.GetType(), item, this) as GraphItemViewModel;
             if (vm == null)
-                Debug.Log(string.Format("Couldn't find view-model for {0}", item.GetType()));
-            
-            GraphItems.Add(vm);
+            {
+                Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
+                continue;
+            }
 
+
+            GraphItems.Add(vm);
+            // Clear the connections on the view-model
+            vm.Connectors.Clear();
+            // Reload all the connections
             foreach (var strategy in uFrameEditor.ConnectionStrategies)
             {
-                strategy.GetConnectors(connectors, vm);
+                strategy.GetConnectors(vm.Connectors, vm);
             }
-            
+
+            connectors.AddRange(vm.Connectors);
+
         }
         foreach (var item in connectors)
         {
             GraphItems.Add(item);
         }
 
+        var connections = new List<ConnectionViewModel>();
+
+        foreach (var strategy in uFrameEditor.ConnectionStrategies)
+        {
+            strategy.GetConnections(connections, connectors);
+        }
+
+        foreach (var item in connections)
+        {
+            GraphItems.Add(item);
+        }
     }
+
+    public IDiagramNode[] CurrentNodes { get; set; }
 
     public ModelCollection<GraphItemViewModel> GraphItems
     {
@@ -284,6 +305,6 @@ public class DiagramViewModel : ViewModel
 
     public IEnumerable<IDiagramNode> GetImportableItems()
     {
-        return Data.GetImportableItems();
+        return Repository.GetImportableItems(Data.CurrentFilter);
     }
 }

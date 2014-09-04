@@ -23,7 +23,6 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
         get { return ElementDesignerStyles.NodeHeader2; }
     }
 
-
     public ViewDrawer(ViewNodeViewModel viewModel)
     {
         ViewModel = viewModel;
