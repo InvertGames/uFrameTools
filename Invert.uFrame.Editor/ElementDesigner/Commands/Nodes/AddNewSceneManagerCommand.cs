@@ -12,7 +12,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             var data = new SceneManagerData()
             {
-                Data = node.Data,
+                //Data = node.Data,
                 Name = node.Data.GetUniqueName("NewSceneManager"),
                 Location = new Vector2(15, 15)
             };

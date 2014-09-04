@@ -14,7 +14,7 @@ namespace Invert.uFrame.Editor
         public IUFrameContainer Container { get; set; }
 
         [Inject]
-        public IElementsDataRepository Repository { get; set; }
+        public IProjectRepository Repository { get; set; }
 
         public object ObjectData { get; set; }
 

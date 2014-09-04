@@ -11,7 +11,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             var data = new ElementData
             {
-                Data = node.Data,
+                //Data = node.Data,
                 Name = node.Data.GetUniqueName("NewElement"),
                 //BaseTypeName = typeof(ViewModel).FullName,
                 Dirty = true

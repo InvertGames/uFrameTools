@@ -168,7 +168,7 @@ public class ViewComponentData : DiagramNode
     }
 
     [DiagramContextMenu("Open Code")]
-    public void OpenViewComponent(IElementsDataRepository repository)
+    public void OpenViewComponent(IProjectRepository repository)
     {
         var gameObject = new GameObject();
         var behaviour = gameObject.AddComponent(this.Name) as MonoBehaviour;

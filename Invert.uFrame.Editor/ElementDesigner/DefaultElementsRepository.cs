@@ -11,7 +11,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = System.Object;
 
-public abstract class DefaultElementsRepository : IElementsDataRepository
+public abstract class DefaultElementsRepository : IProjectRepository
 {
   
     [Inject]
@@ -32,6 +32,7 @@ public abstract class DefaultElementsRepository : IElementsDataRepository
     {
         
     }
+
     public UnityEngine.Object[] GetAssets()
     {
         var tempObjects = new List<UnityEngine.Object>();
@@ -118,6 +119,14 @@ public abstract class DefaultElementsRepository : IElementsDataRepository
         CurrentDiagram.RemoveNode(enumData);
     }
 
+    public IDiagramFilter CurrentFilter
+    {
+        get
+        {
+            return CurrentDiagram.CurrentFilter;
+        }
+    }
+
     public List<JsonElementDesignerData> Diagrams
     {
         get
@@ -156,7 +165,7 @@ public abstract class DefaultElementsRepository : IElementsDataRepository
         {
             return null;
         }
-
+        CurrentDiagram = data;
         return data;
     }
 

@@ -5,7 +5,7 @@ using Invert.uFrame.Editor.Refactoring;
 
 public static class ElementDesignerDataExtensions
 {
-    public static IEnumerable<IDiagramNode> GetImportableItems(this IElementsDataRepository t, IDiagramFilter filter)
+    public static IEnumerable<IDiagramNode> GetImportableItems(this IProjectRepository t, IDiagramFilter filter)
     {
         return
             t.GetAllowedDiagramItems(filter)
@@ -25,11 +25,11 @@ public static class ElementDesignerDataExtensions
         return t.NodeItems.OfType<ElementData>();
     }
 
-    public static IEnumerable<IDiagramNode> GetAllowedDiagramItems(this IElementsDataRepository t, IDiagramFilter filter)
+    public static IEnumerable<IDiagramNode> GetAllowedDiagramItems(this IProjectRepository t, IDiagramFilter filter)
     {
         return t.NodeItems.Where(p => filter.IsAllowed(p, p.GetType()));
     }
-    public static IEnumerable<IDiagramNode> GetDiagramItems(this IElementsDataRepository t, IDiagramFilter filter)
+    public static IEnumerable<IDiagramNode> GetDiagramItems(this IProjectRepository t, IDiagramFilter filter)
     {
         return filter.FilterItems(t.NodeItems);
     }
@@ -92,7 +92,7 @@ public static class ElementDesignerDataExtensions
         designerData.RefactorCount = 0;
         foreach (var allDiagramItem in designerData.NodeItems)
         {
-            allDiagramItem.Data = designerData;
+            //allDiagramItem.Data = designerData;
         }
         designerData.Initialize();
     }
@@ -266,7 +266,7 @@ public static class ElementDesignerDataExtensions
             }
         }
     }
-    public static IEnumerable<IDiagramNode> FilterItems(this IElementsDataRepository designerData, IDiagramFilter filter)
+    public static IEnumerable<IDiagramNode> FilterItems(this IProjectRepository designerData, IDiagramFilter filter)
     {
         return filter.FilterItems(designerData.NodeItems);
     }

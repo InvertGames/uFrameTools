@@ -102,13 +102,13 @@ public class DiagramViewModel : ViewModel
 
     //}
 
-    public IElementsDataRepository Repository
+    public IProjectRepository Repository
     {
         get;
         set;
     }
 
-    public DiagramViewModel(string assetPath, IElementsDataRepository repository)
+    public DiagramViewModel(string assetPath, IProjectRepository repository)
     {
         var fileExtension = Path.GetExtension(assetPath);
         var diagram = repository.LoadDiagram(assetPath);
@@ -169,10 +169,10 @@ public class DiagramViewModel : ViewModel
         }
 
         var connections = new List<ConnectionViewModel>();
-
+        var connectorInfo = new ConnectorInfo(connectors.ToArray());
         foreach (var strategy in uFrameEditor.ConnectionStrategies)
         {
-            strategy.GetConnections(connections, connectors);
+            strategy.GetConnections(connections, connectorInfo);
         }
 
         foreach (var item in connections)

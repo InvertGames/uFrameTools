@@ -142,8 +142,8 @@ namespace Invert.uFrame.Editor.ViewModels
         /// Iterate through connectors and find decorate the connections list with any found connections.
         /// </summary>
         /// <param name="connections"></param>
-        /// <param name="connectors"></param>
-        void GetConnections(List<ConnectionViewModel> connections, List<ConnectorViewModel> connectors);
+        /// <param name="info"></param>
+        void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info);
     }
 
     public abstract class DefaultConnectionStrategy : IConnectionStrategy
@@ -158,7 +158,7 @@ namespace Invert.uFrame.Editor.ViewModels
             return null;
         }
 
-        public virtual void GetConnections(List<ConnectionViewModel> connections, List<ConnectorViewModel> connectors)
+        public virtual void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
         {
             
         }
@@ -210,33 +210,18 @@ namespace Invert.uFrame.Editor.ViewModels
             return null;
         }
 
-        public override void GetConnections(List<ConnectionViewModel> connections, List<ConnectorViewModel> connectors)
+        public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
         {
-            base.GetConnections(connections, connectors);
-            var outputs = connectors.Where(p => p.Direction == ConnectorDirection.Output).ToArray();
-            var inputs = connectors.Where(p => p.Direction == ConnectorDirection.Input).ToArray();
-            foreach (var output in outputs)
-            {
-                var outputElement = output.DataObject as ElementData;
-                if (outputElement == null) continue;
+            base.GetConnections(connections, info);
 
-                foreach (var input in inputs)
-                {
-                    var inputElement = input.DataObject as ElementData;
-                    if (inputElement == null) continue;
-                    if (inputElement.BaseTypeShortName == outputElement.Name)
-                    {
-                        connections.Add(new ConnectionViewModel()
-                        {
-                            ConnectorA = output,
-                            ConnectorB = input
-                        });
-                    }
-
-                }
-
-
-            }
+            connections.AddRange(
+                info.ConnectionsByData<ElementData, ElementData>(
+                    Color.green
+                    , (o, i) => i.BaseTypeShortName == o.Name
+                    , Remove
+                    )
+                );
+           
         }
 
         private void Apply(ConnectionViewModel connectionViewModel)
@@ -246,7 +231,72 @@ namespace Invert.uFrame.Editor.ViewModels
             if (baseElement != null)
                 baseElement.CreateLink(baseElement,derivedEelement);
         }
+
+        private void Remove(ConnectionViewModel connectionViewModel)
+        {
+            var baseElement = connectionViewModel.ConnectorA.DataObject as ElementData;
+            var derivedEelement = connectionViewModel.ConnectorB.DataObject as ElementData;
+            if (baseElement != null)
+                baseElement.CreateLink(baseElement, derivedEelement);
+        }
     }
+
+    public class ConnectorInfo
+    {
+        private ConnectorViewModel[] _inputs;
+        private ConnectorViewModel[] _outputs;
+
+        public ConnectorInfo(ConnectorViewModel[] allConnectors)
+        {
+            AllConnectors = allConnectors;
+        }
+
+        public ConnectorViewModel[] AllConnectors
+        {
+            get; set;
+        }
+
+        public ConnectorViewModel[] Inputs
+        {
+            get { return _inputs ?? (_inputs = AllConnectors.Where(p=>p.Direction == ConnectorDirection.Input).ToArray()); }
+          
+        }
+        public ConnectorViewModel[] Outputs
+        {
+            get { return _outputs ?? (_outputs = AllConnectors.Where(p => p.Direction == ConnectorDirection.Output).ToArray()); }
+        }
+
+        public IEnumerable<ConnectorViewModel> InputsWith<TData>()
+        {
+            return Inputs.Where(p => p.DataObject is TData);
+        }
+        public IEnumerable<ConnectorViewModel> OutputsWith<TData>()
+        {
+            return Outputs.Where(p => p.DataObject is TData);
+        }
+
+        public IEnumerable<ConnectionViewModel> ConnectionsByData<TSource, TTarget>(Color color, Func<TSource, TTarget, bool> isConnected, Action<ConnectionViewModel> remove, Action<ConnectionViewModel> apply = null)
+        {
+            foreach (var output in OutputsWith<TSource>())
+            {
+                foreach (var input in InputsWith<TTarget>())
+                {
+                    if (isConnected((TSource)output.DataObject,(TTarget)input.DataObject))
+                    {
+                        yield return new ConnectionViewModel()
+                        {
+                            Color = color,
+                            ConnectorA = output,
+                            ConnectorB = input,
+                            Remove = remove,
+                            Apply = apply
+                        };
+                    }
+                }
+            }
+        }
+    }
+
     public class ConnectionViewModel : GraphItemViewModel
     {
         public ConnectorViewModel ConnectorA { get; set; }
@@ -258,6 +308,7 @@ namespace Invert.uFrame.Editor.ViewModels
         public Action<ConnectionViewModel> Remove { get; set; }
 
         public override Vector2 Position { get; set; }
+        public Color Color { get; set; }
     }
 
     public class ItemViewModel<TData> : ItemViewModel

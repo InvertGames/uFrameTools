@@ -6,17 +6,19 @@ public interface INodeRepository
     // Basic Information
     string Name { get; }
     IEnumerable<IDiagramNode> NodeItems { get; }
+
     // Settings
     ElementDiagramSettings Settings { get; }
     void AddNode(IDiagramNode data);
     void RemoveNode(IDiagramNode enumData);
+    IDiagramFilter CurrentFilter { get; }
 }
 
 public interface IElementFileData : INodeRepository
 {
        
 
-    IDiagramFilter CurrentFilter { get; }
+
 
     /// <summary>
     /// Should be called when first loaded.

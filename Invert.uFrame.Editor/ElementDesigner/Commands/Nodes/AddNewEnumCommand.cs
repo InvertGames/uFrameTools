@@ -13,7 +13,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             var data = new EnumData()
             {
-                Data = node.Data,
+                //Data = node.Data,
                 Name = node.Data.GetUniqueName("NewEnum"),
                 Location = new Vector2(15, 15)
             };

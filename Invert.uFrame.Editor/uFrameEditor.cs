@@ -21,6 +21,7 @@ namespace Invert.uFrame.Editor
         private static IDiagramPlugin[] _plugins;
 
         private static IToolbarCommand[] _toolbarCommands;
+        private static IProjectRepository _repository;
 
         public static IEditorCommand[] Commands
         {
@@ -314,7 +315,7 @@ namespace Invert.uFrame.Editor
             // Repositories
             //container.RegisterInstance<IElementsDataRepository>(new DefaultElementsRepository(), ".asset");
 
-            container.RegisterInstance<IElementsDataRepository>(new JsonRepository());
+            container.RegisterInstance<IProjectRepository>(new JsonRepository());
 
             //// 2.0 stuff
             //container.RegisterInstance<ElementDesignerViewModel>(new ElementDesignerViewModel());
@@ -433,12 +434,17 @@ namespace Invert.uFrame.Editor
             KeyBindings = Container.ResolveAll<IKeyBinding>().ToArray();
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
             uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
-            Repository = Container.Resolve<IElementsDataRepository>();
+            Repository = Container.Resolve<IProjectRepository>();
             uFrameTypes = container.Resolve<IUFrameTypeProvider>();
 
         }
 
-        public static IElementsDataRepository Repository { get; set; }
+        public static IProjectRepository Repository
+        {
+            get { return _repository ?? (_repository = Container.Resolve<IProjectRepository>()); }
+            set { _repository = value; }
+        }
+
         public static IConnectionStrategy[] ConnectionStrategies { get; set; }
 
         public static void RegisterDrawer<TViewModel, TDrawer>()

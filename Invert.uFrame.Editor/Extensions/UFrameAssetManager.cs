@@ -15,14 +15,14 @@ public class UFrameAssetManager : AssetPostprocessor
     [MenuItem("Assets/[u]Frame/New Element Diagram (Legacy Asset)", false, 41)]
     public static void NewViewModelDiagram()
     {
-        uFrameEditor.Container.Resolve<IElementsDataRepository>(".asset").CreateNewDiagram();
+        uFrameEditor.Container.Resolve<IProjectRepository>(".asset").CreateNewDiagram();
     }
 #endif
 
     [MenuItem("Assets/[u]Frame/New Element Diagram", false, 40)]
     public static void NewJsonViewModelDiagram()
     {
-        uFrameEditor.Container.Resolve<IElementsDataRepository>(".json").CreateNewDiagram();
+        uFrameEditor.Container.Resolve<IProjectRepository>(".json").CreateNewDiagram();
     }
 
 

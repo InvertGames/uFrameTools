@@ -135,23 +135,7 @@ public class SubSystemData : DiagramNode, IDiagramFilter, ISubSystemData
     {
         get
         {
-            if (this == Data.CurrentFilter)
-            {
-                yield break;
-                //foreach (var diagramSubItem in this.GetIncludedItems()) yield return diagramSubItem;
-                //foreach (var diagramSubItem1 in GetSubItems(data)) yield return diagramSubItem1;
-            }
-            else
-            {
-                yield break;
-                //var items = SubItems.OfType<ElementDataBase>().Where(p => !p.IsMultiInstance).SelectMany(p => p.Commands);
-                //foreach (var item in items)
-                //{
-                //    yield return item;
-                //}
-                //foreach (var diagramSubItem in GetIncludedItems(data)) yield return diagramSubItem;
-                //foreach (var diagramSubItem1 in GetSubItems(data)) yield return diagramSubItem1;
-            }
+          yield break;
         }
     }
 

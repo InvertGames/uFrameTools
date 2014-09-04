@@ -149,21 +149,6 @@ namespace Invert.uFrame.Editor
             EditorGUI.HelpBox(new Rect(15, 30, 300, 30), message, type);
         }
 
-        
-
-        //public void OnGUI()
-        //{
-        //    foreach (var editorCommand in DesignerViewModel.ToolbarCommands.Where(p => p.Position == ToolbarPosition.Right).OrderBy(p => p.Order))
-        //    {
-        //        DoCommand(editorCommand);
-        //    }
-        //    GUILayout.FlexibleSpace();
-        //    foreach (var editorCommand in DesignerViewModel.ToolbarCommands.Where(p=>p.Position == ToolbarPosition.Right).OrderBy(p => p.Order))
-        //    {
-        //        DoCommand(editorCommand);
-        //    }
-
-        //}
         public void DoCommand(IEditorCommand command)
         {
             var obj = ContextObjects.FirstOrDefault(p => command.For.IsAssignableFrom(p.GetType()));
@@ -618,7 +603,7 @@ namespace Invert.uFrame.Editor
 
         public void LoadDiagramByName(string diagramName)
         {
-            var repos = uFrameEditor.Container.ResolveAll<IElementsDataRepository>();
+            var repos = uFrameEditor.Container.ResolveAll<IProjectRepository>();
             var diagrams = repos.SelectMany(p => p.GetProjectDiagrams()).ToDictionary(p => p.Key, p => p.Value);
             if (diagrams.ContainsKey(diagramName))
                 LoadDiagram(diagrams[diagramName]);

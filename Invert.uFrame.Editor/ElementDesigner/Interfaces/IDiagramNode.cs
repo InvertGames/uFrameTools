@@ -54,7 +54,9 @@ public interface IDiagramNode : ISelectable,IDiagramNodeItem
     /// <summary>
     /// The current element data displaying this node
     /// </summary>
-    IElementDesignerData Data { get; set; }
+    INodeRepository Data { get; 
+        //set; 
+    }
 
     /// <summary>
     /// The current filter

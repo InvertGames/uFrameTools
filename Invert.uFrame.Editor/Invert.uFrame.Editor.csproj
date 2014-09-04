@@ -170,7 +170,7 @@
     <Compile Include="ElementDesigner\Links\GenericLink.cs" />
     <Compile Include="ElementDesigner\Interfaces\IDiagramFilter.cs" />
     <Compile Include="ElementDesigner\Drawers\INodeDrawer.cs" />
-    <Compile Include="ElementDesigner\Interfaces\IElementsDataRepository.cs" />
+    <Compile Include="ElementDesigner\Interfaces\IProjectRepository.cs" />
     <Compile Include="ElementDesigner\Links\InheritanceLink.cs" />
     <Compile Include="ElementDesigner\Interfaces\ISubSystemType.cs" />
     <Compile Include="ElementDesigner\NodeCurvePointStyle.cs" />

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Invert.uFrame.Editor.ElementDesigner;
-using UnityEditor;
 
-public interface IElementsDataRepository : INodeRepository
+public interface IProjectRepository : INodeRepository
 {
     
     IElementDesignerData LoadDiagram(string path);
@@ -13,5 +11,5 @@ public interface IElementsDataRepository : INodeRepository
     Dictionary<string, string> GetProjectDiagrams();
     void CreateNewDiagram();
     Type RepositoryFor { get; }
-    
+    INodeRepository CurrentDiagram { get; set; }
 }

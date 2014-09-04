@@ -12,7 +12,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             var data = new ViewData()
             {
-                Data = node.Data,
+                //Data = node.Data,
                 Name = node.Data.GetUniqueName(node.Data.CurrentFilter.Name + "View"),
                 Location = new Vector2(15, 15)
             };

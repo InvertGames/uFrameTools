@@ -176,25 +176,24 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     public Vector2[] ConnectionPoints { get; set; }
 
 
-    public virtual IElementDesignerData Data
+    public virtual INodeRepository Data
     {
         get
         {
-            return _data;
+            return uFrameEditor.Repository;
         }
-        set
-        {
-            _data = value;
-            if (value != null)
-            {
-                _location = value.CurrentFilter.Locations[this];
-                _isCollapsed = value.CurrentFilter.CollapsedValues[this];
-                Dirty = true;
-            }
-        }
+        //set
+        //{
+        //    _data = value;
+        //    if (value != null)
+        //    {
+        //        _location = value.CurrentFilter.Locations[this];
+        //        _isCollapsed = value.CurrentFilter.CollapsedValues[this];
+        //        Dirty = true;
+        //    }
+        //}
     }
     
-
     public bool Dirty { get; set; }
 
     public IDiagramFilter Filter
@@ -359,7 +358,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
             }
 
             RenameRefactorer.Set(this);
-            Data.RefactorCount++;
+            //Data.RefactorCount++;
         }
         return true;
     }
@@ -378,7 +377,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
 
     public virtual void RemoveFromDiagram()
     {
-        Data.RefactorCount--;
+        //Data.RefactorCount--;
     }
 
     public void RemoveFromFilter(INodeRepository data)

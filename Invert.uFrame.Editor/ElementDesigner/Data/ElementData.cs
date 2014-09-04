@@ -192,10 +192,10 @@ public class ElementData : ElementDataBase, IDiagramFilter
     {
         get
         {
-            if (Data.CurrentFilter == this)
-            {
-                return base.Items.Concat(IncludedViews.Cast<IDiagramNodeItem>().Concat(IncludedComponents.Cast<IDiagramNodeItem>()));
-            }
+            //if (Data.CurrentFilter == this)
+            //{
+            //    return base.Items.Concat(IncludedViews.Cast<IDiagramNodeItem>().Concat(IncludedComponents.Cast<IDiagramNodeItem>()));
+            //}
             return base.Items;
         }
     }

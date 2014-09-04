@@ -22,7 +22,7 @@ public class ElementDesignerData : ScriptableObject,  IElementDesignerData
         }
     }
 
-    public IElementsDataRepository Repository { get; set; }
+    public IProjectRepository Repository { get; set; }
 
     private string _identifier;
 

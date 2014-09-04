@@ -32,7 +32,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         }
     }
 
-    public IElementsDataRepository Repository { get; set; }
+    public IProjectRepository Repository { get; set; }
 
     public List<IDiagramNode> Nodes
     {
