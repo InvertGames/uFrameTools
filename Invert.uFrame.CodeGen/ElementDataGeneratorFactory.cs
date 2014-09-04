@@ -5,7 +5,7 @@ using Invert.uFrame.Editor;
 
 public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy codePathStrategy, IElementDesignerData diagramData, ElementData item)
+    public override IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
         
         yield return CreateDesignerControllerGenerator(codePathStrategy,diagramData,item);
@@ -15,7 +15,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
         yield return CreateViewBaseGenerator(codePathStrategy, diagramData, item);
     }
 
-    public virtual CodeGenerator CreateDesignerControllerGenerator(ICodePathStrategy codePathStrategy, IElementDesignerData diagramData,ElementData item)
+    public virtual CodeGenerator CreateDesignerControllerGenerator(ICodePathStrategy codePathStrategy, INodeRepository diagramData,ElementData item)
     {
         return new ControllerGenerator()
         {
@@ -26,7 +26,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
         };
     }
 
-    public virtual CodeGenerator CreateEditableControllerGenerator(ICodePathStrategy codePathStrategy, IElementDesignerData diagramData, ElementData item)
+    public virtual CodeGenerator CreateEditableControllerGenerator(ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
         return new ControllerGenerator()
         {
@@ -38,7 +38,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
         };
     }
 
-    public virtual CodeGenerator CreateDesignerViewModelGenerator(ICodePathStrategy codePathStrategy, IElementDesignerData diagramData, ElementData item)
+    public virtual CodeGenerator CreateDesignerViewModelGenerator(ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
         return new ViewModelGenerator(true, item)
         {
@@ -49,7 +49,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
         };
     }
 
-    public virtual CodeGenerator CreateEditableViewModelGenerator(ICodePathStrategy codePathStrategy, IElementDesignerData diagramData, ElementData item)
+    public virtual CodeGenerator CreateEditableViewModelGenerator(ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
         return new ViewModelGenerator(false, item)
         {
@@ -61,7 +61,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
         };
     }
 
-    public virtual CodeGenerator CreateViewBaseGenerator(ICodePathStrategy codePathStrategy, IElementDesignerData diagramData, ElementData item)
+    public virtual CodeGenerator CreateViewBaseGenerator(ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
         return new ViewBaseGenerator()
         {

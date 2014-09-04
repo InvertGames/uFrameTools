@@ -40,7 +40,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     {
         get
         {
-            return Data.LocalNodes.All(p => p.Identifier != Identifier);
+            return Data.NodeItems.All(p => p.Identifier != Identifier);
         }
     }
 
@@ -175,6 +175,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
 
     public Vector2[] ConnectionPoints { get; set; }
 
+
     public virtual IElementDesignerData Data
     {
         get
@@ -186,10 +187,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
             _data = value;
             if (value != null)
             {
-                //if (!value.Locations.Keys.Contains(Identifier))
-                //{
-                //    value.Locations[this] = Location;
-                //}
                 _location = value.CurrentFilter.Locations[this];
                 _isCollapsed = value.CurrentFilter.CollapsedValues[this];
                 Dirty = true;
@@ -197,10 +194,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         }
     }
     
-    public virtual IElementDesignerData OwnerData
-    {
-        get { return Data; }
-    }
 
     public bool Dirty { get; set; }
 
@@ -352,7 +345,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     {
         IsEditing = false;
 
-        if (Data.LocalNodes.Count(p => p.Name == Name) > 1)
+        if (Data.NodeItems.Count(p => p.Name == Name) > 1)
         {
             Name = OldName;
             return false;
@@ -388,7 +381,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         Data.RefactorCount--;
     }
 
-    public void RemoveFromFilter(IElementDesignerData data)
+    public void RemoveFromFilter(INodeRepository data)
     {
         Filter.Locations.Remove(this.Identifier);
     }

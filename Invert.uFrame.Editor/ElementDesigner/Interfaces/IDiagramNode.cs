@@ -55,10 +55,7 @@ public interface IDiagramNode : ISelectable,IDiagramNodeItem
     /// The current element data displaying this node
     /// </summary>
     IElementDesignerData Data { get; set; }
-    /// <summary>
-    /// The element data that owns this node
-    /// </summary>
-    IElementDesignerData OwnerData { get;}
+
     /// <summary>
     /// The current filter
     /// </summary>

@@ -101,7 +101,6 @@
     <Compile Include="ElementDesigner\Commands\Nodes\ScaleCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Nodes\SelectViewBaseElement.cs" />
     <Compile Include="ElementDesigner\Commands\Nodes\ShowExternalItemCommand.cs" />
-    <Compile Include="ElementDesigner\Data\ConvertToJSON.cs" />
     <Compile Include="ElementDesigner\Data\ElementDesignerDataExtensions.cs" />
     <Compile Include="ElementDesigner\Data\ElementDiagramSettings.cs" />
     <Compile Include="ElementDesigner\Data\FilterState.cs" />

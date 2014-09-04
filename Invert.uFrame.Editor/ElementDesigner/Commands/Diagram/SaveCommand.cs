@@ -22,7 +22,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
 
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
 
-            var fileGenerators = uFrameEditor.GetAllFileGenerators(diagram.Data).ToArray();
+            var fileGenerators = uFrameEditor.GetAllFileGenerators().ToArray();
             
             foreach (var codeFileGenerator in fileGenerators)
             {
@@ -42,7 +42,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
                 //Debug.Log("Created file: " + fileInfo.FullName);
 
             }
-            foreach (var allDiagramItem in diagram.Data.LocalNodes)
+            foreach (var allDiagramItem in diagram.Data.NodeItems)
             {
                 allDiagramItem.IsNewNode = false;
             }
@@ -61,7 +61,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
         {
             var refactorer = new RefactorContext(diagram.Data.GetRefactorings());
             
-            var files = uFrameEditor.GetAllFileGenerators(diagram.Data).Where(p=>!p.Filename.EndsWith(".designer.cs")).Select(p => System.IO.Path.Combine(diagram.Data.Settings.CodePathStrategy.AssetPath, p.Filename)).ToArray();
+            var files = uFrameEditor.GetAllFileGenerators().Where(p=>!p.Filename.EndsWith(".designer.cs")).Select(p => System.IO.Path.Combine(diagram.Data.Settings.CodePathStrategy.AssetPath, p.Filename)).ToArray();
 
             
             if (refactorer.Refactors.Count > 0)
@@ -75,11 +75,12 @@ namespace Invert.uFrame.Editor.ElementDesigner
             UnityEngine.Debug.Log(string.Format("Applied {0} refactors.", refactorer.Refactors.Count));
             
         }
+
         public void RefactorApplied(IElementDesignerData data)
         {
             data.RefactorCount = 0;
-            var refactorables = data.LocalNodes.OfType<IRefactorable>()
-                .Concat(data.LocalNodes.SelectMany(p => p.Items).OfType<IRefactorable>());
+            var refactorables = data.NodeItems.OfType<IRefactorable>()
+                .Concat(data.NodeItems.SelectMany(p => p.Items).OfType<IRefactorable>());
             foreach (var refactorable in refactorables)
             {
                 refactorable.RefactorApplied();

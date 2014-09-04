@@ -182,7 +182,7 @@ namespace Invert.uFrame.Editor
             return null;
         }
 
-        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(ICodePathStrategy pathStrategy, IElementDesignerData diagramData)
+        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(ICodePathStrategy pathStrategy, INodeRepository diagramData)
         {
             // Grab all the code generators
             var diagramItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
@@ -191,7 +191,7 @@ namespace Invert.uFrame.Editor
             {
                 DesignerGeneratorFactory generator = diagramItemGenerator;
                 // If its a generator for the entire diagram
-                if (typeof(IElementDesignerData).IsAssignableFrom(generator.DiagramItemType))
+                if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
                 {
                     var codeGenerators = generator.GetGenerators(pathStrategy, diagramData, diagramData);
                     foreach (var codeGenerator in codeGenerators)
@@ -204,7 +204,7 @@ namespace Invert.uFrame.Editor
                 // If its a generator for a specific node type
                 else
                 {
-                    var items = diagramData.LocalNodes.Where(p => p.GetType() == generator.DiagramItemType);
+                    var items = diagramData.NodeItems.Where(p => p.GetType() == generator.DiagramItemType);
 
                     foreach (var item in items)
                     {
@@ -220,7 +220,12 @@ namespace Invert.uFrame.Editor
             }
         }
 
-        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(IElementDesignerData diagramData, ICodePathStrategy strategy = null)
+        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(ICodePathStrategy strategy = null)
+        {
+            return GetAllFileGenerators(Repository, strategy);
+        }
+
+        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(INodeRepository diagramData, ICodePathStrategy strategy = null)
         {
             var codeGenerators = GetAllCodeGenerators(strategy ?? diagramData.Settings.CodePathStrategy, diagramData).ToArray();
             var groups = codeGenerators.GroupBy(p => p.Filename);

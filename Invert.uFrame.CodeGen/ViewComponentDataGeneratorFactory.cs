@@ -3,14 +3,14 @@ using Invert.uFrame.Editor;
 
 public class ViewComponentDataGeneratorFactory : DesignerGeneratorFactory<ViewComponentData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy pathStrategy, IElementDesignerData diagramData, ViewComponentData item)
+    public override IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy pathStrategy, INodeRepository diagramData, ViewComponentData item)
     {
         if (item.Element == null) yield break;
         yield return CreateEditableGenerator(pathStrategy, diagramData, item);
         yield return CreateDesignerGenerator(pathStrategy, diagramData, item);
     }
 
-    protected virtual ViewComponentGenerator CreateEditableGenerator(ICodePathStrategy pathStrategy, IElementDesignerData diagramData, ViewComponentData item)
+    protected virtual ViewComponentGenerator CreateEditableGenerator(ICodePathStrategy pathStrategy, INodeRepository diagramData, ViewComponentData item)
     {
         return new ViewComponentGenerator()
         {
@@ -22,7 +22,7 @@ public class ViewComponentDataGeneratorFactory : DesignerGeneratorFactory<ViewCo
         };
     }
 
-    protected virtual ViewComponentGenerator CreateDesignerGenerator(ICodePathStrategy pathStrategy, IElementDesignerData diagramData, ViewComponentData item)
+    protected virtual ViewComponentGenerator CreateDesignerGenerator(ICodePathStrategy pathStrategy, INodeRepository diagramData, ViewComponentData item)
     {
         return new ViewComponentGenerator()
         {

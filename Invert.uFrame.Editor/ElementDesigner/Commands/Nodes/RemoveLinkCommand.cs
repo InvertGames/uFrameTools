@@ -32,16 +32,16 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             var diagramItem = item as IDiagramNode;
             if (diagramItem == null) yield break;
-            var links = diagramItem.Data.Links.Where(p => p.Target == item);
-            foreach (var link in links)
-            {
-                yield return new UFContextMenuItem()
-                {
-                    Checked = true,
-                    Name = "Remove Link From/" + link.Source.Label,
-                    Value = link
-                };
-            }
+            //var links = diagramItem.Data.Links.Where(p => p.Target == item);
+            //foreach (var link in links)
+            //{
+            //    yield return new UFContextMenuItem()
+            //    {
+            //        Checked = true,
+            //        Name = "Remove Link From/" + link.Source.Label,
+            //        Value = link
+            //    };
+            //}
 
         }
 

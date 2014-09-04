@@ -1,36 +1,37 @@
 using System.Collections.Generic;
 using Invert.uFrame.Editor.Refactoring;
 
-public interface IElementFileData
+public interface INodeRepository
 {
-    string Identifier { get; set; }
-    int RefactorCount { get; set; }
+    // Basic Information
+    string Name { get; }
+    IEnumerable<IDiagramNode> NodeItems { get; }
+    // Settings
+    ElementDiagramSettings Settings { get; }
+    void AddNode(IDiagramNode data);
+    void RemoveNode(IDiagramNode enumData);
+}
+
+public interface IElementFileData : INodeRepository
+{
+       
+
     IDiagramFilter CurrentFilter { get; }
-    IElementsDataRepository Repository { get; }
-    
 
     /// <summary>
     /// Should be called when first loaded.
     /// </summary>
     void Initialize();
-
-    void AddNode(IDiagramNode data);
-    void RemoveNode(IDiagramNode enumData);
-
-    // TemporaryData
-    List<IDiagramLink> Links { get; }
 }
 
 public interface IElementDesignerData : IElementFileData
 {
-    // Settings
-    ElementDiagramSettings Settings { get; }
+    string Identifier { get; set; }
 
-    // Basic Information
-    string Name { get; }
+    int RefactorCount { get; set; }
+    
     string Version { get; set; }
 
-    IEnumerable<IDiagramNode> LocalNodes { get; } 
     // Not Persisted
     FilterState FilterState { get; set; }
 

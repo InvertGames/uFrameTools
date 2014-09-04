@@ -63,7 +63,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         // Store the root filter
         root.AddObject("SceneFlow", data.SceneFlowFilter);
         // Nodes
-        root.AddObjectArray("Nodes", data.LocalNodes);
+        root.AddObjectArray("Nodes", data.NodeItems);
         return root;
     }
 
@@ -90,7 +90,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
 
     public int RefactorCount { get; set; }
 
-    public IEnumerable<IDiagramNode> LocalNodes
+    public IEnumerable<IDiagramNode> NodeItems
     {
         get
         {

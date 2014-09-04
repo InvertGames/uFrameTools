@@ -21,7 +21,7 @@ public class ControllerGenerator : CodeGenerator
         get;
         set;
     }
-    public IElementDesignerData DiagramData
+    public INodeRepository DiagramData
     {
         get;
         set;
@@ -443,7 +443,7 @@ public class ControllerGenerator : CodeGenerator
         //    .ToArray();
 
 
-        var diagramItems = DiagramData.AllDiagramItems.ToArray();
+        var diagramItems = DiagramData.NodeItems.ToArray();
 
         var controllers = GetDependencyControllers(data, diagramItems);
 

@@ -116,7 +116,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         get
         {
             return
-                Data.LocalNodes.OfType<ElementDataBase>()
+                Data.NodeItems.OfType<ElementDataBase>()
                     .SelectMany(p => p.Collections)
                     .Any(p => p.RelatedTypeName == Name) || AllBaseTypes.Any(p => p.IsMultiInstance);
         }

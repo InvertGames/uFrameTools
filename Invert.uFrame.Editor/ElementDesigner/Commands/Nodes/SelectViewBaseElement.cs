@@ -38,7 +38,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             if (element == null) yield break;
 
             var baseViews = element.AllBaseTypes.SelectMany(
-                p => view.Data.LocalNodes.OfType<ViewData>().Where(x => x.ViewForElement == p));
+                p => view.Data.NodeItems.OfType<ViewData>().Where(x => x.ViewForElement == p));
             yield return new UFContextMenuItem()
             {
                 Name = "Base View/" + element.NameAsViewBase,

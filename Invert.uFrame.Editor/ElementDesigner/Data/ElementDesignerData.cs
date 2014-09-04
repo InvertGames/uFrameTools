@@ -191,7 +191,7 @@ public class ElementDesignerData : ScriptableObject,  IElementDesignerData
         set { _views = value; }
     }
 
-    public IEnumerable<IDiagramNode> LocalNodes { get; set; }
+    public IEnumerable<IDiagramNode> NodeItems { get; set; }
 
     public FilterState FilterState
     {

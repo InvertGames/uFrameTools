@@ -34,7 +34,7 @@ namespace Invert.uFrame.Code.Bindings
             get { return Item.Node as ElementData; }
         }
 
-        public IElementDesignerData DiagramData
+        public INodeRepository DiagramData
         {
             get { return RelatedElement.Data; }
         }

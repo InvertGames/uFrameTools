@@ -33,13 +33,13 @@ public class JsonRepository : DefaultElementsRepository
         DiagramNames = Diagrams.Select(p => p.Name).ToArray();
     }
 
-    public override IEnumerable<IDiagramNode> AllNodes
+    public override IEnumerable<IDiagramNode> NodeItems
     {
         get
         {
             foreach (var item in Diagrams)
             {
-                foreach (var node in item.LocalNodes)
+                foreach (var node in item.NodeItems)
                 {
                     yield return node;
                 }

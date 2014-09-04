@@ -19,7 +19,7 @@ public abstract class DefaultElementsRepository : IElementsDataRepository
 
     private Dictionary<string, string> _derivedTypes;
 
-    public void MarkDirty(IElementDesignerData data)
+    public void MarkDirty(INodeRepository data)
     {
         EditorUtility.SetDirty(data as UnityEngine.Object);
     }
@@ -93,9 +93,29 @@ public abstract class DefaultElementsRepository : IElementsDataRepository
         get { return typeof (ElementDesignerData); }
     }
 
-    public virtual IEnumerable<IDiagramNode> AllNodes
+    public string Name { get; private set; }
+
+    public virtual IEnumerable<IDiagramNode> NodeItems
     {
         get { return null; }
+    }
+
+    public ElementDiagramSettings Settings
+    {
+        get
+        {
+            return CurrentDiagram.Settings;
+        }
+    }
+
+    public void AddNode(IDiagramNode data)
+    {
+        CurrentDiagram.AddNode(data);
+    }
+
+    public void RemoveNode(IDiagramNode enumData)
+    {
+        CurrentDiagram.RemoveNode(enumData);
     }
 
     public List<JsonElementDesignerData> Diagrams
@@ -111,7 +131,7 @@ public abstract class DefaultElementsRepository : IElementsDataRepository
         set { _diagrams = value; }
     }
 
-    public IElementDesignerData CurrentDiagram
+    public INodeRepository CurrentDiagram
     {
         get; set;
     }
@@ -140,13 +160,13 @@ public abstract class DefaultElementsRepository : IElementsDataRepository
         return data;
     }
 
-    public void SaveDiagram(IElementDesignerData data)
+    public void SaveDiagram(INodeRepository data)
     {
         EditorUtility.SetDirty(data as UnityEngine.Object);
         AssetDatabase.SaveAssets();
     }
 
-    public void RecordUndo(IElementDesignerData data, string title)
+    public void RecordUndo(INodeRepository data, string title)
     {
         Undo.RecordObject(data as UnityEngine.Object, title);
     }
@@ -276,10 +296,10 @@ public class DefaultCodePathStrategy : ICodePathStrategy
 
     public virtual void MoveTo(ICodePathStrategy strategy, string name, ElementsDesigner designerWindow)
     {
-        var sourceFiles = uFrameEditor.GetAllFileGenerators(Data, this).ToArray();
+        var sourceFiles = uFrameEditor.GetAllFileGenerators(this).ToArray();
         strategy.Data = Data;
         strategy.AssetPath = AssetPath;
-        var targetFiles = uFrameEditor.GetAllFileGenerators(Data, strategy).ToArray();
+        var targetFiles = uFrameEditor.GetAllFileGenerators(strategy).ToArray();
 
         if (sourceFiles.Length == targetFiles.Length)
         {

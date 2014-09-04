@@ -13,7 +13,7 @@ public abstract class ViewClassGenerator : CodeGenerator
 
     public CodeTypeDeclaration Decleration { get; set; }
 
-    public IElementDesignerData DiagramData
+    public INodeRepository DiagramData
     {
         get;
         set;

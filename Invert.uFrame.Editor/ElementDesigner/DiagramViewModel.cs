@@ -138,7 +138,7 @@ public class DiagramViewModel : ViewModel
         GraphItems.Clear();
         var connectors = new List<ConnectorViewModel>();
 
-        CurrentNodes = Data.CurrentFilter.FilterItems(Repository.AllNodes).ToArray();
+        CurrentNodes = Data.CurrentFilter.FilterItems(Repository.NodeItems).ToArray();
 
         foreach (var item in CurrentNodes)
         {
@@ -285,10 +285,10 @@ public class DiagramViewModel : ViewModel
         }
     }
 
-    public void UpgradeProject()
-    {
-        uFrameEditor.ExecuteCommand(new ConvertToJSON());
-    }
+    //public void UpgradeProject()
+    //{
+    //    uFrameEditor.ExecuteCommand(new ConvertToJSON());
+    //}
 
     public void NothingSelected()
     {
@@ -306,5 +306,10 @@ public class DiagramViewModel : ViewModel
     public IEnumerable<IDiagramNode> GetImportableItems()
     {
         return Repository.GetImportableItems(Data.CurrentFilter);
+    }
+
+    public void UpgradeProject()
+    {
+        
     }
 }

@@ -230,7 +230,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public IDiagramNode BaseNode
     {
-        get { return Data.LocalNodes.FirstOrDefault(p => p.AssemblyQualifiedName == ForAssemblyQualifiedName); }
+        get { return Data.NodeItems.FirstOrDefault(p => p.AssemblyQualifiedName == ForAssemblyQualifiedName); }
     }
 
     public ElementData ViewForElement

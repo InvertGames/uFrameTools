@@ -28,7 +28,7 @@ public class ViewModelGenerator : CodeGenerator
 
     public CodeTypeDeclaration Decleration { get; set; }
 
-    public IElementDesignerData DiagramData
+    public INodeRepository DiagramData
     {
         get;
         set;
@@ -240,8 +240,6 @@ public class ViewModelGenerator : CodeGenerator
         ProcessModifiers(Decleration);
         Namespace.Types.Add(Decleration);
     }
-
-
 
     public virtual void AddSetParentMethod(ElementData data)
     {

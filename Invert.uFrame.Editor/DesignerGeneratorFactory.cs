@@ -18,7 +18,7 @@ namespace Invert.uFrame.Editor
 
         public object ObjectData { get; set; }
 
-        public abstract IEnumerable<CodeGenerator> GetGenerators(ICodePathStrategy pathStrategy, IElementDesignerData diagramData, object node);
+        public abstract IEnumerable<CodeGenerator> GetGenerators(ICodePathStrategy pathStrategy, INodeRepository diagramData, object node);
     }
 
     public abstract class DesignerGeneratorFactory<TData> : DesignerGeneratorFactory where TData : class
@@ -28,11 +28,11 @@ namespace Invert.uFrame.Editor
             get { return typeof(TData); }
         }
 
-        public sealed override IEnumerable<CodeGenerator> GetGenerators(ICodePathStrategy pathStrategy, IElementDesignerData diagramData, object node)
+        public sealed override IEnumerable<CodeGenerator> GetGenerators(ICodePathStrategy pathStrategy, INodeRepository diagramData, object node)
         {
             return CreateGenerators(pathStrategy, diagramData, node as TData);
         }
-        public abstract IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy pathStrategy, IElementDesignerData diagramData, TData item);
+        public abstract IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy pathStrategy, INodeRepository diagramData, TData item);
 
     }
 }

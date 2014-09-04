@@ -46,7 +46,7 @@ namespace Invert.uFrame.Editor
         private MouseEvent _mouseEvent;
 
 
-        public static IElementDesignerData SelectedElementDiagram
+        public static INodeRepository SelectedElementDiagram
         {
             get { return Selection.activeObject as IElementDesignerData; }
         }

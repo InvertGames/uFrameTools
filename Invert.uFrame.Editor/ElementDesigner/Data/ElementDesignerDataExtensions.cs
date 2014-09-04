@@ -12,26 +12,26 @@ public static class ElementDesignerDataExtensions
                 .Where(p => !filter.Locations.Keys.Contains(p.Identifier))
                 .ToArray();
     }
-    public static IEnumerable<ElementData> GetAllElements(this IElementDesignerData t)
+    public static IEnumerable<ElementData> GetAllElements(this INodeRepository t)
     {
         if (t == null)
         {
             throw new Exception("Designer data can't be null.");
         }
-        if (t.LocalNodes == null)
+        if (t.NodeItems == null)
         {
             throw new Exception("All diagram items is null.");
         }
-        return t.LocalNodes.OfType<ElementData>();
+        return t.NodeItems.OfType<ElementData>();
     }
 
     public static IEnumerable<IDiagramNode> GetAllowedDiagramItems(this IElementsDataRepository t, IDiagramFilter filter)
     {
-        return t.AllNodes.Where(p => filter.IsAllowed(p, p.GetType()));
+        return t.NodeItems.Where(p => filter.IsAllowed(p, p.GetType()));
     }
     public static IEnumerable<IDiagramNode> GetDiagramItems(this IElementsDataRepository t, IDiagramFilter filter)
     {
-        return filter.FilterItems(t.AllNodes);
+        return filter.FilterItems(t.NodeItems);
     }
 
     //public static IEnumerable<ElementDataBase> GetElements(this IElementDesignerData t)
@@ -44,53 +44,53 @@ public static class ElementDesignerDataExtensions
         return t.FilterState.FilterStack.Reverse();
     }
 
-    public static IEnumerable<IDiagramFilter> GetFilters(this IElementDesignerData t)
+    public static IEnumerable<IDiagramFilter> GetFilters(this INodeRepository t)
     {
-        return t.LocalNodes.OfType<IDiagramFilter>();
+        return t.NodeItems.OfType<IDiagramFilter>();
     }
 
-    public static IEnumerable<SceneManagerData> GetSceneManagers(this IElementDesignerData t)
+    public static IEnumerable<SceneManagerData> GetSceneManagers(this INodeRepository t)
     {
-        return t.LocalNodes.OfType<SceneManagerData>();
+        return t.NodeItems.OfType<SceneManagerData>();
     }
 
-    public static IEnumerable<ISubSystemData> GetSubSystems(this IElementDesignerData t)
+    public static IEnumerable<ISubSystemData> GetSubSystems(this INodeRepository t)
     {
-        return t.LocalNodes.OfType<ISubSystemData>();
+        return t.NodeItems.OfType<ISubSystemData>();
     }
 
-    public static IEnumerable<ViewComponentData> GetViewComponents(this IElementDesignerData t)
+    public static IEnumerable<ViewComponentData> GetViewComponents(this INodeRepository t)
     {
-        return t.LocalNodes.OfType<ViewComponentData>();
+        return t.NodeItems.OfType<ViewComponentData>();
     }
 
-    public static IEnumerable<ElementData> GetElements(this IElementDesignerData t)
+    public static IEnumerable<ElementData> GetElements(this INodeRepository t)
     {
-        return t.LocalNodes.OfType<ElementData>();
+        return t.NodeItems.OfType<ElementData>();
     }
 
-    public static IEnumerable<ViewData> GetViews(this IElementDesignerData t)
+    public static IEnumerable<ViewData> GetViews(this INodeRepository t)
     {
-        return t.LocalNodes.OfType<ViewData>();
+        return t.NodeItems.OfType<ViewData>();
     }
 
-    public static IEnumerable<EnumData> GetEnums(this IElementDesignerData t)
+    public static IEnumerable<EnumData> GetEnums(this INodeRepository t)
     {
-        return t.LocalNodes.OfType<EnumData>();
+        return t.NodeItems.OfType<EnumData>();
     }
 
-    public static List<Refactorer> GetRefactorings(this IElementDesignerData data)
+    public static List<Refactorer> GetRefactorings(this INodeRepository data)
     {
         return
-            data.LocalNodes.OfType<IRefactorable>()
+            data.NodeItems.OfType<IRefactorable>()
                 .SelectMany(p => p.Refactorings)
-                .Concat(data.LocalNodes.SelectMany(p => p.Items).OfType<IRefactorable>().SelectMany(p => p.Refactorings))
+                .Concat(data.NodeItems.SelectMany(p => p.Items).OfType<IRefactorable>().SelectMany(p => p.Refactorings))
                 .ToList();
     }
     public static void Prepare(this IElementDesignerData designerData)
     {
         designerData.RefactorCount = 0;
-        foreach (var allDiagramItem in designerData.LocalNodes)
+        foreach (var allDiagramItem in designerData.NodeItems)
         {
             allDiagramItem.Data = designerData;
         }
@@ -100,11 +100,11 @@ public static class ElementDesignerDataExtensions
     {
         return designerData.CurrentFilter.FilterItems(allDiagramItems);
     }   
-    public static void FilterLeave(this IElementDesignerData data)
+    public static void FilterLeave(this INodeRepository data)
     {
     }
 
-    public static void ApplyFilter(this IElementDesignerData designerData)
+    public static void ApplyFilter(this INodeRepository designerData)
     {
         
         designerData.UpdateLinks();
@@ -116,9 +116,9 @@ public static class ElementDesignerDataExtensions
         //UpdateLinks();
     }
 
-    public static void CleanUpFilters(this IElementDesignerData designerData)
+    public static void CleanUpFilters(this INodeRepository designerData)
     {
-        var diagramItems = designerData.LocalNodes.Select(p => p.Identifier);
+        var diagramItems = designerData.NodeItems.Select(p => p.Identifier);
 
         foreach (var diagramFilter in designerData.GetFilters())
         {
@@ -131,11 +131,11 @@ public static class ElementDesignerDataExtensions
         //UpdateLinks();
     }
 
-    public static string GetUniqueName(this IElementDesignerData designerData, string name)
+    public static string GetUniqueName(this INodeRepository designerData, string name)
     {
         var tempName = name;
         var index = 1;
-        while (designerData.LocalNodes.Any(p => p.Name.ToUpper() == tempName.ToUpper()))
+        while (designerData.NodeItems.Any(p => p.Name.ToUpper() == tempName.ToUpper()))
         {
             tempName = name + index;
             index++;
@@ -219,7 +219,7 @@ public static class ElementDesignerDataExtensions
         }
     }
 
-    public static void UpdateLinks(this IElementDesignerData designerData)
+    public static void UpdateLinks(this INodeRepository designerData)
     {
         //designerData.CleanUpFilters();
         //designerData.Links.Clear();
@@ -249,7 +249,7 @@ public static class ElementDesignerDataExtensions
         //    designerData.Links.AddRange(viewModelData.GetLinks(diagramItems));
         //}
     }
-    public static IEnumerable<ElementDataBase> GetAssociatedElementsInternal(this IElementDesignerData designerData, ElementDataBase data)
+    public static IEnumerable<ElementDataBase> GetAssociatedElementsInternal(this INodeRepository designerData, ElementDataBase data)
     {
         var derived = GetAllBaseItems(designerData, data);
         foreach (var viewModelItem in derived)
@@ -268,10 +268,10 @@ public static class ElementDesignerDataExtensions
     }
     public static IEnumerable<IDiagramNode> FilterItems(this IElementsDataRepository designerData, IDiagramFilter filter)
     {
-        return filter.FilterItems(designerData.AllNodes);
+        return filter.FilterItems(designerData.NodeItems);
     }
 
-    public static IEnumerable<IViewModelItem> GetAllBaseItems(this IElementDesignerData designerData, ElementDataBase data)
+    public static IEnumerable<IViewModelItem> GetAllBaseItems(this INodeRepository designerData, ElementDataBase data)
     {
         var current = data;
         while (current != null)
@@ -288,16 +288,16 @@ public static class ElementDesignerDataExtensions
         }
     }
 
-    public static ElementDataBase[] GetAssociatedElements(this IElementDesignerData designerData, ElementDataBase data)
+    public static ElementDataBase[] GetAssociatedElements(this INodeRepository designerData, ElementDataBase data)
     {
         return GetAssociatedElementsInternal(designerData, data).Concat(new[] { data }).Distinct().ToArray();
     }
 
     public static IDiagramNode RelatedNode(this IViewModelItem item)
     {
-        return item.Node.Data.LocalNodes.FirstOrDefault(p => p.Name == item.RelatedTypeName);
+        return item.Node.Data.NodeItems.FirstOrDefault(p => p.Name == item.RelatedTypeName);
     }
-    public static ElementDataBase GetElement(this IElementDesignerData designerData, IViewModelItem item)
+    public static ElementDataBase GetElement(this INodeRepository designerData, IViewModelItem item)
     {
         
         if (item.RelatedTypeName == null)
@@ -330,7 +330,7 @@ public static class ElementDesignerDataExtensions
     //    return tempName;
     //}
 
-    public static ElementData GetViewModel(this IElementDesignerData designerData, string elementName)
+    public static ElementData GetViewModel(this INodeRepository designerData, string elementName)
     {
         return designerData.GetElements().FirstOrDefault(p => p.Name == elementName);
     }
