@@ -205,11 +205,6 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         }
     }
 
-    //public override void Refresh()
-    //{
-    //    Refresh(ViewModel.Position);
-    //}
-
     protected virtual GUIStyle HeaderStyle
     {
         get
@@ -266,6 +261,17 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         GUI.Label(item.Position.Scale(Scale), item.Label, style);
 
 
+    }
+
+    public override void OnMouseDown(MouseEvent mouseEvent)
+    {
+        ViewModelObject.Select();
+    }
+
+    public override void OnMouseMove(MouseEvent e)
+    {
+        base.OnMouseMove(e);
+        ViewModel.IsMouseOver = true;
     }
 
     protected virtual void DrawSelectedItem(IDiagramNodeItem nodeItem, ElementsDiagram diagram)
@@ -491,6 +497,18 @@ public class ConnectorDrawer : Drawer<ConnectorViewModel>
         get { return ViewModelObject.Bounds; }
         set { ViewModelObject.Bounds = value; }
     }
+
+    public override void OnMouseDown(MouseEvent mouseEvent)
+    {
+        base.OnMouseDown(mouseEvent);
+        if (mouseEvent.MouseButton == 0)
+        {
+            mouseEvent.Begin(new ConnectionHandler(uFrameEditor.CurrentDiagramViewModel, ViewModel));
+            mouseEvent.NoBubble = true;
+            return;
+        }
+    }
+
     public override void Draw(float scale)
     {
         base.Draw(scale);
@@ -503,14 +521,14 @@ public class ConnectorDrawer : Drawer<ConnectorViewModel>
             pos.x = nodePosition.x;
             pos.y = nodePosition.y + (nodePosition.height * ViewModel.SidePercentage);
             pos.y -= (texture.height/2f);
-            pos.x -= texture.width;
+            pos.x -= (texture.width) + 2;
         }
         else if (ViewModel.Side == ConnectorSide.Right)
         {
             pos.x = nodePosition.x + nodePosition.width;
             pos.y = nodePosition.y + (nodePosition.height * ViewModel.SidePercentage);
             pos.y -= (texture.height / 2f);
-            //pos.x += texture.width;
+            pos.x += 2;
         }
         else if (ViewModel.Side == ConnectorSide.Bottom)
         {

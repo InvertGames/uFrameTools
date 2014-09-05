@@ -23,7 +23,21 @@ public class DiagramViewModel : ViewModel
     }
     public IEnumerable<GraphItemViewModel> SelectedGraphItems
     {
-        get { return GraphItems.Where(p => p.IsSelected); }
+        get
+        {
+            foreach (var item in GraphItems)
+            {
+                foreach (var child in item.ContentItems)
+                {
+                    if (child.IsSelected) yield return child;
+                }
+                if (item.IsSelected)
+                {
+                    yield return item;
+                }
+                
+            }
+        }
     }
     public GraphItemViewModel SelectedGraphItem
     {

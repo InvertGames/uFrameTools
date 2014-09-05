@@ -2,25 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Invert.uFrame.Editor.ViewModels;
 
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class AddElementCommandCommand : EditorCommand<ElementData>
+    public class AddElementCommandCommand : EditorCommand<ElementNodeViewModel>
     {
-        public override void Perform(ElementData node)
+        public override void Perform(ElementNodeViewModel node)
         {
-            var property = new ViewModelCommandData()
-            {
-                Node = node,
-                Name = node.Data.GetUniqueName("NewCommand")
-            };
-            node.Commands.Add(property);
-            uFrameEditor.CurrentDiagram.Refresh();
-            property.IsSelected = true;
-            property.BeginEditing();
+            node.AddCommand();
         }
 
-        public override string CanPerform(ElementData node)
+        public override string CanPerform(ElementNodeViewModel node)
         {
             if (node == null) return "Arg can't be null";
             return null;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Invert.uFrame.Editor;
 
-public interface IViewModelItem : IDiagramNodeItem, IRefactorable
+public interface IViewModelItem : IDiagramNodeItem, IRefactorable,IItem
 {
     
     string RelatedType { get; set; }

@@ -71,11 +71,13 @@
     <Compile Include="ElementDesigner\Drawers\BindingDiagramItem.cs" />
     <Compile Include="ElementDesigner\DiagramViewModel.cs" />
     <Compile Include="IKeyBinding.cs" />
+    <Compile Include="ItemSelectionWindow.cs" />
     <Compile Include="IUFrameTypeProvider.cs" />
     <Compile Include="KeyBinding.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="SimpleKeyBinding.cs" />
     <Compile Include="ViewModels\DiagramNodeViewModel.cs" />
+    <Compile Include="ViewModels\IItem.cs" />
     <Compile Include="ViewModels\SceneManagerViewModel.cs" />
     <Compile Include="ViewModels\SubSystemViewModel.cs" />
     <Compile Include="ElementDesigner\Drawers\UFType.cs" />

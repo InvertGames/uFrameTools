@@ -10,6 +10,9 @@ using UnityEngine;
 [Serializable]
 public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializeablePropertyData
 {
+
+    public string Title { get { return Name; } }
+    public string SearchTag { get { return Name; } }
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);

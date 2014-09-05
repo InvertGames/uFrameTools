@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Invert.Common;
 using Invert.MVVM;
+using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor.Connections;
 using Invert.uFrame.Editor.ElementDesigner;
 using UnityEngine;
@@ -30,6 +31,7 @@ namespace Invert.uFrame.Editor.ViewModels
         public Rect Bounds { get; set; }
         private bool _isSelected = false;
         private List<ConnectorViewModel> _connectors;
+        private ModelCollection<GraphItemViewModel> _contentItems;
 
         public const string IsSelectedProperty = "IsSelected";
 
@@ -42,12 +44,23 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
 
+        public virtual void Select()
+        {
+            IsSelected = true;
+
+        }
         public bool IsMouseOver { get; set; }
 
         public List<ConnectorViewModel> Connectors
         {
             get { return _connectors ?? (_connectors = new List<ConnectorViewModel>()); }
             set { _connectors = value; }
+        }
+
+        public ModelCollection<GraphItemViewModel> ContentItems
+        {
+            get { return _contentItems ?? (_contentItems = new ModelCollection<GraphItemViewModel>()); }
+            set { _contentItems = value; }
         }
 
         //public void GetConnectors(List<ConnectorViewModel> list)
@@ -65,6 +78,7 @@ namespace Invert.uFrame.Editor.ViewModels
         //    }
         //}
     }
+
     public class DiagramNodeViewModel<TData> : DiagramNodeViewModel where TData : IDiagramNode
     {
         protected DiagramNodeViewModel()
@@ -74,6 +88,22 @@ namespace Invert.uFrame.Editor.ViewModels
         public DiagramNodeViewModel(TData graphItemObject, DiagramViewModel diagramViewModel) : base(graphItemObject,diagramViewModel)
         {
         }
+        protected override void DataObjectChanged()
+        {
+            base.DataObjectChanged();
+            ContentItems.Clear();
+            foreach (var item in GraphItem.ContainedItems)
+            {
+                var vm = uFrameEditor.Container.ResolveRelation<ViewModel>(item.GetType(), item, this) as GraphItemViewModel;
+                if (vm == null)
+                {
+                    Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
+                    continue;
+                }
+                ContentItems.Add(vm);
+            }
+        }
+
 
         public TData GraphItem
         {
@@ -115,12 +145,14 @@ namespace Invert.uFrame.Editor.ViewModels
         Top,
         Bottom,
     }
+
     public enum ConnectorDirection
     {
         Input,
         Output,
         TwoWay
     }
+
     public interface IConnectionStrategy
     {
         /// <summary>
@@ -241,6 +273,137 @@ namespace Invert.uFrame.Editor.ViewModels
         }
     }
 
+    public class ElementViewConnectionStrategy : DefaultConnectionStrategy
+    {
+        public override void GetConnectors(List<ConnectorViewModel> list, GraphItemViewModel graphItem)
+        {
+            base.GetConnectors(list, graphItem);
+            var elementViewModel = graphItem as ViewNodeViewModel;
+            if (elementViewModel != null)
+            {
+                list.Add(new ConnectorViewModel(this)
+                {
+                    DataObject = elementViewModel.GraphItem,
+                    Direction = ConnectorDirection.Input,
+                    ConnectorFor = elementViewModel,
+                    Side = ConnectorSide.Left,
+                    SidePercentage = 0.5f,
+                });
+
+                list.Add(new ConnectorViewModel(this)
+                {
+                    Side = ConnectorSide.Right,
+                    SidePercentage = 0.5f,
+                    DataObject = elementViewModel.GraphItem,
+                    Direction = ConnectorDirection.Output,
+                    ConnectorFor = elementViewModel
+                });
+            }
+        }
+
+        public override ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
+        {
+
+            if (a.ConnectorFor is ElementNodeViewModel && b.ConnectorFor is ViewNodeViewModel)
+            {
+                if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
+                {
+                    return new ConnectionViewModel()
+                    {
+                        ConnectorA = a,
+                        ConnectorB = b,
+                        Apply = Apply
+                    };
+                }
+
+            }
+            return null;
+        }
+
+        public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
+        {
+            base.GetConnections(connections, info);
+            connections.AddRange(info.ConnectionsByData<ElementData,ViewData>(Color.white, (o, i) => i.ForAssemblyQualifiedName == o.AssemblyQualifiedName,Remove));
+        }
+
+        private void Remove(ConnectionViewModel obj)
+        {
+            
+        }
+
+        private void Apply(ConnectionViewModel connectionViewModel)
+        {
+            var baseElement = connectionViewModel.ConnectorA.DataObject as ElementData;
+            var derivedEelement = connectionViewModel.ConnectorB.DataObject as ViewData;
+            derivedEelement.ForAssemblyQualifiedName = baseElement.AssemblyQualifiedName;
+        }
+    }
+
+    public class SceneTransitionConnectionStrategy : DefaultConnectionStrategy
+    {
+        public override void GetConnectors(List<ConnectorViewModel> list, GraphItemViewModel graphItem)
+        {
+            base.GetConnectors(list, graphItem);
+            var elementViewModel = graphItem as SceneManagerViewModel;
+            if (elementViewModel != null)
+            {
+                list.Add(new ConnectorViewModel(this)
+                {
+                    DataObject = elementViewModel.GraphItem,
+                    Direction = ConnectorDirection.Input,
+                    ConnectorFor = elementViewModel,
+                    Side = ConnectorSide.Left,
+                    SidePercentage = 0.5f,
+                });
+
+                list.Add(new ConnectorViewModel(this)
+                {
+                    Side = ConnectorSide.Right,
+                    SidePercentage = 0.5f,
+                    DataObject = elementViewModel.GraphItem,
+                    Direction = ConnectorDirection.Output,
+                    ConnectorFor = elementViewModel
+                });
+            }
+        }
+
+        public override ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
+        {
+
+            if (a.ConnectorFor is SceneManagerViewModel && b.ConnectorFor is SceneManagerViewModel)
+            {
+                if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
+                {
+                    return new ConnectionViewModel()
+                    {
+                        ConnectorA = a,
+                        ConnectorB = b,
+                        Apply = Apply
+                    };
+                }
+
+            }
+            return null;
+        }
+
+        public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
+        {
+            base.GetConnections(connections, info);
+            connections.AddRange(info.ConnectionsByData<ElementData, ViewData>(Color.white, (o, i) => i.ForAssemblyQualifiedName == o.AssemblyQualifiedName, Remove));
+        }
+
+        private void Remove(ConnectionViewModel obj)
+        {
+
+        }
+
+        private void Apply(ConnectionViewModel connectionViewModel)
+        {
+            var baseElement = connectionViewModel.ConnectorA.DataObject as ElementData;
+            var derivedEelement = connectionViewModel.ConnectorB.DataObject as ViewData;
+            derivedEelement.ForAssemblyQualifiedName = baseElement.AssemblyQualifiedName;
+        }
+    }
     public class ConnectorInfo
     {
         private ConnectorViewModel[] _inputs;
@@ -313,6 +476,12 @@ namespace Invert.uFrame.Editor.ViewModels
 
     public class ItemViewModel<TData> : ItemViewModel
     {
+        public ItemViewModel(DiagramNodeViewModel nodeViewModel) :base(nodeViewModel)
+        {
+         
+        }
+
+   
         public TData Data
         {
             get { return (TData)DataObject; }
@@ -322,6 +491,11 @@ namespace Invert.uFrame.Editor.ViewModels
 
     public class ItemViewModel : GraphItemViewModel
     {
+        public ItemViewModel(DiagramNodeViewModel nodeViewModel)
+        {
+            NodeViewModel = nodeViewModel;
+        }
+        public DiagramNodeViewModel NodeViewModel { get; set; }
         public IDiagramNodeItem NodeItem
         {
             get { return (IDiagramNodeItem) DataObject; }
@@ -357,11 +531,23 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             NodeItem.Remove(((IDiagramNodeItem)DataObject).Node);
         }
+
+        public override void Select()
+        {
+            foreach (var item in NodeViewModel.ContentItems)
+            {
+                item.IsSelected = false;
+            }
+            IsSelected = true;
+            NodeItem.IsEditing = true;
+        }
     }
 
     public class ElementItemViewModel : ItemViewModel<IViewModelItem>
     {
-        public ElementItemViewModel(IViewModelItem viewModelItem)
+
+        public ElementItemViewModel(IViewModelItem viewModelItem, DiagramNodeViewModel nodeViewModel)
+            : base(nodeViewModel)
         {
             DataObject = viewModelItem;
         }
@@ -370,7 +556,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get
             {
-                return Data.RelatedType;
+                return ElementDataBase.TypeAlias(Data.RelatedType);
             }
             set
             {
@@ -379,10 +565,63 @@ namespace Invert.uFrame.Editor.ViewModels
         }
     }
 
+    public class SceneTransitionItemViewModel : ItemViewModel<SceneManagerTransition>
+    {
+
+        public SceneTransitionItemViewModel(SceneManagerTransition data, DiagramNodeViewModel nodeViewModel)
+            : base(nodeViewModel)
+        {
+            DataObject = data;
+        }
+
+     
+    }
+
+    public class ViewPropertyItemViewModel : ItemViewModel<ViewPropertyData>
+    {
+        public ViewPropertyItemViewModel(ViewPropertyData data, DiagramNodeViewModel nodeViewModel)
+            : base(nodeViewModel)
+        {
+            DataObject = data;
+        }
+    }
+
+    public class ViewBindingItemViewModel : ItemViewModel<IBindingGenerator>
+    {
+        public ViewBindingItemViewModel(IBindingGenerator data, DiagramNodeViewModel nodeViewModel)
+            : base(nodeViewModel)
+        {
+            DataObject = data;
+        }
+    }
+
+    public class ElementPropertyItemViewModel : ItemViewModel<ViewModelPropertyData>
+    {
+        public ElementPropertyItemViewModel(ViewModelPropertyData data, DiagramNodeViewModel nodeViewModel)
+            : base(nodeViewModel)
+        {
+            DataObject = data;
+        }
+    }
+    public class ElementCollectionItemViewModel : ItemViewModel<ViewModelCollectionData>
+    {
+        public ElementCollectionItemViewModel(ViewModelCollectionData data, DiagramNodeViewModel nodeViewModel)
+            : base(nodeViewModel)
+        {
+            DataObject = data;
+        }
+    }
+    public class ElementCommandItemViewModel : ItemViewModel<ViewModelCommandData>
+    {
+        public ElementCommandItemViewModel(ViewModelCommandData data, DiagramNodeViewModel nodeViewModel)
+            : base(nodeViewModel)
+        {
+            DataObject = data;
+        }
+    }
     public class DiagramNodeViewModel : GraphItemViewModel
     {
         private bool _isSelected = false;
-        private ModelCollection<GraphItemViewModel> _contentItems;
 
 
         public IDiagramNode GraphItemObject
@@ -529,10 +768,12 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return typeof(IDiagramNode); }
         }
 
-        public ModelCollection<GraphItemViewModel> ContentItems
+        public override void Select()
         {
-            get { return _contentItems ?? (_contentItems = new ModelCollection<GraphItemViewModel>()); }
-            set { _contentItems = value; }
+            if (DiagramViewModel.SelectedGraphItems.Count() < 2)
+            DiagramViewModel.DeselectAll();
+            base.Select();
+            
         }
 
         public void Rename(string newText)

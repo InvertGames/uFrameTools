@@ -287,15 +287,18 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
 
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
-        base.GetContentDrawers(drawers);
+       // base.GetContentDrawers(drawers);
+
         drawers.Add(PropertiesHeader);
-        foreach (var item in ElementViewModel.Properties)
+        foreach (var item in ElementViewModel.ContentItems.OfType<ElementItemViewModel>())
         {
-            drawers.Add(new ElementItemDrawer(new ElementItemViewModel(item)));
+            drawers.Add(uFrameEditor.CreateDrawer(item));
         }
         drawers.Add(ComputedHeader);
         drawers.Add(CollectionsHeader);
+        
         drawers.Add(CommandsHeader);
+        
       
         //var properties = NodeViewModel.Properties.Where(p=>!p.IsComputed).Cast<IDiagramNodeItem>().ToArray();
         //yield return new DiagramSubItemGroup()

@@ -89,7 +89,8 @@ namespace Invert.uFrame.Editor.ViewModels
 
     public class EnumItemViewModel : ItemViewModel<EnumItem>
     {
-        public EnumItemViewModel(EnumItem item)
+        public EnumItemViewModel(EnumItem item,DiagramNodeViewModel nodeViewModel)
+            : base(nodeViewModel)
         {
             DataObject = item;
         }
@@ -117,6 +118,15 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get { return GraphItem.EnumItems; }
         }
+
+        public void AddNew()
+        {
+            GraphItem.EnumItems.Add(new EnumItem()
+            {
+                Node = GraphItem,
+                Name = GraphItem.Data.GetUniqueName("Item")
+            });
+        }
     }
 
     public class ElementNodeViewModel : DiagramNodeViewModel<ElementData>
@@ -130,7 +140,12 @@ namespace Invert.uFrame.Editor.ViewModels
         }
 
         public ConnectorViewModel InheritanceOutput { get; set; }
-        
+
+        protected override void DataObjectChanged()
+        {
+            base.DataObjectChanged();
+            
+        }
 
         public override bool ShowSubtitle
         {
@@ -179,19 +194,31 @@ namespace Invert.uFrame.Editor.ViewModels
                 Name = GraphItem.Data.GetUniqueName("String1"),
                 Type = typeof(string)
             };
-
             this.GraphItem.Properties.Add(property);
-
-            var contentItem = uFrameEditor.Container.ResolveRelation<ViewModel>(property.GetType(), property) as GraphItemViewModel;
-            if (contentItem != null)
-            {
-                ContentItems.Add(contentItem);
-            }
+            Debug.Log("Added Property");
         }
 
-        public IEditorCommand AddPropertyCommand { get; set; }
-        public IEditorCommand AddCommandCommand { get; set; }
-        public IEditorCommand AddElementCollectionCommand { get; set; }
+        public void AddCommand()
+        {
+            var property = new ViewModelCommandData()
+            {
+                Node = GraphItem,
+                Name = uFrameEditor.Repository.GetUniqueName("Command"),
+            };
+
+            this.GraphItem.Commands.Add(property);
+        }
+        public void AddCollection()
+        {
+            var property = new ViewModelCollectionData()
+            {
+                Node = GraphItem,
+                Name = GraphItem.Data.GetUniqueName("Collection"),
+                ItemType = typeof(string)
+            };
+            this.GraphItem.Collections.Add(property);
+        }
+
     }
 }
 

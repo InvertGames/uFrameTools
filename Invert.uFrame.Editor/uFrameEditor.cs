@@ -345,6 +345,7 @@ namespace Invert.uFrame.Editor
 
             container.RegisterInstance(new AddViewPropertyCommand());
             container.RegisterInstance(new AddBindingCommand());
+            container.RegisterInstance(new AddTransitionCommand());
 
             container.RegisterInstance<IEditorCommand>(new RemoveNodeItemCommand(), "RemoveNodeItem");
 
@@ -396,6 +397,7 @@ namespace Invert.uFrame.Editor
             RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
             RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
 
+            RegisterGraphItem<ViewModelPropertyData,ElementItemViewModel,ElementItemDrawer>();
             RegisterGraphItem<SceneManagerData,SceneManagerViewModel,SceneManagerDrawer>();
             RegisterGraphItem<SubSystemData,SubSystemViewModel,SubSystemDrawer>();
             RegisterGraphItem<ElementData,ElementNodeViewModel,ElementDrawer>();
@@ -403,13 +405,19 @@ namespace Invert.uFrame.Editor
             RegisterGraphItem<ViewData,ViewNodeViewModel,ViewDrawer>();
             RegisterGraphItem<ViewComponentData,ViewComponentNodeViewModel,ViewComponentDrawer>();
 
-            RegisterGraphItem<ViewModelPropertyData,ElementItemViewModel,ElementItemDrawer>();
-            RegisterGraphItem<ViewModelCommandData,ElementItemViewModel,ElementItemDrawer>();
-            RegisterGraphItem<ViewModelCollectionData,ElementItemViewModel,ElementItemDrawer>();
+            RegisterGraphItem<ViewModelPropertyData, ElementPropertyItemViewModel, ElementItemDrawer>();
+            RegisterGraphItem<ViewModelCommandData, ElementCommandItemViewModel, ElementItemDrawer>();
+            RegisterGraphItem<ViewModelCollectionData, ElementCollectionItemViewModel, ElementItemDrawer>();
+            RegisterGraphItem<EnumItem, EnumItemViewModel, EnumItemDrawer>();
+            RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
+            RegisterGraphItem<ViewPropertyData, ViewPropertyItemViewModel, ItemDrawer>();
+            RegisterGraphItem<ViewBindingItemViewModel, SceneTransitionItemViewModel, ItemDrawer>();
+            RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
 
             //RegisterGraphItem<EnumData,EnumItemViewModel,EnumItemDrawer>();
 
             container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritance");
+            container.RegisterInstance<IConnectionStrategy>(new ElementViewConnectionStrategy(), "ElementViewConnection");
             container.RegisterInstance<IUFrameTypeProvider>(new uFrameStringTypeProvider());
             
 

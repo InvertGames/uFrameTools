@@ -21,5 +21,15 @@ namespace Invert.uFrame.Editor.ViewModels
                 return this.GraphItem.CurrentType;
             }
         }
+
+        public void AddCommandTransition(ViewModelCommandData item)
+        {
+            GraphItem.Transitions.Add(new SceneManagerTransition()
+            {
+                Node = GraphItem,
+                CommandIdentifier = item.Identifier,
+                Name = item.Name
+            });
+        }
     }
 }

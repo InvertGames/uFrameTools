@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Common;
+using Invert.uFrame.Editor;
+using Invert.uFrame.Editor.ElementDesigner.Commands;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
 public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
 {
     private NodeItemHeader _transitionsHeader;
-
-
 
     public SceneManagerDrawer(SceneManagerViewModel viewModel) : base()
     {
@@ -23,13 +23,19 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
 
     public NodeItemHeader TransitionsHeader
     {
-        get { return _transitionsHeader ?? (_transitionsHeader = new NodeItemHeader(ViewModel) { Label = "Transitions", HeaderType = typeof(SceneManagerData) }); }
+        get { return _transitionsHeader ?? (_transitionsHeader = new NodeItemHeader(ViewModel)
+        {
+            Label = "Transitions", 
+            HeaderType = typeof(SceneManagerData),
+            AddCommand = uFrameEditor.Container.Resolve<AddTransitionCommand>()
+        }); }
         set { _transitionsHeader = value; }
     }
 
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
         base.GetContentDrawers(drawers);
+        drawers.Insert(1,TransitionsHeader);
         //if (!NodeViewModel.Items.Any()) yield break;
         //yield return new DiagramSubItemGroup()
         //{

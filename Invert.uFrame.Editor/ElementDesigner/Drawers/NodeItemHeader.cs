@@ -61,14 +61,15 @@ public class NodeItemHeader : Drawer<DiagramNodeViewModel>
         style.fontStyle = FontStyle.Bold;
 
         GUI.Box(Bounds.Scale(scale), Label, style);
-       
-        //if (AddCommand != null)
-        //{
+
+        if (AddCommand != null)
+        {
             if (GUI.Button(_AddButtonRect.Scale(scale), string.Empty, ElementDesignerStyles.AddButtonStyle))
             {
+                this.ViewModel.IsSelected = true;
                 uFrameEditor.ExecuteCommand(AddCommand);
             }    
-        //}
+        }
         
     }
 

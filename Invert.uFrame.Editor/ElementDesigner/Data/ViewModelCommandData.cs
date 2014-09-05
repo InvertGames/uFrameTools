@@ -236,4 +236,7 @@ public class ViewModelCommandData : DiagramNodeItem, IViewModelItem
             }
         }
     }
+
+    public string Title { get { return Name; } }
+    public string SearchTag { get { return Name; } }
 }

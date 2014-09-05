@@ -41,14 +41,9 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     {
         get
         {
-
-          
-
-       
             if (CurrentMouseOverNode != null && !CurrentMouseOverNode.IsSelected)
             {
                 CurrentMouseOverNode.IsSelected = true;
-
             }
             if (DiagramViewModel != null)
             {
@@ -56,10 +51,10 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
                 foreach (var item in DiagramViewModel.SelectedGraphItems)
                 {
                     yield return item;
-                    
-                }    
+
+                }
             }
-            
+
         }
     }
 
@@ -151,26 +146,19 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
 
     public Vector2 LastMouseUpPosition { get; set; }
 
-    public INodeDrawer NodeAtMouse { get; set; }
+    //public INodeDrawer NodeAtMouse { get; set; }
 
-    public IDrawer NodeDrawerAtMouse
-    {
-        get { return _nodeDrawerAtMouse; }
-        set
-        {
-            if (value != _nodeDrawerAtMouse && _nodeDrawerAtMouse != null)
-            {
-                _nodeDrawerAtMouse.OnMouseExit();
-            }
-            if (value != _nodeDrawerAtMouse && value != null)
-            {
-                value.OnMouseEnter();
-            }
-         
-            _nodeDrawerAtMouse = value;
+    //public IDrawer NodeDrawerAtMouse
+    //{
+    //    get { return _nodeDrawerAtMouse; }
+    //    set
+    //    {
             
-        }
-    }
+
+    //        _nodeDrawerAtMouse = value;
+
+    //    }
+    //}
 
     public Rect Rect { get; set; }
 
@@ -364,27 +352,41 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         }
     }
 
-    public void MouseEvent(Action<IDrawer> action)
-    {
-        var drawer = NodeDrawerAtMouse;
-        if (drawer != null)
-        {
-            action(drawer);
-        }
-    }
+    //public void MouseEvent(Action<IDrawer> action)
+    //{
+    //    if (DrawersAtMouse == null) return;
+    //    foreach (var drawer in DrawersAtMouse)
+    //    {
+    //        action(drawer);
+    //    }
+        
+    //}
 
     public override void OnMouseDoubleClick(MouseEvent mouseEvent)
     {
+        BubbleEvent(d => d.OnMouseDoubleClick(mouseEvent), mouseEvent);
         DiagramViewModel.Navigate();
         Refresh();
         Refresh();
     }
 
-    public void OnMouseDown(MouseEvent mouseEvent)
+    public override void OnMouseEnter(MouseEvent e)
     {
-        var selected = NodeDrawerAtMouse;
+        base.OnMouseEnter(e);
+        BubbleEvent(d => d.OnMouseEnter(e), e);
+    }
+    public override void OnMouseExit(MouseEvent e)
+    {
+        base.OnMouseExit(e);
+        BubbleEvent(d => d.OnMouseExit(e), e);
+    }
 
-        if (selected == null)
+    public override void OnMouseDown(MouseEvent mouseEvent)
+    {
+        base.OnMouseDown(mouseEvent);
+        var selected = DrawersAtMouse.FirstOrDefault();
+
+        if (!DrawersAtMouse.Any())
         {
             DiagramViewModel.NothingSelected();
 
@@ -392,20 +394,30 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         }
         else
         {
-            if (selected is ConnectorDrawer && mouseEvent.MouseButton == 0)
-            {
-                mouseEvent.Begin(new ConnectionHandler(DiagramViewModel,selected.ViewModelObject as ConnectorViewModel));
-                return;
-            }
+            BubbleEvent(d=>d.OnMouseDown(mouseEvent),mouseEvent);
 
-            DiagramViewModel.Select(selected.ViewModelObject);
+         
+
+            
         }
     }
 
+    public void BubbleEvent(Action<IDrawer> action, MouseEvent e)
+    {
+        foreach (var item in DrawersAtMouse)
+        {
+            action(item);
+            if (e.NoBubble)
+            {
+                e.NoBubble = false;
+                break;
+            }
+        }
+    }
     public override void OnMouseMove(MouseEvent e)
     {
         base.OnMouseMove(e);
-        
+
         if (e.IsMouseDown && e.MouseButton == 0)
         {
             foreach (var item in Children.OfType<DiagramNodeDrawer>())
@@ -415,25 +427,73 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
                     item.ViewModel.Position += e.MousePositionDelta;
                     item.Refresh();
                 }
-                
+
             }
-            
+
         }
         else
         {
-            NodeDrawerAtMouse = Children.FirstOrDefault(p => p.Bounds.Scale(Scale).Contains(CurrentMousePosition));
 
+            var nodes = GetDrawersAtPosition(this, e.MousePosition).ToArray();
+
+            //NodeDrawerAtMouse = nodes.FirstOrDefault();
+
+            if (DrawersAtMouse != null)
+            foreach (var item in nodes)
+            {
+                var alreadyInside = DrawersAtMouse.Contains(item);
+                if (!alreadyInside)
+                {
+                    item.OnMouseEnter(e);
+                }
+            }
+            if (DrawersAtMouse != null)
+            foreach (var item in DrawersAtMouse)
+            {
+                if (!nodes.Contains(item))
+                {
+                    item.OnMouseExit(e);
+                }
+            }
+
+            DrawersAtMouse = nodes;
+            foreach (var node in DrawersAtMouse)
+            {
+                node.OnMouseMove(e);
+            }
         }
     }
 
-    public override void OnMouseUp(MouseEvent mouseEvent)
+    public IDrawer[] DrawersAtMouse { get; set; }
+
+    public IEnumerable<IDrawer> GetDrawersAtPosition(IDrawer parent, Vector2 point)
     {
 
-        
+        foreach (var child in parent.Children)
+        {
+            if (child.Bounds.Contains(point))
+            {
+                if (child.Children != null && child.Children.Count > 0)
+                {
+                    var result = GetDrawersAtPosition(child, point);
+                    foreach (var item in result)
+                    {
+                        yield return item;
+                    }
+                }
+                yield return child;
+            }
+        }
+    }
+    public override void OnMouseUp(MouseEvent mouseEvent)
+    {
+        BubbleEvent(d=>d.OnMouseUp(mouseEvent),mouseEvent);
+
     }
 
     public override void OnRightClick(MouseEvent mouseEvent)
     {
+        BubbleEvent(d => d.OnRightClick(mouseEvent), mouseEvent);
         Debug.Log("RIGHT CLICKED");
         if (DiagramViewModel.SelectedNodeItem != null)
         {
@@ -621,7 +681,7 @@ public class SelectionRectHandler : Drawer, IInputHandler
         mouseEvent.Cancel();
     }
 
-    public void OnMouseDown(MouseEvent mouseEvent)
+    public override void OnMouseDown(MouseEvent mouseEvent)
     {
         mouseEvent.Cancel();
     }
@@ -629,7 +689,7 @@ public class SelectionRectHandler : Drawer, IInputHandler
     public override void OnMouseMove(MouseEvent e)
     {
         if (e.IsMouseDown && e.MouseButton == 0)
-        SelectionRect = CreateSelectionRect(e.MouseDownPosition, e.MousePosition);
+            SelectionRect = CreateSelectionRect(e.MouseDownPosition, e.MousePosition);
     }
 
     public Rect SelectionRect { get; set; }
@@ -668,7 +728,7 @@ public class SelectionRectHandler : Drawer, IInputHandler
 
     public override void OnMouseUp(MouseEvent mouseEvent)
     {
-        SelectionRect = new Rect(0f,0f,0f,0f);
+        SelectionRect = new Rect(0f, 0f, 0f, 0f);
         mouseEvent.Cancel();
     }
 
@@ -703,12 +763,12 @@ public class DiagramInputHander : IInputHandler
 
     public virtual void OnMouseDoubleClick(MouseEvent e)
     {
-        
+
     }
 
     public virtual void OnMouseDown(MouseEvent e)
     {
-        
+
     }
 
     public virtual void OnMouseMove(MouseEvent e)
@@ -720,12 +780,12 @@ public class DiagramInputHander : IInputHandler
 
     public virtual void OnMouseUp(MouseEvent e)
     {
-        
+
     }
 
     public void OnRightClick(MouseEvent mouseEvent)
     {
-        
+
     }
 }
 public class ConnectionHandler : DiagramInputHander
@@ -733,7 +793,8 @@ public class ConnectionHandler : DiagramInputHander
     public ConnectorViewModel StartConnector { get; set; }
     public ConnectionViewModel CurrentConnection { get; set; }
 
-    public ConnectionHandler(DiagramViewModel viewModel, ConnectorViewModel startConnector) : base(viewModel)
+    public ConnectionHandler(DiagramViewModel viewModel, ConnectorViewModel startConnector)
+        : base(viewModel)
     {
         StartConnector = startConnector;
     }
@@ -765,17 +826,17 @@ public class ConnectionHandler : DiagramInputHander
                 {
                     // Grab the default connector
                     var adjustedBounds = new Rect(nodeAtMouse.Bounds.x - 9, nodeAtMouse.Bounds.y + 1, nodeAtMouse.Bounds.width + 19, nodeAtMouse.Bounds.height + 9);
-                    ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(ElementDesignerStyles.Scale), ElementDesignerStyles.NodeBackground, string.Empty, 20);    
+                    ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(ElementDesignerStyles.Scale), ElementDesignerStyles.NodeBackground, string.Empty, 20);
                 }
-                
-                
+
+
 
             }
 
         }
         if (endViewModel != null)
         {
-            
+
             CurrentConnection = endViewModel.Strategy.Connect(StartConnector, endViewModel);
 
             if (CurrentConnection == null)
@@ -787,6 +848,10 @@ public class ConnectionHandler : DiagramInputHander
                 _endPos = endViewModel.Bounds.center;
 
             }
+        }
+        else
+        {
+            CurrentConnection = null;
         }
 
         var _startRight = StartConnector.Direction == ConnectorDirection.Output;
@@ -802,7 +867,7 @@ public class ConnectionHandler : DiagramInputHander
             UnityEditor.Handles.DrawBezier(_startPos * ElementDesignerStyles.Scale, _endPos * ElementDesignerStyles.Scale, startTan * ElementDesignerStyles.Scale, endTan * ElementDesignerStyles.Scale, shadowCol, null, (i + 1) * 5);
 
         UnityEditor.Handles.DrawBezier(_startPos * ElementDesignerStyles.Scale, _endPos * ElementDesignerStyles.Scale, startTan * ElementDesignerStyles.Scale, endTan * ElementDesignerStyles.Scale, color, null, 3);
-        
+
     }
 
     public override void OnMouseUp(MouseEvent e)
@@ -814,8 +879,8 @@ public class ConnectionHandler : DiagramInputHander
             {
                 CurrentConnection.Apply(CurrentConnection);
             });
-            
-            
+
+
         }
         e.Cancel();
     }

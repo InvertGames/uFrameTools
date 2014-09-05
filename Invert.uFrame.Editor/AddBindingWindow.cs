@@ -37,7 +37,7 @@ public class AddBindingWindow : SearchableScrollWindow
         window.title = title;
         window._ViewData = data;
         window.ApplySearch();
-        window.minSize = new Vector2(500,300);
+        window.minSize = new Vector2(500, 300);
         window.Show();
 
 
@@ -97,7 +97,7 @@ public class AddBindingWindow : SearchableScrollWindow
         base.OnGUI();
         EditorGUILayout.EndVertical();
         EditorGUILayout.BeginVertical();
-        GUIHelpers.DoToolbar(_ViewData.Name + " Preview",true,null,null,null,null,null,false);
+        GUIHelpers.DoToolbar(_ViewData.Name + " Preview", true, null, null, null, null, null, false);
         _previewScrollPosition = EditorGUILayout.BeginScrollView(_previewScrollPosition);
         if (LastSelected != null)
             EditorGUILayout.TextArea(_ViewData.Preview, GUILayout.Height(Screen.height - 50f));
@@ -105,7 +105,7 @@ public class AddBindingWindow : SearchableScrollWindow
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndHorizontal();
-      
+
     }
 
     public void Apply()
@@ -133,7 +133,7 @@ public class AddBindingWindow : SearchableScrollWindow
         GUIHelpers.DoToolbar("Bindings To Add");
         foreach (var item in _ViewData.NewBindings.ToArray())
         {
-            if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.MethodName, IsWindow = true,FullWidth = true}))
+            if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.MethodName, IsWindow = true, FullWidth = true }))
             {
                 LastSelected = item;
                 _ViewData.RemoveBinding(item);
@@ -147,19 +147,19 @@ public class AddBindingWindow : SearchableScrollWindow
         {
             if (GUIHelpers.DoTriggerButton(item))
             {
-                
+
             }
         }
 
     }
 
-    
+
     protected override void ApplySearch()
     {
         if (_ViewData == null) return;
         _MemberMethods = _ViewData.BindingMethods.ToArray();
         Generators = _ViewData.BindingGenerators;
-        
+
         //Where(p => _MemberMethods.FirstOrDefault(x => x.Name == p.MethodName) != null)
         Items = Generators.Select(p => new UFStyle()
         {

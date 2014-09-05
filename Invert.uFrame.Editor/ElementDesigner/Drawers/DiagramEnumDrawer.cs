@@ -46,10 +46,7 @@ public class DiagramEnumDrawer : DiagramNodeDrawer<EnumNodeViewModel>
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
         base.GetContentDrawers(drawers);
-        foreach (var item in NodeViewModel.EnumItems)
-        {
-            drawers.Add(new EnumItemDrawer(item));
-        }
+        drawers.Insert(1,ItemsHeader);
         //yield return new DiagramSubItemGroup()
         //{
         //    Header = ItemsHeader,

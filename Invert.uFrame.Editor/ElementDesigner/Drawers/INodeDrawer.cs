@@ -22,14 +22,14 @@ public interface IDrawer
     void OnSelecting();
     void OnDeselected();
     void OnSelected();
-    void OnMouseExit();
-    void OnMouseEnter(
-);
+    void OnMouseExit(MouseEvent e);
+    void OnMouseEnter(MouseEvent e);
     void OnMouseMove(MouseEvent e);
     void OnDrag(MouseEvent e);
     void OnMouseUp(MouseEvent e);
     void OnMouseDoubleClick(MouseEvent mouseEvent);
     void OnRightClick(MouseEvent mouseEvent);
+    void OnMouseDown(MouseEvent mouseEvent);
 }
 
 public class Drawer<TViewModel> : Drawer where TViewModel : GraphItemViewModel
@@ -70,14 +70,14 @@ public class Drawer<TViewModel> : Drawer where TViewModel : GraphItemViewModel
         base.OnSelected();
     }
 
-    public override void OnMouseExit()
+    public override void OnMouseExit(MouseEvent e)
     {
-        base.OnMouseExit();
+        base.OnMouseExit(e);
     }
 
-    public override void OnMouseEnter()
+    public override void OnMouseEnter(MouseEvent e)
     {
-        base.OnMouseEnter();
+        base.OnMouseEnter(e);
     }
 
     public override void OnMouseMove(MouseEvent e)
@@ -181,7 +181,7 @@ public abstract class Drawer : IDrawer
         get { return _children ?? (_children = new List<IDrawer>()); }
         set { _children = value; }
     }
-
+    
 
     public virtual void OnDeselecting()
     {
@@ -203,12 +203,12 @@ public abstract class Drawer : IDrawer
     {
     }
 
-    public virtual void OnMouseExit()
+    public virtual void OnMouseExit(MouseEvent e)
     {
         ViewModelObject.IsMouseOver = false;
     }
 
-    public virtual void OnMouseEnter()
+    public virtual void OnMouseEnter(MouseEvent e)
     {
         ViewModelObject.IsMouseOver = true;
     }
@@ -234,6 +234,11 @@ public abstract class Drawer : IDrawer
     }
 
     public virtual void OnRightClick(MouseEvent mouseEvent)
+    {
+        
+    }
+
+    public virtual void OnMouseDown(MouseEvent mouseEvent)
     {
         
     }

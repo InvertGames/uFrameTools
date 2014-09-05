@@ -215,6 +215,7 @@ namespace Invert.uFrame.Editor
             if (DiagramDrawer == null) return;
             var diagramRect = new Rect(0f, (EditorStyles.toolbar.fixedHeight) - 1, Screen.width - 3, Screen.height - (EditorStyles.toolbar.fixedHeight * 2) - EditorStyles.toolbar.fixedHeight - 2);
             DiagramDrawer.Rect = diagramRect;
+            EditorGUI.DrawRect(diagramRect, new Color(0.13f, 0.13f, 0.13f));
             GUI.Box(diagramRect, string.Empty, style);
 
             if (DiagramDrawer == null)
@@ -278,7 +279,18 @@ namespace Invert.uFrame.Editor
                 {
                     
                     GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
+                    if (DiagramDrawer.DrawersAtMouse != null)
+                    foreach (var drawer in DiagramDrawer.DrawersAtMouse)
+                    {
+                        GUILayout.Label(drawer.ToString());
+                    }
+                    if (DiagramDrawer.DiagramViewModel != null)
+                        foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
+                        {
+                            GUILayout.Label(drawer.ToString());
+                        }
                 }
+               
                 GUILayout.EndArea();
 #endif
                 //EndGUI();
@@ -716,6 +728,7 @@ public class MouseEvent
 
     public IInputHandler DefaultHandler { get; set; }
     public int MouseButton { get; set; }
+    public bool NoBubble { get; set; }
 }
 
 public class ModifierKeyState

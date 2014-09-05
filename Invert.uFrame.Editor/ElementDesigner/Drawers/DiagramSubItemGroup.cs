@@ -20,9 +20,9 @@ public class DiagramSubItemGroup : Drawer
 
 public class EnumItemDrawer : ItemDrawer
 {
-    public EnumItemDrawer(EnumItem item)
+    public EnumItemDrawer(EnumItemViewModel viewModel)
     {
-        this.ViewModelObject = new EnumItemViewModel(item);
+        DataContext = viewModel;
     }
     
     public override void Draw(float scale)
@@ -33,6 +33,10 @@ public class EnumItemDrawer : ItemDrawer
 
 public class ItemDrawer : Drawer
 {
+    public ItemDrawer(GraphItemViewModel viewModelObject) : base(viewModelObject)
+    {
+    }
+
     public override Rect Bounds
     {
         get { return ViewModelObject.Bounds; }
@@ -48,6 +52,10 @@ public class ItemDrawer : Drawer
         get { return this.ViewModelObject as ItemViewModel; }
     }
 
+    public ItemDrawer()
+    {
+    }
+
     public virtual int Padding
     {
         get { return 1; }
@@ -61,13 +69,39 @@ public class ItemDrawer : Drawer
 
     public GUIStyle SelectedItemStyle
     {
-        get { return _selectedItemStyle ?? (_selectedItemStyle = ElementDesignerStyles.SelectedItemStyle); }
+        get
+        {
+            if (ViewModelObject.IsMouseOver)
+                return ElementDesignerStyles.Item5;
+            if (ViewModelObject.IsSelected)
+                return ElementDesignerStyles.Item1;
+
+            return ElementDesignerStyles.ClearItemStyle;
+        }
         set { _selectedItemStyle = value; }
     }
     public GUIStyle TextStyle
     {
         get { return _textStyle ?? (_textStyle = ElementDesignerStyles.Item4); }
         set { _textStyle = value; }
+    }
+
+    public override void OnMouseEnter(MouseEvent e)
+    {
+        base.OnMouseEnter(e);
+        ViewModelObject.IsMouseOver = true;
+        Debug.Log("Mouse Enter Item");
+    }
+    public override void OnMouseExit(MouseEvent e)
+    {
+        base.OnMouseExit(e);
+        ViewModelObject.IsMouseOver = false;
+    }
+
+    public override void OnMouseDown(MouseEvent mouseEvent)
+    {
+        base.OnMouseDown(mouseEvent);
+        ViewModelObject.Select();
     }
 
     public override void Refresh(Vector2 position)
@@ -111,7 +145,7 @@ public class ItemDrawer : Drawer
         else
         {
 
-            GUI.Box(Bounds.Scale(scale), string.Empty, ItemViewModel.IsSelected ? SelectedItemStyle : TextStyle);
+            GUI.Box(Bounds.Scale(scale), string.Empty, SelectedItemStyle);
 
             var style = new GUIStyle(TextStyle);
             style.normal.textColor = BackgroundStyle.normal.textColor;
@@ -163,7 +197,7 @@ public class ElementItemDrawer : ItemDrawer
          var nameSize = TextStyle.CalcSize(new GUIContent(ElementItemViewModel.Name));
          var typeSize = TextStyle.CalcSize(new GUIContent(ElementItemViewModel.RelatedType));
 
-         Bounds = new Rect(position.x, position.y, 5 + nameSize.x + 5 + typeSize.x + 5, 25);
+         Bounds = new Rect(position.x, position.y, 5 + nameSize.x + 5 , 22);
     }
 
     public override void Draw(float scale)
@@ -190,7 +224,7 @@ public class HeaderDrawer : Drawer
 
     public GUIStyle TextStyle
     {
-        get { return _textStyle ?? (_textStyle = ElementDesignerStyles.NodeBackground); }
+        get { return _textStyle ?? (_textStyle = ElementDesignerStyles.ViewModelHeaderStyle); }
         set { _textStyle = value; }
     }
 
@@ -203,22 +237,23 @@ public class HeaderDrawer : Drawer
     {
         base.Refresh(position);
         TextSize = TextStyle.CalcSize(new GUIContent(NodeViewModel.Label));
-        var width = Mathf.Max(TextSize.x + (Padding * 2),Bounds.width);
+        var width = TextSize.x + (Padding*2);
         
         if (NodeViewModel.IsCollapsed)
         {
-            this.Bounds = new Rect(position.x, position.y, width, TextSize.y + (Padding * 2));
+            this.Bounds = new Rect(position.x, position.y, width + 12, TextSize.y + (Padding * 2));
          
         }
         else
         {
-            this.Bounds = new Rect(position.x, position.y, width, 32);
+            this.Bounds = new Rect(position.x, position.y, width + 12, 32);
         }
     }
 
     public Vector2 TextSize { get; set; }
 
     public Rect AdjustedBounds { get; set; }
+    
 
     public override void Draw(float scale)
     {
@@ -263,11 +298,12 @@ public class HeaderDrawer : Drawer
             }
 
 
-          
+            textBounds.y += TextSize.y / 2f;
             style = new GUIStyle(EditorStyles.miniLabel);
             style.fontSize = Mathf.RoundToInt(10 * scale);
             style.alignment = TextAnchor.MiddleCenter;
-            GUI.Label(Bounds.Scale(scale), NodeViewModel.SubTitle, TextStyle);
+            style.fontStyle = FontStyle.Italic;
+            GUI.Label(textBounds.Scale(scale), NodeViewModel.SubTitle, TextStyle);
 
         }
         else
@@ -277,10 +313,15 @@ public class HeaderDrawer : Drawer
             titleStyle.alignment = TextAnchor.MiddleCenter;
            
 
-            GUI.Label(textBounds.Scale(scale), NodeViewModel.Label?? string.Empty, titleStyle);
-            textBounds.x+=TextSize.y / 2f;
-
-            GUI.Label(Bounds.Scale(scale), NodeViewModel.SubTitle, ElementDesignerStyles.ViewModelHeaderStyle);
+            GUI.Label(textBounds.Scale(scale), NodeViewModel.Label + NodeViewModel.ContentItems.Count ?? string.Empty, titleStyle);
+            if (NodeViewModel.IsCollapsed)
+            {
+                textBounds.y += TextSize.y / 2f;
+                titleStyle.fontSize = Mathf.RoundToInt(10 * scale);
+                titleStyle.fontStyle = FontStyle.Italic;
+                GUI.Label(textBounds.Scale(scale), NodeViewModel.SubTitle, titleStyle);    
+            }
+            
         }
     }
 }
