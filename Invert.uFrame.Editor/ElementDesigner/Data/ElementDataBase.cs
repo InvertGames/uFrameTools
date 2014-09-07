@@ -253,28 +253,6 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         OldAssemblyName = AssemblyQualifiedName;
     }
 
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        if (target is ViewData) return true;
-
-        var elementData = target as ElementDataBase;
-        return elementData != null && Name != elementData.Name && BaseTypeShortName != elementData.Name;
-    }
-
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        var element = target as ElementDataBase;
-        if (element != null)
-        {
-            element.BaseTypeName = AssemblyQualifiedName;
-        }
-        var view = target as ViewData;
-        if (view != null)
-        {
-            view.ForAssemblyQualifiedName = AssemblyQualifiedName;
-            view.BaseViewIdentifier = null;
-        }
-    }
 
     public override bool EndEditing()
     {
@@ -309,20 +287,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         return true;
     }
 
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-    {
-        foreach (var modelData in nodes.OfType<ElementDataBase>())
-        {
-            if (BaseTypeShortName == modelData.Name)
-            {
-                yield return new InheritanceLink()
-                {
-                    Base = this,
-                    Derived = modelData
-                };
-            }
-        }
-    }
+
 
     //[DiagramContextMenu("")]
     //public void CreateNewBehaviour()

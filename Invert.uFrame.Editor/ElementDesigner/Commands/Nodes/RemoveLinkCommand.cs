@@ -17,10 +17,10 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
         public override void Perform(IDiagramNode node)
         {
-            var link = SelectedOption.Value as IDiagramLink;
+            //var link = SelectedOption.Value as IDiagramLink;
 
-            if (link != null) 
-                link.Source.RemoveLink(node);
+            //if (link != null) 
+            //    link.Source.RemoveLink(node);
         }
 
         public override string CanPerform(IDiagramNode node)

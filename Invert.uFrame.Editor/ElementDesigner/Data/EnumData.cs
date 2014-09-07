@@ -74,23 +74,4 @@ public class EnumData : DiagramNode
         get { return EnumItems.Cast<IDiagramNodeItem>(); }
     }
 
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        
-    }
-
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        return false;
-    }
-
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-    {
-        yield break;
-    }
-
-    public override void RemoveLink(IDiagramNode target)
-    {
-        
-    }
 }

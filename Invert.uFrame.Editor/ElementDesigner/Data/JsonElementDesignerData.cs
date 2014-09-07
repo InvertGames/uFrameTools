@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, ISerializationCallbackReceiver
 {
-    [SerializeField, HideInInspector]
+    [SerializeField,HideInInspector]
     public string _jsonData;
 
     [NonSerialized]
@@ -16,9 +16,6 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
 
     [NonSerialized]
     private SceneFlowFilter _sceneFlowFilter = new SceneFlowFilter();
-
-    [NonSerialized]
-    private List<IDiagramLink> _links = new List<IDiagramLink>();
 
     public IDiagramFilter CurrentFilter
     {
@@ -113,9 +110,6 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
     private FilterState _filterState = new FilterState();
 
     private bool _errors;
-    private List<string> _externalReferences;
-
-   
 
     public SceneFlowFilter SceneFlowFilter
     {
@@ -123,12 +117,6 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         set { _sceneFlowFilter = value; }
     }
 
-
-    public List<IDiagramLink> Links
-    {
-        get { return _links; }
-        set { _links = value; }
-    }
 
     public bool Errors
     {
@@ -158,28 +146,33 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
 
     public void OnBeforeSerialize()
     {
-        if (!Errors)
+        if (!Errors && _deserialized)
         {
+            uFrameEditor.Log("Serializing " + name);
             _jsonData = Serialize().ToString();
         }
     }
 
+    private bool _deserialized;
     public void OnAfterDeserialize()
     {
         //Debug.Log("Deserialize");
         try
         {
+            uFrameEditor.Log("Deserializing " + name);
             Deserialize(_jsonData);
             CleanUpDuplicates();
             Errors = false;
         }
         catch (Exception ex)
         {
+            Debug.Log(_jsonData);
             Debug.Log(this.name + " has a problem.");
             Debug.LogException(ex);
             Errors = true;
             Error = ex;
         }
+        _deserialized = true;
     }
 
     private void CleanUpDuplicates()
@@ -198,7 +191,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
 
     private void Deserialize(string jsonData)
     {
-        Debug.Log(jsonData);
+     
         if (jsonData == null) return;
 
         var jsonNode = JSONNode.Parse(jsonData);
@@ -210,26 +203,26 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         }
 
         Nodes.Clear();
-
+      
         this.Version = jsonNode["Version"].Value;
         this._identifier = jsonNode["Identifier"].Value;
 
         if (jsonNode["Nodes"] is JSONArray)
-            Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>());
+            Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>(this));
 
         if (jsonNode["SceneFlow"] is JSONClass)
-            SceneFlowFilter = jsonNode["SceneFlow"].DeserializeObject() as SceneFlowFilter;
+            SceneFlowFilter = jsonNode["SceneFlow"].DeserializeObject(this) as SceneFlowFilter;
 
         if (jsonNode["FilterState"] is JSONClass)
         {
             FilterState = new FilterState();
-            FilterState.Deserialize(jsonNode["FilterState"].AsObject);
+            FilterState.Deserialize(jsonNode["FilterState"].AsObject, this);
         }
 
         if (jsonNode["Settings"] is JSONClass)
         {
             Settings = new ElementDiagramSettings();
-            Settings.Deserialize(jsonNode["Settings"].AsObject);
+            Settings.Deserialize(jsonNode["Settings"].AsObject, this);
         }
     }
 }

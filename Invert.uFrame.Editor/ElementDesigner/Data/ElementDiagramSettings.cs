@@ -50,7 +50,7 @@ public class ElementDiagramSettings : IJsonObject
         if (color == null) return Color.gray;
         return new Color(color["r"].AsFloat, color["g"].AsFloat, color["b"].AsFloat, color["a"].AsFloat);
     }
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
        
         CodePathStrategyName = cls["CodePathStrategyName"];

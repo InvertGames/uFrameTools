@@ -20,9 +20,9 @@ public class ViewPropertyData : DiagramNodeItem,ISerializeablePropertyData
         cls.Add("ComponentProperty", new JSONData(_componentProperty ?? string.Empty));
     }
 
-    public override void Deserialize(JSONClass cls)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        base.Deserialize(cls);
+        base.Deserialize(cls, repository);
         if (cls["ComponentType"] != null)
         ComponentAssemblyType = uFrameEditor.FindType(cls["ComponentType"].Value);
         if (cls["ComponentProperty"] != null)
@@ -184,15 +184,7 @@ public class ViewPropertyData : DiagramNodeItem,ISerializeablePropertyData
             return string.Format("_{0}{1}", ComponentProperty.Substring(0, 1).ToLower(), ComponentProperty.Substring(1)); 
         }
     }
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        return false;
-    }
 
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] diagramNode)
-    {
-        yield break;
-    }
     
     public override void Remove(IDiagramNode diagramNode)
     {
@@ -203,13 +195,4 @@ public class ViewPropertyData : DiagramNodeItem,ISerializeablePropertyData
         }
     }
 
-    public override void RemoveLink(IDiagramNode target)
-    {
-        
-    }
-
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        
-    }
 }

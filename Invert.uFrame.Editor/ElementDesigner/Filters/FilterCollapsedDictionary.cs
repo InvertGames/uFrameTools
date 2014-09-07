@@ -29,7 +29,7 @@ public class FlagsDictionary : Dictionary<string,bool>, IJsonObject
         }
     }
 
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
         this.Clear();
         foreach (KeyValuePair<string,JSONNode> jsonNode in cls)
@@ -60,7 +60,7 @@ public class DataBag : Dictionary<string, string>, IJsonObject
         }
     }
 
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
         this.Clear();
         foreach (KeyValuePair<string, JSONNode> jsonNode in cls)

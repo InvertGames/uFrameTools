@@ -285,7 +285,6 @@ public class DiagramViewModel : ViewModel
 
     public void DeselectAll()
     {
-        Debug.Log("Deselected all");
         foreach (var item in SelectedGraphItems)
         {
             item.IsSelected = false;
@@ -328,6 +327,5 @@ public class DiagramViewModel : ViewModel
     {
         CurrentRepository.CurrentDiagram.AddNode(newNodeData);
         CurrentRepository.CurrentDiagram.CurrentFilter.Locations[newNodeData] = uFrameEditor.CurrentMouseEvent.MouseDownPosition;
-        Debug.Log("Added node " + newNodeData);
     }
 }

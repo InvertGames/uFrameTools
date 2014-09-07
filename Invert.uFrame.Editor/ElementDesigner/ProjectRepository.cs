@@ -181,9 +181,6 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         {
             diagram.Prepare();
         }
-#if DEBUG
-        Debug.Log(string.Join(Environment.NewLine, Diagrams.Select(p => p.Name + ":" + p.Identifier).ToArray()));
-#endif
         DiagramNames = Diagrams.Select(p => p.Name).ToArray();
     }
 }
@@ -347,11 +344,9 @@ public class DefaultCodePathStrategy : ICodePathStrategy
             if (targetFileInfo.Exists) continue;
             EnsurePath(targetFileInfo);
             
-            //sourceFileInfo.MoveTo(targetFileInfo.FullName);
-            Debug.Log(Application.dataPath);
             var sourceAsset = "Assets" + sourceFileInfo.FullName.Replace("\\", "/").Replace(Application.dataPath, "").Replace("\\", "/");
             var targetAsset = "Assets" + targetFileInfo.FullName.Replace("\\", "/").Replace(Application.dataPath, "").Replace("\\", "/");
-            Debug.Log(string.Format("Moving file {0} to {1}",sourceAsset, targetAsset));
+            uFrameEditor.Log(string.Format("Moving file {0} to {1}",sourceAsset, targetAsset));
             AssetDatabase.MoveAsset(sourceAsset, targetAsset);
         }
  

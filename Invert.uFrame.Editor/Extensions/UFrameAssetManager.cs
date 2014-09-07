@@ -10,19 +10,11 @@ using Object = UnityEngine.Object;
 [InitializeOnLoad]
 public class UFrameAssetManager : AssetPostprocessor
 {
-    public const string VM_ASSEMBLY_NAME = "ViewModel, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null";
-#if DEBUG
-    [MenuItem("Assets/[u]Frame/New Element Diagram (Legacy Asset)", false, 41)]
-    public static void NewViewModelDiagram()
-    {
-        uFrameEditor.Container.Resolve<IProjectRepository>(".asset").CreateNewDiagram();
-    }
-#endif
 
     [MenuItem("Assets/[u]Frame/New Element Diagram", false, 40)]
     public static void NewJsonViewModelDiagram()
     {
-        uFrameEditor.Container.Resolve<IProjectRepository>(".json").CreateNewDiagram();
+        uFrameEditor.CurrentProject.CreateNewDiagram();
     }
 
     [MenuItem("Assets/[u]Frame/New uFrame Project", false, 40)]
@@ -31,12 +23,6 @@ public class UFrameAssetManager : AssetPostprocessor
         var project = CreateAsset<ProjectRepository>();
         project.OutputDirectory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(project));
         //project.n = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(project));
-    }
-
-
-    static UFrameAssetManager()
-    {
-        Refresh();
     }
 
     /// <summary>

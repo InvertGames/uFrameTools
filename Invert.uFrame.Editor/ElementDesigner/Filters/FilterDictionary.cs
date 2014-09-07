@@ -82,7 +82,7 @@ public abstract class FilterDictionary<TValue> : IJsonObject
         }
     }
 
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
         foreach (KeyValuePair<string, JSONNode> cl in cls)
         {

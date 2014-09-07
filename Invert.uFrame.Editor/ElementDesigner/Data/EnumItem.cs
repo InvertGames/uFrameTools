@@ -13,7 +13,7 @@ public class EnumItem : IDiagramNodeItem
         cls.AddObject("DataBag", DataBag);
     }
 
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
         _name = cls["Name"].Value;
         _identifier = cls["Identifier"].Value;
@@ -21,7 +21,7 @@ public class EnumItem : IDiagramNodeItem
         {
             var flags = cls["DataBag"].AsObject;
             DataBag = new DataBag();
-            DataBag.Deserialize(flags);
+            DataBag.Deserialize(flags, repository);
         }
     }
 
@@ -81,24 +81,7 @@ public class EnumItem : IDiagramNodeItem
         get { return Name; }
     }
 
-    public void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        
-    }
-
-    public bool CanCreateLink(IGraphItem target)
-    {
-        return false;
-    }
-
-    public IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-    {
-        yield break;
-    }
 
     public bool IsSelected { get; set; }
-    public void RemoveLink(IDiagramNode target)
-    {
-        throw new NotImplementedException();
-    }
+
 }

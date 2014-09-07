@@ -5,6 +5,7 @@ using Invert.uFrame.Editor.ElementDesigner.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.uFrame.Editor.Nodes;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
@@ -476,14 +477,17 @@ namespace Invert.uFrame.Editor
             RegisterFilterNode<ElementData,ViewComponentData>();
 
 
-
+            // Connections
             container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritanceConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new ElementViewConnectionStrategy(), "ElementViewConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new SceneTransitionConnectionStrategy(), "SceneTransitionConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new ViewInheritanceConnectionStrategy(), "ViewInheritanceConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new SceneManagerSubsystemConnectionStrategy(), "SceneManagerSubsystemConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new SubsystemConnectionStrategy(), "SubsystemConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new AssociationConnectionStrategy(), "AssociationConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputStrategy(), "ComputedPropertyInputStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ViewComponentElementConnectionStrategy(), "ViewComponentElementConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ViewComponentInheritanceConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");
 
 
             container.RegisterInstance<IUFrameTypeProvider>(new uFrameStringTypeProvider());
@@ -603,6 +607,12 @@ namespace Invert.uFrame.Editor
             return AllowedFilterNodes.ContainsKey(type);
         }
 
+        public static void Log(string s)
+        {
+#if DEBUG
+            Debug.Log(s);
+#endif
+        }
     }
 
 }

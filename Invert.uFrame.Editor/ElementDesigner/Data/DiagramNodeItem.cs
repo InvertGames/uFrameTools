@@ -63,7 +63,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         cls.AddObject("DataBag", DataBag);
     }
 
-    public virtual void Deserialize(JSONClass cls)
+    public virtual void Deserialize(JSONClass cls, INodeRepository repository)
     {
         _name = cls["Name"].Value;
         _identifier = cls["Identifier"].Value;
@@ -71,13 +71,13 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         {
             var flags = cls["Flags"].AsObject;
             Flags = new FlagsDictionary();
-            Flags.Deserialize(flags);
+            Flags.Deserialize(flags, repository);
         }
         if (cls["DataBag"] is JSONClass)
         {
             var flags = cls["DataBag"].AsObject;
             DataBag = new DataBag();
-            DataBag.Deserialize(flags);
+            DataBag.Deserialize(flags, repository);
         }
     }
 
@@ -165,10 +165,6 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         OldName = Name;
     }
 
-    public abstract bool CanCreateLink(IGraphItem target);
-
-    public abstract void CreateLink(IDiagramNode container, IGraphItem target);
-
     public virtual RenameRefactorer CreateRenameRefactorer()
     {
         return null;
@@ -187,7 +183,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         }
     }
 
-    public abstract IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] diagramNode);
+    //public abstract IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] diagramNode);
 
     public void RefactorApplied()
     {
@@ -195,8 +191,6 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     }
 
     public abstract void Remove(IDiagramNode diagramNode);
-
-    public abstract void RemoveLink(IDiagramNode target);
 
     public virtual void Rename(IDiagramNode data, string name)
     {

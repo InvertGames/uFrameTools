@@ -62,10 +62,7 @@ public class ElementDesignerData : ScriptableObject,  IElementDesignerData
     //[SerializeField, HideInInspector]
     //private List<ImportedElementData> _importedElements = new List<ImportedElementData>();
 
-   
-    [NonSerialized]
-    private List<IDiagramLink> _links = new List<IDiagramLink>();
-
+  
     //[SerializeField, HideInInspector]
     //private List<string> _persistedFilterStack = new List<string>();
 
@@ -124,14 +121,6 @@ public class ElementDesignerData : ScriptableObject,  IElementDesignerData
         set { _enums = value; }
     }
 
-
-
-
-    public List<IDiagramLink> Links
-    {
-        get { return _links; }
-        set { _links = value; }
-    }
 
     public string Name
     {

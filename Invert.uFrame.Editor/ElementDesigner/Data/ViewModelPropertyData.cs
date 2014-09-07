@@ -21,9 +21,9 @@ public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializea
         cls.AddPrimitiveArray("DependantOn", _dependantPropertyIdentifiers, i => new JSONData(i));
     }
 
-    public override void Deserialize(JSONClass cls)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        base.Deserialize(cls);
+        base.Deserialize(cls, repository);
         _type = cls["ItemType"].Value;
         _isRealTimeProperty = cls["IsRealTime"].AsBool;
         if (cls["DependantOn"] != null)
@@ -80,25 +80,6 @@ public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializea
     public override RenameRefactorer CreateRenameRefactorer()
     {
         return new RenamePropertyRefactorer(this);
-    }
-
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        var element = target as IDiagramNode;
-        if (element != null)
-        {
-            RelatedType = element.AssemblyQualifiedName;
-        }
-    }
-
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        return target is ElementDataBase || target is EnumData;
-    }
-
-    public override void RemoveLink(IDiagramNode target)
-    {
-        RelatedType = typeof(string).AssemblyQualifiedName;
     }
 
     public string RelatedType
@@ -192,34 +173,6 @@ public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializea
         }
     }
 
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] diagramNode)
-    {
-        foreach (var viewModelData in diagramNode)
-        {
-            if (viewModelData.Name == null) continue;
-            if (viewModelData.Name == RelatedTypeName)
-            {
-                yield return new AssociationLink()
-                {
-                    Item = this,
-                    Element = viewModelData
-                };
-            }
-        }
-        if (!Node.IsCollapsed)
-        {
-            foreach (var viewModelPropertyData in DependantProperties)
-            {
-                yield return new DependencyLink()
-                {
-                    Item = this,
-                    To = viewModelPropertyData
-                };
-            }
-            
-        }
-      
-    }
 
     public override string Highlighter
     {

@@ -16,7 +16,7 @@ public class SceneManagerTransition : IDiagramNodeItem
         cls.AddObject("DataBag", DataBag);
     }
 
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
         _name = cls["Name"].Value;
         _toIdentifier = cls["ToIdentifier"].Value;
@@ -25,7 +25,7 @@ public class SceneManagerTransition : IDiagramNodeItem
         {
             var flags = cls["DataBag"].AsObject;
             DataBag = new DataBag();
-            DataBag.Deserialize(flags);
+            DataBag.Deserialize(flags, repository);
         }
 
     }
@@ -54,30 +54,6 @@ public class SceneManagerTransition : IDiagramNodeItem
     public string Label
     {
         get { return Name; }
-    }
-
-    public void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        ToIdentifier = ((SceneManagerData) target).Identifier;
-    }
-
-    public bool CanCreateLink(IGraphItem target)
-    {
-        return target is SceneManagerData;
-    }
-
-    public IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-    {
-        //elementDesignerData.OfType<ElementDataBase>().SelectMany(p=>p.Commands).FirstOrDefault(p=>p.n)
-        yield break;
-        //var linkedTo = elementDesignerData.OfType<SceneManagerData>().FirstOrDefault(p => p.Name == ToIdentifier);
-        //if (linkedTo == null) yield break;
-
-        //yield return new TransitionLink()
-        //{
-        //    From = this,
-        //    To = linkedTo
-        //};
     }
 
     public bool IsSelected { get; set; }
@@ -126,8 +102,6 @@ public class SceneManagerTransition : IDiagramNodeItem
     {
         Name = name;
     }
-
-    public Vector2[] ConnectionPoints { get; set; }
 
     public void Disconnect()
     {

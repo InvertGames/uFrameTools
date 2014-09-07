@@ -8,9 +8,9 @@ public interface IGraphItem
     string Identifier { get; }
 
 
-    void CreateLink(IDiagramNode container, IGraphItem target);
-    bool CanCreateLink(IGraphItem target);
-    IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes);
+    //void CreateLink(IDiagramNode container, IGraphItem target);
+    //bool CanCreateLink(IGraphItem target);
+    //IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes);
 
     
 }

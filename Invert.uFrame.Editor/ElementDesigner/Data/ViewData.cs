@@ -246,26 +246,14 @@ public class ViewData : DiagramNode, ISubSystemType
         }
     }
 
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        return target is ViewData && target != this;
-    }
-
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        var i = target as ViewData;
-        i.ForAssemblyQualifiedName = AssemblyQualifiedName;
-        //i.BaseViewIdentifier = Identifier;
-    }
-
     public override RenameRefactorer CreateRenameRefactorer()
     {
         return new RenameViewRefactorer(this);
     }
 
-    public override void Deserialize(JSONClass cls)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        base.Deserialize(cls);
+        base.Deserialize(cls, repository);
         _forAssemblyQualifiedName = cls["ForAssemblyQualifiedName"].Value;
 
         _baseViewIdentifier = cls["BaseViewIdentifier"].Value;
@@ -282,42 +270,6 @@ public class ViewData : DiagramNode, ISubSystemType
             v.ForAssemblyQualifiedName = AssemblyQualifiedName;
         }
         return true;
-    }
-
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-    {
-        var vm = ViewForElement;
-        //var items = new UFrameBehaviours[] { };
-        //if (vm != null)
-        //{
-        //    items = UBAssetManager.Behaviours.OfType<UFrameBehaviours>()
-        //        .Where(p => p != null && p.ViewModelTypeString == vm.ViewModelAssemblyQualifiedName).ToArray();
-        //}
-
-        //Behaviours = items.Select(p => new BehaviourSubItem() { Behaviour = p }).ToArray();
-
-        var baseView = nodes.FirstOrDefault(p => p.Identifier == BaseViewIdentifier);
-
-        if (baseView != null)
-        {
-            yield return new ViewLink()
-            {
-                Element = baseView,
-                Data = this
-            };
-        }
-
-        var item = nodes.FirstOrDefault(p => p.AssemblyQualifiedName == ForAssemblyQualifiedName);
-        if (item != null)
-        {
-            yield return new ViewLink()
-            {
-                Element = item,
-                Data = this
-            };
-        }
-
-        //SetBindingMethods();
     }
 
     private void SetBindingMethods()
@@ -360,21 +312,6 @@ public class ViewData : DiagramNode, ISubSystemType
         }
     }
 
-    //public BehaviourSubItem[] Behaviours { get; set; }
-    public override void RemoveLink(IDiagramNode target)
-    {
-        var viewData = target as ViewData;
-        if (viewData != null)
-        {
-            viewData.ForAssemblyQualifiedName = null;
-            viewData.BaseViewIdentifier = null;
-        }
-        //viewData.BaseViewIdentifier = null;
-        BaseViewIdentifier = null;
-        //var elementData = target as ElementData;
-        //if (target is )
-    }
-
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
@@ -386,6 +323,7 @@ public class ViewData : DiagramNode, ISubSystemType
     public void SetElement(ElementData output)
     {
         ForAssemblyQualifiedName = output.AssemblyQualifiedName;
+        BaseViewIdentifier = null;
     }
 
     public void RemoveFromElement(ElementData output)

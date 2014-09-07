@@ -86,9 +86,9 @@ public class SubSystemData : DiagramNode, IDiagramFilter, ISubSystemData
         cls.AddPrimitiveArray("Imports", _imports, i => new JSONData(i));
     }
 
-    public override void Deserialize(JSONClass cls)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        base.Deserialize(cls);
+        base.Deserialize(cls, repository);
 
         _imports = cls["Imports"].AsArray.DeserializePrimitiveArray(n => n.Value).ToList();
     }
@@ -150,77 +150,6 @@ public class SubSystemData : DiagramNode, IDiagramFilter, ISubSystemData
         set { _locations = value; }
     }
 
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        var subsystem = target as SubSystemData;
-        if (subsystem != null)
-        {
-            return !this.GetAllImports().Contains(subsystem.Identifier);
-            //return subsystem != this && !subsystem.Imports.Contains(Identifier);
-        }
-        return target is SceneManagerData;
-    }
-
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        var subSystem = target as ISubSystemData;
-        if (subSystem != null)
-        {
-            subSystem.Imports.Add(Identifier);
-            return;
-        }
-        var sceneManagerData = target as SceneManagerData;
-        if (sceneManagerData != null)
-        {
-            sceneManagerData.SubSystemIdentifier = this.Identifier;
-        }
-    }
-
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-    {
-        foreach (var import in Imports)
-        {
-            var item = nodes.OfType<SubSystemData>().FirstOrDefault(p => p.Identifier == import);
-            if (item != null)
-            {
-                yield return new SubSystemLink()
-                {
-                    Start = item,
-                    Finish = this
-                };
-            }
-        }
-        var scenes = nodes.OfType<SceneManagerData>().Where(p => p.SubSystemIdentifier == Identifier);
-        foreach (var sceneManagerData in scenes)
-        {
-            yield return new SceneManagerSystemLink()
-            {
-                SceneManager = sceneManagerData,
-                SubSystem = this
-            };
-        }
-    }
-
-    public bool IsAllowed(object item, Type t)
-    {
-      
-        if (item == this) 
-            return true;
-
-        if (t == typeof(SubSystemData)) return false;
-        if (t == typeof(SceneManagerData)) return false;
-        if (t == typeof(ViewComponentData)) return false;
-        if (t == typeof(ViewData)) return false;
-
-        return true;
-    }
-
-    public bool IsItemAllowed(object item, Type t)
-    {
-        if (t == typeof(ViewComponentData)) return false;
-        if (t == typeof(ViewData)) return false;
-        return true;
-    }
 
     public override void RemoveFromDiagram()
     {
@@ -228,17 +157,4 @@ public class SubSystemData : DiagramNode, IDiagramFilter, ISubSystemData
         Data.RemoveNode(this);
     }
 
-    public override void RemoveLink(IDiagramNode target)
-    {
-        var subSystem = target as SubSystemData;
-        if (subSystem != null)
-        {
-            subSystem.Imports.Remove(Identifier);
-        }
-        var sceneManager = target as SceneManagerData;
-        if (sceneManager != null)
-        {
-            sceneManager.SubSystemIdentifier = null;
-        }
-    }
 }

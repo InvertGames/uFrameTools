@@ -21,7 +21,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             if (node.Data.CurrentFilter is ElementData)
             {
                 var element = node.Data.CurrentFilter as ElementData;
-                element.CreateLink(null, data);
+                data.SetElement(element);
             }
             
             //data.Location = node.LastMouseDownPosition;

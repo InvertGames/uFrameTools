@@ -18,9 +18,9 @@ public class ViewModelCollectionData : DiagramNodeItem, IViewModelItem
         //nodeItemClass.Add("IsRealTime", new JSONData(_isRealTimeProperty));
     }
 
-    public override void Deserialize(JSONClass cls)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        base.Deserialize(cls);
+        base.Deserialize(cls, repository);
         _itemType = cls["ItemType"].Value;
 
     }
@@ -125,39 +125,9 @@ public class ViewModelCollectionData : DiagramNodeItem, IViewModelItem
         }
     }
 
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        return target is ElementDataBase || target is EnumData;
-    }
-
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        var element = target as IDiagramNode;
-        if (element != null)
-        {
-            RelatedType = element.AssemblyQualifiedName;
-        }
-    }
-
     public override RenameRefactorer CreateRenameRefactorer()
     {
         return new RenameCollectionRefactorer(this);
-    }
-
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] diagramNode)
-    {
-        foreach (var viewModelData in diagramNode)
-        {
-            if (viewModelData.Name == null) continue;
-            if (viewModelData.Name == RelatedTypeName)
-            {
-                yield return new AssociationLink()
-                {
-                    Item = this,
-                    Element = viewModelData
-                };
-            }
-        }
     }
 
     public override void Remove(IDiagramNode diagramNode)
@@ -165,10 +135,5 @@ public class ViewModelCollectionData : DiagramNodeItem, IViewModelItem
         var data = diagramNode as ElementDataBase;
         data.Collections.Remove(this);
         data.Dirty = true;
-    }
-
-    public override void RemoveLink(IDiagramNode target)
-    {
-        RelatedType = typeof(string).AssemblyQualifiedName;
     }
 }

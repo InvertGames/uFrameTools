@@ -14,9 +14,9 @@ public class SceneManagerData : DiagramNode
         cls.Add("SubSystemIdentifier", _subSystemIdentifier);
         
     }
-    public override void Deserialize(JSONClass cls)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        base.Deserialize(cls);
+        base.Deserialize(cls, repository);
         _subSystemIdentifier = cls["SubSystemIdentifier"].Value;
     }
 
@@ -128,17 +128,7 @@ public class SceneManagerData : DiagramNode
         }
     }
 
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        return false;
-    }
 
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        //var scItem = target as sceneManagerData;
-        //if (scItem == null) return;
-        //Transitions.Add(new SceneManagerTransition() { ToIdentifier = scItem.Name,Name ="To" + scItem.Name });
-    }
 
     public override RenameRefactorer CreateRenameRefactorer()
     {
@@ -150,45 +140,7 @@ public class SceneManagerData : DiagramNode
         return base.EndEditing();
     }
 
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-    {
-        // Sync commands to here
-        if (this.SubSystem != null)
-        {
-            var commands = this.SubSystem.GetIncludedCommands().ToArray();
-
-            foreach (var command in commands)
-            {
-                var transition = Transitions.FirstOrDefault(p => p.CommandIdentifier == command.Identifier);
-                if (transition == null)
-                {
-                    Transitions.Add(new SceneManagerTransition()
-                    {
-                        Name = command.Name,
-                        CommandIdentifier = command.Identifier
-                    });
-                }
-                else
-                {
-                    transition.Name = command.Name;
-                }
-            }
-            Transitions.RemoveAll(p => commands.All(x => x.Identifier != p.CommandIdentifier));
-        }
-
-        foreach (var transition in Transitions)
-        {
-            var linkedTo = nodes.OfType<SceneManagerData>().FirstOrDefault(p => p.Identifier == transition.ToIdentifier);
-            if (linkedTo == null) continue;
-
-            yield return new TransitionLink()
-            {
-                From = transition,
-                To = linkedTo
-            };
-        }
-        yield break;
-    }
+ 
 
     public bool IsAllowed(object item, Type t)
     {
@@ -205,7 +157,4 @@ public class SceneManagerData : DiagramNode
         Data.RemoveNode(this);
     }
 
-    public override void RemoveLink(IDiagramNode target)
-    {
-    }
 }

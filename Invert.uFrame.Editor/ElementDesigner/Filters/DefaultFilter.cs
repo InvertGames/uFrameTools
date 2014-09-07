@@ -53,10 +53,10 @@ public class DefaultFilter : IDiagramFilter,IJsonObject
         cls.Add("CollapsedValues", _collapsedValues.Serialize());
     }
 
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
         Locations.Deserialize(cls["Locations"].AsObject);
-        CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject);
+        CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject, repository);
 
     }
 }

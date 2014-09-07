@@ -28,15 +28,15 @@ public class BindingDiagramItem : DiagramNodeItem
         get { return MethodName; }
     }
 
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        return false;
-    }
+    //public override bool CanCreateLink(IGraphItem target)
+    //{
+    //    return false;
+    //}
 
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] diagramNode)
-    {
-        yield break;
-    }
+    //public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] diagramNode)
+    //{
+    //    yield break;
+    //}
 
     public override void Remove(IDiagramNode diagramNode)
     {
@@ -44,13 +44,13 @@ public class BindingDiagramItem : DiagramNodeItem
         View.NewBindings.Remove(Generator);
     }
 
-    public override void RemoveLink(IDiagramNode target)
-    {
+    //public override void RemoveLink(IDiagramNode target)
+    //{
 
-    }
+    //}
 
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
+    //public override void CreateLink(IDiagramNode container, IGraphItem target)
+    //{
 
-    }
+    //}
 }

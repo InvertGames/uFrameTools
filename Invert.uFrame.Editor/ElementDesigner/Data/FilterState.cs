@@ -67,7 +67,7 @@ public class FilterState : IJsonObject {
         cls.AddPrimitiveArray("FilterStack",_persistedFilterStack, i=>new JSONData(i));
     }
 
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
         
         _persistedFilterStack = cls["FilterStack"].DeserializePrimitiveArray(n=>n.Value).ToList();

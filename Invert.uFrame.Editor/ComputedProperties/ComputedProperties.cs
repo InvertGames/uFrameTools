@@ -29,25 +29,25 @@ using UnityEngine;
             get { return this.Name; }
         }
 
-        public override bool CanCreateLink(IGraphItem target)
-        {
-            return false;
-        }
+        //public override bool CanCreateLink(IGraphItem target)
+        //{
+        //    return false;
+        //}
 
-        public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-        {
-            yield break;
-        }
+        //public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
+        //{
+        //    yield break;
+        //}
 
-        public override void RemoveLink(IDiagramNode target)
-        {
+        //public override void RemoveLink(IDiagramNode target)
+        //{
             
-        }
+        //}
 
-        public override void CreateLink(IDiagramNode container, IGraphItem target)
-        {
+        //public override void CreateLink(IDiagramNode container, IGraphItem target)
+        //{
             
-        }
+        //}
 
         public override IEnumerable<IDiagramNodeItem> ContainedItems
         {

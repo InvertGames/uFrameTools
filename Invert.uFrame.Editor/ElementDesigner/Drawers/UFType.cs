@@ -90,7 +90,7 @@ public class UFType : IJsonObject
         cls["Namespace"] = Namespace;
     }
 
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
         if (cls["Name"] != null)
             Name = cls["Name"].Value ?? string.Empty;

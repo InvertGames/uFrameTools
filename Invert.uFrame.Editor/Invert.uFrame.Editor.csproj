@@ -47,12 +47,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddBindingWindow.cs" />
-    <Compile Include="Class1.cs" />
-    <Compile Include="CodeFileGenerator.cs" />
-    <Compile Include="CodeGenerator.cs" />
+    <Compile Include="ElementDesigner\Drawers\ConnectionDrawer.cs" />
+    <Compile Include="ElementDesigner\Drawers\ConnectorDrawer.cs" />
+    <Compile Include="ElementDesigner\Drawers\Drawer.cs" />
+    <Compile Include="ElementDesigner\Drawers\ElementItemDrawer.cs" />
+    <Compile Include="ElementDesigner\Drawers\EnumItemDrawer.cs" />
+    <Compile Include="ElementDesigner\Drawers\HeaderDrawer.cs" />
+    <Compile Include="ElementDesigner\Drawers\IDrawer.cs" />
+    <Compile Include="ElementDesigner\Drawers\ItemDrawer.cs" />
+    <Compile Include="ElementDesigner\ViewModels\ElementItemViewModel.cs" />
+    <Compile Include="ElementDesigner\ViewModels\ViewModelExtensions.cs" />
+    <Compile Include="Nodes\Connections\AssociationConnectionStrategy.cs" />
+    <Compile Include="Nodes\Connections\ViewComponentElementConnectionStrategy.cs" />
+    <Compile Include="Nodes\Connections\ViewComponentInheritanceConnectionStrategy.cs" />
+    <Compile Include="Nodes\Connections\ComputedPropertyInputStrategy.cs" />
+    <Compile Include="Nodes\Connections\SceneManagerSubsystemConnectionStrategy.cs" />
+    <Compile Include="Nodes\Connections\SubsystemConnectionStrategy.cs" />
+    <Compile Include="Nodes\Connections\ViewInheritanceConnectionStrategy.cs" />
+    <Compile Include="Nodes\Enums\EnumNodeViewModel.cs" />
+    <Compile Include="Nodes\Elements\ElementNodeViewModel.cs" />
+    <Compile Include="Nodes\Enums\EnumItemViewModel.cs" />
+    <Compile Include="Windows\AddBindingWindow.cs" />
+    <Compile Include="CodeGenerator\CodeFileGenerator.cs" />
+    <Compile Include="CodeGenerator\CodeGenerator.cs" />
     <Compile Include="ComputedProperties\ComputedProperties.cs" />
-    <Compile Include="Connections\Class1.cs" />
     <Compile Include="ElementDesigner\Commands\Diagram\DiagramSettingsCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Diagram\ElementsDiagramToolbarCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Diagram\HookCommand.cs" />
@@ -72,41 +90,40 @@
     <Compile Include="ElementDesigner\DiagramInputHandler.cs" />
     <Compile Include="ElementDesigner\Drawers\BindingDiagramItem.cs" />
     <Compile Include="ElementDesigner\DiagramViewModel.cs" />
-    <Compile Include="IKeyBinding.cs" />
-    <Compile Include="ItemSelectionWindow.cs" />
+    <Compile Include="ElementDesigner\IKeyBinding.cs" />
+    <Compile Include="Windows\ItemSelectionWindow.cs" />
     <Compile Include="UFrameSettings.cs" />
     <Compile Include="IUFrameTypeProvider.cs" />
-    <Compile Include="KeyBinding.cs" />
+    <Compile Include="ElementDesigner\KeyBinding.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="SimpleKeyBinding.cs" />
-    <Compile Include="ViewModels\ConnectionViewModel.cs" />
-    <Compile Include="ViewModels\ConnectorDirection.cs" />
-    <Compile Include="ViewModels\ConnectorInfo.cs" />
-    <Compile Include="ViewModels\ConnectorSide.cs" />
-    <Compile Include="ViewModels\ConnectorViewModel.cs" />
-    <Compile Include="ViewModels\DefaultConnectionStrategy.cs" />
-    <Compile Include="ViewModels\DiagramNodeViewModel.cs" />
-    <Compile Include="ViewModels\ElementCollectionItemViewModel.cs" />
-    <Compile Include="ViewModels\ElementCommandItemViewModel.cs" />
-    <Compile Include="ViewModels\ElementInheritanceConnectionStrategy.cs" />
-    <Compile Include="ViewModels\ElementItemViewModel.cs" />
-    <Compile Include="ViewModels\ElementPropertyItemViewModel.cs" />
-    <Compile Include="ViewModels\ElementViewConnectionStrategy.cs" />
-    <Compile Include="ViewModels\GraphItemViewModel.cs" />
-    <Compile Include="ViewModels\IConnectionStrategy.cs" />
-    <Compile Include="ViewModels\IItem.cs" />
-    <Compile Include="ViewModels\ItemViewModel.cs" />
-    <Compile Include="ViewModels\SceneManagerViewModel.cs" />
-    <Compile Include="ViewModels\SceneTransitionConnectionStrategy.cs" />
-    <Compile Include="ViewModels\SceneTransitionItemViewModel.cs" />
-    <Compile Include="ViewModels\SubSystemViewModel.cs" />
+    <Compile Include="ElementDesigner\SimpleKeyBinding.cs" />
+    <Compile Include="ElementDesigner\ViewModels\ConnectionViewModel.cs" />
+    <Compile Include="ElementDesigner\ViewModels\ConnectorDirection.cs" />
+    <Compile Include="ElementDesigner\ViewModels\ConnectorInfo.cs" />
+    <Compile Include="ElementDesigner\ViewModels\ConnectorSide.cs" />
+    <Compile Include="ElementDesigner\ViewModels\ConnectorViewModel.cs" />
+    <Compile Include="ElementDesigner\ViewModels\DefaultConnectionStrategy.cs" />
+    <Compile Include="ElementDesigner\ViewModels\DiagramNodeViewModel.cs" />
+    <Compile Include="Nodes\Elements\ElementCollectionItemViewModel.cs" />
+    <Compile Include="Nodes\Elements\ElementCommandItemViewModel.cs" />
+    <Compile Include="Nodes\Connections\ElementInheritanceConnectionStrategy.cs" />
+    <Compile Include="Nodes\Elements\ElementItemViewModel.cs" />
+    <Compile Include="Nodes\Elements\ElementPropertyItemViewModel.cs" />
+    <Compile Include="Nodes\Connections\ElementViewConnectionStrategy.cs" />
+    <Compile Include="ElementDesigner\ViewModels\GraphItemViewModel.cs" />
+    <Compile Include="ElementDesigner\ViewModels\IConnectionStrategy.cs" />
+    <Compile Include="ElementDesigner\ViewModels\IItem.cs" />
+    <Compile Include="ElementDesigner\ViewModels\ItemViewModel.cs" />
+    <Compile Include="Nodes\SceneManagers\SceneManagerViewModel.cs" />
+    <Compile Include="Nodes\Connections\SceneTransitionConnectionStrategy.cs" />
+    <Compile Include="Nodes\SceneManagers\SceneTransitionItemViewModel.cs" />
+    <Compile Include="Nodes\Subsystems\SubSystemViewModel.cs" />
     <Compile Include="ElementDesigner\Drawers\UFType.cs" />
-    <Compile Include="ViewModels\ViewBindingItemViewModel.cs" />
-    <Compile Include="ViewModels\ViewComponentNodeViewModel.cs" />
-    <Compile Include="ViewModels\ViewModel.cs" />
-    <Compile Include="ViewModels\ViewNodeViewModel.cs" />
-    <Compile Include="ElementDesigner\Links\DependencyLink.cs" />
-    <Compile Include="SearchableScrollWindow.cs" />
+    <Compile Include="Nodes\Views\ViewBindingItemViewModel.cs" />
+    <Compile Include="Nodes\ViewComponents\ViewComponentNodeViewModel.cs" />
+    <Compile Include="ElementDesigner\ViewModels\ViewModel.cs" />
+    <Compile Include="Nodes\Views\ViewNodeViewModel.cs" />
+    <Compile Include="Windows\SearchableScrollWindow.cs" />
     <Compile Include="ElementDesigner\Commands\Elements\MarkIsMultiInstanceCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Elements\MarkIsYieldCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Nodes\DeleteCommand.cs" />
@@ -133,14 +150,14 @@
     <Compile Include="ElementDesigner\Data\Json\JsonRepository.cs" />
     <Compile Include="ElementDesigner\Data\ViewPropertyData.cs" />
     <Compile Include="ElementDesigner\Drawers\ExternalNodeDrawer.cs" />
-    <Compile Include="ElementsDesigner.cs" />
+    <Compile Include="Windows\ElementsDesigner.cs" />
     <Compile Include="Extensions\UFramePluginProcessor.cs" />
-    <Compile Include="IJsonSerializable.cs" />
-    <Compile Include="ITypeGeneratorPostProcessor.cs" />
-    <Compile Include="TypeGeneratorPostProcessor.cs" />
+    <Compile Include="Serialization\IJsonSerializable.cs" />
+    <Compile Include="CodeGenerator\ITypeGeneratorPostProcessor.cs" />
+    <Compile Include="CodeGenerator\TypeGeneratorPostProcessor.cs" />
     <Compile Include="uFrameStringTypeProvider.cs" />
     <Compile Include="UI\ContextMenuUI.cs" />
-    <Compile Include="DesignerGeneratorFactory.cs" />
+    <Compile Include="CodeGenerator\DesignerGeneratorFactory.cs" />
     <Compile Include="ElementDesigner\Commands\Diagram\AddNewCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Diagram\AutoLayoutCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Hooks\CommandHook.cs" />
@@ -175,8 +192,6 @@
     <Compile Include="ElementDesigner\Data\DiagramNodeItem.cs" />
     <Compile Include="ElementDesigner\Data\DiagramPlugin.cs" />
     <Compile Include="ElementDesigner\ProjectRepository.cs" />
-    <Compile Include="ElementDesigner\Links\AssociationLink.cs" />
-    <Compile Include="ElementDesigner\Links\BeizureLink.cs" />
     <Compile Include="ElementDesigner\Interfaces\IRefactoring.cs" />
     <Compile Include="ElementDesigner\Commands\Diagram\IEditorCommand.cs" />
     <Compile Include="ElementDesigner\ContextMenuItem.cs" />
@@ -186,30 +201,23 @@
     <Compile Include="ElementDesigner\Drawers\DiagramNodeDrawer.cs" />
     <Compile Include="ElementDesigner\Drawers\DiagramSubItemGroup.cs" />
     <Compile Include="ElementDesigner\ElementItemType.cs" />
-    <Compile Include="ElementDesigner\Windows\ElementItemTypesWindow.cs" />
+    <Compile Include="Windows\ElementItemTypesWindow.cs" />
     <Compile Include="ElementDesigner\Filters\FilterCollapsedDictionary.cs" />
     <Compile Include="ElementDesigner\Filters\FilterDictionary.cs" />
     <Compile Include="ElementDesigner\Filters\FilterLocations.cs" />
-    <Compile Include="ElementDesigner\Links\GenericLink.cs" />
     <Compile Include="ElementDesigner\Interfaces\IDiagramFilter.cs" />
     <Compile Include="ElementDesigner\Drawers\INodeDrawer.cs" />
     <Compile Include="ElementDesigner\Interfaces\IProjectRepository.cs" />
-    <Compile Include="ElementDesigner\Links\InheritanceLink.cs" />
     <Compile Include="ElementDesigner\Interfaces\ISubSystemType.cs" />
     <Compile Include="ElementDesigner\NodeCurvePointStyle.cs" />
     <Compile Include="ElementDesigner\RectExtensions.cs" />
     <Compile Include="ElementDesigner\Drawers\SceneManagerDrawer.cs" />
-    <Compile Include="ElementDesigner\Links\SceneManagerSystemLink.cs" />
     <Compile Include="ElementDesigner\Drawers\SubSystemDrawer.cs" />
-    <Compile Include="ElementDesigner\Links\SubSystemLink.cs" />
-    <Compile Include="ElementDesigner\Links\TransitionLink.cs" />
-    <Compile Include="ElementDesigner\Windows\ImportTypeListWindow.cs" />
+    <Compile Include="Windows\ImportTypeListWindow.cs" />
     <Compile Include="ElementDesigner\Data\ViewBehaviourData.cs" />
     <Compile Include="ElementDesigner\Data\ViewComponentData.cs" />
     <Compile Include="ElementDesigner\Drawers\ViewComponentDrawer.cs" />
-    <Compile Include="ElementDesigner\Links\ViewComponentLink.cs" />
     <Compile Include="ElementDesigner\Drawers\ViewDrawer.cs" />
-    <Compile Include="ElementDesigner\Links\ViewLink.cs" />
     <Compile Include="ElementDesigner\Commands\ICommandHandler.cs" />
     <Compile Include="UI\ICommandUI.cs" />
     <Compile Include="Refactoring\ChangeParameterTypeRefactor.cs" />
@@ -226,7 +234,7 @@
     <Compile Include="Refactoring\RenameViewRefactorer.cs" />
     <Compile Include="UI\ToolbarUI.cs" />
     <Compile Include="uFrameEditor.cs" />
-    <Compile Include="ViewModels\ViewPropertyItemViewModel.cs" />
+    <Compile Include="Nodes\Views\ViewPropertyItemViewModel.cs" />
     <Compile Include="Windows\CompilingWindow.cs" />
     <Compile Include="Extensions\EditorExtensions.cs" />
     <Compile Include="ElementDesigner\Drawers\DiagramNode.cs" />
@@ -239,7 +247,6 @@
     <Compile Include="ElementDesigner\Data\EnumData.cs" />
     <Compile Include="ElementDesigner\Data\EnumItem.cs" />
     <Compile Include="ElementDesigner\Interfaces\IDiagramNode.cs" />
-    <Compile Include="ElementDesigner\Links\IDiagramLink.cs" />
     <Compile Include="ElementDesigner\Interfaces\IDiagramNodeItem.cs" />
     <Compile Include="ElementDesigner\Interfaces\IConnectionContainer.cs" />
     <Compile Include="ElementDesigner\Data\ImportedElementData.cs" />
@@ -274,9 +281,7 @@
       <Name>Invert.MVVM</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Connections\NewFolder1\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\ /Y

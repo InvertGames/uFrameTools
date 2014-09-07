@@ -310,9 +310,9 @@ public class ElementData : ElementDataBase, IDiagramFilter
         return new RenameElementRefactorer(this);
     }
 
-    public override void Deserialize(JSONClass cls)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        base.Deserialize(cls);
+        base.Deserialize(cls, repository);
         _baseType = cls["BaseType"].Value;
         IsTemplate = cls["IsTemplate"].AsBool;
         _isMultiInstance = cls["IsMultiInstance"].AsBool;
@@ -372,21 +372,13 @@ public class ElementData : ElementDataBase, IDiagramFilter
         base.RemoveFromDiagram();
         Data.RemoveNode(this);
 
-        foreach (var vm in Data.GetElements())
-        {
-            if (vm.BaseTypeShortName == Name)
-            {
-                vm.RemoveLink(vm);
-            }
-        }
-
         foreach (var elementData in Data.GetElements())
         {
             foreach (var diagramSubItem in elementData.ViewModelItems)
             {
                 if (diagramSubItem.RelatedTypeName == this.Name)
                 {
-                    diagramSubItem.RemoveLink(this);
+                    diagramSubItem.RemoveType();
                 }
             }
         }
@@ -403,24 +395,6 @@ public class ElementData : ElementDataBase, IDiagramFilter
             {
                 viewComponentData.ElementIdentifier = null;
             }
-        }
-    }
-
-    public override void RemoveLink(IDiagramNode target)
-    {
-        var elementData = target as ElementData;
-        if (elementData != null)
-            elementData.BaseTypeName = null;
-
-        var viewData = target as ViewData;
-        if (viewData != null)
-        {
-            viewData.ForAssemblyQualifiedName = null;
-        }
-        var viewComponent = target as ViewComponentData;
-        if (viewComponent != null)
-        {
-            viewComponent.ElementIdentifier = null;
         }
     }
 

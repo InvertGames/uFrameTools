@@ -16,9 +16,9 @@ public class ViewModelCommandData : DiagramNodeItem, IViewModelItem
 
     }
 
-    public override void Deserialize(JSONClass cls)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        base.Deserialize(cls);
+        base.Deserialize(cls, repository);
         _parameterType = cls["ItemType"].Value;
         _isYield = cls["IsYield"].AsBool;
     }
@@ -155,61 +155,9 @@ public class ViewModelCommandData : DiagramNodeItem, IViewModelItem
         set { _transitionName = value; }
     }
 
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        return target is ElementDataBase || target is SceneManagerData || target is EnumData || (target != null && target.CanCreateLink(this));
-    }
-
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        var sceneManagerData = target as SceneManagerData;
-        if (sceneManagerData != null)
-        {
-            var transition = sceneManagerData.Transitions.FirstOrDefault(p => p.CommandIdentifier == this.Identifier);
-            transition.ToIdentifier = sceneManagerData.Identifier;
-        } else if (target is EnumData || target is ElementDataBase)
-        {
-            var element = target as IDiagramNode;
-            RelatedType = element.AssemblyQualifiedName;
-        }
-        else
-        {
-            target.CreateLink(container, this);
-        }
-    }
-
     public override RenameRefactorer CreateRenameRefactorer()
     {
         return new RenameCommandRefactorer(this);
-    }
-
-
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] diagramNode)
-    {
-        foreach (var viewModelData in diagramNode)
-        {
-            if (viewModelData.Name == null) continue;
-            //var scd = viewModelData as SceneManagerData;
-            //if (scd != null)
-            //{
-            //    if (TransitionToIdentifier == scd.Identifier)
-            //    {
-            //        yield return new TransitionLink()
-            //        {
-            //            From = this,
-            //            To = scd
-            //        };
-            //    }
-            //} else
-            if (viewModelData.Name == RelatedTypeName)
-            {
-                yield return new AssociationLink()
-                {
-                    Item = this,
-                    Element = viewModelData
-                };
-            }
-        }
     }
 
     [DiagramContextMenu("Delete", 0)]
@@ -225,12 +173,6 @@ public class ViewModelCommandData : DiagramNodeItem, IViewModelItem
         }
     }
 
-    public override void RemoveLink(IDiagramNode target)
-    {
-        
-        RelatedType = null;
-
-    }
 
     public override void Rename(IDiagramNode data, string name)
     {

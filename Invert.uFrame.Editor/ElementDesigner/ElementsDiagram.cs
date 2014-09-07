@@ -155,7 +155,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     //    get { return _nodeDrawerAtMouse; }
     //    set
     //    {
-            
+
 
     //        _nodeDrawerAtMouse = value;
 
@@ -213,9 +213,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     public void CommandExecuted(IEditorCommand command)
     {
         DiagramViewModel.MarkDirty();
-#if DEBUG
-        Debug.Log(command.Title + " Executed");
-#endif
+        uFrameEditor.Log(command.Title + " Executed");
         this.Refresh();
         Dirty = true;
     }
@@ -315,23 +313,14 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             }
             if (keyBinding.RequireAlt && !keyStates.Alt)
             {
-#if DEBUG
-                Debug.Log("Skipping because of alt");
-#endif
                 continue;
             }
             if (keyBinding.RequireShift && !keyStates.Shift)
             {
-#if DEBUG
-                Debug.Log("Skipping because of shift");
-#endif
                 continue;
             }
             if (keyBinding.RequireControl && !keyStates.Ctrl)
             {
-#if DEBUG
-                Debug.Log("Skipping because of ctrl");
-#endif
                 continue;
             }
 
@@ -342,12 +331,10 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
                 var used = false;
                 foreach (var argument in acceptableArguments)
                 {
-                    
+
                     if (command.CanPerform(argument) == null)
                     {
-#if DEBUG
-                        UnityEngine.Debug.Log("Key Command Executed: " + command.GetType().Name);
-#endif
+                        uFrameEditor.Log("Key Command Executed: " + command.GetType().Name);
                         this.ExecuteCommand(command);
                         used = true;
                     }
@@ -366,7 +353,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     //    {
     //        action(drawer);
     //    }
-        
+
     //}
 
     public override void OnMouseDoubleClick(MouseEvent mouseEvent)
@@ -401,11 +388,11 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         }
         else
         {
-            BubbleEvent(d=>d.OnMouseDown(mouseEvent),mouseEvent);
+            BubbleEvent(d => d.OnMouseDown(mouseEvent), mouseEvent);
 
-         
 
-            
+
+
         }
     }
 
@@ -446,22 +433,22 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             //NodeDrawerAtMouse = nodes.FirstOrDefault();
 
             if (DrawersAtMouse != null)
-            foreach (var item in nodes)
-            {
-                var alreadyInside = DrawersAtMouse.Contains(item);
-                if (!alreadyInside)
+                foreach (var item in nodes)
                 {
-                    item.OnMouseEnter(e);
+                    var alreadyInside = DrawersAtMouse.Contains(item);
+                    if (!alreadyInside)
+                    {
+                        item.OnMouseEnter(e);
+                    }
                 }
-            }
             if (DrawersAtMouse != null)
-            foreach (var item in DrawersAtMouse)
-            {
-                if (!nodes.Contains(item))
+                foreach (var item in DrawersAtMouse)
                 {
-                    item.OnMouseExit(e);
+                    if (!nodes.Contains(item))
+                    {
+                        item.OnMouseExit(e);
+                    }
                 }
-            }
 
             DrawersAtMouse = nodes;
             foreach (var node in DrawersAtMouse)
@@ -494,14 +481,13 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     }
     public override void OnMouseUp(MouseEvent mouseEvent)
     {
-        BubbleEvent(d=>d.OnMouseUp(mouseEvent),mouseEvent);
+        BubbleEvent(d => d.OnMouseUp(mouseEvent), mouseEvent);
 
     }
 
     public override void OnRightClick(MouseEvent mouseEvent)
     {
         BubbleEvent(d => d.OnRightClick(mouseEvent), mouseEvent);
-        Debug.Log("RIGHT CLICKED");
         if (DiagramViewModel.SelectedNodeItem != null)
         {
             ShowItemContextMenu(DiagramViewModel.SelectedNodeItem);
@@ -621,26 +607,6 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         }
     }
 
-    //    //if (e.type == EventType.MouseDown && e.button != 2)
-    //    //{
-    //    //    CurrentEvent = Event.current;
-    //    //    LastMouseDownPosition = e.mousePosition;
-    //    //    IsMouseDown = true;
-    //    //    OnMouseDown();
-    //    //    if (e.clickCount > 1)
-    //    //    {
-    //    //        OnDoubleClick();
-    //    //    }
-    //    //    e.Use();
-    //    //}
-    //    //if (CurrentEvent.rawType == EventType.MouseUp && IsMouseDown)
-    //    //{
-    //    //    LastMouseUpPosition = e.mousePosition;
-    //    //    IsMouseDown = false;
-    //    //    OnMouseUp();
-    //    //    e.Use();
-    //    //}
-
     private bool UpgradeOldProject()
     {
         if (DiagramViewModel.NeedsUpgrade)
@@ -659,10 +625,6 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         }
         return false;
     }
-
-    //public void HandleInput()
-    //{
-    //    //var e = Event.current;
 }
 
 public class SelectionRectHandler : Drawer, IInputHandler
@@ -800,17 +762,39 @@ public class ConnectionHandler : DiagramInputHander
     public ConnectorViewModel StartConnector { get; set; }
     public ConnectionViewModel CurrentConnection { get; set; }
 
+    public List<ConnectorViewModel> PossibleConnections { get; set; }
+
     public ConnectionHandler(DiagramViewModel viewModel, ConnectorViewModel startConnector)
         : base(viewModel)
     {
         StartConnector = startConnector;
-        Debug.Log(StartConnector.DataObject);
+        PossibleConnections = new List<ConnectorViewModel>();
+
+        foreach (var connection in viewModel.GraphItems.OfType<ConnectorViewModel>())
+        {
+            foreach (var strategy in uFrameEditor.ConnectionStrategies)
+            {
+                if (strategy.Connect(StartConnector, connection) != null)
+                {
+                    PossibleConnections.Add(connection);
+                }
+            }
+        }
+        foreach (var a in PossibleConnections)
+        {
+            a.IsMouseOver = true;
+        }
+
     }
 
 
-    public override void OnMouseDown(MouseEvent mouseEvent)
+    public override void OnMouseDown(MouseEvent e)
     {
-        mouseEvent.Cancel();
+        foreach (var a in PossibleConnections)
+        {
+            a.IsMouseOver = false;
+        }
+        e.Cancel();
     }
 
     public override void OnMouseMove(MouseEvent e)
@@ -833,11 +817,11 @@ public class ConnectionHandler : DiagramInputHander
 
                 foreach (var connector in nodeAtMouse.Connectors)
                 {
-                    
+
                     ConnectionViewModel connection = null;
                     foreach (var strategy in uFrameEditor.ConnectionStrategies)
                     {
-                        
+
                         //try and connect them
                         connection = strategy.Connect(StartConnector, connector);
                         if (connection != null)
@@ -860,8 +844,10 @@ public class ConnectionHandler : DiagramInputHander
                 }
             }
 
-        } else  {
-        
+        }
+        else
+        {
+
             foreach (var strategy in uFrameEditor.ConnectionStrategies)
             {
                 //try and connect them
@@ -882,7 +868,7 @@ public class ConnectionHandler : DiagramInputHander
 
             }
         }
-       
+
 
         var _startRight = StartConnector.Direction == ConnectorDirection.Output;
         var _endRight = false;
@@ -911,6 +897,10 @@ public class ConnectionHandler : DiagramInputHander
             });
 
 
+        }
+        foreach (var a in PossibleConnections)
+        {
+            a.IsMouseOver = false;
         }
         e.Cancel();
     }

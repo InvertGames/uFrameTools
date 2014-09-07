@@ -42,7 +42,6 @@ namespace Invert.uFrame.Editor
                     {
                         foreach (var option in dynamicCommand.GetOptions(argument).OrderBy(p=>p.Name))
                         {
-                            Debug.Log(option.Name);
                             groupCount++;
                             UFContextMenuItem option1 = option;
                             genericMenu.AddItem(new GUIContent(Flatten ? editorCommand.Title : option.Name), option.Checked, () =>

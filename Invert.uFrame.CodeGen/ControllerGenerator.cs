@@ -463,27 +463,27 @@ public class ControllerGenerator : CodeGenerator
 
         foreach (var elementDataBase in DiagramData.GetAllElements().ToArray())
         {
-            var links = elementDataBase.Items.SelectMany(p => p.GetLinks(diagramItems));
-            foreach (var diagramLink in links)
-            {
-                var link = diagramLink as AssociationLink;
-                if (link == null) continue;
+            //var links = elementDataBase.Items.SelectMany(p => p.GetLinks(diagramItems));
+            //foreach (var diagramLink in links)
+            //{
+            //    var link = diagramLink as AssociationLink;
+            //    if (link == null) continue;
 
-                if (link.Element == data)
-                {
-                    var controllerElement =
-                        DiagramData.GetAllElements().FirstOrDefault(p => p.ContainedItems.Contains(link.Item));
-                    if (controllerElement == null) continue;
-                    controllers.Add(controllerElement.NameAsController);
-                }
-                else if (data.ContainedItems.Contains(link.Item))
-                {
-                    var controllerElement =
-                        DiagramData.GetAllElements().FirstOrDefault(p => p.Name == link.Item.RelatedTypeName);
-                    if (controllerElement == null) continue;
-                    controllers.Add(controllerElement.NameAsController);
-                }
-            }
+            //    if (link.Element == data)
+            //    {
+            //        var controllerElement =
+            //            DiagramData.GetAllElements().FirstOrDefault(p => p.ContainedItems.Contains(link.Item));
+            //        if (controllerElement == null) continue;
+            //        controllers.Add(controllerElement.NameAsController);
+            //    }
+            //    else if (data.ContainedItems.Contains(link.Item))
+            //    {
+            //        var controllerElement =
+            //            DiagramData.GetAllElements().FirstOrDefault(p => p.Name == link.Item.RelatedTypeName);
+            //        if (controllerElement == null) continue;
+            //        controllers.Add(controllerElement.NameAsController);
+            //    }
+            //}
         }
         return controllers;
     }

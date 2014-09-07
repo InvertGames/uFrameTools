@@ -82,102 +82,31 @@ public class ViewComponentData : DiagramNode
         get { return Name; }
     }
 
-    public override bool CanCreateLink(IGraphItem target)
-    {
-        var viewComponent = target as ViewComponentData;
-        if (viewComponent != null)
-        {
-            if (Element == null)
-            {
-                return false;
-            }
-
-            if (viewComponent.Identifier == this.BaseIdentifier)
-            {
-                return false;
-            }
-            if (AllBaseTypes.Any(p => p.Identifier == viewComponent.Identifier))
-            {
-                return false;
-            }
-        }
-        var elementData = target as ElementData;
-        if (elementData != null)
-        {
-            if (Base != null && Base.Element != null)
-            {
-                return false;
-            }
-        }
-        return target is ViewComponentData || target is ElementData;
-    }
-
-    public override void CreateLink(IDiagramNode container, IGraphItem target)
-    {
-        var viewComponentData = target as ViewComponentData;
-        if (viewComponentData != null)
-        {
-            viewComponentData.BaseIdentifier = this.Identifier;
-            viewComponentData.ElementIdentifier = null;
-        }
-        var element = target as ElementData;
-        if (element != null)
-            ElementIdentifier = element.Identifier;
-    }
-
     public override RenameRefactorer CreateRenameRefactorer()
     {
         return new RenameViewComponentRefactorer(this);
     }
 
-    public override void Deserialize(JSONClass cls)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        base.Deserialize(cls);
+        base.Deserialize(cls, repository);
         _elementIdentifier = cls["ElementIdentifier"].Value;
         _baseIdentifier = cls["BaseIdentifier"].Value;
+    }
+
+    public void SetElement(ElementData element)
+    {
+        ElementIdentifier = element.Identifier;
+    }
+
+    public void RemoveElement()
+    {
+        ElementIdentifier = null;
     }
 
     public override bool EndEditing()
     {
         return base.EndEditing();
-    }
-
-    public override IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-    {
-        foreach (var diagramItem in nodes.OfType<ViewComponentData>().Where(p => p.BaseIdentifier == Identifier))
-        {
-            yield return new ViewComponentLink()
-            {
-                Base = this,
-                Derived = diagramItem
-            };
-        }
-
-        var element = nodes.FirstOrDefault(p => p.Identifier == ElementIdentifier);
-        if (element != null)
-        {
-            if (element != this && element.Identifier != this.Identifier)
-            {
-                yield return new GenericLink()
-                {
-                    Element = element,
-                    Node = this
-                };
-            }
-        }
-    }
-
-    [DiagramContextMenu("Open Code")]
-    public void OpenViewComponent(IProjectRepository repository)
-    {
-        var gameObject = new GameObject();
-        var behaviour = gameObject.AddComponent(this.Name) as MonoBehaviour;
-        if (behaviour != null)
-        {
-            var monoScript = MonoScript.FromMonoBehaviour(behaviour);
-            AssetDatabase.OpenAsset(monoScript);
-        }
-        GameObject.DestroyImmediate(gameObject);
     }
 
     public override void RemoveFromDiagram()
@@ -193,25 +122,20 @@ public class ViewComponentData : DiagramNode
         }
     }
 
-    public override void RemoveLink(IDiagramNode target)
-    {
-        var viewComponent = target as ViewComponentData;
-        if (viewComponent != null)
-        {
-            viewComponent.BaseIdentifier = null;
-            viewComponent.Dirty = true;
-        }
-        var element = target as ElementData;
-        if (element != null)
-        {
-            this.ElementIdentifier = null;
-        }
-    }
-
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
         cls.Add("ElementIdentifier", new JSONData(_elementIdentifier));
         cls.Add("BaseIdentifier", new JSONData(_baseIdentifier));
+    }
+
+    public void RemoveBaseViewComponent()
+    {
+        BaseIdentifier = null;
+    }
+
+    public void SetBaseViewComponent(ViewComponentData output)
+    {
+        BaseIdentifier = output.Identifier;
     }
 }

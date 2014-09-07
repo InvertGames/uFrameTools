@@ -11,20 +11,20 @@ public class AdditiveSceneData : IDiagramNodeItem
     public Rect Position { get; set; }
     public string Label { get; private set; }
 
-    public void CreateLink(IDiagramNode container, IGraphItem target)
-    {
+    //public void CreateLink(IDiagramNode container, IGraphItem target)
+    //{
         
-    }
+    //}
 
-    public bool CanCreateLink(IGraphItem target)
-    {
-        return false;
-    }
+    //public bool CanCreateLink(IGraphItem target)
+    //{
+    //    return false;
+    //}
 
-    public IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
-    {
-        yield break;
-    }
+    //public IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes)
+    //{
+    //    yield break;
+    //}
 
     public bool IsSelected { get; set; }
     public void RemoveLink(IDiagramNode target)
@@ -67,7 +67,7 @@ public class AdditiveSceneData : IDiagramNodeItem
        
     }
 
-    public void Deserialize(JSONClass cls)
+    public void Deserialize(JSONClass cls, INodeRepository repository)
     {
         
     }

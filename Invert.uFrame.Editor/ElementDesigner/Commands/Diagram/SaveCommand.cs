@@ -66,9 +66,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
             
             if (refactorer.Refactors.Count > 0)
             {
-#if DEBUG
-                UnityEngine.Debug.Log(string.Format("{0} : {1}", refactorer.GetType().Name , refactorer.CurrentFilename));
-#endif
+                uFrameEditor.Log(string.Format("{0} : {1}", refactorer.GetType().Name , refactorer.CurrentFilename));
                 refactorer.Refactor(files);
             }
             

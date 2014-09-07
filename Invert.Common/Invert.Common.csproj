@@ -46,10 +46,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ElementDesignerStyles.cs" />
-    <Compile Include="UBStyles.cs" />
+    <Compile Include="UI\ElementDesignerStyles.cs" />
+    <Compile Include="UI\UBStyles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\Class1.cs" />
+    <Compile Include="UI\GUIHelpers.cs" />
+    <Compile Include="UI\UFStyle.cs" />
     <Compile Include="Utilities\ProjectInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

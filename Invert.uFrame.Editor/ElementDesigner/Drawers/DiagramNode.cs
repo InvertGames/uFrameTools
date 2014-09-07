@@ -92,19 +92,19 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
 
     private DataBag _dataBag = new DataBag();
 
-    public virtual void Deserialize(JSONClass cls)
+    public virtual void Deserialize(JSONClass cls, INodeRepository repository)
     {
         _name = cls["Name"].Value;
         _isCollapsed = cls["IsCollapsed"].AsBool;
         _identifier = cls["Identifier"].Value;
         IsNewNode = false;
-        ContainedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>();
+        ContainedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>(repository);
 
         var filter = this as IDiagramFilter;
         if (filter != null)
         {
             filter.Locations.Deserialize(cls["Locations"].AsObject);
-            filter.CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject);
+            filter.CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject, repository);
 
             //cls.Add("Locations", filter.Locations.Serialize());
             //cls.Add("CollapsedValues", filter.CollapsedValues.Serialize());
@@ -113,13 +113,13 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         {
             var flags = cls["Flags"].AsObject;
             Flags = new FlagsDictionary();
-            Flags.Deserialize(flags);
+            Flags.Deserialize(flags, repository);
         }
         if (cls["DataBag"] is JSONClass)
         {
             var flags = cls["DataBag"].AsObject;
             DataBag = new DataBag();
-            DataBag.Deserialize(flags);
+            DataBag.Deserialize(flags, repository);
         }
         if (ContainedItems != null)
         {
@@ -331,9 +331,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         BeginEditing();
     }
 
-    public abstract bool CanCreateLink(IGraphItem target);
-
-    public abstract void CreateLink(IDiagramNode container, IGraphItem target);
 
     public virtual RenameRefactorer CreateRenameRefactorer()
     {
@@ -363,8 +360,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         return true;
     }
 
-    public abstract IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] nodes);
-
     public virtual void RefactorApplied()
     {
         RenameRefactorer = null;
@@ -384,8 +379,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     {
         Filter.Locations.Remove(this.Identifier);
     }
-
-    public abstract void RemoveLink(IDiagramNode target);
 
     public void Rename(IDiagramNode data, string name)
     {
