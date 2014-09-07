@@ -123,10 +123,11 @@ public class DiagramViewModel : ViewModel
         set;
     }
 
-    public DiagramViewModel(string assetPath, IProjectRepository currentRepository)
+    public DiagramViewModel(JsonElementDesignerData diagram, IProjectRepository currentRepository)
     {
+        var assetPath = AssetDatabase.GetAssetPath(diagram);
         var fileExtension = Path.GetExtension(assetPath);
-        var diagram = currentRepository.LoadDiagram(assetPath);
+        //var diagram = currentRepository.LoadDiagram(diagram);
 
         if (diagram == null) throw new Exception("Diagram not found");
         CurrentRepository = currentRepository;

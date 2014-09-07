@@ -11,7 +11,7 @@ public interface IProjectRepository : INodeRepository
     Dictionary<string, string> GetProjectDiagrams();
     void CreateNewDiagram();
     Type RepositoryFor { get; }
-    INodeRepository CurrentDiagram { get; set; }
+    JsonElementDesignerData CurrentDiagram { get; set; }
     List<JsonElementDesignerData> Diagrams { get; set; }
     void Refresh();
 }

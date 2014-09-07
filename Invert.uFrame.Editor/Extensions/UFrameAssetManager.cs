@@ -24,7 +24,19 @@ public class UFrameAssetManager : AssetPostprocessor
         project.OutputDirectory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(project));
         //project.n = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(project));
     }
+    public static void NewUframeProject(string name)
+    {
+        //var project = CreateAsset<ProjectRepository>("Assets/" + path);
+        AssetDatabase.CreateFolder("Assets", name);
+        var project = ScriptableObject.CreateInstance<ProjectRepository>();
+        AssetDatabase.CreateAsset(project,"Assets/" + name + "/" + name + ".asset");
+        project.OutputDirectory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(project));
+        uFrameEditor.CurrentProject = project;
+        Selection.activeObject = project;
+        uFrameEditor.CurrentProject.CreateNewDiagram();
 
+        //project.n = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(project));
+    }
     /// <summary>
     //	This makes it easy to create, name and place unique new ScriptableObject asset files.
     /// </summary>
