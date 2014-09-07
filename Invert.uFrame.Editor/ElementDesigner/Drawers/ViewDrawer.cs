@@ -14,6 +14,10 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
 {
     private ElementDataBase _forElement;
 
+    public override GUIStyle ItemStyle
+    {
+        get { return ElementDesignerStyles.Item4; }
+    }
     public ViewDrawer()
     {
     }
@@ -66,23 +70,24 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
         set { _propertiesHeader = value; }
     }
 
-    protected override void DrawSelectedItemLabel(IDiagramNodeItem nodeItem)
-    {
-        //var  bindingDiagramItem = nodeItem as BindingDiagramItem;
-        //if (bindingDiagramItem != null)
-        //{
-        //    DrawItemLabel(bindingDiagramItem);
-        //}
-        //else
-        //{
-            base.DrawSelectedItemLabel(nodeItem);
-        //}
+    //protected override void DrawSelectedItemLabel(IDiagramNodeItem nodeItem)
+    //{
+    //    //var  bindingDiagramItem = nodeItem as BindingDiagramItem;
+    //    //if (bindingDiagramItem != null)
+    //    //{
+    //    //    DrawItemLabel(bindingDiagramItem);
+    //    //}
+    //    //else
+    //    //{
+    //        base.DrawSelectedItemLabel(nodeItem);
+    //    //}
         
-    }
+    //}
 
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
         base.GetContentDrawers(drawers);
+        drawers.Insert(1,PropertiesHeader);
         //if (NodeViewModel.GraphItem.BaseNode is ElementData)
         //{
         //    yield return new DiagramSubItemGroup()
@@ -110,10 +115,6 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
 
     }
 
-    public override GUIStyle ItemStyle
-    {
-        get { return ElementDesignerStyles.Item4; }
-    }
 
     [Inject("ViewDoubleClick")]
     public IEditorCommand DoubleClickCommand { get; set; }

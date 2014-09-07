@@ -215,7 +215,7 @@ namespace Invert.uFrame.Editor
             if (DiagramDrawer == null) return;
             var diagramRect = new Rect(0f, (EditorStyles.toolbar.fixedHeight) - 1, Screen.width - 3, Screen.height - (EditorStyles.toolbar.fixedHeight * 2) - EditorStyles.toolbar.fixedHeight - 2);
             DiagramDrawer.Rect = diagramRect;
-            EditorGUI.DrawRect(diagramRect, new Color(0.13f, 0.13f, 0.13f));
+            EditorGUI.DrawRect(diagramRect, uFrameEditor.Settings.BackgroundColor);
             GUI.Box(diagramRect, string.Empty, style);
 
             if (DiagramDrawer == null)
@@ -231,10 +231,8 @@ namespace Invert.uFrame.Editor
                 HandlePanning(diagramRect);
                 if (DiagramViewModel != null)
                 {
-                    var softColor = DiagramViewModel.Settings.GridLinesColor;
-                    var hardColor = DiagramViewModel.Settings.GridLinesColorSecondary;
-                    //var softColor = new Color(1f, 1f, 0f, 0.1f);
-                    //var hardColor = new Color(1f, 1f, 1f, 0.3f);
+                    var softColor = uFrameEditor.Settings.GridLinesColor;
+                    var hardColor = uFrameEditor.Settings.GridLinesColorSecondary;
                     var x = 0f;
                     var every10 = 0;
 
@@ -277,20 +275,20 @@ namespace Invert.uFrame.Editor
                 GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
                 if (DiagramDrawer != null)
                 {
-                    
+
                     GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
                     if (DiagramDrawer.DrawersAtMouse != null)
-                    foreach (var drawer in DiagramDrawer.DrawersAtMouse)
-                    {
-                        GUILayout.Label(drawer.ToString());
-                    }
+                        foreach (var drawer in DiagramDrawer.DrawersAtMouse)
+                        {
+                            GUILayout.Label(drawer.ToString());
+                        }
                     if (DiagramDrawer.DiagramViewModel != null)
                         foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
                         {
                             GUILayout.Label(drawer.ToString());
                         }
                 }
-               
+
                 GUILayout.EndArea();
 #endif
                 //EndGUI();
@@ -344,10 +342,13 @@ namespace Invert.uFrame.Editor
             if (evt != null && evt.isKey && evt.type == EventType.KeyUp && DiagramDrawer != null)
             {
               
-                if (DiagramViewModel.SelectedNode == null || !DiagramViewModel.SelectedNode.IsEditing)
+                if (DiagramViewModel != null && (DiagramViewModel.SelectedNode == null || !DiagramViewModel.SelectedNode.IsEditing))
                 {
-                    DiagramDrawer.HandleKeyEvent(evt,ModifierKeyStates);
-                    evt.Use();
+                    if (DiagramDrawer.HandleKeyEvent(evt, ModifierKeyStates))
+                    {
+                        evt.Use();
+                    }
+                    
                 }
             }
 
@@ -361,7 +362,7 @@ namespace Invert.uFrame.Editor
 
             if (DiagramDrawer != null && DiagramDrawer.Dirty || EditorApplication.isCompiling)
             {
-                Repaint();
+                
             }
          
         }
@@ -440,9 +441,13 @@ namespace Invert.uFrame.Editor
                 MouseEvent.IsMouseDown = false;
                 handler.OnMouseUp(MouseEvent);
             }
+            else if (e.rawType == EventType.KeyDown)
+            {
+                
+            }
             else
             {
-                var mp = (_scrollPosition + e.mousePosition) * (1f / ElementsDiagram.Scale);
+                var mp = ( e.mousePosition) * (1f / ElementsDiagram.Scale);
             
                 MouseEvent.MousePosition = mp;
                 MouseEvent.MousePositionDelta = MouseEvent.MousePosition - MouseEvent.LastMousePosition;
@@ -527,18 +532,27 @@ namespace Invert.uFrame.Editor
             try
             {
                 if (
+                  GUILayout.Button(
+                      new GUIContent(uFrameEditor.CurrentProject == null ? "--Select Project--" : uFrameEditor.CurrentProject.Name),
+                      EditorStyles.toolbarPopup))
+                {
+                    SelectProject();
+                }
+                if (uFrameEditor.CurrentProject != null)
+                {
+                    if (
                     GUILayout.Button(
                         new GUIContent(DiagramViewModel == null ? "--Select Diagram--" : DiagramViewModel.Title),
                         EditorStyles.toolbarPopup))
-                {
-                    SelectDiagram();
+                    {
+                        SelectDiagram();
+                    }
                 }
+                
             }
             catch (Exception ex)
             {
                 DiagramDrawer = null;
-            
-                Repaint();
                 return;
 
             }
@@ -572,7 +586,7 @@ namespace Invert.uFrame.Editor
                 {
                     _scrollPosition.y = diagramRect.height - diagramRect.y;
                 }
-                Repaint();
+                
             }
 
         }
@@ -584,20 +598,17 @@ namespace Invert.uFrame.Editor
                 //Undo.undoRedoPerformed = UndoRedoPerformed;
                 Undo.undoRedoPerformed += UndoRedoPerformed;
                 //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
-                DiagramDrawer = new ElementsDiagram(new DiagramViewModel(path, uFrameEditor.Repository));
+                DiagramDrawer = new ElementsDiagram(new DiagramViewModel(path, uFrameEditor.CurrentProject));
                 MouseEvent = new MouseEvent(ModifierKeyStates,DiagramDrawer);
                 //Diagram.SelectionChanged += DiagramOnSelectionChanged;
                 LastLoadedDiagram = path;
                 DiagramDrawer.Dirty = true;
                 //DiagramDrawer.Data.ApplyFilter();
                 DiagramDrawer.Refresh();
-                this.Repaint();
             }
             catch (Exception ex)
             {
-#if DEBUG
                 UnityEngine.Debug.LogException(ex);
-#endif
                 Debug.Log("Either a plugin isn't installed or the file could no longer be found.");
                 LastLoadedDiagram = null;
                 return false;
@@ -610,7 +621,7 @@ namespace Invert.uFrame.Editor
         private void UndoRedoPerformed()
         {
             DiagramDrawer = null;
-            Repaint();
+       
         }
 
         public void LoadDiagramByName(string diagramName)
@@ -624,10 +635,29 @@ namespace Invert.uFrame.Editor
             //if (diagram == null) return;
             //LoadDiagram(diagram);
         }
+        private void SelectProject()
+        {
+            var projects = uFrameEditor.Projects;
 
+
+            var menu = new GenericMenu();
+            foreach (var project in projects)
+            {
+                ProjectRepository project1 = project;
+                menu.AddItem(new GUIContent(project.name), project == uFrameEditor.CurrentProject, () =>
+                {
+                    uFrameEditor.CurrentProject = project1;
+                    uFrameEditor.CurrentProject.CurrentDiagram = uFrameEditor.CurrentProject.Diagrams.FirstOrDefault();
+                });
+            }
+
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent("Force Refresh"), false, () => { uFrameEditor.Projects = null; });
+            menu.ShowAsContext();
+        }
         private void SelectDiagram()
         {
-            var projectDiagrams = uFrameEditor.Repository.GetProjectDiagrams();
+            var projectDiagrams = uFrameEditor.CurrentProject.GetProjectDiagrams();
             var diagramNames = projectDiagrams.Keys.ToArray();
             var diagramPaths = projectDiagrams.Values.ToArray();
 
@@ -645,6 +675,8 @@ namespace Invert.uFrame.Editor
 
                 });
             }
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent("Force Refresh"),false,()=> { uFrameEditor.CurrentProject.Refresh(); } );
             menu.ShowAsContext();
         }
 
@@ -671,7 +703,7 @@ namespace Invert.uFrame.Editor
             {
                 DiagramDrawer.Refresh();
             }
-            Repaint();
+            
         }
 
         public void CommandExecuting(IEditorCommand command)

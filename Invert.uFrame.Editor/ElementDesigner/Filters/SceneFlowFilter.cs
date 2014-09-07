@@ -29,19 +29,4 @@ public class SceneFlowFilter : DefaultFilter
         }
         return base.IsItemAllowed(item, t);
     }
-
-    public override bool IsAllowed(object item, Type t)
-    {
-        if (t == typeof(ViewModelCommandData)) return true;
-        if (t == typeof(SceneManagerData)) return true;
-        if (t == typeof(SubSystemData)) return true;
-        //if (t == typeof (ExternalSubsystem)) return true;
-
-        //var element = item as ElementDataBase;
-        //if (element != null && !element.IsMultiInstance)
-        //{
-        //    return true;
-        //}
-        return false;
-    }
 }

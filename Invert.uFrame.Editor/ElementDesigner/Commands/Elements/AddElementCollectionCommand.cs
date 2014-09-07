@@ -2,27 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class AddElementCollectionCommand : EditorCommand<ElementData>
+    public class AddElementCollectionCommand : EditorCommand<ElementNodeViewModel>
     {
-        public override void Perform(ElementData node)
+        public override void Perform(ElementNodeViewModel node)
         {
-            var property = new ViewModelCollectionData()
-            {
-                Node = node,
-                Name = node.Data.GetUniqueName("NewCollection"),
-                ItemType = typeof (string)
-            };
-            node.Collections.Add(property);
-            uFrameEditor.CurrentDiagram.Refresh();
-            property.IsSelected = true;
-            property.BeginEditing();
+            node.AddCollection();
         }
 
-        public override string CanPerform(ElementData node)
+        public override string CanPerform(ElementNodeViewModel node)
         {
             if (node == null) return "Arg can't be null";
             return null;

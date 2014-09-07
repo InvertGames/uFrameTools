@@ -32,7 +32,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         public override void Perform(SceneManagerViewModel nodeViewModel)
         {
             var data = nodeViewModel.DiagramViewModel.Data;
-            var allCommands = uFrameEditor.Repository.NodeItems.OfType<ElementData>()
+            var allCommands = uFrameEditor.CurrentProject.NodeItems.OfType<ElementData>()
                 .Where(p => !p.IsMultiInstance)
                 .SelectMany(p => p.Commands).ToArray();
 

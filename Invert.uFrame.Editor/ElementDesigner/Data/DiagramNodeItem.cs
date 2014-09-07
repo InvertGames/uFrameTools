@@ -113,14 +113,14 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         get { return _isSelected; }
         set
         {
-            if (value == false && _isSelected)
-            {
-                EndEditing();
-            }
-            else if (value == true && !_isSelected)
-            {
-                BeginEditing();
-            }
+            //if (value == false && _isSelected)
+            //{
+            //    EndEditing();
+            //}
+            //else if (value == true && !_isSelected)
+            //{
+            //    BeginEditing();
+            //}
             _isSelected = value;
         }
     }

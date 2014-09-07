@@ -1,4 +1,5 @@
-﻿using Invert.uFrame.Code.Bindings;
+﻿using System.IO;
+using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
 using System;
@@ -22,6 +23,9 @@ namespace Invert.uFrame.Editor
 
         private static IToolbarCommand[] _toolbarCommands;
         private static IProjectRepository _repository;
+        private static ProjectRepository[] _projects;
+        private static Dictionary<Type, List<Type>> _allowedFilterNodes;
+        private static Dictionary<Type, List<Type>> _allowedFilterItems;
 
         public static IEditorCommand[] Commands
         {
@@ -55,6 +59,11 @@ namespace Invert.uFrame.Editor
             {
                 return DesignerWindow.DiagramDrawer;
             }
+        }
+
+        public static MouseEvent CurrentMouseEvent
+        {
+            get { return DesignerWindow.MouseEvent; }
         }
 
         public static ElementsDesigner DesignerWindow
@@ -223,7 +232,7 @@ namespace Invert.uFrame.Editor
 
         public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(ICodePathStrategy strategy = null)
         {
-            return GetAllFileGenerators(Repository, strategy);
+            return GetAllFileGenerators(CurrentProject, strategy);
         }
 
         public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(INodeRepository diagramData, ICodePathStrategy strategy = null)
@@ -310,12 +319,51 @@ namespace Invert.uFrame.Editor
             Container.RegisterInstance<IKeyBinding>(new SimpleKeyBinding(command, name, code, control, alt, shift), name);
         }
 
+        public static UnityEngine.Object[] GetAssets(Type assetType)
+        {
+            var tempObjects = new List<UnityEngine.Object>();
+            var directory = new DirectoryInfo(Application.dataPath);
+            FileInfo[] goFileInfo = directory.GetFiles("*" + ".asset", SearchOption.AllDirectories);
+
+            int i = 0; int goFileInfoLength = goFileInfo.Length;
+            for (; i < goFileInfoLength; i++)
+            {
+                FileInfo tempGoFileInfo = goFileInfo[i];
+                if (tempGoFileInfo == null)
+                    continue;
+
+                string tempFilePath = tempGoFileInfo.FullName;
+                tempFilePath = tempFilePath.Replace(@"\", "/").Replace(Application.dataPath, "Assets");
+                try
+                {
+
+                    var tempGo = AssetDatabase.LoadAssetAtPath(tempFilePath, assetType) as UnityEngine.Object;
+                    if (tempGo == null)
+                    {
+
+                    }
+                    else
+                    {
+                        tempObjects.Add(tempGo);
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    continue;
+                }
+
+            }
+
+            return tempObjects.ToArray();
+        }
+
         private static void InitializeContainer(uFrameContainer container)
         {
             // Repositories
             //container.RegisterInstance<IElementsDataRepository>(new DefaultElementsRepository(), ".asset");
 
-            container.RegisterInstance<IProjectRepository>(new JsonRepository());
+            //container.RegisterInstance<IProjectRepository>(new ProjectRepository());
 
             //// 2.0 stuff
             //container.RegisterInstance<ElementDesignerViewModel>(new ElementDesignerViewModel());
@@ -365,6 +413,7 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<AddNewCommand>(new AddNewViewComponentCommand(), "AddNewViewComponentCommand");
 
             // For no selection diagram context menu
+            container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddNewFilterItemCommand");
             container.RegisterInstance<IDiagramContextCommand>(new AddNewSceneManagerCommand(), "AddNewSceneManagerCommand");
             container.RegisterInstance<IDiagramContextCommand>(new AddNewSubSystemCommand(), "AddNewSubSystemCommand");
             container.RegisterInstance<IDiagramContextCommand>(new AddNewElementCommand(), "AddNewElementCommand");
@@ -414,24 +463,39 @@ namespace Invert.uFrame.Editor
             RegisterGraphItem<ViewBindingItemViewModel, SceneTransitionItemViewModel, ItemDrawer>();
             RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
 
-            //RegisterGraphItem<EnumData,EnumItemViewModel,EnumItemDrawer>();
 
-            container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritance");
-            container.RegisterInstance<IConnectionStrategy>(new ElementViewConnectionStrategy(), "ElementViewConnection");
+            // Filters
+            RegisterFilterNode<SceneFlowFilter,SceneManagerData>();
+            RegisterFilterNode<SceneFlowFilter,SubSystemData>();
+
+            RegisterFilterNode<SubSystemData,ElementData>();
+            RegisterFilterNode<SubSystemData,EnumData>();
+
+            RegisterFilterNode<ElementData,EnumData>();
+            RegisterFilterNode<ElementData,ViewData>();
+            RegisterFilterNode<ElementData,ViewComponentData>();
+
+
+
+            container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritanceConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ElementViewConnectionStrategy(), "ElementViewConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new SceneTransitionConnectionStrategy(), "SceneTransitionConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ViewInheritanceConnectionStrategy(), "ViewInheritanceConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new SceneManagerSubsystemConnectionStrategy(), "SceneManagerSubsystemConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new AssociationConnectionStrategy(), "AssociationConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputStrategy(), "ComputedPropertyInputStrategy");
+
+
             container.RegisterInstance<IUFrameTypeProvider>(new uFrameStringTypeProvider());
-            
+            container.RegisterInstance<UFrameSettings>(new UFrameSettings());
 
-#if DEBUG
-            //External Nodes
-            //container.RegisterInstance<IDiagramContextCommand>(new ShowExternalItemCommand(), "AddNewExternalItemCommand");
-            //container.RegisterRelation<ExternalSubsystem, INodeDrawer, ExternalNodeDrawer>();
-#endif
             foreach (var diagramPlugin in GetDerivedTypes<DiagramPlugin>(false, false))
             {
                 container.RegisterInstance(Activator.CreateInstance((Type)diagramPlugin) as IDiagramPlugin, diagramPlugin.Name, false);
             }
 
             container.InjectAll();
+
             foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority))
             {
                 if (diagramPlugin.Enabled)
@@ -442,14 +506,46 @@ namespace Invert.uFrame.Editor
             KeyBindings = Container.ResolveAll<IKeyBinding>().ToArray();
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
             uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
-            Repository = Container.Resolve<IProjectRepository>();
+            CurrentProject = Container.Resolve<IProjectRepository>();
             uFrameTypes = container.Resolve<IUFrameTypeProvider>();
+            Settings = container.Resolve<UFrameSettings>();
 
+
+            var filterTypes = Container.RelationshipMappings.Where(
+                p => typeof (IDiagramFilter).IsAssignableFrom(p.From) && p.To == typeof (IDiagramNode));
+            var filterTypeItems = Container.RelationshipMappings.Where(
+                p => typeof(IDiagramFilter).IsAssignableFrom(p.From) && p.To == typeof(IDiagramNodeItem));
+
+            foreach (var filterMapping in filterTypes)
+            {
+                if (!AllowedFilterNodes.ContainsKey(filterMapping.From))
+                {
+                    AllowedFilterNodes.Add(filterMapping.From,new List<Type>());
+                }
+                AllowedFilterNodes[filterMapping.From].Add(filterMapping.Concrete);
+            }
+
+            foreach (var filterMapping in filterTypeItems)
+            {
+                if (!AllowedFilterItems.ContainsKey(filterMapping.From))
+                {
+                    AllowedFilterItems.Add(filterMapping.From, new List<Type>());
+                }
+                AllowedFilterItems[filterMapping.From].Add(filterMapping.Concrete);
+            }
         }
 
-        public static IProjectRepository Repository
+        public static ProjectRepository[] Projects
         {
-            get { return _repository ?? (_repository = Container.Resolve<IProjectRepository>()); }
+            get { return _projects ?? (_projects = GetAssets(typeof(ProjectRepository)).Cast<ProjectRepository>().ToArray()); }
+            set { _projects = value; }
+        }
+
+        public static UFrameSettings Settings { get; set; }
+
+        public static IProjectRepository CurrentProject
+        {
+            get { return _repository ?? (_repository = Projects.FirstOrDefault()); }
             set { _repository = value; }
         }
 
@@ -465,5 +561,48 @@ namespace Invert.uFrame.Editor
             RegisterDrawer<TViewModel,TDrawer>();
         }
 
+        public static void RegisterFilterNode<TFilterData, TAllowedItem>()
+        {
+            if (!AllowedFilterNodes.ContainsKey(typeof (TFilterData)))
+            {
+                AllowedFilterNodes.Add(typeof(TFilterData), new List<Type>());
+            }
+            AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
+        }
+
+        public static void RegisterFilterItem<TFilterData, TAllowedItem>()
+        {
+            Container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();
+        }
+
+        public static IEnumerable<Type> GetAllowedFilterNodes(Type filterType)
+        {
+            return Container.RelationshipMappings.Where(
+                p => p.From == filterType && p.To == typeof(IDiagramNode)).Select(p => p.Concrete);
+        }
+        public static IEnumerable<Type> GetAllowedFilterItems(Type filterType)
+        {
+            return Container.RelationshipMappings.Where(
+                p => p.From == filterType && p.To == typeof(IDiagramNodeItem)).Select(p => p.Concrete);
+        }
+
+        public static Dictionary<Type, List<Type>> AllowedFilterNodes
+        {
+            get { return _allowedFilterNodes ?? (_allowedFilterNodes = new Dictionary<Type, List<Type>>()); }
+            set { _allowedFilterNodes = value; }
+        }
+
+        public static Dictionary<Type, List<Type>> AllowedFilterItems
+        {
+            get { return _allowedFilterItems ?? (_allowedFilterItems = new Dictionary<Type, List<Type>>()); }
+            set { _allowedFilterItems = value; }
+        }
+
+        public static bool IsFilter(Type type)
+        {
+            return AllowedFilterNodes.ContainsKey(type);
+        }
+
     }
+
 }

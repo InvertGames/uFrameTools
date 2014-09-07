@@ -11,11 +11,8 @@ using UnityEditor;
 using UnityEngine;
 using Object = System.Object;
 
-public abstract class DefaultElementsRepository : IProjectRepository
+public class ProjectRepository : ScriptableObject, IProjectRepository
 {
-  
-    [Inject]
-    public IUFrameContainer Container { get; set; }
 
     private Dictionary<string, string> _derivedTypes;
 
@@ -24,53 +21,21 @@ public abstract class DefaultElementsRepository : IProjectRepository
         EditorUtility.SetDirty(data as UnityEngine.Object);
     }
 
-    private UnityEngine.Object[] _Assets;
     protected string[] _diagramNames;
+    
+    private uFrameProject[] _projects;
+
+    [SerializeField]
     protected List<JsonElementDesignerData> _diagrams;
+    [SerializeField]
+    private string _outputDirectory;
 
     public void RecacheAssets()
     {
         
     }
 
-    public UnityEngine.Object[] GetAssets()
-    {
-        var tempObjects = new List<UnityEngine.Object>();
-        var directory = new DirectoryInfo(Application.dataPath);
-        FileInfo[] goFileInfo = directory.GetFiles("*" + ".asset", SearchOption.AllDirectories);
-
-        int i = 0; int goFileInfoLength = goFileInfo.Length;
-        for (; i < goFileInfoLength; i++)
-        {
-            FileInfo tempGoFileInfo = goFileInfo[i];
-            if (tempGoFileInfo == null)
-                continue;
-
-            string tempFilePath = tempGoFileInfo.FullName;
-            tempFilePath = tempFilePath.Replace(@"\", "/").Replace(Application.dataPath, "Assets");
-            try
-            {
-                
-                var tempGo = AssetDatabase.LoadAssetAtPath(tempFilePath, RepositoryFor) as UnityEngine.Object;
-                if (tempGo == null)
-                {
-                    
-                }
-                else
-                {
-                    tempObjects.Add(tempGo);
-                    continue;
-                }
-            }
-            catch (Exception ex)
-            {
-                continue;
-            }
-
-        }
-
-        return tempObjects.ToArray();
-    }
+    
 
     public Dictionary<string, string> GetProjectDiagrams()
     {
@@ -84,21 +49,32 @@ public abstract class DefaultElementsRepository : IProjectRepository
         return items;
     }
 
-    public virtual void CreateNewDiagram()
+    public void CreateNewDiagram()
     {
-        UFrameAssetManager.CreateAsset<ElementDesignerData>();
+        _diagrams.Add(UFrameAssetManager.CreateAsset<JsonElementDesignerData>());
     }
-
     public virtual Type RepositoryFor
     {
-        get { return typeof (ElementDesignerData); }
+        get { return typeof(JsonElementDesignerData); }
     }
 
-    public string Name { get; private set; }
-
-    public virtual IEnumerable<IDiagramNode> NodeItems
+    public string Name
     {
-        get { return null; }
+        get { return name; }
+    }
+
+    public IEnumerable<IDiagramNode> NodeItems
+    {
+        get
+        {
+            foreach (var item in Diagrams)
+            {
+                foreach (var node in item.NodeItems)
+                {
+                    yield return node;
+                }
+            }
+        }
     }
 
     public ElementDiagramSettings Settings
@@ -158,6 +134,12 @@ public abstract class DefaultElementsRepository : IProjectRepository
         set { _diagramNames = value; }
     }
 
+    public string OutputDirectory
+    {
+        get { return _outputDirectory; }
+        set { _outputDirectory = value; }
+    }
+
     public IElementDesignerData LoadDiagram(string path)
     {
         var data = AssetDatabase.LoadAssetAtPath(path, RepositoryFor) as IElementDesignerData;
@@ -190,7 +172,20 @@ public abstract class DefaultElementsRepository : IProjectRepository
 
     }
 
-    protected abstract void Refresh();
+    public virtual void Refresh()
+    {
+        var assets = uFrameEditor.GetAssets(RepositoryFor);
+        Diagrams = assets.OfType<JsonElementDesignerData>().ToList();
+
+        foreach (var diagram in Diagrams)
+        {
+            diagram.Prepare();
+        }
+#if DEBUG
+        Debug.Log(string.Join(Environment.NewLine, Diagrams.Select(p => p.Name + ":" + p.Identifier).ToArray()));
+#endif
+        DiagramNames = Diagrams.Select(p => p.Name).ToArray();
+    }
 }
 
 public interface ICodePathStrategy

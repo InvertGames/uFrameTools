@@ -12,4 +12,6 @@ public interface IProjectRepository : INodeRepository
     void CreateNewDiagram();
     Type RepositoryFor { get; }
     INodeRepository CurrentDiagram { get; set; }
+    List<JsonElementDesignerData> Diagrams { get; set; }
+    void Refresh();
 }

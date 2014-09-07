@@ -382,4 +382,24 @@ public class ViewData : DiagramNode, ISubSystemType
         cls.Add("BaseViewIdentifier", new JSONData(_baseViewIdentifier));
         cls.AddPrimitiveArray("ComponentIdentifiers", _componentIdentifiers, i => new JSONData(i));
     }
+
+    public void SetElement(ElementData output)
+    {
+        ForAssemblyQualifiedName = output.AssemblyQualifiedName;
+    }
+
+    public void RemoveFromElement(ElementData output)
+    {
+        ForAssemblyQualifiedName = null;
+    }
+
+    public void SetBaseView(ViewData output)
+    {
+        BaseViewIdentifier = output.Identifier;
+    }
+
+    public void ClearBaseView()
+    {
+        BaseViewIdentifier = null;
+    }
 }

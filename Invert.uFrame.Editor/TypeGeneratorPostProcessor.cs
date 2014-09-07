@@ -3,6 +3,7 @@ using System.CodeDom;
 
 namespace Invert.uFrame.Editor
 {
+    
     public abstract class TypeGeneratorPostProcessor<TCodeGenerator> : ITypeGeneratorPostProcessor where TCodeGenerator : CodeGenerator
     {
         public Type For

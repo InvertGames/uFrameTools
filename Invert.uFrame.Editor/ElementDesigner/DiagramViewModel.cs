@@ -7,6 +7,7 @@ using Invert.MVVM;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ViewModels;
+using UnityEditor;
 using UnityEngine;
 using ViewModel = Invert.uFrame.Editor.ViewModels.ViewModel;
 
@@ -116,19 +117,19 @@ public class DiagramViewModel : ViewModel
 
     //}
 
-    public IProjectRepository Repository
+    public IProjectRepository CurrentRepository
     {
         get;
         set;
     }
 
-    public DiagramViewModel(string assetPath, IProjectRepository repository)
+    public DiagramViewModel(string assetPath, IProjectRepository currentRepository)
     {
         var fileExtension = Path.GetExtension(assetPath);
-        var diagram = repository.LoadDiagram(assetPath);
+        var diagram = currentRepository.LoadDiagram(assetPath);
 
         if (diagram == null) throw new Exception("Diagram not found");
-        Repository = repository;
+        CurrentRepository = currentRepository;
         DataObject = diagram;
         Data.Settings.CodePathStrategy =
              uFrameEditor.Container.Resolve<ICodePathStrategy>(Data.Settings.CodePathStrategyName ?? "Default");
@@ -152,7 +153,7 @@ public class DiagramViewModel : ViewModel
         GraphItems.Clear();
         var connectors = new List<ConnectorViewModel>();
 
-        CurrentNodes = Data.CurrentFilter.FilterItems(Repository.NodeItems).ToArray();
+        CurrentNodes = Data.CurrentFilter.FilterItems(CurrentRepository.NodeItems).ToArray();
 
         foreach (var item in CurrentNodes)
         {
@@ -163,17 +164,10 @@ public class DiagramViewModel : ViewModel
                 Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
                 continue;
             }
-
-
             GraphItems.Add(vm);
             // Clear the connections on the view-model
             vm.Connectors.Clear();
-            // Reload all the connections
-            foreach (var strategy in uFrameEditor.ConnectionStrategies)
-            {
-                strategy.GetConnectors(vm.Connectors, vm);
-            }
-
+            vm.GetConnectors(vm.Connectors);
             connectors.AddRange(vm.Connectors);
 
         }
@@ -192,6 +186,8 @@ public class DiagramViewModel : ViewModel
         foreach (var item in connections)
         {
             GraphItems.Add(item);
+            item.ConnectorA.HasConnections = true;
+            item.ConnectorB.HasConnections = true;
         }
     }
 
@@ -215,7 +211,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return Data.Name;
+            return  Data.Name;
         }
     }
 
@@ -274,21 +270,22 @@ public class DiagramViewModel : ViewModel
 
     public void Save()
     {
-        Repository.SaveDiagram(Data);
+        CurrentRepository.SaveDiagram(Data);
     }
 
     public void MarkDirty()
     {
-        Repository.MarkDirty(Data);
+        CurrentRepository.MarkDirty(Data);
     }
 
     public void RecordUndo(string title)
     {
-        Repository.RecordUndo(Data, title);
+        CurrentRepository.RecordUndo(Data, title);
     }
 
     public void DeselectAll()
     {
+        Debug.Log("Deselected all");
         foreach (var item in SelectedGraphItems)
         {
             item.IsSelected = false;
@@ -319,11 +316,18 @@ public class DiagramViewModel : ViewModel
 
     public IEnumerable<IDiagramNode> GetImportableItems()
     {
-        return Repository.GetImportableItems(Data.CurrentFilter);
+        return CurrentRepository.GetImportableItems(Data.CurrentFilter);
     }
 
     public void UpgradeProject()
     {
         
+    }
+
+    public void AddNode(IDiagramNode newNodeData)
+    {
+        CurrentRepository.CurrentDiagram.AddNode(newNodeData);
+        CurrentRepository.CurrentDiagram.CurrentFilter.Locations[newNodeData] = uFrameEditor.CurrentMouseEvent.MouseDownPosition;
+        Debug.Log("Added node " + newNodeData);
     }
 }

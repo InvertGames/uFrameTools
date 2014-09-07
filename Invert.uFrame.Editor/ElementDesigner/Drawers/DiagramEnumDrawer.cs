@@ -54,9 +54,5 @@ public class DiagramEnumDrawer : DiagramNodeDrawer<EnumNodeViewModel>
         //};
     }
 
-    protected override void DrawSelectedItem(IDiagramNodeItem nodeItem, ElementsDiagram diagram)
-    {
-        base.DrawSelectedItem(nodeItem, diagram);
 
-    }
 }

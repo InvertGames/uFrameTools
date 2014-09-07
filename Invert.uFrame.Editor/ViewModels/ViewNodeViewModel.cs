@@ -15,9 +15,10 @@ namespace Invert.uFrame.Editor.ViewModels
     {
         private string _preview;
 
-        public ViewNodeViewModel(ViewData data,DiagramViewModel diagramViewModel) : base(data,diagramViewModel)
+        public ViewNodeViewModel(ViewData data, DiagramViewModel diagramViewModel)
+            : base(data, diagramViewModel)
         {
-        
+
         }
 
         public override bool AllowCollapsing
@@ -89,7 +90,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
     public class EnumItemViewModel : ItemViewModel<EnumItem>
     {
-        public EnumItemViewModel(EnumItem item,DiagramNodeViewModel nodeViewModel)
+        public EnumItemViewModel(EnumItem item, DiagramNodeViewModel nodeViewModel)
             : base(nodeViewModel)
         {
             DataObject = item;
@@ -104,11 +105,17 @@ namespace Invert.uFrame.Editor.ViewModels
 
     public class EnumNodeViewModel : DiagramNodeViewModel<EnumData>
     {
-        public EnumNodeViewModel(EnumData data,DiagramViewModel diagramViewModel)
-            : base(data,diagramViewModel)
+        public EnumNodeViewModel(EnumData data, DiagramViewModel diagramViewModel)
+            : base(data, diagramViewModel)
         {
 
         }
+
+        public override ConnectorViewModel OutputConnector
+        {
+            get { return null; }
+        }
+
         public override bool AllowCollapsing
         {
             get { return true; }
@@ -131,12 +138,12 @@ namespace Invert.uFrame.Editor.ViewModels
 
     public class ElementNodeViewModel : DiagramNodeViewModel<ElementData>
     {
-
+        
 
         public ElementNodeViewModel(ElementData data, DiagramViewModel diagramViewModel)
-            : base(data,diagramViewModel)
+            : base(data, diagramViewModel)
         {
-            
+
         }
 
         public ConnectorViewModel InheritanceOutput { get; set; }
@@ -144,7 +151,7 @@ namespace Invert.uFrame.Editor.ViewModels
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
-            
+
         }
 
         public override bool ShowSubtitle
@@ -203,7 +210,7 @@ namespace Invert.uFrame.Editor.ViewModels
             var property = new ViewModelCommandData()
             {
                 Node = GraphItem,
-                Name = uFrameEditor.Repository.GetUniqueName("Command"),
+                Name = uFrameEditor.CurrentProject.GetUniqueName("Command"),
             };
 
             this.GraphItem.Commands.Add(property);

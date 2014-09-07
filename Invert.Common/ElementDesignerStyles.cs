@@ -80,6 +80,7 @@ namespace Invert.Common
         private static GUIStyle _nodeExpand;
         private static Texture2D _circleRightTexture;
         private static Texture2D _circleLeftTexture;
+        private static GUIStyle _boxHighlighter5;
 
         public static float Scale
         {
@@ -794,6 +795,23 @@ namespace Invert.Common
                     };
 
                 return _boxHighlighter4;
+            }
+        }
+        public static GUIStyle BoxHighlighter5
+        {
+            get
+            {
+                if (_boxHighlighter5 == null)
+                    _boxHighlighter5 = new GUIStyle
+                    {
+                        normal = { background = GetSkinTexture("BoxHighlighter5"), textColor = Color.white },
+                        stretchHeight = true,
+                        stretchWidth = true,
+                        border = new RectOffset(171, 180, 120, 135),
+                        padding = new RectOffset(7, 7, 7, 7)
+                    };
+
+                return _boxHighlighter5;
             }
         }
         public static GUIStyle Background

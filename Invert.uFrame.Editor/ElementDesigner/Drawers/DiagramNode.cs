@@ -180,7 +180,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     {
         get
         {
-            return uFrameEditor.Repository;
+            return uFrameEditor.CurrentProject;
         }
         //set
         //{

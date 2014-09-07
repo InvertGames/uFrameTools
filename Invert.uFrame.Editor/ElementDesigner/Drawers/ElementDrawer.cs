@@ -199,83 +199,84 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         return maxLengthItem.x + 8;
 
     }
-    protected override void DrawSelectedItem(IDiagramNodeItem nodeItem, ElementsDiagram diagram)
-    {
-        var item = nodeItem as IViewModelItem;
-        if (item == null)
-        {
-            base.DrawSelectedItem(nodeItem, diagram);
-            return;
-        }
-        GUILayout.Space(7);
-        var rtn = item.RelatedTypeName ?? "[None]";
-
-        if (ElementDataBase.TypeNameAliases.ContainsKey(rtn))
-        {
-            rtn = ElementDataBase.TypeNameAliases[rtn];
-        }
-        if (GUILayout.Button(rtn, ElementDesignerStyles.ClearItemStyle))
-        {
-            var commandName = item.GetType().Name.Replace("Data", "") + "TypeSelection";
-            var command = Container.Resolve<IEditorCommand>(commandName);
-            if (command == null)
-            {
-                Debug.Log("Type selection command not found for " + commandName);
-            }
-            else
-            {
-                uFrameEditor.ExecuteCommand(command);
-            }
-         
-
-         
-        }
-        base.DrawSelectedItem(nodeItem, diagram);
-    }
-
     protected override GUIStyle HeaderStyle
     {
         get { return ElementDesignerStyles.NodeHeader3; }
     }
 
-    protected override void DrawItemLabel(IDiagramNodeItem item)
-    {
-        var vmItem = item as IViewModelItem;
-        if (vmItem == null)
-        {
-            base.DrawItemLabel(item);
-        }
-        else
-        {
-            GUILayout.BeginArea(item.Position.Scale(Scale));
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(7);
+    //protected override void DrawSelectedItem(IDiagramNodeItem nodeItem, ElementsDiagram diagram)
+    //{
+    //    var item = nodeItem as IViewModelItem;
+    //    if (item == null)
+    //    {
+    //        base.DrawSelectedItem(nodeItem, diagram);
+    //        return;
+    //    }
+    //    GUILayout.Space(7);
+    //    var rtn = item.RelatedTypeName ?? "[None]";
 
-            var style = new GUIStyle(ElementDesignerStyles.ClearItemStyle)
-            {
-                fontStyle = FontStyle.Normal,
-                alignment = TextAnchor.MiddleLeft,
-                normal = { textColor = ElementDesignerStyles.NodeBackground.normal.textColor }
-            };
-            // style.fontSize = Mathf.RoundToInt(style.fontSize * Scale);
-            var rtn = vmItem.RelatedTypeName ?? string.Empty;
-            if (ElementDataBase.TypeNameAliases.ContainsKey(rtn))
-            {
-                rtn = ElementDataBase.TypeNameAliases[rtn];
-            }
-            //GUILayout.Label((_maxTypeWidth * Scale).ToString(), style, GUILayout.Width(_maxTypeWidth * Scale));
-            GUI.Label(new Rect(5,0f,_maxTypeWidth * Scale,ItemHeight), rtn, style);
-            style.fontStyle = FontStyle.Bold;
-            style.alignment = TextAnchor.MiddleLeft;
-            GUI.Label(new Rect(_maxTypeWidth * Scale, 0f, (_maxNameWidth + 10)* Scale, ItemHeight), item.Name, style);
-            //GUILayout.Label((_maxNameWidth * Scale).ToString(), style, GUILayout.Width(_maxNameWidth * Scale));
-           // GUI.Label(vmItem.Name, style, GUILayout.Width(_maxNameWidth * Scale));
-            GUILayout.EndHorizontal();
-            GUILayout.EndArea();
-        }
-        //base.DrawItemLabel(item);
+    //    if (ElementDataBase.TypeNameAliases.ContainsKey(rtn))
+    //    {
+    //        rtn = ElementDataBase.TypeNameAliases[rtn];
+    //    }
+    //    if (GUILayout.Button(rtn, ElementDesignerStyles.ClearItemStyle))
+    //    {
+    //        var commandName = item.GetType().Name.Replace("Data", "") + "TypeSelection";
+    //        var command = Container.Resolve<IEditorCommand>(commandName);
+    //        if (command == null)
+    //        {
+    //            Debug.Log("Type selection command not found for " + commandName);
+    //        }
+    //        else
+    //        {
+    //            uFrameEditor.ExecuteCommand(command);
+    //        }
+         
 
-    }
+         
+    //    }
+    //    base.DrawSelectedItem(nodeItem, diagram);
+    //}
+
+ 
+    //protected override void DrawItemLabel(IDiagramNodeItem item)
+    //{
+    //    var vmItem = item as IViewModelItem;
+    //    if (vmItem == null)
+    //    {
+    //        base.DrawItemLabel(item);
+    //    }
+    //    else
+    //    {
+    //        GUILayout.BeginArea(item.Position.Scale(Scale));
+    //        GUILayout.BeginHorizontal();
+    //        GUILayout.Space(7);
+
+    //        var style = new GUIStyle(ElementDesignerStyles.ClearItemStyle)
+    //        {
+    //            fontStyle = FontStyle.Normal,
+    //            alignment = TextAnchor.MiddleLeft,
+    //            normal = { textColor = ElementDesignerStyles.NodeBackground.normal.textColor }
+    //        };
+    //        // style.fontSize = Mathf.RoundToInt(style.fontSize * Scale);
+    //        var rtn = vmItem.RelatedTypeName ?? string.Empty;
+    //        if (ElementDataBase.TypeNameAliases.ContainsKey(rtn))
+    //        {
+    //            rtn = ElementDataBase.TypeNameAliases[rtn];
+    //        }
+    //        //GUILayout.Label((_maxTypeWidth * Scale).ToString(), style, GUILayout.Width(_maxTypeWidth * Scale));
+    //        GUI.Label(new Rect(5,0f,_maxTypeWidth * Scale,ItemHeight), rtn, style);
+    //        style.fontStyle = FontStyle.Bold;
+    //        style.alignment = TextAnchor.MiddleLeft;
+    //        GUI.Label(new Rect(_maxTypeWidth * Scale, 0f, (_maxNameWidth + 10)* Scale, ItemHeight), item.Name, style);
+    //        //GUILayout.Label((_maxNameWidth * Scale).ToString(), style, GUILayout.Width(_maxNameWidth * Scale));
+    //       // GUI.Label(vmItem.Name, style, GUILayout.Width(_maxNameWidth * Scale));
+    //        GUILayout.EndHorizontal();
+    //        GUILayout.EndArea();
+    //    }
+    //    //base.DrawItemLabel(item);
+
+    //}
 
     public ElementNodeViewModel ElementViewModel
     {
@@ -290,14 +291,33 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
        // base.GetContentDrawers(drawers);
 
         drawers.Add(PropertiesHeader);
-        foreach (var item in ElementViewModel.ContentItems.OfType<ElementItemViewModel>())
+        foreach (var item in ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>().Where(p=>!p.IsComputed))
         {
             drawers.Add(uFrameEditor.CreateDrawer(item));
         }
-        drawers.Add(ComputedHeader);
-        drawers.Add(CollectionsHeader);
+        var computedItems = ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
+            .Where(p => p.IsComputed).ToArray();
+
+        if (computedItems.Length > 0)
+        {
+            drawers.Add(ComputedHeader);
+            foreach (var item in computedItems)
+            {
+                drawers.Add(uFrameEditor.CreateDrawer(item));
+            }
+            
+        }
         
+        drawers.Add(CollectionsHeader);
+        foreach (var item in ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>())
+        {
+            drawers.Add(uFrameEditor.CreateDrawer(item));
+        }
         drawers.Add(CommandsHeader);
+        foreach (var item in ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>())
+        {
+            drawers.Add(uFrameEditor.CreateDrawer(item));
+        }
         
       
         //var properties = NodeViewModel.Properties.Where(p=>!p.IsComputed).Cast<IDiagramNodeItem>().ToArray();

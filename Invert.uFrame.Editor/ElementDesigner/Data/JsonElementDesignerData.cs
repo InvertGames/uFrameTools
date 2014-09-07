@@ -198,10 +198,16 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
 
     private void Deserialize(string jsonData)
     {
+        Debug.Log(jsonData);
         if (jsonData == null) return;
 
         var jsonNode = JSONNode.Parse(jsonData);
-        if (jsonNode == null) return;
+     
+        if (jsonNode == null)
+        {
+            Debug.Log("Couldn't parse file.");
+            return;
+        }
 
         Nodes.Clear();
 

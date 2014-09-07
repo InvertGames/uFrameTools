@@ -32,6 +32,8 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     private IDrawer _nodeDrawerAtMouse;
     private SelectionRectHandler _selectionRectHandler;
 
+
+
     public static float Scale
     {
         get { return ElementDesignerStyles.Scale; }
@@ -302,7 +304,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         }
     }
 
-    public void HandleKeyEvent(Event evt, ModifierKeyState keyStates)
+    public bool HandleKeyEvent(Event evt, ModifierKeyState keyStates)
     {
         var bindings = uFrameEditor.KeyBindings;
         foreach (var keyBinding in bindings)
@@ -337,19 +339,24 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             if (command != null)
             {
                 var acceptableArguments = ContextObjects.Where(p => command.For.IsAssignableFrom(p.GetType())).ToArray();
+                var used = false;
                 foreach (var argument in acceptableArguments)
                 {
+                    
                     if (command.CanPerform(argument) == null)
                     {
 #if DEBUG
                         UnityEngine.Debug.Log("Key Command Executed: " + command.GetType().Name);
 #endif
                         this.ExecuteCommand(command);
-                        return;
+                        used = true;
                     }
                 }
+                return used;
             }
+            return false;
         }
+        return false;
     }
 
     //public void MouseEvent(Action<IDrawer> action)
@@ -797,6 +804,7 @@ public class ConnectionHandler : DiagramInputHander
         : base(viewModel)
     {
         StartConnector = startConnector;
+        Debug.Log(StartConnector.DataObject);
     }
 
 
@@ -814,31 +822,56 @@ public class ConnectionHandler : DiagramInputHander
 
         var endViewModel = ViewModelAtMouse as ConnectorViewModel;
         var color = Color.green;
+
+
+
         if (endViewModel == null)
         {
             var nodeAtMouse = ViewModelAtMouse as DiagramNodeViewModel;
             if (nodeAtMouse != null)
             {
-                // Try and find a default connector
-                endViewModel = nodeAtMouse.Connectors.FirstOrDefault(p => p.Strategy.Connect(StartConnector, p) != null);
 
-                if (endViewModel != null)
+                foreach (var connector in nodeAtMouse.Connectors)
+                {
+                    
+                    ConnectionViewModel connection = null;
+                    foreach (var strategy in uFrameEditor.ConnectionStrategies)
+                    {
+                        
+                        //try and connect them
+                        connection = strategy.Connect(StartConnector, connector);
+                        if (connection != null)
+                            break;
+
+                    }
+                    if (connection != null)
+                    {
+                        CurrentConnection = connection;
+                        _endPos = connector.Bounds.center;
+                        connector.HasConnections = true;
+                        break;
+                    }
+                }
+                if (CurrentConnection != null)
                 {
                     // Grab the default connector
                     var adjustedBounds = new Rect(nodeAtMouse.Bounds.x - 9, nodeAtMouse.Bounds.y + 1, nodeAtMouse.Bounds.width + 19, nodeAtMouse.Bounds.height + 9);
                     ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(ElementDesignerStyles.Scale), ElementDesignerStyles.NodeBackground, string.Empty, 20);
                 }
-
-
-
             }
 
-        }
-        if (endViewModel != null)
-        {
-
-            CurrentConnection = endViewModel.Strategy.Connect(StartConnector, endViewModel);
-
+        } else  {
+        
+            foreach (var strategy in uFrameEditor.ConnectionStrategies)
+            {
+                //try and connect them
+                var connection = strategy.Connect(StartConnector, endViewModel);
+                if (connection != null)
+                {
+                    CurrentConnection = connection;
+                    break;
+                }
+            }
             if (CurrentConnection == null)
             {
                 color = Color.red;
@@ -849,10 +882,7 @@ public class ConnectionHandler : DiagramInputHander
 
             }
         }
-        else
-        {
-            CurrentConnection = null;
-        }
+       
 
         var _startRight = StartConnector.Direction == ConnectorDirection.Output;
         var _endRight = false;

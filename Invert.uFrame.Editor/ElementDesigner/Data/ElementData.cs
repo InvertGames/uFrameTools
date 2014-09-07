@@ -434,4 +434,14 @@ public class ElementData : ElementDataBase, IDiagramFilter
         cls.Add("BaseType", new JSONData(_baseType));
         cls.Add("IsMultiInstance", new JSONData(_isMultiInstance));
     }
+
+    public void SetBaseElement(ElementData output)
+    {
+        BaseTypeName = output.AssemblyQualifiedName;
+    }
+
+    public void RemoveBaseElement()
+    {
+        BaseTypeName = null;
+    }
 }

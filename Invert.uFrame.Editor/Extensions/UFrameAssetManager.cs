@@ -25,7 +25,13 @@ public class UFrameAssetManager : AssetPostprocessor
         uFrameEditor.Container.Resolve<IProjectRepository>(".json").CreateNewDiagram();
     }
 
-
+    [MenuItem("Assets/[u]Frame/New uFrame Project", false, 40)]
+    public static void NewUframeProject()
+    {
+        var project = CreateAsset<ProjectRepository>();
+        project.OutputDirectory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(project));
+        //project.n = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(project));
+    }
 
 
     static UFrameAssetManager()

@@ -78,22 +78,18 @@ public class ElementDiagramSettingsWindow : EditorWindow
             EditorGUILayout.HelpBox("Turning off 'Generate Default Bindings' will require you to implement all binding methods.",MessageType.Info);
             s.GenerateDefaultBindings = EditorGUILayout.Toggle("Generate Default Bindings", s.GenerateDefaultBindings);
           
-            EditorGUI.BeginChangeCheck();
-            s.AssociationLinkColor = EditorGUILayout.ColorField("Association Link Color", s.AssociationLinkColor);
-            s.GridLinesColor = EditorGUILayout.ColorField("Grid Lines Color", s.GridLinesColor);
-            s.GridLinesColorSecondary = EditorGUILayout.ColorField("Grid Lines Secondary Color", s.GridLinesColorSecondary);
-            s.DefinitionLinkColor = EditorGUILayout.ColorField("Definition Link Color", s.DefinitionLinkColor);
-            s.InheritanceLinkColor = EditorGUILayout.ColorField("Inheritance Link Color", s.InheritanceLinkColor);
-            s.SceneManagerLinkColor = EditorGUILayout.ColorField("SceneManager Link Color", s.SceneManagerLinkColor);
-            s.SubSystemLinkColor = EditorGUILayout.ColorField("SubSystem Link Color", s.SubSystemLinkColor);
-            s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
-            s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
+      
+            //s.AssociationLinkColor = EditorGUILayout.ColorField("Association Link Color", s.AssociationLinkColor);
+            //s.GridLinesColor = EditorGUILayout.ColorField("Grid Lines Color", s.GridLinesColor);
+            //s.GridLinesColorSecondary = EditorGUILayout.ColorField("Grid Lines Secondary Color", s.GridLinesColorSecondary);
+            //s.DefinitionLinkColor = EditorGUILayout.ColorField("Definition Link Color", s.DefinitionLinkColor);
+            //s.InheritanceLinkColor = EditorGUILayout.ColorField("Inheritance Link Color", s.InheritanceLinkColor);
+            //s.SceneManagerLinkColor = EditorGUILayout.ColorField("SceneManager Link Color", s.SceneManagerLinkColor);
+            //s.SubSystemLinkColor = EditorGUILayout.ColorField("SubSystem Link Color", s.SubSystemLinkColor);
+            //s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
+            //s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
             s.SnapSize = Math.Max(1, EditorGUILayout.IntField("Snap Size", s.SnapSize));
-            if (EditorGUI.EndChangeCheck())
-            {
-
-                DesignerWindow.Repaint();
-            }
+         
             var pathStrategies =
                 uFrameEditor.Container.Mappings.Where(p => p.From == typeof (ICodePathStrategy)).ToArray();
             var names = pathStrategies.Select(p => p.Name).ToArray();

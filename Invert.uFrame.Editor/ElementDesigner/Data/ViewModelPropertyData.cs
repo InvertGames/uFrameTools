@@ -166,6 +166,16 @@ public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializea
         }
     }
 
+    public void SetType(ElementData input)
+    {
+        this.RelatedType = input.AssemblyQualifiedName;
+    }
+
+    public void RemoveType()
+    {
+        this.RelatedType = typeof(string).AssemblyQualifiedName;
+    }
+
     public string FieldName
     {
         get

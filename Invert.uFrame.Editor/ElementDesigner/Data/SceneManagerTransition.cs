@@ -128,5 +128,15 @@ public class SceneManagerTransition : IDiagramNodeItem
     }
 
     public Vector2[] ConnectionPoints { get; set; }
+
+    public void Disconnect()
+    {
+        ToIdentifier = null;
+    }
+
+    public void ConnectTo(SceneManagerData input)
+    {
+        ToIdentifier = input.Identifier;
+    }
 }
 

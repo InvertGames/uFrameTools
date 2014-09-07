@@ -90,7 +90,7 @@ public class ItemDrawer : Drawer
     {
         base.OnMouseEnter(e);
         ViewModelObject.IsMouseOver = true;
-        Debug.Log("Mouse Enter Item");
+        //Debug.Log("Mouse Enter Item");
     }
     public override void OnMouseExit(MouseEvent e)
     {
@@ -132,7 +132,8 @@ public class ItemDrawer : Drawer
             var newName = EditorGUILayout.TextField(ItemViewModel.Name, ElementDesignerStyles.ClearItemStyle);
             if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
             {
-                uFrameEditor.ExecuteCommand(p => ItemViewModel.Rename(newName));
+                ItemViewModel.Rename(newName);
+                //uFrameEditor.ExecuteCommand(p => );
             }
 
             if (GUILayout.Button(string.Empty, UBStyles.RemoveButtonStyle.Scale(scale)))
@@ -197,7 +198,7 @@ public class ElementItemDrawer : ItemDrawer
          var nameSize = TextStyle.CalcSize(new GUIContent(ElementItemViewModel.Name));
          var typeSize = TextStyle.CalcSize(new GUIContent(ElementItemViewModel.RelatedType));
 
-         Bounds = new Rect(position.x, position.y, 5 + nameSize.x + 5 , 22);
+         Bounds = new Rect(position.x, position.y, 5 + nameSize.x + 5 , 18);
     }
 
     public override void Draw(float scale)
@@ -313,7 +314,7 @@ public class HeaderDrawer : Drawer
             titleStyle.alignment = TextAnchor.MiddleCenter;
            
 
-            GUI.Label(textBounds.Scale(scale), NodeViewModel.Label + NodeViewModel.ContentItems.Count ?? string.Empty, titleStyle);
+            GUI.Label(textBounds.Scale(scale), NodeViewModel.Label  ?? string.Empty, titleStyle);
             if (NodeViewModel.IsCollapsed)
             {
                 textBounds.y += TextSize.y / 2f;

@@ -1,11 +1,38 @@
 using System.Globalization;
 using System.Linq;
+using Invert.MVVM;
 using Invert.uFrame.Editor;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class RxTypePostProcessor : TypeGeneratorPostProcessor<ViewModelGenerator>
+{
+    
+    public override void Apply()
+    {
+        var elementData = CodeGenerator.Data;
+        foreach (var item in elementData.Properties)
+        {
+            if (item["IsRxProperty"])
+            {
+                foreach (var member in Declaration.Members.OfType<CodeMemberField>())
+                {
+                    if (member.Name == item.FieldName)
+                    {
+                        var typeArgument = member.Type.TypeArguments[0];
+
+                        member.Type = new CodeTypeReference(typeof(P<>));
+
+                        member.Type.TypeArguments.Add(typeArgument);
+                    }
+                }
+            }
+        }
+        
+    }
+}
 public class ViewModelGenerator : CodeGenerator
 {
     public static Dictionary<Type, string> AcceptableTypes = new Dictionary<Type, string>

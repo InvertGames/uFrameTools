@@ -1,6 +1,8 @@
+using Invert.uFrame.Editor.ViewModels;
+
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class RenameCommand : EditorCommand<IDiagramNode>, IDiagramNodeCommand
+    public class RenameCommand : EditorCommand<DiagramNodeViewModel>, IDiagramNodeCommand
     {
         public override string Group
         {
@@ -12,15 +14,17 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             get { return -1; }
         }
 
-        public override void Perform(IDiagramNode node)
+        public override void Perform(DiagramNodeViewModel node)
         {
             node.BeginEditing();
         }
 
-        public override string CanPerform(IDiagramNode node)
+        public override string CanPerform(DiagramNodeViewModel node)
         {
             if (node == null) return "Invalid argument";
             return null;
         }
+
+
     }
 }

@@ -47,6 +47,16 @@ public class ViewModelCommandData : DiagramNodeItem, IViewModelItem
         }
     }
 
+    public void SetType(ElementData input)
+    {
+        this.RelatedType = input.AssemblyQualifiedName;
+    }
+
+    public void RemoveType()
+    {
+        this.RelatedType = null;
+    }
+
     public ElementData Element
     {
         get { return _element; }
