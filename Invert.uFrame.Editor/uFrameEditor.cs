@@ -27,7 +27,6 @@ namespace Invert.uFrame.Editor
         private static ProjectRepository[] _projects;
         private static Dictionary<Type, List<Type>> _allowedFilterNodes;
         private static Dictionary<Type, List<Type>> _allowedFilterItems;
-        private static UFrameSettings _settings;
 
         public static IEditorCommand[] Commands
         {
@@ -513,7 +512,7 @@ namespace Invert.uFrame.Editor
             uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
             CurrentProject = Container.Resolve<IProjectRepository>();
             uFrameTypes = container.Resolve<IUFrameTypeProvider>();
-            
+            Settings = container.Resolve<UFrameSettings>();
 
 
             var filterTypes = Container.RelationshipMappings.Where(
@@ -546,11 +545,7 @@ namespace Invert.uFrame.Editor
             set { _projects = value; }
         }
 
-        public static UFrameSettings Settings
-        {
-            get { return _settings ?? (_settings = Container.Resolve<UFrameSettings>()); }
-            set { _settings = value; }
-        }
+        public static UFrameSettings Settings { get; set; }
 
         public static IProjectRepository CurrentProject
         {

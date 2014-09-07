@@ -51,9 +51,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public void CreateNewDiagram()
     {
-        var diagram = UFrameAssetManager.CreateAsset<JsonElementDesignerData>();
-        _diagrams.Add(diagram);
-        CurrentDiagram = diagram;
+        _diagrams.Add(UFrameAssetManager.CreateAsset<JsonElementDesignerData>());
     }
     public virtual Type RepositoryFor
     {
