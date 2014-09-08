@@ -48,6 +48,7 @@ namespace Invert.uFrame.Editor.ViewModels
     {
         private bool _isSelected = false;
 
+      
         public IDiagramNode GraphItemObject
         {
             get { return DataObject as IDiagramNode; }
@@ -171,7 +172,7 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return GraphItemObject.SubTitle; }
         }
 
-        public string Name
+        public override string Name
         {
             get { return GraphItemObject.Name; }
             set

@@ -15,5 +15,11 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public override Vector2 Position { get; set; }
         public Color Color { get; set; }
+
+        public override string Name
+        {
+            get { return ConnectorA.Name + " -> " + ConnectorB.Name; }
+            set { }
+        }
     }
 }

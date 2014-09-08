@@ -22,6 +22,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         public override string CanPerform(DiagramNodeViewModel node)
         {
             if (node == null) return "Invalid argument";
+            if (!node.IsLocal) return "Can't rename a node when its not local.";
             return null;
         }
 

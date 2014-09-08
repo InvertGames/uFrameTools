@@ -45,6 +45,7 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
                 _bindingsHeader = Container.Resolve<NodeItemHeader>();
                 _bindingsHeader.Label = "Bindings";
                 _bindingsHeader.HeaderType = typeof(string);
+                if (NodeViewModel.IsLocal)
                 _bindingsHeader.AddCommand = Container.Resolve<AddBindingCommand>();
             }
             return _bindingsHeader;
@@ -63,6 +64,7 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
                 _propertiesHeader.Label = "2-Way Properties";
 
                 _propertiesHeader.HeaderType = typeof(ViewModelPropertyData);
+                if (NodeViewModel.IsLocal)
                 _propertiesHeader.AddCommand = Container.Resolve<AddViewPropertyCommand>();
             }
             return _propertiesHeader;

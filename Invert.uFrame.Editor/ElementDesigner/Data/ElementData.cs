@@ -1,3 +1,4 @@
+using Invert.MVVM;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using System;
@@ -28,11 +29,15 @@ public static class UFListExtensions
     }
 }
 
+public interface IDesignerType
+{
+    string Identifier { get; }
+}
 [Serializable]
-public class ElementData : ElementDataBase, IDiagramFilter
+public class ElementData : ElementDataBase, IDiagramFilter, IDesignerType
 {
     [SerializeField]
-    private string _baseType;
+    private string _baseIdentifier;
 
     [SerializeField]
     private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
@@ -71,16 +76,17 @@ public class ElementData : ElementDataBase, IDiagramFilter
         }
     }
 
+
     public override string BaseTypeName
     {
         get
         {
-            return _baseType ?? uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName;
-        }
-        set
-        {
-            _baseType = value;
-            Dirty = true;
+            var baseElement = BaseElement;
+            if (baseElement != null)
+            {
+                return baseElement.Name;
+            }
+            return "ViewModel";
         }
     }
 
@@ -149,34 +155,6 @@ public class ElementData : ElementDataBase, IDiagramFilter
         get { return true; }
     }
 
-    public IEnumerable<ViewComponentData> IncludedComponents
-    {
-        get
-        {
-            foreach (var viewComponentData in Data.GetViewComponents())
-            {
-                if (AllBaseTypes.Any(p => p.Identifier == viewComponentData.ElementIdentifier))
-                {
-                    yield return viewComponentData;
-                }
-            }
-        }
-    }
-
-    public IEnumerable<ViewData> IncludedViews
-    {
-        get
-        {
-            foreach (var v in Data.GetViews())
-            {
-                if (AllBaseTypes.Any(p => p.AssemblyQualifiedName == v.AssemblyQualifiedName))
-                {
-                    yield return v;
-                }
-            }
-        }
-    }
-
     public override string InfoLabel
     {
         get { return string.Format("Items: [{0}] {1}", Locations.Keys.Count - 1, base.InfoLabel ?? string.Empty); }
@@ -186,18 +164,6 @@ public class ElementData : ElementDataBase, IDiagramFilter
     {
         get { return _isTemplate; }
         set { _isTemplate = value; }
-    }
-
-    public override IEnumerable<IDiagramNodeItem> Items
-    {
-        get
-        {
-            //if (Data.CurrentFilter == this)
-            //{
-            //    return base.Items.Concat(IncludedViews.Cast<IDiagramNodeItem>().Concat(IncludedComponents.Cast<IDiagramNodeItem>()));
-            //}
-            return base.Items;
-        }
     }
 
     public FilterLocations Locations
@@ -224,7 +190,7 @@ public class ElementData : ElementDataBase, IDiagramFilter
             {
                 foreach (var item in element.ViewModelItems)
                 {
-                    if (item.RelatedType == this.AssemblyQualifiedName)
+                    if (item.RelatedType == this.Identifier)
                     {
                         yield return element;
                         break;
@@ -254,16 +220,7 @@ public class ElementData : ElementDataBase, IDiagramFilter
     {
         get
         {
-            if (string.IsNullOrEmpty(BaseTypeName))
-            {
-                return string.Empty;
-            }
-            if (BaseTypeShortName == "ViewModel")
-            {
-                return null;
-            }
-            return BaseTypeShortName;
-            //return BaseTypeShortName ?? string.Empty;
+            return string.Empty;
         }
     }
 
@@ -296,8 +253,7 @@ public class ElementData : ElementDataBase, IDiagramFilter
         {
             foreach (var v in Data.GetViews())
             {
-                if (v.ForAssemblyQualifiedName == this.AssemblyQualifiedName ||
-                    AllBaseTypes.Any(p => p.AssemblyQualifiedName == v.AssemblyQualifiedName))
+                if (v.ForElementIdentifier == this.Identifier)
                 {
                     yield return v;
                 }
@@ -313,7 +269,26 @@ public class ElementData : ElementDataBase, IDiagramFilter
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
-        _baseType = cls["BaseType"].Value;
+        if (cls["BaseType"] != null)
+        {
+            var assemblyQualifiedName = cls["BaseType"].Value;
+            var foundElement =
+                repository.GetElements().FirstOrDefault(p => p.AssemblyQualifiedName == assemblyQualifiedName);
+            if (foundElement != null)
+            {
+                Debug.Log("Found Element base identifier");
+                _baseIdentifier = foundElement.Identifier;
+            }
+            else
+            {
+                Debug.Log("Couldn't find base identifier");
+            }
+        }
+        else
+        {
+            _baseIdentifier = cls["BaseIdentifier"];
+        }
+        
         IsTemplate = cls["IsTemplate"].AsBool;
         _isMultiInstance = cls["IsMultiInstance"].AsBool;
     }
@@ -382,40 +357,44 @@ public class ElementData : ElementDataBase, IDiagramFilter
                 }
             }
         }
-        foreach (var viewData in Data.GetViews())
-        {
-            if (viewData.ForAssemblyQualifiedName == this.AssemblyQualifiedName)
-            {
-                viewData.ForAssemblyQualifiedName = null;
-            }
-        }
-        foreach (var viewComponentData in Data.GetViewComponents())
-        {
-            if (viewComponentData.ElementIdentifier == this.Identifier)
-            {
-                viewComponentData.ElementIdentifier = null;
-            }
-        }
+        //foreach (var viewData in Data.GetViews())
+        //{
+        //    if (viewData.ForElementIdentifier == this.Identifier)
+        //    {
+        //        viewData.ForElementIdentifier = null;
+        //    }
+        //}
+        //foreach (var viewComponentData in Data.GetViewComponents())
+        //{
+        //    if (viewComponentData.ElementIdentifier == this.Identifier)
+        //    {
+        //        viewComponentData.ElementIdentifier = null;
+        //    }
+        //}
     }
 
-    public string BaseIdentifier { get; set; }
+    public string BaseIdentifier
+    {
+        get { return _baseIdentifier; }
+        set { _baseIdentifier = value; }
+    }
 
 
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
         cls.Add("IsTemplate", new JSONData(IsTemplate));
-        cls.Add("BaseType", new JSONData(_baseType));
+        cls.Add("BaseIdentifier", new JSONData(_baseIdentifier));
         cls.Add("IsMultiInstance", new JSONData(_isMultiInstance));
     }
 
     public void SetBaseElement(ElementData output)
     {
-        BaseTypeName = output.AssemblyQualifiedName;
+        BaseIdentifier = output.Identifier;
     }
 
     public void RemoveBaseElement()
     {
-        BaseTypeName = null;
+        BaseIdentifier = null;
     }
 }

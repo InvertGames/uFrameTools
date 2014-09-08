@@ -65,7 +65,7 @@ namespace Invert.uFrame.Editor.ViewModels
                 Node = GraphItem,
                 DefaultValue = string.Empty,
                 Name = GraphItem.Data.GetUniqueName("String1"),
-                Type = typeof(string)
+                RelatedType = typeof(string).ToString()
             };
             this.GraphItem.Properties.Add(property);
         }
@@ -86,7 +86,7 @@ namespace Invert.uFrame.Editor.ViewModels
             {
                 Node = GraphItem,
                 Name = GraphItem.Data.GetUniqueName("Collection"),
-                ItemType = typeof(string)
+                RelatedType = typeof(string).Name
             };
             this.GraphItem.Collections.Add(property);
         }

@@ -73,9 +73,9 @@ public class ViewModelGenerator : CodeGenerator
         
         if (IsDesignerFile)
         {
-            Decleration.BaseTypes.Add(string.Format("{0}ViewModel", data.BaseTypeShortName.Replace("ViewModel", "")));
+            Decleration.BaseTypes.Add(data.BaseTypeName);
             Decleration.CustomAttributes.Add(
-                new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.uFrameTypes.DiagramInfoAttribute),
+                new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.DiagramInfoAttribute),
                     new CodeAttributeArgument(new CodePrimitiveExpression(DiagramData.Name))));
             CreateViewProperties(data);
             AddWireCommandsMethod(data, Decleration, new CodeTypeReference(data.NameAsViewModel));
@@ -276,17 +276,12 @@ public class ViewModelGenerator : CodeGenerator
             Attributes = MemberAttributes.Override | MemberAttributes.Public
 
         };
-        setParentMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.uFrameTypes.ViewModel, "viewModel"));
+        setParentMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.UFrameTypes.ViewModel, "viewModel"));
 
         var baseInvoker = new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(),
             setParentMethod.Name);
         baseInvoker.Parameters.Add(new CodeVariableReferenceExpression("viewModel"));
         setParentMethod.Statements.Add(baseInvoker);
-
-        foreach (var parentElement in data.ParentElements)
-        {
-
-        }
     }
     public virtual void AddWriteMethod(ElementData data)
     {
@@ -295,14 +290,14 @@ public class ViewModelGenerator : CodeGenerator
             Name = "Read",
             Attributes = MemberAttributes.Override | MemberAttributes.Public
         };
-        readMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.uFrameTypes.ISerializerStream, "stream"));
+        readMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.UFrameTypes.ISerializerStream, "stream"));
 
         var writeMethod = new CodeMemberMethod()
         {
             Name = "Write",
             Attributes = MemberAttributes.Override | MemberAttributes.Public
         };
-        writeMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.uFrameTypes.ISerializerStream, "stream"));
+        writeMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.UFrameTypes.ISerializerStream, "stream"));
         writeMethod.Statements.Add(new CodeSnippetStatement("\t\tbase.Write(stream);"));
         readMethod.Statements.Add(new CodeSnippetStatement("\t\tbase.Read(stream);"));
 
@@ -398,7 +393,7 @@ public class ViewModelGenerator : CodeGenerator
             field.Type = new CodeTypeReference(string.Format("readonly P<{0}>", relatedType));
         }
 
-        var t = itemData.IsComputed ? new CodeTypeReference(uFrameEditor.uFrameTypes.Computed) : new CodeTypeReference(uFrameEditor.uFrameTypes.P);
+        var t = itemData.IsComputed ? new CodeTypeReference(uFrameEditor.UFrameTypes.Computed) : new CodeTypeReference(uFrameEditor.UFrameTypes.P);
         t.TypeArguments.Add(new CodeTypeReference(relatedType));
         var initExpr = new CodeObjectCreateExpression(t);
         //field.InitExpression = initExpr;
@@ -456,7 +451,7 @@ public class ViewModelGenerator : CodeGenerator
 
         field.Type = new CodeTypeReference(string.Format("readonly ModelCollection<{0}>", relatedType));
 
-        var t = new CodeTypeReference(uFrameEditor.uFrameTypes.ModelCollection);
+        var t = new CodeTypeReference(uFrameEditor.UFrameTypes.ModelCollection);
         t.TypeArguments.Add(new CodeTypeReference(relatedType));
         var initExpr = new CodeObjectCreateExpression(t);
         initExpr.Parameters.Add(new CodeThisReferenceExpression());
@@ -494,7 +489,7 @@ public class ViewModelGenerator : CodeGenerator
     {
         var property = new CodeMemberField();
         property.Name = itemData.FieldName;
-        property.Type = new CodeTypeReference(uFrameEditor.uFrameTypes.ICommand);
+        property.Type = new CodeTypeReference(uFrameEditor.UFrameTypes.ICommand);
         return property;
     }
 
@@ -504,7 +499,7 @@ public class ViewModelGenerator : CodeGenerator
         {
             Name = itemData.Name,
             Attributes = MemberAttributes.Public,
-            Type = new CodeTypeReference(uFrameEditor.uFrameTypes.ICommand)
+            Type = new CodeTypeReference(uFrameEditor.UFrameTypes.ICommand)
         };
 
         property.GetStatements.Add(
@@ -519,7 +514,7 @@ public class ViewModelGenerator : CodeGenerator
     {
         var wireMethod = new CodeMemberMethod { Name = string.Format("WireCommands") };
         tDecleration.Members.Add(wireMethod);
-        wireMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(uFrameEditor.uFrameTypes.Controller),
+        wireMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(uFrameEditor.UFrameTypes.Controller),
             "controller"));
         if (data.IsDerived)
         {
@@ -575,13 +570,13 @@ public class ViewModelGenerator : CodeGenerator
             {
                 if (element.IsMultiInstance)
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.CommandWithSenderT);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWithSenderT);
                     commandWithType.TypeArguments.Add(senderType);
                     return commandWithType;
                 }
                 else
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.Command);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.Command);
                     return commandWithType;
                 }
 
@@ -590,7 +585,7 @@ public class ViewModelGenerator : CodeGenerator
             {
                 if (element.IsMultiInstance)
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.CommandWithSenderAndArgument);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWithSenderAndArgument);
                     commandWithType.TypeArguments.Add(senderType);
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
                     if (typeViewModel == null)
@@ -606,7 +601,7 @@ public class ViewModelGenerator : CodeGenerator
                 }
                 else
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.CommandWith);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWith);
 
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
                     if (typeViewModel == null)
@@ -630,13 +625,13 @@ public class ViewModelGenerator : CodeGenerator
             {
                 if (element.IsMultiInstance)
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.YieldCommandWithSenderT);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWithSenderT);
                     commandWithType.TypeArguments.Add(senderType);
                     return commandWithType;
                 }
                 else
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.YieldCommand);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommand);
 
                     return commandWithType;
                 }
@@ -646,7 +641,7 @@ public class ViewModelGenerator : CodeGenerator
             {
                 if (element.IsMultiInstance)
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.YieldCommandWithSenderAndArgument);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWithSenderAndArgument);
                     commandWithType.TypeArguments.Add(senderType);
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
                     if (typeViewModel == null)
@@ -661,7 +656,7 @@ public class ViewModelGenerator : CodeGenerator
                 }
                 else
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.YieldCommandWith);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWith);
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
                     if (typeViewModel == null)
                     {

@@ -29,7 +29,7 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return (IDiagramNodeItem)DataObject; }
         }
 
-        public virtual string Name
+        public override string Name
         {
             get { return NodeItem.Name; }
             set { NodeItem.Name = value; }

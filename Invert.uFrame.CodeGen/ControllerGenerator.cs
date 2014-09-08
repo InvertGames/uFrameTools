@@ -35,13 +35,13 @@ public class ControllerGenerator : CodeGenerator
             {
                 if (element.IsMultiInstance)
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.CommandWithSenderT);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWithSenderT);
                     commandWithType.TypeArguments.Add(senderType);
                     return commandWithType;
                 }
                 else
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.Command);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.Command);
                     return commandWithType;
                 }
 
@@ -50,7 +50,7 @@ public class ControllerGenerator : CodeGenerator
             {
                 if (element.IsMultiInstance)
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.CommandWithSenderAndArgument);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWithSenderAndArgument);
                     commandWithType.TypeArguments.Add(senderType);
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
                     if (typeViewModel == null)
@@ -66,7 +66,7 @@ public class ControllerGenerator : CodeGenerator
                 }
                 else
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.CommandWith);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWith);
 
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
                     if (typeViewModel == null)
@@ -90,13 +90,13 @@ public class ControllerGenerator : CodeGenerator
             {
                 if (element.IsMultiInstance)
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.YieldCommandWithSenderT);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWithSenderT);
                     commandWithType.TypeArguments.Add(senderType);
                     return commandWithType;
                 }
                 else
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.YieldCommand);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommand);
 
                     return commandWithType;
                 }
@@ -106,7 +106,7 @@ public class ControllerGenerator : CodeGenerator
             {
                 if (element.IsMultiInstance)
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.YieldCommandWithSenderAndArgument);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWithSenderAndArgument);
                     commandWithType.TypeArguments.Add(senderType);
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
                     if (typeViewModel == null)
@@ -121,7 +121,7 @@ public class ControllerGenerator : CodeGenerator
                 }
                 else
                 {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.uFrameTypes.YieldCommandWith);
+                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWith);
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
                     if (typeViewModel == null)
                     {
@@ -152,11 +152,11 @@ public class ControllerGenerator : CodeGenerator
             tDecleration.TypeAttributes = TypeAttributes.Abstract | TypeAttributes.Public;
             if (data.IsDerived)
             {
-                tDecleration.BaseTypes.Add(string.Format("{0}Controller", data.BaseTypeShortName.Replace("ViewModel", "")));
+                tDecleration.BaseTypes.Add(string.Format("{0}Controller", data.BaseElement.NameAsController));
             }
             else
             {
-                tDecleration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.uFrameTypes.Controller));
+                tDecleration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.UFrameTypes.Controller));
             }
 
             if (!data.IsMultiInstance)
@@ -206,7 +206,7 @@ public class ControllerGenerator : CodeGenerator
                 Attributes = MemberAttributes.Public | MemberAttributes.Override
             };
             tDecleration.Members.Add(initializeOverrideMethod);
-            initializeOverrideMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(uFrameEditor.uFrameTypes.ViewModel), "viewModel"));
+            initializeOverrideMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(uFrameEditor.UFrameTypes.ViewModel), "viewModel"));
 
             if (data.BaseElement != null)
             {
@@ -308,7 +308,7 @@ public class ControllerGenerator : CodeGenerator
             {
                 Name = "CreateEmpty",
                 Attributes = MemberAttributes.Public | MemberAttributes.Override,
-                ReturnType = new CodeTypeReference(uFrameEditor.uFrameTypes.ViewModel)
+                ReturnType = new CodeTypeReference(uFrameEditor.UFrameTypes.ViewModel)
             };
             //createOverrideMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof (Action<ViewModel>),
             //    "preInitializer = null") {});

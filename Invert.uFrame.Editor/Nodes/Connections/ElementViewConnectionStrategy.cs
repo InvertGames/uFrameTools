@@ -33,12 +33,12 @@ namespace Invert.uFrame.Editor.Nodes
         public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
         {
             base.GetConnections(connections, info);
-            connections.AddRange(info.ConnectionsByData<ElementData, ViewData>(Color.white, (o, i) => i.ForAssemblyQualifiedName == o.AssemblyQualifiedName, Remove));
+            //connections.AddRange(info.ConnectionsByData<ElementData, ViewData>(Color.white, (o, i) => i.ForElementIdentifier == o.Identifier, Remove));
         }
 
         protected override bool IsConnected(ElementData outputData, ViewData inputData)
         {
-            return inputData.ForAssemblyQualifiedName == outputData.AssemblyQualifiedName;
+            return inputData.ForElementIdentifier == outputData.Identifier;
         }
 
         protected override void ApplyConnection(ElementData output, ViewData input)

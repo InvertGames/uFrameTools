@@ -33,7 +33,7 @@ public abstract class ViewClassGenerator : CodeGenerator
             InitExpression = new CodePrimitiveExpression(true)
         };
 
-        bindField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.uFrameTypes.UFToggleGroup),
+        bindField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.UFToggleGroup),
             new CodeAttributeArgument(new CodePrimitiveExpression(item.Name))));
         bindField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(HideInInspector))));
 
@@ -44,7 +44,7 @@ public abstract class ViewClassGenerator : CodeGenerator
             if (relatedElement == null)
             {
                 bindField.CustomAttributes.Add(
-                    new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.uFrameTypes.UFRequireInstanceMethod),
+                    new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.UFRequireInstanceMethod),
                         new CodeAttributeArgument(new CodePrimitiveExpression(prop.NameAsChangedMethod))));
             }
         }
@@ -171,7 +171,7 @@ public abstract class ViewClassGenerator : CodeGenerator
                 "_" + propertyName + name) { Attributes = MemberAttributes.Public };
         if (!keepHidden)
         {
-            memberField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.uFrameTypes.UFGroup),
+            memberField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.UFGroup),
                 new CodeAttributeArgument(new CodePrimitiveExpression(propertyName))));
         }
 
@@ -246,25 +246,23 @@ public abstract class ViewClassGenerator : CodeGenerator
         {
             try
             {
-                var baseType = DiagramData.GetAllElements().First(p => p.Name == data.BaseTypeShortName);
+                var baseType = DiagramData.GetAllElements().First(p => p.Name == data.BaseTypeName);
                 Decleration.BaseTypes.Add(new CodeTypeReference(baseClassName ?? baseType.NameAsViewBase));
             }
             catch (Exception ex)
             {
-                data.BaseTypeName = null;
-                Decleration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.uFrameTypes.ViewBase));
-                Debug.Log(data.BaseTypeName);
-                Debug.Log(data.BaseTypeShortName);
+                data.BaseIdentifier = null;
+                Decleration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.UFrameTypes.ViewBase));
             }
         }
         else
         {
-            Decleration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.uFrameTypes.ViewBase));
+            Decleration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.UFrameTypes.ViewBase));
         }
 
         if (IsDesignerFile)
         {
-            Decleration.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.uFrameTypes.DiagramInfoAttribute),
+            Decleration.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.DiagramInfoAttribute),
                 new CodeAttributeArgument(new CodePrimitiveExpression(DiagramData.Name))));
 
             AddDefaultIdentifierProperty(data);
@@ -312,7 +310,7 @@ public abstract class ViewClassGenerator : CodeGenerator
         };
 
         initializeViewModelMethod.Parameters.Add(
-            new CodeParameterDeclarationExpression(new CodeTypeReference(uFrameEditor.uFrameTypes.ViewModel), "viewModel"));
+            new CodeParameterDeclarationExpression(new CodeTypeReference(uFrameEditor.UFrameTypes.ViewModel), "viewModel"));
 
         if (data.IsDerived)
         {
@@ -338,7 +336,7 @@ public abstract class ViewClassGenerator : CodeGenerator
                 var field = new CodeMemberField(new CodeTypeReference(property.RelatedTypeName),
                     property.ViewFieldName) { Attributes = MemberAttributes.Public };
                 field.CustomAttributes.Add(
-                    new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.uFrameTypes.UFGroup),
+                    new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.UFGroup),
                         new CodeAttributeArgument(new CodePrimitiveExpression("View Model Properties"))));
                 field.CustomAttributes.Add(
                     new CodeAttributeDeclaration(new CodeTypeReference(typeof(HideInInspector))));
@@ -350,11 +348,11 @@ public abstract class ViewClassGenerator : CodeGenerator
             }
             else // ViewModel Properties
             {
-                var field = new CodeMemberField(new CodeTypeReference(uFrameEditor.uFrameTypes.ViewBase),
+                var field = new CodeMemberField(new CodeTypeReference(uFrameEditor.UFrameTypes.ViewBase),
                     property.ViewFieldName) { Attributes = MemberAttributes.Public };
 
                 field.CustomAttributes.Add(
-                    new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.uFrameTypes.UFGroup),
+                    new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.UFGroup),
                         new CodeAttributeArgument(new CodePrimitiveExpression("View Model Properties"))));
                 field.CustomAttributes.Add(
                     new CodeAttributeDeclaration(new CodeTypeReference(typeof(HideInInspector))));
@@ -373,7 +371,7 @@ public abstract class ViewClassGenerator : CodeGenerator
         {
             Name = "CreateModel",
             Attributes = MemberAttributes.Public | MemberAttributes.Override,
-            ReturnType = new CodeTypeReference(uFrameEditor.uFrameTypes.ViewModel)
+            ReturnType = new CodeTypeReference(uFrameEditor.UFrameTypes.ViewModel)
         };
 
         //if (data.IsMultiInstance)
@@ -541,7 +539,7 @@ public abstract class ViewClassGenerator : CodeGenerator
         removeHandlerMethod.Parameters.Add(new CodeParameterDeclarationExpression(parameterTypeName, varName));
         if (relatedElement != null)
         {
-            var listField = AddPropertyBindingField(decl, uFrameEditor.uFrameTypes.ListOfViewModel.FullName.Replace("ViewModel", relatedElement.NameAsViewBase), collectionProperty.Name, "List", true);
+            var listField = AddPropertyBindingField(decl, uFrameEditor.UFrameTypes.ListOfViewModel.FullName.Replace("ViewModel", relatedElement.NameAsViewBase), collectionProperty.Name, "List", true);
             addHandlerMethod.Statements.Add(new CodeMethodInvokeExpression(
                 new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), listField.Name), "Add",
                 new CodeVariableReferenceExpression(relatedElement.NameAsVariable)));
@@ -559,7 +557,7 @@ public abstract class ViewClassGenerator : CodeGenerator
             {
                 Attributes = MemberAttributes.Public,
                 Name = collectionProperty.NameAsCreateHandler,
-                ReturnType = new CodeTypeReference(uFrameEditor.uFrameTypes.ViewBase)
+                ReturnType = new CodeTypeReference(uFrameEditor.UFrameTypes.ViewBase)
             };
 
 

@@ -48,7 +48,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
         var decl = new CodeTypeDeclaration(IsDesignerFile ? sceneManager.NameAsSceneManagerBase : sceneManager.NameAsSceneManager);
         if (IsDesignerFile)
         {
-            decl.BaseTypes.Add(new CodeTypeReference(uFrameEditor.uFrameTypes.SceneManager));
+            decl.BaseTypes.Add(new CodeTypeReference(uFrameEditor.UFrameTypes.SceneManager));
 
             //var singleInstanceElements = elements.Where(p => !p.IsMultiInstance).ToArray();
 
@@ -71,7 +71,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                 ReturnType = new CodeTypeReference(typeof (IEnumerator)),
                 Attributes = MemberAttributes.Override | MemberAttributes.Public
             };
-            loadMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.uFrameTypes.UpdateProgressDelegate, "progress"));
+            loadMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.UFrameTypes.UpdateProgressDelegate, "progress"));
             loadMethod.Statements.Add(new CodeCommentStatement("Use the controllers to create the game."));
             loadMethod.Statements.Add(new CodeSnippetExpression("yield break"));
 
@@ -109,7 +109,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                 };
 
                 var switchGameAndLevelCall =
-                    new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(uFrameEditor.uFrameTypes.GameManager),
+                    new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(uFrameEditor.UFrameTypes.GameManager),
                         String.Format("TransitionLevel<{0}>", transitionItem.NameAsSceneManager));
 
                 switchGameAndLevelCall.Parameters.Add(

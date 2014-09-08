@@ -10,7 +10,8 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
 {
     private NodeItemHeader _transitionsHeader;
 
-    public SceneManagerDrawer(SceneManagerViewModel viewModel) : base()
+    public SceneManagerDrawer(SceneManagerViewModel viewModel)
+        : base()
     {
         ViewModel = viewModel;
     }
@@ -23,19 +24,29 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
 
     public NodeItemHeader TransitionsHeader
     {
-        get { return _transitionsHeader ?? (_transitionsHeader = new NodeItemHeader(ViewModel)
+        get
         {
-            Label = "Transitions", 
-            HeaderType = typeof(SceneManagerData),
-            AddCommand = uFrameEditor.Container.Resolve<AddTransitionCommand>()
-        }); }
+            if (_transitionsHeader != null) return _transitionsHeader;
+            
+                _transitionsHeader = new NodeItemHeader(ViewModel)
+                {
+                    Label = "Transitions",
+                    HeaderType = typeof (SceneManagerData),
+                  
+                };
+
+            if (NodeViewModel.IsLocal)
+                _transitionsHeader.AddCommand = uFrameEditor.Container.Resolve<AddTransitionCommand>();
+
+            return _transitionsHeader;
+        }
         set { _transitionsHeader = value; }
     }
 
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
         base.GetContentDrawers(drawers);
-        drawers.Insert(1,TransitionsHeader);
+        drawers.Insert(1, TransitionsHeader);
         //if (!NodeViewModel.Items.Any()) yield break;
         //yield return new DiagramSubItemGroup()
         //{

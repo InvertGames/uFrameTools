@@ -146,14 +146,13 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
 
     public void OnBeforeSerialize()
     {
-        if (!Errors && _deserialized)
+        if (!Errors)
         {
-            uFrameEditor.Log("Serializing " + name);
+          
             _jsonData = Serialize().ToString();
         }
     }
 
-    private bool _deserialized;
     public void OnAfterDeserialize()
     {
         //Debug.Log("Deserialize");
@@ -172,7 +171,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
             Errors = true;
             Error = ex;
         }
-        _deserialized = true;
+     
     }
 
     private void CleanUpDuplicates()

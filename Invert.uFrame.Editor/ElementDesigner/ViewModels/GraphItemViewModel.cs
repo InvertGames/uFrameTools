@@ -15,6 +15,7 @@ namespace Invert.uFrame.Editor.ViewModels
     public abstract class GraphItemViewModel : ViewModel
     {
         public abstract Vector2 Position { get; set; }
+        public abstract string Name { get; set; }
 
         public Rect Bounds
         {

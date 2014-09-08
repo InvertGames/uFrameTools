@@ -52,10 +52,12 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
         public override void Perform(DiagramViewModel node)
         {
-            var newNodeData = Activator.CreateInstance(SelectedOption.Value as Type) as IDiagramNode;
-            newNodeData.Name = uFrameEditor.CurrentProject.GetUniqueName(SelectedOption.Name);
-            node.AddNode(newNodeData);
-
+            if (SelectedOption != null)
+            {
+                var newNodeData = Activator.CreateInstance(SelectedOption.Value as Type) as IDiagramNode;
+                newNodeData.Name = uFrameEditor.CurrentProject.GetUniqueName(SelectedOption.Name.Replace("Add ",""));
+                node.AddNode(newNodeData);
+            }
         }
 
         public override string CanPerform(DiagramViewModel node)

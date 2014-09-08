@@ -169,7 +169,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     {
         get
         {
-            return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name);
+            return uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name);
         }
     }
 

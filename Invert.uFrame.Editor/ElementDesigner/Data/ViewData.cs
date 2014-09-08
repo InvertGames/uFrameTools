@@ -18,7 +18,7 @@ public class ViewData : DiagramNode, ISubSystemType
     private List<string> _componentIdentifiers = new List<string>();
 
     [SerializeField]
-    private string _forAssemblyQualifiedName;
+    private string _forElementIdentifier;
 
     private List<ViewPropertyData> _properties;
     private List<IBindingGenerator> _newBindings;
@@ -118,7 +118,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public override string AssemblyQualifiedName
     {
-        get { return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsView); }
+        get { return uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsView); }
     }
     public override IEnumerable<Refactorer> Refactorings
     {
@@ -134,10 +134,10 @@ public class ViewData : DiagramNode, ISubSystemType
             }
         }
     }
-    public string ForAssemblyQualifiedName
+    public string ForElementIdentifier
     {
-        get { return _forAssemblyQualifiedName; }
-        set { _forAssemblyQualifiedName = value; }
+        get { return _forElementIdentifier; }
+        set { _forElementIdentifier = value; }
     }
     public List<MethodInfo> BindingMethods
     {
@@ -219,7 +219,7 @@ public class ViewData : DiagramNode, ISubSystemType
     {
         get
         {
-            return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsView);
+            return uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsView);
         }
     }
 
@@ -230,7 +230,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public IDiagramNode BaseNode
     {
-        get { return Data.NodeItems.FirstOrDefault(p => p.AssemblyQualifiedName == ForAssemblyQualifiedName); }
+        get { return Data.NodeItems.FirstOrDefault(p => p.Identifier == ForElementIdentifier); }
     }
 
     public ElementData ViewForElement
@@ -254,22 +254,26 @@ public class ViewData : DiagramNode, ISubSystemType
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
-        _forAssemblyQualifiedName = cls["ForAssemblyQualifiedName"].Value;
+        // Upgrading project from old assembly names
+        if (cls["ForAssemblyQualifiedName"] != null)
+        {
+            var element =
+                repository.GetElements()
+                    .FirstOrDefault(p => p.AssemblyQualifiedName == cls["ForAssemblyQualifiedName"].Value);
+            if (element != null)
+            {
+                _forElementIdentifier = element.Identifier;
+            }
+        }
+        else
+        {
+            _forElementIdentifier = cls["ForElementIdentifier"].Value;
+        }
+        
 
         _baseViewIdentifier = cls["BaseViewIdentifier"].Value;
         _componentIdentifiers = cls["ComponentIdentifiers"].AsArray.DeserializePrimitiveArray(n => n.Value).ToList();
 
-    }
-
-    public override bool EndEditing()
-    {
-        var oldAssemblyName = AssemblyQualifiedName;
-        if (!base.EndEditing()) return false;
-        foreach (var v in Data.GetViews().Where(p => p.ForAssemblyQualifiedName == oldAssemblyName))
-        {
-            v.ForAssemblyQualifiedName = AssemblyQualifiedName;
-        }
-        return true;
     }
 
     private void SetBindingMethods()
@@ -306,29 +310,29 @@ public class ViewData : DiagramNode, ISubSystemType
     {
         base.RemoveFromDiagram();
         Data.RemoveNode(this);
-        foreach (var source in Data.GetViews().Where(p => p.ForAssemblyQualifiedName == this.AssemblyQualifiedName))
+        foreach (var source in Data.GetViews().Where(p => p.ForElementIdentifier == this.Identifier))
         {
-            source.ForAssemblyQualifiedName = null;
+            source.ForElementIdentifier = null;
         }
     }
 
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
-        cls.Add("ForAssemblyQualifiedName", new JSONData(_forAssemblyQualifiedName));
+        cls.Add("ForElementIdentifier", new JSONData(_forElementIdentifier));
         cls.Add("BaseViewIdentifier", new JSONData(_baseViewIdentifier));
         cls.AddPrimitiveArray("ComponentIdentifiers", _componentIdentifiers, i => new JSONData(i));
     }
 
     public void SetElement(ElementData output)
     {
-        ForAssemblyQualifiedName = output.AssemblyQualifiedName;
+        ForElementIdentifier = output.Identifier;
         BaseViewIdentifier = null;
     }
 
     public void RemoveFromElement(ElementData output)
     {
-        ForAssemblyQualifiedName = null;
+        ForElementIdentifier = null;
     }
 
     public void SetBaseView(ViewData output)

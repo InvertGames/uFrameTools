@@ -9,11 +9,20 @@ using Invert.uFrame.Editor.Nodes;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Invert.uFrame.Editor
 {
+
     public static class uFrameEditor
     {
+
+        public static ProjectRepository[] Projects
+        {
+            get { return _projects ?? (_projects = GetAssets(typeof(ProjectRepository)).Cast<ProjectRepository>().ToArray()); }
+            set { _projects = value; }
+        }
+
         private static IEditorCommand[] _commands;
 
         private static uFrameContainer _container;
@@ -24,9 +33,12 @@ namespace Invert.uFrame.Editor
 
         private static IToolbarCommand[] _toolbarCommands;
         private static IProjectRepository _repository;
-        private static ProjectRepository[] _projects;
+        
         private static Dictionary<Type, List<Type>> _allowedFilterNodes;
         private static Dictionary<Type, List<Type>> _allowedFilterItems;
+        private static ProjectRepository[] _projects;
+        private static UFrameSettings _settings;
+        private static IUFrameTypeProvider _uFrameTypes;
 
         public static IEditorCommand[] Commands
         {
@@ -110,7 +122,11 @@ namespace Invert.uFrame.Editor
             }
         }
 
-        public static IUFrameTypeProvider uFrameTypes { get; set; }
+        public static IUFrameTypeProvider UFrameTypes
+        {
+            get { return _uFrameTypes ?? (_uFrameTypes = Container.Resolve<IUFrameTypeProvider>()); }
+            set { _uFrameTypes = value; }
+        }
 
         private static IBindingGenerator[] BindingGenerators { get; set; }
 
@@ -147,7 +163,7 @@ namespace Invert.uFrame.Editor
             var drawer = Container.ResolveRelation<IDrawer>(viewModel.GetType(), viewModel);
             if (drawer == null)
             {
-                Debug.Log(string.Format("Couldn't Create drawer for {0}.", viewModel.GetType()));
+                Debug.Log(String.Format("Couldn't Create drawer for {0}.", viewModel.GetType()));
             }
             return drawer;
         }
@@ -176,6 +192,7 @@ namespace Invert.uFrame.Editor
                     handler.CommandExecuted(command);
                 }
             }
+            
         }
 
         public static Type FindType(string name)
@@ -320,9 +337,9 @@ namespace Invert.uFrame.Editor
             Container.RegisterInstance<IKeyBinding>(new SimpleKeyBinding(command, name, code, control, alt, shift), name);
         }
 
-        public static UnityEngine.Object[] GetAssets(Type assetType)
+        public static Object[] GetAssets(Type assetType)
         {
-            var tempObjects = new List<UnityEngine.Object>();
+            var tempObjects = new List<Object>();
             var directory = new DirectoryInfo(Application.dataPath);
             FileInfo[] goFileInfo = directory.GetFiles("*" + ".asset", SearchOption.AllDirectories);
 
@@ -338,7 +355,7 @@ namespace Invert.uFrame.Editor
                 try
                 {
 
-                    var tempGo = AssetDatabase.LoadAssetAtPath(tempFilePath, assetType) as UnityEngine.Object;
+                    var tempGo = AssetDatabase.LoadAssetAtPath(tempFilePath, assetType) as Object;
                     if (tempGo == null)
                     {
 
@@ -447,13 +464,13 @@ namespace Invert.uFrame.Editor
             RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
             RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
 
-            RegisterGraphItem<ViewModelPropertyData,ElementItemViewModel,ElementItemDrawer>();
-            RegisterGraphItem<SceneManagerData,SceneManagerViewModel,SceneManagerDrawer>();
-            RegisterGraphItem<SubSystemData,SubSystemViewModel,SubSystemDrawer>();
-            RegisterGraphItem<ElementData,ElementNodeViewModel,ElementDrawer>();
-            RegisterGraphItem<EnumData,EnumNodeViewModel,DiagramEnumDrawer>();
-            RegisterGraphItem<ViewData,ViewNodeViewModel,ViewDrawer>();
-            RegisterGraphItem<ViewComponentData,ViewComponentNodeViewModel,ViewComponentDrawer>();
+            RegisterGraphItem<ViewModelPropertyData, ElementItemViewModel, ElementItemDrawer>();
+            RegisterGraphItem<SceneManagerData, SceneManagerViewModel, SceneManagerDrawer>();
+            RegisterGraphItem<SubSystemData, SubSystemViewModel, SubSystemDrawer>();
+            RegisterGraphItem<ElementData, ElementNodeViewModel, ElementDrawer>();
+            RegisterGraphItem<EnumData, EnumNodeViewModel, DiagramEnumDrawer>();
+            RegisterGraphItem<ViewData, ViewNodeViewModel, ViewDrawer>();
+            RegisterGraphItem<ViewComponentData, ViewComponentNodeViewModel, ViewComponentDrawer>();
 
             RegisterGraphItem<ViewModelPropertyData, ElementPropertyItemViewModel, ElementItemDrawer>();
             RegisterGraphItem<ViewModelCommandData, ElementCommandItemViewModel, ElementItemDrawer>();
@@ -466,15 +483,15 @@ namespace Invert.uFrame.Editor
 
 
             // Filters
-            RegisterFilterNode<SceneFlowFilter,SceneManagerData>();
-            RegisterFilterNode<SceneFlowFilter,SubSystemData>();
+            RegisterFilterNode<SceneFlowFilter, SceneManagerData>();
+            RegisterFilterNode<SceneFlowFilter, SubSystemData>();
 
-            RegisterFilterNode<SubSystemData,ElementData>();
-            RegisterFilterNode<SubSystemData,EnumData>();
+            RegisterFilterNode<SubSystemData, ElementData>();
+            RegisterFilterNode<SubSystemData, EnumData>();
 
-            RegisterFilterNode<ElementData,EnumData>();
-            RegisterFilterNode<ElementData,ViewData>();
-            RegisterFilterNode<ElementData,ViewComponentData>();
+            RegisterFilterNode<ElementData, EnumData>();
+            RegisterFilterNode<ElementData, ViewData>();
+            RegisterFilterNode<ElementData, ViewComponentData>();
 
 
             // Connections
@@ -509,9 +526,8 @@ namespace Invert.uFrame.Editor
             ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
             KeyBindings = Container.ResolveAll<IKeyBinding>().ToArray();
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
-            uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
-            CurrentProject = Container.Resolve<IProjectRepository>();
-            uFrameTypes = container.Resolve<IUFrameTypeProvider>();
+           // uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
+            
             Settings = container.Resolve<UFrameSettings>();
 
 
@@ -539,18 +555,11 @@ namespace Invert.uFrame.Editor
             }
         }
 
-        public static ProjectRepository[] Projects
-        {
-            get { return _projects ?? (_projects = GetAssets(typeof(ProjectRepository)).Cast<ProjectRepository>().ToArray()); }
-            set { _projects = value; }
-        }
 
-        public static UFrameSettings Settings { get; set; }
-
-        public static IProjectRepository CurrentProject
+        public static UFrameSettings Settings
         {
-            get { return _repository ?? (_repository = Projects.FirstOrDefault()); }
-            set { _repository = value; }
+            get { return _settings ?? (Container.Resolve<UFrameSettings>()); }
+            set { _settings = value; }
         }
 
         public static IConnectionStrategy[] ConnectionStrategies { get; set; }
@@ -562,7 +571,7 @@ namespace Invert.uFrame.Editor
         public static void RegisterGraphItem<TModel, TViewModel, TDrawer>()
         {
             Container.RegisterRelation<TModel, ViewModel, TViewModel>();
-            RegisterDrawer<TViewModel,TDrawer>();
+            RegisterDrawer<TViewModel, TDrawer>();
         }
 
         public static void RegisterFilterNode<TFilterData, TAllowedItem>()
@@ -601,6 +610,8 @@ namespace Invert.uFrame.Editor
             get { return _allowedFilterItems ?? (_allowedFilterItems = new Dictionary<Type, List<Type>>()); }
             set { _allowedFilterItems = value; }
         }
+
+        public static IProjectRepository CurrentProject { get; set; }
 
         public static bool IsFilter(Type type)
         {

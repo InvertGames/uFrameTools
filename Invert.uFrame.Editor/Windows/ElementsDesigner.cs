@@ -1,10 +1,8 @@
+using Invert.Common;
+using Invert.uFrame.Editor.ElementDesigner;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Invert.Common;
-using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ElementDesigner;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,45 +10,84 @@ namespace Invert.uFrame.Editor
 {
     public class ElementsDesigner : EditorWindow, ICommandHandler
     {
+        public event EventHandler ProjectChanged;
+
         private static float HEIGHT = 768;
 
         private static List<Matrix4x4> stack = new List<Matrix4x4>();
 
         private static float WIDTH = 1024;
 
-        public ModifierKeyState ModifierKeyStates
-        {
-            get { return _modifierKeyStates ?? (_modifierKeyStates = new ModifierKeyState()); }
-            set { _modifierKeyStates = value; }
-        }
-
-
-        public ICommandUI Toolbar
-        {
-            get
-            {
-                if (_toolbar != null) return _toolbar;
-
-
-                return _toolbar = uFrameEditor.CreateCommandUI<ToolbarUI>(this, typeof(IToolbarCommand));
-            }
-            set { _toolbar = value; }
-        }
+        private IProjectRepository _currentProject;
 
         [SerializeField]
         private ElementsDiagram _diagramDrawer;
 
-        private Vector2 _scrollPosition;
-        private ICommandUI _toolbar;
+        private bool _drawEveryFrame = true;
+
         private ModifierKeyState _modifierKeyStates;
+
         private MouseEvent _mouseEvent;
 
+        private ProjectRepository[] _projects;
+
+        private Vector2 _scrollPosition;
+
+        private ICommandUI _toolbar;
+        private string _newProjectName = "NewProject";
 
         public static INodeRepository SelectedElementDiagram
         {
             get { return Selection.activeObject as IElementDesignerData; }
         }
 
+        public IEnumerable<object> ContextObjects
+        {
+            get
+            {
+                yield return this;
+                if (DiagramDrawer != null)
+                {
+                    foreach (var co in DiagramDrawer.ContextObjects)
+                    {
+                        yield return co;
+                    }
+                }
+            }
+        }
+
+        public IProjectRepository CurrentProject
+        {
+            get
+            {
+                if (uFrameEditor.CurrentProject == null)
+                {
+                    if (!String.IsNullOrEmpty(LastLoadedProject))
+                    {
+                        uFrameEditor.CurrentProject = uFrameEditor.Projects.FirstOrDefault(p => p.name == LastLoadedProject);
+                    }
+                    if (uFrameEditor.CurrentProject == null)
+                    {
+                        uFrameEditor.CurrentProject = uFrameEditor.Projects.FirstOrDefault();
+                    }
+                }
+                return uFrameEditor.CurrentProject;
+            }
+            set
+            {
+                var changed = uFrameEditor.CurrentProject != value;
+
+                uFrameEditor.CurrentProject = value;
+                if (value != null)
+                {
+                    if (changed)
+                    {
+                        OnProjectChanged();
+                    }
+                    LastLoadedProject = value.Name;
+                }
+            }
+        }
 
         public ElementsDiagram DiagramDrawer
         {
@@ -62,7 +99,9 @@ namespace Invert.uFrame.Editor
             }
         }
 
-        public DiagramViewModel DiagramViewModel 
+        public Rect DiagramRect { get; set; }
+
+        public DiagramViewModel DiagramViewModel
         {
             get
             {
@@ -70,6 +109,7 @@ namespace Invert.uFrame.Editor
                 return DiagramDrawer.DiagramViewModel;
             }
         }
+
         public float InspectorWidth
         {
             get
@@ -83,6 +123,8 @@ namespace Invert.uFrame.Editor
 
         public bool IsMiddleMouseDown { get; set; }
 
+        public Event LastEvent { get; set; }
+
         public string LastLoadedDiagram
         {
             get
@@ -95,7 +137,40 @@ namespace Invert.uFrame.Editor
             }
         }
 
+        public string LastLoadedProject
+        {
+            get { return EditorPrefs.GetString("UF_LastLoadedProject", String.Empty); }
+            set { EditorPrefs.SetString("UF_LastLoadedProject", value); }
+        }
+
+        public Event LastMouseDownEvent { get; set; }
+
+        public Vector2 LastMousePosition { get; set; }
+
+        public ModifierKeyState ModifierKeyStates
+        {
+            get { return _modifierKeyStates ?? (_modifierKeyStates = new ModifierKeyState()); }
+            set { _modifierKeyStates = value; }
+        }
+
+        public MouseEvent MouseEvent
+        {
+            get { return _mouseEvent ?? (_mouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer)); }
+            set { _mouseEvent = value; }
+        }
+
         public Vector2 PanStartPosition { get; set; }
+
+        public ICommandUI Toolbar
+        {
+            get
+            {
+                if (_toolbar != null) return _toolbar;
+
+                return _toolbar = uFrameEditor.CreateCommandUI<ToolbarUI>(this, typeof(IToolbarCommand));
+            }
+            set { _toolbar = value; }
+        }
 
         static public void BeginGUI()
         {
@@ -132,9 +207,9 @@ namespace Invert.uFrame.Editor
             // Get existing open window or if none, make a new one:
             var window = (ElementsDesigner)GetWindow(typeof(ElementsDesigner));
             window.title = "Elements";
-
+            //uFrameEditor.ProjectChanged += window.UFrameEditorOnProjectChanged;
             //window.DesignerViewModel = uFrameEditor.Application.Designer;
-        
+
             //var repo = new ElementsDataRepository();
             //var diagram = new ElementsDiagram(repo);
             //diagram.Data.ViewModels.Add(repo.GetViewModel(typeof(FPSWeaponViewModel)));
@@ -144,9 +219,16 @@ namespace Invert.uFrame.Editor
             window.Show();
         }
 
-        public void InfoBox(string message, MessageType type = MessageType.Info)
+        public void CommandExecuted(IEditorCommand command)
         {
-            EditorGUI.HelpBox(new Rect(15, 30, 300, 30), message, type);
+            if (DiagramDrawer != null)
+            {
+                DiagramDrawer.Refresh();
+            }
+        }
+
+        public void CommandExecuting(IEditorCommand command)
+        {
         }
 
         public void DoCommand(IEditorCommand command)
@@ -156,7 +238,6 @@ namespace Invert.uFrame.Editor
             if (command is IDynamicOptionsCommand)
             {
                 var cmd = command as IDynamicOptionsCommand;
-
 
                 foreach (var ufContextMenuItem in cmd.GetOptions(obj))
                 {
@@ -169,7 +250,6 @@ namespace Invert.uFrame.Editor
             }
             else if (GUILayout.Button(new GUIContent(command.Title), EditorStyles.toolbarButton))
             {
-
                 if (command is IParentCommand)
                 {
                     var contextUI = uFrameEditor.CreateCommandUI<ContextMenuUI>(this, command.GetType());
@@ -183,25 +263,91 @@ namespace Invert.uFrame.Editor
             }
             GUI.enabled = true;
         }
+
+        public void HandleInput()
+        {
+            if (DiagramDrawer == null) return;
+
+            var e = Event.current;
+            if (e == null)
+            {
+                return;
+            }
+            var handler = MouseEvent.CurrentHandler;
+
+            if (e.type == EventType.MouseDown)
+            {
+                MouseEvent.MouseDownPosition = MouseEvent.MousePosition;
+                MouseEvent.IsMouseDown = true;
+                MouseEvent.MouseButton = e.button;
+                handler.OnMouseDown(MouseEvent);
+                if (e.button == 1)
+                {
+                    handler.OnRightClick(MouseEvent);
+                }
+
+                if (e.clickCount > 1)
+                {
+                    handler.OnMouseDoubleClick(MouseEvent);
+                }
+                LastMouseDownEvent = e;
+            }
+            if (e.rawType == EventType.MouseUp)
+            {
+                MouseEvent.MouseUpPosition = MouseEvent.MousePosition;
+                MouseEvent.IsMouseDown = false;
+                handler.OnMouseUp(MouseEvent);
+            }
+            else if (e.rawType == EventType.KeyDown)
+            {
+            }
+            else
+            {
+                var mp = (e.mousePosition) * (1f / ElementsDiagram.Scale);
+
+                MouseEvent.MousePosition = mp;
+                MouseEvent.MousePositionDelta = MouseEvent.MousePosition - MouseEvent.LastMousePosition;
+
+                handler.OnMouseMove(MouseEvent);
+                MouseEvent.LastMousePosition = mp;
+            }
+        }
+
+        public void InfoBox(string message, MessageType type = MessageType.Info)
+        {
+            EditorGUI.HelpBox(new Rect(15, 30, 300, 30), message, type);
+        }
+
+        public void LoadDiagram(IElementDesignerData diagram)
+        {
+            if (diagram == null) return;
+            try
+            {
+                //Undo.undoRedoPerformed = UndoRedoPerformed;
+                Undo.undoRedoPerformed += UndoRedoPerformed;
+                //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
+                DiagramDrawer = new ElementsDiagram(new DiagramViewModel(diagram, CurrentProject));
+                MouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer);
+                DiagramDrawer.Dirty = true;
+                //DiagramDrawer.Data.ApplyFilter();
+                DiagramDrawer.Refresh();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                Debug.Log("Either a plugin isn't installed or the file could no longer be found. See Exception error");
+                LastLoadedDiagram = null;
+            }
+        }
+
+        public void OnFocus()
+        {
+            _drawEveryFrame = true;
+        }
+
         public void OnGUI()
         {
-
-            if ((DiagramViewModel == null) && !string.IsNullOrEmpty(LastLoadedDiagram))
-            {
-                DiagramDrawer = null;
-                if (!LoadDiagram(LastLoadedDiagram))
-                {
-                    LastLoadedDiagram = null;
-                    return;
-                }
-                if (DiagramDrawer == null)
-                {
-                    LastLoadedDiagram = null;
-                    return;
-                }
-            }
-            
-          
+           
             var style = ElementDesignerStyles.Background;
             style.border = new RectOffset(
                 Mathf.RoundToInt(41),
@@ -212,23 +358,71 @@ namespace Invert.uFrame.Editor
             //DoToolbar(diagramRect);
             DoToolbar();
             GUILayout.EndHorizontal();
-            if (DiagramDrawer == null) return;
-            var diagramRect = new Rect(0f, (EditorStyles.toolbar.fixedHeight) - 1, Screen.width - 3, Screen.height - (EditorStyles.toolbar.fixedHeight * 2) - EditorStyles.toolbar.fixedHeight - 2);
-            DiagramDrawer.Rect = diagramRect;
-            EditorGUI.DrawRect(diagramRect, uFrameEditor.Settings.BackgroundColor);
-            GUI.Box(diagramRect, string.Empty, style);
 
+            DiagramRect = new Rect(0f, (EditorStyles.toolbar.fixedHeight) - 1, Screen.width - 3, Screen.height - (EditorStyles.toolbar.fixedHeight * 2) - EditorStyles.toolbar.fixedHeight - 2);
+
+            EditorGUI.DrawRect(DiagramRect, uFrameEditor.Settings.BackgroundColor);
+            GUI.Box(DiagramRect, String.Empty, style);
+            if (CurrentProject == null)
+            {
+                DiagramDrawer = null;
+                var width = 400;
+                var height = 300;
+                var x = (Screen.width / 2f) - (width / 2f);
+                var y = (Screen.height / 2f) - (width / 2f);
+                var padding = 30;
+                var rect = new Rect(x, y, width, height);
+                ElementDesignerStyles.DrawExpandableBox(rect, ElementDesignerStyles.NodeBackground, string.Empty);
+                GUI.DrawTexture(new Rect(x, y + 25, width, 100), ElementDesignerStyles.GetSkinTexture("uframeLogoLarge"), ScaleMode.ScaleToFit);
+                rect.y += 110;
+                rect.height -= 110;
+                GUILayout.BeginArea(rect);
+                GUILayout.BeginArea(new Rect(padding, padding, width - (padding * 2), height - (padding * 2)));
+       
+                    EditorGUILayout.BeginVertical();
+                    EditorGUILayout.LabelField("Create New Project", ElementDesignerStyles.ViewModelHeaderStyle);
+
+                    GUILayout.Space(20f);
+                    _newProjectName = EditorGUILayout.TextField("New Project Name:", _newProjectName);
+                    if (GUILayout.Button("Create Project"))
+                    {
+                        UFrameAssetManager.NewUFrameProject(_newProjectName);
+                    }
+                    EditorGUILayout.EndVertical();
+                
+             
+                GUILayout.EndArea();
+                GUILayout.EndArea();
+            
+
+            }
             if (DiagramDrawer == null)
             {
+                if (CurrentProject != null)
+                {
+                    if (CurrentProject.CurrentDiagram != null)
+                    {
+                        LoadDiagram(CurrentProject.CurrentDiagram);
+                    }
+                }
+                //else
+                //{
+                //    return;
+                //}
+            }
+            if (DiagramDrawer == null)
+            {
+                return;
             }
             else
             {
+                DiagramDrawer.Rect = DiagramRect;
                 if (Event.current.control && Event.current.type == EventType.mouseDown)
                 {
                 }
-                _scrollPosition = GUI.BeginScrollView(diagramRect, _scrollPosition, DiagramDrawer.DiagramSize);
+                _scrollPosition = GUI.BeginScrollView(DiagramRect, _scrollPosition, DiagramDrawer.DiagramSize);
 
-                HandlePanning(diagramRect);
+                HandlePanning(DiagramRect);
                 if (DiagramViewModel != null)
                 {
                     var softColor = uFrameEditor.Settings.GridLinesColor;
@@ -236,12 +430,12 @@ namespace Invert.uFrame.Editor
                     var x = 0f;
                     var every10 = 0;
 
-                    while (x < diagramRect.width + _scrollPosition.x)
+                    while (x < DiagramRect.width + _scrollPosition.x)
                     {
                         Handles.color = softColor;
                         if (every10 == 10)
                         {
-                            Handles.color = hardColor; 
+                            Handles.color = hardColor;
                             every10 = 0;
                         }
                         Handles.DrawLine(new Vector2(x, 0f), new Vector2(x, Screen.height + _scrollPosition.y));
@@ -250,7 +444,7 @@ namespace Invert.uFrame.Editor
                     }
                     var y = 3f;
                     every10 = 0;
-                    while (y < diagramRect.height + _scrollPosition.y)
+                    while (y < DiagramRect.height + _scrollPosition.y)
                     {
                         Handles.color = softColor;
                         if (every10 == 10)
@@ -267,33 +461,32 @@ namespace Invert.uFrame.Editor
                 DiagramDrawer.Draw(ElementDesignerStyles.Scale);
                 HandleInput();
 
-//#if DEBUG
-//                GUILayout.BeginArea(new Rect(10f, 70f, 500f, 500f));
-//                GUILayout.Label(string.Format("Mouse Position: x = {0}, y = {1}", MouseEvent.MousePosition.x, MouseEvent.MousePosition.y));
-//                GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
-//                GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
-//                GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
-//                if (DiagramDrawer != null)
-//                {
+                //#if DEBUG
+                //                GUILayout.BeginArea(new Rect(10f, 70f, 500f, 500f));
+                //                GUILayout.Label(string.Format("Mouse Position: x = {0}, y = {1}", MouseEvent.MousePosition.x, MouseEvent.MousePosition.y));
+                //                GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
+                //                GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
+                //                GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
+                //                if (DiagramDrawer != null)
+                //                {
+                //                    GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
+                //                    if (DiagramDrawer.DrawersAtMouse != null)
+                //                        foreach (var drawer in DiagramDrawer.DrawersAtMouse)
+                //                        {
+                //                            GUILayout.Label(drawer.ToString());
+                //                        }
+                //                    if (DiagramDrawer.DiagramViewModel != null)
+                //                        foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
+                //                        {
+                //                            GUILayout.Label(drawer.ToString());
+                //                        }
+                //                }
 
-//                    GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
-//                    if (DiagramDrawer.DrawersAtMouse != null)
-//                        foreach (var drawer in DiagramDrawer.DrawersAtMouse)
-//                        {
-//                            GUILayout.Label(drawer.ToString());
-//                        }
-//                    if (DiagramDrawer.DiagramViewModel != null)
-//                        foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
-//                        {
-//                            GUILayout.Label(drawer.ToString());
-//                        }
-//                }
-
-//                GUILayout.EndArea();
-//#endif
+                //                GUILayout.EndArea();
+                //#endif
                 //EndGUI();
                 GUI.EndScrollView();
-                GUILayout.Space(diagramRect.height);
+                GUILayout.Space(DiagramRect.height);
                 GUILayout.BeginHorizontal(EditorStyles.toolbar);
                 //DoToolbar(diagramRect);
                 Toolbar.GoBottom();
@@ -309,7 +502,7 @@ namespace Invert.uFrame.Editor
                 var refactors = DiagramViewModel.RefactorCount;
                 if (refactors > 0)
                 {
-                    InfoBox(string.Format("You have {0} refactors. Save before recompiling occurs.", refactors), MessageType.Warning);
+                    InfoBox(String.Format("You have {0} refactors. Save before recompiling occurs.", refactors), MessageType.Warning);
                 }
             }
             LastEvent = Event.current;
@@ -322,7 +515,7 @@ namespace Invert.uFrame.Editor
                     if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt) ModifierKeyStates.Alt = false;
                 }
             }
-           
+
             if (LastEvent != null)
             {
                 if (LastEvent.type == EventType.keyDown)
@@ -334,210 +527,58 @@ namespace Invert.uFrame.Editor
                     if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt)
                         ModifierKeyStates.Alt = true;
                 }
-               // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));
+                // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));
             }
 
-         
             var evt = Event.current;
             if (evt != null && evt.isKey && evt.type == EventType.KeyUp && DiagramDrawer != null)
             {
-              
                 if (DiagramViewModel != null && (DiagramViewModel.SelectedNode == null || !DiagramViewModel.SelectedNode.IsEditing))
                 {
                     if (DiagramDrawer.HandleKeyEvent(evt, ModifierKeyStates))
                     {
                         evt.Use();
                     }
-                    
                 }
             }
 
-
-
-            if (Event.current.type == EventType.ValidateCommand &&
-          Event.current.commandName == "UndoRedoPerformed")
+            if (Event.current.type == EventType.ValidateCommand && Event.current.commandName == "UndoRedoPerformed")
             {
-               
             }
 
             if (DiagramDrawer != null && DiagramDrawer.Dirty || EditorApplication.isCompiling)
             {
-                
             }
-         
         }
-   
+
         public void OnLostFocus()
         {
             if (DiagramViewModel != null)
-            DiagramViewModel.DeselectAll();
+                DiagramViewModel.DeselectAll();
 
             MouseEvent.IsMouseDown = false;
+            _drawEveryFrame = false;
         }
 
-        //public virtual void OpenDiagramByAttribute(Type type)
-        //{
-        //    var attribute = type.GetCustomAttributes(typeof(DiagramInfoAttribute), true).FirstOrDefault() as DiagramInfoAttribute;
-        //    if (attribute == null) return;
-        //    LoadDiagramByName(attribute.DiagramName);
-        //}
-       
         public void Update()
         {
-            //if (Diagram == null) return;
-           
-            //if (Diagram.IsMouseDown || Diagram.Dirty || EditorApplication.isCompiling)
-            //{
-              
-            //    Diagram.Dirty = false;
-            //}
-
-            Repaint();
-           
+            if (_drawEveryFrame)
+                Repaint();
         }
 
-        public MouseEvent MouseEvent
-        {
-            get { return _mouseEvent ?? (_mouseEvent = new MouseEvent(ModifierKeyStates,DiagramDrawer)); }
-            set { _mouseEvent = value; }
-        }
-
-        private Vector2 _mousePosition;
-
-        
-        public void HandleInput()
-        {
-            if (DiagramDrawer == null) return;
-
-            var e = Event.current;
-            if (e == null)
-            {
-                return;
-            }
-            var handler = MouseEvent.CurrentHandler;
-
-         
-            if (e.type == EventType.MouseDown)
-            {
-                MouseEvent.MouseDownPosition = MouseEvent.MousePosition;
-                MouseEvent.IsMouseDown = true;
-                MouseEvent.MouseButton = e.button;
-                handler.OnMouseDown(MouseEvent);
-                if (e.button == 1)
-                {
-                    handler.OnRightClick(MouseEvent);
-                }
- 
-                if (e.clickCount > 1)
-                {
-                    handler.OnMouseDoubleClick(MouseEvent);
-               }
-                LastMouseDownEvent = e;
-            }
-            if (e.rawType == EventType.MouseUp)
-            {
-                MouseEvent.MouseUpPosition = MouseEvent.MousePosition;
-                MouseEvent.IsMouseDown = false;
-                handler.OnMouseUp(MouseEvent);
-            }
-            else if (e.rawType == EventType.KeyDown)
-            {
-                
-            }
-            else
-            {
-                var mp = ( e.mousePosition) * (1f / ElementsDiagram.Scale);
-            
-                MouseEvent.MousePosition = mp;
-                MouseEvent.MousePositionDelta = MouseEvent.MousePosition - MouseEvent.LastMousePosition;
-
-                handler.OnMouseMove(MouseEvent);
-                MouseEvent.LastMousePosition = mp;
-            }
-          
-        }
-
-        //public void HandleInput()
-        //{
-        //    var e = Event.current;
-
-        //    if (e.type == EventType.MouseDown)
-        //    {
-
-        //        InputManager.MouseDown();
-
-        //        if (e.clickCount > 1)
-        //        {
-        //            InputManager.MouseDoubleClick();
-        //        }
-        //        e.Use();
-        //    }
-        //    else if (e.type == EventType.MouseUp)
-        //    {
-        //        InputManager.MouseUp();
-        //    }
-        //    else
-        //    {
-        //        var mp = (_scrollPosition + e.mousePosition) * (1f / ElementsDiagram.Scale);
-
-        //        InputManager.MousePositionDelta = mp - InputManager.MousePosition;
-        //        InputManager.MousePosition = mp;
-        //        InputManager.MouseMove();
-        //    }
-        //    LastEvent = e;
-        //    if (LastEvent != null)
-        //    {
-        //        if (LastEvent.type == EventType.keyUp)
-        //        {
-        //            if (LastEvent.keyCode == KeyCode.LeftShift || LastEvent.keyCode == KeyCode.RightShift) ModifierKeyStates.Shift = false;
-        //            if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl) ModifierKeyStates.Ctrl = false;
-        //            if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt) ModifierKeyStates.Alt = false;
-        //        }
-        //    }
-
-        //    if (LastEvent != null)
-        //    {
-        //        if (LastEvent.type == EventType.keyDown)
-        //        {
-        //            if (LastEvent.keyCode == KeyCode.LeftShift || LastEvent.keyCode == KeyCode.RightShift)
-        //                ModifierKeyStates.Shift = true;
-        //            if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl)
-        //                ModifierKeyStates.Ctrl = true;
-        //            if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt)
-        //                ModifierKeyStates.Alt = true;
-        //        }
-        //        // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));
-        //    }
-        //    var evt = Event.current;
-        //    if (evt != null && evt.isKey && evt.type == EventType.KeyUp && Diagram != null)
-        //    {
-        //        InputManager.KeyPressed(evt.keyCode);
-
-
-        //    }
-        //}
-
-        //public 
-        //{
-        //    get
-        //    {
-        //        return Diagram.InputManager;
-        //    }
-        //}
-
-        public Vector2 LastMousePosition { get; set; }
         private void DoToolbar()
         {
             try
             {
                 if (
                   GUILayout.Button(
-                      new GUIContent(uFrameEditor.CurrentProject == null ? "--Select Project--" : uFrameEditor.CurrentProject.Name),
+                      new GUIContent(CurrentProject == null ? "--Select Project--" : CurrentProject.Name),
                       EditorStyles.toolbarPopup))
                 {
                     SelectProject();
                 }
-                if (uFrameEditor.CurrentProject != null)
+
+                if (CurrentProject != null)
                 {
                     if (
                     GUILayout.Button(
@@ -546,16 +587,14 @@ namespace Invert.uFrame.Editor
                     {
                         SelectDiagram();
                     }
+                    Toolbar.Go();
                 }
-                
             }
             catch (Exception ex)
             {
                 DiagramDrawer = null;
                 return;
-
             }
-            Toolbar.Go();
         }
 
         private void HandlePanning(Rect diagramRect)
@@ -585,68 +624,45 @@ namespace Invert.uFrame.Editor
                 {
                     _scrollPosition.y = diagramRect.height - diagramRect.y;
                 }
-                
             }
-
         }
 
-        public bool LoadDiagram(string path)
-        {
-            try
-            {
-                //Undo.undoRedoPerformed = UndoRedoPerformed;
-                Undo.undoRedoPerformed += UndoRedoPerformed;
-                //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
-                DiagramDrawer = new ElementsDiagram(new DiagramViewModel(path, uFrameEditor.CurrentProject));
-                MouseEvent = new MouseEvent(ModifierKeyStates,DiagramDrawer);
-                //Diagram.SelectionChanged += DiagramOnSelectionChanged;
-                LastLoadedDiagram = path;
-                DiagramDrawer.Dirty = true;
-                //DiagramDrawer.Data.ApplyFilter();
-                DiagramDrawer.Refresh();
-            }
-            catch (Exception ex)
-            {
-                UnityEngine.Debug.LogException(ex);
-                Debug.Log("Either a plugin isn't installed or the file could no longer be found. See Exception error");
-                LastLoadedDiagram = null;
-                return false;
-            }
-            return true;
-            // var newScrollPosition = new Vector2(Diagram.DiagramSize.width, Diagram.DiagramSize.height).normalized / 2;
-            //_scrollPosition = new Vector2(250,250);
-        }
-
-        private void UndoRedoPerformed()
+        private void OnProjectChanged()
         {
             DiagramDrawer = null;
-       
         }
 
-        public void LoadDiagramByName(string diagramName)
+        private void SelectDiagram()
         {
-            var repos = uFrameEditor.Container.ResolveAll<IProjectRepository>();
-            var diagrams = repos.SelectMany(p => p.GetProjectDiagrams()).ToDictionary(p => p.Key, p => p.Value);
-            if (diagrams.ContainsKey(diagramName))
-                LoadDiagram(diagrams[diagramName]);
-
-            //var diagram = UFrameAssetManager.Diagrams.FirstOrDefault(p => p.Name == diagramName);
-            //if (diagram == null) return;
-            //LoadDiagram(diagram);
+            var menu = new GenericMenu();
+            foreach (var item in CurrentProject.Diagrams)
+            {
+                JsonElementDesignerData item1 = item;
+                menu.AddItem(new GUIContent(item.Name), DiagramDrawer != null && CurrentProject.CurrentDiagram == item1, () =>
+                {
+                    CurrentProject.CurrentDiagram = item1;
+                    LoadDiagram(CurrentProject.CurrentDiagram);
+                });
+            }
+            menu.AddItem(new GUIContent("Force Refresh"), false, () => { CurrentProject.Refresh(); });
+            menu.AddItem(new GUIContent("Create New"), false, () => { CurrentProject.CreateNewDiagram();
+                                                                        DiagramDrawer = null;
+            });
+            menu.ShowAsContext();
         }
+
         private void SelectProject()
         {
             var projects = uFrameEditor.Projects;
 
-
             var menu = new GenericMenu();
             foreach (var project in projects)
             {
-                ProjectRepository project1 = project;
-                menu.AddItem(new GUIContent(project.name), project == uFrameEditor.CurrentProject, () =>
+                IProjectRepository project1 = project;
+                menu.AddItem(new GUIContent(project.name), project1 == CurrentProject, () =>
                 {
-                    uFrameEditor.CurrentProject = project1;
-                    uFrameEditor.CurrentProject.CurrentDiagram = uFrameEditor.CurrentProject.Diagrams.FirstOrDefault();
+                    CurrentProject = project1;
+                    LoadDiagram(CurrentProject.CurrentDiagram);
                 });
             }
 
@@ -654,117 +670,27 @@ namespace Invert.uFrame.Editor
             menu.AddItem(new GUIContent("Force Refresh"), false, () => { uFrameEditor.Projects = null; });
             menu.ShowAsContext();
         }
-        private void SelectDiagram()
+
+        private void UFrameEditorOnProjectChanged(object sender, EventArgs eventArgs)
         {
-            var projectDiagrams = uFrameEditor.CurrentProject.GetProjectDiagrams();
-            var diagramNames = projectDiagrams.Keys.ToArray();
-            var diagramPaths = projectDiagrams.Values.ToArray();
-
-
-            var menu = new GenericMenu();
-            for (int index = 0; index < diagramNames.Length; index++)
-            {
-                var diagramName = diagramNames[index];
-                var diagram = diagramPaths[index];
-
-                menu.AddItem(new GUIContent(diagramName), DiagramDrawer != null && diagram == LastLoadedDiagram, () =>
-                {
-                    LastLoadedDiagram = diagramName;
-                    LoadDiagram(diagram);
-
-                });
-            }
-            menu.AddSeparator("");
-            menu.AddItem(new GUIContent("Force Refresh"),false,()=> { uFrameEditor.CurrentProject.Refresh(); } );
-            menu.ShowAsContext();
         }
 
-        public IEnumerable<object> ContextObjects
+        private void UndoRedoPerformed()
         {
-            get
-            {
-                yield return this;
-                if (DiagramDrawer != null)
-                {
-                    foreach (var co in DiagramDrawer.ContextObjects)
-                    {
-                        yield return co;
-                    }
-                }
-            }
+            DiagramDrawer = null;
         }
 
-        public Event LastEvent { get; set; }
-        public Event LastMouseDownEvent { get; set; }
-        public void CommandExecuted(IEditorCommand command)
-        {
-            if (DiagramDrawer != null)
-            {
-                DiagramDrawer.Refresh();
-            }
-            
-        }
+        //public void LoadDiagramByName(string diagramName)
+        //{
+        //    var repos = uFrameEditor.Container.ResolveAll<IProjectRepository>();
+        //    var diagrams = repos.SelectMany(p => p.GetProjectDiagrams()).ToDictionary(p => p.Key, p => p.Value);
+        //    if (diagrams.ContainsKey(diagramName))
+        //        LoadDiagram(diagrams[diagramName]);
 
-        public void CommandExecuting(IEditorCommand command)
-        {
-
-        }
+        //    //var diagram = UFrameAssetManager.Diagrams.FirstOrDefault(p => p.Name == diagramName);
+        //    //if (diagram == null) return;
+        //    //LoadDiagram(diagram);
+        //}
     }
 }
 
-public class MouseEvent
-{
-    private Stack<IInputHandler> _inputHandlers;
-    public ModifierKeyState ModifierKeyStates { get; set; }
-
-    public MouseEvent(ModifierKeyState modifierKeyStates,IInputHandler defaultHandler)
-    {
-        ModifierKeyStates = modifierKeyStates;
-        DefaultHandler = defaultHandler;
-    }
-
-    public void Begin(IInputHandler handler)
-    {
-        if (handler != null)
-        {
-            InputHandlers.Push(handler);
-        }
-    }
-    public void Cancel()
-    {
-        if (this.InputHandlers.Count > 0)
-            this.InputHandlers.Pop();
-    }
-    public IInputHandler CurrentHandler
-    {
-        get
-        {
-            if (InputHandlers.Count < 1)
-                return DefaultHandler;
-            return InputHandlers.Peek();
-        }
-    }
-    public Stack<IInputHandler> InputHandlers
-    {
-        get { return _inputHandlers ?? (_inputHandlers = new Stack<IInputHandler>()); }
-        set { _inputHandlers = value; }
-    }
-
-    public Vector2 MousePosition { get; set; }
-    public bool IsMouseDown { get; set; }
-    public Vector2 LastMousePosition { get; set; }
-    public Vector2 MouseDownPosition { get; set; }
-    public Vector2 MouseUpPosition { get; set; }
-    public Vector2 MousePositionDelta { get; set; }
-
-    public IInputHandler DefaultHandler { get; set; }
-    public int MouseButton { get; set; }
-    public bool NoBubble { get; set; }
-}
-
-public class ModifierKeyState
-{
-    public bool Shift { get; set; }
-    public bool Alt { get; set; }
-    public bool Ctrl { get; set; }
-}

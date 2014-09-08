@@ -54,6 +54,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
 
                 _propertiesHeader.Label = "Properties";
                 _propertiesHeader.HeaderType = typeof (ViewModelPropertyData);
+                if (NodeViewModel.IsLocal)
                 _propertiesHeader.AddCommand = Container.Resolve<AddElementPropertyCommand>();
             }
             return _propertiesHeader;
@@ -84,6 +85,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
                 _collectionsHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
                 _collectionsHeader.Label = "Collections";
                 _collectionsHeader.HeaderType = typeof (ViewModelCollectionData);
+                if (NodeViewModel.IsLocal)
                 _collectionsHeader.AddCommand = Container.Resolve<AddElementCollectionCommand>();
             }
             return _collectionsHeader;
@@ -100,6 +102,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
                 _commandsHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
                 _commandsHeader.Label = "Commands";
                 _commandsHeader.HeaderType = typeof(ViewModelCommandData);
+                if (NodeViewModel.IsLocal)
                 _commandsHeader.AddCommand = Container.Resolve<AddElementCommandCommand>();
             }
             return _commandsHeader;

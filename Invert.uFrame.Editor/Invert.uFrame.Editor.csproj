@@ -123,6 +123,8 @@
     <Compile Include="Nodes\ViewComponents\ViewComponentNodeViewModel.cs" />
     <Compile Include="ElementDesigner\ViewModels\ViewModel.cs" />
     <Compile Include="Nodes\Views\ViewNodeViewModel.cs" />
+    <Compile Include="Windows\ModifierKeyState.cs" />
+    <Compile Include="Windows\MouseEvent.cs" />
     <Compile Include="Windows\SearchableScrollWindow.cs" />
     <Compile Include="ElementDesigner\Commands\Elements\MarkIsMultiInstanceCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Elements\MarkIsYieldCommand.cs" />

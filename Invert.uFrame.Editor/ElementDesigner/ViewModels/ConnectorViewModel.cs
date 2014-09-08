@@ -15,6 +15,12 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public override Vector2 Position { get; set; }
 
+        public override string Name
+        {
+            get { return ConnectorFor.Name; }
+            set { }
+        }
+
         public Action<ConnectionViewModel> ApplyConnection { get; set; }
 
         public ConnectorDirection Direction { get; set; }

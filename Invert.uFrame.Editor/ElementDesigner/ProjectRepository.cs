@@ -22,20 +22,19 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     }
 
     protected string[] _diagramNames;
-    
-    private uFrameProject[] _projects;
 
     [SerializeField]
     protected List<JsonElementDesignerData> _diagrams;
+
     [SerializeField]
     private string _outputDirectory;
+
+    private JsonElementDesignerData _currentDiagram;
 
     public void RecacheAssets()
     {
         
     }
-
-    
 
     public Dictionary<string, string> GetProjectDiagrams()
     {
@@ -51,7 +50,11 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public void CreateNewDiagram()
     {
-        _diagrams.Add(UFrameAssetManager.CreateAsset<JsonElementDesignerData>());
+        Selection.activeObject = this;
+        var diagram = UFrameAssetManager.CreateAsset<JsonElementDesignerData>();
+        Diagrams.Add(diagram);
+        CurrentDiagram = diagram;
+        Refresh();
     }
     public virtual Type RepositoryFor
     {
@@ -102,36 +105,42 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
             return CurrentDiagram.CurrentFilter;
         }
     }
-
+    public string LastLoadedDiagram
+    {
+        get { return EditorPrefs.GetString("UF_LastLoadedDiagram" + this.name, string.Empty); }
+        set { EditorPrefs.SetString("UF_LastLoadedDiagram" + this.name, value); }
+    }
     public List<JsonElementDesignerData> Diagrams
     {
         get
         {
             if (_diagrams == null)
             {
-                Refresh();
+               _diagrams = new List<JsonElementDesignerData>();
             }
             return _diagrams;
         }
         set { _diagrams = value; }
     }
 
-    public INodeRepository CurrentDiagram
-    {
-        get; set;
-    }
-
-    public virtual string[] DiagramNames
+    public JsonElementDesignerData CurrentDiagram
     {
         get
         {
-            if (_diagramNames == null)
+            if (_currentDiagram == null)
             {
-                Refresh();
+                if (!String.IsNullOrEmpty(LastLoadedDiagram))
+                {
+                    _currentDiagram = Diagrams.FirstOrDefault(p => p.name == LastLoadedDiagram);
+                }
+                if (_currentDiagram == null)
+                {
+                    _currentDiagram = Diagrams.FirstOrDefault();
+                }
             }
-            return _diagramNames;
+            return _currentDiagram;
         }
-        set { _diagramNames = value; }
+        set { _currentDiagram = value; }
     }
 
     public string OutputDirectory
@@ -142,7 +151,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public IElementDesignerData LoadDiagram(string path)
     {
-        var data = AssetDatabase.LoadAssetAtPath(path, RepositoryFor) as IElementDesignerData;
+        var data = AssetDatabase.LoadAssetAtPath(path, RepositoryFor) as JsonElementDesignerData;
         if (data == null)
         {
             return null;
@@ -174,14 +183,14 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public virtual void Refresh()
     {
-        var assets = uFrameEditor.GetAssets(RepositoryFor);
-        Diagrams = assets.OfType<JsonElementDesignerData>().ToList();
+        //var assets = uFrameEditor.GetAssets(RepositoryFor);
+        //Diagrams = assets.OfType<JsonElementDesignerData>().ToList();
 
         foreach (var diagram in Diagrams)
         {
             diagram.Prepare();
         }
-        DiagramNames = Diagrams.Select(p => p.Name).ToArray();
+        
     }
 }
 

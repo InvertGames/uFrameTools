@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class EnumData : DiagramNode
+public class EnumData : DiagramNode,IDesignerType
 {
     
     [SerializeField]
@@ -35,18 +35,6 @@ public class EnumData : DiagramNode
     public override bool EndEditing()
     {
         if (!base.EndEditing()) return false;
-        foreach (var item in Data.GetElements().SelectMany(p => p.Properties).Where(p => p.RelatedTypeName == OldName))
-        {
-            item.RelatedType = AssemblyQualifiedName;
-        }
-        foreach (var item in Data.GetElements().SelectMany(p => p.Commands).Where(p => p.RelatedTypeName == OldName))
-        {
-            item.RelatedType = AssemblyQualifiedName;
-        }
-        foreach (var item in Data.GetElements().SelectMany(p => p.Collections).Where(p => p.RelatedTypeName == OldName))
-        {
-            item.RelatedType = AssemblyQualifiedName;
-        }
         return true;
     }
 

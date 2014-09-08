@@ -35,6 +35,7 @@ public class DiagramEnumDrawer : DiagramNodeDrawer<EnumNodeViewModel>
                 _itemsHeader = Container.Resolve<NodeItemHeader>(null,false,ViewModel);
                 _itemsHeader.Label = "Items";
                 _itemsHeader.HeaderType = typeof(EnumData);
+                if (NodeViewModel.IsLocal)
                 _itemsHeader.AddCommand = Container.Resolve<AddEnumItemCommand>();
             }
 

@@ -1,6 +1,7 @@
 using Invert.Common;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
+using UnityEditor;
 using UnityEngine;
 
 public class ConnectorDrawer : Drawer<ConnectorViewModel>
@@ -74,6 +75,12 @@ public class ConnectorDrawer : Drawer<ConnectorViewModel>
             mouseEvent.NoBubble = true;
             return;
         }
+    }
+
+    public override void OnRightClick(MouseEvent mouseEvent)
+    {
+        base.OnRightClick(mouseEvent);
+        
     }
 
     public override void Draw(float scale)

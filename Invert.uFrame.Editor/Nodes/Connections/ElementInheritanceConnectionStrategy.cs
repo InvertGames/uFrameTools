@@ -13,7 +13,7 @@ namespace Invert.uFrame.Editor.Nodes
 
         protected override bool IsConnected(ElementData outputData, ElementData inputData)
         {
-            return inputData.BaseTypeShortName == outputData.Name;
+            return inputData.BaseIdentifier == outputData.Identifier;
         }
 
         protected override void ApplyConnection(ElementData output, ElementData input)

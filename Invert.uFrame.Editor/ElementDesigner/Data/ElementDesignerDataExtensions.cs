@@ -249,7 +249,7 @@ public static class ElementDesignerDataExtensions
         //    designerData.Links.AddRange(viewModelData.GetLinks(diagramItems));
         //}
     }
-    public static IEnumerable<ElementDataBase> GetAssociatedElementsInternal(this INodeRepository designerData, ElementDataBase data)
+    public static IEnumerable<ElementDataBase> GetAssociatedElementsInternal(this INodeRepository designerData, ElementData data)
     {
         var derived = GetAllBaseItems(designerData, data);
         foreach (var viewModelItem in derived)
@@ -271,7 +271,7 @@ public static class ElementDesignerDataExtensions
         return filter.FilterItems(designerData.NodeItems);
     }
 
-    public static IEnumerable<IViewModelItem> GetAllBaseItems(this INodeRepository designerData, ElementDataBase data)
+    public static IEnumerable<IViewModelItem> GetAllBaseItems(this INodeRepository designerData, ElementData data)
     {
         var current = data;
         while (current != null)
@@ -284,20 +284,20 @@ public static class ElementDesignerDataExtensions
                 }
             }
 
-            current = designerData.GetAllElements().FirstOrDefault(p => p.AssemblyQualifiedName == current.BaseTypeName);
+            current = designerData.GetAllElements().FirstOrDefault(p => p.Identifier == current.BaseIdentifier);
         }
     }
 
-    public static ElementDataBase[] GetAssociatedElements(this INodeRepository designerData, ElementDataBase data)
+    public static ElementDataBase[] GetAssociatedElements(this INodeRepository designerData, ElementData data)
     {
         return GetAssociatedElementsInternal(designerData, data).Concat(new[] { data }).Distinct().ToArray();
     }
 
     public static IDiagramNode RelatedNode(this IViewModelItem item)
     {
-        return item.Node.Data.NodeItems.FirstOrDefault(p => p.Name == item.RelatedTypeName);
+        return item.Node.Data.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
     }
-    public static ElementDataBase GetElement(this INodeRepository designerData, IViewModelItem item)
+    public static ElementData GetElement(this INodeRepository designerData, IViewModelItem item)
     {
         
         if (item.RelatedTypeName == null)

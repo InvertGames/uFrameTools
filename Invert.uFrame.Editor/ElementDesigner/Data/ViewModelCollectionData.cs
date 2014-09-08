@@ -21,11 +21,11 @@ public class ViewModelCollectionData : DiagramNodeItem, IViewModelItem
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
+
         _itemType = cls["ItemType"].Value;
 
     }
 
-    [SerializeField]
     private string _itemType;
 
     public bool AllowEmptyRelatedType
@@ -42,14 +42,14 @@ public class ViewModelCollectionData : DiagramNodeItem, IViewModelItem
         }
     }
 
-    public void SetType(ElementData input)
+    public void SetType(IDesignerType input)
     {
-        this.RelatedType = input.AssemblyQualifiedName;
+        this.RelatedType = input.Identifier;
     }
 
     public void RemoveType()
     {
-        this.RelatedType = typeof (string).AssemblyQualifiedName;
+        this.RelatedType = typeof (string).Name;
     }
 
     public string FieldName
@@ -64,8 +64,11 @@ public class ViewModelCollectionData : DiagramNodeItem, IViewModelItem
 
     public Type ItemType
     {
-        get { return Type.GetType(_itemType); }
-        set { _itemType = value.AssemblyQualifiedName; }
+        get
+        {
+            
+            return Type.GetType(_itemType);
+        }
     }
 
     public override string Label
@@ -121,7 +124,12 @@ public class ViewModelCollectionData : DiagramNodeItem, IViewModelItem
     {
         get
         {
-            return RelatedType.Split(',').FirstOrDefault() ?? "No Type";
+            var relatedNode = this.RelatedNode();
+            if (relatedNode != null)
+            {
+                return relatedNode.Name;
+            }
+            return RelatedType ?? string.Empty;
         }
     }
 

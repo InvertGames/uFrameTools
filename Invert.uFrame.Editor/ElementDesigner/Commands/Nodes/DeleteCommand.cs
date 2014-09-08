@@ -66,7 +66,9 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
         public override string CanPerform(DiagramViewModel diagram)
         {
-            return diagram.SelectedNode != null ? null : "Select something first.";
+            if (diagram.SelectedNode == null) return "Select something first.";
+            if (!diagram.SelectedNode.IsLocal) return "Must be local to delete. Use hide instead.";
+            return null;
         }
     }
 }

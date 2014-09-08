@@ -53,13 +53,9 @@ public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializea
     {
         get
         {
-            if (_type == null)
-            {
-                return typeof(string);
-            }
+            if (string.IsNullOrEmpty(_type)) return null;
             return Type.GetType(_type);
         }
-        set { _type = value.AssemblyQualifiedName; }
     }
 
     public object DefaultValue { get; set; }
@@ -124,8 +120,11 @@ public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializea
     {
         get
         {
+            var relatedNode = this.RelatedNode();
+            if (relatedNode != null)
+                return relatedNode.Name;
 
-            return RelatedType.Split(',').FirstOrDefault() ?? "No Type";
+            return RelatedType;
         }
     }
 
@@ -147,14 +146,14 @@ public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializea
         }
     }
 
-    public void SetType(ElementData input)
+    public void SetType(IDesignerType input)
     {
-        this.RelatedType = input.AssemblyQualifiedName;
+        this.RelatedType = input.Identifier;
     }
 
     public void RemoveType()
     {
-        this.RelatedType = typeof(string).AssemblyQualifiedName;
+        this.RelatedType = typeof(string).Name;
     }
 
     public string FieldName

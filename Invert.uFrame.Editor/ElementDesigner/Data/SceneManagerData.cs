@@ -39,7 +39,7 @@ public class SceneManagerData : DiagramNode
     {
         get
         {
-            return Type.GetType(uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsSettings));
+            return Type.GetType(uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsSettings));
         }
     }
 
@@ -47,7 +47,7 @@ public class SceneManagerData : DiagramNode
     {
         get
         {
-            return Type.GetType(uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsSceneManager));
+            return Type.GetType(uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsSceneManager));
         }
     }
 

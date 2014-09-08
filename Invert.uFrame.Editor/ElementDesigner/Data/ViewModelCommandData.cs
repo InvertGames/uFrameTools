@@ -47,9 +47,9 @@ public class ViewModelCommandData : DiagramNodeItem, IViewModelItem
         }
     }
 
-    public void SetType(ElementData input)
+    public void SetType(IDesignerType input)
     {
-        this.RelatedType = input.AssemblyQualifiedName;
+        this.RelatedType = input.Identifier;
     }
 
     public void RemoveType()
@@ -143,9 +143,11 @@ public class ViewModelCommandData : DiagramNodeItem, IViewModelItem
     {
         get
         {
-            if (string.IsNullOrEmpty(RelatedType))
-                return null;
-            return RelatedType.Split(',').FirstOrDefault() ?? "No Type";
+            var relatedNode = this.RelatedNode();
+            if (relatedNode != null)
+                return relatedNode.Name;
+
+            return RelatedType;
         }
     }
 
@@ -172,7 +174,6 @@ public class ViewModelCommandData : DiagramNodeItem, IViewModelItem
             data.Dirty = true;
         }
     }
-
 
     public override void Rename(IDiagramNode data, string name)
     {

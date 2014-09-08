@@ -8,6 +8,6 @@ public interface IViewModelItem : IDiagramNodeItem, IRefactorable,IItem
     string RelatedTypeName { get; }
     bool AllowEmptyRelatedType { get;  }
     IEnumerable<string> BindingMethodNames { get; }
-    void SetType(ElementData input);
+    void SetType(IDesignerType input);
     void RemoveType();
 }

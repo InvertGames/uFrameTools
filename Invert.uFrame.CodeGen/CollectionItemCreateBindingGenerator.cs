@@ -25,7 +25,7 @@ namespace Invert.uFrame.Code.Bindings
 
         public override void CreateMembers(CodeTypeMemberCollection collection)
         {
-            var createHandlerMethod = CreateMethodSignature(new CodeTypeReference(uFrameEditor.uFrameTypes.ViewBase),
+            var createHandlerMethod = CreateMethodSignature(new CodeTypeReference(uFrameEditor.UFrameTypes.ViewBase),
                 new CodeParameterDeclarationExpression(VarTypeName, VarName));
 
             if (GenerateDefaultImplementation)

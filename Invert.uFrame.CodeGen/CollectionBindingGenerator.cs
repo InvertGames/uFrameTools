@@ -53,7 +53,7 @@ namespace Invert.uFrame.Code.Bindings
             {
                 if (!HasField(collection, NameAsListField))
                 {
-                    var listField = CreateBindingField(uFrameEditor.uFrameTypes.ListOfViewModel.FullName.Replace("ViewModel", RelatedElement.NameAsViewBase), CollectionProperty.Name, "List", true);
+                    var listField = CreateBindingField(uFrameEditor.UFrameTypes.ListOfViewModel.FullName.Replace("ViewModel", RelatedElement.NameAsViewBase), CollectionProperty.Name, "List", true);
                     collection.Add(listField);
                 }
 

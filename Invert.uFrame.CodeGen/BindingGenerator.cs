@@ -48,7 +48,7 @@ namespace Invert.uFrame.Code.Bindings
                     "_" + propertyName + name) { Attributes = MemberAttributes.Public };
             if (!keepHidden)
             {
-                memberField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.uFrameTypes.UFGroup),
+                memberField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.UFGroup),
                     new CodeAttributeArgument(new CodePrimitiveExpression(propertyName))));
             }
 

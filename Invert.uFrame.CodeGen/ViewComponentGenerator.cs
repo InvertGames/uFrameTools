@@ -23,7 +23,7 @@ public class ViewComponentGenerator : ViewClassGenerator
         var baseComponent = componentData.Base;
 
         var ctr = baseComponent == null
-            ? new CodeTypeReference(uFrameEditor.uFrameTypes.ViewComponent)
+            ? new CodeTypeReference(uFrameEditor.UFrameTypes.ViewComponent)
             : new CodeTypeReference(baseComponent.Name);
 
 

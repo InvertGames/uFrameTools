@@ -39,37 +39,13 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         }
     }
 
-    public ElementData BaseElement { get { return Data.GetAllElements().FirstOrDefault(p => p.Name == BaseTypeShortName); } }
+    public ElementData BaseElement { get { return Data.GetAllElements().FirstOrDefault(p => p.Identifier == Identifier); } }
 
-    public abstract string BaseTypeName { get; set; }
-
-    public string BaseTypeShortName
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(BaseTypeName))
-            {
-                return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Split(',').FirstOrDefault();
-            }
-            return BaseTypeName.Split(',').FirstOrDefault();
-        }
-    }
+    public abstract string BaseTypeName { get; }
 
     public abstract ICollection<ViewModelCollectionData> Collections { get; set; }
 
     public abstract ICollection<ViewModelCommandData> Commands { get; set; }
-
-    public Type ControllerBaseType
-    {
-        get
-        {
-            if (IsDerived)
-            {
-                return Type.GetType(uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", BaseTypeShortName.Replace("ViewModel", "") + "ControllerBase"));
-            }
-            return Type.GetType(uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name.Replace("ViewModel", "") + "ControllerBase"));
-        }
-    }
 
     public string ControllerName
     {
@@ -78,15 +54,14 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
 
     public Type ControllerType
     {
-        get { return Type.GetType(uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name.Replace("ViewModel", "") + "Controller")); }
+        get { return uFrameEditor.FindType(NameAsController); }
     }
 
     public Type CurrentViewModelType
     {
         get
         {
-            var name = uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name.Replace("ViewModel", "") + "ViewModel");
-            return Type.GetType(name);
+            return uFrameEditor.FindType(NameAsViewModel);
         }
     }
 
@@ -94,7 +69,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
     {
         get
         {
-            var derived = Data.GetAllElements().Where(p => p.BaseTypeShortName == Name);
+            var derived = Data.GetAllElements().Where(p => p.BaseIdentifier == Identifier);
             foreach (var derivedItem in derived)
             {
                 yield return derivedItem;
@@ -220,7 +195,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
     {
         get
         {
-            return uFrameEditor.uFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsViewModel);
+            return uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsViewModel);
         }
     }
 
@@ -238,7 +213,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
     {
         if (typeName == null)
         {
-            return "[None]";
+            return " ";
         }
         if (TypeNameAliases.ContainsKey(typeName))
         {
@@ -250,7 +225,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
     public override void BeginEditing()
     {
         base.BeginEditing();
-        OldAssemblyName = AssemblyQualifiedName;
+        
     }
 
 
@@ -263,26 +238,6 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         if (Data.GetElements().Count(p => p.Name == newText || p.Name == OldName) > 1)
         {
             return false;
-        }
-        foreach (var item in Data.GetElements().Where(p => p.BaseTypeShortName == OldName))
-        {
-            item.BaseTypeName = AssemblyQualifiedName;
-        }
-        foreach (var item in Data.GetElements().SelectMany(p => p.Properties).Where(p => p.RelatedTypeName == OldName))
-        {
-            item.RelatedType = AssemblyQualifiedName;
-        }
-        foreach (var item in Data.GetElements().SelectMany(p => p.Commands).Where(p => p.RelatedTypeName == OldName))
-        {
-            item.RelatedType = AssemblyQualifiedName;
-        }
-        foreach (var item in Data.GetElements().SelectMany(p => p.Collections).Where(p => p.RelatedTypeName == OldName))
-        {
-            item.RelatedType = AssemblyQualifiedName;
-        }
-        foreach (var result in Data.GetViews().Where(p => p.ForAssemblyQualifiedName == OldAssemblyName))
-        {
-            result.ForAssemblyQualifiedName = AssemblyQualifiedName;
         }
         return true;
     }

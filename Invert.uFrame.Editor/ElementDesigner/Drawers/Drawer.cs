@@ -1,3 +1,4 @@
+using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 
 public class Drawer<TViewModel> : Drawer where TViewModel : GraphItemViewModel

@@ -9,6 +9,9 @@ namespace Invert.uFrame.Editor.ViewModels
             DataObject = data;
         }
 
-
+        public override ConnectorViewModel InputConnector
+        {
+            get { return null; }
+        }
     }
 }

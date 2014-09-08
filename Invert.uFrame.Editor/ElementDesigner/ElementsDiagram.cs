@@ -148,20 +148,6 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
 
     public Vector2 LastMouseUpPosition { get; set; }
 
-    //public INodeDrawer NodeAtMouse { get; set; }
-
-    //public IDrawer NodeDrawerAtMouse
-    //{
-    //    get { return _nodeDrawerAtMouse; }
-    //    set
-    //    {
-
-
-    //        _nodeDrawerAtMouse = value;
-
-    //    }
-    //}
-
     public Rect Rect { get; set; }
 
     public Vector2 SelectionOffset { get; set; }
@@ -231,13 +217,6 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         GUI.Box(new Rect(0, 0f, Rect.width, 30f), DiagramViewModel.Title, ElementDesignerStyles.DiagramTitle);
 
         string focusItem = null;
-
-        //var links = Data.Links.ToArray();
-        //foreach (var link in links)
-        //{
-        //    link.Draw(this);
-        //}
-
         // Draw all of our drawers
         foreach (var drawer in Children.OrderBy(p => p.ZOrder).ToArray())
         {
@@ -254,16 +233,10 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             drawer.Draw(Scale);
         }
 
-        //foreach (var link in links)
+        //if (focusItem != null)
         //{
-        //    //link.Draw(this);
-        //    link.DrawPoints(this);
+        //    EditorGUI.FocusTextInControl(focusItem);
         //}
-
-        if (focusItem != null)
-        {
-            EditorGUI.FocusTextInControl(focusItem);
-        }
 
         if (IsMouseDown)
         {
@@ -286,20 +259,8 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             LastDragPosition = CurrentMousePosition;
         }
 
-        //if (!DiagramViewModel.SelectedGraphItems.Any())
-        //{
-        //    SelectionRect = IsMouseDown ? CreateSelectionRect(LastMouseDownPosition, CurrentMousePosition) : new Rect(0f, 0f, 0f, 0f);
-        //}
-
-        //DrawSelectionRect(SelectionRect);
-
         DrawErrors();
         DrawHelp();
-
-        if (!EditorApplication.isCompiling)
-        {
-            //HandleInput();
-        }
     }
 
     public bool HandleKeyEvent(Event evt, ModifierKeyState keyStates)
@@ -346,16 +307,6 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         return false;
     }
 
-    //public void MouseEvent(Action<IDrawer> action)
-    //{
-    //    if (DrawersAtMouse == null) return;
-    //    foreach (var drawer in DrawersAtMouse)
-    //    {
-    //        action(drawer);
-    //    }
-
-    //}
-
     public override void OnMouseDoubleClick(MouseEvent mouseEvent)
     {
         BubbleEvent(d => d.OnMouseDoubleClick(mouseEvent), mouseEvent);
@@ -378,8 +329,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     public override void OnMouseDown(MouseEvent mouseEvent)
     {
         base.OnMouseDown(mouseEvent);
-        var selected = DrawersAtMouse.FirstOrDefault();
-
+        if (DrawersAtMouse == null) return;
         if (!DrawersAtMouse.Any())
         {
             DiagramViewModel.NothingSelected();
@@ -389,15 +339,13 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         else
         {
             BubbleEvent(d => d.OnMouseDown(mouseEvent), mouseEvent);
-
-
-
-
         }
     }
 
     public void BubbleEvent(Action<IDrawer> action, MouseEvent e)
     {
+        if (DrawersAtMouse == null) return;
+
         foreach (var item in DrawersAtMouse)
         {
             action(item);
@@ -408,6 +356,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             }
         }
     }
+
     public override void OnMouseMove(MouseEvent e)
     {
         base.OnMouseMove(e);
@@ -421,9 +370,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
                     item.ViewModel.Position += e.MousePositionDelta;
                     item.Refresh();
                 }
-
             }
-
         }
         else
         {
@@ -462,7 +409,6 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
 
     public IEnumerable<IDrawer> GetDrawersAtPosition(IDrawer parent, Vector2 point)
     {
-
         foreach (var child in parent.Children)
         {
             if (child.Bounds.Contains(point))
@@ -481,6 +427,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     }
     public override void OnMouseUp(MouseEvent mouseEvent)
     {
+
         BubbleEvent(d => d.OnMouseUp(mouseEvent), mouseEvent);
 
     }
@@ -488,18 +435,52 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     public override void OnRightClick(MouseEvent mouseEvent)
     {
         BubbleEvent(d => d.OnRightClick(mouseEvent), mouseEvent);
-        if (DiagramViewModel.SelectedNodeItem != null)
+        if (DrawersAtMouse == null)
         {
-            ShowItemContextMenu(DiagramViewModel.SelectedNodeItem);
+            ShowAddNewContextMenu(true);
+            return;
+
         }
-        else if (DiagramViewModel.SelectedNode != null)
+        var item = DrawersAtMouse.FirstOrDefault();
+        if (item != null)
         {
-            ShowContextMenu();
+            
+            if (item is DiagramNodeDrawer || item is HeaderDrawer)
+            {
+
+                ShowContextMenu();
+            }
+            else if (item is ItemDrawer)
+            {
+                ShowItemContextMenu(item);
+            }
+            else if (item is ConnectorDrawer)
+            {
+                var connector = item.ViewModelObject as ConnectorViewModel;
+
+                var connections =
+                    DiagramViewModel.GraphItems.OfType<ConnectionViewModel>()
+                        .Where(p => p.ConnectorA == connector || p.ConnectorB == connector).ToArray();
+                var a = new GenericMenu();
+                foreach (var connection in connections)
+                {
+                    ConnectionViewModel connection1 = connection;
+                    a.AddItem(new GUIContent("Disconnect: " + connection.Name),true, () =>
+                    {
+                        uFrameEditor.ExecuteCommand((v) => { connection1.Remove(connection1); });
+                        
+                    } );
+                }
+                a.ShowAsContext();
+            }
         }
         else
         {
+
             ShowAddNewContextMenu(true);
         }
+    
+      
     }
 
     public override void Refresh(Vector2 position)

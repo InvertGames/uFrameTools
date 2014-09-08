@@ -11,18 +11,32 @@ using Object = UnityEngine.Object;
 public class UFrameAssetManager : AssetPostprocessor
 {
 
-    [MenuItem("Assets/[u]Frame/New Element Diagram", false, 40)]
-    public static void NewJsonViewModelDiagram()
-    {
-        uFrameEditor.CurrentProject.CreateNewDiagram();
-    }
-
+    //[MenuItem("Assets/[u]Frame/New Element Diagram", false, 40)]
+    //public static void NewJsonViewModelDiagram()
+    //{
+    //    uFrameEditor.CurrentProject.CreateNewDiagram();
+    //}
     [MenuItem("Assets/[u]Frame/New uFrame Project", false, 40)]
-    public static void NewUframeProject()
+    public static void NewUFrameProject()
     {
         var project = CreateAsset<ProjectRepository>();
-        project.OutputDirectory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(project));
-        //project.n = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(project));
+        project.OutputDirectory = AssetDatabase.GetAssetPath(project);
+        project.CreateNewDiagram();
+        AssetDatabase.SaveAssets();
+        Refresh();
+
+    }
+    public static void NewUFrameProject(string name)
+    {
+        //var project = CreateAsset<ProjectRepository>("Assets/" + path);
+        AssetDatabase.CreateFolder("Assets", name);
+        var project = ScriptableObject.CreateInstance<ProjectRepository>();
+        AssetDatabase.CreateAsset(project, "Assets/" + name + "/" + name + ".asset");
+        project.OutputDirectory = "Assets/" + name + "/";
+        project.CreateNewDiagram();
+        Selection.activeObject = project;
+        Refresh();
+
     }
 
     /// <summary>
@@ -58,13 +72,15 @@ public class UFrameAssetManager : AssetPostprocessor
         String[] movedAssets,
         String[] movedFromAssetPaths)
     {
-
+        if (deletedAssets.Length > 0)
+            Refresh();
     }
 
 
 
     private static void Refresh()
     {
-
+        uFrameEditor.Projects = null;
+        uFrameEditor.CurrentProject = null;
     }
 }
