@@ -7,5 +7,12 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             DataObject = data;
         }
+        public override string TypeLabel
+        {
+            get
+            {
+                return ElementDataBase.TypeAlias(Data.RelatedTypeName);
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 namespace Invert.uFrame.Editor.ViewModels
 {
-    public class ElementItemViewModel : ItemViewModel<IViewModelItem>
+    public abstract class ElementItemViewModel : ItemViewModel<IViewModelItem>
     {
 
         public ElementItemViewModel(IViewModelItem viewModelItem, DiagramNodeViewModel nodeViewModel)
@@ -20,5 +20,7 @@ namespace Invert.uFrame.Editor.ViewModels
                 Data.RelatedType = value;
             }
         }
+
+        public abstract string TypeLabel { get; }
     }
 }

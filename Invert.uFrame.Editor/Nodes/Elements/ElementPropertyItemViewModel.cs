@@ -12,5 +12,13 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get { return ElementItem.IsComputed; }
         }
+
+        public override string TypeLabel
+        {
+            get
+            {
+                return ElementDataBase.TypeAlias(Data.RelatedTypeName);
+            }
+        }
     }
 }

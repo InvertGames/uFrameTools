@@ -8,7 +8,7 @@ public class ElementItemType
     public Type Type
     {
         get { return Type.GetType(AssemblyQualifiedName); }
-        set { AssemblyQualifiedName = value.AssemblyQualifiedName; }
+        set { AssemblyQualifiedName = value.Name; }
     }
 
     public string AssemblyQualifiedName { get; set; }

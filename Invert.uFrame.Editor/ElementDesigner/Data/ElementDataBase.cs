@@ -8,15 +8,13 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
 {
     public static Dictionary<string, string> TypeNameAliases = new Dictionary<string, string>()
     {
-        {"System.Int32","int"},
-        {"System.Boolean","bool"},
-        {"System.Char","char"},
-        {"System.Decimal","decimal"},
-        {"System.Double","double"},
-        {"System.Single","float"},
-        {"System.String","string"},
-        {"UnityEngine.Vector2","Vector2"},
-        {"UnityEngine.Vector3","Vector3"},
+        {"Int32","int"},
+        {"Boolean","bool"},
+        {"Char","char"},
+        {"Decimal","decimal"},
+        {"Double","double"},
+        {"Single","float"},
+        {"String","string"},
     };
 
     [SerializeField] protected bool _isMultiInstance;

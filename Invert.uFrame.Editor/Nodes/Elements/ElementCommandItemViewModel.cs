@@ -12,14 +12,20 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get
             {
-                return string.Format("{0} ({1})", Data.Name,
-                    ElementDataBase.TypeAlias(Data.RelatedTypeName) ?? string.Empty);
+                return Data.Name;
             }
         }
 
         public override Invert.uFrame.Editor.ViewModels.ConnectorViewModel InputConnector
         {
             get { return null; }
+        }
+        public override string TypeLabel
+        {
+            get
+            {
+                return ElementDataBase.TypeAlias(Data.RelatedTypeName);
+            }
         }
     }
 }

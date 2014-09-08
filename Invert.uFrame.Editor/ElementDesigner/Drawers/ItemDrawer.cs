@@ -90,6 +90,10 @@ public class ItemDrawer : Drawer
 
     }
 
+    public virtual void DrawOption()
+    {
+        
+    }
     public override void Draw(float scale)
     {
         base.Draw(scale);
@@ -100,7 +104,7 @@ public class ItemDrawer : Drawer
             GUILayout.BeginArea(Bounds);
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.BeginHorizontal();
-
+            DrawOption();
             GUI.SetNextControlName(ItemViewModel.Name);
             var newName = EditorGUILayout.TextField(ItemViewModel.Name, ElementDesignerStyles.ClearItemStyle);
             if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
@@ -118,18 +122,20 @@ public class ItemDrawer : Drawer
         }
         else
         {
-
+          
             GUI.Box(Bounds.Scale(scale), string.Empty, SelectedItemStyle);
-
+            GUILayout.BeginArea(Bounds);
+            EditorGUILayout.BeginHorizontal();
+            DrawOption();
             var style = new GUIStyle(TextStyle);
             style.normal.textColor = BackgroundStyle.normal.textColor;
-            GUI.Label(Bounds.Scale(scale), ItemViewModel.Name, style);
-
+            GUILayout.Label(ItemViewModel.Name, style);
+            EditorGUILayout.EndHorizontal();
+            GUILayout.EndArea();
         }
         if (!string.IsNullOrEmpty(ItemViewModel.Highlighter))
         {
-            var highlighterPosition = new Rect(Bounds);
-            highlighterPosition.width = 4;
+            var highlighterPosition = new Rect(Bounds) {width = 4};
             highlighterPosition.y += 2;
             highlighterPosition.x += 2;
             highlighterPosition.height = Bounds.height - 6;

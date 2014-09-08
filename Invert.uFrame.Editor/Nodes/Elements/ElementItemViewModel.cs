@@ -1,6 +1,6 @@
 namespace Invert.uFrame.Editor.ViewModels
 {
-    public class ElementItemViewModel<TElementItem> : ElementItemViewModel
+    public abstract class ElementItemViewModel<TElementItem> : ElementItemViewModel
     {
         public TElementItem ElementItem
         {
