@@ -7,8 +7,8 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
 {
     public override IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
-        
-        yield return CreateDesignerControllerGenerator(codePathStrategy,diagramData,item);
+
+        yield return CreateDesignerControllerGenerator(codePathStrategy, diagramData, item);
         yield return CreateEditableControllerGenerator(codePathStrategy, diagramData, item);
         yield return CreateDesignerViewModelGenerator(codePathStrategy, diagramData, item);
         yield return CreateEditableViewModelGenerator(codePathStrategy, diagramData, item);

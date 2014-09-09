@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Invert.MVVM;
 using Invert.uFrame.Code.Bindings;
@@ -13,6 +14,7 @@ namespace Invert.uFrame.Editor.ViewModels
     public class ViewNodeViewModel : DiagramNodeViewModel<ViewData>
     {
         private string _preview;
+        private BindingDiagramItem[] _bindings;
 
         public ViewNodeViewModel(ViewData data, DiagramViewModel diagramViewModel)
             : base(data, diagramViewModel)
@@ -62,6 +64,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             GraphItem.NewBindings.Add(lastSelected);
             Preview = null;
+            _bindings = null;
         }
 
         public IEnumerable<IBindingGenerator> BindingGenerators
@@ -79,11 +82,44 @@ namespace Invert.uFrame.Editor.ViewModels
                 return GraphItem.BindingMethods;
             }
         }
+        public BindingDiagramItem[] Bindings
+        {
+            get
+            {
+                if (_bindings == null)
+                {
+                var existing =
+                    GraphItem.BindingMethods.Select(p => (new BindingDiagramItem(this, p.Name) {View = GraphItem ,MethodInfo = p}));
+                var adding =
+                    GraphItem.NewBindings.Select(p => (new BindingDiagramItem(this, "[Added] " + p.MethodName) { View = GraphItem, Generator = p }));
+                    _bindings = existing.Concat(adding).ToArray();
+                }
+                return _bindings;
+            }
+        }
+
+        public IEnumerable<ViewPropertyData> Properties
+        {
+            get { return GraphItem.Properties; }
+        }
 
         public void RemoveBinding(IBindingGenerator item)
         {
+            
             GraphItem.NewBindings.Remove(item);
             Preview = null;
+            _bindings = null;
+        }
+
+        public void AddProperty(ViewPropertyData viewPropertyData)
+        {
+            viewPropertyData.Node = GraphItem;
+            GraphItem.Properties.Add(viewPropertyData);
+        }
+
+        public void RemoveProperty(MemberInfo memberInfo)
+        {
+            GraphItem.Properties.RemoveAll(p => p.MemberInfo == memberInfo);
         }
     }
 }

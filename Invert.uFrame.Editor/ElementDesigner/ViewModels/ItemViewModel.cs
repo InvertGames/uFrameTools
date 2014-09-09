@@ -90,4 +90,11 @@ namespace Invert.uFrame.Editor.ViewModels
             IsEditing = true;
         }
     }
+
+    public class BindingViewModel : ItemViewModel
+    {
+        public BindingViewModel(DiagramNodeViewModel nodeViewModel) : base(nodeViewModel)
+        {
+        }
+    }
 }

@@ -35,11 +35,11 @@ public class NodeItemHeader : Drawer<DiagramNodeViewModel>
     public override void Refresh(Vector2 position)
     {
         base.Refresh(position);
-     
 
-        
 
-        Bounds = new Rect(position.x, position.y,100,25);
+        var width = ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(Label)).x + 20;
+
+        Bounds = new Rect(position.x, position.y, width, 25);
     }
 
     public Rect _AddButtonRect;

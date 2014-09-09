@@ -1,12 +1,13 @@
 using System.Linq;
 using System.Reflection;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class AddViewPropertyCommand : EditorCommand<ViewData>
+    public class AddViewPropertyCommand : EditorCommand<ViewNodeViewModel>
     {
-        public override void Perform(ViewData node)
+        public override void Perform(ViewNodeViewModel node)
         {
             var quickFind = new MemberInfo[]
             {
@@ -26,22 +27,22 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             };
             uFrameComponentSearchWindow.ShowWindow((w,m) =>
             {
-                node.Properties.Add(new ViewPropertyData()
+                node.AddProperty(new ViewPropertyData()
                 {
-                    Node = node,
                     Name = m.Name,
                     ComponentProperty = m.Name,
                     ComponentTypeName = m.DeclaringType.FullName
                 });
 
+
             }, (w,m) =>
             {
-                node.Properties.RemoveAll(p=>p.MemberInfo == m);
+                node.RemoveProperty(m);
             },node.Properties.Select(p=>p.MemberInfo).ToArray(),quickFind);
            
         }
 
-        public override string CanPerform(ViewData node)
+        public override string CanPerform(ViewNodeViewModel node)
         {
             if (node == null) return "Arg can't be null";
             return null;

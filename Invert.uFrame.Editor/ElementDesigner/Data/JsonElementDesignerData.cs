@@ -83,6 +83,8 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         get { return Regex.Replace(name, "[^a-zA-Z0-9_.]+", ""); }
     }
 
+    public string Namespace { get; set; }
+
     public string Version { get; set; }
 
     public int RefactorCount { get; set; }

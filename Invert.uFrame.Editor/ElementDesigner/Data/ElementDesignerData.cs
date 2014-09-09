@@ -95,6 +95,8 @@ public class ElementDesignerData : ScriptableObject,  IElementDesignerData
     private ElementDiagramSettings _settings;
     [SerializeField]
     private FilterState _filterState = new FilterState();
+    [SerializeField]
+    private string _ns;
 
 
     public IEnumerable<IDiagramNode> AllDiagramItems
@@ -128,6 +130,12 @@ public class ElementDesignerData : ScriptableObject,  IElementDesignerData
         {
             return Regex.Replace(name, "[^a-zA-Z0-9_.]+", "");
         }
+    }
+
+    public string Namespace
+    {
+        get { return _ns; }
+        private set { _ns = value; }
     }
 
     public int RefactorCount { get; set; }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using Invert.Common;
+using Invert.Common.UI;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ElementDesigner;
@@ -10,7 +12,31 @@ using Invert.uFrame.Editor.Refactoring;
 using UnityEditor;
 using UnityEngine;
 using Object = System.Object;
+[CustomEditor(typeof(ProjectRepository))]
+public class ProjectRepositoryInspector : Editor
+{
+    private TypeMapping[] _generators;
 
+    public ProjectRepository Target
+    {
+        get { return target as ProjectRepository; }
+    }
+
+    public TypeMapping[] CodeGenerators
+    {
+        get { return _generators ?? (_generators = uFrameEditor.Container.Mappings.Where(p=>p.From == typeof(DesignerGeneratorFactory)).ToArray()); }
+    }
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        foreach (var a in CodeGenerators)
+        {
+            GUIHelpers.DoTriggerButton(new UFStyle(a.To.Name, UBStyles.IncludeTriggerBackgroundStyle));
+
+        }
+
+    }
+}
 public class ProjectRepository : ScriptableObject, IProjectRepository
 {
 
@@ -30,6 +56,8 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     private string _outputDirectory;
 
     private JsonElementDesignerData _currentDiagram;
+    [SerializeField]
+    private string _ns;
 
     public void RecacheAssets()
     {
@@ -64,6 +92,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     public string Name
     {
         get { return name; }
+    }
+
+    public string Namespace
+    {
+        get { return _ns; }
+        set { _ns = value; }
     }
 
     public IEnumerable<IDiagramNode> NodeItems

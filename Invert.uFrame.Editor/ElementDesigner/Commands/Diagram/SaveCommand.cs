@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Invert.uFrame.Editor.Refactoring;
 using UnityEditor;
+using UnityEngine;
 
 namespace Invert.uFrame.Editor.ElementDesigner
 {
@@ -22,14 +23,25 @@ namespace Invert.uFrame.Editor.ElementDesigner
 
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
 
-            var fileGenerators = uFrameEditor.GetAllFileGenerators().ToArray();
-            
+            var fileGenerators = uFrameEditor.GetAllFileGenerators(uFrameEditor.CurrentProject).ToArray();
+            Debug.Log(string.Format("{0} file generators", fileGenerators.Length));
             foreach (var codeFileGenerator in fileGenerators)
             {
+                UnityEngine.Debug.Log(codeFileGenerator.Filename);
+            }
+        
+            foreach (var codeFileGenerator in fileGenerators)
+            {
+               
                 // Grab the information for the file
                 var fileInfo = new FileInfo(System.IO.Path.Combine(diagram.Data.Settings.CodePathStrategy.AssetPath, codeFileGenerator.Filename));
                 // Make sure we are allowed to generate the file
-                if (!codeFileGenerator.CanGenerate(fileInfo)) continue;
+                if (!codeFileGenerator.CanGenerate(fileInfo))
+                {
+                    Debug.Log("Can't generate " + fileInfo.FullName);
+                    continue;
+                }
+              
                 // Get the path to the directory
                 var directory = System.IO.Path.GetDirectoryName(fileInfo.FullName);
                 // Create it if it doesn't exist
@@ -37,9 +49,14 @@ namespace Invert.uFrame.Editor.ElementDesigner
                 {
                     Directory.CreateDirectory(directory);
                 }
+                try { 
                 // Write the file
                 File.WriteAllText(fileInfo.FullName, codeFileGenerator.ToString());
-                //Debug.Log("Created file: " + fileInfo.FullName);
+                    } catch(Exception ex)
+                {
+                    Debug.LogError(ex);
+                        Debug.Log("Coudln't create file " + fileInfo.FullName);
+                }
 
             }
             foreach (var allDiagramItem in diagram.Data.NodeItems)

@@ -256,6 +256,7 @@ namespace Invert.uFrame.Editor.ViewModels
         }
 
 
+
         public void BeginEditing()
         {
             GraphItemObject.BeginEditing();

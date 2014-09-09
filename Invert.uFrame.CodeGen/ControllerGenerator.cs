@@ -147,7 +147,7 @@ public class ControllerGenerator : CodeGenerator
 
         if (IsDesignerFile)
         {
-            AddDependencyControllers(tDecleration, data);
+            //AddDependencyControllers(tDecleration, data);
             tDecleration.Name = data.NameAsControllerBase;
             tDecleration.TypeAttributes = TypeAttributes.Abstract | TypeAttributes.Public;
             if (data.IsDerived)

@@ -44,6 +44,7 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
             {
                 _bindingsHeader = Container.Resolve<NodeItemHeader>();
                 _bindingsHeader.Label = "Bindings";
+                _bindingsHeader.ViewModelObject = ViewModel;
                 _bindingsHeader.HeaderType = typeof(string);
                 if (NodeViewModel.IsLocal)
                 _bindingsHeader.AddCommand = Container.Resolve<AddBindingCommand>();
@@ -60,8 +61,8 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
             if (_propertiesHeader == null)
             {
                 _propertiesHeader = Container.Resolve<NodeItemHeader>();
-
-                _propertiesHeader.Label = "2-Way Properties";
+                _propertiesHeader.ViewModelObject = ViewModel;
+                _propertiesHeader.Label = "Scene Properties";
 
                 _propertiesHeader.HeaderType = typeof(ViewModelPropertyData);
                 if (NodeViewModel.IsLocal)
@@ -88,8 +89,23 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
 
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
-        base.GetContentDrawers(drawers);
-        drawers.Insert(1,PropertiesHeader);
+        //base.GetContentDrawers(drawers);
+        drawers.Add(PropertiesHeader);
+        foreach (var item in ViewModel.ContentItems.OfType<ViewPropertyItemViewModel>())
+        {
+                var drawer = uFrameEditor.CreateDrawer(item);
+            if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
+            drawers.Add(drawer);
+        }
+
+        drawers.Add(BindingsHeader);
+
+        //foreach (var item in this.NodeViewModel.Bindings)
+        //{
+        //    var drawer = uFrameEditor.CreateDrawer(item);
+        //    if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
+        //    drawers.Add(drawer);
+        //}
         //if (NodeViewModel.GraphItem.BaseNode is ElementData)
         //{
         //    yield return new DiagramSubItemGroup()
