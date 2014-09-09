@@ -107,7 +107,7 @@ public class ElementDiagramSettingsWindow : EditorWindow
                         EditorApplication.SaveAssets();
                         
                         var newStrategy = uFrameEditor.Container.Resolve<ICodePathStrategy>(names[newIndex]);
-                        DesignerData.Settings.CodePathStrategy.MoveTo(newStrategy, names[newIndex], this.DesignerWindow);
+                        DesignerData.Settings.CodePathStrategy.MoveTo(DesignerData.CurrentRepository.GeneratorSettings, newStrategy, names[newIndex], this.DesignerWindow);
                     }
 
                 }

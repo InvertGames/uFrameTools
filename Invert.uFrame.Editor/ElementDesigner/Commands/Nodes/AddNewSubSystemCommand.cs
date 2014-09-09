@@ -16,7 +16,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                 Name = node.Data.GetUniqueName("New Sub System"),
                 Location = new Vector2(15, 15)
             };
-            node.Data.AddNode(data);
+            node.CurrentRepository.AddNode(data);
             //data.Location = node.LastMouseDownPosition;
         }
     }

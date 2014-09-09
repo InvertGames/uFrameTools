@@ -77,7 +77,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return uFrameEditor.GetAllCodeGenerators(Settings.CodePathStrategy, Data);
+            return uFrameEditor.GetAllCodeGenerators(CurrentRepository.GeneratorSettings, Settings.CodePathStrategy, Data);
         }
     }
     protected override void DataObjectChanged()
@@ -326,7 +326,7 @@ public class DiagramViewModel : ViewModel
 
     public void AddNode(IDiagramNode newNodeData)
     {
-        CurrentRepository.CurrentDiagram.AddNode(newNodeData);
+        CurrentRepository.AddNode(newNodeData);
         CurrentRepository.CurrentDiagram.CurrentFilter.Locations[newNodeData] = uFrameEditor.CurrentMouseEvent.MouseDownPosition;
     }
 }

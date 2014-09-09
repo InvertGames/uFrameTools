@@ -15,6 +15,7 @@ public interface INodeRepository
     IDiagramFilter CurrentFilter { get; }
 }
 
+
 public interface IElementFileData : INodeRepository
 {
        

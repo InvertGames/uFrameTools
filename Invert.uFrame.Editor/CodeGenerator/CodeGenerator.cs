@@ -55,6 +55,7 @@ namespace Invert.uFrame.Editor
 
         public Type GeneratorFor { get; set; }
         public object ObjectData { get; set; }
+        public GeneratorSettings Settings { get; set; }
 
         public void ProcessModifiers(CodeTypeDeclaration declaration)
         {

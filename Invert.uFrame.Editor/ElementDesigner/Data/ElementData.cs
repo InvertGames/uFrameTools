@@ -34,14 +34,8 @@ public interface IDesignerType
     string Identifier { get; }
 }
 [Serializable]
-public class ElementData : ElementDataBase, IDiagramFilter, IDesignerType
+public class ElementData : ElementDataBase, IDesignerType
 {
-    [SerializeField]
-    private string _baseIdentifier;
-
-    [SerializeField]
-    private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
-
     [SerializeField]
     private List<ViewModelCollectionData> _collections = new List<ViewModelCollectionData>();
 
@@ -50,9 +44,6 @@ public class ElementData : ElementDataBase, IDiagramFilter, IDesignerType
 
     [SerializeField]
     private bool _isTemplate;
-
-    [SerializeField]
-    private FilterLocations _locations = new FilterLocations();
 
     [SerializeField]
     private List<ViewModelPropertyData> _properties = new List<ViewModelPropertyData>();
@@ -96,12 +87,6 @@ public class ElementData : ElementDataBase, IDiagramFilter, IDesignerType
         {
             return ViewModelItems.SelectMany(p => p.BindingMethodNames);
         }
-    }
-
-    public FilterCollapsedDictionary CollapsedValues
-    {
-        get { return _collapsedValues; }
-        set { _collapsedValues = value; }
     }
 
     public override ICollection<ViewModelCollectionData> Collections
@@ -150,11 +135,6 @@ public class ElementData : ElementDataBase, IDiagramFilter, IDesignerType
         }
     }
 
-    public bool ImportedOnly
-    {
-        get { return true; }
-    }
-
     public override string InfoLabel
     {
         get { return string.Format("Items: [{0}] {1}", Locations.Keys.Count - 1, base.InfoLabel ?? string.Empty); }
@@ -164,12 +144,6 @@ public class ElementData : ElementDataBase, IDiagramFilter, IDesignerType
     {
         get { return _isTemplate; }
         set { _isTemplate = value; }
-    }
-
-    public FilterLocations Locations
-    {
-        get { return _locations; }
-        set { _locations = value; }
     }
 
     public string NameAsAssetClass
@@ -371,12 +345,6 @@ public class ElementData : ElementDataBase, IDiagramFilter, IDesignerType
         //        viewComponentData.ElementIdentifier = null;
         //    }
         //}
-    }
-
-    public string BaseIdentifier
-    {
-        get { return _baseIdentifier; }
-        set { _baseIdentifier = value; }
     }
 
 

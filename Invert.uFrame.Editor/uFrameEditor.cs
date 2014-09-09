@@ -210,7 +210,7 @@ namespace Invert.uFrame.Editor
             return null;
         }
 
-        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(ICodePathStrategy pathStrategy, INodeRepository diagramData)
+        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData)
         {
             // Grab all the code generators
             var diagramItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
@@ -221,9 +221,10 @@ namespace Invert.uFrame.Editor
                 // If its a generator for the entire diagram
                 if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
                 {
-                    var codeGenerators = generator.GetGenerators(pathStrategy, diagramData, diagramData);
+                    var codeGenerators = generator.GetGenerators(settings, pathStrategy, diagramData, diagramData);
                     foreach (var codeGenerator in codeGenerators)
                     {
+                        codeGenerator.Settings = settings;
                         codeGenerator.ObjectData = diagramData;
                         codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                         yield return codeGenerator;
@@ -236,9 +237,10 @@ namespace Invert.uFrame.Editor
 
                     foreach (var item in items)
                     {
-                        var codeGenerators = generator.GetGenerators(pathStrategy, diagramData, item);
+                        var codeGenerators = generator.GetGenerators(settings, pathStrategy, diagramData, item);
                         foreach (var codeGenerator in codeGenerators)
                         {
+                            codeGenerator.Settings = settings;
                             codeGenerator.ObjectData = item;
                             codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                             yield return codeGenerator;
@@ -248,14 +250,14 @@ namespace Invert.uFrame.Editor
             }
         }
 
-        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(ICodePathStrategy strategy = null)
+        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings,ICodePathStrategy strategy = null)
         {
-            return GetAllFileGenerators(CurrentProject, strategy);
+            return GetAllFileGenerators(settings, CurrentProject, strategy);
         }
 
-        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(INodeRepository diagramData, ICodePathStrategy strategy = null)
+        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings,INodeRepository diagramData, ICodePathStrategy strategy = null)
         {
-            var codeGenerators = GetAllCodeGenerators(strategy ?? diagramData.Settings.CodePathStrategy, diagramData).ToArray();
+            var codeGenerators = GetAllCodeGenerators(settings,strategy ?? diagramData.Settings.CodePathStrategy, diagramData).ToArray();
             var groups = codeGenerators.GroupBy(p => p.Filename);
             foreach (var @group in groups)
             {
@@ -621,6 +623,7 @@ namespace Invert.uFrame.Editor
         public static void Log(string s)
         {
 #if DEBUG
+            File.AppendAllText("uframe-log.txt", s + "\r\n\r\n");
             Debug.Log(s);
 #endif
         }

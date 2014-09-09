@@ -128,27 +128,38 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
 
             List<ElementData> rootElements = new List<ElementData>();
             List<ElementData> baseElements = new List<ElementData>();
+
             foreach (var element in elements)
             {
                 if (element.IsTemplate) continue;
-                decl.Members.Add(
-                    new CodeSnippetTypeMember(string.Format("public {0} {0} {{ get; set; }}", element.NameAsController)));
-                var property = new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), element.NameAsController);
+                if (Settings.GenerateControllers)
+                {
+                    decl.Members.Add(
+                        new CodeSnippetTypeMember(string.Format("public {0} {0} {{ get; set; }}",
+                            element.NameAsController)));
 
-                var assignProperty =
-                    new CodeAssignStatement(property,
-                        new CodeObjectCreateExpression(element.NameAsController)
-                        );
-                setupMethod.Statements.Add(new CodeSnippetExpression(string.Format("this.{0} = new {0}() {{ Container = Container, Context = Context }}", element.NameAsController)));
+                    var property = new CodePropertyReferenceExpression(new CodeThisReferenceExpression(),
+                       element.NameAsController);
 
-                var registerInstance = new CodeMethodInvokeExpression(
-                    new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Container"), "RegisterInstance");
-                registerInstance.Parameters.Add(
-                    new CodePropertyReferenceExpression(
-                        new CodeThisReferenceExpression(), element.NameAsController));
+                    var assignProperty =
+                        new CodeAssignStatement(property,
+                            new CodeObjectCreateExpression(element.NameAsController)
+                            );
 
-                registerInstance.Parameters.Add(new CodeSnippetExpression("false"));
-                setupMethod.Statements.Add(registerInstance);
+                    setupMethod.Statements.Add(new CodeSnippetExpression(string.Format("this.{0} = new {0}() {{ Container = Container, Context = Context }}", element.NameAsController)));
+
+                    var registerInstance = new CodeMethodInvokeExpression(
+                        new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Container"), "RegisterInstance");
+                    registerInstance.Parameters.Add(
+                        new CodePropertyReferenceExpression(
+                            new CodeThisReferenceExpression(), element.NameAsController));
+
+                    registerInstance.Parameters.Add(new CodeSnippetExpression("false"));
+                    setupMethod.Statements.Add(registerInstance);
+                }
+
+               
+             
 
                 if ((element.BaseElement == null || element.BaseElement.IsTemplate) && !element.IsMultiInstance && !element.IsTemplate)
                 {
@@ -171,8 +182,21 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
 
             foreach (var element in baseElements)
             {
-
-                setupMethod.Statements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>(SetupViewModel<{0}>({1}, \"{2}\"))", element.NameAsViewModel, element.NameAsController,element.RootElement.Name)));
+                if (Settings.GenerateControllers)
+                {
+                    setupMethod.Statements.Add(
+                        new CodeSnippetExpression(
+                            string.Format("Container.RegisterInstance<{0}>(SetupViewModel<{0}>({1}, \"{2}\"))",
+                                element.NameAsViewModel, element.NameAsController, element.RootElement.Name)));
+                }
+                else
+                {
+                    setupMethod.Statements.Add(
+                        new CodeSnippetExpression(
+                            string.Format("Container.RegisterInstance<{0}>(SetupViewModel<{0}>(null, \"{1}\"))",
+                                element.NameAsViewModel, element.RootElement.Name)));
+                }
+                
             }
 
             foreach (var element in rootElements)
@@ -187,9 +211,11 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                                 ), CodeBinaryOperatorType.ValueEquality,
                             new CodeSnippetExpression(string.Format("{0}.{1}",
                                 sceneManager.NameAsSceneManager + element.NameAsTypeEnum, derivedElement.Name))));
+
+
                     condition.TrueStatements.Add(
                         new CodeVariableDeclarationStatement(new CodeTypeReference(derivedElement.NameAsViewModel),
-                            derivedElement.NameAsVariable, new CodeSnippetExpression(string.Format("SetupViewModel<{1}>({0},\"{2}\")", derivedElement.NameAsController, derivedElement.NameAsViewModel,derivedElement.RootElement.Name))));
+                            derivedElement.NameAsVariable, new CodeSnippetExpression(string.Format("SetupViewModel<{1}>({0},\"{2}\")", Settings.GenerateControllers ? derivedElement.NameAsController : "null", derivedElement.NameAsViewModel,derivedElement.RootElement.Name))));
 
                     condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", derivedElement.NameAsViewModel, derivedElement.NameAsVariable)));
                     // TODO add a while here for each base type
@@ -199,7 +225,8 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                         //condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", baseType.NameAsController, derivedElement.NameAsController)));
                         //condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", element.NameAsController, baseType.NameAsController)));
                         condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", baseType.NameAsViewModel, derivedElement.NameAsVariable)));
-                        condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", baseType.NameAsController, derivedElement.NameAsController)));
+                        if (Settings.GenerateControllers)
+                            condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", baseType.NameAsController, derivedElement.NameAsController)));
                     }
 
 

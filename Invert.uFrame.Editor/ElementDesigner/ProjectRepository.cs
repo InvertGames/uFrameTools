@@ -100,7 +100,19 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         set { _ns = value; }
     }
 
+    private IDiagramNode[] _nodeItems;
+    [SerializeField]
+    private GeneratorSettings _generatorSettings;
+
     public IEnumerable<IDiagramNode> NodeItems
+    {
+        get
+        {
+            return _nodeItems ?? (_nodeItems = AllNodeItems.ToArray());
+        }
+    }
+
+    public IEnumerable<IDiagramNode> AllNodeItems
     {
         get
         {
@@ -113,7 +125,6 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
             }
         }
     }
-
     public ElementDiagramSettings Settings
     {
         get
@@ -124,11 +135,14 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public void AddNode(IDiagramNode data)
     {
+        _nodeItems = null;
         CurrentDiagram.AddNode(data);
+
     }
 
     public void RemoveNode(IDiagramNode enumData)
     {
+        _nodeItems = null;
         CurrentDiagram.RemoveNode(enumData);
     }
 
@@ -155,6 +169,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
             return _diagrams;
         }
         set { _diagrams = value; }
+    }
+
+    public GeneratorSettings GeneratorSettings
+    {
+        get { return _generatorSettings; }
+        set { _generatorSettings = value; }
     }
 
     public JsonElementDesignerData CurrentDiagram
@@ -228,6 +248,11 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     }
 }
 
+public interface INamespaceProvider
+{
+    string GetNamespace();
+}
+
 public interface ICodePathStrategy
 {
     /// <summary>
@@ -269,8 +294,8 @@ public interface ICodePathStrategy
     string GetEditableControllerFilename(ElementData controllerName);
     string GetEditableViewModelFilename(ElementData nameAsViewModel);
     string GetEnumsFilename(EnumData name);
-    
-    void MoveTo(ICodePathStrategy strategy,string name,ElementsDesigner designerWindow);
+
+    void MoveTo(GeneratorSettings settings, ICodePathStrategy strategy, string name, ElementsDesigner designerWindow);
 }
 
 public class DefaultCodePathStrategy : ICodePathStrategy
@@ -338,12 +363,12 @@ public class DefaultCodePathStrategy : ICodePathStrategy
         return GetViewModelsFileName(name.Data.Name);
     }
 
-    public virtual void MoveTo(ICodePathStrategy strategy, string name, ElementsDesigner designerWindow)
+    public virtual void MoveTo(GeneratorSettings settings, ICodePathStrategy strategy, string name, ElementsDesigner designerWindow)
     {
-        var sourceFiles = uFrameEditor.GetAllFileGenerators(this).ToArray();
+        var sourceFiles = uFrameEditor.GetAllFileGenerators(settings,this).ToArray();
         strategy.Data = Data;
         strategy.AssetPath = AssetPath;
-        var targetFiles = uFrameEditor.GetAllFileGenerators(strategy).ToArray();
+        var targetFiles = uFrameEditor.GetAllFileGenerators(settings, strategy).ToArray();
 
         if (sourceFiles.Length == targetFiles.Length)
         {

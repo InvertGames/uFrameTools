@@ -36,6 +36,8 @@ namespace Invert.uFrame.Editor
     {
         public override void Initialize(uFrameContainer container)
         {
+            uFrameEditor.RegisterKeyBinding(new RenameCommand(), "Rename", KeyCode.F2);
+
             uFrameEditor.RegisterKeyBinding(new DeleteItemCommand(), "Delete Item", KeyCode.X,true);
             uFrameEditor.RegisterKeyBinding(new DeleteCommand(), "Delete", KeyCode.Delete);
             uFrameEditor.RegisterKeyBinding(new MoveUpCommand(), "Move Up", KeyCode.UpArrow);

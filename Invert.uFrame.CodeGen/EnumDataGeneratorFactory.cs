@@ -3,7 +3,7 @@ using Invert.uFrame.Editor;
 
 public class EnumDataGeneratorFactory : DesignerGeneratorFactory<EnumData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy pathStrategy,INodeRepository diagramData, EnumData item)
+    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, EnumData item)
     {
         yield return new EnumCodeGenerator()
         {

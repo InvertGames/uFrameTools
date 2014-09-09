@@ -14,14 +14,6 @@ public static class ElementDesignerDataExtensions
     }
     public static IEnumerable<ElementData> GetAllElements(this INodeRepository t)
     {
-        if (t == null)
-        {
-            throw new Exception("Designer data can't be null.");
-        }
-        if (t.NodeItems == null)
-        {
-            throw new Exception("All diagram items is null.");
-        }
         return t.NodeItems.OfType<ElementData>();
     }
 

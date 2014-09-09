@@ -23,7 +23,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
 
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
 
-            var fileGenerators = uFrameEditor.GetAllFileGenerators(uFrameEditor.CurrentProject).ToArray();
+            var fileGenerators = uFrameEditor.GetAllFileGenerators(uFrameEditor.CurrentProject.GeneratorSettings, uFrameEditor.CurrentProject).ToArray();
             Debug.Log(string.Format("{0} file generators", fileGenerators.Length));
             foreach (var codeFileGenerator in fileGenerators)
             {
@@ -49,7 +49,8 @@ namespace Invert.uFrame.Editor.ElementDesigner
                 {
                     Directory.CreateDirectory(directory);
                 }
-                try { 
+                try {
+                    uFrameEditor.Log(string.Format("Writing file with {0} with filename {1}", codeFileGenerator.GetType().Name, codeFileGenerator.Filename));
                 // Write the file
                 File.WriteAllText(fileInfo.FullName, codeFileGenerator.ToString());
                     } catch(Exception ex)
@@ -78,7 +79,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
         {
             var refactorer = new RefactorContext(diagram.Data.GetRefactorings());
             
-            var files = uFrameEditor.GetAllFileGenerators().Where(p=>!p.Filename.EndsWith(".designer.cs")).Select(p => System.IO.Path.Combine(diagram.Data.Settings.CodePathStrategy.AssetPath, p.Filename)).ToArray();
+            var files = uFrameEditor.GetAllFileGenerators(diagram.CurrentRepository.GeneratorSettings).Where(p=>!p.Filename.EndsWith(".designer.cs")).Select(p => System.IO.Path.Combine(diagram.Data.Settings.CodePathStrategy.AssetPath, p.Filename)).ToArray();
 
             
             if (refactorer.Refactors.Count > 0)

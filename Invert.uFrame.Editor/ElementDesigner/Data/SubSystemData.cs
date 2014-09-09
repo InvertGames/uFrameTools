@@ -78,7 +78,7 @@ public static class SubsystemExtensions
     }
 }
 [Serializable]
-public class SubSystemData : DiagramNode, IDiagramFilter, ISubSystemData
+public class SubSystemData : DiagramNode, ISubSystemData
 {
     public override void Serialize(JSONClass cls)
     {
@@ -99,24 +99,11 @@ public class SubSystemData : DiagramNode, IDiagramFilter, ISubSystemData
     [SerializeField]
     private List<string> _imports = new List<string>();
 
-    [SerializeField]
-    private FilterLocations _locations = new FilterLocations();
-
-    public FilterCollapsedDictionary CollapsedValues
-    {
-        get { return _collapsedValues; }
-        set { _collapsedValues = value; }
-    }
 
     public override IEnumerable<IDiagramNodeItem> ContainedItems
     {
         get { yield break; }
         set { }
-    }
-
-    public bool ImportedOnly
-    {
-        get { return true; }
     }
 
     public virtual List<string> Imports
@@ -142,12 +129,6 @@ public class SubSystemData : DiagramNode, IDiagramFilter, ISubSystemData
     public override string Label
     {
         get { return Name; }
-    }
-
-    public FilterLocations Locations
-    {
-        get { return _locations; }
-        set { _locations = value; }
     }
 
 

@@ -55,6 +55,7 @@
     <Compile Include="CollectionItemCreateBindingGenerator.cs" />
     <Compile Include="CollectionItemRemovedBindingGenerator.cs" />
     <Compile Include="ControllerGenerator.cs" />
+    <Compile Include="ElementCodeGenerator.cs" />
     <Compile Include="ElementDataGeneratorFactory.cs" />
     <Compile Include="EnumCodeGenerator.cs" />
     <Compile Include="EnumDataGeneratorFactory.cs" />

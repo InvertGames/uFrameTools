@@ -3,7 +3,7 @@ using Invert.uFrame.Editor;
 
 public class ViewComponentDataGeneratorFactory : DesignerGeneratorFactory<ViewComponentData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy pathStrategy, INodeRepository diagramData, ViewComponentData item)
+    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, ViewComponentData item)
     {
         if (item.Element == null) yield break;
         yield return CreateEditableGenerator(pathStrategy, diagramData, item);

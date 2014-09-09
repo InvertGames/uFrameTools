@@ -4,9 +4,9 @@ using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
-public interface IDiagramNode : ISelectable,IDiagramNodeItem
+public interface IDiagramNode : IDiagramNodeItem
 {
-    DataBag DataBag { get; }
+    
     string SubTitle { get; }
     /// <summary>
     /// The label that sits above the node providing additional insight.

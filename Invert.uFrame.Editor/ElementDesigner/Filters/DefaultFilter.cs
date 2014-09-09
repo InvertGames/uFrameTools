@@ -27,6 +27,7 @@ public class DefaultFilter : IDiagramFilter,IJsonObject
     public virtual string Name
     {
         get { return "All"; }
+        set{}
     }
 
     public string InfoLabel { get; private set; }

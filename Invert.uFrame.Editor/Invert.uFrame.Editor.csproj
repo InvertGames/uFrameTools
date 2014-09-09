@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGenerator\GeneratorSettings.cs" />
     <Compile Include="ElementDesigner\Drawers\ConnectionDrawer.cs" />
     <Compile Include="ElementDesigner\Drawers\ConnectorDrawer.cs" />
     <Compile Include="ElementDesigner\Drawers\Drawer.cs" />

@@ -376,11 +376,22 @@ public abstract class ViewClassGenerator : CodeGenerator
 
         //if (data.IsMultiInstance)
         //{
-        createModelMethod.Statements.Add(
+        if (Settings.GenerateControllers)
+        {
+            createModelMethod.Statements.Add(
             new CodeMethodReturnStatement(new CodeMethodInvokeExpression(new CodeThisReferenceExpression(),
                 "RequestViewModel",
                 new CodeSnippetExpression(string.Format("GameManager.Container.Resolve<{0}>()",
                     data.NameAsController)))));
+        }
+        else
+        {
+            createModelMethod.Statements.Add(
+            new CodeMethodReturnStatement(new CodeMethodInvokeExpression(new CodeThisReferenceExpression(),
+                "RequestViewModel",
+                new CodeSnippetExpression("null"))));
+        }
+        
 
         Decleration.Members.Add(createModelMethod);
     }

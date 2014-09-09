@@ -233,7 +233,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public bool IsFilter
         {
-            get { return DataObject is IDiagramFilter; }
+            get { return uFrameEditor.IsFilter(GraphItemObject.GetType()); }
         }
 
         public IEnumerable<CodeGenerator> CodeGenerators
@@ -249,9 +249,11 @@ namespace Invert.uFrame.Editor.ViewModels
             get
             {
                 var filter = GraphItemObject as IDiagramFilter;
-                if (filter == null) return false;
-
-                return filter.Locations.Keys.Count > 1;
+                if (filter == null)
+                {
+                    return false;
+                }
+                return filter.GetContainingNodes(DiagramViewModel.CurrentRepository).Any();
             }
         }
 

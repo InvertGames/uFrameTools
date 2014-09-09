@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public abstract class DiagramNode : IDiagramNode, IRefactorable
+public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 {
     public bool this[string flag]
     {
@@ -56,24 +56,12 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         cls.Add("Identifier", new JSONData(_identifier));
 
         cls.AddObjectArray("Items", ContainedItems);
-        var filter = this as IDiagramFilter;
-        if (filter != null)
-        {
-            cls.Add("Locations", filter.Locations.Serialize());
-            cls.Add("CollapsedValues", filter.CollapsedValues.Serialize());
-        }
+        
+        cls.Add("Locations", Locations.Serialize());
+        cls.Add("CollapsedValues", CollapsedValues.Serialize());
+
         cls.AddObject("Flags", Flags);
         cls.AddObject("DataBag", DataBag);
-
-        //var itemsArray = new JSONArray();
-        //foreach (var diagramNodeItem in ContainedItems)
-        //{
-        //    var nodeItemClass = new JSONClass { { "Type", diagramNodeItem.GetType().Name } };
-        //    diagramNodeItem.Serialize(nodeItemClass);
-
-        //    itemsArray.Add(nodeItemClass);
-        //}
-        //cls.Add("Items", itemsArray);
     }
 
     public virtual void MoveItemDown(IDiagramNodeItem nodeItem)
@@ -100,14 +88,10 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         IsNewNode = false;
         ContainedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>(repository);
 
-        var filter = this as IDiagramFilter;
-        if (filter != null)
+        if (cls["Locations"] != null)
         {
-            filter.Locations.Deserialize(cls["Locations"].AsObject);
-            filter.CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject, repository);
-
-            //cls.Add("Locations", filter.Locations.Serialize());
-            //cls.Add("CollapsedValues", filter.CollapsedValues.Serialize());
+            Locations.Deserialize(cls["Locations"].AsObject);
+            CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject, repository);
         }
         if (cls["Flags"] is JSONClass)
         {
@@ -160,6 +144,12 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     private List<Refactorer> _refactorings;
     private FlagsDictionary _flags = new FlagsDictionary();
 
+    [SerializeField]
+    private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
+
+    [SerializeField]
+    private FilterLocations _locations = new FilterLocations();
+
     public IEnumerable<Refactorer> AllRefactorers
     {
         get { return Refactorings.Concat(Items.OfType<IRefactorable>().SelectMany(p => p.Refactorings)); }
@@ -193,7 +183,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         //    }
         //}
     }
-    
+
     public bool Dirty { get; set; }
 
     public IDiagramFilter Filter
@@ -258,7 +248,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
         set
         {
             _location = value;
-         
+
             if (_location.x < 0)
                 _location.x = 0;
             if (_location.y < 0)
@@ -306,6 +296,23 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable
     public RenameRefactorer RenameRefactorer { get; set; }
 
     public virtual bool ShouldRenameRefactor { get { return true; } }
+
+    public FilterCollapsedDictionary CollapsedValues
+    {
+        get { return _collapsedValues; }
+        set { _collapsedValues = value; }
+    }
+
+    public bool ImportedOnly
+    {
+        get { return true; }
+    }
+
+    public FilterLocations Locations
+    {
+        get { return _locations; }
+        set { _locations = value; }
+    }
 
     protected DiagramNode()
     {

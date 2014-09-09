@@ -19,6 +19,8 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
 
     [SerializeField] protected bool _isMultiInstance;
 
+    [SerializeField] protected string _baseIdentifier;
+
     //[DiagramContextMenu("Print Items")]
     //public void Print()
     //{
@@ -37,7 +39,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         }
     }
 
-    public ElementData BaseElement { get { return Data.GetAllElements().FirstOrDefault(p => p.Identifier == Identifier); } }
+    public ElementData BaseElement { get { return Data.GetAllElements().FirstOrDefault(p => p.Identifier == this.BaseIdentifier); } }
 
     public abstract string BaseTypeName { get; }
 
@@ -89,9 +91,9 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         get
         {
             return
-                Data.NodeItems.OfType<ElementDataBase>()
+                Data.NodeItems.ToArray().OfType<ElementDataBase>()
                     .SelectMany(p => p.Collections)
-                    .Any(p => p.RelatedTypeName == Name) || AllBaseTypes.Any(p => p.IsMultiInstance);
+                    .Any(p => p.RelatedType == Identifier);// || AllBaseTypes.Any(p =>p!=this && p.IsMultiInstance);
         }
     }
 
@@ -205,6 +207,12 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
                 .Concat(Collections.Cast<IViewModelItem>())
                 .Concat(Commands.Cast<IViewModelItem>());
         }
+    }
+
+    public string BaseIdentifier
+    {
+        get { return _baseIdentifier; }
+        set { _baseIdentifier = value; }
     }
 
     public static string TypeAlias(string typeName)

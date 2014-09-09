@@ -9,7 +9,7 @@ public interface IDiagramNodeItem : ISelectable, IJsonObject
     bool IsSelectable { get;}
     DiagramNode Node { get; set; }
     DataBag DataBag { get; set; }
-
+        
     /// <summary>
     /// Is this node currently in edit mode/ rename mode.
     /// </summary>

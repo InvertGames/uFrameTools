@@ -18,7 +18,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             };
             //data.Location = node.LastMouseDownPosition;
             data.Filter.Locations[data] = data.Location;
-            node.Data.AddNode(data);
+            node.CurrentRepository.AddNode(data);
         }
     }
 

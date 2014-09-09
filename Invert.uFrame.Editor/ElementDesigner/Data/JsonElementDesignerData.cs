@@ -143,6 +143,13 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
 
     public void RemoveNode(IDiagramNode enumData)
     {
+        //foreach (var item in Nodes)
+        //{
+        //    if (item.Locations.Keys.Contains(item.Identifier))
+        //    {
+        //        item.Locations.Remove(item.Identifier);
+        //    }
+        //}
         Nodes.Remove(enumData);
     }
 

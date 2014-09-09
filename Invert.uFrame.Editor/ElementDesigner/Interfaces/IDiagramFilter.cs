@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Invert.uFrame.Editor;
 
 public interface IDiagramFilter
@@ -7,7 +10,7 @@ public interface IDiagramFilter
 
     FilterLocations Locations { get; set; }
     FilterCollapsedDictionary CollapsedValues { get; set; }
-    string Name { get; }
+    string Name { get; set; }
 
     //bool IsAllowed(object item, Type t);
     //bool IsItemAllowed(object item, Type t);
@@ -15,6 +18,10 @@ public interface IDiagramFilter
 
 public static class FilterExtensions
 {
+    public static IEnumerable<IDiagramNode> GetContainingNodes(this IDiagramFilter filter, INodeRepository repository)
+    {
+        return repository.NodeItems.Where(node => node != filter && filter.Locations.Keys.Contains(node.Identifier));
+    }
     public static bool IsAllowed(this IDiagramFilter filter, object item, Type t)
     {
         if (filter == item) return true;

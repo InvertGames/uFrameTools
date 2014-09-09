@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Invert.uFrame.Editor;
 
 public interface IProjectRepository : INodeRepository
 {
@@ -13,5 +14,6 @@ public interface IProjectRepository : INodeRepository
     Type RepositoryFor { get; }
     JsonElementDesignerData CurrentDiagram { get; set; }
     List<JsonElementDesignerData> Diagrams { get; set; }
+    GeneratorSettings GeneratorSettings { get; set; }
     void Refresh();
 }

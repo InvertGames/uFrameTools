@@ -5,18 +5,23 @@ using Invert.uFrame.Editor;
 
 public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
+    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
-
-        yield return CreateDesignerControllerGenerator(codePathStrategy, diagramData, item);
-        yield return CreateEditableControllerGenerator(codePathStrategy, diagramData, item);
+        if (settings.GenerateControllers)
+        {
+            yield return CreateDesignerControllerGenerator(codePathStrategy, diagramData, item);
+            yield return CreateEditableControllerGenerator(codePathStrategy, diagramData, item);
+        }
+       
         yield return CreateDesignerViewModelGenerator(codePathStrategy, diagramData, item);
         yield return CreateEditableViewModelGenerator(codePathStrategy, diagramData, item);
+
         yield return CreateViewBaseGenerator(codePathStrategy, diagramData, item);
     }
 
     public virtual CodeGenerator CreateDesignerControllerGenerator(ICodePathStrategy codePathStrategy, INodeRepository diagramData,ElementData item)
     {
+
         return new ControllerGenerator()
         {
             ElementData = item,
@@ -42,7 +47,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
     {
         return new ViewModelGenerator(true, item)
         {
-            Data = item,
+            ElementData = item,
             IsDesignerFile = true,
             DiagramData = diagramData,
             Filename = codePathStrategy.GetViewModelsFileName(diagramData.Name)
@@ -54,7 +59,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
         return new ViewModelGenerator(false, item)
         {
             IsDesignerFile = false,
-            Data = item,
+            ElementData = item,
             RelatedType = item.CurrentViewModelType,
             DiagramData = diagramData,
             Filename = codePathStrategy.GetEditableViewModelFilename(item)

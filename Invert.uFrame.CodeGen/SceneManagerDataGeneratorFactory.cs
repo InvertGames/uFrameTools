@@ -4,7 +4,7 @@ using Invert.uFrame.Editor;
 
 public class SceneManagerDataGeneratorFactory : DesignerGeneratorFactory<SceneManagerData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(ICodePathStrategy pathStrategy, INodeRepository diagramData, SceneManagerData item)
+    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, SceneManagerData item)
     {
         if (item.SubSystem == null) yield break;
         yield return new SceneManagerGenerator()
