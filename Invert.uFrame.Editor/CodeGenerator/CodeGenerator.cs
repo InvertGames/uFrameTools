@@ -59,6 +59,7 @@ namespace Invert.uFrame.Editor
 
         public void ProcessModifiers(CodeTypeDeclaration declaration)
         {
+            
             var typeDeclerationModifiers = uFrameEditor.Container.ResolveAll<ITypeGeneratorPostProcessor>().Where(p => p.For.IsAssignableFrom(this.GetType()));
             foreach (var typeDeclerationModifier in typeDeclerationModifiers)
             {

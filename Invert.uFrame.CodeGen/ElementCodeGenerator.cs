@@ -26,7 +26,11 @@ public class ElementCodeGenerator : CodeGenerator
                 Name = computedProperty.NameAsComputeMethod,
                 ReturnType = new CodeTypeReference(computedProperty.RelatedTypeName)
             };
-            computeMethod.Parameters.Add(new CodeParameterDeclarationExpression(data.NameAsViewModel, "vm"));
+            if (Settings.GenerateControllers)
+            {
+                computeMethod.Parameters.Add(new CodeParameterDeclarationExpression(data.NameAsViewModel, "vm"));
+            }
+            
             if (IsDesignerFile)
             {
                 computeMethod.Attributes = MemberAttributes.Public;
@@ -104,15 +108,25 @@ public class ElementCodeGenerator : CodeGenerator
                 {
                     commandMethod.Parameters.Add(
                         new CodeParameterDeclarationExpression(new CodeTypeReference(command.RelatedTypeName), "arg"));
+                    if (!Settings.GenerateControllers && !IsDesignerFile)
+                    commandMethod.Statements.Insert(0,
+                        new CodeSnippetStatement(string.Format("base.{0}(arg);", commandMethod.Name)));
                 }
                 else
                 {
                     commandMethod.Parameters.Add(
-                        new CodeParameterDeclarationExpression(new CodeTypeReference(relatedViewModel.NameAsViewModel), "arg"));
+                        new CodeParameterDeclarationExpression(new CodeTypeReference(relatedViewModel.NameAsViewModel),
+                            "arg"));
+                    if (!Settings.GenerateControllers && !IsDesignerFile)
+                    commandMethod.Statements.Insert(0,
+                        new CodeSnippetStatement(string.Format("base.{0}(arg);", commandMethod.Name)));
                 }
             }
-            //commandMethod.Statements.Add(commandMethod);
-
+            else
+            {
+                if (!Settings.GenerateControllers && !IsDesignerFile)
+                commandMethod.Statements.Insert(0, new CodeSnippetStatement(string.Format("base.{0}();", commandMethod.Name)));
+            }
             tDecleration.Members.Add(commandMethod);
         }
     }

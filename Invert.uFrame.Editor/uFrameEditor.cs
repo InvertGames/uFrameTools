@@ -23,6 +23,13 @@ namespace Invert.uFrame.Editor
             set { _projects = value; }
         }
 
+        public static INamespaceProvider NamespaceProvider
+        {
+            get
+            {
+                return Container.Resolve<INamespaceProvider>();
+            }
+        }
         private static IEditorCommand[] _commands;
 
         private static uFrameContainer _container;
@@ -261,7 +268,7 @@ namespace Invert.uFrame.Editor
             var groups = codeGenerators.GroupBy(p => p.Filename);
             foreach (var @group in groups)
             {
-                var generator = new CodeFileGenerator()
+                var generator = new CodeFileGenerator(settings.NamespaceProvider.RootNamespace)
                 {
                     Filename = @group.Key,
                     Generators = @group.ToArray()

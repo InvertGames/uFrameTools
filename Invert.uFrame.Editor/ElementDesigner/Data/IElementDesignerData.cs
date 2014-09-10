@@ -5,7 +5,6 @@ public interface INodeRepository
 {
     // Basic Information
     string Name { get; }
-    string Namespace { get; }
     IEnumerable<IDiagramNode> NodeItems { get; }
 
     // Settings

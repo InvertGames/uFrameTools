@@ -14,5 +14,14 @@ namespace Invert.uFrame.Editor
             get { return _generateControllers; }
             set { _generateControllers = value; }
         }
+
+        public DefaultNamespaceProvider NamespaceProvider
+        {
+            get { return _namespaceProvider; }
+            set { _namespaceProvider = value; }
+        }
+
+        [SerializeField]
+        private DefaultNamespaceProvider _namespaceProvider;
     }
 }

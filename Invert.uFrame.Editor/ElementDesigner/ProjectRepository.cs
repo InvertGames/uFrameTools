@@ -56,8 +56,6 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     private string _outputDirectory;
 
     private JsonElementDesignerData _currentDiagram;
-    [SerializeField]
-    private string _ns;
 
     public void RecacheAssets()
     {
@@ -94,11 +92,6 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         get { return name; }
     }
 
-    public string Namespace
-    {
-        get { return _ns; }
-        set { _ns = value; }
-    }
 
     private IDiagramNode[] _nodeItems;
     [SerializeField]
@@ -250,7 +243,25 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
 public interface INamespaceProvider
 {
-    string GetNamespace();
+    string GetNamespace(IDiagramNode node);
+}
+
+[Serializable]
+public class DefaultNamespaceProvider : INamespaceProvider
+{
+    [SerializeField]
+    private string _rootNamespace;
+
+    public string RootNamespace
+    {
+        get { return _rootNamespace; }
+        set { _rootNamespace = value; }
+    }
+
+    public string GetNamespace(IDiagramNode node)
+    {
+        return RootNamespace;
+    }
 }
 
 public interface ICodePathStrategy

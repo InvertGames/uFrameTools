@@ -176,7 +176,12 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
 
     public string NameAsViewModel
     {
-        get { return string.Format("{0}ViewModel", Name.Replace("ViewModel", "")); }
+        get { return string.Format("{0}ViewModel", Name); }
+    }
+
+    public string NameAsViewModelBase
+    {
+        get { return string.Format("{0}ViewModelBase", Name); }
     }
 
     public string OldAssemblyName { get; set; }
