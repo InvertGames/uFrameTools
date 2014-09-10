@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
-
+/// <summary>
+/// The base data class for all diagram nodes.
+/// </summary>
 public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 {
     public bool this[string flag]
@@ -172,16 +174,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         {
             return uFrameEditor.CurrentProject;
         }
-        //set
-        //{
-        //    _data = value;
-        //    if (value != null)
-        //    {
-        //        _location = value.CurrentFilter.Locations[this];
-        //        _isCollapsed = value.CurrentFilter.CollapsedValues[this];
-        //        Dirty = true;
-        //    }
-        //}
     }
 
     public bool Dirty { get; set; }
@@ -206,9 +198,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         get
         {
             return null;
-            //var count = AllRefactorers.Count();
-            //if (count == 0) return null;
-            //return string.Format("Refactors: {0}", count);
         }
     }
 
@@ -239,10 +228,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
     {
         get
         {
-            //if (Filter == this)
-            //{
-            //    return new Vector2((Screen.width / 2f) - (Position.width / 2f), (Screen.height / 2f) - (Position.height / 2f));
-            //}
             return Filter.Locations[this];
         }
         set
