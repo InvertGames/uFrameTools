@@ -338,6 +338,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         }
         else
         {
+
             BubbleEvent(d => d.OnMouseDown(mouseEvent), mouseEvent);
         }
     }

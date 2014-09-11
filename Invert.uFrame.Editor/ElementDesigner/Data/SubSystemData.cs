@@ -4,15 +4,10 @@ using System.Linq;
 using Invert.uFrame.Editor;
 using UnityEngine;
 
-public interface ISubSystemData : IDiagramNode
-{
-    List<string> Imports { get; set; }
-    FilterLocations Locations { get; set; }
-}
 
 public static class SubsystemExtensions
 {
-    public static IEnumerable<ISubSystemData> GetAllImportedSubSystems(this ISubSystemData subsystem,INodeRepository data)
+    public static IEnumerable<SubSystemData> GetAllImportedSubSystems(this SubSystemData subsystem,INodeRepository data)
     {
         var subSystem = data.NodeItems.OfType<SubSystemData>()
             .Where(p => subsystem.Imports.Contains(p.Identifier));
@@ -26,13 +21,13 @@ public static class SubsystemExtensions
             }
         }
     }
-    public static IEnumerable<string> GetAllImports(this ISubSystemData subsystem)
+    public static IEnumerable<string> GetAllImports(this SubSystemData subsystem)
     {
         return subsystem.GetAllImportedSubSystems(subsystem.Data).SelectMany(p => p.Imports).Concat(subsystem.Imports);
     }
-    public static IEnumerable<IDiagramNodeItem> GetIncludedItems(this ISubSystemData subsystem)
+    public static IEnumerable<IDiagramNodeItem> GetIncludedItems(this SubSystemData subsystem)
     {
-        foreach (var allDiagramItem in subsystem.Data.NodeItems.OfType<ISubSystemData>())
+        foreach (var allDiagramItem in subsystem.Data.NodeItems.OfType<SubSystemData>())
         {
             if (subsystem.Imports.Contains(allDiagramItem.Identifier))
             {
@@ -43,21 +38,22 @@ public static class SubsystemExtensions
             }
         }
     }
-    public static IEnumerable<IDiagramNodeItem> GetSubItems(this ISubSystemData subsystem)
+    public static IEnumerable<IDiagramNodeItem> GetSubItems(this SubSystemData subsystem)
     {
         var items =
-            subsystem.Data.NodeItems.OfType<ISubSystemType>()
-                .Where(p => subsystem.Locations.Keys.Contains(p.Identifier))
+            subsystem.Data.NodeItems.OfType<ElementData>()
+                .Where(p => subsystem.Data.PositionData.HasPosition(subsystem,p))
                 .Cast<IDiagramNodeItem>();
 
         foreach (var item in items)
             yield return item;
     }
-    public static IEnumerable<ViewModelCommandData> GetIncludedCommands(this ISubSystemData subsystem)
+    public static IEnumerable<ViewModelCommandData> GetIncludedCommands(this SubSystemData subsystem)
     {
         return subsystem.GetIncludedElements().Where(p => !p.IsMultiInstance).SelectMany(p => p.Commands);
     }
-    public static IEnumerable<ElementData> GetIncludedElements(this ISubSystemData subsystem)
+
+    public static IEnumerable<ElementData> GetIncludedElements(this SubSystemData subsystem)
     {
         var list = new List<ElementData>();
         foreach (var diagramSubItem in subsystem.GetSubItems().OfType<ElementData>())
@@ -78,7 +74,7 @@ public static class SubsystemExtensions
     }
 }
 [Serializable]
-public class SubSystemData : DiagramNode, ISubSystemData
+public class SubSystemData : DiagramNode
 {
     public override void Serialize(JSONClass cls)
     {

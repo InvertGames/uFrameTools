@@ -26,10 +26,10 @@ public interface IDiagramNode : IDiagramNodeItem
     /// The current position of the node on the diagram
     /// </summary>
     Vector2 Location { get; set; }
-    /// <summary>
-    /// An assembly name representing this node if applicable
-    /// </summary>
-    string AssemblyQualifiedName { get; }
+    ///// <summary>
+    ///// An assembly name representing this node if applicable
+    ///// </summary>
+    //string AssemblyQualifiedName { get; }
 
     /// <summary>
     /// Is this node dirty/modified and should its bounds be recalculated.

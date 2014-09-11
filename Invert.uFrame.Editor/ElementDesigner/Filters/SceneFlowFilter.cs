@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public class SceneFlowFilter : DefaultFilter
+public class SceneFlowFilter : DiagramFilter
 {
     public override bool ImportedOnly
     {

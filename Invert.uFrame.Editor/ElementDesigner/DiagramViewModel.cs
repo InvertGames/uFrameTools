@@ -154,7 +154,7 @@ public class DiagramViewModel : ViewModel
         GraphItems.Clear();
         var connectors = new List<ConnectorViewModel>();
 
-        CurrentNodes = Data.CurrentFilter.FilterItems(CurrentRepository.NodeItems).ToArray();
+        CurrentNodes = Data.CurrentFilter.FilterItems(CurrentRepository).ToArray();
 
         foreach (var item in CurrentNodes)
         {
@@ -327,6 +327,5 @@ public class DiagramViewModel : ViewModel
     public void AddNode(IDiagramNode newNodeData)
     {
         CurrentRepository.AddNode(newNodeData);
-        CurrentRepository.CurrentDiagram.CurrentFilter.Locations[newNodeData] = uFrameEditor.CurrentMouseEvent.MouseDownPosition;
     }
 }

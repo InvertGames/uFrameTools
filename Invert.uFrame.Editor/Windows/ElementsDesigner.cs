@@ -345,6 +345,11 @@ namespace Invert.uFrame.Editor
             _drawEveryFrame = true;
         }
 
+        public void SwitchDiagram(IElementDesignerData data)
+        {
+            CurrentProject.CurrentDiagram = data as JsonElementDesignerData;
+            LoadDiagram(CurrentProject.CurrentDiagram);
+        }
         public void OnGUI()
         {
            
@@ -461,29 +466,29 @@ namespace Invert.uFrame.Editor
                 DiagramDrawer.Draw(ElementDesignerStyles.Scale);
                 HandleInput();
 
-                //#if DEBUG
-                //                GUILayout.BeginArea(new Rect(10f, 70f, 500f, 500f));
-                //                GUILayout.Label(string.Format("Mouse Position: x = {0}, y = {1}", MouseEvent.MousePosition.x, MouseEvent.MousePosition.y));
-                //                GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
-                //                GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
-                //                GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
-                //                if (DiagramDrawer != null)
-                //                {
-                //                    GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
-                //                    if (DiagramDrawer.DrawersAtMouse != null)
-                //                        foreach (var drawer in DiagramDrawer.DrawersAtMouse)
-                //                        {
-                //                            GUILayout.Label(drawer.ToString());
-                //                        }
-                //                    if (DiagramDrawer.DiagramViewModel != null)
-                //                        foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
-                //                        {
-                //                            GUILayout.Label(drawer.ToString());
-                //                        }
-                //                }
+//#if DEBUG
+//                GUILayout.BeginArea(new Rect(10f, 70f, 500f, 500f));
+//                GUILayout.Label(string.Format("Mouse Position: x = {0}, y = {1}", MouseEvent.MousePosition.x, MouseEvent.MousePosition.y));
+//                GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
+//                GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
+//                GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
+//                if (DiagramDrawer != null)
+//                {
+//                    GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
+//                    if (DiagramDrawer.DrawersAtMouse != null)
+//                        foreach (var drawer in DiagramDrawer.DrawersAtMouse)
+//                        {
+//                            GUILayout.Label(drawer.ToString());
+//                        }
+//                    if (DiagramDrawer.DiagramViewModel != null)
+//                        foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
+//                        {
+//                            GUILayout.Label(drawer.ToString());
+//                        }
+//                }
 
-                //                GUILayout.EndArea();
-                //#endif
+//                GUILayout.EndArea();
+//#endif
                 //EndGUI();
                 GUI.EndScrollView();
                 GUILayout.Space(DiagramRect.height);

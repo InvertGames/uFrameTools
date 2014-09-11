@@ -198,7 +198,7 @@
     <Compile Include="ElementDesigner\Interfaces\IRefactoring.cs" />
     <Compile Include="ElementDesigner\Commands\Diagram\IEditorCommand.cs" />
     <Compile Include="ElementDesigner\ContextMenuItem.cs" />
-    <Compile Include="ElementDesigner\Filters\DefaultFilter.cs" />
+    <Compile Include="ElementDesigner\Filters\DiagramFilter.cs" />
     <Compile Include="ElementDesigner\DiagramContextMenuAttribute.cs" />
     <Compile Include="ElementDesigner\Drawers\DiagramEnumDrawer.cs" />
     <Compile Include="ElementDesigner\Drawers\DiagramNodeDrawer.cs" />

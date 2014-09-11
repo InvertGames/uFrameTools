@@ -441,12 +441,12 @@ namespace Invert.uFrame.Editor
 
             // For no selection diagram context menu
             container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddNewFilterItemCommand");
-            container.RegisterInstance<IDiagramContextCommand>(new AddNewSceneManagerCommand(), "AddNewSceneManagerCommand");
-            container.RegisterInstance<IDiagramContextCommand>(new AddNewSubSystemCommand(), "AddNewSubSystemCommand");
-            container.RegisterInstance<IDiagramContextCommand>(new AddNewElementCommand(), "AddNewElementCommand");
-            container.RegisterInstance<IDiagramContextCommand>(new AddNewEnumCommand(), "AddNewEnumCommand");
-            container.RegisterInstance<IDiagramContextCommand>(new AddNewViewCommand(), "AddNewViewCommand");
-            container.RegisterInstance<IDiagramContextCommand>(new AddNewViewComponentCommand(), "AddNewViewComponentCommand");
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNewSceneManagerCommand(), "AddNewSceneManagerCommand");
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNewSubSystemCommand(), "AddNewSubSystemCommand");
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNewElementCommand(), "AddNewElementCommand");
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNewEnumCommand(), "AddNewEnumCommand");
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNewViewCommand(), "AddNewViewCommand");
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNewViewComponentCommand(), "AddNewViewComponentCommand");
             container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
 
             // For node context menu
@@ -458,11 +458,12 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IDiagramNodeCommand>(new SelectViewBaseElement(), "SelectView");
             container.RegisterInstance<IDiagramNodeCommand>(new MarkIsTemplateCommand(), "MarkAsTemplate");
             container.RegisterInstance<IDiagramNodeCommand>(new MarkIsMultiInstanceCommand(), "MarkAsMulti");
+            
 
             // For node item context menu
             container.RegisterInstance<IDiagramNodeItemCommand>(new MarkIsYieldCommand(), "MarkIsYield");
             container.RegisterInstance<IDiagramNodeItemCommand>(new DeleteItemCommand(), "Delete");
-            container.RegisterInstance<IDiagramNodeItemCommand>(new SelectDependantPropertiesCommand(), "DependantOn");
+            //container.RegisterInstance<IDiagramNodeItemCommand>(new SelectDependantPropertiesCommand(), "DependantOn");
 
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveUpCommand(), "MoveItemUp");
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveDownCommand(), "MoveItemDown");

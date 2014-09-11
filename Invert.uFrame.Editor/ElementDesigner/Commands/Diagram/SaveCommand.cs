@@ -18,6 +18,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
 
         public override void Perform(DiagramViewModel diagram)
         {
+            AssetDatabase.SaveAssets();
             // Go ahead and process any code refactors
             ProcessRefactorings(diagram);
 

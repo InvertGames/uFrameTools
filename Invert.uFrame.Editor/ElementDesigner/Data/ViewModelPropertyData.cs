@@ -127,7 +127,24 @@ public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializea
             return RelatedType;
         }
     }
+    public string RelatedTypeNameOrViewModel
+    {
+        get
+        {
+            var relatedNode = this.RelatedNode();
+            if (relatedNode != null)
+            {
+                var element = relatedNode as ElementData;
+                if (element != null)
+                    return element.NameAsViewModel;
 
+                return relatedNode.Name;
+            }
+                
+
+            return RelatedType;
+        }
+    }
     public IDiagramNode TypeNode()
     {
         return this.RelatedNode();

@@ -39,6 +39,25 @@ public class ProjectRepositoryInspector : Editor
 }
 public class ProjectRepository : ScriptableObject, IProjectRepository
 {
+    public Vector2 GetItemLocation(IDiagramNode node)
+    {
+        //if (!CurrentDiagram.PositionData.HasPosition(CurrentFilter, node))
+        //{
+        //    foreach (var diagram in Diagrams)
+        //    {
+        //        if (diagram.PositionData.HasPosition(CurrentFilter, node))
+        //        {
+        //            return diagram.PositionData[CurrentFilter,node];
+        //        }
+        //    }
+        //}
+        return CurrentDiagram.PositionData[CurrentFilter, node];
+    }
+
+    public void SetItemLocation(IDiagramNode node, Vector2 position)
+    {
+        CurrentDiagram.PositionData[CurrentFilter, node] = position;
+    }
 
     private Dictionary<string, string> _derivedTypes;
 
@@ -74,13 +93,14 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         return items;
     }
 
-    public void CreateNewDiagram()
+    public IElementDesignerData CreateNewDiagram()
     {
         Selection.activeObject = this;
         var diagram = UFrameAssetManager.CreateAsset<JsonElementDesignerData>();
         Diagrams.Add(diagram);
         CurrentDiagram = diagram;
         Refresh();
+        return diagram;
     }
     public virtual Type RepositoryFor
     {
@@ -146,6 +166,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
             return CurrentDiagram.CurrentFilter;
         }
     }
+
+    public FilterPositionData PositionData
+    {
+        get { return CurrentDiagram.PositionData; }
+    }
+
     public string LastLoadedDiagram
     {
         get { return EditorPrefs.GetString("UF_LastLoadedDiagram" + this.name, string.Empty); }
@@ -239,6 +265,11 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         }
         
     }
+
+    public void HideNode(string identifier)
+    {
+        CurrentDiagram.PositionData.Remove(CurrentDiagram.CurrentFilter, identifier);
+    }
 }
 
 public interface INamespaceProvider
@@ -307,6 +338,7 @@ public interface ICodePathStrategy
     string GetEnumsFilename(EnumData name);
 
     void MoveTo(GeneratorSettings settings, ICodePathStrategy strategy, string name, ElementsDesigner designerWindow);
+    string GetSceneManagersFilename(string name);
 }
 
 public class DefaultCodePathStrategy : ICodePathStrategy
@@ -407,6 +439,11 @@ public class DefaultCodePathStrategy : ICodePathStrategy
         
     }
 
+    public string GetSceneManagersFilename(string name)
+    {
+        return name + "SceneManagers.designer.cs";
+    }
+
     protected virtual void ProcessMove(ICodePathStrategy strategy, string name, CodeFileGenerator[] sourceFiles,
         CodeFileGenerator[] targetFiles)
     {
@@ -480,7 +517,7 @@ public class SubSystemPathStrategy : DefaultCodePathStrategy
         var allFilters = Data.GetFilters();
         foreach (var diagramFilter in allFilters)
         {
-            if (node != diagramFilter &&  diagramFilter.Locations.Keys.Contains(node.Identifier))
+            if (node != diagramFilter &&  node.Data.PositionData.HasPosition(diagramFilter,node))
             {
                 return diagramFilter;
             }

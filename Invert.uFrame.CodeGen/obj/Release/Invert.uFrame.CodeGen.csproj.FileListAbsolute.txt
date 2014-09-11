@@ -24,3 +24,15 @@ D:\Invert\uFrameSVN2\Invert.uFrame.CodeGen\obj\Release\Invert.uFrame.CodeGen.dll
 D:\Invert\uFrameSVN2\Invert.uFrame.CodeGen\obj\Release\Invert.uFrame.CodeGen.pdb
 D:\Invert\uFrameSVN2\Invert.uFrame.CodeGen\bin\Release\Invert.MVVM.dll
 D:\Invert\uFrameSVN2\Invert.uFrame.CodeGen\bin\Release\Invert.MVVM.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Release\Invert.uFrame.CodeGen.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Release\Invert.uFrame.CodeGen.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Release\Invert.MVVM.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Release\Invert.uFrame.Editor.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Release\Invert.Common.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Release\Invert.MVVM.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Release\UnityEditor.xml
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Release\UnityEngine.xml
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Release\Invert.Common.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\obj\Release\Invert.uFrame.CodeGen.csprojResolveAssemblyReference.cache
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\obj\Release\Invert.uFrame.CodeGen.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\obj\Release\Invert.uFrame.CodeGen.pdb

@@ -169,6 +169,10 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         //    GUI.Label(offsetPosition.Scale(Scale), label, style);
 
         //}
+
+
+        
+       
         var adjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
         ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(Scale), ElementDesignerStyles.NodeBackground, string.Empty, 20);
 

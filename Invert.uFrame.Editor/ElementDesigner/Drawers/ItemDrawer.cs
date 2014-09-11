@@ -1,5 +1,6 @@
 using Invert.Common;
 using Invert.uFrame.Editor;
+using Invert.uFrame.Editor.ElementDesigner.Commands;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
@@ -75,6 +76,7 @@ public class ItemDrawer : Drawer
     {
         base.OnMouseDown(mouseEvent);
         ViewModelObject.Select();
+        Debug.Log("Selected Item");
     }
 
     public override void Refresh(Vector2 position)
@@ -97,10 +99,15 @@ public class ItemDrawer : Drawer
     public override void Draw(float scale)
     {
         base.Draw(scale);
-        if (ItemViewModel.IsSelected && ItemViewModel.IsSelectable)
+        if (ItemViewModel.IsSelected)
+        {
+            GUI.Box(Bounds.Scale(scale), string.Empty, SelectedItemStyle);
+        }
+
+        if (ItemViewModel.IsSelected && ItemViewModel.IsEditable)
         {
            
-            GUI.Box(Bounds.Scale(scale), string.Empty, SelectedItemStyle);
+            
             GUILayout.BeginArea(Bounds);
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.BeginHorizontal();
@@ -112,10 +119,10 @@ public class ItemDrawer : Drawer
                 ItemViewModel.Rename(newName);
                 //uFrameEditor.ExecuteCommand(p => );
             }
-
+            if (ItemViewModel.AllowRemoving)
             if (GUILayout.Button(string.Empty, UBStyles.RemoveButtonStyle.Scale(scale)))
             {
-                uFrameEditor.ExecuteCommand(ItemViewModel.RemoveItemCommand);
+                uFrameEditor.ExecuteCommand(new RemoveNodeItemCommand());
             }
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();

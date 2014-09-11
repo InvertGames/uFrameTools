@@ -30,3 +30,14 @@ D:\Invert\uFrameSVN2\Invert.uBehaviours.Editor\obj\Release\Invert.uBehaviours.Ed
 D:\Invert\uFrameSVN2\Invert.uBehaviours.Editor\obj\Release\Invert.uBehaviours.Editor.dll
 D:\Invert\uFrameSVN2\Invert.uBehaviours.Editor\bin\Release\Invert.MVVM.dll
 D:\Invert\uFrameSVN2\Invert.uBehaviours.Editor\bin\Release\Invert.MVVM.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\bin\Release\Invert.uBehaviours.Editor.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\bin\Release\Invert.Common.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\bin\Release\Invert.uBehaviours.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\bin\Release\Invert.uFrame.Editor.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\bin\Release\Invert.MVVM.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\bin\Release\Invert.Common.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\bin\Release\UnityEditor.xml
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\bin\Release\UnityEngine.xml
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\bin\Release\Invert.MVVM.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\obj\Release\Invert.uBehaviours.Editor.csprojResolveAssemblyReference.cache
+D:\Invert\uFrameGit\uFrameTools\Invert.uBehaviours.Editor\obj\Release\Invert.uBehaviours.Editor.dll

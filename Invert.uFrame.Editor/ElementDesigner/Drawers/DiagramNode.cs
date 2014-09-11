@@ -51,6 +51,20 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         get { return _location; }
     }
 
+    public virtual string Namespace
+    {
+        get { return uFrameEditor.CurrentProject.GeneratorSettings.NamespaceProvider.RootNamespace; }
+    }
+    public virtual string FullName
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Namespace))
+                return string.Format("{0}.{1}",Namespace, Name);
+
+            return Name;
+        }
+    }
     public virtual void Serialize(JSONClass cls)
     {
         cls.Add("Name", new JSONData(_name));
@@ -59,7 +73,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 
         cls.AddObjectArray("Items", ContainedItems);
         
-        cls.Add("Locations", Locations.Serialize());
+        //cls.Add("Locations", Locations.Serialize());
         cls.Add("CollapsedValues", CollapsedValues.Serialize());
 
         cls.AddObject("Flags", Flags);
@@ -157,6 +171,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         get { return Refactorings.Concat(Items.OfType<IRefactorable>().SelectMany(p => p.Refactorings)); }
     }
 
+    [Obsolete]
     public virtual string AssemblyQualifiedName
     {
         get
@@ -164,9 +179,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
             return uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name);
         }
     }
-
-    public Vector2[] ConnectionPoints { get; set; }
-
 
     public virtual INodeRepository Data
     {
@@ -299,6 +311,14 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         set { _locations = value; }
     }
 
+    public Type CurrentType
+    {
+        get
+        {
+            return uFrameEditor.FindType(FullName);
+        }
+    }
+
     protected DiagramNode()
     {
         IsNewNode = true;
@@ -323,7 +343,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         BeginEditing();
     }
 
-
+    
     public virtual RenameRefactorer CreateRenameRefactorer()
     {
         return null;
@@ -359,7 +379,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 
     public void Remove(IDiagramNode diagramNode)
     {
-        Filter.Locations.Remove(this.Identifier);
+        Data.PositionData.Remove(Data.CurrentFilter,diagramNode.Identifier);
     }
 
     public virtual void RemoveFromDiagram()
@@ -369,7 +389,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 
     public void RemoveFromFilter(INodeRepository data)
     {
-        Filter.Locations.Remove(this.Identifier);
+        data.PositionData.Remove(data.CurrentFilter, this.Identifier);
     }
 
     public void Rename(IDiagramNode data, string name)

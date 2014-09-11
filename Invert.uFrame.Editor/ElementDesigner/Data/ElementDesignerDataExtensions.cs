@@ -9,7 +9,7 @@ public static class ElementDesignerDataExtensions
     {
         return
             t.GetAllowedDiagramItems(filter)
-                .Where(p => !filter.Locations.Keys.Contains(p.Identifier))
+                .Where(p => !t.PositionData.HasPosition(t.CurrentFilter,p))
                 .ToArray();
     }
     public static IEnumerable<ElementData> GetAllElements(this INodeRepository t)
@@ -23,7 +23,7 @@ public static class ElementDesignerDataExtensions
     }
     public static IEnumerable<IDiagramNode> GetDiagramItems(this IProjectRepository t, IDiagramFilter filter)
     {
-        return filter.FilterItems(t.NodeItems);
+        return filter.FilterItems(t);
     }
 
     //public static IEnumerable<ElementDataBase> GetElements(this IElementDesignerData t)
@@ -46,9 +46,9 @@ public static class ElementDesignerDataExtensions
         return t.NodeItems.OfType<SceneManagerData>();
     }
 
-    public static IEnumerable<ISubSystemData> GetSubSystems(this INodeRepository t)
+    public static IEnumerable<SubSystemData> GetSubSystems(this INodeRepository t)
     {
-        return t.NodeItems.OfType<ISubSystemData>();
+        return t.NodeItems.OfType<SubSystemData>();
     }
 
     public static IEnumerable<ViewComponentData> GetViewComponents(this INodeRepository t)
@@ -88,9 +88,9 @@ public static class ElementDesignerDataExtensions
         }
         designerData.Initialize();
     }
-    public static IEnumerable<IDiagramNode> FilterItems(this IElementDesignerData designerData, IEnumerable<IDiagramNode> allDiagramItems)
+    public static IEnumerable<IDiagramNode> FilterItems(this IElementDesignerData designerData, INodeRepository repository)
     {
-        return designerData.CurrentFilter.FilterItems(allDiagramItems);
+        return designerData.CurrentFilter.FilterItems(repository);
     }   
     public static void FilterLeave(this INodeRepository data)
     {
@@ -135,16 +135,16 @@ public static class ElementDesignerDataExtensions
         return tempName;
     }
 
-    public static IEnumerable<IDiagramNode> FilterItems(this IDiagramFilter filter, IEnumerable<IDiagramNode> allDiagramItems)
+    public static IEnumerable<IDiagramNode> FilterItems(this IDiagramFilter filter, INodeRepository repo)
     {
         
-        foreach (var item in allDiagramItems)
+        foreach (var item in repo.NodeItems)
         {
             if (filter.IsAllowed(item, item.GetType()))
             {
                 if (filter.ImportedOnly && filter != item)
                 {
-                    if (filter.Locations.Keys.Contains(item.Identifier))
+                    if (repo.PositionData.HasPosition(filter,item))
                     {
                         yield return item;
                        
@@ -260,7 +260,7 @@ public static class ElementDesignerDataExtensions
     }
     public static IEnumerable<IDiagramNode> FilterItems(this IProjectRepository designerData, IDiagramFilter filter)
     {
-        return filter.FilterItems(designerData.NodeItems);
+        return filter.FilterItems(designerData);
     }
 
     public static IEnumerable<IViewModelItem> GetAllBaseItems(this INodeRepository designerData, ElementData data)

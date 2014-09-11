@@ -56,7 +56,7 @@ public class UFrameAssetManager : AssetPostprocessor
             path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
         }
 
-        string assetPathAndName = assetName == null ? AssetDatabase.GenerateUniqueAssetPath(path + "/New " + typeof(T).ToString() + ".asset") : path + "/" + assetName + ".asset";
+        string assetPathAndName = assetName == null ? AssetDatabase.GenerateUniqueAssetPath(path + "/New" + typeof(T).ToString() + ".asset") :AssetDatabase.GenerateUniqueAssetPath( path + "/" + assetName + ".asset");
 
         AssetDatabase.CreateAsset(asset, assetPathAndName);
         AssetDatabase.SaveAssets();

@@ -74,6 +74,7 @@ namespace Invert.uFrame.Editor.ViewModels
             {
                 if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
                 {
+                    
                     if (canConnect != null &&
                         !canConnect((TOutput) a.ConnectorFor.DataObject, (TInput) b.ConnectorFor.DataObject))
                         return null;

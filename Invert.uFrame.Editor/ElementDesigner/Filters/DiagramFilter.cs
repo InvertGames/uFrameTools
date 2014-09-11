@@ -4,7 +4,7 @@ using Invert.uFrame.Editor;
 using UnityEngine;
 
 [Serializable]
-public class DefaultFilter : IDiagramFilter,IJsonObject
+public class DiagramFilter : IDiagramFilter,IJsonObject
 {
     private Type[] _allowedTypes;
 
@@ -12,6 +12,22 @@ public class DefaultFilter : IDiagramFilter,IJsonObject
     private FilterLocations _locations = new FilterLocations();
     [SerializeField]
     private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
+
+    [SerializeField]
+    private string _identifier;
+
+    public string Identifier
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_identifier))
+            {
+                _identifier = Guid.NewGuid().ToString();
+            }
+            return _identifier;
+        }
+        private set { _identifier = value; }
+    }
 
     public virtual bool ImportedOnly
     {
@@ -50,12 +66,17 @@ public class DefaultFilter : IDiagramFilter,IJsonObject
 
     public void Serialize(JSONClass cls)
     {
+        cls.Add("Identifier", Identifier);
         cls.Add("Locations", _locations.Serialize());
         cls.Add("CollapsedValues", _collapsedValues.Serialize());
     }
 
     public void Deserialize(JSONClass cls, INodeRepository repository)
     {
+        if (cls["Identifier"] != null)
+        {
+            Identifier = cls["Identifier"].Value;
+        }
         Locations.Deserialize(cls["Locations"].AsObject);
         CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject, repository);
 

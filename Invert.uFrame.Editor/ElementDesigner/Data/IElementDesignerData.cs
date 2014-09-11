@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Invert.uFrame.Editor.Refactoring;
+using UnityEngine;
 
 public interface INodeRepository
 {
@@ -12,6 +13,7 @@ public interface INodeRepository
     void AddNode(IDiagramNode data);
     void RemoveNode(IDiagramNode enumData);
     IDiagramFilter CurrentFilter { get; }
+    FilterPositionData PositionData { get; }
 }
 
 

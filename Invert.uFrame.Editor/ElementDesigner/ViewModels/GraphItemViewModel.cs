@@ -44,6 +44,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public virtual void Select()
         {
+            
             IsSelected = true;
 
         }

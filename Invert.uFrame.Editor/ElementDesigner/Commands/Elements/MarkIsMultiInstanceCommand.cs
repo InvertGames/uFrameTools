@@ -1,6 +1,8 @@
+using Invert.uFrame.Editor.ViewModels;
+
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class MarkIsMultiInstanceCommand : EditorCommand<ElementData>, IDiagramNodeCommand
+    public class MarkIsMultiInstanceCommand : EditorCommand<ElementNodeViewModel>, IDiagramNodeCommand
     {
         public override string Group
         {
@@ -11,24 +13,24 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             get { return "Has Multiple Instances?"; }
         }
 
-        public override string CanPerform(ElementData arg)
+        public override string CanPerform(ElementNodeViewModel arg)
         {
             if (arg == null)
             {
                 return "Must be an element to perform this operation.";
             }
-
+            if (!arg.IsLocal) return "The node muse be local to the current diagram.";
             return null;
         }
 
-        public override bool IsChecked(ElementData arg)
+        public override bool IsChecked(ElementNodeViewModel arg)
         {
             return arg.IsMultiInstance;
         }
 
-        public override void Perform(ElementData arg)
+        public override void Perform(ElementNodeViewModel arg)
         {
-            arg.IsMultiInstance = !arg.IsMultiInstance;
+            arg.GraphItem.IsMultiInstance = !arg.IsMultiInstance;
         }
     }
 }

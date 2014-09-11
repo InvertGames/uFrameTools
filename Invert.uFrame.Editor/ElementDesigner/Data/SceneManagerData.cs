@@ -99,7 +99,7 @@ public class SceneManagerData : DiagramNode
 
     public RenameSceneManagerRefactorer RenameRefactor { get; set; }
 
-    public ISubSystemData SubSystem
+    public SubSystemData SubSystem
     {
         get
         {

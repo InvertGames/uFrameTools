@@ -63,7 +63,7 @@ public class ViewData : DiagramNode, ISubSystemType
     /// <summary>
     /// The name of the view that this view will derive from
     /// </summary>
-    public string BaseViewName
+    public string  BaseViewName
     {
         get
         {
@@ -73,12 +73,7 @@ public class ViewData : DiagramNode, ISubSystemType
             {
                 return viewNode.NameAsView;
             }
-            var baseView = BaseView;
-            if (baseView != null)
-            {
-                return baseView.NameAsView;
-            }
-            var element = baseNode as ElementData;
+            var element = ViewForElement;
             if (element != null)
             {
                 return element.NameAsViewBase;
@@ -112,14 +107,11 @@ public class ViewData : DiagramNode, ISubSystemType
     {
         get
         {
+            
             return Type.GetType(ViewAssemblyQualifiedName);
         }
     }
 
-    public override string AssemblyQualifiedName
-    {
-        get { return uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsView); }
-    }
     public override IEnumerable<Refactorer> Refactorings
     {
         get
@@ -230,19 +222,27 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public IDiagramNode BaseNode
     {
-        get { return Data.NodeItems.FirstOrDefault(p => p.Identifier == ForElementIdentifier); }
+        get { return Data.NodeItems.FirstOrDefault(p => p.Identifier == BaseViewIdentifier); }
     }
 
     public ElementData ViewForElement
     {
         get
         {
-            var bn = BaseNode;
-            if (bn is ElementData)
-                return bn as ElementData;
-            
-            var data = bn as ViewData;
-            return data != null ? data.ViewForElement : null;
+            var bn = ForElementIdentifier;
+            if (bn != null)
+            {
+                var item = Data.NodeItems.OfType<ElementData>().FirstOrDefault(p => p.Identifier == bn);
+                if (item != null)
+                    return item;
+            }
+
+            var baseNode = BaseNode as ViewData;
+            if (baseNode != null)
+            {
+                return baseNode.ViewForElement;
+            }
+            return null;
         }
     }
 

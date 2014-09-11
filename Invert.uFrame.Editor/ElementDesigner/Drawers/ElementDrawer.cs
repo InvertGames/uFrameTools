@@ -50,12 +50,12 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         {
             if (_propertiesHeader == null)
             {
-                _propertiesHeader = Container.Resolve<NodeItemHeader>(null,false,ElementViewModel);
+                _propertiesHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
 
                 _propertiesHeader.Label = "Properties";
-                _propertiesHeader.HeaderType = typeof (ViewModelPropertyData);
+                _propertiesHeader.HeaderType = typeof(ViewModelPropertyData);
                 if (NodeViewModel.IsLocal)
-                _propertiesHeader.AddCommand = Container.Resolve<AddElementPropertyCommand>();
+                    _propertiesHeader.AddCommand = Container.Resolve<AddElementPropertyCommand>();
             }
             return _propertiesHeader;
         }
@@ -79,14 +79,14 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     {
         get
         {
-            
-             if (_collectionsHeader == null)
+
+            if (_collectionsHeader == null)
             {
                 _collectionsHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
                 _collectionsHeader.Label = "Collections";
-                _collectionsHeader.HeaderType = typeof (ViewModelCollectionData);
+                _collectionsHeader.HeaderType = typeof(ViewModelCollectionData);
                 if (NodeViewModel.IsLocal)
-                _collectionsHeader.AddCommand = Container.Resolve<AddElementCollectionCommand>();
+                    _collectionsHeader.AddCommand = Container.Resolve<AddElementCollectionCommand>();
             }
             return _collectionsHeader;
         }
@@ -103,7 +103,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
                 _commandsHeader.Label = "Commands";
                 _commandsHeader.HeaderType = typeof(ViewModelCommandData);
                 if (NodeViewModel.IsLocal)
-                _commandsHeader.AddCommand = Container.Resolve<AddElementCommandCommand>();
+                    _commandsHeader.AddCommand = Container.Resolve<AddElementCommandCommand>();
             }
             return _commandsHeader;
         }
@@ -122,6 +122,13 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     //    get { return _inheritanceConnector ?? (_inheritanceConnector = new DefaultConnectionPointDrawer()); }
     //    set { _inheritanceConnector = value; }
     //}
+    public override void Draw(float scale)
+    {
+        base.Draw(scale); 
+        if (_isMultiInstance)
+        EditorGUI.LabelField(new Rect(Bounds.x + Bounds.width - 30f, Bounds.y - 18f, 26f, 15f).Scale(Scale), "*",
+             ElementDesignerStyles.Tag1);
+    }
 
     protected override GUIStyle GetHighlighter()
     {
@@ -145,6 +152,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     {
         base.Refresh(position);
 
+        _isMultiInstance = NodeViewModel.IsMultiInstance;
         _maxNameWidth = MaxNameWidth(EditorStyles.label);
         _maxTypeWidth = MaxTypeWidth(EditorStyles.label);
 
@@ -154,12 +162,13 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     private float _maxTypeWidth;
     private float _maxNameWidth;
     private NodeItemHeader _computedHeader;
-    
+    private bool _isMultiInstance;
+
 
     public virtual float MaxTypeWidth(GUIStyle style)
     {
         var maxLengthItem = Vector2.zero;
-  
+
         if (ViewModel.AllowCollapsing && !ViewModel.IsCollapsed)
         {
             foreach (var item in NodeViewModel.ViewModelItems)
@@ -178,7 +187,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
                 }
             }
         }
-        return maxLengthItem.x +5;
+        return maxLengthItem.x + 5;
 
     }
     public float MaxNameWidth(GUIStyle style)
@@ -234,14 +243,14 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     //        {
     //            uFrameEditor.ExecuteCommand(command);
     //        }
-         
 
-         
+
+
     //    }
     //    base.DrawSelectedItem(nodeItem, diagram);
     //}
 
- 
+
     //protected override void DrawItemLabel(IDiagramNodeItem item)
     //{
     //    var vmItem = item as IViewModelItem;
@@ -291,10 +300,10 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
 
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
-       // base.GetContentDrawers(drawers);
+        // base.GetContentDrawers(drawers);
 
         drawers.Add(PropertiesHeader);
-        foreach (var item in ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>().Where(p=>!p.IsComputed))
+        foreach (var item in ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>().Where(p => !p.IsComputed))
         {
             drawers.Add(uFrameEditor.CreateDrawer(item));
         }
@@ -308,9 +317,9 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
             {
                 drawers.Add(uFrameEditor.CreateDrawer(item));
             }
-            
+
         }
-        
+
         drawers.Add(CollectionsHeader);
         foreach (var item in ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>())
         {
@@ -321,8 +330,8 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         {
             drawers.Add(uFrameEditor.CreateDrawer(item));
         }
-        
-      
+
+
         //var properties = NodeViewModel.Properties.Where(p=>!p.IsComputed).Cast<IDiagramNodeItem>().ToArray();
         //yield return new DiagramSubItemGroup()
         //{

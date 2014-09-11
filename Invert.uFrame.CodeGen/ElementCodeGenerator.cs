@@ -24,7 +24,7 @@ public class ElementCodeGenerator : CodeGenerator
             var computeMethod = new CodeMemberMethod()
             {
                 Name = computedProperty.NameAsComputeMethod,
-                ReturnType = new CodeTypeReference(computedProperty.RelatedTypeName)
+                ReturnType = new CodeTypeReference(computedProperty.RelatedTypeNameOrViewModel)
             };
             if (Settings.GenerateControllers)
             {
@@ -41,7 +41,7 @@ public class ElementCodeGenerator : CodeGenerator
             }
 
             computeMethod.Statements.Add(
-                new CodeSnippetExpression(string.Format("return default({0})", computedProperty.RelatedTypeName)));
+                new CodeSnippetExpression(string.Format("return default({0})", computedProperty.RelatedTypeNameOrViewModel)));
 
             tDecleration.Members.Add(computeMethod);
         }

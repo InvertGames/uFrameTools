@@ -47,11 +47,7 @@ public class AddBindingWindow : SearchableScrollWindow
 
     public override void OnGUI()
     {
-        if (_ViewData != null)
-        {
-            this.Close();
-            return;
-        }
+      
         if (_ViewData == null)
         {
 
@@ -76,7 +72,8 @@ public class AddBindingWindow : SearchableScrollWindow
 
 
         }
-        if (_ViewData.HasElement)
+   
+        if (!_ViewData.HasElement)
         {
             EditorGUILayout.HelpBox("This view must be associated with an element in order to add bindings.",
                 MessageType.Error);

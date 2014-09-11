@@ -82,13 +82,14 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public override Vector2 Position
         {
-            get { return GraphItemObject.Location; }
+            get
+            {
+                return DiagramViewModel.CurrentRepository.GetItemLocation(GraphItemObject);
+                //return GraphItemObject.Location;
+            }
             set
             {
-
-
-                GraphItemObject.Location = value;
-                DiagramViewModel.MarkDirty();
+                DiagramViewModel.CurrentRepository.SetItemLocation(GraphItemObject,value);
             }
         }
 
@@ -271,7 +272,8 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public void Hide()
         {
-            DiagramViewModel.Data.CurrentFilter.Locations.Remove(GraphItemObject.Identifier);
+            DiagramViewModel.CurrentRepository.HideNode(GraphItemObject.Identifier);
+            //DiagramViewModel.Data.CurrentFilter.Locations.Remove(GraphItemObject.Identifier);
         }
     }
 }

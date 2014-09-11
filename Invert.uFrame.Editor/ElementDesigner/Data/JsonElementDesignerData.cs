@@ -8,6 +8,14 @@ using UnityEngine;
 
 public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, ISerializationCallbackReceiver
 {
+
+    public FilterPositionData PositionData
+    {
+        get { return _positionData ?? (_positionData = new FilterPositionData()); }
+        set { _positionData = value; }
+    }
+
+
     [SerializeField,HideInInspector]
     public string _jsonData;
 
@@ -57,6 +65,15 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         if (data.Settings != null)
             // Add the settings
             root.AddObject("Settings", data.Settings);
+
+        var d = data as JsonElementDesignerData;
+        if (d != null)
+        {
+            if (d.PositionData != null)
+            {
+                root.AddObject("PositionData",d.PositionData);
+            }
+        }
         // Store the root filter
         root.AddObject("SceneFlow", data.SceneFlowFilter);
         // Nodes
@@ -112,6 +129,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
     private FilterState _filterState = new FilterState();
 
     private bool _errors;
+    private FilterPositionData _positionData;
 
     public SceneFlowFilter SceneFlowFilter
     {
@@ -150,6 +168,10 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         //        item.Locations.Remove(item.Identifier);
         //    }
         //}
+        foreach (var item in PositionData.Positions)
+        {
+            item.Value.Remove(enumData.Identifier);
+        }
         Nodes.Remove(enumData);
     }
 
@@ -202,6 +224,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
      
         if (jsonData == null) return;
 
+        
         var jsonNode = JSONNode.Parse(jsonData);
      
         if (jsonNode == null)
@@ -221,6 +244,10 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         if (jsonNode["SceneFlow"] is JSONClass)
             SceneFlowFilter = jsonNode["SceneFlow"].DeserializeObject(this) as SceneFlowFilter;
 
+        if (jsonNode["PositionData"] != null)
+            PositionData = jsonNode["PositionData"].DeserializeObject(this) as FilterPositionData;
+            
+
         if (jsonNode["FilterState"] is JSONClass)
         {
             FilterState = new FilterState();
@@ -232,5 +259,113 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
             Settings = new ElementDiagramSettings();
             Settings.Deserialize(jsonNode["Settings"].AsObject, this);
         }
+        if (string.IsNullOrEmpty(Version))
+        {
+            foreach (var filter in NodeItems.OfType<IDiagramFilter>().Concat(new [] {SceneFlowFilter}).ToArray())
+            {
+                var index = 0;
+                foreach (var itemLoction in filter.Locations.Keys)
+                {
+                    PositionData[filter, itemLoction] = filter.Locations.Values[index];
+                    index++;
+                }
+            }
+        }
+
+        Version = uFrameVersionProcessor.CURRENT_VERSION;
+    }
+}
+
+public class FilterPositionData : IJsonObject
+{
+    private Dictionary<string, FilterLocations> _positions;
+
+    public Dictionary<string, FilterLocations> Positions
+    {
+        get { return _positions ?? (_positions = new Dictionary<string, FilterLocations>()); }
+        set { _positions = value; }
+    }
+
+    public bool HasPosition(IDiagramFilter filter, IDiagramNode node)
+    {
+        if (Positions.ContainsKey(filter.Identifier))
+        {
+            var filterData = Positions[filter.Identifier];
+            if (filterData.Keys.Contains(node.Identifier)) return true;
+        }
+        return false;
+    }
+    public Vector2 this[IDiagramFilter filter, IDiagramNode node]
+    {
+        get
+        {
+            if (Positions.ContainsKey(filter.Identifier))
+            {
+                var filterData = Positions[filter.Identifier];
+                if (filterData.Keys.Contains(node.Identifier))
+                    return filterData[node];
+
+            
+            }
+            return Vector2.zero;
+        }
+        set
+        {
+            if (!Positions.ContainsKey(filter.Identifier))
+            {
+                Positions.Add(filter.Identifier,new FilterLocations());
+            }
+
+            Positions[filter.Identifier][node] = value;
+        }
+    }
+    public Vector2 this[IDiagramFilter filter, string node]
+    {
+        get
+        {
+            if (Positions.ContainsKey(filter.Identifier))
+            {
+                var filterData = Positions[filter.Identifier];
+                if (filterData.Keys.Contains(node))
+                    return filterData[node];
+
+
+            }
+            return Vector2.zero;
+        }
+        set
+        {
+            if (!Positions.ContainsKey(filter.Identifier))
+            {
+                Positions.Add(filter.Identifier, new FilterLocations());
+            }
+
+            Positions[filter.Identifier][node] = value;
+        }
+    }
+    public void Serialize(JSONClass cls)
+    {
+        foreach (var item in Positions)
+        {
+            cls.Add(item.Key, item.Value.Serialize());
+        }
+    }
+
+    public void Deserialize(JSONClass cls, INodeRepository repository)
+    {
+
+        Positions.Clear();
+        foreach (KeyValuePair<string, JSONNode> cl in cls)
+        {
+            var locations = new FilterLocations();
+            if (!(cl.Value is JSONClass)) continue;
+            locations.Deserialize(cl.Value.AsObject);
+            Positions.Add(cl.Key, locations);
+        }
+    }
+
+    public void Remove(IDiagramFilter currentFilter, string identifier)
+    {
+        Positions[currentFilter.Identifier].Remove(identifier);
     }
 }

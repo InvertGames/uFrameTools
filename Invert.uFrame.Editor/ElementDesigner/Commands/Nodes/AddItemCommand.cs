@@ -56,6 +56,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             {
                 var newNodeData = Activator.CreateInstance(SelectedOption.Value as Type) as IDiagramNode;
                 newNodeData.Name = uFrameEditor.CurrentProject.GetUniqueName(SelectedOption.Name.Replace("Add ",""));
+                node.CurrentRepository.SetItemLocation(newNodeData,uFrameEditor.CurrentMouseEvent.MouseDownPosition);
                 node.AddNode(newNodeData);
             }
         }

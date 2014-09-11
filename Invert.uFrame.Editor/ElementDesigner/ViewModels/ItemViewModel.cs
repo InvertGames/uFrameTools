@@ -23,6 +23,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             NodeViewModel = nodeViewModel;
         }
+        
         public DiagramNodeViewModel NodeViewModel { get; set; }
         public IDiagramNodeItem NodeItem
         {
@@ -63,13 +64,18 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
 
-        public bool IsSelectable
+        public bool IsEditable
         {
             get { return true; }
         }
 
         public IEditorCommand RemoveItemCommand { get; set; }
         public string Highlighter { get; set; }
+
+        public virtual bool AllowRemoving
+        {
+            get { return true; }
+        }
 
         public void Rename(string newName)
         {
@@ -82,6 +88,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public override void Select()
         {
+            NodeViewModel.Select();
             foreach (var item in NodeViewModel.ContentItems)
             {
                 item.IsSelected = false;

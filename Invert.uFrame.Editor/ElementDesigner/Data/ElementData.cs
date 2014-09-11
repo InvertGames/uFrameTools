@@ -127,11 +127,13 @@ public class ElementData : ElementDataBase, IDesignerType
         }
     }
 
-    public Type CurrentType
+    public override string FullName
     {
         get
         {
-            return Type.GetType(AssemblyQualifiedName);
+            if (string.IsNullOrEmpty(Namespace)) return NameAsViewModel;
+
+            return string.Format("{0}.{1}", Namespace, NameAsViewModel);
         }
     }
 

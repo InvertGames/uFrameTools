@@ -9,7 +9,7 @@ public class SceneManagerDataGeneratorFactory : DesignerGeneratorFactory<SceneMa
         if (item.SubSystem == null) yield break;
         yield return new SceneManagerGenerator()
         {
-            Filename = pathStrategy.GetControllersFileName(diagramData.Name),
+            Filename = pathStrategy.GetSceneManagersFilename(diagramData.Name),
             Data = item,
             DiagramData = diagramData,
             IsDesignerFile = true,

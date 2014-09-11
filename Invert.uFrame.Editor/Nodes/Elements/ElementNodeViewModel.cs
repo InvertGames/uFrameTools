@@ -13,11 +13,11 @@ namespace Invert.uFrame.Editor.ViewModels
         }
 
         public ConnectorViewModel InheritanceOutput { get; set; }
-
+        
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
-
+            
         }
 
         public override bool ShowSubtitle

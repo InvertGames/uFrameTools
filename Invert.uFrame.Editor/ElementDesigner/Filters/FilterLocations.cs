@@ -37,7 +37,31 @@ public class FilterLocations
             }
         }
     }
+    public Vector2 this[string node]
+    {
+        get
+        {
+            var indexOf = Keys.IndexOf(node);
+            if (indexOf > -1)
+            {
+                return Values[indexOf];
+            }
 
+            return Vector2.zero;
+        }
+        set
+        {
+            var indexOf = Keys.IndexOf(node);
+            if (indexOf != -1)
+            {
+                Values[indexOf] = value;
+            }
+            else
+            {
+                Add(node, value);
+            }
+        }
+    }
     public List<string> Keys
     {
         get { return _keys; }
@@ -54,8 +78,12 @@ public class FilterLocations
     {
         if (key == null) return;
         var index = Keys.IndexOf(key);
-        Keys.RemoveAt(index);
-        Values.RemoveAt(index);
+        if (index > -1)
+        {
+            Keys.RemoveAt(index);
+            Values.RemoveAt(index);
+        }
+        
     }
 
     protected void Add(string key, Vector2 value)
@@ -89,7 +117,6 @@ public class FilterLocations
     {
         foreach (KeyValuePair<string, JSONNode> cl in cls)
         {
-
             Add(cl.Key, DeserializeValue(cl.Value));
         }
     }

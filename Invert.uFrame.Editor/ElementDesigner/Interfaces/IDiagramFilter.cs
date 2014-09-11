@@ -6,6 +6,7 @@ using Invert.uFrame.Editor;
 
 public interface IDiagramFilter
 {
+    string Identifier { get; }
     bool ImportedOnly { get; }
 
     FilterLocations Locations { get; set; }
@@ -20,7 +21,7 @@ public static class FilterExtensions
 {
     public static IEnumerable<IDiagramNode> GetContainingNodes(this IDiagramFilter filter, INodeRepository repository)
     {
-        return repository.NodeItems.Where(node => node != filter && filter.Locations.Keys.Contains(node.Identifier));
+        return repository.NodeItems.Where(node => node != filter && repository.PositionData.HasPosition(filter,node));
     }
     public static bool IsAllowed(this IDiagramFilter filter, object item, Type t)
     {

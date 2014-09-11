@@ -100,12 +100,12 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
 
         drawers.Add(BindingsHeader);
 
-        //foreach (var item in this.NodeViewModel.Bindings)
-        //{
-        //    var drawer = uFrameEditor.CreateDrawer(item);
-        //    if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
-        //    drawers.Add(drawer);
-        //}
+        foreach (var item in this.NodeViewModel.Bindings)
+        {
+            var drawer = new ItemDrawer(item);
+            //if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
+            drawers.Add(drawer);
+        }
         //if (NodeViewModel.GraphItem.BaseNode is ElementData)
         //{
         //    yield return new DiagramSubItemGroup()

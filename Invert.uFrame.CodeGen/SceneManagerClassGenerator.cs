@@ -175,10 +175,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
 
                 }
             }
-            setupMethod.Statements.Add(
-                new CodeMethodInvokeExpression(
-                    new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Container"),
-                    "InjectAll"));
+            
 
             foreach (var element in baseElements)
             {
@@ -244,6 +241,12 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                     setupMethod.Statements.Add(condition);
                 }
             }
+
+            setupMethod.Statements.Add(
+                new CodeMethodInvokeExpression(
+                    new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Container"),
+                    "InjectAll"));
+
             var settingsField2 = new CodeMemberField(sceneManager.NameAsSettings, sceneManager.NameAsSettingsField)
             {
                 Attributes = MemberAttributes.Public,

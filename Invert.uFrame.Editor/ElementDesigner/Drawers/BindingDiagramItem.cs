@@ -16,4 +16,9 @@ public class BindingDiagramItem : ItemViewModel
 
     public string MethodName { get; set; }
 
+    public override string Name
+    {
+        get { return MethodName; }
+    }
+    
 }

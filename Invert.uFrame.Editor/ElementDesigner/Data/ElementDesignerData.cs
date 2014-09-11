@@ -22,6 +22,8 @@ public class ElementDesignerData : ScriptableObject,  IElementDesignerData
         }
     }
 
+    public FilterPositionData PositionData { get; private set; }
+
     public IProjectRepository Repository { get; set; }
 
     private string _identifier;

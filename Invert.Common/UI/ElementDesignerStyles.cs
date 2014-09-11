@@ -81,6 +81,7 @@ namespace Invert.Common
         private static Texture2D _circleRightTexture;
         private static Texture2D _circleLeftTexture;
         private static GUIStyle _boxHighlighter5;
+        private static GUIStyle _tag1;
 
         public static float Scale
         {
@@ -103,6 +104,24 @@ namespace Invert.Common
                 }
 
 
+            }
+        }
+        public static GUIStyle Tag1
+        {
+            get
+            {
+                if (_tag1 == null)
+                    _tag1 = new GUIStyle
+                    {
+                        normal = { background = GetSkinTexture("Tag1"), textColor = Color.white },
+                        padding = new RectOffset(7, 3, 3, 3),
+                        fixedHeight = 19f * Scale,
+                        stretchWidth = true,
+                        fontSize = 18,
+                        fontStyle = FontStyle.Bold
+                        
+                    };
+                return _tag1;
             }
         }
         public static GUIStyle AddButtonStyle

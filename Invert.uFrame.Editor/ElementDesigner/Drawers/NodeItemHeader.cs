@@ -66,7 +66,7 @@ public class NodeItemHeader : Drawer<DiagramNodeViewModel>
         {
             if (GUI.Button(_AddButtonRect.Scale(scale), string.Empty, ElementDesignerStyles.AddButtonStyle))
             {
-                this.ViewModel.IsSelected = true;
+                this.ViewModel.Select();
                 uFrameEditor.ExecuteCommand(AddCommand);
             }    
         }
