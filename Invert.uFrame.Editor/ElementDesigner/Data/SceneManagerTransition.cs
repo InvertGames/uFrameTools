@@ -103,6 +103,12 @@ public class SceneManagerTransition : IDiagramNodeItem
         Name = name;
     }
 
+    public void NodeRemoved(IDiagramNode item)
+    {
+        
+    }
+
+
     public void Disconnect()
     {
         ToIdentifier = null;

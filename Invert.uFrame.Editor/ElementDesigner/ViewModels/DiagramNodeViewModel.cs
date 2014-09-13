@@ -143,7 +143,7 @@ namespace Invert.uFrame.Editor.ViewModels
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
-            IsLocal = uFrameEditor.CurrentProject.CurrentDiagram.NodeItems.Contains(GraphItemObject);
+            IsLocal = uFrameEditor.CurrentProject.CurrentGraph.NodeItems.Contains(GraphItemObject);
 
         }
         public bool IsLocal { get; set; }
@@ -275,5 +275,7 @@ namespace Invert.uFrame.Editor.ViewModels
             DiagramViewModel.CurrentRepository.HideNode(GraphItemObject.Identifier);
             //DiagramViewModel.Data.CurrentFilter.Locations.Remove(GraphItemObject.Identifier);
         }
+
+       
     }
 }

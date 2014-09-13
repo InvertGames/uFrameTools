@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Invert.uFrame.Editor.ViewModels;
@@ -82,6 +83,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
             foreach (var nodeType in uFrameEditor.AllowedFilterNodes[viewModel.CurrentRepository.CurrentFilter.GetType()])
             {
+                UnityEngine.Debug.Log(nodeType.Name);
                 yield return new UFContextMenuItem()
                 {
                     Name = "Add " + nodeType.Name.Replace("Data",""),

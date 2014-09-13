@@ -80,7 +80,7 @@ namespace Invert.uFrame.Code.Bindings
     public interface IBindingGenerator
     {
         string MethodName { get; }
-        IViewModelItem Item { get; set; }
+        ITypeDiagramItem Item { get; set; }
         bool IsApplicable { get; }
         bool IsOverride { get; set; }
         bool CallBase { get; set; }

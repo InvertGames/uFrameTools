@@ -1,19 +1,21 @@
+using Invert.uFrame.Editor.ViewModels;
+
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class MoveUpCommand : EditorCommand<IDiagramNodeItem>, IDiagramNodeItemCommand, IKeyBindable
+    public class MoveUpCommand : EditorCommand<ItemViewModel>, IDiagramNodeItemCommand, IKeyBindable
     {
         public override string Name
         {
             get { return "Move Up"; }
         }
-        public override void Perform(IDiagramNodeItem node)
+        public override void Perform(ItemViewModel node)
         {
-            node.Node.MoveItemUp(node);
+            node.NodeItem.Node.MoveItemUp(node.NodeItem);
         }
 
-        public override string CanPerform(IDiagramNodeItem node)
+        public override string CanPerform(ItemViewModel node)
         {
-            if (node != null && node.Node != null) return null;
+            if (node != null && node.NodeItem != null) return null;
             return "Can't move item.";
         }
     }

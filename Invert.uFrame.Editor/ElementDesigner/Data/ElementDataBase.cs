@@ -93,7 +93,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
             return
                 Data.NodeItems.ToArray().OfType<ElementDataBase>()
                     .SelectMany(p => p.Collections)
-                    .Any(p => p.RelatedType == Identifier);// || AllBaseTypes.Any(p =>p!=this && p.IsMultiInstance);
+                    .Any(p => p.RelatedType == Identifier) || AllBaseTypes.Any(p =>p!=this && p.IsMultiInstance);
         }
     }
 
@@ -204,13 +204,13 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         }
     }
 
-    public IEnumerable<IViewModelItem> ViewModelItems
+    public IEnumerable<ITypeDiagramItem> ViewModelItems
     {
         get
         {
-            return Properties.Cast<IViewModelItem>()
-                .Concat(Collections.Cast<IViewModelItem>())
-                .Concat(Commands.Cast<IViewModelItem>());
+            return Properties.Cast<ITypeDiagramItem>()
+                .Concat(Collections.Cast<ITypeDiagramItem>())
+                .Concat(Commands.Cast<ITypeDiagramItem>());
         }
     }
 

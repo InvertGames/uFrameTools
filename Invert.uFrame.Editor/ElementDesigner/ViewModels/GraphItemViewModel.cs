@@ -12,6 +12,12 @@ namespace Invert.uFrame.Editor.ViewModels
         }
     }
 
+    public class ConnectorHeaderViewModel : GraphItemViewModel
+    {
+        public override Vector2 Position { get; set; }
+        public override string Name { get; set; }
+
+    }
     public abstract class GraphItemViewModel : ViewModel
     {
         public abstract Vector2 Position { get; set; }

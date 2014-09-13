@@ -196,6 +196,19 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     {
         Name = name;
     }
-    
-   
+
+    public virtual void NodeRemoved(IDiagramNode item)
+    {
+        if (this is ITypeDiagramItem)
+        {
+            var typeItem = this as ITypeDiagramItem;
+            if (typeItem != null && typeItem.RelatedType == item.Identifier)
+            {
+                typeItem.RemoveType();
+            }
+        }
+        
+    }
+
+
 }

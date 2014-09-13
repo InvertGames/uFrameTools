@@ -16,7 +16,7 @@ public class SubSystemViewModel : DiagramNodeViewModel
     {
         var d = data ?? uFrameEditor.CurrentProject.CreateNewDiagram();
         d.AddNode(GraphItemObject);
-        d.PositionData[d.SceneFlowFilter, GraphItemObject.Identifier] = Position;
+        d.PositionData[d.RootFilter, GraphItemObject.Identifier] = Position;
         uFrameEditor.CurrentProject.RemoveNode(GraphItemObject);
         uFrameEditor.DesignerWindow.SwitchDiagram(data);
     }

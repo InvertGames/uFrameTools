@@ -6,8 +6,26 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, ISerializationCallbackReceiver
+public class GraphData : ScriptableObject, IElementDesignerData, ISerializationCallbackReceiver
 {
+    [SerializeField,HideInInspector]
+    public string _jsonData;
+
+    [NonSerialized]
+    private List<IDiagramNode> _nodes = new List<IDiagramNode>();
+
+    private string _identifier;
+    private List<Refactorer> _refactorings = new List<Refactorer>();
+
+    [NonSerialized]
+    private ElementDiagramSettings _settings = new ElementDiagramSettings();
+
+    [NonSerialized]
+    private FilterState _filterState = new FilterState();
+
+    private bool _errors;
+    private FilterPositionData _positionData;
+   
 
     public FilterPositionData PositionData
     {
@@ -15,23 +33,13 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         set { _positionData = value; }
     }
 
-
-    [SerializeField,HideInInspector]
-    public string _jsonData;
-
-    [NonSerialized]
-    private List<IDiagramNode> _nodes = new List<IDiagramNode>();
-
-    [NonSerialized]
-    private SceneFlowFilter _sceneFlowFilter = new SceneFlowFilter();
-
     public IDiagramFilter CurrentFilter
     {
         get
         {
             if (FilterState.FilterStack.Count < 1)
             {
-                return SceneFlowFilter;
+                return RootFilter;
             }
             return FilterState.FilterStack.Peek();
         }
@@ -44,6 +52,61 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         get { return _nodes; }
         set { _nodes = value; }
     }
+
+    public string Identifier
+    {
+        get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; }
+        set { _identifier = value; }
+    }
+
+    public ElementDiagramSettings Settings
+    {
+        get { return _settings; }
+        set { _settings = value; }
+    }
+
+    public string Name
+    {
+        get { return Regex.Replace(name, "[^a-zA-Z0-9_.]+", ""); }
+    }
+
+    public string Namespace { get; set; }
+    public string Version { get; set; }
+    public int RefactorCount { get; set; }
+
+    public IEnumerable<IDiagramNode> NodeItems
+    {
+        get
+        {
+            return Nodes;
+        }
+    }
+
+    public FilterState FilterState
+    {
+        get { return _filterState; }
+        set { _filterState = value; }
+    }
+
+    public virtual IDiagramFilter RootFilter
+    {
+        get { return NodeItems.FirstOrDefault() as IDiagramFilter; }
+        set
+        {
+            if (Nodes.Count < 1)
+            {
+                Nodes.Insert(0,value as IDiagramNode);
+            }
+        }
+    }
+
+    public bool Errors
+    {
+        get { return _errors; }
+        set { _errors = value; }
+    }
+
+    public Exception Error { get; set; }
 
     public JSONNode Serialize()
     {
@@ -66,7 +129,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
             // Add the settings
             root.AddObject("Settings", data.Settings);
 
-        var d = data as JsonElementDesignerData;
+        var d = data as GraphData;
         if (d != null)
         {
             if (d.PositionData != null)
@@ -75,73 +138,10 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
             }
         }
         // Store the root filter
-        root.AddObject("SceneFlow", data.SceneFlowFilter);
+        root.AddObject("SceneFlow", data.RootFilter as IJsonObject);
         // Nodes
         root.AddObjectArray("Nodes", data.NodeItems);
         return root;
-    }
-
-    private string _identifier;
-
-    public string Identifier
-    {
-        get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; }
-        set { _identifier = value; }
-    }
-
-    public ElementDiagramSettings Settings
-    {
-        get { return _settings; }
-        set { _settings = value; }
-    }
-
-    public string Name
-    {
-        get { return Regex.Replace(name, "[^a-zA-Z0-9_.]+", ""); }
-    }
-
-    public string Namespace { get; set; }
-
-    public string Version { get; set; }
-
-    public int RefactorCount { get; set; }
-
-    public IEnumerable<IDiagramNode> NodeItems
-    {
-        get
-        {
-            return Nodes;
-        }
-    }
-
-    public FilterState FilterState
-    {
-        get { return _filterState; }
-        set { _filterState = value; }
-    }
-
-    private List<Refactorer> _refactorings = new List<Refactorer>();
-
-    [NonSerialized]
-    private ElementDiagramSettings _settings = new ElementDiagramSettings();
-
-    [NonSerialized]
-    private FilterState _filterState = new FilterState();
-
-    private bool _errors;
-    private FilterPositionData _positionData;
-
-    public SceneFlowFilter SceneFlowFilter
-    {
-        get { return _sceneFlowFilter; }
-        set { _sceneFlowFilter = value; }
-    }
-
-
-    public bool Errors
-    {
-        get { return _errors; }
-        set { _errors = value; }
     }
 
     public void Initialize()
@@ -217,8 +217,6 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         }
     }
 
-    public Exception Error { get; set; }
-
     private void Deserialize(string jsonData)
     {
      
@@ -242,7 +240,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
             Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>(this));
 
         if (jsonNode["SceneFlow"] is JSONClass)
-            SceneFlowFilter = jsonNode["SceneFlow"].DeserializeObject(this) as SceneFlowFilter;
+            RootFilter = jsonNode["SceneFlow"].DeserializeObject(this) as DiagramFilter;
 
         if (jsonNode["PositionData"] != null)
             PositionData = jsonNode["PositionData"].DeserializeObject(this) as FilterPositionData;
@@ -261,7 +259,7 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         }
         if (string.IsNullOrEmpty(Version))
         {
-            foreach (var filter in NodeItems.OfType<IDiagramFilter>().Concat(new [] {SceneFlowFilter}).ToArray())
+            foreach (var filter in NodeItems.OfType<IDiagramFilter>().Concat(new [] {RootFilter}).ToArray())
             {
                 var index = 0;
                 foreach (var itemLoction in filter.Locations.Keys)
@@ -273,6 +271,25 @@ public class JsonElementDesignerData : ScriptableObject, IElementDesignerData, I
         }
 
         Version = uFrameVersionProcessor.CURRENT_VERSION;
+    }
+}
+
+public class ElementsGraph : GraphData
+{
+
+    [NonSerialized]
+    protected SceneFlowFilter _sceneFlowFilter;
+
+    public SceneFlowFilter SceneFlowFilter
+    {
+        get { return _sceneFlowFilter ?? (_sceneFlowFilter = new SceneFlowFilter()); }
+        set { _sceneFlowFilter = value; }
+    }
+
+    public override IDiagramFilter RootFilter
+    {
+        get { return SceneFlowFilter; }
+        set { SceneFlowFilter = value as SceneFlowFilter; }
     }
 }
 

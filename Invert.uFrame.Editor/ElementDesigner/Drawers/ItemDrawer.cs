@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class ItemDrawer : Drawer
 {
-    public ItemDrawer(GraphItemViewModel viewModelObject) : base(viewModelObject)
+    public ItemDrawer(GraphItemViewModel viewModelObject)
+        : base(viewModelObject)
     {
     }
 
@@ -56,7 +57,7 @@ public class ItemDrawer : Drawer
     }
     public GUIStyle TextStyle
     {
-        get { return _textStyle ?? (_textStyle = ElementDesignerStyles.Item4); }
+        get { return _textStyle ?? (_textStyle = ElementDesignerStyles.ClearItemStyle); }
         set { _textStyle = value; }
     }
 
@@ -87,14 +88,14 @@ public class ItemDrawer : Drawer
         var width = textSize.x + (Padding * 2);
         var height = textSize.y + (Padding * 2);
 
-        this.Bounds = new Rect(position.x,position.y, width, height);
-        
+        this.Bounds = new Rect(position.x, position.y, width, height);
+
 
     }
 
     public virtual void DrawOption()
     {
-        
+
     }
     public override void Draw(float scale)
     {
@@ -106,9 +107,9 @@ public class ItemDrawer : Drawer
 
         if (ItemViewModel.IsSelected && ItemViewModel.IsEditable)
         {
-           
-            
-            GUILayout.BeginArea(Bounds);
+
+
+            GUILayout.BeginArea(Bounds.Scale(scale));
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.BeginHorizontal();
             DrawOption();
@@ -120,29 +121,30 @@ public class ItemDrawer : Drawer
                 //uFrameEditor.ExecuteCommand(p => );
             }
             if (ItemViewModel.AllowRemoving)
-            if (GUILayout.Button(string.Empty, UBStyles.RemoveButtonStyle.Scale(scale)))
-            {
-                uFrameEditor.ExecuteCommand(new RemoveNodeItemCommand());
-            }
+                if (GUILayout.Button(string.Empty, UBStyles.RemoveButtonStyle.Scale(scale)))
+                {
+                    uFrameEditor.ExecuteCommand(new RemoveNodeItemCommand());
+                }
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
         }
         else
         {
-          
+
             GUI.Box(Bounds.Scale(scale), string.Empty, SelectedItemStyle);
-            GUILayout.BeginArea(Bounds);
+            GUILayout.BeginArea(Bounds.Scale(scale));
             EditorGUILayout.BeginHorizontal();
             DrawOption();
-            var style = new GUIStyle(TextStyle);
-            style.normal.textColor = BackgroundStyle.normal.textColor;
-            GUILayout.Label(ItemViewModel.Name, style);
+            //var style = new GUIStyle(TextStyle);
+            //style.normal.textColor = BackgroundStyle.normal.textColor;
+
+            GUILayout.Label(ItemViewModel.Name, ElementDesignerStyles.ClearItemStyle);
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
         }
         if (!string.IsNullOrEmpty(ItemViewModel.Highlighter))
         {
-            var highlighterPosition = new Rect(Bounds) {width = 4};
+            var highlighterPosition = new Rect(Bounds) { width = 4 };
             highlighterPosition.y += 2;
             highlighterPosition.x += 2;
             highlighterPosition.height = Bounds.height - 6;
@@ -155,11 +157,37 @@ public class ItemDrawer : Drawer
 
     protected virtual void DrawSelectedItem(IDiagramNodeItem nodeItem)
     {
-       
+
     }
 
     protected virtual void DrawSelectedItemLabel(IDiagramNodeItem nodeItem)
     {
-      
+
+    }
+}
+
+public class InputHeaderDrawer : Drawer<GraphItemViewModel>
+{
+    public InputHeaderDrawer(GraphItemViewModel viewModelObject)
+        : base(viewModelObject)
+    {
+
+    }
+    public override Rect Bounds
+    {
+        get { return ViewModelObject.Bounds; }
+        set { ViewModelObject.Bounds = value; }
+    }
+    public override void Refresh(Vector2 position)
+    {
+        base.Refresh(position);
+        Bounds = new Rect(position.x + 25, position.y, 100, 28);
+    }
+
+    public override void Draw(float scale)
+    {
+        base.Draw(scale);
+
+        GUI.Label(Bounds.Scale(scale), ViewModel.Name,ElementDesignerStyles.HeaderStyle);
     }
 }

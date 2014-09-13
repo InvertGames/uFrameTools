@@ -241,38 +241,38 @@ public static class ElementDesignerDataExtensions
         //    designerData.Links.AddRange(viewModelData.GetLinks(diagramItems));
         //}
     }
-    public static IEnumerable<ElementDataBase> GetAssociatedElementsInternal(this INodeRepository designerData, ElementData data)
-    {
-        var derived = GetAllBaseItems(designerData, data);
-        foreach (var viewModelItem in derived)
-        {
-            var element = GetElement(designerData,viewModelItem);
-            if (element != null)
-            {
-                yield return element;
-                var subItems = GetAssociatedElementsInternal(designerData, element);
-                foreach (var elementDataBase in subItems)
-                {
-                    yield return elementDataBase;
-                }
-            }
-        }
-    }
+    //public static IEnumerable<ElementDataBase> GetAssociatedElementsInternal(this INodeRepository designerData, ElementData data)
+    //{
+    //    var derived = GetAllBaseItems(designerData, data);
+    //    foreach (var viewModelItem in derived)
+    //    {
+    //        var element = GetElement(designerData,viewModelItem);
+    //        if (element != null)
+    //        {
+    //            yield return element;
+    //            var subItems = GetAssociatedElementsInternal(designerData, element);
+    //            foreach (var elementDataBase in subItems)
+    //            {
+    //                yield return elementDataBase;
+    //            }
+    //        }
+    //    }
+    //}
     public static IEnumerable<IDiagramNode> FilterItems(this IProjectRepository designerData, IDiagramFilter filter)
     {
         return filter.FilterItems(designerData);
     }
 
-    public static IEnumerable<IViewModelItem> GetAllBaseItems(this INodeRepository designerData, ElementData data)
+    public static IEnumerable<ITypeDiagramItem> GetAllBaseItems(this INodeRepository designerData, ElementData data)
     {
         var current = data;
         while (current != null)
         {
             foreach (var item in current.Items)
             {
-                if (item is IViewModelItem)
+                if (item is ITypeDiagramItem)
                 {
-                    yield return item as IViewModelItem;
+                    yield return item as ITypeDiagramItem;
                 }
             }
 
@@ -280,23 +280,14 @@ public static class ElementDesignerDataExtensions
         }
     }
 
-    public static ElementDataBase[] GetAssociatedElements(this INodeRepository designerData, ElementData data)
-    {
-        return GetAssociatedElementsInternal(designerData, data).Concat(new[] { data }).Distinct().ToArray();
-    }
+    //public static ElementDataBase[] GetAssociatedElements(this INodeRepository designerData, ElementData data)
+    //{
+    //    return GetAssociatedElementsInternal(designerData, data).Concat(new[] { data }).Distinct().ToArray();
+    //}
 
-    public static IDiagramNode RelatedNode(this IViewModelItem item)
+    public static IDiagramNode RelatedNode(this ITypeDiagramItem item)
     {
         return item.Node.Data.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
-    }
-    public static ElementData GetElement(this INodeRepository designerData, IViewModelItem item)
-    {
-        
-        if (item.RelatedTypeName == null)
-        {
-            return null;
-        }
-        return designerData.GetAllElements().FirstOrDefault(p =>p!=null && p.Name == item.RelatedTypeName);
     }
 
     //public static IEnumerable<IDiagramFilter> GetFilters(this IElementDesignerData designerData, IDiagramFilter filter)

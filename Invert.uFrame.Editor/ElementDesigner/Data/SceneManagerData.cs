@@ -20,8 +20,6 @@ public class SceneManagerData : DiagramNode
         _subSystemIdentifier = cls["SubSystemIdentifier"].Value;
     }
 
-    [SerializeField]
-    private FilterLocations _locations = new FilterLocations();
 
     [SerializeField]
     private string _subSystemIdentifier;
@@ -43,15 +41,8 @@ public class SceneManagerData : DiagramNode
         }
     }
 
-    public Type CurrentType
-    {
-        get
-        {
-            return Type.GetType(uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", NameAsSceneManager));
-        }
-    }
 
-    public bool ImportedOnly
+    public override bool ImportedOnly
     {
         get { return true; }
     }
@@ -74,11 +65,6 @@ public class SceneManagerData : DiagramNode
         get { return Name; }
     }
 
-    public FilterLocations Locations
-    {
-        get { return _locations; }
-        set { _locations = value; }
-    }
 
     public string NameAsSceneManager
     {

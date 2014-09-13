@@ -214,7 +214,7 @@ namespace Invert.uFrame.Editor
             //var diagram = new ElementsDiagram(repo);
             //diagram.Data.ViewModels.Add(repo.GetViewModel(typeof(FPSWeaponViewModel)));
             //diagram.Data.ViewModels.Add(repo.GetViewModel(typeof(FPSBulletViewModel)));
-
+            uFrameEditor.DesignerWindow = window;
             // RemoveFromDiagram when switching to add all
             window.Show();
         }
@@ -347,12 +347,17 @@ namespace Invert.uFrame.Editor
 
         public void SwitchDiagram(IElementDesignerData data)
         {
-            CurrentProject.CurrentDiagram = data as JsonElementDesignerData;
-            LoadDiagram(CurrentProject.CurrentDiagram);
+            CurrentProject.CurrentGraph = data as ElementsGraph;
+            LoadDiagram(CurrentProject.CurrentGraph);
+        }
+
+        public void OnEnable()
+        {
+            uFrameEditor.DesignerWindow = this;
         }
         public void OnGUI()
         {
-           
+            uFrameEditor.DesignerWindow = this;
             var style = ElementDesignerStyles.Background;
             style.border = new RectOffset(
                 Mathf.RoundToInt(41),
@@ -405,9 +410,9 @@ namespace Invert.uFrame.Editor
             {
                 if (CurrentProject != null)
                 {
-                    if (CurrentProject.CurrentDiagram != null)
+                    if (CurrentProject.CurrentGraph != null)
                     {
-                        LoadDiagram(CurrentProject.CurrentDiagram);
+                        LoadDiagram(CurrentProject.CurrentGraph);
                     }
                 }
                 //else
@@ -558,6 +563,7 @@ namespace Invert.uFrame.Editor
 
         public void OnLostFocus()
         {
+            uFrameEditor.DesignerWindow = this;
             if (DiagramViewModel != null)
                 DiagramViewModel.DeselectAll();
 
@@ -642,17 +648,24 @@ namespace Invert.uFrame.Editor
             var menu = new GenericMenu();
             foreach (var item in CurrentProject.Diagrams)
             {
-                JsonElementDesignerData item1 = item;
-                menu.AddItem(new GUIContent(item.Name), DiagramDrawer != null && CurrentProject.CurrentDiagram == item1, () =>
+                GraphData item1 = item;
+                menu.AddItem(new GUIContent(item.Name), DiagramDrawer != null && CurrentProject.CurrentGraph == item1, () =>
                 {
-                    CurrentProject.CurrentDiagram = item1;
-                    LoadDiagram(CurrentProject.CurrentDiagram);
+                    CurrentProject.CurrentGraph = item1;
+                    LoadDiagram(CurrentProject.CurrentGraph);
                 });
             }
             menu.AddItem(new GUIContent("Force Refresh"), false, () => { CurrentProject.Refresh(); });
-            menu.AddItem(new GUIContent("Create New"), false, () => { CurrentProject.CreateNewDiagram();
-                                                                        DiagramDrawer = null;
-            });
+            foreach (var graphType in uFrameEditor.Container.Mappings.Where(p => p.From == typeof (GraphData)))
+            {
+                TypeMapping type = graphType;
+                menu.AddItem(new GUIContent("Create " + graphType.Name), false, () =>
+                {
+                    CurrentProject.CreateNewDiagram(type.To);
+                    DiagramDrawer = null;
+                });
+            }
+
             menu.ShowAsContext();
         }
 
@@ -667,7 +680,7 @@ namespace Invert.uFrame.Editor
                 menu.AddItem(new GUIContent(project.name), project1 == CurrentProject, () =>
                 {
                     CurrentProject = project1;
-                    LoadDiagram(CurrentProject.CurrentDiagram);
+                    LoadDiagram(CurrentProject.CurrentGraph);
                 });
             }
 

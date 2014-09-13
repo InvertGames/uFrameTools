@@ -101,9 +101,9 @@ public class ElementCodeGenerator : CodeGenerator
             //{
             //    commandMethod.Statements.Add(new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(),commandMethod.Name,))
             //}
-            if (!string.IsNullOrEmpty(command.RelatedTypeName))
+            if (!string.IsNullOrEmpty(command.RelatedType))
             {
-                var relatedViewModel = DiagramData.GetViewModel(command.RelatedTypeName);
+                var relatedViewModel = command.RelatedNode() as ElementData;
                 if (relatedViewModel == null)
                 {
                     commandMethod.Parameters.Add(

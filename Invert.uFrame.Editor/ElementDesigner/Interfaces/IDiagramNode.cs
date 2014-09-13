@@ -93,7 +93,8 @@ public interface IDiagramNode : IDiagramNodeItem
     /// <returns>Could it successfully rename the node.</returns>
     bool EndEditing();
 
-    
+
+    //void NodeRemoved(IDiagramNode enumData);
 }
 
 public interface IRefactorable

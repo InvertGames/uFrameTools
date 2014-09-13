@@ -1,9 +1,9 @@
 namespace Invert.uFrame.Editor.ViewModels
 {
-    public abstract class ElementItemViewModel : ItemViewModel<IViewModelItem>
+    public abstract class TypedItemViewModel : ItemViewModel<ITypeDiagramItem>
     {
 
-        public ElementItemViewModel(IViewModelItem viewModelItem, DiagramNodeViewModel nodeViewModel)
+        public TypedItemViewModel(ITypeDiagramItem viewModelItem, DiagramNodeViewModel nodeViewModel)
             : base(nodeViewModel)
         {
             DataObject = viewModelItem;

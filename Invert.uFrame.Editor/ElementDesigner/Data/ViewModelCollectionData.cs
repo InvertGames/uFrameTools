@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class ViewModelCollectionData : DiagramNodeItem, IViewModelItem
+public class ViewModelCollectionData : DiagramNodeItem, ITypeDiagramItem
 {
     public string Title { get { return Name; } }
     public string SearchTag { get { return Name; } }

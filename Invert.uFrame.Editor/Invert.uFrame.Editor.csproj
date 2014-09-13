@@ -56,7 +56,7 @@
     <Compile Include="ElementDesigner\Drawers\HeaderDrawer.cs" />
     <Compile Include="ElementDesigner\Drawers\IDrawer.cs" />
     <Compile Include="ElementDesigner\Drawers\ItemDrawer.cs" />
-    <Compile Include="ElementDesigner\ViewModels\ElementItemViewModel.cs" />
+    <Compile Include="ElementDesigner\ViewModels\TypedItemViewModel.cs" />
     <Compile Include="ElementDesigner\ViewModels\ViewModelExtensions.cs" />
     <Compile Include="Nodes\Connections\AssociationConnectionStrategy.cs" />
     <Compile Include="Nodes\Connections\ViewComponentElementConnectionStrategy.cs" />
@@ -149,7 +149,7 @@
     <Compile Include="ElementDesigner\Data\FilterState.cs" />
     <Compile Include="ElementDesigner\Data\IDiagramPlugin.cs" />
     <Compile Include="ElementDesigner\Data\IElementDesignerData.cs" />
-    <Compile Include="ElementDesigner\Data\JsonElementDesignerData.cs" />
+    <Compile Include="ElementDesigner\Data\ElementsGraph.cs" />
     <Compile Include="ElementDesigner\Data\Json\JsonRepository.cs" />
     <Compile Include="ElementDesigner\Data\ViewPropertyData.cs" />
     <Compile Include="ElementDesigner\Drawers\ExternalNodeDrawer.cs" />
@@ -254,7 +254,7 @@
     <Compile Include="ElementDesigner\Interfaces\IConnectionContainer.cs" />
     <Compile Include="ElementDesigner\Data\ImportedElementData.cs" />
     <Compile Include="ElementDesigner\Interfaces\ISelectable.cs" />
-    <Compile Include="ElementDesigner\Interfaces\IViewModelItem.cs" />
+    <Compile Include="ElementDesigner\Interfaces\ITypeDiagramItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ElementDesigner\Data\SceneManagerData.cs" />
     <Compile Include="ElementDesigner\Data\SceneManagerTransition.cs" />

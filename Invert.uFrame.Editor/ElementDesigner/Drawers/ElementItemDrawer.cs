@@ -7,14 +7,14 @@ using UnityEngine;
 
 public class ElementItemDrawer : ItemDrawer
 {
-    public ElementItemViewModel ElementItemViewModel
+    public TypedItemViewModel ElementItemViewModel
     {
         get
         {
-            return ViewModelObject as ElementItemViewModel;
+            return ViewModelObject as TypedItemViewModel;
         }
     }
-    public ElementItemDrawer(ElementItemViewModel viewModel)
+    public ElementItemDrawer(TypedItemViewModel viewModel)
     {
         ViewModelObject = viewModel;
     }
@@ -42,10 +42,10 @@ public class ElementItemDrawer : ItemDrawer
     public virtual void OptionClicked()
     {
         var commandName = ViewModelObject.DataObject.GetType().Name.Replace("Data","") + "TypeSelection";
-        Debug.Log(commandName);
+        
         var command = uFrameEditor.Container.Resolve<IEditorCommand>(commandName);
         ElementItemViewModel.Select();
-        Debug.Log(command.GetType().Name);
+        
         uFrameEditor.ExecuteCommand(command);
     }
 

@@ -20,8 +20,8 @@ namespace Invert.uFrame.Editor.ElementDesigner
             
             yield return new UFContextMenuItem()
             {
-                Name = item.Data.SceneFlowFilter.Name, 
-                Checked = item.Data.CurrentFilter == item.Data.SceneFlowFilter
+                Name = item.Data.RootFilter.Name, 
+                Checked = item.Data.CurrentFilter == item.Data.RootFilter
             };
             foreach (var filter in item.Data.GetFilterPath())
             {

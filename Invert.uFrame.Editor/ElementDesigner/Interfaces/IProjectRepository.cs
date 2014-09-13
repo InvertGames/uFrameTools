@@ -12,10 +12,10 @@ public interface IProjectRepository : INodeRepository
     void RecordUndo(INodeRepository data, string title);
     void MarkDirty(INodeRepository data);
     Dictionary<string, string> GetProjectDiagrams();
-    IElementDesignerData CreateNewDiagram();
+    IElementDesignerData CreateNewDiagram(Type diagramType = null, IDiagramFilter defaultFilter = null);
     Type RepositoryFor { get; }
-    JsonElementDesignerData CurrentDiagram { get; set; }
-    List<JsonElementDesignerData> Diagrams { get; set; }
+    GraphData CurrentGraph { get; set; }
+    List<GraphData> Diagrams { get; set; }
     GeneratorSettings GeneratorSettings { get; set; }
     void Refresh();
     void HideNode(string identifier);

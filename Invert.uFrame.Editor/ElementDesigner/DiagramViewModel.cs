@@ -125,7 +125,7 @@ public class DiagramViewModel : ViewModel
 
     public DiagramViewModel(IElementDesignerData diagram, IProjectRepository currentRepository)
     {
-        var assetPath = AssetDatabase.GetAssetPath(diagram as JsonElementDesignerData);
+        var assetPath = AssetDatabase.GetAssetPath(diagram as GraphData);
         var fileExtension = Path.GetExtension(assetPath);
         
 
@@ -220,9 +220,9 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            if (Data is JsonElementDesignerData)
+            if (Data is ElementsGraph)
             {
-                var dd = Data as JsonElementDesignerData;
+                var dd = Data as ElementsGraph;
                 if (dd.Errors)
                 {
                     return true;
@@ -236,7 +236,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            var jsonElementDesignerData = (Data) as JsonElementDesignerData;
+            var jsonElementDesignerData = (Data) as ElementsGraph;
             if (jsonElementDesignerData != null)
                 return jsonElementDesignerData.Error;
             return null;
@@ -245,10 +245,7 @@ public class DiagramViewModel : ViewModel
 
     public bool NeedsUpgrade
     {
-        get
-        {
-            return Data is ElementDesignerData;
-        }
+        get { return false; }
     }
 
     public void Navigate()

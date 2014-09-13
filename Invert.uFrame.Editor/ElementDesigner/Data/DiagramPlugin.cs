@@ -37,6 +37,10 @@ namespace Invert.uFrame.Editor
         public override void Initialize(uFrameContainer container)
         {
             uFrameEditor.RegisterKeyBinding(new RenameCommand(), "Rename", KeyCode.F2);
+            uFrameEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            {
+               p.DeselectAll();
+            }), "End All Editing", KeyCode.Return);
 
             uFrameEditor.RegisterKeyBinding(new DeleteItemCommand(), "Delete Item", KeyCode.X,true);
             uFrameEditor.RegisterKeyBinding(new DeleteCommand(), "Delete", KeyCode.Delete);
@@ -50,7 +54,7 @@ namespace Invert.uFrame.Editor
             uFrameEditor.RegisterKeyBinding(new AddNewViewCommand(), "Add View", KeyCode.V,true,true);
             uFrameEditor.RegisterKeyBinding(new AddNewViewComponentCommand(), "Add View Component", KeyCode.W,true,true);
 
-            uFrameEditor.RegisterKeyBinding(new SimpleEditorCommand<ElementsDiagram>((p) =>
+            uFrameEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
             {
                 uFrameEditor.ShowHelp = !uFrameEditor.ShowHelp;
             }),"Show/Hide This Help", KeyCode.F1);

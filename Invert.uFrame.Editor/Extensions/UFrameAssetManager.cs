@@ -44,7 +44,14 @@ public class UFrameAssetManager : AssetPostprocessor
     /// </summary>
     public static T CreateAsset<T>(string assetPath = null, string assetName = null) where T : ScriptableObject
     {
-        T asset = ScriptableObject.CreateInstance<T>();
+        return CreateAsset(typeof(T),assetPath,assetName) as T;
+
+        
+    }
+
+    public static ScriptableObject CreateAsset(Type type, string assetPath = null, string assetName = null)
+    {
+        var asset = ScriptableObject.CreateInstance(type) as ScriptableObject;
 
         string path = assetPath ?? AssetDatabase.GetAssetPath(Selection.activeObject);
         if (path == "")
@@ -56,7 +63,7 @@ public class UFrameAssetManager : AssetPostprocessor
             path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
         }
 
-        string assetPathAndName = assetName == null ? AssetDatabase.GenerateUniqueAssetPath(path + "/New" + typeof(T).ToString() + ".asset") :AssetDatabase.GenerateUniqueAssetPath( path + "/" + assetName + ".asset");
+        string assetPathAndName = assetName == null ? AssetDatabase.GenerateUniqueAssetPath(path + "/New" + type.ToString() + ".asset") : AssetDatabase.GenerateUniqueAssetPath(path + "/" + assetName + ".asset");
 
         AssetDatabase.CreateAsset(asset, assetPathAndName);
         AssetDatabase.SaveAssets();
@@ -64,8 +71,6 @@ public class UFrameAssetManager : AssetPostprocessor
         Selection.activeObject = asset;
         return asset;
     }
-
-
     public static void OnPostprocessAllAssets(
         String[] importedAssets,
         String[] deletedAssets,

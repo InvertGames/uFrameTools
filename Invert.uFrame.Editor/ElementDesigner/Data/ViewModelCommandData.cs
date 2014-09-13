@@ -6,7 +6,7 @@ using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
 [Serializable]
-public class ViewModelCommandData : DiagramNodeItem, IViewModelItem
+public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
 {
     public override void Serialize(JSONClass cls)
     {

@@ -1,3 +1,4 @@
+using System.Linq;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
@@ -9,6 +10,13 @@ namespace Invert.uFrame.Editor.Nodes
         public override Color ConnectionColor
         {
             get { return Color.green; }
+        }
+
+        protected override bool CanConnect(ElementData output, ElementData input)
+        {
+            if (output.Identifier == input.Identifier) return false;
+            if (input.DerivedElements.Any(p => p.Identifier == output.Identifier)) return false;
+            return base.CanConnect(output, input);
         }
 
         protected override bool IsConnected(ElementData outputData, ElementData inputData)

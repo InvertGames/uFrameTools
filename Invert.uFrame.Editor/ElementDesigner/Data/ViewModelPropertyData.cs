@@ -8,7 +8,7 @@ using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
 [Serializable]
-public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializeablePropertyData
+public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializeablePropertyData
 {
 
     public string Title { get { return Name; } }
@@ -217,6 +217,11 @@ public class ViewModelPropertyData : DiagramNodeItem, IViewModelItem,ISerializea
         }
 
         data.Dirty = true;
+    }
+
+    public override void NodeRemoved(IDiagramNode item)
+    {
+       base.NodeRemoved(item);
     }
 
     public string NameAsPrefabBindingOption

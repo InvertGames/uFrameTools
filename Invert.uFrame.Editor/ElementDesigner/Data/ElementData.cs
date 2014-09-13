@@ -48,9 +48,6 @@ public class ElementData : ElementDataBase, IDesignerType
     [SerializeField]
     private List<ViewModelPropertyData> _properties = new List<ViewModelPropertyData>();
 
-
-
-
     public IEnumerable<ViewModelPropertyData> AllProperties
     {
         get
@@ -81,13 +78,13 @@ public class ElementData : ElementDataBase, IDesignerType
         }
     }
 
-    public IEnumerable<string> BindingMethodNames
-    {
-        get
-        {
-            return ViewModelItems.SelectMany(p => p.BindingMethodNames);
-        }
-    }
+    //public IEnumerable<string> BindingMethodNames
+    //{
+    //    get
+    //    {
+    //        return ViewModelItems.SelectMany(p => p.BindingMethodNames);
+    //    }
+    //}
 
     public override ICollection<ViewModelCollectionData> Collections
     {

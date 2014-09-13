@@ -13,11 +13,12 @@ namespace Invert.uFrame.Editor.Nodes
 
         protected override bool CanConnect(ViewComponentData output, ViewComponentData input)
         {
+            if (output.Identifier == input.Identifier) return false;
             if (output.Element == null)
             {
                 return false;
             }
-
+            
             if (input.Identifier == output.BaseIdentifier)
             {
                 return false;

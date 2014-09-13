@@ -117,7 +117,7 @@ namespace Invert.Common
                         padding = new RectOffset(7, 3, 3, 3),
                         fixedHeight = 19f * Scale,
                         stretchWidth = true,
-                        fontSize = 18,
+                        fontSize = Mathf.RoundToInt(18 * Scale),
                         fontStyle = FontStyle.Bold
                         
                     };
@@ -684,7 +684,7 @@ namespace Invert.Common
                 if (_clearItemStyle == null)
                     _clearItemStyle = new GUIStyle
                     {
-                        normal = { textColor = Color.black },
+                        normal = { textColor = new Color(0.88f,0.88f,0.88f) },
                         stretchHeight = true,
                         stretchWidth = true,
                         fontSize = Mathf.RoundToInt(9f * Scale),

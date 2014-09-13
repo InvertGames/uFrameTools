@@ -282,7 +282,7 @@ public class ViewData : DiagramNode, ISubSystemType
         if (element != null)
         {
             var list = new List<MethodInfo>();
-            var vmType = this.CurrentViewType;
+            var vmType = this.CurrentType;
             if (vmType == null)
             {
                 return;

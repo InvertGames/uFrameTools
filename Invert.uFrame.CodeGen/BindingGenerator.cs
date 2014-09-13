@@ -18,7 +18,7 @@ namespace Invert.uFrame.Code.Bindings
         {
             get { return "_Bind" + Item.Name; }
         }
-        public IViewModelItem Item { get; set; }
+        public ITypeDiagramItem Item { get; set; }
 
         public IDiagramNode RelatedNode
         {
@@ -56,7 +56,7 @@ namespace Invert.uFrame.Code.Bindings
             return memberField;
         }
 
-        public virtual string GetMethodName(IViewModelItem itemData)
+        public virtual string GetMethodName(ITypeDiagramItem itemData)
         {
             return string.Empty;
         }

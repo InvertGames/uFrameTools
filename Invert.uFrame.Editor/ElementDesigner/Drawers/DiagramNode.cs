@@ -55,6 +55,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
     {
         get { return uFrameEditor.CurrentProject.GeneratorSettings.NamespaceProvider.RootNamespace; }
     }
+
     public virtual string FullName
     {
         get
@@ -65,6 +66,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
             return Name;
         }
     }
+
     public virtual void Serialize(JSONClass cls)
     {
         cls.Add("Name", new JSONData(_name));
@@ -300,7 +302,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         set { _collapsedValues = value; }
     }
 
-    public bool ImportedOnly
+    public virtual bool ImportedOnly
     {
         get { return true; }
     }
@@ -343,7 +345,6 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         BeginEditing();
     }
 
-    
     public virtual RenameRefactorer CreateRenameRefactorer()
     {
         return null;
@@ -370,6 +371,15 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
             //Data.RefactorCount++;
         }
         return true;
+    }
+
+    public void NodeRemoved(IDiagramNode enumData)
+    {
+        foreach (var item in ContainedItems)
+        {
+            if (item != this)
+                item.NodeRemoved(enumData);
+        }
     }
 
     public virtual void RefactorApplied()

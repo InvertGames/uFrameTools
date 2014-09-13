@@ -23,7 +23,7 @@ public abstract class ViewClassGenerator : CodeGenerator
         return collection.OfType<CodeMemberField>().Any(item => item.Name == name);
     }
 
-    public CodeConditionStatement AddBindingCondition(CodeTypeDeclaration decl, CodeStatementCollection statements, IViewModelItem item, ElementDataBase relatedElement)
+    public CodeConditionStatement AddBindingCondition(CodeTypeDeclaration decl, CodeStatementCollection statements, ITypeDiagramItem item, ElementDataBase relatedElement)
     {
         var bindField = new CodeMemberField
         {
@@ -491,11 +491,11 @@ public abstract class ViewClassGenerator : CodeGenerator
         if (useViewReference)
             executeCommandReference = new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "View");
 
-        relatedElement = DiagramData.GetElement(viewModelCommandData);
+        relatedElement = viewModelCommandData.RelatedNode() as ElementData;
 
         if (relatedElement == null)
         {
-            if (viewModelCommandData.RelatedTypeName != null)
+            if (!string.IsNullOrEmpty(viewModelCommandData.RelatedType))
             {
                 executeMethod.Parameters.Add(new CodeParameterDeclarationExpression(
                     viewModelCommandData.RelatedTypeName, "arg"));

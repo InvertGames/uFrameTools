@@ -51,12 +51,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         //        }
         //    }
         //}
-        return CurrentDiagram.PositionData[CurrentFilter, node];
+        return CurrentGraph.PositionData[CurrentFilter, node];
     }
 
     public void SetItemLocation(IDiagramNode node, Vector2 position)
     {
-        CurrentDiagram.PositionData[CurrentFilter, node] = position;
+        CurrentGraph.PositionData[CurrentFilter, node] = position;
     }
 
     private Dictionary<string, string> _derivedTypes;
@@ -69,12 +69,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     protected string[] _diagramNames;
 
     [SerializeField]
-    protected List<JsonElementDesignerData> _diagrams;
+    protected List<GraphData> _diagrams;
 
     [SerializeField]
     private string _outputDirectory;
 
-    private JsonElementDesignerData _currentDiagram;
+    private GraphData _currentGraph;
 
     public void RecacheAssets()
     {
@@ -93,18 +93,23 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         return items;
     }
 
-    public IElementDesignerData CreateNewDiagram()
+    public IElementDesignerData CreateNewDiagram(Type diagramType = null, IDiagramFilter defaultFilter = null)
     {
         Selection.activeObject = this;
-        var diagram = UFrameAssetManager.CreateAsset<JsonElementDesignerData>();
+        var t = diagramType ?? typeof (ElementsGraph);
+        var diagram = UFrameAssetManager.CreateAsset(t) as GraphData;
+        if (defaultFilter != null && diagram != null)
+        {
+            diagram.RootFilter = defaultFilter;
+        }
         Diagrams.Add(diagram);
-        CurrentDiagram = diagram;
+        CurrentGraph = diagram;
         Refresh();
         return diagram;
     }
     public virtual Type RepositoryFor
     {
-        get { return typeof(JsonElementDesignerData); }
+        get { return typeof(ElementsGraph); }
     }
 
     public string Name
@@ -142,34 +147,39 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     {
         get
         {
-            return CurrentDiagram.Settings;
+            return CurrentGraph.Settings;
         }
     }
 
     public void AddNode(IDiagramNode data)
     {
         _nodeItems = null;
-        CurrentDiagram.AddNode(data);
+        CurrentGraph.AddNode(data);
 
     }
 
     public void RemoveNode(IDiagramNode enumData)
     {
         _nodeItems = null;
-        CurrentDiagram.RemoveNode(enumData);
+        
+        CurrentGraph.RemoveNode(enumData);
+        foreach (var item in NodeItems)
+        {
+            item.NodeRemoved(enumData);
+        }
     }
 
     public IDiagramFilter CurrentFilter
     {
         get
         {
-            return CurrentDiagram.CurrentFilter;
+            return CurrentGraph.CurrentFilter;
         }
     }
 
     public FilterPositionData PositionData
     {
-        get { return CurrentDiagram.PositionData; }
+        get { return CurrentGraph.PositionData; }
     }
 
     public string LastLoadedDiagram
@@ -177,13 +187,13 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         get { return EditorPrefs.GetString("UF_LastLoadedDiagram" + this.name, string.Empty); }
         set { EditorPrefs.SetString("UF_LastLoadedDiagram" + this.name, value); }
     }
-    public List<JsonElementDesignerData> Diagrams
+    public List<GraphData> Diagrams
     {
         get
         {
             if (_diagrams == null)
             {
-               _diagrams = new List<JsonElementDesignerData>();
+               _diagrams = new List<GraphData>();
             }
             return _diagrams;
         }
@@ -196,24 +206,24 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         set { _generatorSettings = value; }
     }
 
-    public JsonElementDesignerData CurrentDiagram
+    public GraphData CurrentGraph
     {
         get
         {
-            if (_currentDiagram == null)
+            if (_currentGraph == null)
             {
                 if (!String.IsNullOrEmpty(LastLoadedDiagram))
                 {
-                    _currentDiagram = Diagrams.FirstOrDefault(p => p.name == LastLoadedDiagram);
+                    _currentGraph = Diagrams.FirstOrDefault(p => p.name == LastLoadedDiagram);
                 }
-                if (_currentDiagram == null)
+                if (_currentGraph == null)
                 {
-                    _currentDiagram = Diagrams.FirstOrDefault();
+                    _currentGraph = Diagrams.FirstOrDefault();
                 }
             }
-            return _currentDiagram;
+            return _currentGraph;
         }
-        set { _currentDiagram = value; }
+        set { _currentGraph = value; }
     }
 
     public string OutputDirectory
@@ -224,12 +234,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public IElementDesignerData LoadDiagram(string path)
     {
-        var data = AssetDatabase.LoadAssetAtPath(path, RepositoryFor) as JsonElementDesignerData;
+        var data = AssetDatabase.LoadAssetAtPath(path, RepositoryFor) as ElementsGraph;
         if (data == null)
         {
             return null;
         }
-        CurrentDiagram = data;
+        CurrentGraph = data;
         return data;
     }
 
@@ -268,7 +278,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public void HideNode(string identifier)
     {
-        CurrentDiagram.PositionData.Remove(CurrentDiagram.CurrentFilter, identifier);
+        CurrentGraph.PositionData.Remove(CurrentGraph.CurrentFilter, identifier);
     }
 }
 

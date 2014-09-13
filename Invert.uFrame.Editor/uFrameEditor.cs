@@ -86,13 +86,7 @@ namespace Invert.uFrame.Editor
             get { return DesignerWindow.MouseEvent; }
         }
 
-        public static ElementsDesigner DesignerWindow
-        {
-            get
-            {
-                return EditorWindow.GetWindow<ElementsDesigner>();
-            }
-        }
+        public static ElementsDesigner DesignerWindow { get; set; }
 
         public static IKeyBinding[] KeyBindings { get; set; }
 
@@ -226,7 +220,26 @@ namespace Invert.uFrame.Editor
             {
                 DesignerGeneratorFactory generator = diagramItemGenerator;
                 // If its a generator for the entire diagram
-                if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
+                var project = diagramData as IProjectRepository;
+                if (typeof (GraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
+                {
+                    var items = project.Diagrams;
+                    foreach (var item in items)
+                    {
+                        if (generator.DiagramItemType.IsAssignableFrom(item.GetType()))
+                        {
+                            var codeGenerators = generator.GetGenerators(settings, pathStrategy, diagramData, item);
+                            foreach (var codeGenerator in codeGenerators)
+                            {
+                                codeGenerator.Settings = settings;
+                                codeGenerator.ObjectData = diagramData;
+                                codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
+                                yield return codeGenerator;
+                            }    
+                        }
+                    }
+                }
+                else if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
                 {
                     var codeGenerators = generator.GetGenerators(settings, pathStrategy, diagramData, diagramData);
                     foreach (var codeGenerator in codeGenerators)
@@ -236,7 +249,7 @@ namespace Invert.uFrame.Editor
                         codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                         yield return codeGenerator;
                     }
-                }
+                } 
                 // If its a generator for a specific node type
                 else
                 {
@@ -279,7 +292,7 @@ namespace Invert.uFrame.Editor
 
         public static IEnumerable<IBindingGenerator> GetBindingGeneratorsFor(ElementData element, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
         {
-            IEnumerable<IViewModelItem> items = element.ViewModelItems;
+            IEnumerable<ITypeDiagramItem> items = element.ViewModelItems;
             if (includeBaseItems)
             {
                 items = new[] { element }.Concat(element.AllBaseTypes).SelectMany(p => p.ViewModelItems);
@@ -385,17 +398,13 @@ namespace Invert.uFrame.Editor
             return tempObjects.ToArray();
         }
 
+        public static TGraphType CreateGraph<TGraphType>() where TGraphType : GraphData
+        {
+            return UFrameAssetManager.CreateAsset<TGraphType>();
+        }
+
         private static void InitializeContainer(uFrameContainer container)
         {
-            // Repositories
-            //container.RegisterInstance<IElementsDataRepository>(new DefaultElementsRepository(), ".asset");
-
-            //container.RegisterInstance<IProjectRepository>(new ProjectRepository());
-
-            //// 2.0 stuff
-            //container.RegisterInstance<ElementDesignerViewModel>(new ElementDesignerViewModel());
-            //container.RegisterInstance<UFrameApplicationViewModel>(new UFrameApplicationViewModel());
-
 #if DEBUG
             container.RegisterInstance<IToolbarCommand>(new PrintPlugins(),"Print Plugins");
 #endif
@@ -474,7 +483,9 @@ namespace Invert.uFrame.Editor
             RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
             RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
 
-            RegisterGraphItem<ViewModelPropertyData, ElementItemViewModel, ElementItemDrawer>();
+            container.Register<GraphData,ElementsGraph>("Element Graph");
+
+            RegisterGraphItem<ViewModelPropertyData, TypedItemViewModel, ElementItemDrawer>();
             RegisterGraphItem<SceneManagerData, SceneManagerViewModel, SceneManagerDrawer>();
             RegisterGraphItem<SubSystemData, SubSystemViewModel, SubSystemDrawer>();
             RegisterGraphItem<ElementData, ElementNodeViewModel, ElementDrawer>();
@@ -503,6 +514,7 @@ namespace Invert.uFrame.Editor
             RegisterFilterNode<ElementData, ViewData>();
             RegisterFilterNode<ElementData, ViewComponentData>();
 
+            RegisterDrawer<ConnectorHeaderViewModel, InputHeaderDrawer>();
 
             // Connections
             container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritanceConnectionStrategy");

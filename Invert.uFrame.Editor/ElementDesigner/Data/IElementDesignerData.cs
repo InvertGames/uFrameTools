@@ -41,6 +41,6 @@ public interface IElementDesignerData : IElementFileData
     FilterState FilterState { get; set; }
 
     // Filters
-    SceneFlowFilter SceneFlowFilter { get;  }
+    IDiagramFilter RootFilter { get;  }
 
 }
