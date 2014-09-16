@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using Invert.uFrame;
 using Invert.uFrame.Editor;
 
 public class ControllerGenerator : ElementCodeGenerator
@@ -12,6 +13,7 @@ public class ControllerGenerator : ElementCodeGenerator
     {
         base.Initialize(fileGenerator);
         AddController(ElementData);
+        
     }
 
     public CodeTypeReference GetCommandTypeReference(ViewModelCommandData itemData, CodeTypeReference senderType, ElementData element)
@@ -20,23 +22,23 @@ public class ControllerGenerator : ElementCodeGenerator
         {
             if (string.IsNullOrEmpty(itemData.RelatedTypeName))
             {
-                if (element.IsMultiInstance)
-                {
+                //if (element.IsMultiInstance)
+                //{
                     var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWithSenderT);
                     commandWithType.TypeArguments.Add(senderType);
                     return commandWithType;
-                }
-                else
-                {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.Command);
-                    return commandWithType;
-                }
+                //}
+                //else
+                //{
+                //    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.Command);
+                //    return commandWithType;
+                //}
 
             }
             else
             {
-                if (element.IsMultiInstance)
-                {
+                //if (element.IsMultiInstance)
+               // {
                     var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWithSenderAndArgument);
                     commandWithType.TypeArguments.Add(senderType);
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
@@ -50,24 +52,24 @@ public class ControllerGenerator : ElementCodeGenerator
                     }
 
                     return commandWithType;
-                }
-                else
-                {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWith);
+               // }
+                //else
+                //{
+                //    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWith);
 
-                    var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
-                    if (typeViewModel == null)
-                    {
-                        commandWithType.TypeArguments.Add(new CodeTypeReference(itemData.RelatedTypeName));
-                    }
-                    else
-                    {
-                        commandWithType.TypeArguments.Add(new CodeTypeReference(typeViewModel.NameAsViewModel));
-                    }
+                //    var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
+                //    if (typeViewModel == null)
+                //    {
+                //        commandWithType.TypeArguments.Add(new CodeTypeReference(itemData.RelatedTypeName));
+                //    }
+                //    else
+                //    {
+                //        commandWithType.TypeArguments.Add(new CodeTypeReference(typeViewModel.NameAsViewModel));
+                //    }
 
-                    return commandWithType;
+                //    return commandWithType;
 
-                }
+                //}
 
             }
         }
@@ -75,24 +77,24 @@ public class ControllerGenerator : ElementCodeGenerator
         {
             if (string.IsNullOrEmpty(itemData.RelatedTypeName))
             {
-                if (element.IsMultiInstance)
-                {
+                //if (element.IsMultiInstance)
+                //{
                     var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWithSenderT);
                     commandWithType.TypeArguments.Add(senderType);
                     return commandWithType;
-                }
-                else
-                {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommand);
+                //}
+                //else
+                //{
+                //    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommand);
 
-                    return commandWithType;
-                }
+                //    return commandWithType;
+                //}
 
             }
             else
             {
-                if (element.IsMultiInstance)
-                {
+                //if (element.IsMultiInstance)
+                //{
                     var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWithSenderAndArgument);
                     commandWithType.TypeArguments.Add(senderType);
                     var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
@@ -105,21 +107,21 @@ public class ControllerGenerator : ElementCodeGenerator
                         commandWithType.TypeArguments.Add(new CodeTypeReference(typeViewModel.NameAsViewModel));
                     }
                     return commandWithType;
-                }
-                else
-                {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWith);
-                    var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
-                    if (typeViewModel == null)
-                    {
-                        commandWithType.TypeArguments.Add(new CodeTypeReference(itemData.RelatedTypeName));
-                    }
-                    else
-                    {
-                        commandWithType.TypeArguments.Add(new CodeTypeReference(typeViewModel.NameAsViewModel));
-                    }
-                    return commandWithType;
-                }
+                //}
+                //else
+                //{
+                //    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWith);
+                //    var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
+                //    if (typeViewModel == null)
+                //    {
+                //        commandWithType.TypeArguments.Add(new CodeTypeReference(itemData.RelatedTypeName));
+                //    }
+                //    else
+                //    {
+                //        commandWithType.TypeArguments.Add(new CodeTypeReference(typeViewModel.NameAsViewModel));
+                //    }
+                //    return commandWithType;
+                //}
 
             }
         }
@@ -134,6 +136,21 @@ public class ControllerGenerator : ElementCodeGenerator
 
         if (IsDesignerFile)
         {
+            if (!data.IsDerived)
+            {
+                foreach (var item in DiagramData.GetAllRegisteredElements())
+                {
+                    UnityEngine.Debug.Log("Creating Property" + item.Name);
+                    var element = item.RelatedNode() as ElementData;
+                    if (element == null) continue;
+
+                    tDecleration.Members.Add(
+                        new CodeSnippetTypeMember(string.Format("[Inject(\"{1}\")] {0} {1} {{ get; set; }}",element.NameAsViewModel, item.Name)));
+
+                }
+            }
+            
+
             AddDependencyControllers(tDecleration, data);
             tDecleration.Name = data.NameAsControllerBase;
             tDecleration.TypeAttributes = TypeAttributes.Abstract | TypeAttributes.Public;
@@ -146,23 +163,23 @@ public class ControllerGenerator : ElementCodeGenerator
                 tDecleration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.UFrameTypes.Controller));
             }
 
-            if (!data.IsMultiInstance)
-            {
-                var property = new CodeMemberProperty
-                {
-                    Name = data.Name,
-                    Type = new CodeTypeReference(data.NameAsViewModel),
-                    HasGet = true,
-                    HasSet = false,
-                    Attributes = MemberAttributes.Public
-                };
-                property.GetStatements.Add(
-                    new CodeMethodReturnStatement(
-                        new CodeSnippetExpression(string.Format("Container.Resolve<{0}>()", data.NameAsViewModel))));//,data.RootElement.Name))));
+            //if (!data.IsMultiInstance)
+            //{
+            //    var property = new CodeMemberProperty
+            //    {
+            //        Name = data.Name,
+            //        Type = new CodeTypeReference(data.NameAsViewModel),
+            //        HasGet = true,
+            //        HasSet = false,
+            //        Attributes = MemberAttributes.Public
+            //    };
+            //    property.GetStatements.Add(
+            //        new CodeMethodReturnStatement(
+            //            new CodeSnippetExpression(string.Format("Container.Resolve<{0}>()", data.NameAsViewModel))));//,data.RootElement.Name))));
 
                 
-                tDecleration.Members.Add(property);
-            }
+            //    tDecleration.Members.Add(property);
+            //}
         }
         else
         {

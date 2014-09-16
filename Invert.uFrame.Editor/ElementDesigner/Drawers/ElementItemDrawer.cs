@@ -32,7 +32,7 @@ public class ElementItemDrawer : ItemDrawer
     {
         base.DrawOption();
 
-        if (GUILayout.Button(ElementItemViewModel.TypeLabel,ElementDesignerStyles.SelectedItemStyle))
+        if (GUILayout.Button(ElementItemViewModel.TypeLabel,ElementDesignerStyles.ClearItemStyle))
         {
             ElementItemViewModel.NodeViewModel.IsSelected = true;
             OptionClicked();

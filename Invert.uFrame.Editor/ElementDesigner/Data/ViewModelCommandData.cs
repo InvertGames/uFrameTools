@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.uFrame.Editor;
@@ -8,6 +9,10 @@ using UnityEngine;
 [Serializable]
 public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
 {
+    public string ViewFieldName
+    {
+        get { return string.Format("_{0}", Name); }
+    }
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
@@ -57,6 +62,28 @@ public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
         this.RelatedType = null;
     }
 
+    public CodeTypeReference GetFieldType()
+    {
+        var relatedNode = this.RelatedNode();
+        if (relatedNode != null)
+        {
+            return relatedNode.GetFieldType(this);
+        }
+        var t = new CodeTypeReference(uFrameEditor.UFrameTypes.Computed);
+        t.TypeArguments.Add(new CodeTypeReference(RelatedTypeName));
+        return t;
+    }
+
+    public CodeTypeReference GetPropertyType()
+    {
+        var relatedNode = this.RelatedNode();
+        if (relatedNode != null)
+        {
+            return relatedNode.GetPropertyType(this);
+        }
+        return new CodeTypeReference(RelatedTypeName);
+    }
+
     public ElementData Element
     {
         get { return _element; }
@@ -70,6 +97,8 @@ public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
             return string.Format("_{0}", Name);
         }
     }
+
+    public string NameAsChangedMethod { get; set; }
 
     public override string FullLabel
     {
@@ -162,7 +191,6 @@ public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
         return new RenameCommandRefactorer(this);
     }
 
-    [DiagramContextMenu("Delete", 0)]
     public override void Remove(IDiagramNode diagramNode)
     {
         var data = diagramNode as ElementDataBase;
@@ -190,6 +218,109 @@ public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
         }
     }
 
-    public string Title { get { return Name; } }
-    public string SearchTag { get { return Name; } }
+
+}
+
+public class RegisteredInstanceData : DiagramNodeItem,ITypeDiagramItem
+{
+    public override string FullLabel
+    {
+        get { return Name; }
+    }
+
+    public override void Remove(IDiagramNode diagramNode)
+    {
+        var data = Node as SceneManagerData;
+        if (data != null)
+        {
+            data.Instances.Remove(this);
+            data.Dirty = true;
+        }
+    }
+
+    public override string Label
+    {
+        get { return Name; }
+    }
+
+    public string RelatedType { get; set; }
+
+    public string RelatedTypeName
+    {
+        get
+        {
+            var node = this.RelatedNode() as ElementData;
+            if (node == null)
+            {
+                return "ERROR";
+            }
+            return node.NameAsViewModel;
+        }
+    }
+
+    public bool AllowEmptyRelatedType
+    {
+        get { return false; }
+    }
+
+    public string FieldName
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public string NameAsChangedMethod
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public string ViewFieldName
+    {
+        get
+        {
+            throw new NotImplementedException();
+            
+        }
+    }
+
+    public void SetType(IDesignerType input)
+    {
+        this.RelatedType = input.Identifier;
+    }
+
+    public void RemoveType()
+    {
+        this.Remove(Node);
+    }
+
+    public CodeTypeReference GetFieldType()
+    {
+        throw new NotImplementedException();
+    }
+
+    public CodeTypeReference GetPropertyType()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Serialize(JSONClass cls)
+    {
+        base.Serialize(cls);
+        cls.Add("RegisterType",new JSONData(RelatedType));
+
+    }
+
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    {
+        base.Deserialize(cls, repository);
+        if (cls["RegisterType"] != null)
+        {
+            RelatedType = cls["RegisterType"].Value;
+        }
+    }
 }

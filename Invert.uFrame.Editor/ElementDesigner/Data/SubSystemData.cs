@@ -48,10 +48,10 @@ public static class SubsystemExtensions
         foreach (var item in items)
             yield return item;
     }
-    public static IEnumerable<ViewModelCommandData> GetIncludedCommands(this SubSystemData subsystem)
-    {
-        return subsystem.GetIncludedElements().Where(p => !p.IsMultiInstance).SelectMany(p => p.Commands);
-    }
+    //public static IEnumerable<ViewModelCommandData> GetIncludedCommands(this SubSystemData subsystem)
+    //{
+    //    return subsystem.GetIncludedElements().Where(p => !p.IsMultiInstance).SelectMany(p => p.Commands);
+    //}
 
     public static IEnumerable<ElementData> GetIncludedElements(this SubSystemData subsystem)
     {

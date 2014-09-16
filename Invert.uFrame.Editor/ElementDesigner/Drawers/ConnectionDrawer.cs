@@ -44,6 +44,6 @@ public class ConnectionDrawer : Drawer<ConnectionViewModel>
         for (int i = 0; i < 3; i++) // Draw a shadow
             UnityEditor.Handles.DrawBezier(_startPos * scale, _endPos * scale, startTan * ElementDesignerStyles.Scale, endTan * ElementDesignerStyles.Scale, shadowCol, null, (i + 1) * 5);
 
-        UnityEditor.Handles.DrawBezier(_startPos * scale, _endPos * scale, startTan * ElementDesignerStyles.Scale, endTan * ElementDesignerStyles.Scale, ViewModel.Color, null, 3);
+        UnityEditor.Handles.DrawBezier(_startPos * scale, _endPos * scale, startTan * ElementDesignerStyles.Scale, endTan * ElementDesignerStyles.Scale, ViewModel.CurrentColor, null, 3);
     }
 }

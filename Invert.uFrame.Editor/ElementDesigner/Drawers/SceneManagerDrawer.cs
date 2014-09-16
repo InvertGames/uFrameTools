@@ -9,6 +9,7 @@ using UnityEngine;
 public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
 {
     private NodeItemHeader _transitionsHeader;
+    private NodeItemHeader _instancesHeader;
 
     public SceneManagerDrawer(SceneManagerViewModel viewModel)
         : base()
@@ -21,6 +22,26 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
         get { return ElementDesignerStyles.NodeHeader6; }
     }
 
+    public NodeItemHeader InstancesHeader
+    {
+        get
+        {
+            if (_instancesHeader != null) return _instancesHeader;
+
+            _instancesHeader = new NodeItemHeader(ViewModel)
+            {
+                Label = "Instances",
+                HeaderType = typeof(RegisterInstanceItemViewModel),
+
+            };
+
+            if (NodeViewModel.IsLocal)
+                _instancesHeader.AddCommand = uFrameEditor.Container.Resolve<AddInstanceCommand>();
+
+            return _instancesHeader;
+        }
+        set { _transitionsHeader = value; }
+    }
 
     public NodeItemHeader TransitionsHeader
     {
@@ -31,7 +52,7 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
                 _transitionsHeader = new NodeItemHeader(ViewModel)
                 {
                     Label = "Transitions",
-                    HeaderType = typeof (SceneManagerData),
+                    HeaderType = typeof (SceneTransitionItemViewModel),
                   
                 };
 
@@ -45,14 +66,21 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
 
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
-        base.GetContentDrawers(drawers);
-        drawers.Insert(1, TransitionsHeader);
-        //if (!NodeViewModel.Items.Any()) yield break;
-        //yield return new DiagramSubItemGroup()
-        //{
-        //    Header = TransitionsHeader,
-        //    Items = NodeViewModel.Items.ToArray()
-        //};
+        //base.GetContentDrawers(drawers);
+        drawers.Add( TransitionsHeader);
+        foreach (var item in ViewModel.ContentItems.OfType<SceneTransitionItemViewModel>())
+        {
+            var drawer = uFrameEditor.CreateDrawer(item);
+            if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
+            drawers.Add(drawer);
+        }
+        drawers.Add(InstancesHeader);
+        foreach (var item in ViewModel.ContentItems.OfType<RegisterInstanceItemViewModel>())
+        {
+            var drawer = uFrameEditor.CreateDrawer(item);
+            if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
+            drawers.Add(drawer);
+        }
     }
 
     public override GUIStyle ItemStyle

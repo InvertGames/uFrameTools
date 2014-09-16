@@ -35,10 +35,10 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return GraphItem.IsTemplate; }
         }
 
-        public bool IsMultiInstance
-        {
-            get { return GraphItem.IsMultiInstance; }
-        }
+        //public bool IsMultiInstance
+        //{
+        //    get { return GraphItem.IsMultiInstance; }
+        //}
 
         public IEnumerable<ITypeDiagramItem> ViewModelItems
         {

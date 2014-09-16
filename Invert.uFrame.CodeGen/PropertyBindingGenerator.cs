@@ -7,9 +7,9 @@ namespace Invert.uFrame.Code.Bindings
 {
     public class PropertyBindingGenerator : BindingGenerator
     {
-        public ViewModelPropertyData PropertyData
+        public ITypeDiagramItem PropertyData
         {
-            get { return Item as ViewModelPropertyData; }
+            get { return Item as ITypeDiagramItem; }
         }
 
         public override string MethodName
@@ -50,9 +50,7 @@ namespace Invert.uFrame.Code.Bindings
 
 
             var setterMethod = CreateMethodSignature(null, new CodeParameterDeclarationExpression(
-                new CodeTypeReference(RelatedElement == null
-                    ? PropertyData.RelatedTypeName
-                    : RelatedElement.NameAsViewModel), "value"));
+                PropertyData.GetPropertyType(), "value"));
 
             if (GenerateDefaultImplementation)
             {

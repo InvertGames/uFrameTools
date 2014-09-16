@@ -17,14 +17,12 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
     {
         get; set;
     }
-
-    public CodeTypeDeclaration AddTypeEnum(ElementDataBase rootElement, SceneManagerData sceneManager, ElementData[] elements)
+    
+    public CodeTypeDeclaration AddTypeEnum(string name, IEnumerable<RegisteredInstanceData> instances)
     {
-        var derivedElements = rootElement.DerivedElements.Where(p=>!p.IsTemplate && elements.Contains(p)).ToArray();
-        if (derivedElements.Length < 1) return null;
-        var enumDecleration = new CodeTypeDeclaration(sceneManager.NameAsSceneManager + rootElement.NameAsTypeEnum) { IsEnum = true };
-        enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, rootElement.Name));
-        foreach (var item in derivedElements)
+        var enumDecleration = new CodeTypeDeclaration(name) { IsEnum = true };
+        //enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, name));
+        foreach (var item in instances)
         {
             enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, item.Name));
         }
@@ -127,7 +125,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
 
 
             List<ElementData> rootElements = new List<ElementData>();
-            List<ElementData> baseElements = new List<ElementData>();
+            //List<ElementData> baseElements = new List<ElementData>();
 
             foreach (var element in elements)
             {
@@ -161,24 +159,27 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                
              
 
-                if ((element.BaseElement == null || element.BaseElement.IsTemplate) && !element.IsMultiInstance && !element.IsTemplate)
-                {
-                    if (AddTypeEnum(element, sceneManager, elements) == null)
-                    {
-                        baseElements.Add(element);
+                //if ((element.BaseElement == null || element.BaseElement.IsTemplate) && !element.IsTemplate)
+                //{
+                //    if (AddTypeEnum(element, sceneManager, elements) == null)
+                //    {
+                //        baseElements.Add(element);
 
-                    }
-                    else
-                    {
-                        rootElements.Add(element);
-                    }
+                //    }
+                //    else
+                //    {
+                //        rootElements.Add(element);
+                //    }
 
-                }
+                //}
             }
             
-
-            foreach (var element in baseElements)
+            // TODO Change this method to register items that have been added
+            //setupMethod.Statements
+            foreach (var instance in Data.Instances)
             {
+                var element = instance.RelatedNode() as ElementData;
+                if (element == null) continue;
                 if (Settings.GenerateControllers)
                 {
                     setupMethod.Statements.Add(
@@ -280,9 +281,20 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                     element.NameAsTypeEnum) { Attributes = MemberAttributes.Public };
                 decl.Members.Add(field);
             }
+
+            
         }
+
+
+
         ProcessModifiers(decl);
         Namespace.Types.Add(decl);
     }
+
+}
+
+public class TypeEnumGenerator : CodeGenerator
+{
+    
 
 }

@@ -1,3 +1,4 @@
+using System.CodeDom;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using System;
@@ -8,6 +9,11 @@ using UnityEngine;
 [Serializable]
 public class ViewModelCollectionData : DiagramNodeItem, ITypeDiagramItem
 {
+  
+    public string ViewFieldName
+    {
+        get { return string.Format("_{0}", Name); }
+    }
     public string Title { get { return Name; } }
     public string SearchTag { get { return Name; } }
     public override void Serialize(JSONClass cls)
@@ -52,12 +58,31 @@ public class ViewModelCollectionData : DiagramNodeItem, ITypeDiagramItem
         this.RelatedType = typeof (string).Name;
     }
 
+    public CodeTypeReference GetFieldType()
+    {
+        var t = new CodeTypeReference(uFrameEditor.UFrameTypes.ModelCollection);
+        t.TypeArguments.Add(new CodeTypeReference(RelatedTypeName));
+        return t;
+    }
+
+    public CodeTypeReference GetPropertyType()
+    {
+        var t = new CodeTypeReference(uFrameEditor.UFrameTypes.ModelCollection);
+        t.TypeArguments.Add(new CodeTypeReference(RelatedTypeName));
+        return t;
+    }
+
     public string FieldName
     {
         get
         {
             return string.Format("_{0}Property", Name);
         }
+    }
+
+    public string NameAsChangedMethod
+    {
+        get { return string.Format("{0}Changed", Name); }
     }
 
     public override string FullLabel { get { return RelatedTypeName + Name; } }

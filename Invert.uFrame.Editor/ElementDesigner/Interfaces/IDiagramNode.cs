@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
@@ -95,6 +96,8 @@ public interface IDiagramNode : IDiagramNodeItem
 
 
     //void NodeRemoved(IDiagramNode enumData);
+    CodeTypeReference GetPropertyType(ITypeDiagramItem itemData);
+    CodeTypeReference GetFieldType(ITypeDiagramItem itemData);
 }
 
 public interface IRefactorable

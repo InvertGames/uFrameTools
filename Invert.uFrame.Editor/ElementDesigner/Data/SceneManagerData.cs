@@ -27,10 +27,16 @@ public class SceneManagerData : DiagramNode
     [SerializeField]
     private List<SceneManagerTransition> _transitions = new List<SceneManagerTransition>();
 
+    private List<RegisteredInstanceData> _instances;
+
     public override IEnumerable<IDiagramNodeItem> ContainedItems
     {
-        get { return Transitions.Cast<IDiagramNodeItem>(); }
-        set { Transitions = value.OfType<SceneManagerTransition>().ToList(); }
+        get { return Instances.Cast<IDiagramNodeItem>().Concat(Transitions.Cast<IDiagramNodeItem>()); }
+        set
+        {
+            Transitions = value.OfType<SceneManagerTransition>().ToList();
+            Instances = value.OfType<RegisteredInstanceData>().ToList();
+        }
     }
 
     public Type CurrentSettingsType
@@ -103,6 +109,12 @@ public class SceneManagerData : DiagramNode
     {
         get { return _transitions; }
         set { _transitions = value; }
+    }
+
+    public List<RegisteredInstanceData> Instances
+    {
+        get { return _instances ?? (_instances = new List<RegisteredInstanceData>()); }
+        set { _instances = value; }
     }
 
     public override void BeginEditing()

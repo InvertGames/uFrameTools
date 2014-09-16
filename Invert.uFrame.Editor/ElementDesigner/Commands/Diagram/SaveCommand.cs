@@ -25,11 +25,11 @@ namespace Invert.uFrame.Editor.ElementDesigner
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
 
             var fileGenerators = uFrameEditor.GetAllFileGenerators(uFrameEditor.CurrentProject.GeneratorSettings, uFrameEditor.CurrentProject).ToArray();
-            Debug.Log(string.Format("{0} file generators", fileGenerators.Length));
-            foreach (var codeFileGenerator in fileGenerators)
-            {
-                UnityEngine.Debug.Log(codeFileGenerator.Filename);
-            }
+            //Debug.Log(string.Format("{0} file generators", fileGenerators.Length));
+            //foreach (var codeFileGenerator in fileGenerators)
+            //{
+            //    UnityEngine.Debug.Log(codeFileGenerator.Filename);
+            //}
         
             foreach (var codeFileGenerator in fileGenerators)
             {
@@ -39,7 +39,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
                 // Make sure we are allowed to generate the file
                 if (!codeFileGenerator.CanGenerate(fileInfo))
                 {
-                    Debug.Log("Can't generate " + fileInfo.FullName);
+                    //Debug.Log("Can't generate " + fileInfo.FullName);
                     continue;
                 }
               

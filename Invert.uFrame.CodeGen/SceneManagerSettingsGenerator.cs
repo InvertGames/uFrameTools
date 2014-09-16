@@ -1,4 +1,5 @@
 using Invert.uFrame.Editor;
+using UnityEngine;
 
 public class SceneManagerSettingsGenerator : SceneManagerClassGenerator
 {

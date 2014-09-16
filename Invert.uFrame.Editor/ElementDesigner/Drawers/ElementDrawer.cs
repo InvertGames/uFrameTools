@@ -125,17 +125,14 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     public override void Draw(float scale)
     {
         base.Draw(scale); 
-        if (_isMultiInstance)
+        if (_isRegistered)
         EditorGUI.LabelField(new Rect(Bounds.x + Bounds.width - 30f, Bounds.y - 18f, 26f, 15f).Scale(Scale), "*",
              ElementDesignerStyles.Tag1);
     }
 
     protected override GUIStyle GetHighlighter()
     {
-        if (!NodeViewModel.IsMultiInstance)
-        {
-            return ElementDesignerStyles.BoxHighlighter4;
-        }
+     
         return base.GetHighlighter();
     }
 
@@ -152,7 +149,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     {
         base.Refresh(position);
 
-        _isMultiInstance = NodeViewModel.IsMultiInstance;
+        //_isMultiInstance = NodeViewModel.IsMultiInstance;
         _maxNameWidth = MaxNameWidth(EditorStyles.label);
         _maxTypeWidth = MaxTypeWidth(EditorStyles.label);
 
@@ -162,7 +159,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     private float _maxTypeWidth;
     private float _maxNameWidth;
     private NodeItemHeader _computedHeader;
-    private bool _isMultiInstance;
+    private bool _isRegistered;
 
 
     public virtual float MaxTypeWidth(GUIStyle style)
@@ -303,22 +300,22 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         // base.GetContentDrawers(drawers);
 
         drawers.Add(PropertiesHeader);
-        foreach (var item in ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>().Where(p => !p.IsComputed))
+        foreach (var item in ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>())
         {
             drawers.Add(uFrameEditor.CreateDrawer(item));
         }
-        var computedItems = ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
-            .Where(p => p.IsComputed).ToArray();
+        //var computedItems = ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
+        //    .Where(p => p.IsComputed).ToArray();
 
-        if (computedItems.Length > 0)
-        {
-            drawers.Add(ComputedHeader);
-            foreach (var item in computedItems)
-            {
-                drawers.Add(uFrameEditor.CreateDrawer(item));
-            }
+        //if (computedItems.Length > 0)
+        //{
+        //    drawers.Add(ComputedHeader);
+        //    foreach (var item in computedItems)
+        //    {
+        //        drawers.Add(uFrameEditor.CreateDrawer(item));
+        //    }
 
-        }
+        //}
 
         drawers.Add(CollectionsHeader);
         foreach (var item in ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>())

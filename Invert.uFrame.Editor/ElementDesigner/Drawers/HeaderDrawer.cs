@@ -7,9 +7,12 @@ public class HeaderDrawer : Drawer
 {
     private GUIStyle _textStyle;
     private GUIStyle _backgroundStyle;
-    public virtual int Padding
+    private float _padding = 12;
+
+    public virtual float Padding
     {
-        get { return 12; }
+        get { return _padding; }
+        set { _padding = value; }
     }
 
     public GUIStyle BackgroundStyle

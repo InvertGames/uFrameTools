@@ -39,22 +39,39 @@ public class FlagsDictionary : Dictionary<string,bool>, IJsonObject
     }
 }
 
-public class DataBag : Dictionary<string, string>, IJsonObject
+public class DataBag : IJsonObject
 {
+    Dictionary<string,string>  _dict = new Dictionary<string, string>();
+
+    public string this[string key]
+    {
+        get
+        {
+            if (_dict.ContainsKey(key))
+                return _dict[key];
+
+            return null;
+        }
+        set
+        {
+            AddOrReplace(key,value);
+        }
+    }
+
     public void AddOrReplace(string key, string value)
     {
-        if (this.ContainsKey(key))
+        if (_dict.ContainsKey(key))
         {
-            this[key] = value;
+            _dict[key] = value;
         }
         else
         {
-            this.Add(key,value);
+            _dict.Add(key, value);
         }
     }
     public void Serialize(JSONClass cls)
     {
-        foreach (var item in this)
+        foreach (var item in _dict)
         {
             cls.Add(item.Key, new JSONData(item.Value));
         }
@@ -62,10 +79,10 @@ public class DataBag : Dictionary<string, string>, IJsonObject
 
     public void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        this.Clear();
+        _dict.Clear();
         foreach (KeyValuePair<string, JSONNode> jsonNode in cls)
         {
-            this.Add(jsonNode.Key, jsonNode.Value.Value);
+            _dict.Add(jsonNode.Key, jsonNode.Value.Value);
         }
     }
 }

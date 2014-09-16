@@ -19,13 +19,14 @@ public class ElementCodeGenerator : CodeGenerator
 
     protected void AddComputedPropertyMethods(ElementData data, CodeTypeDeclaration tDecleration)
     {
-        foreach (var computedProperty in data.Properties.Where(p => p.IsComputed))
+        foreach (var computedProperty in data.ComputedProperties)
         {
             var computeMethod = new CodeMemberMethod()
             {
                 Name = computedProperty.NameAsComputeMethod,
                 ReturnType = new CodeTypeReference(computedProperty.RelatedTypeNameOrViewModel)
             };
+
             if (Settings.GenerateControllers)
             {
                 computeMethod.Parameters.Add(new CodeParameterDeclarationExpression(data.NameAsViewModel, "vm"));
@@ -78,7 +79,7 @@ public class ElementCodeGenerator : CodeGenerator
                 commandMethod.Attributes = MemberAttributes.Override | MemberAttributes.Public;
             }
 
-            if (data.IsMultiInstance && Settings.GenerateControllers)
+            if (Settings.GenerateControllers)
             {
                 commandMethod.Parameters.Add(new CodeParameterDeclarationExpression(viewModelTypeReference,
                     data.NameAsVariable));

@@ -49,5 +49,28 @@ namespace Invert.uFrame.Editor.ViewModels
                 Name = item.Name
             });
         }
+
+        public void AddInstance(ElementData registeredInstanceData)
+        {
+            GraphItem.Instances.Add(new RegisteredInstanceData()
+            {
+                RelatedType = registeredInstanceData.Identifier,
+                Name = registeredInstanceData.Name,
+                Node = GraphItem,
+
+            });
+        }
     }
+
+    //public class RegisteredInstanceViewModel : TypedItemViewModel
+    //{
+    //    public RegisteredInstanceViewModel(ITypeDiagramItem viewModelItem, DiagramNodeViewModel nodeViewModel) : base(viewModelItem, nodeViewModel)
+    //    {
+    //    }
+
+    //    public override string TypeLabel
+    //    {
+    //        get { return  }
+    //    }
+    //}
 }

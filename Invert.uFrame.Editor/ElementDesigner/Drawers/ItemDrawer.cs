@@ -138,7 +138,7 @@ public class ItemDrawer : Drawer
             //var style = new GUIStyle(TextStyle);
             //style.normal.textColor = BackgroundStyle.normal.textColor;
 
-            GUILayout.Label(ItemViewModel.Name, ElementDesignerStyles.ClearItemStyle);
+            GUILayout.Label(ItemViewModel.Name, ElementDesignerStyles.SelectedItemStyle);
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
         }

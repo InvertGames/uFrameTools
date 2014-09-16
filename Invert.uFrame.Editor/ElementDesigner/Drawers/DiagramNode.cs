@@ -1,3 +1,4 @@
+using System.CodeDom;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using System;
@@ -35,7 +36,8 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
             }
         }
     }
-
+    public string Title { get { return Name; } }
+    public string SearchTag { get { return Name; } }
     public bool IsNewNode { get; set; }
 
     public bool IsExternal
@@ -230,7 +232,17 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 
     public bool IsSelectable { get { return true; } }
 
-    public DiagramNode Node { get; set; }
+    public DiagramNode Node
+    {
+        get
+        {
+            return this;
+        }
+        set
+        {
+            
+        }
+    }
 
     public bool IsSelected { get; set; }
 
@@ -371,6 +383,19 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
             //Data.RefactorCount++;
         }
         return true;
+    }
+
+    public virtual CodeTypeReference GetPropertyType(ITypeDiagramItem itemData)
+    {
+        return new CodeTypeReference(this.Name);
+    }
+
+    public virtual CodeTypeReference GetFieldType(ITypeDiagramItem itemData)
+    {
+
+        var tRef = new CodeTypeReference(uFrameEditor.UFrameTypes.P);
+        tRef.TypeArguments.Add(this.Name);
+        return tRef;
     }
 
     public void NodeRemoved(IDiagramNode enumData)

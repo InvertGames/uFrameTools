@@ -12,6 +12,10 @@ public static class ElementDesignerDataExtensions
                 .Where(p => !t.PositionData.HasPosition(t.CurrentFilter,p))
                 .ToArray();
     }
+    public static IEnumerable<RegisteredInstanceData> GetAllRegisteredElements(this INodeRepository t)
+    {
+        return t.NodeItems.OfType<SceneManagerData>().SelectMany(p=>p.Instances);
+    }
     public static IEnumerable<ElementData> GetAllElements(this INodeRepository t)
     {
         return t.NodeItems.OfType<ElementData>();

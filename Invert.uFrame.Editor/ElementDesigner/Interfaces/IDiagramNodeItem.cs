@@ -1,7 +1,7 @@
 using Invert.uFrame.Editor;
 using UnityEngine;
 
-public interface IDiagramNodeItem : ISelectable, IJsonObject
+public interface IDiagramNodeItem : ISelectable, IJsonObject,IItem
 {
     string Name { get; set; }
     string Highlighter { get; }

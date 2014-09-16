@@ -8,10 +8,10 @@ namespace Invert.uFrame.Editor.ViewModels
             DataObject = data;
         }
 
-        public bool IsComputed
-        {
-            get { return ElementItem.IsComputed; }
-        }
+        //public bool IsComputed
+        //{
+        //    get { return ElementItem.IsComputed; }
+        //}
 
         public override string TypeLabel
         {

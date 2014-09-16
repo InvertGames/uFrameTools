@@ -90,10 +90,10 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
         set { _isRealTimeProperty = value; }
     }
 
-    public bool IsComputed
-    {
-        get { return DependantPropertyIdentifiers.Count > 0; }
-    }
+    //public bool IsComputed
+    //{
+    //    get { return DependantPropertyIdentifiers.Count > 0; }
+    //}
 
     public List<string> DependantPropertyIdentifiers
     {
@@ -173,6 +173,29 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
         this.RelatedType = typeof(string).Name;
     }
 
+    public CodeTypeReference GetFieldType()
+    {
+        var relatedNode = this.RelatedNode();
+        if (relatedNode != null)
+        {
+            return relatedNode.GetFieldType(this);
+        }
+        var t = new CodeTypeReference(uFrameEditor.UFrameTypes.P);
+        t.TypeArguments.Add(new CodeTypeReference(RelatedTypeName));
+        return t;
+    }
+
+    public CodeTypeReference GetPropertyType()
+    {
+        var relatedNode = this.RelatedNode();
+        if (relatedNode != null)
+        {
+            return relatedNode.GetPropertyType(this);
+        }
+        return new CodeTypeReference(RelatedTypeName);
+    }
+
+
     public string FieldName
     {
         get
@@ -238,8 +261,7 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
         get { return string.Format("_Bind{0}", Name); }
     }
 
-    public string NameAsComputeMethod
-    {
-        get { return string.Format("Compute{0}",Name); }
-    }
+
+
+    public string TransitionId { get; set; }
 }

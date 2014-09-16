@@ -6,5 +6,7 @@ public class SceneManagerGenerator : SceneManagerClassGenerator
     {
         base.Initialize(fileGenerator);
         AddSceneManager(Data);
+        if (IsDesignerFile)
+            AddTypeEnum(Data.Name + "Registry", Data.Instances);
     }
 }

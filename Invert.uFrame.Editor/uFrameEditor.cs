@@ -430,6 +430,7 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance(new AddViewPropertyCommand());
             container.RegisterInstance(new AddBindingCommand());
             container.RegisterInstance(new AddTransitionCommand());
+            container.RegisterInstance(new AddInstanceCommand());
 
             container.RegisterInstance<IEditorCommand>(new RemoveNodeItemCommand(), "RemoveNodeItem");
 
@@ -466,7 +467,7 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IDiagramNodeCommand>(new RemoveLinkCommand(), "RemoveLink");
             container.RegisterInstance<IDiagramNodeCommand>(new SelectViewBaseElement(), "SelectView");
             container.RegisterInstance<IDiagramNodeCommand>(new MarkIsTemplateCommand(), "MarkAsTemplate");
-            container.RegisterInstance<IDiagramNodeCommand>(new MarkIsMultiInstanceCommand(), "MarkAsMulti");
+            //container.RegisterInstance<IDiagramNodeCommand>(new MarkIsMultiInstanceCommand(), "MarkAsMulti");
             
 
             // For node item context menu
@@ -501,6 +502,7 @@ namespace Invert.uFrame.Editor
             RegisterGraphItem<ViewPropertyData, ViewPropertyItemViewModel, ItemDrawer>();
             RegisterGraphItem<ViewBindingItemViewModel, SceneTransitionItemViewModel, ItemDrawer>();
             RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
+            RegisterGraphItem<RegisteredInstanceData, RegisterInstanceItemViewModel, ElementItemDrawer>();
 
 
             // Filters

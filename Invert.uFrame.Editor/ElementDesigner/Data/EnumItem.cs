@@ -6,6 +6,9 @@ using UnityEngine;
 [Serializable]
 public class EnumItem : IDiagramNodeItem
 {
+    public string Title { get { return Name; } }
+    public string SearchTag { get { return Name; } }
+
     public void Serialize(JSONClass cls)
     {
         cls.Add("Name", new JSONData(_name));

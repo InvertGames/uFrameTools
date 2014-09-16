@@ -8,6 +8,8 @@ using UnityEngine;
 [Serializable]
 public class SceneManagerTransition : IDiagramNodeItem
 {
+    public string Title { get { return Name; } }
+    public string SearchTag { get { return Name; } }
     public virtual void Serialize(JSONClass cls)
     {
         cls.Add("ToIdentifier",_toIdentifier);
@@ -93,9 +95,9 @@ public class SceneManagerTransition : IDiagramNodeItem
 
     public void Remove(IDiagramNode diagramNode)
     {
-        //var SceneManagerData = data as SceneManagerData;
-        //if (SceneManagerData != null) 
-        //    SceneManagerData.Transitions.Remove(this);
+        var sceneManagerData = Node as SceneManagerData;
+        if (sceneManagerData != null) 
+            sceneManagerData.Transitions.Remove(this);
     }
 
     public void Rename(IDiagramNode data, string name)

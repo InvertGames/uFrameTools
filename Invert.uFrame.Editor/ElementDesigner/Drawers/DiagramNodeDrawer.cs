@@ -114,7 +114,7 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
     }
 
     public float ItemHeight { get { return 20; } }
-
+    
     public virtual float Padding
     {
         get { return 12; }
@@ -328,13 +328,19 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         {
             BackgroundStyle = HeaderStyle,
             TextStyle = ElementDesignerStyles.ViewModelHeaderStyle,
-            ViewModelObject = ViewModelObject
+            ViewModelObject = ViewModelObject,
+            Padding = HeaderPadding
         });
         if (!ViewModel.IsCollapsed)
         {
             GetContentDrawers(drawers);
         }
         Children = drawers.ToList();
+    }
+
+    public virtual float HeaderPadding
+    {
+        get { return 12; }
     }
 
     public override void Refresh(Vector2 position)

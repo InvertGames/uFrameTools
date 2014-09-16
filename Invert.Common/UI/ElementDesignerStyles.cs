@@ -82,6 +82,7 @@ namespace Invert.Common
         private static Texture2D _circleLeftTexture;
         private static GUIStyle _boxHighlighter5;
         private static GUIStyle _tag1;
+        private static GUIStyle _tag2;
 
         public static float Scale
         {
@@ -122,6 +123,26 @@ namespace Invert.Common
                         
                     };
                 return _tag1;
+            }
+        }
+        public static GUIStyle Tag2
+        {
+            get
+            {
+                if (_tag2 == null)
+                    _tag2 = new GUIStyle
+                    {
+                        normal = { background = GetSkinTexture("Tag1"), textColor = Color.white },
+                        padding = new RectOffset(7, 3, 3, 3),
+                        border = new RectOffset(10,10,10,0),
+                        fixedHeight = 19f * Scale,
+                        stretchWidth = true,
+                        alignment = TextAnchor.MiddleCenter,
+                        fontSize = Mathf.RoundToInt(12 * Scale),
+                        fontStyle = FontStyle.Bold
+
+                    };
+                return _tag2;
             }
         }
         public static GUIStyle AddButtonStyle
@@ -684,12 +705,13 @@ namespace Invert.Common
                 if (_clearItemStyle == null)
                     _clearItemStyle = new GUIStyle
                     {
-                        normal = { textColor = new Color(0.88f,0.88f,0.88f) },
+                        normal = { textColor = new Color(0.7f,0.7f,0.7f) },
                         stretchHeight = true,
                         stretchWidth = true,
+                        padding = new RectOffset(5,0,0,0),
                         fontSize = Mathf.RoundToInt(9f * Scale),
                         fixedHeight = 18f * Scale,
-                        alignment = TextAnchor.MiddleCenter
+                        alignment = TextAnchor.MiddleLeft
                     };
 
                 return _clearItemStyle;
@@ -917,10 +939,10 @@ namespace Invert.Common
                         normal = { background = GetSkinTexture("SelectedNodeItem"), textColor = Color.white },
                         active = { background = GetSkinTexture("SelectedNodeItem"), textColor = Color.white },
                         stretchHeight = true,
-
+                        padding = new RectOffset(0,5,0,0),
                         fixedHeight = Mathf.RoundToInt(18 * Scale),
                         fontSize = Mathf.RoundToInt(9 * Scale),
-                        alignment = TextAnchor.MiddleCenter
+                        alignment = TextAnchor.MiddleRight
                     };
                 }
                 return _selectedItemStyle;

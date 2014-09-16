@@ -1,3 +1,5 @@
+using System.CodeDom;
+using System.Runtime.InteropServices;
 using Invert.MVVM;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
@@ -64,6 +66,24 @@ public class ElementData : ElementDataBase, IDesignerType
         }
     }
 
+    public IEnumerable<ITypeDiagramItem> SubscribableProperties
+    {
+        get
+        {
+            foreach (var item in ComputedProperties)
+            {
+                yield return item;
+            }
+            foreach (var item in Properties)
+            {
+                yield return item;
+            }
+            //foreach (var item in Collections)
+            //{
+            //    yield return item;
+            //}
+        }
+    } 
 
     public override string BaseTypeName
     {
@@ -197,6 +217,17 @@ public class ElementData : ElementDataBase, IDesignerType
         }
     }
 
+    public override CodeTypeReference GetPropertyType(ITypeDiagramItem itemData)
+    {
+        return new CodeTypeReference(this.NameAsViewModel);
+    }
+
+    public override CodeTypeReference GetFieldType(ITypeDiagramItem itemData)
+    {
+        var tRef = new CodeTypeReference(uFrameEditor.UFrameTypes.P);
+        tRef.TypeArguments.Add(this.NameAsViewModel);
+        return tRef;
+    }
     public IEnumerable<ViewComponentData> ViewComponents
     {
         get

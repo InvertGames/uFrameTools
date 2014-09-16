@@ -27,7 +27,7 @@ namespace Invert.uFrame.Editor.ViewModels
             ContentItems.Clear();
             foreach (var item in GraphItem.ContainedItems)
             {
-                var vm = uFrameEditor.Container.ResolveRelation<ViewModel>(item.GetType(), item, this) as GraphItemViewModel;
+                var vm = GetDataViewModel(item);
                 if (vm == null)
                 {
                     Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
@@ -35,6 +35,12 @@ namespace Invert.uFrame.Editor.ViewModels
                 }
                 ContentItems.Add(vm);
             }
+        }
+
+        protected GraphItemViewModel GetDataViewModel(IDiagramNodeItem item)
+        {
+            var vm = uFrameEditor.Container.ResolveRelation<ViewModel>(item.GetType(), item, this) as GraphItemViewModel;
+            return vm;
         }
 
 
