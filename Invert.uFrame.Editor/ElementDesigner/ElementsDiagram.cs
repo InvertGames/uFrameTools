@@ -1,3 +1,5 @@
+using System.Collections.Specialized;
+using System.ComponentModel;
 using Invert.Common;
 using Invert.MVVM;
 using Invert.uFrame.Editor;
@@ -521,8 +523,8 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     protected override void DataContextChanged()
     {
         base.DataContextChanged();
-        DiagramViewModel.GraphItems.CollectionChangedWith += GraphItemsOnCollectionChangedWith;
-    }
+        DiagramViewModel.GraphItems.CollectionChanged+= GraphItemsOnCollectionChangedWith;
+    } 
 
     protected virtual void OnSelectionChanged(IDiagramNode olddata, IDiagramNode newdata)
     {
@@ -577,9 +579,10 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     //        if (DiagramViewModel.SelectedNode != null && DiagramViewModel.SelectedNode.IsEditing)
     //        {
     //            DiagramViewModel.SelectedNode.EndEditing();
-    private void GraphItemsOnCollectionChangedWith(ModelCollectionChangeEventWith<GraphItemViewModel> changeArgs)
+    private void GraphItemsOnCollectionChangedWith(NotifyCollectionChangedEventArgs changeArgs)
     {
-        foreach (var item in changeArgs.NewItemsOfT)
+        if (changeArgs.NewItems != null)
+        foreach (var item in changeArgs.NewItems.OfType<ViewModel>())
         {
             if (item == null) Debug.Log("Graph Item is null");
             var drawer = uFrameEditor.CreateDrawer(item);

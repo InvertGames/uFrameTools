@@ -43,46 +43,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\GameContainer.cs">
-      <Link>GameContainer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\IBinding.cs">
-      <Link>IBinding.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\ICommand.cs">
-      <Link>ICommand.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\IGameContainer.cs">
-      <Link>IGameContainer.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\IJsonSerializable.cs">
       <Link>IJsonSerializable.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\InjectAttribute.cs">
-      <Link>InjectAttribute.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\ITwoWayBinding.cs">
-      <Link>ITwoWayBinding.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\ModelCollection.cs">
-      <Link>ModelCollection.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\ModelPropertyBase.cs">
-      <Link>ModelPropertyBase.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\ModelPropertyBinding.cs">
-      <Link>ModelPropertyBinding.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\P.cs">
-      <Link>P.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\SimpleJSON.cs">
       <Link>SimpleJSON.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\ViewModel.cs">
-      <Link>ViewModel.cs</Link>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\INotifyCollectionChanged.cs">
+      <Link>INotifyCollectionChanged.cs</Link>
     </Compile>
-    <Compile Include="Binding.cs" />
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\NotifyCollectionChangedAction.cs">
+      <Link>NotifyCollectionChangedAction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\NotifyCollectionChangedEventArgs.cs">
+      <Link>NotifyCollectionChangedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\NotifyCollectionChangedEventHandler.cs">
+      <Link>NotifyCollectionChangedEventHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\ObservableCollection.cs">
+      <Link>ObservableCollection.cs</Link>
+    </Compile>
     <Compile Include="Controller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

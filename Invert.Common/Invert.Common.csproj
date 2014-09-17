@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DLL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -46,6 +46,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\GameContainer.cs">
+      <Link>GameContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\IGameContainer.cs">
+      <Link>IGameContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\InjectAttribute.cs">
+      <Link>InjectAttribute.cs</Link>
+    </Compile>
     <Compile Include="UI\ElementDesignerStyles.cs" />
     <Compile Include="UI\UBStyles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

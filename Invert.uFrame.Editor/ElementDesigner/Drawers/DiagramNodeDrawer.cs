@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using Invert.Common;
 using Invert.MVVM;
@@ -55,13 +56,15 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
     protected override void DataContextChanged()
     {
         base.DataContextChanged();
-        ViewModel.ContentItems.CollectionChangedWith += ContentItemsOnCollectionChangedWith;
+        
+        ViewModel.ContentItems.CollectionChanged += ContentItemsOnCollectionChangedWith;
     }
 
-    private void ContentItemsOnCollectionChangedWith(ModelCollectionChangeEventWith<GraphItemViewModel> changeArgs)
+    private void ContentItemsOnCollectionChangedWith(NotifyCollectionChangedEventArgs changeargs)
     {
         this.RefreshContent();
     }
+
 
     public float Scale
     {
@@ -421,6 +424,6 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
 
     public void Dispose()
     {
-        ViewModel.ContentItems.CollectionChangedWith -= ContentItemsOnCollectionChangedWith;
+        ViewModel.ContentItems.CollectionChanged-= ContentItemsOnCollectionChangedWith;
     }
 }

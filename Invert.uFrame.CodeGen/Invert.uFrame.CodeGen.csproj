@@ -80,6 +80,10 @@
     <Compile Include="ViewModelGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Invert.Common\Invert.Common.csproj">
+      <Project>{346C6B33-6FB0-40D1-B8A6-EB2144C10A5C}</Project>
+      <Name>Invert.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Invert.MVVM\Invert.MVVM.csproj">
       <Project>{CB024A98-EE90-4497-8AF3-2C574D665A8A}</Project>
       <Name>Invert.MVVM</Name>

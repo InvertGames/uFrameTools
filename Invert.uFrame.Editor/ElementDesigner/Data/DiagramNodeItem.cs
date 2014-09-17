@@ -108,8 +108,6 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     public virtual bool IsSelectable { get { return true; } }
     public DiagramNode Node  { get; set; }
 
-    private P<bool> _IsSelectedProperty = new P<bool>(false);
-
     public bool IsSelected
     {
         get { return _isSelected; }
