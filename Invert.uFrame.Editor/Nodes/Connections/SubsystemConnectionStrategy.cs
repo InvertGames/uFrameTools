@@ -13,6 +13,7 @@ namespace Invert.uFrame.Editor.Nodes
 
         protected override bool CanConnect(SubSystemData output, SubSystemData input)
         {
+            if (output == input) return false;
             return !output.GetAllImports().Contains(input.Identifier);
         }
 

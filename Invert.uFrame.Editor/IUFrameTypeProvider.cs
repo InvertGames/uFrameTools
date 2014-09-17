@@ -35,5 +35,7 @@ namespace Invert.uFrame.Editor
         Type P { get; }
         Type ModelCollection { get; }
         Type Computed { get; }
+        Type State { get;  }
+        Type StateMachine { get;  }
     }
 }

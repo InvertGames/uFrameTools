@@ -177,11 +177,18 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
 
     public void OnBeforeSerialize()
     {
-        if (!Errors)
+
+        var backup = _jsonData;
+        try
         {
-          
             _jsonData = Serialize().ToString();
         }
+        catch (Exception ex)
+        {
+            _jsonData = backup;
+            UnityEngine.Debug.LogException(ex);
+        }
+
     }
 
     public void OnAfterDeserialize()
@@ -189,8 +196,8 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         //Debug.Log("Deserialize");
         try
         {
-            uFrameEditor.Log("Deserializing " + name);
             Deserialize(_jsonData);
+        
             CleanUpDuplicates();
             Errors = false;
         }
@@ -198,6 +205,7 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         {
             Debug.Log(_jsonData);
             Debug.Log(this.name + " has a problem.");
+
             Debug.LogException(ex);
             Errors = true;
             Error = ex;
@@ -219,15 +227,19 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
 
     private void Deserialize(string jsonData)
     {
-     
-        if (jsonData == null) return;
+
+        if (jsonData == null)
+        {
+            return;
+        }
 
         
         var jsonNode = JSONNode.Parse(jsonData);
      
         if (jsonNode == null)
         {
-            Debug.Log("Couldn't parse file.");
+
+            Debug.Log("Couldn't parse file." + this.name);
             return;
         }
 
@@ -237,7 +249,16 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         this._identifier = jsonNode["Identifier"].Value;
 
         if (jsonNode["Nodes"] is JSONArray)
+        {
+    
+            //uFrameEditor.Log(this.name + jsonNode["Nodes"].ToString());
             Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>(this));
+
+        }
+        else
+        {
+        }
+            
 
         if (jsonNode["SceneFlow"] is JSONClass)
             RootFilter = jsonNode["SceneFlow"].DeserializeObject(this) as DiagramFilter;
@@ -269,8 +290,6 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
                 }
             }
         }
-
-        Version = uFrameVersionProcessor.CURRENT_VERSION;
     }
 }
 
@@ -293,6 +312,13 @@ public class ElementsGraph : GraphData
     }
 }
 
+public class JsonElementDesignerData : ElementsGraph
+{
+
+ 
+
+
+}
 public class FilterPositionData : IJsonObject
 {
     private Dictionary<string, FilterLocations> _positions;

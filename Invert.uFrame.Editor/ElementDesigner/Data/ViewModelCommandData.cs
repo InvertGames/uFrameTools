@@ -24,7 +24,7 @@ public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
-        _parameterType = cls["ItemType"].Value;
+        _parameterType = cls["ItemType"].Value.Split(',')[0].Split('.').Last();
         _isYield = cls["IsYield"].AsBool;
     }
 
@@ -230,7 +230,7 @@ public class RegisteredInstanceData : DiagramNodeItem,ITypeDiagramItem
 
     public override void Remove(IDiagramNode diagramNode)
     {
-        var data = Node as SceneManagerData;
+        var data = Node as SubSystemData;
         if (data != null)
         {
             data.Instances.Remove(this);

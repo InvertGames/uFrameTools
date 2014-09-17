@@ -102,6 +102,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         {
             diagram.RootFilter = defaultFilter;
         }
+        diagram.Version = uFrameVersionProcessor.CURRENT_VERSION_NUMBER.ToString();
         Diagrams.Add(diagram);
         CurrentGraph = diagram;
         Refresh();

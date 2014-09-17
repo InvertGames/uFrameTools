@@ -125,8 +125,8 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     public override void Draw(float scale)
     {
         base.Draw(scale); 
-        if (_isRegistered)
-        EditorGUI.LabelField(new Rect(Bounds.x + Bounds.width - 30f, Bounds.y - 18f, 26f, 15f).Scale(Scale), "*",
+        if (NodeViewModel.IsTemplate)
+        EditorGUI.LabelField(new Rect(Bounds.x + Bounds.width - 30f, Bounds.y - 18f, 26f, 15f).Scale(Scale), "A",
              ElementDesignerStyles.Tag1);
     }
 

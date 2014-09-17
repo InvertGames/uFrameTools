@@ -9,7 +9,7 @@ using UnityEngine;
 public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
 {
     private NodeItemHeader _transitionsHeader;
-    private NodeItemHeader _instancesHeader;
+
 
     public SceneManagerDrawer(SceneManagerViewModel viewModel)
         : base()
@@ -22,27 +22,7 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
         get { return ElementDesignerStyles.NodeHeader6; }
     }
 
-    public NodeItemHeader InstancesHeader
-    {
-        get
-        {
-            if (_instancesHeader != null) return _instancesHeader;
-
-            _instancesHeader = new NodeItemHeader(ViewModel)
-            {
-                Label = "Instances",
-                HeaderType = typeof(RegisterInstanceItemViewModel),
-
-            };
-
-            if (NodeViewModel.IsLocal)
-                _instancesHeader.AddCommand = uFrameEditor.Container.Resolve<AddInstanceCommand>();
-
-            return _instancesHeader;
-        }
-        set { _transitionsHeader = value; }
-    }
-
+ 
     public NodeItemHeader TransitionsHeader
     {
         get
@@ -74,13 +54,7 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
             if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
             drawers.Add(drawer);
         }
-        drawers.Add(InstancesHeader);
-        foreach (var item in ViewModel.ContentItems.OfType<RegisterInstanceItemViewModel>())
-        {
-            var drawer = uFrameEditor.CreateDrawer(item);
-            if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
-            drawers.Add(drawer);
-        }
+    
     }
 
     public override GUIStyle ItemStyle

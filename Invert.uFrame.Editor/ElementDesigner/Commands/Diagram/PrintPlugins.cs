@@ -13,14 +13,15 @@ namespace Invert.uFrame.Editor.ElementDesigner
 
         public override void Perform(DiagramViewModel node)
         {
-            var diagram = uFrameEditor.CurrentDiagramViewModel.Data;
-            if (diagram.CurrentFilter == null)
+            var subsystem = node.SelectedGraphItem as SubSystemViewModel;
+            if (subsystem != null)
             {
-                Debug.Log("CURRENT FILTER NULL");
-            }
-            else if (diagram.FilterState == null)
-            {
-                Debug.Log("FILTER STATE IS NULL");
+                var data = subsystem.DataObject as SubSystemData;
+                var instances = data.AllInstancesDistinct;
+                foreach (var instane in instances)
+                {
+                    Debug.Log(instane.RelatedTypeName+" : "+instane.Name);
+                }
             }
             //Debug.Log(uFrameEditor.uFrameTypes);
             Type T = typeof(GUIUtility);

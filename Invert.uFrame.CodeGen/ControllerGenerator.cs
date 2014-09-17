@@ -138,15 +138,17 @@ public class ControllerGenerator : ElementCodeGenerator
         {
             if (!data.IsDerived)
             {
+                var itemsAdded = new List<string>();
                 foreach (var item in DiagramData.GetAllRegisteredElements())
                 {
-                    UnityEngine.Debug.Log("Creating Property" + item.Name);
+                    if (itemsAdded.Contains(item.Name)) continue;
+
                     var element = item.RelatedNode() as ElementData;
                     if (element == null) continue;
 
                     tDecleration.Members.Add(
-                        new CodeSnippetTypeMember(string.Format("[Inject(\"{1}\")] {0} {1} {{ get; set; }}",element.NameAsViewModel, item.Name)));
-
+                        new CodeSnippetTypeMember(string.Format("[Inject(\"{1}\")] public {0} {1} {{ get; set; }}",element.NameAsViewModel, item.Name)));
+                    itemsAdded.Add(item.Name);
                 }
             }
             

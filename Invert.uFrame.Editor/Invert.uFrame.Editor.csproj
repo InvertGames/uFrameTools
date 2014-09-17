@@ -48,6 +48,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeGenerator\GeneratorSettings.cs" />
+    <Compile Include="StateMachines\Nodes\Actions\Actions.cs" />
+    <Compile Include="StateMachines\Nodes\Machines\StateMachineNodeData.cs" />
+    <Compile Include="StateMachines\Nodes\Machines\StateMachineNodeDrawer.cs" />
+    <Compile Include="StateMachines\Nodes\Machines\StateMachineNodeViewModel.cs" />
+    <Compile Include="StateMachines\Nodes\Machines\StateMachineVariableData.cs" />
+    <Compile Include="StateMachines\Nodes\Machines\StateMachineVariableItemViewModel.cs" />
+    <Compile Include="StateMachines\Nodes\States\ComputedTransitionConnectionStrategy.cs" />
+    <Compile Include="StateMachines\Nodes\States\StateMachineStateData.cs" />
+    <Compile Include="StateMachines\Nodes\States\StateMachineStateNodeDrawer.cs" />
+    <Compile Include="StateMachines\Nodes\States\StateMachineStateNodeViewModel.cs" />
+    <Compile Include="StateMachines\Nodes\States\StateMachineTransition.cs" />
+    <Compile Include="StateMachines\Nodes\States\StateMachineTransitionConnectionStrategy.cs" />
+    <Compile Include="StateMachines\Nodes\States\StateMachineTransitionViewModel.cs" />
+    <Compile Include="StateMachines\StateMachineFilter.cs" />
+    <Compile Include="StateMachines\StateMachineGraph.cs" />
     <Compile Include="ElementDesigner\Drawers\ConnectionDrawer.cs" />
     <Compile Include="ElementDesigner\Drawers\ConnectorDrawer.cs" />
     <Compile Include="ElementDesigner\Drawers\Drawer.cs" />

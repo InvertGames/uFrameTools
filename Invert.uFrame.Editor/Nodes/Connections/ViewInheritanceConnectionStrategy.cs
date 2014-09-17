@@ -12,6 +12,7 @@ namespace Invert.uFrame.Editor.Nodes
 
         protected override bool IsConnected(ViewData outputData, ViewData inputData)
         {
+            if (outputData == inputData) return false;
             return inputData.BaseViewIdentifier == outputData.Identifier;
         }
 

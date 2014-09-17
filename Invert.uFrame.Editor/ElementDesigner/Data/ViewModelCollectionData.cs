@@ -14,8 +14,7 @@ public class ViewModelCollectionData : DiagramNodeItem, ITypeDiagramItem
     {
         get { return string.Format("_{0}", Name); }
     }
-    public string Title { get { return Name; } }
-    public string SearchTag { get { return Name; } }
+
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
@@ -28,7 +27,7 @@ public class ViewModelCollectionData : DiagramNodeItem, ITypeDiagramItem
     {
         base.Deserialize(cls, repository);
 
-        _itemType = cls["ItemType"].Value;
+        _itemType = cls["ItemType"].Value.Split(',')[0].Split('.').Last();
 
     }
 

@@ -452,6 +452,7 @@ public class ViewModelGenerator : ElementCodeGenerator
             decl.BaseTypes.Add(ElementData.NameAsViewModelBase);
             Namespace.Types.Add(decl);
         }
+        this.TryAddNamespace("UnityEngine");
     }
 
     public virtual CodeMemberField ToCodeMemberField(ITypeDiagramItem itemData, CodeConstructor constructor)

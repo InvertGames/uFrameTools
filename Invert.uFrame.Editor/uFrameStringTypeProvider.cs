@@ -56,9 +56,22 @@ namespace Invert.uFrame.Editor
         public Type _P;
         public virtual Type P { get { return _P ?? (_P = uFrameEditor.FindType("P`1")); } }
         private  Type _Computed;
+      
         public virtual Type Computed { get { return _Computed ?? (_Computed = uFrameEditor.FindType("Computed`1")); } }
+          private Type _State;
+
+        public virtual Type State
+        {
+            get { return _State ?? (_State = uFrameEditor.FindType("Invert.StateMachine.State")); }
+        }
+         public virtual Type StateMachine
+        {
+            get { return _StateMachine ?? (_StateMachine = uFrameEditor.FindType("Invert.StateMachine.StateMachine")); }
+        }
+
         public Type _ModelCollection;
- 
+        private Type _StateMachine;
+
         public Type ModelCollection { get { return _ModelCollection ?? (_ModelCollection = uFrameEditor.FindType("ModelCollection`1")); } }
     }
 

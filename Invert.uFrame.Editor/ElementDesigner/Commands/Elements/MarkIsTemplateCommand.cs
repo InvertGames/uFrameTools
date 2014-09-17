@@ -1,6 +1,8 @@
+using Invert.uFrame.Editor.ViewModels;
+
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class MarkIsTemplateCommand : EditorCommand<ElementData>, IDiagramNodeCommand
+    public class MarkIsTemplateCommand : EditorCommand<ElementNodeViewModel>, IDiagramNodeCommand
     {
         public override string Group
         {
@@ -8,27 +10,26 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         }
         public override string Name
         {
-            get { return "Is Template"; }
+            get { return "Is Abstract"; }
         }
 
-        public override string CanPerform(ElementData arg)
+        public override string CanPerform(ElementNodeViewModel arg)
         {
             if (arg == null)
             {
                 return "Must be an element to perform this operation.";
             }
-
             return null;
         }
 
-        public override bool IsChecked(ElementData arg)
+        public override bool IsChecked(ElementNodeViewModel arg)
         {
             return arg.IsTemplate;
         }
 
-        public override void Perform(ElementData arg)
+        public override void Perform(ElementNodeViewModel arg)
         {
-            arg.IsTemplate = !arg.IsTemplate;
+            arg.GraphItem.IsTemplate = !arg.IsTemplate;
         }
     }
 }

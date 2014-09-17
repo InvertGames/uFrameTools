@@ -83,6 +83,7 @@ namespace Invert.uFrame.Editor
             var clrTypeString = node["_CLRType"].Value;
             if (string.IsNullOrEmpty(clrTypeString))
             {
+                uFrameEditor.Log("CLR Type is null can't load the type");
                 return null;
             }
             var clrType = uFrameEditor.FindType(clrTypeString);

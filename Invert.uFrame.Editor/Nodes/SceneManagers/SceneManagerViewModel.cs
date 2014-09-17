@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Invert.uFrame.Editor.ViewModels
 {
@@ -39,7 +40,10 @@ namespace Invert.uFrame.Editor.ViewModels
         //{
         //    base.GetConnectors(list);
         //}
-
+        public IEnumerable<RegisteredInstanceData> ImportedInstances
+        {
+            get { return GraphItem.SubSystem.AllInstances; }
+        } 
         public void AddCommandTransition(ViewModelCommandData item)
         {
             GraphItem.Transitions.Add(new SceneManagerTransition()
@@ -50,16 +54,7 @@ namespace Invert.uFrame.Editor.ViewModels
             });
         }
 
-        public void AddInstance(ElementData registeredInstanceData)
-        {
-            GraphItem.Instances.Add(new RegisteredInstanceData()
-            {
-                RelatedType = registeredInstanceData.Identifier,
-                Name = registeredInstanceData.Name,
-                Node = GraphItem,
-
-            });
-        }
+  
     }
 
     //public class RegisteredInstanceViewModel : TypedItemViewModel

@@ -1,15 +1,34 @@
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 
-public class SubSystemViewModel : DiagramNodeViewModel
+public class SubSystemViewModel : DiagramNodeViewModel<SubSystemData>
 {
     public SubSystemViewModel(SubSystemData data,DiagramViewModel diagramViewModel) : base(data,diagramViewModel)
     {
         
     }
+
+    public override ConnectorViewModel InputConnector
+    {
+        get
+        {
+            if (DiagramViewModel.Data.CurrentFilter == this.GraphItem) return null;
+            return base.InputConnector;
+        }
+    }
+
+    public override ConnectorViewModel OutputConnector
+    {
+        get
+        {
+            if (DiagramViewModel.Data.CurrentFilter == this.GraphItem) return null;
+            return base.OutputConnector;
+        }
+    }
+
     public override bool AllowCollapsing
     {
-        get { return false; }
+        get { return true; }
     }
 
     public void Export(IElementDesignerData data = null)
@@ -19,5 +38,16 @@ public class SubSystemViewModel : DiagramNodeViewModel
         d.PositionData[d.RootFilter, GraphItemObject.Identifier] = Position;
         uFrameEditor.CurrentProject.RemoveNode(GraphItemObject);
         uFrameEditor.DesignerWindow.SwitchDiagram(data);
+    }
+
+    public void AddInstance(ElementData registeredInstanceData)
+    {
+        GraphItem.Instances.Add(new RegisteredInstanceData()
+        {
+            RelatedType = registeredInstanceData.Identifier,
+            Name = registeredInstanceData.Name,
+            Node = GraphItem,
+
+        });
     }
 }

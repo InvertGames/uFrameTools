@@ -86,32 +86,33 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         get { return BaseElement != null; }
     }
 
-    //public bool IsForcedMultiInstance
-    //{
-    //    get
-    //    {
-    //        return
-    //            Data.NodeItems.ToArray().OfType<ElementDataBase>()
-    //                .SelectMany(p => p.Collections)
-    //                .Any(p => p.RelatedType == Identifier) || AllBaseTypes.Any(p =>p!=this && p.IsMultiInstance);
-    //    }
-    //}
-
-    //public bool IsMultiInstance
-    //{
-    //    get
-    //    {
-    //        return IsForcedMultiInstance || _isMultiInstance;
-    //    }
-    //    set
-    //    {
-    //        if (IsForcedMultiInstance && !value)
-    //        {
-    //            throw new Exception("This element belongs to a collection so it can NOT be a single instance element.");
-    //        }
-    //        _isMultiInstance = value;
-    //    }
-    //}
+    [Obsolete]
+    public bool IsForcedMultiInstance
+    {
+        get
+        {
+            return
+                Data.NodeItems.ToArray().OfType<ElementDataBase>()
+                    .SelectMany(p => p.Collections)
+                    .Any(p => p.RelatedType == Identifier) || AllBaseTypes.Any(p => p != this && p.IsMultiInstance);
+        }
+    }
+    [Obsolete]
+    public bool IsMultiInstance
+    {
+        get
+        {
+            return IsForcedMultiInstance || _isMultiInstance;
+        }
+        set
+        {
+            if (IsForcedMultiInstance && !value)
+            {
+                throw new Exception("This element belongs to a collection so it can NOT be a single instance element.");
+            }
+            _isMultiInstance = value;
+        }
+    }
 
     public override IEnumerable<IDiagramNodeItem> Items
     {

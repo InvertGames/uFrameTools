@@ -36,7 +36,7 @@ public class DiagramViewModel : ViewModel
                 {
                     yield return item;
                 }
-                
+
             }
         }
     }
@@ -127,7 +127,7 @@ public class DiagramViewModel : ViewModel
     {
         var assetPath = AssetDatabase.GetAssetPath(diagram as GraphData);
         var fileExtension = Path.GetExtension(assetPath);
-        
+
 
         if (diagram == null) throw new Exception("Diagram not found");
         CurrentRepository = currentRepository;
@@ -212,7 +212,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return  Data.Name;
+            return Data.Name;
         }
     }
 
@@ -245,7 +245,10 @@ public class DiagramViewModel : ViewModel
 
     public bool NeedsUpgrade
     {
-        get { return false; }
+        get
+        {
+            return string.IsNullOrEmpty(Data.Version) || (Convert.ToDouble(Data.Version) < uFrameVersionProcessor.CURRENT_VERSION_NUMBER && uFrameVersionProcessor.REQUIRE_UPGRADE);
+        }
     }
 
     public void Navigate()
@@ -318,7 +321,40 @@ public class DiagramViewModel : ViewModel
 
     public void UpgradeProject()
     {
-        
+        uFrameEditor.ExecuteCommand((n) =>
+        {
+            var nodes = Data.NodeItems.ToArray();
+            foreach (var node in nodes.OfType<ElementData>())
+            {
+                foreach (var item in node.ContainedItems.OfType<ITypeDiagramItem>())
+                {
+                    var uFrameType = Data.NodeItems.FirstOrDefault(p => p.Name == item.RelatedType);
+                    if (uFrameType != null)
+                        item.RelatedType = uFrameType.Identifier;
+                }
+            }
+
+            foreach (var subsystem in nodes.OfType<SubSystemData>())
+            {
+                var containing = subsystem.GetContainingNodes(CurrentRepository).OfType<ElementData>();
+                foreach (var node in containing)
+                {
+                    if (!node.IsMultiInstance)
+                    {
+                        subsystem.Instances.Add(new RegisteredInstanceData()
+                        {
+                            Node = subsystem,
+                            Name = node.Name,
+                            RelatedType = node.Identifier
+                        });
+                    }
+                }
+            }
+
+            Data.Version = uFrameVersionProcessor.CURRENT_VERSION_NUMBER.ToString();
+            AssetDatabase.SaveAssets();
+        });
+      
     }
 
     public void AddNode(IDiagramNode newNodeData)

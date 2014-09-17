@@ -50,6 +50,10 @@
     <Compile Include="Class1.cs" />
     <Compile Include="CodeDomExtensions.cs" />
     <Compile Include="CodeDomHelper.cs" />
+    <Compile Include="CodeGenerators\StateMachineClassGenerator.cs" />
+    <Compile Include="CodeGenerators\StateMachineCodeFactory.cs" />
+    <Compile Include="CodeGenerators\StateMachineStateClassGenerator.cs" />
+    <Compile Include="CodeGenerators\StateMachineStateCodeFactory.cs" />
     <Compile Include="CollectionBindingGenerator.cs" />
     <Compile Include="CollectionItemAddedBindingGenerator.cs" />
     <Compile Include="CollectionItemCreateBindingGenerator.cs" />
@@ -65,6 +69,7 @@
     <Compile Include="SceneManagerDataGeneratorFactory.cs" />
     <Compile Include="SceneManagerGenerator.cs" />
     <Compile Include="SceneManagerSettingsGenerator.cs" />
+    <Compile Include="CodeGenerators\StateMachinePlugin.cs" />
     <Compile Include="ViewBaseGenerator.cs" />
     <Compile Include="ViewBindingExtender.cs" />
     <Compile Include="ViewClassGenerator.cs" />

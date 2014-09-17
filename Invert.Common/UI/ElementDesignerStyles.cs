@@ -115,10 +115,10 @@ namespace Invert.Common
                     _tag1 = new GUIStyle
                     {
                         normal = { background = GetSkinTexture("Tag1"), textColor = Color.white },
-                        padding = new RectOffset(7, 3, 3, 3),
+                        padding = new RectOffset(8, 3, 3, 3),
                         fixedHeight = 19f * Scale,
                         stretchWidth = true,
-                        fontSize = Mathf.RoundToInt(18 * Scale),
+                        fontSize = Mathf.RoundToInt(14 * Scale),
                         fontStyle = FontStyle.Bold
                         
                     };

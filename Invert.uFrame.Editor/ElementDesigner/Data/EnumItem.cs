@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Invert.uFrame.Editor;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ public class EnumItem : IDiagramNodeItem
     public string Name
     {
         get { return _name; }
-        set { _name = value; }
+        set { _name = Regex.Replace(value, @"[^a-zA-Z0-9_\.]+", ""); }
     }
 
     public string Highlighter

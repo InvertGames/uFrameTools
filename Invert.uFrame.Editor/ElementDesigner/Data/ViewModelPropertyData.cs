@@ -11,8 +11,6 @@ using UnityEngine;
 public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializeablePropertyData
 {
 
-    public string Title { get { return Name; } }
-    public string SearchTag { get { return Name; } }
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
@@ -24,7 +22,7 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
-        _type = cls["ItemType"].Value;
+        _type = cls["ItemType"].Value.Split(',')[0].Split('.').Last();
         _isRealTimeProperty = cls["IsRealTime"].AsBool;
         if (cls["DependantOn"] != null)
         {

@@ -7,6 +7,6 @@ public class SceneManagerGenerator : SceneManagerClassGenerator
         base.Initialize(fileGenerator);
         AddSceneManager(Data);
         if (IsDesignerFile)
-            AddTypeEnum(Data.Name + "Registry", Data.Instances);
+            AddTypeEnum(Data.Name + "Registry", Data.SubSystem.Instances);
     }
 }

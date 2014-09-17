@@ -14,7 +14,7 @@ public static class ElementDesignerDataExtensions
     }
     public static IEnumerable<RegisteredInstanceData> GetAllRegisteredElements(this INodeRepository t)
     {
-        return t.NodeItems.OfType<SceneManagerData>().SelectMany(p=>p.Instances);
+        return t.NodeItems.OfType<SubSystemData>().SelectMany(p=>p.Instances);
     }
     public static IEnumerable<ElementData> GetAllElements(this INodeRepository t)
     {

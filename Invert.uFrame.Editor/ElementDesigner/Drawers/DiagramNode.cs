@@ -398,7 +398,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         return tRef;
     }
 
-    public void NodeRemoved(IDiagramNode enumData)
+    public virtual  void NodeRemoved(IDiagramNode enumData)
     {
         foreach (var item in ContainedItems)
         {

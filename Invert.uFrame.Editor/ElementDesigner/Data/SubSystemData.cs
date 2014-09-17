@@ -7,15 +7,25 @@ using UnityEngine;
 
 public static class SubsystemExtensions
 {
+    public static IEnumerable<SubSystemData> GetAllImportedSubSystems(this SubSystemData subsystem)
+    {
+        return GetAllImportedSubSystems(subsystem, subsystem.Data);
+    }
+
     public static IEnumerable<SubSystemData> GetAllImportedSubSystems(this SubSystemData subsystem,INodeRepository data)
     {
+        
         var subSystem = data.NodeItems.OfType<SubSystemData>()
-            .Where(p => subsystem.Imports.Contains(p.Identifier));
+            .Where(p => subsystem.Imports.Contains(p.Identifier) ).ToArray();
 
         foreach (var subSystemData in subSystem)
         {
             yield return subSystemData;
-            foreach (var systemData in subSystemData.GetAllImportedSubSystems(subSystemData.Data))
+           
+        }
+        foreach (var item in subSystem)
+        {
+             foreach (var systemData in item.GetAllImportedSubSystems(data))
             {
                 yield return systemData;
             }
@@ -76,6 +86,27 @@ public static class SubsystemExtensions
 [Serializable]
 public class SubSystemData : DiagramNode
 {
+    public IEnumerable<RegisteredInstanceData> AllInstances
+    {
+        get { return this.GetAllImportedSubSystems().Concat(new[] {this}).SelectMany(p => p.Instances).Reverse(); }
+    }
+
+    public IEnumerable<RegisteredInstanceData> AllInstancesDistinct
+    {
+        get
+        {
+            var instancesAdded = new List<string>();
+            foreach (var instance in AllInstances)
+            {
+                if (!instancesAdded.Contains(instance.Name))
+                {
+                    yield return instance;
+                }
+                instancesAdded.Add(instance.Name);
+            }
+        }
+    }
+
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
@@ -95,11 +126,17 @@ public class SubSystemData : DiagramNode
     [SerializeField]
     private List<string> _imports = new List<string>();
 
+    public List<RegisteredInstanceData> Instances
+    {
+        get { return _instances ?? (_instances = new List<RegisteredInstanceData>()); }
+        set { _instances = value; }
+    }
+    private List<RegisteredInstanceData> _instances;
 
     public override IEnumerable<IDiagramNodeItem> ContainedItems
     {
-        get { yield break; }
-        set { }
+        get { return Instances.Cast<IDiagramNodeItem>(); }
+        set { Instances = value.OfType<RegisteredInstanceData>().ToList(); }
     }
 
     public virtual List<string> Imports
@@ -127,6 +164,16 @@ public class SubSystemData : DiagramNode
         get { return Name; }
     }
 
+    public override void NodeRemoved(IDiagramNode enumData)
+    {
+        base.NodeRemoved(enumData);
+        if (Imports.Contains(enumData.Identifier))
+        {
+            Imports.Remove(enumData.Identifier);
+        }
+        Instances.RemoveAll(p=>p.RelatedType == enumData.Identifier);
+
+    }
 
     public override void RemoveFromDiagram()
     {

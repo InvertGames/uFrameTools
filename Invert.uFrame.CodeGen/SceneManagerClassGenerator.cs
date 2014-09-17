@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using Invert.uFrame.Editor;
 using UnityEngine;
 
@@ -11,13 +12,15 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
 {
     public SceneManagerData Data
     {
-        get; set;
+        get;
+        set;
     }
     public INodeRepository DiagramData
     {
-        get; set;
+        get;
+        set;
     }
-    
+
     public CodeTypeDeclaration AddTypeEnum(string name, IEnumerable<RegisteredInstanceData> instances)
     {
         var enumDecleration = new CodeTypeDeclaration(name) { IsEnum = true };
@@ -27,7 +30,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
             enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, item.Name));
         }
         Namespace.Types.Add(enumDecleration);
-        
+
         return enumDecleration;
     }
 
@@ -66,7 +69,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
             var loadMethod = new CodeMemberMethod
             {
                 Name = "Load",
-                ReturnType = new CodeTypeReference(typeof (IEnumerator)),
+                ReturnType = new CodeTypeReference(typeof(IEnumerator)),
                 Attributes = MemberAttributes.Override | MemberAttributes.Public
             };
             loadMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.UFrameTypes.UpdateProgressDelegate, "progress"));
@@ -85,10 +88,8 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
         decl.Members.Add(setupMethod);
         if (IsDesignerFile)
         {
-            //var commands = sceneManager.SubSystem.IncludedCommands.ToArray();
             foreach (var sceneManagerTransition in sceneManager.Transitions)
             {
-                //commands.Where(p=>p.Identifier == SceneManagerTransition.Id)
                 var transitionItem = DiagramData.GetSceneManagers().FirstOrDefault(p => p.Identifier == sceneManagerTransition.ToIdentifier);
                 if (transitionItem == null || transitionItem.SubSystem == null) continue;
 
@@ -124,123 +125,52 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
             }
 
 
-            List<ElementData> rootElements = new List<ElementData>();
-            //List<ElementData> baseElements = new List<ElementData>();
-
-            foreach (var element in elements)
+            var rootElements = new List<ElementData>();
+            var instancesRegistered = new List<string>();
+            foreach (var instanceGroup in Data.SubSystem.AllInstances.GroupBy(p=>p.Name))
             {
-                if (element.IsTemplate) continue;
-                if (Settings.GenerateControllers)
+                foreach (var instance in instanceGroup)
                 {
-                    decl.Members.Add(
-                        new CodeSnippetTypeMember(string.Format("public {0} {0} {{ get; set; }}",
-                            element.NameAsController)));
+                    if (!instancesRegistered.Contains(instanceGroup.Key))
+                    {
+                        var element = instance.RelatedNode() as ElementData;
+                        if (element == null) continue;
 
-                    var property = new CodePropertyReferenceExpression(new CodeThisReferenceExpression(),
-                       element.NameAsController);
+                        var instanceField = new CodeMemberField(element.NameAsViewModel, "_" + instance.Name);
+                        var instanceProperty = instanceField.EncapsulateField(instance.Name, new CodeSnippetExpression(
+                            string.Format("SetupViewModel<{0}>({1}, \"{2}\")",
+                                        element.NameAsViewModel, element.NameAsController, instance.Name)
+                            ), null, true);
+                        instanceProperty.CustomAttributes.Add(
+                            new CodeAttributeDeclaration(new CodeTypeReference("Inject"),
+                                new CodeAttributeArgument(new CodePrimitiveExpression(instance.Name))));
 
-                    var assignProperty =
-                        new CodeAssignStatement(property,
-                            new CodeObjectCreateExpression(element.NameAsController)
-                            );
-
-                    setupMethod.Statements.Add(new CodeSnippetExpression(string.Format("this.{0} = new {0}() {{ Container = Container, Context = Context }}", element.NameAsController)));
-
-                    var registerInstance = new CodeMethodInvokeExpression(
-                        new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Container"), "RegisterInstance");
-                    registerInstance.Parameters.Add(
-                        new CodePropertyReferenceExpression(
-                            new CodeThisReferenceExpression(), element.NameAsController));
-
-                    registerInstance.Parameters.Add(new CodeSnippetExpression("false"));
-                    setupMethod.Statements.Add(registerInstance);
-                }
-
+                        decl.Members.Add(instanceField);
+                        decl.Members.Add(instanceProperty);
+                    }   
+                    instancesRegistered.Add(instanceGroup.Key);
                
-             
 
-                //if ((element.BaseElement == null || element.BaseElement.IsTemplate) && !element.IsTemplate)
-                //{
-                //    if (AddTypeEnum(element, sceneManager, elements) == null)
-                //    {
-                //        baseElements.Add(element);
-
-                //    }
-                //    else
-                //    {
-                //        rootElements.Add(element);
-                //    }
-
-                //}
+                    setupMethod.Statements.Add(
+                        new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1},\"{1}\")",instance.RelatedTypeName, instanceGroup.Key, instance.Name)));
+                }
             }
             
-            // TODO Change this method to register items that have been added
-            //setupMethod.Statements
-            foreach (var instance in Data.Instances)
+
+            foreach (var element in Data.SubSystem.GetIncludedElements())
             {
-                var element = instance.RelatedNode() as ElementData;
-                if (element == null) continue;
-                if (Settings.GenerateControllers)
-                {
-                    setupMethod.Statements.Add(
-                        new CodeSnippetExpression(
-                            string.Format("Container.RegisterInstance<{0}>(SetupViewModel<{0}>({1}, \"{2}\"))",
-                                element.NameAsViewModel, element.NameAsController, element.RootElement.Name)));
-                }
-                else
-                {
-                    setupMethod.Statements.Add(
-                        new CodeSnippetExpression(
-                            string.Format("Container.RegisterInstance<{0}>(SetupViewModel<{0}>(null, \"{1}\"))",
-                                element.NameAsViewModel, element.RootElement.Name)));
-                }
-                
-            }
+                var controllerField = new CodeMemberField(element.NameAsController, "_" + element.NameAsController);
+                var controllerProperty = controllerField.EncapsulateField(element.NameAsController,
+                    new CodeSnippetExpression(string.Format("new {0}() {{ Container = Container, Context = Context }}",
+                        element.NameAsController)),null,true);
+                controllerProperty.CustomAttributes.Add(
+                    new CodeAttributeDeclaration(new CodeTypeReference("Inject")));
+                decl.Members.Add(controllerField);
+                decl.Members.Add(controllerProperty);
 
-            foreach (var element in rootElements)
-            {
-                var derived = element.DerivedElements.Where(p => elements.Contains(p)).ToArray();
-
-                foreach (var derivedElement in derived.Concat(new[] { element }))
-                {
-                    var condition =
-                        new CodeConditionStatement(new CodeBinaryOperatorExpression(
-                            new CodeFieldReferenceExpression(new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), sceneManager.NameAsSettingsField), element.NameAsTypeEnum
-                                ), CodeBinaryOperatorType.ValueEquality,
-                            new CodeSnippetExpression(string.Format("{0}.{1}",
-                                sceneManager.NameAsSceneManager + element.NameAsTypeEnum, derivedElement.Name))));
-
-
-                    condition.TrueStatements.Add(
-                        new CodeVariableDeclarationStatement(new CodeTypeReference(derivedElement.NameAsViewModel),
-                            derivedElement.NameAsVariable, new CodeSnippetExpression(string.Format("SetupViewModel<{1}>({0},\"{2}\")", Settings.GenerateControllers ? derivedElement.NameAsController : "null", derivedElement.NameAsViewModel,derivedElement.RootElement.Name))));
-
-                    condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", derivedElement.NameAsViewModel, derivedElement.NameAsVariable)));
-                    // TODO add a while here for each base type
-                    foreach (var baseType in derivedElement.AllBaseTypes)
-                    {
-                        //if (baseType == derivedElement) continue;
-                        //condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", baseType.NameAsController, derivedElement.NameAsController)));
-                        //condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", element.NameAsController, baseType.NameAsController)));
-                        condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", baseType.NameAsViewModel, derivedElement.NameAsVariable)));
-                        if (Settings.GenerateControllers)
-                            condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1}, false)", baseType.NameAsController, derivedElement.NameAsController)));
-                    }
-
-
-
-                    //if (!derivedElement.IsMultiInstance)
-                    //{
-                    //    condition.TrueStatements.Add(
-                    //        new CodeMethodInvokeExpression(
-                    //        new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Container"),
-                    //        string.Format("RegisterInstance<{0}>", element.NameAsController), new CodeSnippetExpression()));
-
-                    //}
-
-
-                    setupMethod.Statements.Add(condition);
-                }
+                setupMethod.Statements.Add(
+                    new CodeSnippetExpression(string.Format("Container.RegisterInstance({0},false)",
+                        element.NameAsController)));
             }
 
             setupMethod.Statements.Add(
@@ -260,7 +190,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
         Namespace.Types.Add(decl);
     }
 
-    public virtual void AddSceneManagerSettings( SceneManagerData sceneManagerData, List<ElementData> rootElements)
+    public virtual void AddSceneManagerSettings(SceneManagerData sceneManagerData, List<ElementData> rootElements)
     {
         var decl = new CodeTypeDeclaration
         {
@@ -282,7 +212,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                 decl.Members.Add(field);
             }
 
-            
+
         }
 
 
@@ -295,6 +225,6 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
 
 public class TypeEnumGenerator : CodeGenerator
 {
-    
+
 
 }

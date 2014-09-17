@@ -32,7 +32,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
     {
         public override void Perform(SceneManagerViewModel nodeViewModel)
         {
-            var allCommands = nodeViewModel.GraphItem.Instances.Select(p=>p.RelatedNode()).OfType<ElementData>()
+            var allCommands = nodeViewModel.ImportedInstances.Select(p=>p.RelatedNode()).OfType<ElementData>()
                 .SelectMany(p => p.Commands).ToArray();
 
             ItemSelectionWindow.Init("Select Command", allCommands, (item) =>
@@ -51,12 +51,12 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             return null;
         }
     }
-    public class AddInstanceCommand : EditorCommand<SceneManagerViewModel>
+    public class AddInstanceCommand : EditorCommand<SubSystemViewModel>
     {
-        public override void Perform(SceneManagerViewModel nodeViewModel)
+        public override void Perform(SubSystemViewModel nodeViewModel)
         {
             //var data = nodeViewModel.DiagramViewModel.Data;
-            var subsystem = nodeViewModel.GraphItem.SubSystem;
+            var subsystem = nodeViewModel.GraphItem;
             if (subsystem == null)
             {
                 EditorUtility.DisplayDialog("Missing Subsystem",
@@ -64,7 +64,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                     "OK");
 
             }
-            var elements = nodeViewModel.GraphItem.SubSystem.GetContainingNodes(uFrameEditor.CurrentProject).OfType<ElementData>().ToArray();
+            var elements = nodeViewModel.GraphItem.GetContainingNodes(uFrameEditor.CurrentProject).OfType<ElementData>().ToArray();
             ItemSelectionWindow.Init("Select Command", elements, (item) =>
             {
                 uFrameEditor.ExecuteCommand((n) =>
@@ -75,7 +75,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             });
         }
 
-        public override string CanPerform(SceneManagerViewModel node)
+        public override string CanPerform(SubSystemViewModel node)
         {
             if (node == null) return "Arg can't be null";
             return null;
