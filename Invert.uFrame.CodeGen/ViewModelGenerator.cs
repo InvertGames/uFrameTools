@@ -669,10 +669,10 @@ public class ViewModelGenerator : ElementCodeGenerator
             if (relatedElement != null)
             {
                 constructor.Statements.Add(
-                    new CodeSnippetExpression(string.Format("{0}.CollectionChangedWith += {1}CollectionChanged",
+                    new CodeSnippetExpression(string.Format("{0}.CollectionChanged += {1}CollectionChanged",
                         viewModelPropertyData.FieldName, viewModelPropertyData.Name)));
                 unBindMethod.Statements.Add(
-                    new CodeSnippetExpression(string.Format("{0}.CollectionChangedWith -= {1}CollectionChanged",
+                    new CodeSnippetExpression(string.Format("{0}.CollectionChanged -= {1}CollectionChanged",
                         viewModelPropertyData.FieldName, viewModelPropertyData.Name)));
 
                 var collectionChangedMethod = new CodeMemberMethod()
@@ -683,16 +683,16 @@ public class ViewModelGenerator : ElementCodeGenerator
 
                 collectionChangedMethod.Parameters.Add(
                     new CodeParameterDeclarationExpression(
-                        string.Format("ModelCollectionChangeEventWith<{0}>", relatedElement.NameAsViewModel), "args"));
+                        "System.Collections.Specialized.NotifyCollectionChangedEventArgs", "args"));
 
                 collectionChangedMethod.Statements.Add(
                     new CodeExpressionStatement(
                         new CodeSnippetExpression(
-                            string.Format("foreach (var item in args.OldItemsOfT) item.Parent{0} = null;", data.Name))));
+                            string.Format("foreach (var item in args.OldItems.OfType<{0}>()) item.Parent{1} = null;",relatedElement.NameAsViewModel, data.Name))));
                 collectionChangedMethod.Statements.Add(
                     new CodeExpressionStatement(
                         new CodeSnippetExpression(
-                            string.Format("foreach (var item in args.NewItemsOfT) item.Parent{0} = this;", data.Name))));
+                            string.Format("foreach (var item in args.NewItems.OfType<{0}>()) item.Parent{1} = this;",relatedElement.NameAsViewModel, data.Name))));
 
                 Decleration.Members.Add(collectionChangedMethod);
             }

@@ -25,7 +25,7 @@ public class StateMachineClassGenerator : CodeGenerator
         Constructor.Parameters.Add(new CodeParameterDeclarationExpression(typeof(string), "propertyName"));
         Constructor.BaseConstructorArgs.Add(new CodeSnippetExpression("vm"));
         Constructor.BaseConstructorArgs.Add(new CodeSnippetExpression("propertyName"));
-
+        Decleration.Members.Add(Constructor);
 
         if (IsDesignerFile)
         {
