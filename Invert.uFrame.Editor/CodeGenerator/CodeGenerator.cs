@@ -67,7 +67,7 @@ namespace Invert.uFrame.Editor
                 typeDeclerationModifier.Declaration = declaration;
 
                 typeDeclerationModifier.Generator = this;
-                uFrameEditor.Log("Processed: " + typeDeclerationModifier.GetType().Name);
+                //uFrameEditor.Log("Processed: " + typeDeclerationModifier.GetType().Name);
                 typeDeclerationModifier.Apply();
             }
 
@@ -86,6 +86,7 @@ namespace Invert.uFrame.Code.Bindings
         bool CallBase { get; set; }
         string BindingConditionFieldName { get; }
         bool GenerateDefaultImplementation { get; set; }
+        ElementData Element { get; set; }
         void CreateMembers(CodeTypeMemberCollection collection);
         void CreateBindingStatement(CodeTypeMemberCollection collection, CodeConditionStatement bindingCondition);
     }

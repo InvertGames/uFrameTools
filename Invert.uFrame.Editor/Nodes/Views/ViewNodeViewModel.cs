@@ -22,6 +22,12 @@ namespace Invert.uFrame.Editor.ViewModels
 
         }
 
+        protected override void DataObjectChanged()
+        {
+            base.DataObjectChanged();
+
+        }
+
         public override bool AllowCollapsing
         {
             get { return true; }
@@ -41,7 +47,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get
             {
-                return GraphItem.NewBindings;
+                return GraphItem.NewBindings.Select(p => p.Generator);
             }
         }
         public string GetViewPreview()
@@ -62,7 +68,12 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public void AddNewBinding(IBindingGenerator lastSelected)
         {
-            GraphItem.NewBindings.Add(lastSelected);
+            GraphItem.Bindings.Add(new ViewBindingData()
+            {
+                Name = lastSelected.MethodName,
+                Generator = lastSelected,
+                Node = GraphItem
+            });
             Preview = null;
             _bindings = null;
         }
@@ -79,23 +90,12 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get
             {
-                return GraphItem.BindingMethods;
+                return GraphItem.ReflectionBindingMethods;
             }
         }
         public BindingDiagramItem[] Bindings
         {
-            get
-            {
-                if (_bindings == null)
-                {
-                var existing =
-                    GraphItem.BindingMethods.Select(p => (new BindingDiagramItem(this, p.Name) {View = GraphItem ,MethodInfo = p}));
-                var adding =
-                    GraphItem.NewBindings.Select(p => (new BindingDiagramItem(this, "[Added] " + p.MethodName) { View = GraphItem, Generator = p }));
-                    _bindings = existing.Concat(adding).ToArray();
-                }
-                return _bindings;
-            }
+            get { return Items.OfType<BindingDiagramItem>().ToArray(); }
         }
 
         public IEnumerable<ViewPropertyData> Properties
@@ -105,8 +105,8 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public void RemoveBinding(IBindingGenerator item)
         {
-            
-            GraphItem.NewBindings.Remove(item);
+
+            GraphItem.Bindings.RemoveAll(p => p.Generator == item);
             Preview = null;
             _bindings = null;
         }
@@ -120,6 +120,18 @@ namespace Invert.uFrame.Editor.ViewModels
         public void RemoveProperty(MemberInfo memberInfo)
         {
             GraphItem.Properties.RemoveAll(p => p.MemberInfo == memberInfo);
+        }
+
+        public void AddProperty()
+        {
+            var property = new ViewPropertyData()
+            {
+                Name = GraphItem.Data.GetUniqueName("NewProperty"),
+                Node = GraphItem,
+
+            };
+            GraphItem.Properties.Add(property);
+            Debug.Log("Property Added");
         }
     }
 }

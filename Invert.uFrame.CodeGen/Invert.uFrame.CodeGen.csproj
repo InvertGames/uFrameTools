@@ -54,6 +54,7 @@
     <Compile Include="CodeGenerators\StateMachineCodeFactory.cs" />
     <Compile Include="CodeGenerators\StateMachineStateClassGenerator.cs" />
     <Compile Include="CodeGenerators\StateMachineStateCodeFactory.cs" />
+    <Compile Include="CodeGenPlugin\DefaultCodeGenerators.cs" />
     <Compile Include="CollectionBindingGenerator.cs" />
     <Compile Include="CollectionItemAddedBindingGenerator.cs" />
     <Compile Include="CollectionItemCreateBindingGenerator.cs" />
@@ -92,6 +93,9 @@
       <Project>{93faeb5c-683e-4093-89ce-6082890a331e}</Project>
       <Name>Invert.uFrame.Editor</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CodeGenPlugin\NewFolder1\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

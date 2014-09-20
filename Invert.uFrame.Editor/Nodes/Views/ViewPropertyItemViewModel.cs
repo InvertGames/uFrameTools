@@ -7,5 +7,6 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             DataObject = data;
         }
+        
     }
 }

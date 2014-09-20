@@ -50,7 +50,7 @@ namespace Invert.uFrame.Editor
             AddImports();
             foreach (var codeGenerator in Generators)
             {
-                uFrameEditor.Log(codeGenerator.GetType().Name + " is generating");
+               // uFrameEditor.Log(codeGenerator.GetType().Name + " is generating");
                 codeGenerator.Initialize(this);
             }
             var provider = new CSharpCodeProvider();

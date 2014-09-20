@@ -124,15 +124,16 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     //}
     public override void Draw(float scale)
     {
-        base.Draw(scale); 
+        base.Draw(scale);
         if (NodeViewModel.IsTemplate)
-        EditorGUI.LabelField(new Rect(Bounds.x + Bounds.width - 30f, Bounds.y - 18f, 26f, 15f).Scale(Scale), "A",
-             ElementDesignerStyles.Tag1);
+    
+            GUI.Label(new Rect(Bounds.x + 10, Bounds.y - 18f, 120f, 15f ).Scale(Scale), "Abstract",
+                 ElementDesignerStyles.Tag2);
     }
-
+    
     protected override GUIStyle GetHighlighter()
     {
-     
+
         return base.GetHighlighter();
     }
 
@@ -297,36 +298,79 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
 
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
-        // base.GetContentDrawers(drawers);
+        var inheritedProperties =
+              ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
+                  .Where(p => p.NodeItem.Node != NodeViewModel.GraphItem).ToArray();
+        if (inheritedProperties.Length > 0)
+        {
+            drawers.Add(new NodeItemHeader(NodeViewModel)
+            {
+                Label = "Inherited Properties"
+            });
+            foreach (var item in inheritedProperties)
+                drawers.Add(uFrameEditor.CreateDrawer(item));
+        }
+
 
         drawers.Add(PropertiesHeader);
-        foreach (var item in ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>())
-        {
+        foreach (
+            var item in
+                ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
+                    .Where(p => p.NodeItem.Node == NodeViewModel.GraphItem))
             drawers.Add(uFrameEditor.CreateDrawer(item));
+
+
+
+        // Collections Here
+        var inheritedCollections =
+              ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>()
+                  .Where(p => p.NodeItem.Node != NodeViewModel.GraphItem).ToArray();
+        if (inheritedCollections.Length > 0)
+        {
+            drawers.Add(new NodeItemHeader(NodeViewModel)
+            {
+                Label = "Inherited Collections"
+            });
+            foreach (var item in inheritedCollections)
+                drawers.Add(uFrameEditor.CreateDrawer(item));
         }
-        //var computedItems = ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
-        //    .Where(p => p.IsComputed).ToArray();
 
-        //if (computedItems.Length > 0)
-        //{
-        //    drawers.Add(ComputedHeader);
-        //    foreach (var item in computedItems)
-        //    {
-        //        drawers.Add(uFrameEditor.CreateDrawer(item));
-        //    }
-
-        //}
 
         drawers.Add(CollectionsHeader);
-        foreach (var item in ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>())
-        {
+        foreach (
+            var item in
+                ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>()
+                    .Where(p => p.NodeItem.Node == NodeViewModel.GraphItem))
             drawers.Add(uFrameEditor.CreateDrawer(item));
+
+
+        
+        // COMMANDS HERE
+        var inheritedCommands =
+        ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>()
+            .Where(p => p.NodeItem.Node != NodeViewModel.GraphItem).ToArray();
+        if (inheritedCommands.Length > 0)
+        {
+            drawers.Add(new NodeItemHeader(NodeViewModel)
+            {
+                Label = "Inherited Commands"
+            });
+            foreach (var item in inheritedCommands)
+                drawers.Add(uFrameEditor.CreateDrawer(item));
         }
+
         drawers.Add(CommandsHeader);
-        foreach (var item in ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>())
-        {
-            drawers.Add(uFrameEditor.CreateDrawer(item));
-        }
+        foreach (
+            var item in
+                ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>()
+                    .Where(p => p.NodeItem.Node == NodeViewModel.GraphItem))
+                drawers.Add(uFrameEditor.CreateDrawer(item));
+
+        //drawers.Add(CommandsHeader);
+        //foreach (var item in ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>())
+        //{
+        //    drawers.Add(uFrameEditor.CreateDrawer(item));
+        //}
 
 
         //var properties = NodeViewModel.Properties.Where(p=>!p.IsComputed).Cast<IDiagramNodeItem>().ToArray();

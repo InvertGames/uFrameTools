@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class NodeItemHeader : Drawer<DiagramNodeViewModel>
 {
-
+    
     public NodeItemHeader(GraphItemViewModel viewModelObject) : base(viewModelObject)
     {
 

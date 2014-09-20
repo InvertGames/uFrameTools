@@ -1,3 +1,4 @@
+using System;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 
@@ -6,6 +7,11 @@ public class SubSystemViewModel : DiagramNodeViewModel<SubSystemData>
     public SubSystemViewModel(SubSystemData data,DiagramViewModel diagramViewModel) : base(data,diagramViewModel)
     {
         
+    }
+
+    public override Type ExportGraphType
+    {
+        get { return typeof (ExternalSubsystemGraph); }
     }
 
     public override ConnectorViewModel InputConnector

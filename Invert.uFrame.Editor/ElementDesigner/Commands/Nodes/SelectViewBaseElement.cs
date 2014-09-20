@@ -49,14 +49,16 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                 yield return new UFContextMenuItem()
                 {
                     Name = "Base View/" + element.NameAsViewBase,
-                    Value = null
+                    Value = null,
+                    Checked = string.IsNullOrEmpty(viewNode.GraphItem.BaseViewIdentifier)
                 };
                 foreach (var baseView in baseViews)
                 {
                     yield return new UFContextMenuItem()
                     {
                         Name = "Base View/" + baseView.NameAsView,
-                        Value = baseView
+                        Value = baseView,
+                        Checked = baseView.Identifier == viewNode.GraphItem.BaseViewIdentifier
                     };
                 }
             }

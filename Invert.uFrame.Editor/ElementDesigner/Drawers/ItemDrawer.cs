@@ -151,6 +151,7 @@ public class ItemDrawer : Drawer
             GUI.Box(highlighterPosition.Scale(scale), string.Empty, ElementDesignerStyles.GetHighlighter(ItemViewModel.Highlighter));
         }
     }
+
     protected virtual void DrawItemLabel(IDiagramNodeItem item)
     {
     }

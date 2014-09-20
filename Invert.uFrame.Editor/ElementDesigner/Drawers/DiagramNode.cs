@@ -196,7 +196,12 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 
     public IDiagramFilter Filter
     {
-        get { return Data.CurrentFilter; }
+        get
+        {
+            if (Data.CurrentFilter == this)
+                return this;
+            return Data.CurrentFilter;
+        }
     }
 
     public string FullLabel { get { return Name; } }
@@ -232,7 +237,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 
     public bool IsSelectable { get { return true; } }
 
-    public DiagramNode Node
+    public virtual DiagramNode Node
     {
         get
         {
@@ -246,7 +251,10 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 
     public bool IsSelected { get; set; }
 
-    public abstract IEnumerable<IDiagramNodeItem> Items { get; }
+    public virtual IEnumerable<IDiagramNodeItem> Items
+    {
+        get { return ContainedItems; }
+    }
 
     public abstract string Label { get; }
 

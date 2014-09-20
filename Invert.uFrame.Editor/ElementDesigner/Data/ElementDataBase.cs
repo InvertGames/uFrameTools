@@ -209,9 +209,14 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
     {
         get
         {
-            return Properties.Cast<ITypeDiagramItem>()
-                .Concat(Collections.Cast<ITypeDiagramItem>())
-                .Concat(Commands.Cast<ITypeDiagramItem>()).Concat(ComputedProperties.Cast<ITypeDiagramItem>());
+            foreach (var p in Properties)
+                yield return p;
+            foreach (var x in Collections)
+                yield return x;
+            foreach (var y in Commands)
+                yield return y;
+            foreach (var z in ComputedProperties)
+                yield return z;
         }
     }
 

@@ -46,6 +46,7 @@ namespace Invert.uFrame.Editor
         private static ProjectRepository[] _projects;
         private static UFrameSettings _settings;
         private static IUFrameTypeProvider _uFrameTypes;
+        private static IConnectionStrategy[] _connectionStrategies;
 
         public static IEditorCommand[] Commands
         {
@@ -179,21 +180,23 @@ namespace Invert.uFrame.Editor
         public static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command)
         {
             var objs = handler.ContextObjects.ToArray();
+            CurrentProject.RecordUndo(CurrentProject, command.Title);
             foreach (var o in objs)
             {
                 if (o == null) continue;
 
+
                 if (command.For.IsAssignableFrom(o.GetType()))
                 {
                     if (command.CanPerform(o) != null) continue;
-                    handler.CommandExecuting(command);
+                    //handler.CommandExecuting(command);
                     command.Execute(o);
                     if (command.Hooks != null)
                         command.Hooks.ForEach(p => ExecuteCommand(handler, p));
                     handler.CommandExecuted(command);
                 }
             }
-            
+            CurrentProject.MarkDirty(CurrentProject);
         }
 
         public static Type FindType(string name)
@@ -290,22 +293,20 @@ namespace Invert.uFrame.Editor
             }
         }
 
-        public static IEnumerable<IBindingGenerator> GetBindingGeneratorsFor(ElementData element, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
+
+        public static IEnumerable<IBindingGenerator> GetBindingGeneratorsFor(ElementData data, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
         {
-            IEnumerable<ITypeDiagramItem> items = element.ViewModelItems;
-            if (includeBaseItems)
-            {
-                items = new[] { element }.Concat(element.AllBaseTypes).SelectMany(p => p.ViewModelItems);
-            }
-            //var vmItems = new[] {element}.Concat(element.AllBaseTypes).SelectMany(p => p.ViewModelItems);
-            foreach (var viewModelItem in items)
+
+            foreach (var viewModelItem in data.ViewModelItems)
             {
                 var bindingGenerators = Container.ResolveAll<IBindingGenerator>();
                 foreach (var bindingGenerator in bindingGenerators)
                 {
                     bindingGenerator.IsOverride = isOverride;
                     bindingGenerator.Item = viewModelItem;
+                    bindingGenerator.Element = data;
                     bindingGenerator.GenerateDefaultImplementation = generateDefaultBindings;
+                    
                     if (bindingGenerator.IsApplicable)
                         yield return bindingGenerator;
                 }
@@ -407,6 +408,7 @@ namespace Invert.uFrame.Editor
         {
 #if DEBUG
             container.RegisterInstance<IToolbarCommand>(new PrintPlugins(),"Print Plugins");
+            container.RegisterInstance<IToolbarCommand>(new ForceUpgradeDiagram(),"Force Upgrade");
 #endif
 
             container.Register<NodeItemHeader, NodeItemHeader>();
@@ -451,12 +453,6 @@ namespace Invert.uFrame.Editor
 
             // For no selection diagram context menu
             container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddNewFilterItemCommand");
-            //container.RegisterInstance<IDiagramContextCommand>(new AddNewSceneManagerCommand(), "AddNewSceneManagerCommand");
-            //container.RegisterInstance<IDiagramContextCommand>(new AddNewSubSystemCommand(), "AddNewSubSystemCommand");
-            //container.RegisterInstance<IDiagramContextCommand>(new AddNewElementCommand(), "AddNewElementCommand");
-            //container.RegisterInstance<IDiagramContextCommand>(new AddNewEnumCommand(), "AddNewEnumCommand");
-            //container.RegisterInstance<IDiagramContextCommand>(new AddNewViewCommand(), "AddNewViewCommand");
-            //container.RegisterInstance<IDiagramContextCommand>(new AddNewViewComponentCommand(), "AddNewViewComponentCommand");
             container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
 
             // For node context menu
@@ -467,13 +463,11 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IDiagramNodeCommand>(new RemoveLinkCommand(), "RemoveLink");
             container.RegisterInstance<IDiagramNodeCommand>(new SelectViewBaseElement(), "SelectView");
             container.RegisterInstance<IDiagramNodeCommand>(new MarkIsTemplateCommand(), "MarkAsTemplate");
-            //container.RegisterInstance<IDiagramNodeCommand>(new MarkIsMultiInstanceCommand(), "MarkAsMulti");
             
-
             // For node item context menu
             container.RegisterInstance<IDiagramNodeItemCommand>(new MarkIsYieldCommand(), "MarkIsYield");
             container.RegisterInstance<IDiagramNodeItemCommand>(new DeleteItemCommand(), "Delete");
-            //container.RegisterInstance<IDiagramNodeItemCommand>(new SelectDependantPropertiesCommand(), "DependantOn");
+            
 
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveUpCommand(), "MoveItemUp");
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveDownCommand(), "MoveItemDown");
@@ -497,13 +491,22 @@ namespace Invert.uFrame.Editor
             RegisterGraphItem<ViewModelPropertyData, ElementPropertyItemViewModel, ElementItemDrawer>();
             RegisterGraphItem<ViewModelCommandData, ElementCommandItemViewModel, ElementItemDrawer>();
             RegisterGraphItem<ViewModelCollectionData, ElementCollectionItemViewModel, ElementItemDrawer>();
+            RegisterGraphItem<ViewPropertyData, ElementViewPropertyItemViewModel, ItemDrawer>();
+
+
             RegisterGraphItem<EnumItem, EnumItemViewModel, EnumItemDrawer>();
             RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
-            RegisterGraphItem<ViewPropertyData, ViewPropertyItemViewModel, ItemDrawer>();
-            RegisterGraphItem<ViewBindingItemViewModel, SceneTransitionItemViewModel, ItemDrawer>();
+            RegisterGraphItem<ViewBindingData, ViewBindingItemViewModel, ItemDrawer>();
             RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
             RegisterGraphItem<RegisteredInstanceData, RegisterInstanceItemViewModel, ElementItemDrawer>();
 
+            RegisterGraphItem<StateMachineNodeData, StateMachineNodeViewModel, StateMachineNodeDrawer>();
+            RegisterGraphItem<StateMachineStateData, StateMachineStateNodeViewModel, StateMachineStateNodeDrawer>();
+            RegisterGraphItem<StateMachineTransition, StateMachineTransitionViewModel, ItemDrawer>();
+            RegisterGraphItem<StateMachineActionData, StateActionNodeViewModel, StateActionNodeDrawer>();
+
+            RegisterFilterNode<StateMachineNodeData, StateMachineStateData>();
+            RegisterFilterNode<ElementData, StateMachineNodeData>();
 
             // Filters
             RegisterFilterNode<SceneFlowFilter, SceneManagerData>();
@@ -529,10 +532,22 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputStrategy(), "ComputedPropertyInputStrategy");
             container.RegisterInstance<IConnectionStrategy>(new ViewComponentElementConnectionStrategy(), "ViewComponentElementConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new ViewComponentInheritanceConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new TwoWayPropertyConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new StateMachineTransitionConnectionStrategy(), "StateMachineTransitionConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ElementStateMachineConnectionStrategy(), "ElementStateMachineConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ElementStateVariableConnectionStrategy(), "ElementStateVariableConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ComputedTransitionConnectionStrategy(), "ComputedTransitionConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new StartStateConnectionStrategy(), "StartStateConnectionStrategy");
+
 
 
             container.RegisterInstance<IUFrameTypeProvider>(new uFrameStringTypeProvider());
             container.RegisterInstance<UFrameSettings>(new UFrameSettings());
+
+            // Where the generated code files are placed
+            container.Register<ICodePathStrategy, DefaultCodePathStrategy>("Default");
+            container.Register<ICodePathStrategy, SubSystemPathStrategy>("By Subsystem");
+
 
             foreach (var diagramPlugin in GetDerivedTypes<DiagramPlugin>(false, false))
             {
@@ -586,7 +601,11 @@ namespace Invert.uFrame.Editor
             set { _settings = value; }
         }
 
-        public static IConnectionStrategy[] ConnectionStrategies { get; set; }
+        public static IConnectionStrategy[] ConnectionStrategies
+        {
+            get { return _connectionStrategies ?? (_connectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray()); }
+            set { _connectionStrategies = value; }
+        }
 
         public static void RegisterDrawer<TViewModel, TDrawer>()
         {

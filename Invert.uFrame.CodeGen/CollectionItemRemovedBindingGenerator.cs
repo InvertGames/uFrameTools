@@ -15,8 +15,8 @@ namespace Invert.uFrame.Code.Bindings
             if (RelatedElement != null)
             {
                 bindingCondition.TrueStatements.Add(
-                    new CodeSnippetExpression(string.Format("binding.SetRemoveHandler(item=>{0}(item as {1}))",
-                        MethodName, RelatedElement.NameAsViewBase)));
+                    new CodeSnippetExpression(string.Format("binding.SetRemoveHandler(item=>{0}(item as ViewBase))",
+                        MethodName)));
             }
             else
             {

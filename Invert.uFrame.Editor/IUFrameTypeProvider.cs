@@ -37,5 +37,6 @@ namespace Invert.uFrame.Editor
         Type Computed { get; }
         Type State { get;  }
         Type StateMachine { get;  }
+        Type IObservable { get; }
     }
 }

@@ -50,6 +50,15 @@ public class ElementData : ElementDataBase, IDesignerType
     [SerializeField]
     private List<ViewModelPropertyData> _properties = new List<ViewModelPropertyData>();
 
+    public IEnumerable<RegisteredInstanceData> RegisteredInstances
+    {
+        get
+        {
+            return
+                Data.GetSubSystems().SelectMany(p => p.Instances).Where(p => p.RelatedType == this.Identifier);
+        }
+    }
+
     public IEnumerable<ViewModelPropertyData> AllProperties
     {
         get
@@ -83,7 +92,7 @@ public class ElementData : ElementDataBase, IDesignerType
             //    yield return item;
             //}
         }
-    } 
+    }
 
     public override string BaseTypeName
     {
@@ -118,6 +127,43 @@ public class ElementData : ElementDataBase, IDesignerType
         set { _commands = value.ToList(); }
     }
 
+    public override IEnumerable<IDiagramNodeItem> Items
+    {
+        get
+        {
+
+           
+
+
+            foreach (var item in Properties)
+                yield return item;
+            foreach (var item in Collections)
+                yield return item;
+            foreach (var item in Commands)
+                yield return item;
+        }
+    }
+    public  IEnumerable<IDiagramNodeItem> AllItems
+    {
+        get
+        {
+
+            var baseElement = BaseElement;
+            if (baseElement != null)
+                foreach (var baseItem in baseElement.Items)
+                {
+                    yield return baseItem;
+                }
+
+
+            foreach (var item in Properties)
+                yield return item;
+            foreach (var item in Collections)
+                yield return item;
+            foreach (var item in Commands)
+                yield return item;
+        }
+    }
     public override IEnumerable<IDiagramNodeItem> ContainedItems
     {
         get
@@ -276,26 +322,19 @@ public class ElementData : ElementDataBase, IDesignerType
         if (cls["BaseType"] != null)
         {
             var assemblyQualifiedName = cls["BaseType"].Value;
-            var foundElement =
-                repository.GetElements().FirstOrDefault(p => p.AssemblyQualifiedName == assemblyQualifiedName);
-            if (foundElement != null)
-            {
-                Debug.Log("Found Element base identifier");
-                _baseIdentifier = foundElement.Identifier;
-            }
-            else
-            {
-                Debug.Log("Couldn't find base identifier");
-            }
+            BaseType = assemblyQualifiedName;
         }
         else
         {
             _baseIdentifier = cls["BaseIdentifier"];
         }
-        
+
         IsTemplate = cls["IsTemplate"].AsBool;
         _isMultiInstance = cls["IsMultiInstance"].AsBool;
     }
+
+    [Obsolete("For Upgrading Old Projects Only")]
+    public string BaseType { get; set; }
 
     public bool IsAllowed(object item, Type t)
     {

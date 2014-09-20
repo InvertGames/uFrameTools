@@ -171,6 +171,9 @@ public abstract class ViewClassGenerator : CodeGenerator
 
     public void AddViewModelProperty(ElementData data)
     {
+
+
+
         ViewModelProperty = new CodeMemberProperty
          {
              Name = data.Name,
@@ -202,47 +205,9 @@ public abstract class ViewClassGenerator : CodeGenerator
             new CodeConditionStatement(new CodeSnippetExpression(string.Format("{0}.Dirty", element.Name)));
 
         updateMethod.Statements.Add(dirtyCondition);
-        // Create cached properties of monobehaviour types
-        var componentTypeName = view.Properties.GroupBy(p => p.ComponentTypeName);
-        foreach (var propertyGroup in componentTypeName)
-        {
-            var statements = updateMethod.Statements;
-            if (propertyGroup.Key == typeof(Transform).FullName)
-            {
-                var ifTransformChanged = new CodeConditionStatement(new CodeSnippetExpression("Transform.hasChanged"));
-                updateMethod.Statements.Add(ifTransformChanged);
-                statements = ifTransformChanged.TrueStatements;
-            }
-            var first = propertyGroup.First();
-            var viewPropertyFieldDecleration = new CodeMemberField(propertyGroup.Key, first.NameAsCachedPropertyField);
-            var viewPropertyDecleration = viewPropertyFieldDecleration.EncapsulateField(first.NameAsCachedProperty,
-                new CodeSnippetExpression(string.Format("this.GetComponent<{0}>()", propertyGroup.Key)));
 
-            decl.Members.Add(viewPropertyFieldDecleration);
-            decl.Members.Add(viewPropertyDecleration);
-
-            foreach (var viewPropertyData in propertyGroup)
-            {
-                dirtyCondition.TrueStatements.Add(
-                    new CodeAssignStatement(new CodeSnippetExpression(viewPropertyData.Expression),
-                        new CodeSnippetExpression(string.Format("{0}.{1}", element.Name, viewPropertyData.NameAsProperty))));
-
-                statements.Add(new CodeAssignStatement(new CodeSnippetExpression(string.Format("{0}.{1}", element.Name, viewPropertyData.NameAsProperty)),
-                    new CodeSnippetExpression(viewPropertyData.Expression)));
-            }
-        }
-        dirtyCondition.TrueStatements.Add(new CodeSnippetExpression(string.Format("{0}.Dirty = false", element.Name)));
         decl.Members.Add(updateMethod);
         return updateMethod;
-    }
-
-    public void CreateViewPropertyBinding(string modelName, CodeStatementCollection statements,
-        ViewModelPropertyData propertyData)
-    {
-        statements.Add(
-            new CodeSnippetExpression(string.Format("this.BindToView(() => {0}.{1}, v => {2} = v, () => {2})",
-                modelName, propertyData.FieldName,
-                propertyData.ViewFieldName)));
     }
 
     public bool HasField(CodeTypeMemberCollection collection, string name)
@@ -255,6 +220,7 @@ public abstract class ViewClassGenerator : CodeGenerator
         base.Initialize(fileGenerator);
         BindingExtenders = uFrameEditor.Container.ResolveAll<ViewBindingExtender>().Where(p => p.Initialize(this)).ToList();
         Namespace.Imports.Add(new CodeNamespaceImport("UnityEngine"));
+        Namespace.Imports.Add(new CodeNamespaceImport("UniRx"));
     }
 
     protected void AddComponentReferences(CodeTypeDeclaration decl, ElementData data)
@@ -287,18 +253,21 @@ public abstract class ViewClassGenerator : CodeGenerator
 
     protected void AddDefaultIdentifierProperty(ElementData data)
     {
-        //if (data.BaseElement == null)
-        //{
+        var defaultInstance = data.RegisteredInstances.FirstOrDefault();
+        if (defaultInstance == null) return;
+        
         var defaultIdentifierProperty = new CodeMemberProperty()
         {
             Name = "DefaultIdentifier",
             Attributes = MemberAttributes.Public | MemberAttributes.Override,
             Type = new CodeTypeReference(typeof(string))
         };
+        
         defaultIdentifierProperty.GetStatements.Add(
-            new CodeMethodReturnStatement(new CodePrimitiveExpression(data.Name)));
+            new CodeMethodReturnStatement(new CodePrimitiveExpression(defaultInstance.Name)));
+        
         Decleration.Members.Add(defaultIdentifierProperty);
-        //}
+        
     }
 
     protected void AddExecuteMethods(ElementData data, CodeTypeDeclaration decl, bool useViewReference = false)
@@ -377,22 +346,6 @@ public abstract class ViewClassGenerator : CodeGenerator
             }
         }
     }
-
-    //protected void AddMultiInstanceProperty(ElementData data)
-    //{
-    //    var multiInstanceProperty = new CodeMemberProperty
-    //    {
-    //        Attributes = MemberAttributes.Override | MemberAttributes.Public,
-    //        Type = new CodeTypeReference(typeof(bool)),
-    //        Name = "IsMultiInstance",
-    //        HasSet = false,
-    //        HasGet = true
-    //    };
-
-    //    multiInstanceProperty.GetStatements.Add(
-    //        new CodeSnippetExpression(string.Format("return {0}", data.IsMultiInstance ? "true" : "false")));
-    //    Decleration.Members.Add(multiInstanceProperty);
-    //}
 
     protected void AddViewModelTypeProperty(ElementData data)
     {
@@ -495,12 +448,59 @@ public abstract class ViewClassGenerator : CodeGenerator
 
         preBindMethod.Statements.Add(new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(), "Bind"));
 
+
+        foreach (var viewProperty in data.SceneProperties)
+        {
+
+            Decleration.Members.Add(
+                new CodeSnippetTypeMember(string.Format("public IObservable<{0}> {1} {{ get; set; }}",
+                    viewProperty.RelatedTypeName, viewProperty.Name)));
+
+
+            var getMethod = new CodeMemberMethod()
+            {
+                Name = string.Format("Get{0}", viewProperty.Name),
+                ReturnType = viewProperty.GetPropertyType(),
+                Attributes = MemberAttributes.Family,
+
+            };
+
+            getMethod.Statements.Add(
+                new CodeSnippetExpression(string.Format("return default({0})", viewProperty.RelatedTypeName)));
+
+            Decleration.Members.Add(getMethod);
+
+            var returnType = new CodeTypeReference(uFrameEditor.UFrameTypes.IObservable);
+            returnType.TypeArguments.Add(getMethod.ReturnType);
+            var createObservableMethod = new CodeMemberMethod()
+            {
+                Name = string.Format("Get{0}Observable", viewProperty.Name),
+                Attributes = MemberAttributes.Family,
+                ReturnType = returnType
+            };
+
+
+            createObservableMethod.Statements.Add(
+                new CodeSnippetExpression(string.Format("return this.UpdateAsObservable().Select(p => {0}())", getMethod.Name)));
+
+            Decleration.Members.Add(createObservableMethod);
+
+            preBindMethod.Statements.Add(
+                new CodeSnippetExpression(string.Format("{0} = {1}()", viewProperty.Name, createObservableMethod.Name)));
+            preBindMethod.Statements.Add(
+                new CodeSnippetExpression(string.Format("{0}.Subscribe({1}.{2})", viewProperty.Name,
+                    data.ViewForElement.Name, viewProperty.FieldName)));
+
+        }
+
         var bindingGenerators = uFrameEditor.GetBindingGeneratorsFor(data.ViewForElement, isOverride: false, generateDefaultBindings: DiagramData.Settings.GenerateDefaultBindings, includeBaseItems: data.BaseView == null).ToArray();
 
         foreach (var bindingGenerator in bindingGenerators)
         {
-            if (data.BindingMethods.All(p => p.Name != bindingGenerator.MethodName) &&
-                data.NewBindings.All(p => p.MethodName != bindingGenerator.MethodName)) continue;
+            if (data.Bindings.All(p => p.Name != bindingGenerator.MethodName) &&
+                data.NewBindings.All(p => p.Name != bindingGenerator.MethodName)) continue;
+
+            
 
             CodeConditionStatement bindingCondition = null;
             if (this.BindingConditionStatements.ContainsKey(bindingGenerator.BindingConditionFieldName))
@@ -511,6 +511,8 @@ public abstract class ViewClassGenerator : CodeGenerator
             {
                 bindingCondition = AddBindingCondition(decl, preBindMethod.Statements, bindingGenerator.Item,
                    bindingGenerator.Item.RelatedNode() as ElementData);
+
+
                 BindingConditionStatements.Add(bindingGenerator.BindingConditionFieldName, bindingCondition);
             }
             //if (HasField(Decleration.Members, bindingGenerator.BindingConditionFieldName)) continue;
@@ -553,121 +555,5 @@ public abstract class ViewClassGenerator : CodeGenerator
         //}
     }
 
-    private void AddCollectionBinding(CodeTypeDeclaration decl, string modelName, CodeStatementCollection statements, ViewModelCollectionData collectionProperty, ElementDataBase relatedElement)
-    {
-        var varTypeName = relatedElement == null ? collectionProperty.RelatedTypeName : relatedElement.NameAsViewModel;
-        var parameterTypeName = relatedElement == null ? collectionProperty.RelatedTypeName : relatedElement.NameAsViewBase;
-        var varName = relatedElement == null ? "item" : relatedElement.NameAsVariable;
 
-        var addHandlerMethod = new CodeMemberMethod()
-        {
-            Attributes = MemberAttributes.Public,
-            Name = collectionProperty.Name + "Added",
-        };
-        addHandlerMethod.Parameters.Add(new CodeParameterDeclarationExpression(parameterTypeName, varName));
-
-        decl.Members.Add(addHandlerMethod);
-        var removeHandlerMethod = new CodeMemberMethod()
-        {
-            Attributes = MemberAttributes.Public,
-            Name = collectionProperty.Name + "Removed"
-        };
-        removeHandlerMethod.Parameters.Add(new CodeParameterDeclarationExpression(parameterTypeName, varName));
-        if (relatedElement != null)
-        {
-            var listField = AddPropertyBindingField(decl, uFrameEditor.UFrameTypes.ListOfViewModel.FullName.Replace("ViewModel", relatedElement.NameAsViewBase), collectionProperty.Name, "List", true);
-            addHandlerMethod.Statements.Add(new CodeMethodInvokeExpression(
-                new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), listField.Name), "Add",
-                new CodeVariableReferenceExpression(relatedElement.NameAsVariable)));
-            removeHandlerMethod.Statements.Add(new CodeMethodInvokeExpression(
-                new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), listField.Name), "Remove",
-                new CodeVariableReferenceExpression(relatedElement.NameAsVariable)));
-            removeHandlerMethod.Statements.Add(new CodeSnippetExpression(string.Format("UnityEngine.Object.Destroy({0}.gameObject)", relatedElement.NameAsVariable)));
-        }
-
-        decl.Members.Add(removeHandlerMethod);
-
-        if (relatedElement != null && DiagramData.Settings.GenerateDefaultBindings)
-        {
-            var createHandlerMethod = new CodeMemberMethod()
-            {
-                Attributes = MemberAttributes.Public,
-                Name = collectionProperty.NameAsCreateHandler,
-                ReturnType = new CodeTypeReference(uFrameEditor.UFrameTypes.ViewBase)
-            };
-
-            createHandlerMethod.Parameters.Add(new CodeParameterDeclarationExpression(varTypeName, varName));
-            if (DiagramData.Settings.GenerateDefaultBindings)
-            {
-                createHandlerMethod.Statements.Add(new CodeMethodReturnStatement(new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "InstantiateView", new CodeVariableReferenceExpression(varName))));
-            }
-
-            decl.Members.Add(createHandlerMethod);
-
-            statements.Add(
-                new CodeSnippetExpression(string.Format("var binding = this.BindToViewCollection(() => {0}.{1})", modelName,
-                    collectionProperty.FieldName)));
-
-            statements.Add(
-                new CodeSnippetExpression(string.Format("binding.SetAddHandler(item=>{0}(item as {1}))",
-                    addHandlerMethod.Name, relatedElement.NameAsViewBase)));
-            statements.Add(
-                new CodeSnippetExpression(string.Format("binding.SetRemoveHandler(item=>{0}(item as {1}))",
-                    removeHandlerMethod.Name, relatedElement.NameAsViewBase)));
-            statements.Add(
-                new CodeSnippetExpression(
-                    string.Format("binding.SetCreateHandler(viewModel=>{{ return {0}(viewModel as {1}); }}); ",
-                        createHandlerMethod.Name, relatedElement.NameAsViewModel)));
-        }
-        else
-        {
-            statements.Add(
-                new CodeSnippetExpression(string.Format("var binding = this.BindCollection(() => {0}.{1})", modelName,
-                    collectionProperty.FieldName)));
-
-            statements.Add(
-                new CodeSnippetExpression(string.Format("binding.SetAddHandler({0})",
-                    addHandlerMethod.Name)));
-            statements.Add(
-                new CodeSnippetExpression(string.Format("binding.SetRemoveHandler({0})",
-                    removeHandlerMethod.Name)));
-        }
-
-        if (relatedElement != null)
-        {
-            var sceneFirstField = AddPropertyBindingField(decl, typeof(bool).FullName, collectionProperty.Name, "SceneFirst");
-            //sceneFirstField.CustomAttributes.Add(
-            //new CodeAttributeDeclaration(new CodeTypeReference(typeof(UFRequireInstanceMethod)),
-            //    new CodeAttributeArgument(new CodePrimitiveExpression(collectionProperty.NameAsCreateHandler))));
-
-            var containerField = AddPropertyBindingField(decl, typeof(Transform).FullName, collectionProperty.Name, "Container");
-            //containerField.CustomAttributes.Add(
-            //   new CodeAttributeDeclaration(new CodeTypeReference(typeof(UFRequireInstanceMethod)),
-            //       new CodeAttributeArgument(new CodePrimitiveExpression(collectionProperty.NameAsCreateHandler))));
-            var containerNullCondition =
-                new CodeConditionStatement(
-                    new CodeBinaryOperatorExpression(new CodeVariableReferenceExpression(containerField.Name),
-                        CodeBinaryOperatorType.ValueEquality, new CodeSnippetExpression("null")));
-
-            containerNullCondition.FalseStatements.Add(new CodeSnippetExpression(string.Format("binding.SetParent({0})", containerField.Name)));
-            statements.Add(containerNullCondition);
-
-            var sceneFirstCondition =
-                new CodeConditionStatement(
-                    new CodeVariableReferenceExpression(sceneFirstField.Name));
-
-            sceneFirstCondition.TrueStatements.Add(new CodeSnippetExpression("binding.ViewFirst()"));
-            statements.Add(sceneFirstCondition);
-        }
-
-        //this.BindToViewCollection(() => Model._WeaponsProperty)
-        //            .SetAddHandler((weapon) =>
-        //            {
-        //                // set the rotation to the camera rotation
-        //                weapon.transform.localPosition = Vector3.zero;
-        //                weapon.transform.localRotation = Quaternion.identity;
-        //                _Weapons.Add(weapon);
-        //            })
-        //            .SetParent(_GunsTransform).ViewFirst();
-    }
 }

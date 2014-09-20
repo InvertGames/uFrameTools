@@ -99,12 +99,6 @@ public class HeaderDrawer : Drawer
                 GUI.FocusControl(NodeViewModel.GraphItemObject.Identifier);
 
             textBounds.y += TextSize.y / 2f;
-            style = new GUIStyle(EditorStyles.miniLabel);
-            style.fontSize = Mathf.RoundToInt(10 * scale);
-            style.alignment = TextAnchor.MiddleCenter;
-            style.fontStyle = FontStyle.Italic;
-            GUI.Label(textBounds.Scale(scale), NodeViewModel.SubTitle, TextStyle);
-
         }
         else
         {

@@ -31,14 +31,6 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
         
     }
 
-    //string IDiagramNodeItem.Highlighter
-    //{
-    //    get
-    //    {
-    //        return IsComputed ? "Computed" : null;
-    //    }
-    //}
-
     [SerializeField]
     private string _type = string.Empty;
 

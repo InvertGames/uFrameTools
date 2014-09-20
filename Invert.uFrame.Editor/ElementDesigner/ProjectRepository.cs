@@ -63,6 +63,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public void MarkDirty(INodeRepository data)
     {
+        Debug.Log("Marked Dirty");
         EditorUtility.SetDirty(data as UnityEngine.Object);
     }
 
@@ -104,7 +105,6 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         }
         diagram.Version = uFrameVersionProcessor.CURRENT_VERSION_NUMBER.ToString();
         Diagrams.Add(diagram);
-        CurrentGraph = diagram;
         Refresh();
         return diagram;
     }
@@ -252,6 +252,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public void RecordUndo(INodeRepository data, string title)
     {
+        Debug.Log("Recording Undo");
         Undo.RecordObject(data as UnityEngine.Object, title);
     }
 

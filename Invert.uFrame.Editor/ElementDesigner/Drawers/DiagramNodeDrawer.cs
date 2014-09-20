@@ -120,9 +120,9 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
     
     public virtual float Padding
     {
-        get { return 12; }
+        get { return 8; }
     }
-
+    
     public virtual GUIStyle BackgroundStyle
     {
         get
@@ -343,7 +343,7 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
 
     public virtual float HeaderPadding
     {
-        get { return 12; }
+        get { return 10; }
     }
 
     public override void Refresh(Vector2 position)

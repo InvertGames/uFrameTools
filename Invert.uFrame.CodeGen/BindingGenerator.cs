@@ -29,16 +29,15 @@ namespace Invert.uFrame.Code.Bindings
         {
             get { return RelatedNode as ElementData; }
         }
-        public ElementData ElementData
-        {
-            get { return Item.Node as ElementData; }
-        }
+
+  
 
         public INodeRepository DiagramData
         {
             get { return RelatedElement.Data; }
         }
         public bool GenerateDefaultImplementation { get; set; }
+        public ElementData Element { get; set; }
 
         public CodeMemberField CreateBindingField(string typeFullName, string propertyName, string name, bool keepHidden = false)
         {
@@ -64,6 +63,7 @@ namespace Invert.uFrame.Code.Bindings
         public abstract string MethodName { get; }
 
         public abstract bool IsApplicable { get; }
+
         public bool IsOverride { get; set; }
 
         public virtual void CreateMembers(CodeTypeMemberCollection collection)

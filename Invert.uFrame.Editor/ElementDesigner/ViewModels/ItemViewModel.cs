@@ -64,7 +64,7 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
 
-        public bool IsEditable
+        public virtual bool IsEditable
         {
             get { return true; }
         }

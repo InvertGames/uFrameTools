@@ -84,7 +84,7 @@ public class ViewModelGenerator : ElementCodeGenerator
                 new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.DiagramInfoAttribute),
                     new CodeAttributeArgument(new CodePrimitiveExpression(DiagramData.Name))));
 
-            CreateViewProperties(data);
+            //CreateViewProperties(data);
 
             AddWireCommandsMethod(data, Decleration, new CodeTypeReference(data.NameAsViewModel));
             AddComputedPropertyMethods(data, Decleration);

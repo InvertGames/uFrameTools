@@ -65,8 +65,8 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
                 _propertiesHeader.Label = "Scene Properties";
 
                 _propertiesHeader.HeaderType = typeof(ViewModelPropertyData);
-                if (NodeViewModel.IsLocal)
-                _propertiesHeader.AddCommand = Container.Resolve<AddViewPropertyCommand>();
+                //if (NodeViewModel.IsLocal)
+                //_propertiesHeader.AddCommand = Container.Resolve<AddViewPropertyCommand>();
             }
             return _propertiesHeader;
         }
@@ -91,45 +91,21 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
     {
         //base.GetContentDrawers(drawers);
         drawers.Add(PropertiesHeader);
-        foreach (var item in ViewModel.ContentItems.OfType<ViewPropertyItemViewModel>())
+        foreach (var item in ViewModel.ContentItems.OfType<ElementViewPropertyItemViewModel>())
         {
-                var drawer = uFrameEditor.CreateDrawer(item);
+            var drawer = uFrameEditor.CreateDrawer(item);
             if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
             drawers.Add(drawer);
         }
 
         drawers.Add(BindingsHeader);
 
-        foreach (var item in this.NodeViewModel.Bindings)
+        foreach (var item in ViewModel.ContentItems.OfType<ViewBindingItemViewModel>())
         {
-            var drawer = new ItemDrawer(item);
+            var drawer = uFrameEditor.CreateDrawer(item);
             //if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
             drawers.Add(drawer);
         }
-        //if (NodeViewModel.GraphItem.BaseNode is ElementData)
-        //{
-        //    yield return new DiagramSubItemGroup()
-        //    {
-        //        Header = PropertiesHeader,
-        //        Items = ViewModel.ContainedItems.ToArray()
-        //    };
-
-        //    var vForElement = NodeViewModel.GraphItem.ViewForElement;
-
-        //    if (vForElement != null)
-        //    {
-        //        var existing =
-        //            NodeViewModel.GraphItem.BindingMethods.Select(p => (IDiagramNodeItem)(new BindingDiagramItem(p.Name) {View = NodeViewModel.GraphItem,MethodInfo = p}));
-        //        var adding =
-        //            NodeViewModel.GraphItem.NewBindings.Select(p => (IDiagramNodeItem)(new BindingDiagramItem("[Added] " + p.MethodName) { View = NodeViewModel.GraphItem, Generator = p }));
-
-        //        yield return new DiagramSubItemGroup()
-        //        {
-        //            Header = BindingsHeader,
-        //            Items = existing.Concat(adding).ToArray()
-        //        };
-        //    }
-        //}
 
     }
 

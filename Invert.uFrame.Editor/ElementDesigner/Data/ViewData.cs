@@ -23,6 +23,7 @@ public class ViewData : DiagramNode, ISubSystemType
     private List<ViewPropertyData> _properties;
     private List<IBindingGenerator> _newBindings;
     private List<MethodInfo> _bindingMethods;
+    private List<ViewBindingData> _bindings;
 
     public override string SubTitle
     {
@@ -97,10 +98,13 @@ public class ViewData : DiagramNode, ISubSystemType
     {
         get
         {
-            
-            return this.Properties.Cast<IDiagramNodeItem>().ToArray();
+           // return this.SceneProperties.Cast<IDiagramNodeItem>();
+            return Bindings.Cast<IDiagramNodeItem>();
         }
-        set { this.Properties = value.OfType<ViewPropertyData>().ToList(); }
+        set
+        {
+            this.Bindings = value.OfType<ViewBindingData>().ToList();
+        }
     }
 
     public Type CurrentViewType
@@ -112,6 +116,18 @@ public class ViewData : DiagramNode, ISubSystemType
         }
     }
 
+    public IEnumerable<ViewModelPropertyData> SceneProperties 
+    {
+        get
+        {
+            var elementData = ViewForElement;
+            if (elementData == null) yield break;
+            foreach (var item in elementData.Properties.Where(p => p.DataBag["ViewIdentifier"] == this.Identifier))
+            {
+                yield return item;
+            }
+        }
+    }
     public override IEnumerable<Refactorer> Refactorings
     {
         get
@@ -120,18 +136,20 @@ public class ViewData : DiagramNode, ISubSystemType
             {
                 yield return RenameRefactorer;
             }
-            if (NewBindings.Count > 0)
+            if (NewBindings.Any())
             {
                 yield return BindingInsertMethodRefactorer;
             }
         }
     }
+
     public string ForElementIdentifier
     {
         get { return _forElementIdentifier; }
         set { _forElementIdentifier = value; }
     }
-    public List<MethodInfo> BindingMethods
+
+    public List<MethodInfo> ReflectionBindingMethods
     {
         get
         {
@@ -143,18 +161,23 @@ public class ViewData : DiagramNode, ISubSystemType
         }
     }
 
-    public List<IBindingGenerator> NewBindings
+    public IEnumerable<ViewBindingData> NewBindings
     {
-        get { return _newBindings ?? (_newBindings = new List<IBindingGenerator>()); }
-        set { _newBindings = value; }
+        get { return Bindings.Where(p => p.Generator != null); }
     }
+
+    //public List<IBindingGenerator> NewBindings
+    //{
+    //    get { return _newBindings ?? (_newBindings = new List<IBindingGenerator>()); }
+    //    set { _newBindings = value; }
+    //}
 
     public InsertMethodRefactorer BindingInsertMethodRefactorer
     {
         get
         {
             var sb = new StringBuilder();
-            foreach (var addedGenerator in NewBindings)
+            foreach (var addedGenerator in NewBindings.Select(p=>p.Generator))
             {
                 addedGenerator.CallBase = false;
                 sb.AppendLine(addedGenerator.ToString());
@@ -166,18 +189,29 @@ public class ViewData : DiagramNode, ISubSystemType
             };
         }
     }
+
+    public List<ViewBindingData> Bindings
+    {
+        get { return _bindings ?? (_bindings = new List<ViewBindingData>()); }
+        set { _bindings = value; }
+    }
+
     public override IEnumerable<IDiagramNodeItem> Items
     {
         get
         {
-            yield break;
-            //if (Behaviours == null)
-            //    yield break;
-
-            //foreach (var behaviourSubItem in Behaviours)
-            //{
-            //    yield return behaviourSubItem;
-            //}
+            foreach (var item in SceneProperties)
+            {
+                yield return new ViewPropertyData()
+                {
+                    Name = item.Name,
+                    RelatedType = item.RelatedType,
+                    Node = this,
+                    
+                };
+            }
+            foreach (var binding in Bindings)
+                yield return binding;
         }
     }
 
@@ -246,6 +280,9 @@ public class ViewData : DiagramNode, ISubSystemType
         }
     }
 
+    [Obsolete] // Still used for upgrading old versions
+    public string ForAssemblyQualifiedName { get; set; }
+
     public override RenameRefactorer CreateRenameRefactorer()
     {
         return new RenameViewRefactorer(this);
@@ -254,24 +291,21 @@ public class ViewData : DiagramNode, ISubSystemType
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
+
         // Upgrading project from old assembly names
         if (cls["ForAssemblyQualifiedName"] != null)
         {
-            var element =
-                repository.GetElements()
-                    .FirstOrDefault(p => p.AssemblyQualifiedName == cls["ForAssemblyQualifiedName"].Value);
-            if (element != null)
-            {
-                _forElementIdentifier = element.Identifier;
-            }
+            ForAssemblyQualifiedName = cls["ForAssemblyQualifiedName"].Value;
         }
-        else
+        
+        if (cls["ForElementIdentifier"] != null)
         {
             _forElementIdentifier = cls["ForElementIdentifier"].Value;
         }
-        
 
+        if (cls["BaseViewIdentifier"] != null)
         _baseViewIdentifier = cls["BaseViewIdentifier"].Value;
+        if (cls["ComponentIdentifiers"] != null)
         _componentIdentifiers = cls["ComponentIdentifiers"].AsArray.DeserializePrimitiveArray(n => n.Value).ToList();
 
     }
@@ -282,7 +316,7 @@ public class ViewData : DiagramNode, ISubSystemType
         if (element != null)
         {
             var list = new List<MethodInfo>();
-            var vmType = this.CurrentType;
+            var vmType = CurrentType;
             if (vmType == null)
             {
                 return;
@@ -300,12 +334,17 @@ public class ViewData : DiagramNode, ISubSystemType
             _bindingMethods = list;
         }
     }
+
     public override void RefactorApplied()
     {
         base.RefactorApplied();
-        NewBindings.Clear();
+        foreach (var binding in Bindings)
+        {
+            binding.Generator = null;
+        }
 
     }
+
     public override void RemoveFromDiagram()
     {
         base.RemoveFromDiagram();
@@ -344,4 +383,28 @@ public class ViewData : DiagramNode, ISubSystemType
     {
         BaseViewIdentifier = null;
     }
+}
+
+public class ViewBindingData : DiagramNodeItem
+{ 
+    public override string FullLabel
+    {
+        get { return Name; }
+    }
+
+    public override void Remove(IDiagramNode diagramNode)
+    {
+        var viewData = Node as ViewData;
+        if (viewData != null)
+        {
+            viewData.Bindings.Remove(this);
+        }
+    }
+
+    public override string Label
+    {
+        get { return Name; }
+    }
+
+    public IBindingGenerator Generator { get; set; }
 }

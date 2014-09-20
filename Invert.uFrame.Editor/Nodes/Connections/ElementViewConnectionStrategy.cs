@@ -52,4 +52,35 @@ namespace Invert.uFrame.Editor.Nodes
             input.RemoveFromElement(output);
         }
     }
+
+
+    public class TwoWayPropertyConnectionStrategy : DefaultConnectionStrategy<ViewModelPropertyData, ViewData>
+    {
+        public override Color ConnectionColor
+        {
+            get { return Color.white; }
+        }
+
+        protected override bool CanConnect(ViewModelPropertyData output, ViewData input)
+        {
+            
+            return base.CanConnect(output, input);
+        }
+
+        protected override bool IsConnected(ViewModelPropertyData outputData, ViewData inputData)
+        {
+            return outputData.DataBag["ViewIdentifier"] == inputData.Identifier;
+        }
+
+        protected override void ApplyConnection(ViewModelPropertyData output, ViewData input)
+        {
+            output.DataBag["ViewIdentifier"] = input.Identifier; 
+        }
+
+        protected override void RemoveConnection(ViewModelPropertyData output, ViewData input)
+        {
+            output.DataBag["ViewIdentifier"] = string.Empty;
+        }
+    }
+
 }

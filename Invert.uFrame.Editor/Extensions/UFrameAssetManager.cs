@@ -24,8 +24,8 @@ public class UFrameAssetManager : AssetPostprocessor
         project.CreateNewDiagram();
         AssetDatabase.SaveAssets();
         Refresh();
-
     }
+
     public static void NewUFrameProject(string name)
     {
         //var project = CreateAsset<ProjectRepository>("Assets/" + path);

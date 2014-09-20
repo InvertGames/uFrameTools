@@ -1,10 +1,16 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Invert.uFrame.Editor.ViewModels
 {
     public class ElementNodeViewModel : DiagramNodeViewModel<ElementData>
     {
-        
+        public override Type ExportGraphType
+        {
+            get { return typeof(ExternalElementGraph); }
+        }
 
         public ElementNodeViewModel(ElementData data, DiagramViewModel diagramViewModel)
             : base(data, diagramViewModel)
@@ -16,7 +22,35 @@ namespace Invert.uFrame.Editor.ViewModels
         
         protected override void DataObjectChanged()
         {
-            base.DataObjectChanged();
+            IsLocal = uFrameEditor.CurrentProject.CurrentGraph.NodeItems.Contains(GraphItemObject);
+            ContentItems.Clear();
+            if (GraphItem == uFrameEditor.CurrentProject.CurrentFilter)
+            {
+                foreach (var item in GraphItem.AllItems)
+                {
+                    var vm = GetDataViewModel(item);
+                    if (vm == null)
+                    {
+                        Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
+                        continue;
+                    }
+                    ContentItems.Add(vm);
+                }
+            }
+            else
+            {
+                foreach (var item in GraphItem.Items)
+                {
+                    var vm = GetDataViewModel(item);
+                    if (vm == null)
+                    {
+                        Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
+                        continue;
+                    }
+                    ContentItems.Add(vm);
+                }
+            }
+            
             
         }
 

@@ -26,7 +26,6 @@ public class uFrameComponentSearchWindow : EditorWindow
         set { _quickFindMemberInfos = value; }
     }
 
-    [MenuItem("Tools/[u]Frame/Component Search")]
     internal static void ShowWindow(Action<uFrameComponentSearchWindow, MemberInfo> finished, Action<uFrameComponentSearchWindow, MemberInfo> remove, MemberInfo[] selectedMemberInfos, MemberInfo[] quickFinds)
     {
         var window = GetWindow<uFrameComponentSearchWindow>();

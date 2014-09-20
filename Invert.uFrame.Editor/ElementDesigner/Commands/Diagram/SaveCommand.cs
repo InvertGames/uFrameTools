@@ -51,7 +51,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
                     Directory.CreateDirectory(directory);
                 }
                 try {
-                    uFrameEditor.Log(string.Format("Writing file with {0} with filename {1}", codeFileGenerator.GetType().Name, codeFileGenerator.Filename));
+                   // uFrameEditor.Log(string.Format("Writing file with {0} with filename {1}", codeFileGenerator.GetType().Name, codeFileGenerator.Filename));
                 // Write the file
                 File.WriteAllText(fileInfo.FullName, codeFileGenerator.ToString());
                     } catch(Exception ex)

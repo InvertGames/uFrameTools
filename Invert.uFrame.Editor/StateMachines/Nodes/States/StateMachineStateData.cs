@@ -5,10 +5,6 @@ public class StateMachineStateData : DiagramNode
 {
     private List<StateMachineTransition> _transitions = new List<StateMachineTransition>();
 
-    public override IEnumerable<IDiagramNodeItem> Items
-    {
-        get { yield break; }
-    }
 
     public List<StateMachineTransition> Transitions
     {

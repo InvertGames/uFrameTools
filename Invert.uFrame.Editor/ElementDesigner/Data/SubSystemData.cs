@@ -132,7 +132,7 @@ public class SubSystemData : DiagramNode
         set { _instances = value; }
     }
     private List<RegisteredInstanceData> _instances;
-
+    
     public override IEnumerable<IDiagramNodeItem> ContainedItems
     {
         get { return Instances.Cast<IDiagramNodeItem>(); }
@@ -153,10 +153,7 @@ public class SubSystemData : DiagramNode
 
     public override IEnumerable<IDiagramNodeItem> Items
     {
-        get
-        {
-          yield break;
-        }
+        get { return ContainedItems; }
     }
 
     public override string Label

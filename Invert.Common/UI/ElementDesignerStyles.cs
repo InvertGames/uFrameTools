@@ -118,7 +118,7 @@ namespace Invert.Common
                         padding = new RectOffset(8, 3, 3, 3),
                         fixedHeight = 19f * Scale,
                         stretchWidth = true,
-                        fontSize = Mathf.RoundToInt(14 * Scale),
+                        fontSize = Mathf.RoundToInt(12 * Scale),
                         fontStyle = FontStyle.Bold
                         
                     };
@@ -133,7 +133,7 @@ namespace Invert.Common
                     _tag2 = new GUIStyle
                     {
                         normal = { background = GetSkinTexture("Tag1"), textColor = Color.white },
-                        padding = new RectOffset(7, 3, 3, 3),
+                        padding = new RectOffset(7, 7, 5, 3),
                         border = new RectOffset(10,10,10,0),
                         fixedHeight = 19f * Scale,
                         stretchWidth = true,
@@ -705,12 +705,13 @@ namespace Invert.Common
                 if (_clearItemStyle == null)
                     _clearItemStyle = new GUIStyle
                     {
-                        normal = { textColor = new Color(0.7f,0.7f,0.7f) },
+                        normal = { textColor = new Color(0.6f,0.6f,0.8f) },
                         stretchHeight = true,
                         stretchWidth = true,
                         padding = new RectOffset(5,0,0,0),
-                        fontSize = Mathf.RoundToInt(9f * Scale),
+                        fontSize = Mathf.RoundToInt(8f * Scale),
                         fixedHeight = 18f * Scale,
+                        fontStyle = FontStyle.Bold,
                         alignment = TextAnchor.MiddleLeft
                     };
 
@@ -919,9 +920,9 @@ namespace Invert.Common
                 {
                     _headerStyle = new GUIStyle()
                     {
-                        normal = { textColor = new Color(0.8f, 0.8f, 0.8f) },
+                        normal = { textColor = new Color(0.35f, 0.35f, 0.35f) },
                         padding = new RectOffset(4, 4, 4, 4),
-                        fontSize = Mathf.RoundToInt(10f * Scale),
+                        fontSize = Mathf.RoundToInt(11f * Scale),
                         alignment = TextAnchor.MiddleLeft
                     };
                 }
@@ -936,12 +937,12 @@ namespace Invert.Common
                 {
                     _selectedItemStyle = new GUIStyle()
                     {
-                        normal = { background = GetSkinTexture("SelectedNodeItem"), textColor = Color.white },
-                        active = { background = GetSkinTexture("SelectedNodeItem"), textColor = Color.white },
+                        normal = { background = GetSkinTexture("SelectedNodeItem"), textColor = new Color(0.7f,0.7f,0.7f) },
+                        active = { background = GetSkinTexture("SelectedNodeItem"), textColor = new Color(0.7f, 0.7f, 0.7f) },
                         stretchHeight = true,
                         padding = new RectOffset(0,5,0,0),
                         fixedHeight = Mathf.RoundToInt(18 * Scale),
-                        fontSize = Mathf.RoundToInt(9 * Scale),
+                        fontSize = Mathf.RoundToInt(10 * Scale),
                         alignment = TextAnchor.MiddleRight
                     };
                 }

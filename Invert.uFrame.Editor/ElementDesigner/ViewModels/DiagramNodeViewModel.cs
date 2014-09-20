@@ -26,7 +26,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             base.DataObjectChanged();
             ContentItems.Clear();
-            foreach (var item in GraphItem.ContainedItems)
+            foreach (var item in GraphItem.Items)
             {
                 var vm = GetDataViewModel(item);
                 if (vm == null)
@@ -70,6 +70,10 @@ namespace Invert.uFrame.Editor.ViewModels
 
         }
 
+        public virtual Type ExportGraphType
+        {
+            get { return null; }
+        }
         public override ConnectorViewModel InputConnector
         {
             get
@@ -241,7 +245,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public bool IsFilter
         {
-            get { return uFrameEditor.IsFilter(GraphItemObject.GetType()); }
+            get { return uFrameEditor.IsFilter(GraphItemObject.GetType()) && IsLocal; }
         }
 
         public IEnumerable<CodeGenerator> CodeGenerators

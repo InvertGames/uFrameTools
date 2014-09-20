@@ -21,18 +21,18 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
         set;
     }
 
-    public CodeTypeDeclaration AddTypeEnum(string name, IEnumerable<RegisteredInstanceData> instances)
-    {
-        var enumDecleration = new CodeTypeDeclaration(name) { IsEnum = true };
-        //enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, name));
-        foreach (var item in instances)
-        {
-            enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, item.Name));
-        }
-        Namespace.Types.Add(enumDecleration);
+    //public CodeTypeDeclaration AddTypeEnum(string name, IEnumerable<RegisteredInstanceData> instances)
+    //{
+    //    var enumDecleration = new CodeTypeDeclaration(name) { IsEnum = true };
+    //    //enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, name));
+    //    foreach (var item in instances)
+    //    {
+    //        enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, item.Name));
+    //    }
+    //    Namespace.Types.Add(enumDecleration);
 
-        return enumDecleration;
-    }
+    //    return enumDecleration;
+    //}
 
     public virtual void AddSceneManager(SceneManagerData sceneManager)
     {

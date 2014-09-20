@@ -9,6 +9,8 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
     {
         public override void Perform(ViewNodeViewModel node)
         {
+            node.AddProperty();
+            return;
             var quickFind = new MemberInfo[]
             {
                 typeof (Transform).GetMember("position").First(),

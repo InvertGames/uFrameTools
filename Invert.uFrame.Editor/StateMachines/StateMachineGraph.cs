@@ -1,19 +1,41 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using JSONData = Invert.uFrame.Editor.JSONData;
 
-public class StateMachineGraph : GraphData
+public class StateMachineGraph : GraphData<StateMachineNodeData>
 {
-    private StateMachineFilter _rootFilter = new StateMachineFilter();
+   
+}
 
-    public override IDiagramFilter RootFilter
+public class GraphData<T> : GraphData where T : IDiagramFilter, new()
+{
+    public T FilterNode
     {
-        get { return StateMachineFilter ?? (StateMachineFilter = new StateMachineFilter()); }
-        set { StateMachineFilter = value as StateMachineFilter; }
+        get { return (T)RootFilter; }
     }
-
-    public StateMachineFilter StateMachineFilter
+    protected override IDiagramFilter CreateDefaultFilter()
     {
-        get { return _rootFilter; }
-        set { _rootFilter = value; }
+        return new T()
+        {
+            Name = name
+        };
+    }
+}
+
+public class ExternalSubsystemGraph : GraphData<SubSystemData>
+{
+    public override string Name
+    {
+        get { return RootFilter.Name; }
+    }
+}
+
+public class ExternalElementGraph : GraphData<ElementData>
+{
+    public override string Name
+    {
+        get { return RootFilter.Name; }
     }
 }

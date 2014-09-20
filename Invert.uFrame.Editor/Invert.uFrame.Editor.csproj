@@ -48,6 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeGenerator\GeneratorSettings.cs" />
+    <Compile Include="ElementDesigner\Commands\Nodes\AddItemCommand2.cs" />
+    <Compile Include="ElementDesigner\Commands\Nodes\ExportCommand.cs" />
+    <Compile Include="ElementDesigner\Commands\Nodes\ImportCommand.cs" />
+    <Compile Include="ElementDesigner\Data\MissingNodeData.cs" />
     <Compile Include="StateMachines\Nodes\Actions\Actions.cs" />
     <Compile Include="StateMachines\Nodes\Machines\StateMachineNodeData.cs" />
     <Compile Include="StateMachines\Nodes\Machines\StateMachineNodeDrawer.cs" />

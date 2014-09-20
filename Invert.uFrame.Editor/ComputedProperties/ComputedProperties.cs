@@ -26,7 +26,7 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
 
     public string ViewFieldName
     {
-        get { return string.Format("_{0}",Name); }
+        get { return string.Format("_{0}", Name); }
     }
 
     private List<string> _dependantPropertyIdentifiers = new List<string>();
@@ -42,11 +42,16 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
         get { return _dependantPropertyIdentifiers; }
         set { _dependantPropertyIdentifiers = value; }
     }
+
     public IEnumerable<ITypeDiagramItem> DependantProperties
     {
         get
         {
-            var properties = Node.Data.GetElements().SelectMany(p => p.Properties.Cast<ITypeDiagramItem>().Concat(p.ComputedProperties.Cast<ITypeDiagramItem>())).ToArray();
+            var properties =
+                Node.Data.GetElements()
+                    .SelectMany(
+                        p => p.Properties.Cast<ITypeDiagramItem>().Concat(p.ComputedProperties.Cast<ITypeDiagramItem>()))
+                    .ToArray();
             foreach (var property in DependantPropertyIdentifiers)
             {
                 var result = properties.FirstOrDefault(p => p.Identifier == property);
@@ -56,6 +61,7 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
 
         }
     }
+
     public override string Label
     {
         get { return this.Name; }
@@ -63,10 +69,7 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
 
     public override IEnumerable<IDiagramNodeItem> ContainedItems
     {
-        get
-        {
-            yield break;
-        }
+        get { yield break; }
         set { }
     }
 
@@ -80,10 +83,12 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
     {
         get { return string.Format("Compute{0}", Name); }
     }
+
     public string PropertyIdentifier { get; set; }
+
     public string RelatedType
     {
-        get { return _type ?? (_type = typeof(bool).Name); }
+        get { return _type ?? (_type = typeof (bool).Name); }
         set { _type = value; }
     }
 
@@ -98,6 +103,7 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
             return RelatedType;
         }
     }
+
     public string RelatedTypeNameOrViewModel
     {
         get
@@ -116,6 +122,7 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
             return RelatedType;
         }
     }
+
     public bool AllowEmptyRelatedType
     {
         get { return false; }
@@ -123,10 +130,7 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
 
     public string FieldName
     {
-        get
-        {
-            return string.Format("_{0}Property", Name);
-        }
+        get { return string.Format("_{0}Property", Name); }
     }
 
 
@@ -175,121 +179,126 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
         }
     }
 
-    public string Title
+    public ElementData Element
     {
-        get { return Name; }
-    }
-
-    public string SearchTag
-    {
-        get { return Name; }
-    }
-}
-
-public class ComputedPropertyNodeViewModel : DiagramNodeViewModel<ComputedPropertyData>
-{
-    public ComputedPropertyNodeViewModel(ComputedPropertyData graphItemObject, DiagramViewModel diagramViewModel)
-        : base(graphItemObject, diagramViewModel)
-    {
-    }
-
-    public string RelatedTypeName
-    {
-        get { return GraphItem.RelatedTypeName; }
-    }
-}
-
-public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeViewModel>
-{
-    private string _cachedRelatedType;
-    private float _typeWidth;
-
-    //public override float Padding
-    //{
-    //    get { return 12; }
-    //}
-
-    public override float HeaderPadding
-    {
-        get { return 6; }
-    }
-    public ComputedPropertyDrawer()
-    {
-    }
-
-    public ComputedPropertyDrawer(ComputedPropertyNodeViewModel viewModel)
-        : base(viewModel)
-    {
-    }
-
-    protected override GUIStyle HeaderStyle
-    {
-        get { return ElementDesignerStyles.NodeHeader10; }
-    }
-
-    public override void Refresh(Vector2 position)
-    {
-        base.Refresh(position);
-        _cachedRelatedType = NodeViewModel.RelatedTypeName;
-
-        _typeWidth = ElementDesignerStyles.Tag1.CalcSize(new GUIContent(_cachedRelatedType)).x;
-    }
-
-    public override void Draw(float scale)
-    {
-        base.Draw(scale);
-
-        if (GUI.Button(new Rect(Bounds.x + 5, Bounds.y - 18f, _typeWidth, 15f).Scale(Scale),
-            _cachedRelatedType,
-            ElementDesignerStyles.Tag2))
+        get
         {
-            var commandName = ViewModelObject.DataObject.GetType().Name.Replace("Data", "") + "TypeSelection";
-            Debug.Log(commandName);
-            var command = uFrameEditor.Container.Resolve<IEditorCommand>(commandName);
-            ViewModel.Select();
-            uFrameEditor.ExecuteCommand(command);
-            //ElementItemTypesWindow.InitTypeListWindow("Choose Type",);
+            var dependantProperty = DependantProperties.FirstOrDefault();
+            if (dependantProperty == null)
+            {
+                return null;
+            }
+            return dependantProperty.Node as ElementData;
+        }
+    }
+
+
+    public class ComputedPropertyNodeViewModel : DiagramNodeViewModel<ComputedPropertyData>
+    {
+        public ComputedPropertyNodeViewModel(ComputedPropertyData graphItemObject, DiagramViewModel diagramViewModel)
+            : base(graphItemObject, diagramViewModel)
+        {
+        }
+
+        public string RelatedTypeName
+        {
+            get { return GraphItem.RelatedTypeName; }
+        }
+    }
+
+    public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeViewModel>
+    {
+        private string _cachedRelatedType;
+        private float _typeWidth;
+
+        //public override float Padding
+        //{
+        //    get { return 12; }
+        //}
+
+        public override float HeaderPadding
+        {
+            get { return 6; }
+        }
+
+        public ComputedPropertyDrawer()
+        {
+        }
+
+        public ComputedPropertyDrawer(ComputedPropertyNodeViewModel viewModel)
+            : base(viewModel)
+        {
+        }
+
+        protected override GUIStyle HeaderStyle
+        {
+            get { return ElementDesignerStyles.NodeHeader10; }
+        }
+
+        public override void Refresh(Vector2 position)
+        {
+            base.Refresh(position);
+            _cachedRelatedType = NodeViewModel.RelatedTypeName;
+
+            _typeWidth = ElementDesignerStyles.Tag1.CalcSize(new GUIContent(_cachedRelatedType)).x;
+        }
+
+        public override void Draw(float scale)
+        {
+            base.Draw(scale);
+
+            if (GUI.Button(new Rect(Bounds.x + 5, Bounds.y - 18f, _typeWidth, 15f).Scale(Scale),
+                _cachedRelatedType,
+                ElementDesignerStyles.Tag2))
+            {
+                var commandName = ViewModelObject.DataObject.GetType().Name.Replace("Data", "") + "TypeSelection";
+                Debug.Log(commandName);
+                var command = uFrameEditor.Container.Resolve<IEditorCommand>(commandName);
+                ViewModel.Select();
+                uFrameEditor.ExecuteCommand(command);
+                //ElementItemTypesWindow.InitTypeListWindow("Choose Type",);
+            }
+        }
+    }
+
+
+    public class ComputedPropertyPlugin : DiagramPlugin
+    {
+        public override void Initialize(uFrameContainer container)
+        {
+            uFrameEditor.RegisterGraphItem<ComputedPropertyData, ComputedPropertyNodeViewModel, ComputedPropertyDrawer>();
+            uFrameEditor.RegisterFilterNode<ElementData, ComputedPropertyData>();
+
+            container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputsConnectionStrategy(),
+                "ComputedPropertyInputsConnectionStrategy");
+            //container.Register<DesignerGeneratorFactory, ComputedPopertyCodeFactory>("ComputedPropertyFactory");
+        }
+    }
+
+    public class ComputedPropertyInputsConnectionStrategy :
+        DefaultConnectionStrategy<ITypeDiagramItem, ComputedPropertyData>
+    {
+        public override Color ConnectionColor
+        {
+            get { return Color.white; }
+        }
+
+        protected override bool IsConnected(ITypeDiagramItem outputData, ComputedPropertyData inputData)
+        {
+            return inputData.DependantPropertyIdentifiers.Contains(outputData.Identifier);
+        }
+
+        protected override void ApplyConnection(ITypeDiagramItem output, ComputedPropertyData input)
+        {
+            input.DependantPropertyIdentifiers.Add(output.Identifier);
+        }
+
+        protected override void RemoveConnection(ITypeDiagramItem output, ComputedPropertyData input)
+        {
+            input.DependantPropertyIdentifiers.Remove(output.Identifier);
         }
     }
 }
-
-
-public class ComputedPropertyPlugin : DiagramPlugin
-{
-    public override void Initialize(uFrameContainer container)
-    {
-        uFrameEditor.RegisterGraphItem<ComputedPropertyData, ComputedPropertyNodeViewModel, ComputedPropertyDrawer>();
-        uFrameEditor.RegisterFilterNode<ElementData, ComputedPropertyData>();
-
-        container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputsConnectionStrategy(), "ComputedPropertyInputsConnectionStrategy");
-        //container.Register<DesignerGeneratorFactory, ComputedPopertyCodeFactory>("ComputedPropertyFactory");
-    }
-}
-
-public class ComputedPropertyInputsConnectionStrategy :
-    DefaultConnectionStrategy<ITypeDiagramItem, ComputedPropertyData>
-{
-    public override Color ConnectionColor
-    {
-        get { return Color.white; }
-    }
-
-    protected override bool IsConnected(ITypeDiagramItem outputData, ComputedPropertyData inputData)
-    {
-        return inputData.DependantPropertyIdentifiers.Contains(outputData.Identifier);
-    }
-
-    protected override void ApplyConnection(ITypeDiagramItem output, ComputedPropertyData input)
-    {
-        input.DependantPropertyIdentifiers.Add(output.Identifier);
-    }
-
-    protected override void RemoveConnection(ITypeDiagramItem output, ComputedPropertyData input)
-    {
-        input.DependantPropertyIdentifiers.Remove(output.Identifier);
-    }
-}
-
 
 //public class ComputedPopertyCodeFactory : DesignerGeneratorFactory<ComputedPropertyData>
 //{

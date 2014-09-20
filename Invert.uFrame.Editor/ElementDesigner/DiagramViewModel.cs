@@ -324,40 +324,73 @@ public class DiagramViewModel : ViewModel
     {
         uFrameEditor.ExecuteCommand((n) =>
         {
-            var nodes = Data.NodeItems.ToArray();
-            foreach (var node in nodes.OfType<ElementData>())
-            {
-                foreach (var item in node.ContainedItems.OfType<ITypeDiagramItem>())
-                {
-                    var uFrameType = Data.NodeItems.FirstOrDefault(p => p.Name == item.RelatedType);
-                    if (uFrameType != null)
-                        item.RelatedType = uFrameType.Identifier;
-                }
-            }
-
-            foreach (var subsystem in nodes.OfType<SubSystemData>())
-            {
-                var containing = subsystem.GetContainingNodes(CurrentRepository).OfType<ElementData>();
-                foreach (var node in containing)
-                {
-                    if (!node.IsMultiInstance)
-                    {
-                        subsystem.Instances.Add(new RegisteredInstanceData()
-                        {
-                            Node = subsystem,
-                            Name = node.Name,
-                            RelatedType = node.Identifier
-                        });
-                    }
-                }
-            }
-
-            Data.Version = uFrameVersionProcessor.CURRENT_VERSION_NUMBER.ToString();
-            AssetDatabase.SaveAssets();
+            Process15Uprade();
         });
       
     }
 
+    public void Process15Uprade()
+    {
+        var nodes = Data.NodeItems.ToArray();
+        foreach (var node in nodes.OfType<ElementData>())
+        {
+
+            var foundElement =
+                nodes.OfType<ElementData>().FirstOrDefault(p => p.AssemblyQualifiedName == node.BaseType);
+            
+            if (foundElement != null)
+                node.BaseIdentifier = foundElement.Identifier;
+
+            foreach (var item in node.ContainedItems.OfType<ITypeDiagramItem>())
+            {
+                var uFrameType = Data.NodeItems.FirstOrDefault(p => p.Name == item.RelatedType);
+                if (uFrameType != null)
+                    item.RelatedType = uFrameType.Identifier;
+            }
+        }
+
+        foreach (var subsystem in nodes.OfType<SubSystemData>())
+        {
+            var containing = subsystem.GetContainingNodes(CurrentRepository).OfType<ElementData>();
+            foreach (var node in containing)
+            {
+                if (!node.IsMultiInstance)
+                {
+                    subsystem.Instances.Add(new RegisteredInstanceData()
+                    {
+                        Node = subsystem,
+                        Name = node.Name,
+                        RelatedType = node.Identifier
+                    });
+                }
+            }
+        }
+
+        foreach (var viewData in nodes.OfType<ViewData>())
+        {
+
+            var newElement = nodes.OfType<ElementData>().FirstOrDefault(p => p.AssemblyQualifiedName == viewData.ForAssemblyQualifiedName);
+            if (newElement != null)
+            {
+                viewData.ForElementIdentifier = newElement.Identifier;
+            }
+
+            // Upgrade bindings
+            foreach (var item in viewData.ReflectionBindingMethods)
+            {
+                viewData.Bindings.Add(new ViewBindingData()
+                {
+                    Name = item.Name,
+                    Node = viewData
+                });
+            }
+        }
+
+
+
+        Data.Version = uFrameVersionProcessor.CURRENT_VERSION_NUMBER.ToString();
+        AssetDatabase.SaveAssets();
+    }
     public void AddNode(IDiagramNode newNodeData)
     {
         CurrentRepository.AddNode(newNodeData);

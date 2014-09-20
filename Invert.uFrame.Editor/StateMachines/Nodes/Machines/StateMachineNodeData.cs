@@ -9,11 +9,6 @@ public class StateMachineNodeData : DiagramNode,IDesignerType
 {
     //private List<StateMachineVariableData> _variables;
 
-    public override IEnumerable<IDiagramNodeItem> Items
-    {
-        get { yield break; }
-    }
-
     public override string Label
     {
         get { return Name; }

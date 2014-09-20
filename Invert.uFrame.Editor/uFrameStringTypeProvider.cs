@@ -64,6 +64,12 @@ namespace Invert.uFrame.Editor
         {
             get { return _State ?? (_State = uFrameEditor.FindType("Invert.StateMachine.State")); }
         }
+        private Type _iobservable;
+
+        public virtual Type IObservable
+        {
+            get { return _iobservable ?? (_State = uFrameEditor.FindType("UniRx.IObservable`1")); }
+        }
          public virtual Type StateMachine
         {
             get { return _StateMachine ?? (_StateMachine = uFrameEditor.FindType("Invert.StateMachine.StateMachine")); }

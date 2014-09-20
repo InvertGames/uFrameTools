@@ -45,8 +45,8 @@ public class ViewGenerator : ViewClassGenerator
 
             foreach (var bindingGenerator in bindingGenerators)
             {
-                if (View.BindingMethods.All(p => p.Name != bindingGenerator.MethodName) &&
-                    View.NewBindings.All(p => p.MethodName != bindingGenerator.MethodName)) continue;
+                if (View.ReflectionBindingMethods.All(p => p.Name != bindingGenerator.MethodName) &&
+                    View.NewBindings.All(p => p.Name != bindingGenerator.MethodName)) continue;
 
                 //bindingGenerator.IsOverride = true;
 
@@ -109,7 +109,7 @@ public class ViewGenerator : ViewClassGenerator
         }
         else
         {
-            foreach (var bindingGenerator in view.NewBindings)
+            foreach (var bindingGenerator in view.NewBindings.Select(p=>p.Generator))
             {
                 bindingGenerator.CreateMembers(decl.Members);
             }
@@ -202,8 +202,8 @@ public class ViewViewBaseGenerator : ViewClassGenerator
 
         foreach (var bindingGenerator in bindingGenerators)
         {
-            if (View.BindingMethods.All(p => p.Name != bindingGenerator.MethodName) &&
-                View.NewBindings.All(p => p.MethodName != bindingGenerator.MethodName)) continue;
+            if (View.ReflectionBindingMethods.All(p => p.Name != bindingGenerator.MethodName) &&
+                View.NewBindings.All(p => p.Name != bindingGenerator.MethodName)) continue;
 
             bindingGenerator.CreateMembers(Decleration.Members);
         }

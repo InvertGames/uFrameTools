@@ -200,15 +200,15 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
 
     public void CommandExecuted(IEditorCommand command)
     {
-        DiagramViewModel.MarkDirty();
-        uFrameEditor.Log(command.Title + " Executed");
+        //DiagramViewModel.MarkDirty();
+        //uFrameEditor.Log(command.Title + " Executed");
         this.Refresh();
-        Dirty = true;
+        //Dirty = true;
     }
 
     public void CommandExecuting(IEditorCommand command)
     {
-        DiagramViewModel.RecordUndo(command.Title);
+        //DiagramViewModel.RecordUndo(command.Title);
     }
 
     public override void Draw(float scale)
@@ -298,7 +298,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
                     if (command.CanPerform(argument) == null)
                     {
                         uFrameEditor.Log("Key Command Executed: " + command.GetType().Name);
-                        this.ExecuteCommand(command);
+                        uFrameEditor.ExecuteCommand(command);
                         used = true;
                     }
                 }

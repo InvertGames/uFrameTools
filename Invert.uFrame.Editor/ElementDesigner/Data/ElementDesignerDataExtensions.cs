@@ -86,10 +86,6 @@ public static class ElementDesignerDataExtensions
     public static void Prepare(this IElementDesignerData designerData)
     {
         designerData.RefactorCount = 0;
-        foreach (var allDiagramItem in designerData.NodeItems)
-        {
-            //allDiagramItem.Data = designerData;
-        }
         designerData.Initialize();
     }
     public static IEnumerable<IDiagramNode> FilterItems(this IElementDesignerData designerData, INodeRepository repository)
@@ -144,6 +140,7 @@ public static class ElementDesignerDataExtensions
         
         foreach (var item in repo.NodeItems)
         {
+            if (item == null) continue;
             if (filter.IsAllowed(item, item.GetType()))
             {
                 if (filter.ImportedOnly && filter != item)

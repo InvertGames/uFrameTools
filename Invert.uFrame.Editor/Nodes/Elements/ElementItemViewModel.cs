@@ -11,5 +11,15 @@ namespace Invert.uFrame.Editor.ViewModels
             : base(viewModelItem, nodeViewModel)
         {
         }
+
+        public override bool IsEditable
+        {
+            get { return base.IsEditable; }
+        }
+
+        public override ConnectorViewModel InputConnector
+        {
+            get { return null; }
+        }
     }
 }

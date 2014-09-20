@@ -25,7 +25,8 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
 
     private bool _errors;
     private FilterPositionData _positionData;
-   
+    private IDiagramFilter _rootFilter;
+
 
     public FilterPositionData PositionData
     {
@@ -65,7 +66,7 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         set { _settings = value; }
     }
 
-    public string Name
+    public virtual string Name
     {
         get { return Regex.Replace(name, "[^a-zA-Z0-9_.]+", ""); }
     }
@@ -74,11 +75,14 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
     public string Version { get; set; }
     public int RefactorCount { get; set; }
 
-    public IEnumerable<IDiagramNode> NodeItems
+    public virtual IEnumerable<IDiagramNode> NodeItems
     {
         get
         {
-            return Nodes;
+            if (RootFilter is IDiagramNode)
+                yield return RootFilter as IDiagramNode;
+            foreach (var item in Nodes)
+                yield return item;
         }
     }
 
@@ -90,14 +94,17 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
 
     public virtual IDiagramFilter RootFilter
     {
-        get { return NodeItems.FirstOrDefault() as IDiagramFilter; }
-        set
+        get
         {
-            if (Nodes.Count < 1)
-            {
-                Nodes.Insert(0,value as IDiagramNode);
-            }
+
+            return _rootFilter ?? (_rootFilter = CreateDefaultFilter());
         }
+        set { _rootFilter = value; }
+    }
+
+    protected virtual IDiagramFilter CreateDefaultFilter()
+    {
+        return null;
     }
 
     public bool Errors
@@ -197,7 +204,6 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         try
         {
             Deserialize(_jsonData);
-        
             CleanUpDuplicates();
             Errors = false;
         }
@@ -261,7 +267,7 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
             
 
         if (jsonNode["SceneFlow"] is JSONClass)
-            RootFilter = jsonNode["SceneFlow"].DeserializeObject(this) as DiagramFilter;
+            RootFilter = jsonNode["SceneFlow"].DeserializeObject(this) as IDiagramFilter;
 
         if (jsonNode["PositionData"] != null)
             PositionData = jsonNode["PositionData"].DeserializeObject(this) as FilterPositionData;
@@ -295,21 +301,11 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
 
 public class ElementsGraph : GraphData
 {
-
-    [NonSerialized]
-    protected SceneFlowFilter _sceneFlowFilter;
-
-    public SceneFlowFilter SceneFlowFilter
+    protected override IDiagramFilter CreateDefaultFilter()
     {
-        get { return _sceneFlowFilter ?? (_sceneFlowFilter = new SceneFlowFilter()); }
-        set { _sceneFlowFilter = value; }
+        return new SceneFlowFilter();
     }
 
-    public override IDiagramFilter RootFilter
-    {
-        get { return SceneFlowFilter; }
-        set { SceneFlowFilter = value as SceneFlowFilter; }
-    }
 }
 
 public class JsonElementDesignerData : ElementsGraph
@@ -319,6 +315,7 @@ public class JsonElementDesignerData : ElementsGraph
 
 
 }
+
 public class FilterPositionData : IJsonObject
 {
     private Dictionary<string, FilterLocations> _positions;

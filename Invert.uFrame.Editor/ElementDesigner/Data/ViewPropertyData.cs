@@ -1,33 +1,31 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Invert.uFrame.Editor;
 using UnityEngine;
 
-public class ViewPropertyData : DiagramNodeItem,ISerializeablePropertyData
+public class ViewPropertyData : DiagramNodeItem,ISerializeablePropertyData,ITypeDiagramItem
 {
     private string _componentTypeName = "";
     private string _componentTypeShortName = "";
 
     private string _componentProperty = "";
     private Type _componentAssemblyType = null;
+    private string _type;
 
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
-        cls.Add("ComponentType", new JSONData(_componentTypeName ?? string.Empty));
-        cls.Add("ComponentProperty", new JSONData(_componentProperty ?? string.Empty));
+        cls.Add("ItemType", new JSONData(_type));
     }
 
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
-        if (cls["ComponentType"] != null)
-        ComponentAssemblyType = uFrameEditor.FindType(cls["ComponentType"].Value);
-        if (cls["ComponentProperty"] != null)
-        ComponentProperty = cls["ComponentProperty"].Value;
 
+        _type = cls["ItemType"].Value.Split(',')[0].Split('.').Last();
     }
 
     string ISerializeablePropertyData.Name
@@ -39,23 +37,54 @@ public class ViewPropertyData : DiagramNodeItem,ISerializeablePropertyData
         get { return Label; }
     }
 
-    public override string Name
-    {
-        get { return Label; }
-        set
-        {
-            // nothing here
-        }
-    }
-
     public Type Type
     {
         get { return MemberType; }
     }
 
+
+    public string RelatedType
+    {
+        get { return _type ?? (_type = typeof(string).Name); }
+        set { _type = value; }
+    }
+
     public string RelatedTypeName
     {
-        get { return Type.Name; }
+        get { return RelatedType; }
+    }
+
+    public bool AllowEmptyRelatedType { get { return false; } }
+    public string FieldName { get { return NameAsField; } }
+
+    public string NameAsChangedMethod
+    {
+        get { return "Get" + Name; }
+    }
+
+    public string ViewFieldName
+    {
+        get { return NameAsField; }
+    }
+
+    public void SetType(IDesignerType input)
+    {
+        RelatedType = input.Identifier;
+    }
+
+    public void RemoveType()
+    {
+        RelatedType = typeof (string).Name;
+    }
+
+    public CodeTypeReference GetFieldType()
+    {
+        throw new NotImplementedException();
+    }
+
+    public CodeTypeReference GetPropertyType()
+    {
+        throw new NotImplementedException();
     }
 
     public IDiagramNode TypeNode()

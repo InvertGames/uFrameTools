@@ -20,6 +20,8 @@ namespace Invert.uFrame.Code.Bindings
         {
             get { return string.Format("_{0}Container", Item.Name); }
         }
+
+
         public override bool IsApplicable
         {
             get { return CollectionProperty != null; }
@@ -53,7 +55,8 @@ namespace Invert.uFrame.Code.Bindings
             {
                 if (!HasField(collection, NameAsListField))
                 {
-                    var listField = CreateBindingField(uFrameEditor.UFrameTypes.ListOfViewModel.FullName.Replace("ViewModel", RelatedElement.NameAsViewBase), CollectionProperty.Name, "List", true);
+                    var listField = CreateBindingField(string.Format("List<{0}>",uFrameEditor.UFrameTypes.ViewBase.Name), CollectionProperty.Name, "List", true);
+                    listField.InitExpression = new CodeObjectCreateExpression(string.Format("List<{0}>", uFrameEditor.UFrameTypes.ViewBase.Name));
                     collection.Add(listField);
                 }
 
@@ -71,7 +74,7 @@ namespace Invert.uFrame.Code.Bindings
                 }
 
                 bindingCondition.TrueStatements.Add(
-                    new CodeSnippetExpression(string.Format("var binding = this.BindToViewCollection(() => {0}.{1})", ElementData.Name, CollectionProperty.FieldName)));
+                    new CodeSnippetExpression(string.Format("var binding = this.BindToViewCollection(() => {0}.{1})", Element.Name, CollectionProperty.FieldName)));
 
                 var containerNullCondition =
                     new CodeConditionStatement(
@@ -91,7 +94,7 @@ namespace Invert.uFrame.Code.Bindings
             else
             {
                 bindingCondition.TrueStatements.Add(
-                    new CodeSnippetExpression(string.Format("var binding = this.BindCollection(() => {0}.{1})", ElementData.Name,
+                    new CodeSnippetExpression(string.Format("var binding = this.BindCollection(() => {0}.{1})", Element.Name,
                         CollectionProperty.FieldName)));
             }
         }
@@ -103,7 +106,7 @@ namespace Invert.uFrame.Code.Bindings
 
         public string ParameterTypeName
         {
-            get { return RelatedElement == null ? CollectionProperty.RelatedTypeName : RelatedElement.NameAsViewBase; }
+            get { return RelatedElement == null ? CollectionProperty.RelatedTypeName : "ViewBase"; }
         }
 
         public virtual string VarName

@@ -323,8 +323,9 @@ namespace Invert.uFrame.Editor
             if (diagram == null) return;
             try
             {
-                //Undo.undoRedoPerformed = UndoRedoPerformed;
+                if (Undo.undoRedoPerformed != null) Undo.undoRedoPerformed -= UndoRedoPerformed;
                 Undo.undoRedoPerformed += UndoRedoPerformed;
+                SerializedGraph = new SerializedObject(diagram as UnityEngine.Object);
                 //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
                 DiagramDrawer = new ElementsDiagram(new DiagramViewModel(diagram, CurrentProject));
                 MouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer);
@@ -339,6 +340,8 @@ namespace Invert.uFrame.Editor
                 LastLoadedDiagram = null;
             }
         }
+
+        public SerializedObject SerializedGraph { get; set; }
 
         public void OnFocus()
         {
@@ -357,6 +360,7 @@ namespace Invert.uFrame.Editor
         }
         public void OnGUI()
         {
+
             uFrameEditor.DesignerWindow = this;
             var style = ElementDesignerStyles.Background;
             style.border = new RectOffset(
@@ -661,8 +665,13 @@ namespace Invert.uFrame.Editor
                 TypeMapping type = graphType;
                 menu.AddItem(new GUIContent("Create " + graphType.Name), false, () =>
                 {
-                    CurrentProject.CreateNewDiagram(type.To);
-                    DiagramDrawer = null;
+                    uFrameEditor.ExecuteCommand((b) =>
+                    {
+                        var diagram = CurrentProject.CreateNewDiagram(type.To);
+                        LoadDiagram(diagram);
+                        DiagramDrawer = null;
+                    });
+                  
                 });
             }
 
@@ -695,7 +704,10 @@ namespace Invert.uFrame.Editor
 
         private void UndoRedoPerformed()
         {
+            Debug.Log("Undo performed");
             DiagramDrawer = null;
+            uFrameEditor.CurrentProject.Refresh();
+            LoadDiagram(CurrentProject.CurrentGraph);
         }
 
         //public void LoadDiagramByName(string diagramName)
