@@ -12,7 +12,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             var node = item as DiagramViewModel;
             if (node == null) return;
 
-            var data = node.Data.NodeItems.LastOrDefault();
+            var data = node.DiagramData.NodeItems.LastOrDefault();
        
             if (data == null) return;
             data.BeginEditing();
@@ -22,7 +22,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             if (node == null) return "Diagram must be loaded first.";
 
-            if (!node.Data.CurrentFilter.IsAllowed(null, typeof(TType)))
+            if (!node.DiagramData.CurrentFilter.IsAllowed(null, typeof(TType)))
                 return "Item is not allowed in this part of the diagram.";
 
             return null;

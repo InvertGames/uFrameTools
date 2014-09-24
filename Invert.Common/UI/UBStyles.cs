@@ -458,9 +458,14 @@ namespace Invert.Common
                 if (_eventButtonLargeStyle == null)
                     _eventButtonLargeStyle = new GUIStyle
                     {
-                        normal = { background = GetSkinTexture("EventButton"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.grey },
-                        fixedHeight = 33,
-                        padding = new RectOffset(0, 0, 5, 5)
+                        normal = { background = GetSkinTexture("CommandBar"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.grey },
+                        active = { background = CommandBarClosedStyle.normal.background },
+                        stretchHeight = true,
+
+                        fixedHeight = 35,
+                        border = new RectOffset(3, 3, 3, 3),
+
+                        padding = new RectOffset(25, 0, 5, 5)
                     };
 
                 return _eventButtonLargeStyle;
@@ -474,18 +479,39 @@ namespace Invert.Common
                 if (_eventButtonStyle == null)
                     _eventButtonStyle = new GUIStyle
                     {
-                        normal = { background = GetSkinTexture("EventButton"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.grey },
+                        normal = { background = GetSkinTexture("CommandBar"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.grey },
                         active = { background = CommandBarClosedStyle.normal.background },
-                        fixedHeight = 22,
                         stretchHeight = true,
-
-                        padding = new RectOffset(0, 0, 5, 5)
+                        
+                        fixedHeight = 55,
+                        border = new RectOffset(3,3,3,3),
+                        
+                        padding = new RectOffset(25, 0, 5, 5)
                     };
 
                 return _eventButtonStyle;
             }
         }
+        public static GUIStyle EventButtonStyleSmall
+        {
+            get
+            {
+                if (_eventButtonStyle == null)
+                    _eventButtonStyle = new GUIStyle
+                    {
+                        normal = { background = GetSkinTexture("CommandBar"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.grey },
+                        active = { background = CommandBarClosedStyle.normal.background },
+                        stretchHeight = true,
 
+                        fixedHeight = 25,
+                        border = new RectOffset(3, 3, 3, 3),
+
+                        padding = new RectOffset(25, 0, 5, 5)
+                    };
+
+                return _eventButtonStyle;
+            }
+        }
         public static Texture2D EventInActiveTexture
         {
             get
@@ -728,9 +754,9 @@ namespace Invert.Common
                 if (_subLabelStyle == null)
                     _subLabelStyle = new GUIStyle
                     {
-                        normal = new GUIStyleState() { textColor = new Color(0.9f, 0.9f, 0.9f) },
-                        fontStyle = FontStyle.Bold,
-                        fontSize = 10,
+                        normal = new GUIStyleState() { textColor = new Color(0.6f, 0.6f, 0.6f) },
+                        wordWrap = true,
+                        fontSize = 9,
                         alignment = TextAnchor.MiddleCenter
                     };
 
@@ -745,9 +771,15 @@ namespace Invert.Common
                 if (_toolbarStyle == null)
                     _toolbarStyle = new GUIStyle
                     {
-                        normal = { background = GetSkinTexture("Toolbar"), textColor = Color.white },
-                        fixedHeight = 25,
-                        padding = new RectOffset(0, 0, 5, 5)
+
+                        normal = { background = GetSkinTexture("CommandExpanded"), textColor = new Color(0.7f, 0.7f, 0.7f) },
+                        active = { background = CommandBarClosedStyle.normal.background },
+                        fixedHeight = 28,
+                        border = new RectOffset(3, 3, 3, 3),
+                        
+                        stretchHeight = true,
+
+                        //padding = new RectOffset(5, 5, 5, 0)
                     };
 
                 return _toolbarStyle;

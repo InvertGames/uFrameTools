@@ -40,7 +40,7 @@ namespace Invert.uFrame.Editor
 
         private static IToolbarCommand[] _toolbarCommands;
         private static IProjectRepository _repository;
-        
+
         private static Dictionary<Type, List<Type>> _allowedFilterNodes;
         private static Dictionary<Type, List<Type>> _allowedFilterItems;
         private static ProjectRepository[] _projects;
@@ -214,7 +214,7 @@ namespace Invert.uFrame.Editor
             return null;
         }
 
-        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData)
+        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, IProjectRepository diagramData)
         {
             // Grab all the code generators
             var diagramItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
@@ -224,69 +224,84 @@ namespace Invert.uFrame.Editor
                 DesignerGeneratorFactory generator = diagramItemGenerator;
                 // If its a generator for the entire diagram
                 var project = diagramData as IProjectRepository;
-                if (typeof (GraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
+                if (typeof(GraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
                 {
-                    var items = project.Diagrams;
-                    foreach (var item in items)
+                    var diagrams = project.Diagrams;
+                    foreach (var diagram in diagrams)
                     {
-                        if (generator.DiagramItemType.IsAssignableFrom(item.GetType()))
+                        if (generator.DiagramItemType.IsAssignableFrom(diagram.GetType()))
                         {
-                            var codeGenerators = generator.GetGenerators(settings, pathStrategy, diagramData, item);
+                            var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, diagramData, diagram);
                             foreach (var codeGenerator in codeGenerators)
                             {
+                                codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                                 codeGenerator.Settings = settings;
                                 codeGenerator.ObjectData = diagramData;
                                 codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                                 yield return codeGenerator;
-                            }    
+                            }
                         }
                     }
                 }
                 else if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
                 {
-                    var codeGenerators = generator.GetGenerators(settings, pathStrategy, diagramData, diagramData);
-                    foreach (var codeGenerator in codeGenerators)
+                    foreach (var diagram in diagramData.Diagrams)
                     {
-                        codeGenerator.Settings = settings;
-                        codeGenerator.ObjectData = diagramData;
-                        codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
-                        yield return codeGenerator;
-                    }
-                } 
-                // If its a generator for a specific node type
-                else
-                {
-                    var items = diagramData.NodeItems.Where(p => p.GetType() == generator.DiagramItemType);
-
-                    foreach (var item in items)
-                    {
-                        var codeGenerators = generator.GetGenerators(settings, pathStrategy, diagramData, item);
+                        var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, diagramData, diagram);
                         foreach (var codeGenerator in codeGenerators)
                         {
+                            codeGenerator.AssetPath =  diagram.CodePathStrategy.AssetPath;
                             codeGenerator.Settings = settings;
-                            codeGenerator.ObjectData = item;
+                            codeGenerator.ObjectData = diagramData;
                             codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                             yield return codeGenerator;
                         }
+
                     }
+
+
+                }
+                // If its a generator for a specific node type
+                else
+                {
+                    foreach (var diagram in diagramData.Diagrams)
+                    {
+                        var items = diagram.NodeItems.Where(p => p.GetType() == generator.DiagramItemType);
+
+                        foreach (var item in items)
+                        {
+                            var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, diagramData, item);
+                            foreach (var codeGenerator in codeGenerators)
+                            {
+                                codeGenerator.AssetPath =diagram.CodePathStrategy.AssetPath;
+                                codeGenerator.Settings = settings;
+                                codeGenerator.ObjectData = item;
+                                codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
+                                yield return codeGenerator;
+                            }
+                        }
+                    }
+
                 }
             }
         }
 
-        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings,ICodePathStrategy strategy = null)
+        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings)
         {
-            return GetAllFileGenerators(settings, CurrentProject, strategy);
+            return GetAllFileGenerators(settings, CurrentProject);
         }
 
-        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings,INodeRepository diagramData, ICodePathStrategy strategy = null)
+        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings, IProjectRepository project)
         {
-            var codeGenerators = GetAllCodeGenerators(settings,strategy ?? diagramData.Settings.CodePathStrategy, diagramData).ToArray();
-            var groups = codeGenerators.GroupBy(p => p.Filename);
+            var codeGenerators = GetAllCodeGenerators(settings, project).ToArray();
+            var groups = codeGenerators.GroupBy(p => p.FullPathName);
             foreach (var @group in groups)
             {
+                Debug.Log(@group.Key);
                 var generator = new CodeFileGenerator(settings.NamespaceProvider.RootNamespace)
                 {
-                    Filename = @group.Key,
+                    AssetPath = @group.Key.Replace("\\","/"),
+                    SystemPath = Path.Combine(Application.dataPath, @group.Key.Substring(7)).Replace("\\", "/"),
                     Generators = @group.ToArray()
                 };
                 yield return generator;
@@ -306,7 +321,7 @@ namespace Invert.uFrame.Editor
                     bindingGenerator.Item = viewModelItem;
                     bindingGenerator.Element = data;
                     bindingGenerator.GenerateDefaultImplementation = generateDefaultBindings;
-                    
+
                     if (bindingGenerator.IsApplicable)
                         yield return bindingGenerator;
                 }
@@ -407,8 +422,29 @@ namespace Invert.uFrame.Editor
         private static void InitializeContainer(uFrameContainer container)
         {
 #if DEBUG
-            container.RegisterInstance<IToolbarCommand>(new PrintPlugins(),"Print Plugins");
-            container.RegisterInstance<IToolbarCommand>(new ForceUpgradeDiagram(),"Force Upgrade");
+            container.RegisterInstance<IToolbarCommand>(new PrintPlugins(), "Print Plugins");
+            container.RegisterInstance<IToolbarCommand>(new ForceUpgradeDiagram(), "Force Upgrade");
+            container.RegisterInstance<IToolbarCommand>(new DebugCommand("Identifier", d =>
+            {
+                Debug.Log(d.SelectedNode.GraphItemObject.Identifier);
+            }), "Identifer");
+
+            container.RegisterInstance<IToolbarCommand>(new DebugCommand("Print Objects", d =>
+            {
+                foreach (var item in d.DiagramData.NodeItems)
+                {
+                    Debug.Log(item.Name + ": " + item.Identifier);
+                }
+            }), "Print Objects");
+            container.RegisterInstance<IToolbarCommand>(new DebugCommand("Print Generators", d =>
+            {
+                var generators =GetAllFileGenerators(CurrentProject.GeneratorSettings,CurrentProject);
+
+                foreach (var item in generators)
+                {
+                    Debug.Log(item.SystemPath);
+                }
+            }), "Print Objects");
 #endif
 
             container.Register<NodeItemHeader, NodeItemHeader>();
@@ -439,7 +475,6 @@ namespace Invert.uFrame.Editor
             // Toolbar commands
             container.RegisterInstance<IToolbarCommand>(new PopToFilterCommand(), "PopToFilterCommand");
             container.RegisterInstance<IToolbarCommand>(new SaveCommand(), "SaveCommand");
-            container.RegisterInstance<IToolbarCommand>(new AutoLayoutCommand(), "AutoLayoutCommand");
             container.RegisterInstance<IToolbarCommand>(new AddNewCommand(), "AddNewCommand");
             container.RegisterInstance<IToolbarCommand>(new DiagramSettingsCommand() { Title = "Settings" }, "SettingsCommand");
 
@@ -454,6 +489,8 @@ namespace Invert.uFrame.Editor
             // For no selection diagram context menu
             container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddNewFilterItemCommand");
             container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
+            container.RegisterInstance<IDiagramNodeCommand>(new PushToCommand(), "Push To Command");
+            container.RegisterInstance<IDiagramNodeCommand>(new PullFromCommand(), "Pull From Command");
 
             // For node context menu
             container.RegisterInstance<IDiagramNodeCommand>(new OpenCommand(), "OpenCode");
@@ -463,11 +500,11 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IDiagramNodeCommand>(new RemoveLinkCommand(), "RemoveLink");
             container.RegisterInstance<IDiagramNodeCommand>(new SelectViewBaseElement(), "SelectView");
             container.RegisterInstance<IDiagramNodeCommand>(new MarkIsTemplateCommand(), "MarkAsTemplate");
-            
+
             // For node item context menu
             container.RegisterInstance<IDiagramNodeItemCommand>(new MarkIsYieldCommand(), "MarkIsYield");
             container.RegisterInstance<IDiagramNodeItemCommand>(new DeleteItemCommand(), "Delete");
-            
+
 
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveUpCommand(), "MoveItemUp");
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveDownCommand(), "MoveItemDown");
@@ -478,7 +515,10 @@ namespace Invert.uFrame.Editor
             RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
             RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
 
-            container.Register<GraphData,ElementsGraph>("Element Graph");
+            container.Register<GraphData, ElementsGraph>("Element Graph");
+            container.Register<GraphData, ExternalSubsystemGraph>("External Subsystem Graph");
+            container.Register<GraphData, ExternalElementGraph>("External Element Graph");
+            container.Register<GraphData, ExternalStateMachineGraph>("External State Machine Graph");
 
             RegisterGraphItem<ViewModelPropertyData, TypedItemViewModel, ElementItemDrawer>();
             RegisterGraphItem<SceneManagerData, SceneManagerViewModel, SceneManagerDrawer>();
@@ -492,7 +532,11 @@ namespace Invert.uFrame.Editor
             RegisterGraphItem<ViewModelCommandData, ElementCommandItemViewModel, ElementItemDrawer>();
             RegisterGraphItem<ViewModelCollectionData, ElementCollectionItemViewModel, ElementItemDrawer>();
             RegisterGraphItem<ViewPropertyData, ElementViewPropertyItemViewModel, ItemDrawer>();
+            RegisterGraphItem<ComputedPropertyData, ComputedPropertyNodeViewModel, ComputedPropertyDrawer>();
+            RegisterFilterNode<ElementData, ComputedPropertyData>();
 
+            container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputsConnectionStrategy(),
+                "ComputedPropertyInputsConnectionStrategy");
 
             RegisterGraphItem<EnumItem, EnumItemViewModel, EnumItemDrawer>();
             RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
@@ -503,10 +547,12 @@ namespace Invert.uFrame.Editor
             RegisterGraphItem<StateMachineNodeData, StateMachineNodeViewModel, StateMachineNodeDrawer>();
             RegisterGraphItem<StateMachineStateData, StateMachineStateNodeViewModel, StateMachineStateNodeDrawer>();
             RegisterGraphItem<StateMachineTransition, StateMachineTransitionViewModel, ItemDrawer>();
+            RegisterGraphItem<StateTransitionData, StateTransitionViewModel, ItemDrawer>();
             RegisterGraphItem<StateMachineActionData, StateActionNodeViewModel, StateActionNodeDrawer>();
 
             RegisterFilterNode<StateMachineNodeData, StateMachineStateData>();
             RegisterFilterNode<ElementData, StateMachineNodeData>();
+            RegisterFilterNode<SubSystemData, StateMachineNodeData>();
 
             // Filters
             RegisterFilterNode<SceneFlowFilter, SceneManagerData>();
@@ -565,13 +611,13 @@ namespace Invert.uFrame.Editor
             ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
             KeyBindings = Container.ResolveAll<IKeyBinding>().ToArray();
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
-           // uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
-            
+            // uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
+
             Settings = container.Resolve<UFrameSettings>();
 
 
             var filterTypes = Container.RelationshipMappings.Where(
-                p => typeof (IDiagramFilter).IsAssignableFrom(p.From) && p.To == typeof (IDiagramNode));
+                p => typeof(IDiagramFilter).IsAssignableFrom(p.From) && p.To == typeof(IDiagramNode));
             var filterTypeItems = Container.RelationshipMappings.Where(
                 p => typeof(IDiagramFilter).IsAssignableFrom(p.From) && p.To == typeof(IDiagramNodeItem));
 
@@ -579,7 +625,7 @@ namespace Invert.uFrame.Editor
             {
                 if (!AllowedFilterNodes.ContainsKey(filterMapping.From))
                 {
-                    AllowedFilterNodes.Add(filterMapping.From,new List<Type>());
+                    AllowedFilterNodes.Add(filterMapping.From, new List<Type>());
                 }
                 AllowedFilterNodes[filterMapping.From].Add(filterMapping.Concrete);
             }
@@ -609,7 +655,7 @@ namespace Invert.uFrame.Editor
 
         public static void RegisterDrawer<TViewModel, TDrawer>()
         {
-            Container.RegisterRelation<TViewModel,IDrawer,TDrawer>();
+            Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
         }
         public static void RegisterGraphItem<TModel, TViewModel, TDrawer>()
         {
@@ -619,7 +665,7 @@ namespace Invert.uFrame.Editor
 
         public static void RegisterFilterNode<TFilterData, TAllowedItem>()
         {
-            if (!AllowedFilterNodes.ContainsKey(typeof (TFilterData)))
+            if (!AllowedFilterNodes.ContainsKey(typeof(TFilterData)))
             {
                 AllowedFilterNodes.Add(typeof(TFilterData), new List<Type>());
             }

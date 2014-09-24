@@ -419,24 +419,6 @@ public abstract class ViewClassGenerator : CodeGenerator
         return executeMethod;
     }
 
-    protected void GenerateBindingMembers(CodeTypeDeclaration decl, ElementData data, bool isOverride = false)
-    {
-        var bindingGenerators = uFrameEditor.GetBindingGeneratorsFor(data, isOverride: isOverride, generateDefaultBindings: false).ToArray();
-        foreach (var bindingGenerator in bindingGenerators)
-        {
-            bindingGenerator.CreateMembers(decl.Members);
-        }
-        if (!data.IsDerived)
-        {
-            var bindMethod = new CodeMemberMethod
-            {
-                Name = "Bind",
-                Attributes = MemberAttributes.Public | MemberAttributes.Override
-            };
-            decl.Members.Add(bindMethod);
-            //bindMethod.Statements.Add(new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(), "PreBind"));
-        }
-    }
 
     protected CodeMemberMethod GenerateBindMethod(CodeTypeDeclaration decl, ViewData data)
     {
@@ -493,14 +475,18 @@ public abstract class ViewClassGenerator : CodeGenerator
 
         }
 
-        var bindingGenerators = uFrameEditor.GetBindingGeneratorsFor(data.ViewForElement, isOverride: false, generateDefaultBindings: DiagramData.Settings.GenerateDefaultBindings, includeBaseItems: data.BaseView == null).ToArray();
+        var bindingGenerators = uFrameEditor.GetBindingGeneratorsFor(data.ViewForElement, isOverride: false, generateDefaultBindings:true, includeBaseItems: data.BaseView == null).ToArray();
 
+        //foreach (var binding in data.Bindings)
+        //{
+            
+            
+
+        //}
         foreach (var bindingGenerator in bindingGenerators)
         {
-            if (data.Bindings.All(p => p.Name != bindingGenerator.MethodName) &&
-                data.NewBindings.All(p => p.Name != bindingGenerator.MethodName)) continue;
-
             
+            if (data.Bindings.All(p => p.Name != bindingGenerator.MethodName && p.GeneratorType != bindingGenerator.GetType().Name)) continue;
 
             CodeConditionStatement bindingCondition = null;
             if (this.BindingConditionStatements.ContainsKey(bindingGenerator.BindingConditionFieldName))

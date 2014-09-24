@@ -13,11 +13,10 @@ public class StateMachineStateClassGenerator : CodeGenerator
     public override void Initialize(CodeFileGenerator fileGenerator)
     {
         base.Initialize(fileGenerator);
-        Decleration = new CodeTypeDeclaration(Data.Name + "State");
+        Decleration = new CodeTypeDeclaration(Data.Name);
         if (IsDesignerFile)
         {
             Decleration.BaseTypes.Add(StateType);
-            Decleration.Name += "Base";
             var composeMethod = new CodeMemberMethod()
             {
                 Name = "Compose",
@@ -27,7 +26,7 @@ public class StateMachineStateClassGenerator : CodeGenerator
             composeMethod.Parameters.Add(new CodeParameterDeclarationExpression("List<StateTransition>", "transitions"));
             composeMethod.Statements.Add(new CodeSnippetExpression("base.Compose(transitions)"));
 
-            Decleration.Members.Add(composeMethod);
+            //Decleration.Members.Add(composeMethod);
             foreach (var transition in Data.Transitions)
             {
                 var transitionTo = transition.TransitionTo;
@@ -42,6 +41,7 @@ public class StateMachineStateClassGenerator : CodeGenerator
                 var property = field.EncapsulateField(transition.Name);
                 Decleration.Members.Add(field);
                 Decleration.Members.Add(property);
+
                 composeMethod.Statements.Add(new CodeSnippetExpression(string.Format("transitions.Add(this.{0});", transition.Name)));
                 var transitionMethod = new CodeMemberMethod()
                 {
@@ -75,14 +75,7 @@ public class StateMachineStateClassGenerator : CodeGenerator
             nameProperty.GetStatements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(Data.Name)));
             Decleration.Members.Add(nameProperty);
         }
-        else
-        {
-            Decleration.BaseTypes.Add(Decleration.Name + "Base");
-
-
-        }
-
-
+  
         //var updateMethod = new CodeMemberMethod() { Name = "Update", Attributes = MemberAttributes.Public | MemberAttributes.Override };
         //updateMethod.Statements.Add(new CodeSnippetExpression("base.Update()"));
         //Decleration.Members.Add(updateMethod);

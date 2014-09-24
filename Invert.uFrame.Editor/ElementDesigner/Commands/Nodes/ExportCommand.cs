@@ -11,7 +11,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             var exportedDiagram = node.DiagramViewModel.CurrentRepository.CreateNewDiagram(node.ExportGraphType, nodeData as IDiagramFilter);
             var repository = diagramViewModel.CurrentRepository;
 
-            diagramViewModel.Data.RemoveNode(nodeData);
+            diagramViewModel.DiagramData.RemoveNode(nodeData);
 
 
         }

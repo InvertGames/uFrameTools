@@ -41,12 +41,11 @@ public class ViewGenerator : ViewClassGenerator
         }
         else
         {
-            var bindingGenerators = uFrameEditor.GetBindingGeneratorsFor(View.ViewForElement, isOverride: true, generateDefaultBindings: DiagramData.Settings.GenerateDefaultBindings).ToArray();
+            var bindingGenerators = uFrameEditor.GetBindingGeneratorsFor(View.ViewForElement, isOverride: true, generateDefaultBindings: true).ToArray();
 
             foreach (var bindingGenerator in bindingGenerators)
             {
-                if (View.ReflectionBindingMethods.All(p => p.Name != bindingGenerator.MethodName) &&
-                    View.NewBindings.All(p => p.Name != bindingGenerator.MethodName)) continue;
+                if (View.Bindings.All(p => p.Name != bindingGenerator.MethodName && p.GeneratorType != bindingGenerator.GetType().Name)) continue;
 
                 //bindingGenerator.IsOverride = true;
 
@@ -197,13 +196,12 @@ public class ViewViewBaseGenerator : ViewClassGenerator
     private void AddBindingMembers()
     {
         var bindingGenerators =
-            uFrameEditor.GetBindingGeneratorsFor(View.ViewForElement, isOverride: false, generateDefaultBindings: DiagramData.Settings.GenerateDefaultBindings,includeBaseItems: View.BaseView == null)
+            uFrameEditor.GetBindingGeneratorsFor(View.ViewForElement, isOverride: false, generateDefaultBindings:true,includeBaseItems: View.BaseView == null)
                 .ToArray();
 
         foreach (var bindingGenerator in bindingGenerators)
         {
-            if (View.ReflectionBindingMethods.All(p => p.Name != bindingGenerator.MethodName) &&
-                View.NewBindings.All(p => p.Name != bindingGenerator.MethodName)) continue;
+            if (View.Bindings.All(p => p.Name != bindingGenerator.MethodName && p.GeneratorType != bindingGenerator.GetType().Name)) continue;
 
             bindingGenerator.CreateMembers(Decleration.Members);
         }

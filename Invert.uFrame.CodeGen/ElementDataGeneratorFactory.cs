@@ -26,7 +26,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
         {
             ElementData = item,
             DiagramData = diagramData,
-            Filename = codePathStrategy.GetControllersFileName(diagramData.Name),
+            Filename = codePathStrategy.GetDesignerFilePath("Controllers"),
             IsDesignerFile = true
         };
     }
@@ -50,7 +50,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
             ElementData = item,
             IsDesignerFile = true,
             DiagramData = diagramData,
-            Filename = codePathStrategy.GetViewModelsFileName(diagramData.Name)
+            Filename = codePathStrategy.GetDesignerFilePath(string.Empty)
         };
     }
 
@@ -74,7 +74,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
             DiagramData = diagramData,
             IsDesignerFile = true,
 
-            Filename = codePathStrategy.GetViewsFileName(diagramData.Name)
+            Filename = codePathStrategy.GetDesignerFilePath("Views")
         };
     }
 }

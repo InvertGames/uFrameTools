@@ -30,7 +30,7 @@ public class StateMachineNodeDrawer : DiagramNodeDrawer<StateMachineNodeViewMode
                 if (NodeViewModel.IsLocal)
                     _transitionsHeader.AddCommand = new SimpleEditorCommand<StateMachineNodeViewModel>((node) =>
                     {
-                        
+                        node.AddTransition();
                     });
             }
             return _transitionsHeader;
@@ -47,7 +47,7 @@ public class StateMachineNodeDrawer : DiagramNodeDrawer<StateMachineNodeViewMode
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
         base.GetContentDrawers(drawers);
-        if (!NodeViewModel.IsCurrentFilter)
+        
         drawers.Insert(1, TransitionsHeader);
         
     }

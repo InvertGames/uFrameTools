@@ -197,7 +197,7 @@ public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
         if (data != null)
         {
             data.Commands.Remove(this);
-            foreach (var sceneManagerData in data.Data.GetSceneManagers())
+            foreach (var sceneManagerData in data.Project.GetSceneManagers())
                 sceneManagerData.Transitions.RemoveAll(p => p.CommandIdentifier == this.Identifier);
             data.Dirty = true;
         }
@@ -206,7 +206,7 @@ public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
     public override void Rename(IDiagramNode data, string name)
     {
         base.Rename(data, name);
-        foreach (var sceneManagerData in data.Data.GetSceneManagers())
+        foreach (var sceneManagerData in data.Project.GetSceneManagers())
         {
             foreach (var transition in sceneManagerData.Transitions.ToArray())
             {

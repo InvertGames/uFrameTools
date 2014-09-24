@@ -34,6 +34,8 @@ public class DiagramFilter : IDiagramFilter,IJsonObject
         get { return false; }
     }
 
+    public bool IsExplorerCollapsed { get; set; }
+
     public FilterLocations Locations
     {
         get { return _locations; }

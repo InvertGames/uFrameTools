@@ -7,7 +7,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
 
         public override void Perform(DiagramViewModel node)
         {
-            node.Data.PopToFilter(SelectedOption.Name);
+            node.DiagramData.PopToFilter(SelectedOption.Name);
         }
 
         public IEnumerable<UFContextMenuItem> GetOptions(object arg)
@@ -20,15 +20,15 @@ namespace Invert.uFrame.Editor.ElementDesigner
             
             yield return new UFContextMenuItem()
             {
-                Name = item.Data.RootFilter.Name, 
-                Checked = item.Data.CurrentFilter == item.Data.RootFilter
+                Name = item.DiagramData.RootFilter.Name, 
+                Checked = item.DiagramData.CurrentFilter == item.DiagramData.RootFilter
             };
-            foreach (var filter in item.Data.GetFilterPath())
+            foreach (var filter in item.DiagramData.GetFilterPath())
             {
                 yield return new UFContextMenuItem()
                 {
                     Name = filter.Name,
-                    Checked = item.Data.CurrentFilter == filter
+                    Checked = item.DiagramData.CurrentFilter == filter
                 };
             }
         }

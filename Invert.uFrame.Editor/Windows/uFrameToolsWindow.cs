@@ -150,3 +150,71 @@
 //        }
 //    }
 //}
+
+
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Invert.uFrame.Editor;
+using UnityEditor;
+using UnityEngine;
+
+public class ElementExplorerWindow : SearchableScrollWindow
+{
+
+#if DEBUG
+    [MenuItem("[u]Frame/Element Explorer", false, 1)]
+    public static void Init()
+    {
+        // Get existing open window or if none, make a new one:
+        var window = (ElementExplorerWindow)GetWindow(typeof(ElementExplorerWindow));
+        window.title = "View Tools";
+
+        window.Show();
+    }
+#endif
+    protected override void ApplySearch()
+    {
+        
+    }
+
+    public override void OnGUIScrollView()
+    {
+        if (uFrameEditor.CurrentProject == null) return;
+        foreach (var diagram in uFrameEditor.CurrentProject.Diagrams)
+        {
+            DoFilter(diagram.RootFilter);
+        }
+    }
+
+    public void DoItems(IEnumerable<IDiagramNode> items)
+    {
+        foreach (var item in items)
+        {
+            if (uFrameEditor.IsFilter(item.GetType()))
+            {
+                DoFilter(item as IDiagramFilter);
+            }
+            else
+            {
+                DoItem(item);
+            }
+        }
+    }
+    private void DoItem(IDiagramNode item)
+    {
+        GUILayout.Button(item.Name,EditorStyles.label);
+    }
+
+    public void DoFilter(IDiagramFilter filter)
+    {
+        filter.IsExplorerCollapsed = EditorGUILayout.Foldout(filter.IsExplorerCollapsed, filter.Name);
+
+        if (filter.IsExplorerCollapsed)
+        {
+            EditorGUI.indentLevel ++;
+            DoItems(filter.GetContainingNodes(uFrameEditor.CurrentProject));
+            EditorGUI.indentLevel--;
+        }
+    }
+}

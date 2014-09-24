@@ -26,7 +26,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             if (node == null) return;
             var selected = node.SelectedNode;
 
-            var pathStrategy = node.Settings.CodePathStrategy;
+            var pathStrategy = node.DiagramData.CodePathStrategy;
 
             var generators = selected.CodeGenerators.Where(p => !p.IsDesignerFile).ToArray();
 

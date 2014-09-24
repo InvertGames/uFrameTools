@@ -12,7 +12,7 @@ public class ViewDataGeneratorFactory : DesignerGeneratorFactory<ViewData>
             IsDesignerFile = true,
             View = item,
             DiagramData = diagramData,
-            Filename = pathStrategy.GetViewsFileName(diagramData.Name),
+            Filename = pathStrategy.GetDesignerFilePath("Views"),
         };
         yield return CreateEditableGenerator(pathStrategy, diagramData, item);
         yield return CreateDesignerGenerator(pathStrategy, diagramData, item);
@@ -37,7 +37,7 @@ public class ViewDataGeneratorFactory : DesignerGeneratorFactory<ViewData>
             IsDesignerFile = true,
             DiagramData = diagramData,
             View = item,
-            Filename = pathStrategy.GetViewsFileName(diagramData.Name),
+            Filename = pathStrategy.GetDesignerFilePath("Views"),
         };
     }
 }

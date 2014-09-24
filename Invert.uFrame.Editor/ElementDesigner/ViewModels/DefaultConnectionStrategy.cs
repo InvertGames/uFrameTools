@@ -34,8 +34,10 @@ namespace Invert.uFrame.Editor.ViewModels
         public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
         {
             base.GetConnections(connections, info);
-            connections.AddRange(info.ConnectionsByData<TOutputData,TInputData>(ConnectionColor,IsConnected,Remove,Apply));
+            connections.AddRange(info.ConnectionsByData<TOutputData,TInputData>(ConnectionColor,IsConnected,Remove,Apply,IsStateLink));
         }
+
+ 
 
         protected abstract bool IsConnected(TOutputData outputData, TInputData inputData);
         
@@ -57,7 +59,10 @@ namespace Invert.uFrame.Editor.ViewModels
     }
     public abstract class DefaultConnectionStrategy : IConnectionStrategy
     {
-
+        public virtual bool IsStateLink
+        {
+            get { return false; }
+        }
         public virtual ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
         {
             return null;
@@ -81,6 +86,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
                     return new ConnectionViewModel()
                     {
+                        IsStateLink = this.IsStateLink,
                         ConnectorA = a,
                         ConnectorB = b,
                         Apply = apply

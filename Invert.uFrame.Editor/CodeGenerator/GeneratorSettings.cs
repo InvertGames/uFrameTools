@@ -6,8 +6,11 @@ namespace Invert.uFrame.Editor
     [Serializable]
     public class GeneratorSettings
     {
-        [SerializeField]
+        //[SerializeField]
         private bool _generateControllers = true;
+
+        [SerializeField]
+        private bool _generateComments = true;
 
         public bool GenerateControllers
         {
@@ -19,6 +22,12 @@ namespace Invert.uFrame.Editor
         {
             get { return _namespaceProvider; }
             set { _namespaceProvider = value; }
+        }
+
+        public bool GenerateComments
+        {
+            get { return _generateComments; }
+            set { _generateComments = value; }
         }
 
         [SerializeField]

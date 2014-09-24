@@ -1,5 +1,6 @@
 using System;
 using System.CodeDom;
+using System.IO;
 using System.Linq;
 using Invert.uFrame.Editor;
 
@@ -10,6 +11,14 @@ namespace Invert.uFrame.Editor
         private CodeNamespace _ns;
         private CodeCompileUnit _unit;
 
+        public string FullPathName
+        {
+            get { return Path.Combine(AssetPath, Filename).Replace("\\","/"); }
+        }
+        public string RelativeFullPathName
+        {
+            get { return Path.Combine(AssetPath, Filename).Replace("\\", "/").Substring(7); }
+        }
         public void TryAddNamespace(string ns)
         {
             foreach (CodeNamespaceImport n in _ns.Imports)
@@ -56,6 +65,7 @@ namespace Invert.uFrame.Editor
         public Type GeneratorFor { get; set; }
         public object ObjectData { get; set; }
         public GeneratorSettings Settings { get; set; }
+        public string AssetPath { get; set; }
 
         public void ProcessModifiers(CodeTypeDeclaration declaration)
         {
@@ -79,6 +89,8 @@ namespace Invert.uFrame.Code.Bindings
 {
     public interface IBindingGenerator
     {
+        string Title { get; }
+        string Description { get; }
         string MethodName { get; }
         ITypeDiagramItem Item { get; set; }
         bool IsApplicable { get; }

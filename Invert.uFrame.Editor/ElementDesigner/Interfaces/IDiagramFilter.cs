@@ -8,7 +8,8 @@ public interface IDiagramFilter
 {
     string Identifier { get; }
     bool ImportedOnly { get; }
-
+    bool IsExplorerCollapsed { get; set; }
+    
     FilterLocations Locations { get; set; }
     FilterCollapsedDictionary CollapsedValues { get; set; }
     string Name { get; set; }
@@ -23,6 +24,7 @@ public static class FilterExtensions
     {
         return repository.NodeItems.Where(node => node != filter && repository.PositionData.HasPosition(filter,node));
     }
+
     public static bool IsAllowed(this IDiagramFilter filter, object item, Type t)
     {
         if (filter == item) return true;

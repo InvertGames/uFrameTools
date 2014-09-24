@@ -95,7 +95,7 @@ public class SceneManagerData : DiagramNode
     {
         get
         {
-            return Data.GetSubSystems().FirstOrDefault(p => p.Identifier == SubSystemIdentifier);
+            return Project.GetSubSystems().FirstOrDefault(p => p.Identifier == SubSystemIdentifier);
         }
     }
 
@@ -146,7 +146,7 @@ public class SceneManagerData : DiagramNode
     public override void RemoveFromDiagram()
     {
         base.RemoveFromDiagram();
-        Data.RemoveNode(this);
+        Project.RemoveNode(this);
     }
 
 }

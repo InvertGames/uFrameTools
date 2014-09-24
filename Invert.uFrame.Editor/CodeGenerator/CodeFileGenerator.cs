@@ -30,7 +30,9 @@ namespace Invert.uFrame.Editor
             set;
         }
 
-        public string Filename { get; set; }
+        //public string Filename { get; set; }
+        public string SystemPath { get; set; }
+        public string AssetPath { get; set; }
 
         public virtual void AddImports()
         {

@@ -29,6 +29,16 @@ public class StateMachineClassGenerator : CodeGenerator
 
         if (IsDesignerFile)
         {
+
+            foreach (var item in Data.Transitions)
+            {
+                var field = new CodeMemberField("StateMachineTrigger", "_" + item.Name);
+                var property = field.EncapsulateField(item.Name,
+                    new CodeSnippetExpression(string.Format("new StateMachineTrigger(this, \"{0}\")", item.Name)));
+                Decleration.Members.Add(field);
+                Decleration.Members.Add(property);
+            }
+
             Decleration.BaseTypes.Add(StateMachineType);
             Decleration.Name += "Base";
 
@@ -59,11 +69,11 @@ public class StateMachineClassGenerator : CodeGenerator
             ComposeMethod.Statements.Add(new CodeSnippetExpression("base.Compose(states)"));
             Decleration.Members.Add(ComposeMethod);
 
-            foreach (var state in Data.GetContainingNodes(Repository).OfType<StateMachineStateData>())
+            foreach (var state in Data.States)
             {
-                var field = new CodeMemberField() { Name = "_" + state.Name, Type = new CodeTypeReference(state.Name + "State") };
+                var field = new CodeMemberField() { Name = "_" + state.Name, Type = new CodeTypeReference(state.Name) };
                 var property = field.EncapsulateField(state.Name,
-                    new CodeObjectCreateExpression(state.Name + "State"));
+                    new CodeObjectCreateExpression(state.Name));
                 ComposeMethod.Statements.Add(new CodeSnippetExpression(string.Format("this.{0}.StateMachine = this", state.Name)));
 
                 foreach (var transition in state.Transitions)
@@ -77,6 +87,11 @@ public class StateMachineClassGenerator : CodeGenerator
                     ComposeMethod.Statements.Add(
                         new CodeSnippetExpression(string.Format("{0}.{1} = new StateTransition(\"{1}\", {2},{3})", state.Name, transition.Name, state.Name, transitionTo.Name)));
 
+                }
+                foreach (var t in state.Transitions)
+                {
+                    if (t.Transition == null) continue;
+                    ComposeMethod.Statements.Add(new CodeSnippetExpression(string.Format("{0}.AddTrigger({1}, {0}.{1})", property.Name, t.Transition.Name)));
                 }
                 ComposeMethod.Statements.Add(new CodeSnippetExpression(string.Format("states.Add({0})", state.Name)));
                 Decleration.Members.Add(field);

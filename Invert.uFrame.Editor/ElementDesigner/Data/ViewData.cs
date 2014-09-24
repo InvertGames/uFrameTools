@@ -39,7 +39,7 @@ public class ViewData : DiagramNode, ISubSystemType
         {
 
             if (string.IsNullOrEmpty(BaseViewIdentifier)) return null;
-            return Data.GetViews().FirstOrDefault(p => p.Identifier == BaseViewIdentifier);
+            return Project.GetViews().FirstOrDefault(p => p.Identifier == BaseViewIdentifier);
         }
     }
 
@@ -91,7 +91,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public IEnumerable<ViewComponentData> Components
     {
-        get { return Data.GetViewComponents().Where(p => ComponentIdentifiers.Contains(p.Identifier)); }
+        get { return Project.GetViewComponents().Where(p => ComponentIdentifiers.Contains(p.Identifier)); }
     }
 
     public override IEnumerable<IDiagramNodeItem> ContainedItems
@@ -256,7 +256,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public IDiagramNode BaseNode
     {
-        get { return Data.NodeItems.FirstOrDefault(p => p.Identifier == BaseViewIdentifier); }
+        get { return Project.NodeItems.FirstOrDefault(p => p.Identifier == BaseViewIdentifier); }
     }
 
     public ElementData ViewForElement
@@ -266,7 +266,7 @@ public class ViewData : DiagramNode, ISubSystemType
             var bn = ForElementIdentifier;
             if (bn != null)
             {
-                var item = Data.NodeItems.OfType<ElementData>().FirstOrDefault(p => p.Identifier == bn);
+                var item = Project.NodeItems.OfType<ElementData>().FirstOrDefault(p => p.Identifier == bn);
                 if (item != null)
                     return item;
             }
@@ -348,8 +348,8 @@ public class ViewData : DiagramNode, ISubSystemType
     public override void RemoveFromDiagram()
     {
         base.RemoveFromDiagram();
-        Data.RemoveNode(this);
-        foreach (var source in Data.GetViews().Where(p => p.ForElementIdentifier == this.Identifier))
+        Project.RemoveNode(this);
+        foreach (var source in Project.GetViews().Where(p => p.ForElementIdentifier == this.Identifier))
         {
             source.ForElementIdentifier = null;
         }
@@ -405,6 +405,22 @@ public class ViewBindingData : DiagramNodeItem
     {
         get { return Name; }
     }
+    public string GeneratorType { get; set; }
 
     public IBindingGenerator Generator { get; set; }
+    public override void Serialize(JSONClass cls)
+    {
+        base.Serialize(cls);
+        if (GeneratorType != null)
+        cls.Add("GeneratorType",new JSONData(GeneratorType));
+    }
+
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    {
+        base.Deserialize(cls, repository);
+        if (cls["GeneratorType"] != null)
+        {
+            GeneratorType = cls["GeneratorType"].Value;
+        }
+    }
 }

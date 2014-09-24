@@ -45,6 +45,11 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return _isSelected; }
             set
             {
+                if (value == false)
+                foreach (var item in ContentItems)
+                {
+                    item.IsSelected = false;
+                }
                 SetProperty(ref _isSelected, value, IsSelectedProperty);
             }
         }

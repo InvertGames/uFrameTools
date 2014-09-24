@@ -21,8 +21,23 @@ public class ElementCodeGenerator : CodeGenerator
     {
         foreach (var computedProperty in data.ComputedProperties)
         {
+            var dependentsMethods = new CodeMemberMethod()
+            {
+                Attributes = MemberAttributes.Public,
+                Name = string.Format("Get{0}Dependents",computedProperty.Name),
+                ReturnType = new CodeTypeReference("IEnumerable<IObservableProperty>")
+            };
+
+            foreach (var dependent in computedProperty.DependantProperties)
+            {
+                dependentsMethods.Statements.Add(new CodeSnippetExpression(string.Format("yield return vm.{0}",dependent.FieldName)));
+                
+            }
+            dependentsMethods.Statements.Add(new CodeSnippetExpression("yield break"));
+
             var computeMethod = new CodeMemberMethod()
             {
+                Attributes = MemberAttributes.Public,
                 Name = computedProperty.NameAsComputeMethod,
                 ReturnType = new CodeTypeReference(computedProperty.RelatedTypeNameOrViewModel)
             };
@@ -30,6 +45,7 @@ public class ElementCodeGenerator : CodeGenerator
             if (Settings.GenerateControllers)
             {
                 computeMethod.Parameters.Add(new CodeParameterDeclarationExpression(data.NameAsViewModel, "vm"));
+                dependentsMethods.Parameters.Add(new CodeParameterDeclarationExpression(data.NameAsViewModel, "vm"));
             }
             
             if (IsDesignerFile)
@@ -45,6 +61,7 @@ public class ElementCodeGenerator : CodeGenerator
                 new CodeSnippetExpression(string.Format("return default({0})", computedProperty.RelatedTypeNameOrViewModel)));
 
             tDecleration.Members.Add(computeMethod);
+            tDecleration.Members.Add(dependentsMethods);
         }
     }
 

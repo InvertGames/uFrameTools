@@ -1,3 +1,4 @@
+using System.Linq;
 using Invert.uFrame.Editor.ElementDesigner;
 using UnityEngine;
 
@@ -88,11 +89,11 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public override void Select()
         {
-            NodeViewModel.Select();
-            foreach (var item in NodeViewModel.ContentItems)
-            {
+            var items = NodeViewModel.DiagramViewModel.SelectedNodeItems.ToArray();
+            foreach (var item in items)
                 item.IsSelected = false;
-            }
+            GUIUtility.keyboardControl = 0;
+            NodeViewModel.Select();
             IsSelected = true;
             IsEditing = true;
         }

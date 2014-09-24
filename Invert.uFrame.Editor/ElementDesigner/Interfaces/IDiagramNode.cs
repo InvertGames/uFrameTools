@@ -22,15 +22,6 @@ public interface IDiagramNode : IDiagramNodeItem
     /// Any child list items of the node
     /// </summary>
     IEnumerable<IDiagramNodeItem> Items { get; }
-    
-    /// <summary>
-    /// The current position of the node on the diagram
-    /// </summary>
-    Vector2 Location { get; set; }
-    ///// <summary>
-    ///// An assembly name representing this node if applicable
-    ///// </summary>
-    //string AssemblyQualifiedName { get; }
 
     /// <summary>
     /// Is this node dirty/modified and should its bounds be recalculated.
@@ -55,7 +46,7 @@ public interface IDiagramNode : IDiagramNodeItem
     /// <summary>
     /// The current element data displaying this node
     /// </summary>
-    INodeRepository Data { get; 
+    IProjectRepository Project { get; 
         //set; 
     }
 

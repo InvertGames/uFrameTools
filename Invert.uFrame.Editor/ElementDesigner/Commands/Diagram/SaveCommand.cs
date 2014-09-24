@@ -23,26 +23,24 @@ namespace Invert.uFrame.Editor.ElementDesigner
             ProcessRefactorings(diagram);
 
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
-
-            var fileGenerators = uFrameEditor.GetAllFileGenerators(uFrameEditor.CurrentProject.GeneratorSettings, uFrameEditor.CurrentProject).ToArray();
-            //Debug.Log(string.Format("{0} file generators", fileGenerators.Length));
-            //foreach (var codeFileGenerator in fileGenerators)
-            //{
-            //    UnityEngine.Debug.Log(codeFileGenerator.Filename);
-            //}
-        
+            var generatorSettings = uFrameEditor.CurrentProject.GeneratorSettings;
+            var fileGenerators = uFrameEditor.GetAllFileGenerators(generatorSettings, uFrameEditor.CurrentProject).ToArray();
+            Debug.Log(fileGenerators.Length);
             foreach (var codeFileGenerator in fileGenerators)
             {
-               
+            
+            
                 // Grab the information for the file
-                var fileInfo = new FileInfo(System.IO.Path.Combine(diagram.Data.Settings.CodePathStrategy.AssetPath, codeFileGenerator.Filename));
+                var fileInfo = new FileInfo(codeFileGenerator.SystemPath);
+                    Debug.Log(codeFileGenerator.SystemPath + ": " + fileInfo.Exists);
+                
                 // Make sure we are allowed to generate the file
                 if (!codeFileGenerator.CanGenerate(fileInfo))
                 {
-                    //Debug.Log("Can't generate " + fileInfo.FullName);
+                    Debug.Log("Can't generate " + fileInfo.FullName);
                     continue;
                 }
-              
+                 
                 // Get the path to the directory
                 var directory = System.IO.Path.GetDirectoryName(fileInfo.FullName);
                 // Create it if it doesn't exist
@@ -61,11 +59,12 @@ namespace Invert.uFrame.Editor.ElementDesigner
                 }
 
             }
-            foreach (var allDiagramItem in diagram.Data.NodeItems)
+            
+            foreach (var allDiagramItem in diagram.DiagramData.NodeItems)
             {
                 allDiagramItem.IsNewNode = false;
             }
-            RefactorApplied(diagram.Data);
+            RefactorApplied(diagram.DiagramData);
             AssetDatabase.Refresh();
             
             diagram.Save();
@@ -78,9 +77,10 @@ namespace Invert.uFrame.Editor.ElementDesigner
         /// </summary>
         public void ProcessRefactorings(DiagramViewModel diagram)
         {
-            var refactorer = new RefactorContext(diagram.Data.GetRefactorings());
+            var refactorer = new RefactorContext(diagram.DiagramData.GetRefactorings());
             
-            var files = uFrameEditor.GetAllFileGenerators(diagram.CurrentRepository.GeneratorSettings).Where(p=>!p.Filename.EndsWith(".designer.cs")).Select(p => System.IO.Path.Combine(diagram.Data.Settings.CodePathStrategy.AssetPath, p.Filename)).ToArray();
+            var files = uFrameEditor.GetAllFileGenerators(diagram.CurrentRepository.GeneratorSettings).Where(p=>!p.AssetPath.EndsWith(".designer.cs")).Select(p => p.SystemPath).ToArray();
+
 
             
             if (refactorer.Refactors.Count > 0)

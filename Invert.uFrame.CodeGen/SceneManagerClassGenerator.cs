@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
+using System.Text;
 using Invert.uFrame.Editor;
 using UnityEngine;
 
@@ -21,19 +21,6 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
         set;
     }
 
-    //public CodeTypeDeclaration AddTypeEnum(string name, IEnumerable<RegisteredInstanceData> instances)
-    //{
-    //    var enumDecleration = new CodeTypeDeclaration(name) { IsEnum = true };
-    //    //enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, name));
-    //    foreach (var item in instances)
-    //    {
-    //        enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, item.Name));
-    //    }
-    //    Namespace.Types.Add(enumDecleration);
-
-    //    return enumDecleration;
-    //}
-
     public virtual void AddSceneManager(SceneManagerData sceneManager)
     {
         // Grab the root items
@@ -44,48 +31,71 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
             return;
         }
 
-        var elements = subSystem.GetIncludedElements().ToArray();
-
-        var decl = new CodeTypeDeclaration(IsDesignerFile ? sceneManager.NameAsSceneManagerBase : sceneManager.NameAsSceneManager);
+        Declaration = new CodeTypeDeclaration(IsDesignerFile ? sceneManager.NameAsSceneManagerBase : sceneManager.NameAsSceneManager);
+        Declaration.Comments.AddRange(
+            UFrameGeneratorComments.SceneManagerDeclaration(sceneManager).ToArray());
         if (IsDesignerFile)
         {
-            decl.BaseTypes.Add(new CodeTypeReference(uFrameEditor.UFrameTypes.SceneManager));
-
-            //var singleInstanceElements = elements.Where(p => !p.IsMultiInstance).ToArray();
-
-            //foreach (var element in singleInstanceElements)
-            //{
-
-
-            //    //Container.RegisterInstance(AICheckersGameController.CreateAICheckersGame());
-            //    //progress("Loading CheckersGame", 100);
-            //}
+            Declaration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.UFrameTypes.SceneManager));
 
         }
         else
         {
-            decl.BaseTypes.Add(new CodeTypeReference(sceneManager.NameAsSceneManagerBase));
+            Declaration.BaseTypes.Add(new CodeTypeReference(sceneManager.NameAsSceneManagerBase));
 
-            var loadMethod = new CodeMemberMethod
+            LoadMethod = new CodeMemberMethod
             {
                 Name = "Load",
                 ReturnType = new CodeTypeReference(typeof(IEnumerator)),
                 Attributes = MemberAttributes.Override | MemberAttributes.Public
             };
-            loadMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.UFrameTypes.UpdateProgressDelegate, "progress"));
-            loadMethod.Statements.Add(new CodeCommentStatement("Use the controllers to create the game."));
-            loadMethod.Statements.Add(new CodeSnippetExpression("yield break"));
+            LoadMethod.Comments.AddRange(UFrameGeneratorComments.SceneManagerLoadMethod(sceneManager).ToArray());
+            LoadMethod.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.UFrameTypes.UpdateProgressDelegate, "progress"));
+            LoadMethod.Statements.Add(new CodeCommentStatement("Use the controllers to create the game."));
+            LoadMethod.Statements.Add(new CodeSnippetExpression("yield break"));
 
-            decl.Members.Add(loadMethod);
+            OnLoadedMethod = new CodeMemberMethod()
+            {
+                Name = "OnLoaded",
+                Attributes = MemberAttributes.Public | MemberAttributes.Override
+            };
+            OnLoadedMethod.Statements.Add(new CodeSnippetExpression("base.OnLoaded()"));
+            OnLoadedMethod.Comments.AddRange(UFrameGeneratorComments.OnLoadedMethod(sceneManager).ToArray());
+
+            OnLoadingMethod = new CodeMemberMethod()
+            {
+                Name = "OnLoading",
+                Attributes = MemberAttributes.Public | MemberAttributes.Override
+            };
+            OnLoadingMethod.Statements.Add(new CodeSnippetExpression("base.OnLoading()"));
+            OnLoadingMethod.Comments.AddRange(UFrameGeneratorComments.OnLoadingMethod(sceneManager).ToArray());
+
+
+            UnloadMethod = new CodeMemberMethod()
+            {
+                Name = "Unload",
+                Attributes = MemberAttributes.Public | MemberAttributes.Override
+            };
+            UnloadMethod.Statements.Add(new CodeSnippetExpression("base.Unload()"));
+            UnloadMethod.Comments.AddRange(UFrameGeneratorComments.OnUnloadMethod(sceneManager).ToArray());
+
+            Declaration.Members.Add(OnLoadingMethod);
+            Declaration.Members.Add(LoadMethod);
+            Declaration.Members.Add(OnLoadedMethod);
+            Declaration.Members.Add(UnloadMethod);
+
         }
 
-        var setupMethod = new CodeMemberMethod()
+        SetupMethod = new CodeMemberMethod()
         {
             Name = "Setup"
         };
-        setupMethod.Attributes = MemberAttributes.Override | MemberAttributes.Public;
-        setupMethod.Statements.Add(new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(), "Setup"));
-        decl.Members.Add(setupMethod);
+        SetupMethod.Comments.AddRange(
+            UFrameGeneratorComments.SceneManagerSetupMethod(sceneManager).ToArray());
+
+        SetupMethod.Attributes = MemberAttributes.Override | MemberAttributes.Public;
+        SetupMethod.Statements.Add(new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(), "Setup"));
+        Declaration.Members.Add(SetupMethod);
         if (IsDesignerFile)
         {
             foreach (var sceneManagerTransition in sceneManager.Transitions)
@@ -99,7 +109,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                     InitExpression = new CodeObjectCreateExpression(transitionItem.NameAsSettings)
                 };
 
-                decl.Members.Add(settingsField);
+                Declaration.Members.Add(settingsField);
 
                 var transitionMethod = new CodeMemberMethod()
                 {
@@ -118,10 +128,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                 switchGameAndLevelCall.Parameters.Add(new CodeFieldReferenceExpression(new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), settingsField.Name), "_Scenes"));
 
                 transitionMethod.Statements.Add(switchGameAndLevelCall);
-                decl.Members.Add(transitionMethod);
-                //transitionMethod.Statements.Add(new CodeSnippetExpression(
-                //    string.Format(
-                //        "GameManager.SwitchGameAndLevel<CheckersMenuManager>((checkersMenu) =>{checkersMenu._CheckersMenuSettings = _QuitTransition;},\"CheckersMenu\")")));
+                Declaration.Members.Add(transitionMethod);
             }
 
 
@@ -145,19 +152,19 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                             new CodeAttributeDeclaration(new CodeTypeReference("Inject"),
                                 new CodeAttributeArgument(new CodePrimitiveExpression(instance.Name))));
 
-                        decl.Members.Add(instanceField);
-                        decl.Members.Add(instanceProperty);
+                        Declaration.Members.Add(instanceField);
+                        Declaration.Members.Add(instanceProperty);
                     }   
                     instancesRegistered.Add(instanceGroup.Key);
                
 
-                    setupMethod.Statements.Add(
+                    SetupMethod.Statements.Add(
                         new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1},\"{1}\")",instance.RelatedTypeName, instanceGroup.Key, instance.Name)));
                 }
             }
-            
 
-            foreach (var element in Data.SubSystem.GetIncludedElements())
+
+            foreach (var element in Data.SubSystem.AllInstances.Select(p=>p.RelatedNode()).OfType<ElementData>())
             {
                 var controllerField = new CodeMemberField(element.NameAsController, "_" + element.NameAsController);
                 var controllerProperty = controllerField.EncapsulateField(element.NameAsController,
@@ -165,30 +172,44 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                         element.NameAsController)),null,true);
                 controllerProperty.CustomAttributes.Add(
                     new CodeAttributeDeclaration(new CodeTypeReference("Inject")));
-                decl.Members.Add(controllerField);
-                decl.Members.Add(controllerProperty);
+                Declaration.Members.Add(controllerField);
+                Declaration.Members.Add(controllerProperty);
 
-                setupMethod.Statements.Add(
+                SetupMethod.Statements.Add(
                     new CodeSnippetExpression(string.Format("Container.RegisterInstance({0},false)",
                         element.NameAsController)));
             }
 
-            setupMethod.Statements.Add(
+            SetupMethod.Statements.Add(
                 new CodeMethodInvokeExpression(
                     new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Container"),
                     "InjectAll"));
 
-            var settingsField2 = new CodeMemberField(sceneManager.NameAsSettings, sceneManager.NameAsSettingsField)
+            SettingsField = new CodeMemberField(sceneManager.NameAsSettings, sceneManager.NameAsSettingsField)
             {
                 Attributes = MemberAttributes.Public,
                 InitExpression = new CodeObjectCreateExpression(sceneManager.NameAsSettings)
             };
-            decl.Members.Add(settingsField2);
+            Declaration.Members.Add(SettingsField);
             AddSceneManagerSettings(sceneManager, rootElements);
         }
-        ProcessModifiers(decl);
-        Namespace.Types.Add(decl);
+        ProcessModifiers(Declaration);
+        Namespace.Types.Add(Declaration);
     }
+
+    public CodeMemberMethod UnloadMethod { get; set; }
+
+    public CodeMemberMethod OnLoadingMethod { get; set; }
+
+    public CodeMemberMethod OnLoadedMethod { get; set; }
+
+    public CodeMemberField SettingsField { get; set; }
+
+    public CodeMemberMethod LoadMethod { get; set; }
+
+    public CodeMemberMethod SetupMethod { get; set; }
+
+    public CodeTypeDeclaration Declaration { get; set; }
 
     public virtual void AddSceneManagerSettings(SceneManagerData sceneManagerData, List<ElementData> rootElements)
     {
@@ -223,8 +244,65 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
 
 }
 
-public class TypeEnumGenerator : CodeGenerator
+public static class UFrameGeneratorComments
 {
+    public static IEnumerable<CodeCommentStatement> SceneManagerDeclaration(SceneManagerData sceneManager)
+    {
+        return CodeComment("The responsibility of this class is to manage the scenes Initialization, Loading, Transitioning, and Unloading.");
+    }
 
+    public static IEnumerable<CodeCommentStatement> SceneManagerSetupMethod(SceneManagerData sceneManager)
+    {
+        return CodeComment("This method is the first method to be invoked when the scene first loads. Anything registered " +
+                               "here with 'Container' will effectively be injected on controllers, and instances defined on a subsystem." +
+                               "And example of this would be Container.RegisterInstance<IDataRepository>(new CodeRepository()). " +
+                               "Then any property with the 'Inject' attribute on any controller or view-model will automatically be set by uFrame. ");
+    }
 
+    public static IEnumerable<CodeCommentStatement> SceneManagerLoadMethod(SceneManagerData sceneManager)
+    {
+        return CodeComment("This method loads the scene instantiating any views or regular prefabs required by the scene.  " +
+                               "This method is invoked after Setup() and Initialize().  Note:" +
+                               " be sure to report progress to the delgate supplied in the first parameter.  It will update " +
+                               "the loading screen to display a nice status message.");
+    }
+
+    public static IEnumerable<CodeCommentStatement> OnLoadedMethod(SceneManagerData sceneManager)
+    {
+        return CodeComment("This method is invoked after uFrame has completed its scene boot and the game is ready to begin.  " +
+                               "Here would be a good place to use the generated Controller properties on this class to invoke some gameplay logic initialization");
+    }
+
+    public static IEnumerable<CodeCommentStatement> OnLoadingMethod(SceneManagerData sceneManager)
+    {
+        return CodeComment("This method is invoked exactly right before the Load method is invoked.");
+    }
+
+    public static IEnumerable<CodeCommentStatement> OnUnloadMethod(SceneManagerData sceneManager)
+    {
+        return CodeComment("This method is invoked when transitioning to another scene.  This could be used to destory a scene or effectively log a user off.");
+    }
+
+    public static IEnumerable<CodeCommentStatement> CodeComment(string comment)
+    {
+        if (!uFrameEditor.CurrentProject.GeneratorSettings.GenerateComments) yield break;
+        var sb = new StringBuilder();
+        yield return new CodeCommentStatement("<summary>");
+        var whitespace = 0;
+        foreach (var c in comment)
+        {
+            sb.Append(c);
+            if (Char.IsWhiteSpace(c))
+                whitespace++;
+            if (whitespace > 20)
+            {
+                yield return new CodeCommentStatement(sb.ToString());
+                sb = new StringBuilder();
+                whitespace = 0;
+            }
+        }
+        yield return new CodeCommentStatement(sb.ToString());
+        yield return new CodeCommentStatement("</summary>");
+
+    }
 }

@@ -1,9 +1,43 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor.ElementDesigner
 {
+    public class DebugCommand : ElementsDiagramToolbarCommand
+    {
+        public string _name;
+
+        public DebugCommand(string name, Action<DiagramViewModel> action)
+        {
+            _name = name;
+            Action = action;
+        }
+
+        public DebugCommand(Action<DiagramViewModel> action)
+        {
+            Action = action;
+        }
+
+        public override string Name
+        {
+            get { return _name; }
+        }
+
+        Action<DiagramViewModel> Action { get; set; }
+        public override void Perform(DiagramViewModel node)
+        {
+            if (Action != null)
+                Action(node);
+
+        }
+
+        public override ToolbarPosition Position
+        {
+            get { return ToolbarPosition.BottomRight; }
+        }
+    }
     public class PrintPlugins : ElementsDiagramToolbarCommand
     {
         public override string Name
@@ -27,7 +61,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
             //Debug.Log(uFrameEditor.uFrameTypes);
             Type T = typeof(GUIUtility);
             PropertyInfo systemCopyBufferProperty = T.GetProperty("systemCopyBuffer", BindingFlags.Static | BindingFlags.NonPublic);
-            systemCopyBufferProperty.SetValue(null, ElementsGraph.Serialize(node.Data).ToString(), null);
+            systemCopyBufferProperty.SetValue(null, ElementsGraph.Serialize(node.DiagramData as GraphData).ToString(), null);
             Debug.Log("Json copied to clipboard.");
         }
     }
@@ -40,6 +74,18 @@ namespace Invert.uFrame.Editor.ElementDesigner
 
         public override void Perform(DiagramViewModel node)
         {
+
+            var data = node.CurrentRepository.NodeItems.OfType<SubSystemData>();
+            foreach (var view in data)
+            {
+                
+                view.Instances.RemoveAll(p => true);
+            }
+            var views = node.CurrentRepository.NodeItems.OfType<ViewData>();
+            foreach (var view in views)
+            {
+                view.Bindings.RemoveAll(p => true);
+            }
             node.UpgradeProject();
         }
     }

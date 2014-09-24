@@ -10,9 +10,10 @@ namespace Invert.uFrame.Editor.Refactoring
             View = new RenameIdentifierRefactorer() { From = data.NameAsView };
             ViewBase = new RenameIdentifierRefactorer() { From = data.NameAsViewBase };
             ViewFileRenamer = new RenameFileRefactorer();
-            ViewFileRenamer.RootPath = data.Data.Settings.CodePathStrategy.AssetPath;
-            ViewFileRenamer.From =
-                data.Data.Settings.CodePathStrategy.GetEditableViewFilename(data);
+            var strategy = data.GetPathStrategy();
+            ViewFileRenamer.RootPath = strategy.AssetPath;
+            ViewFileRenamer.From = strategy.GetEditableViewFilename(data);
+
         }
         public override void Set(ISelectable data)
         {
@@ -20,10 +21,11 @@ namespace Invert.uFrame.Editor.Refactoring
         }
         public void Set(ViewData data)
         {
+            var strategy = data.GetPathStrategy();
             View.To = data.NameAsView;
             ViewBase.To = data.NameAsViewBase;
             ViewFileRenamer.To =
-                data.Data.Settings.CodePathStrategy.GetEditableViewFilename(data);
+                strategy.GetEditableViewFilename(data);
         }
         public override void PreProcess(RefactorContext refactorContext)
         {

@@ -9,7 +9,7 @@ public static class SubsystemExtensions
 {
     public static IEnumerable<SubSystemData> GetAllImportedSubSystems(this SubSystemData subsystem)
     {
-        return GetAllImportedSubSystems(subsystem, subsystem.Data);
+        return GetAllImportedSubSystems(subsystem, subsystem.Project);
     }
 
     public static IEnumerable<SubSystemData> GetAllImportedSubSystems(this SubSystemData subsystem,INodeRepository data)
@@ -33,11 +33,11 @@ public static class SubsystemExtensions
     }
     public static IEnumerable<string> GetAllImports(this SubSystemData subsystem)
     {
-        return subsystem.GetAllImportedSubSystems(subsystem.Data).SelectMany(p => p.Imports).Concat(subsystem.Imports);
+        return subsystem.GetAllImportedSubSystems(subsystem.Project).SelectMany(p => p.Imports).Concat(subsystem.Imports);
     }
     public static IEnumerable<IDiagramNodeItem> GetIncludedItems(this SubSystemData subsystem)
     {
-        foreach (var allDiagramItem in subsystem.Data.NodeItems.OfType<SubSystemData>())
+        foreach (var allDiagramItem in subsystem.Project.NodeItems.OfType<SubSystemData>())
         {
             if (subsystem.Imports.Contains(allDiagramItem.Identifier))
             {
@@ -51,8 +51,8 @@ public static class SubsystemExtensions
     public static IEnumerable<IDiagramNodeItem> GetSubItems(this SubSystemData subsystem)
     {
         var items =
-            subsystem.Data.NodeItems.OfType<ElementData>()
-                .Where(p => subsystem.Data.PositionData.HasPosition(subsystem,p))
+            subsystem.Project.NodeItems.OfType<ElementData>()
+                .Where(p => subsystem.Project.PositionData.HasPosition(subsystem,p))
                 .Cast<IDiagramNodeItem>();
 
         foreach (var item in items)
@@ -70,7 +70,7 @@ public static class SubsystemExtensions
         {
             list.Add(diagramSubItem);
         }
-        foreach (var allDiagramItem in subsystem.Data.NodeItems.OfType<SubSystemData>())
+        foreach (var allDiagramItem in subsystem.Project.NodeItems.OfType<SubSystemData>())
         {
             if (subsystem.Imports.Contains(allDiagramItem.Identifier))
             {
@@ -175,7 +175,7 @@ public class SubSystemData : DiagramNode
     public override void RemoveFromDiagram()
     {
         base.RemoveFromDiagram();
-        Data.RemoveNode(this);
+        Project.RemoveNode(this);
     }
 
 }

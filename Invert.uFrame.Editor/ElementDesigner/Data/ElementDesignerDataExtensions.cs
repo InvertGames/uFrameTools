@@ -288,7 +288,7 @@ public static class ElementDesignerDataExtensions
 
     public static IDiagramNode RelatedNode(this ITypeDiagramItem item)
     {
-        return item.Node.Data.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
+        return item.Node.Project.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
     }
 
     //public static IEnumerable<IDiagramFilter> GetFilters(this IElementDesignerData designerData, IDiagramFilter filter)

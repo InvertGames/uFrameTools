@@ -20,7 +20,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return Data.Settings;
+            return DiagramData.Settings;
         }
     }
     public IEnumerable<GraphItemViewModel> SelectedGraphItems
@@ -66,7 +66,7 @@ public class DiagramViewModel : ViewModel
         }
     }
 
-    public IElementDesignerData Data
+    public IElementDesignerData DiagramData
     {
         get
         {
@@ -78,7 +78,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return uFrameEditor.GetAllCodeGenerators(CurrentRepository.GeneratorSettings, Settings.CodePathStrategy, Data);
+            return uFrameEditor.GetAllCodeGenerators(CurrentRepository.GeneratorSettings, uFrameEditor.CurrentProject);
         }
     }
     protected override void DataObjectChanged()
@@ -133,18 +133,11 @@ public class DiagramViewModel : ViewModel
         if (diagram == null) throw new Exception("Diagram not found");
         CurrentRepository = currentRepository;
         DataObject = diagram;
-        Data.Settings.CodePathStrategy =
-             uFrameEditor.Container.Resolve<ICodePathStrategy>(Data.Settings.CodePathStrategyName ?? "Default");
+      
 
-        if (Data.Settings.CodePathStrategy == null)
-        {
-            Data.Settings.CodePathStrategy = uFrameEditor.Container.Resolve<ICodePathStrategy>("Default");
-        }
 
-        Data.Settings.CodePathStrategy.Data = Data;
-        Data.Settings.CodePathStrategy.AssetPath =
-            assetPath.Replace(string.Format("{0}{1}", Path.GetFileNameWithoutExtension(assetPath), fileExtension), "").Replace("/", Path.DirectorySeparatorChar.ToString());
-        Data.Prepare();
+     
+        DiagramData.Prepare();
 
     }
 
@@ -155,7 +148,7 @@ public class DiagramViewModel : ViewModel
         GraphItems.Clear();
         var connectors = new List<ConnectorViewModel>();
 
-        CurrentNodes = Data.CurrentFilter.FilterItems(CurrentRepository).ToArray();
+        CurrentNodes = DiagramData.CurrentFilter.FilterItems(CurrentRepository).ToArray();
 
         foreach (var item in CurrentNodes)
         {
@@ -205,7 +198,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return Data.RefactorCount;
+            return DiagramData.RefactorCount;
         }
     }
 
@@ -213,7 +206,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return Data.Name;
+            return DiagramData.Name;
         }
     }
 
@@ -221,9 +214,9 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            if (Data is ElementsGraph)
+            if (DiagramData is ElementsGraph)
             {
-                var dd = Data as ElementsGraph;
+                var dd = DiagramData as ElementsGraph;
                 if (dd.Errors)
                 {
                     return true;
@@ -237,7 +230,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            var jsonElementDesignerData = (Data) as ElementsGraph;
+            var jsonElementDesignerData = (DiagramData) as ElementsGraph;
             if (jsonElementDesignerData != null)
                 return jsonElementDesignerData.Error;
             return null;
@@ -248,7 +241,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return string.IsNullOrEmpty(Data.Version) || (Convert.ToDouble(Data.Version) < uFrameVersionProcessor.CURRENT_VERSION_NUMBER && uFrameVersionProcessor.REQUIRE_UPGRADE);
+            return string.IsNullOrEmpty(DiagramData.Version) || (Convert.ToDouble(DiagramData.Version) < uFrameVersionProcessor.CURRENT_VERSION_NUMBER && uFrameVersionProcessor.REQUIRE_UPGRADE);
         }
     }
 
@@ -257,32 +250,32 @@ public class DiagramViewModel : ViewModel
         if (SelectedNode == null) return;
         if (SelectedNode.IsFilter)
         {
-            if (SelectedNode.GraphItemObject == Data.CurrentFilter)
+            if (SelectedNode.GraphItemObject == DiagramData.CurrentFilter)
             {
-                Data.PopFilter(null);
-                Data.UpdateLinks();
+                DiagramData.PopFilter(null);
+                DiagramData.UpdateLinks();
             }
             else
             {
-                Data.PushFilter(SelectedNode.GraphItemObject as IDiagramFilter);
-                Data.UpdateLinks();
+                DiagramData.PushFilter(SelectedNode.GraphItemObject as IDiagramFilter);
+                DiagramData.UpdateLinks();
             }
         }
     }
 
     public void Save()
     {
-        CurrentRepository.SaveDiagram(Data);
+        CurrentRepository.SaveDiagram(DiagramData);
     }
 
     public void MarkDirty()
     {
-        CurrentRepository.MarkDirty(Data);
+        CurrentRepository.MarkDirty(DiagramData);
     }
 
     public void RecordUndo(string title)
     {
-        CurrentRepository.RecordUndo(Data, title);
+        CurrentRepository.RecordUndo(DiagramData, title);
     }
 
     public void DeselectAll()
@@ -317,7 +310,7 @@ public class DiagramViewModel : ViewModel
 
     public IEnumerable<IDiagramNode> GetImportableItems()
     {
-        return CurrentRepository.GetImportableItems(Data.CurrentFilter);
+        return CurrentRepository.GetImportableItems(DiagramData.CurrentFilter);
     }
 
     public void UpgradeProject()
@@ -331,7 +324,7 @@ public class DiagramViewModel : ViewModel
 
     public void Process15Uprade()
     {
-        var nodes = Data.NodeItems.ToArray();
+        var nodes = DiagramData.NodeItems.ToArray();
         foreach (var node in nodes.OfType<ElementData>())
         {
 
@@ -343,7 +336,7 @@ public class DiagramViewModel : ViewModel
 
             foreach (var item in node.ContainedItems.OfType<ITypeDiagramItem>())
             {
-                var uFrameType = Data.NodeItems.FirstOrDefault(p => p.Name == item.RelatedType);
+                var uFrameType = DiagramData.NodeItems.FirstOrDefault(p => p.Name == item.RelatedType);
                 if (uFrameType != null)
                     item.RelatedType = uFrameType.Identifier;
             }
@@ -368,18 +361,30 @@ public class DiagramViewModel : ViewModel
 
         foreach (var viewData in nodes.OfType<ViewData>())
         {
-
+            
+            
             var newElement = nodes.OfType<ElementData>().FirstOrDefault(p => p.AssemblyQualifiedName == viewData.ForAssemblyQualifiedName);
             if (newElement != null)
             {
                 viewData.ForElementIdentifier = newElement.Identifier;
             }
 
+            if (viewData.ViewForElement == null) continue;
+            var generators = uFrameEditor.GetBindingGeneratorsFor(viewData.ViewForElement, true, false, true, false).ToArray();
+
             // Upgrade bindings
             foreach (var item in viewData.ReflectionBindingMethods)
             {
+                var generator = generators.FirstOrDefault(p => p.MethodName == item.Name);
+                if (generator == null || generator.MethodName.EndsWith("Added") || generator.MethodName.EndsWith("Removed"))
+                {
+                    //Debug.Log("Generator not found for " + item.Name + " Method. You might need to re-add the binding.");
+                    continue;
+                }
+
                 viewData.Bindings.Add(new ViewBindingData()
                 {
+                    GeneratorType = generator.GetType().Name,
                     Name = item.Name,
                     Node = viewData
                 });
@@ -388,7 +393,7 @@ public class DiagramViewModel : ViewModel
 
 
 
-        Data.Version = uFrameVersionProcessor.CURRENT_VERSION_NUMBER.ToString();
+        DiagramData.Version = uFrameVersionProcessor.CURRENT_VERSION_NUMBER.ToString();
         AssetDatabase.SaveAssets();
     }
     public void AddNode(IDiagramNode newNodeData)

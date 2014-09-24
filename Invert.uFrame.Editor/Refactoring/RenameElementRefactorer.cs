@@ -21,12 +21,13 @@ namespace Invert.uFrame.Editor.Refactoring
             ViewModel = new RenameIdentifierRefactorer();
             Initialize = new RenameIdentifierRefactorer();
             Variable = new RenameIdentifierRefactorer();
-            ViewModelRenamer.RootPath = data.Data.Settings.CodePathStrategy.AssetPath;
-            ControllerRenamer.RootPath = data.Data.Settings.CodePathStrategy.AssetPath;
+            var strategy = data.GetPathStrategy();
+            ViewModelRenamer.RootPath = strategy.AssetPath;
+            ControllerRenamer.RootPath = strategy.AssetPath;
             ViewModelRenamer.From =
-                data.Data.Settings.CodePathStrategy.GetEditableViewModelFilename(data);
+                strategy.GetEditableViewModelFilename(data);
             ControllerRenamer.From =
-                data.Data.Settings.CodePathStrategy.GetEditableControllerFilename(data);
+                strategy.GetEditableControllerFilename(data);
             ViewBase.From = data.NameAsViewBase;
             ControllerBase.From = data.NameAsControllerBase;
             Controller.From = data.NameAsController;
@@ -40,11 +41,11 @@ namespace Invert.uFrame.Editor.Refactoring
         }
         public void Set(ElementData data)
         {
-
+            var strategy = data.GetPathStrategy();
             ViewModelRenamer.To =
-              data.Data.Settings.CodePathStrategy.GetEditableViewModelFilename(data);
+              strategy.GetEditableViewModelFilename(data);
             ControllerRenamer.To =
-                data.Data.Settings.CodePathStrategy.GetEditableControllerFilename(data);
+                strategy.GetEditableControllerFilename(data);
 
             ViewBase.To = data.NameAsViewBase;
             ControllerBase.To = data.NameAsControllerBase;

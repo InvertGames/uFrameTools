@@ -76,12 +76,7 @@ namespace Invert.uFrame.Editor.ViewModels
         }
         public override ConnectorViewModel InputConnector
         {
-            get
-            {
-                if (this.IsLocal)
-                    return base.InputConnector;
-                return null;
-            }
+            get { return base.InputConnector; }
         }
 
         protected DiagramNodeViewModel()

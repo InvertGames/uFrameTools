@@ -40,7 +40,7 @@ namespace Invert.uFrame.Editor.ViewModels
             return Outputs.Where(p => p.DataObject is TData);
         }
 
-        public IEnumerable<ConnectionViewModel> ConnectionsByData<TSource, TTarget>(Color color, Func<TSource, TTarget, bool> isConnected, Action<ConnectionViewModel> remove, Action<ConnectionViewModel> apply = null)
+        public IEnumerable<ConnectionViewModel> ConnectionsByData<TSource, TTarget>(Color color, Func<TSource, TTarget, bool> isConnected, Action<ConnectionViewModel> remove, Action<ConnectionViewModel> apply = null, bool isStateLink = false)
         {
             foreach (var output in OutputsWith<TSource>())
             {
@@ -50,6 +50,7 @@ namespace Invert.uFrame.Editor.ViewModels
                     {
                         yield return new ConnectionViewModel()
                         {
+                            IsStateLink = isStateLink,
                             Color = color,
                             ConnectorA = output,
                             ConnectorB = input,

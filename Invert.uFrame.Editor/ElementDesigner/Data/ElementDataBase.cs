@@ -39,7 +39,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         }
     }
 
-    public ElementData BaseElement { get { return Data.GetAllElements().FirstOrDefault(p => p.Identifier == this.BaseIdentifier); } }
+    public ElementData BaseElement { get { return Project.GetAllElements().FirstOrDefault(p => p.Identifier == this.BaseIdentifier); } }
 
     public abstract string BaseTypeName { get; }
 
@@ -69,7 +69,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
     {
         get
         {
-            var derived = Data.GetAllElements().Where(p => p.BaseIdentifier == Identifier);
+            var derived = Project.GetAllElements().Where(p => p.BaseIdentifier == Identifier);
             foreach (var derivedItem in derived)
             {
                 yield return derivedItem;
@@ -92,7 +92,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         get
         {
             return
-                Data.NodeItems.ToArray().OfType<ElementDataBase>()
+                Project.NodeItems.ToArray().OfType<ElementDataBase>()
                     .SelectMany(p => p.Collections)
                     .Any(p => p.RelatedType == Identifier) || AllBaseTypes.Any(p => p != this && p.IsMultiInstance);
         }
@@ -228,7 +228,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
 
     public IEnumerable<ComputedPropertyData> ComputedProperties
     {
-        get { return this.GetContainingNodes(Data).OfType<ComputedPropertyData>().Where(p=>p.DependantPropertyIdentifiers.Count > 0); }
+        get { return this.GetContainingNodes(Diagram).OfType<ComputedPropertyData>().Where(p=>p.DependantPropertyIdentifiers.Count > 0); }
     }
 
     public static string TypeAlias(string typeName)
@@ -257,7 +257,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
 
         var newText = Name;
 
-        if (Data.GetElements().Count(p => p.Name == newText || p.Name == OldName) > 1)
+        if (Project.GetElements().Count(p => p.Name == newText || p.Name == OldName) > 1)
         {
             return false;
         }

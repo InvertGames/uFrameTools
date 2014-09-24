@@ -9,7 +9,7 @@ public class StateMachineTransition : DiagramNodeItem
 
     public override void Remove(IDiagramNode diagramNode)
     {
-        var node = diagramNode as StateMachineStateData;
+        var node = diagramNode as StateMachineNodeData;
         if (node != null)
             node.Transitions.Remove(this);
     }
@@ -27,7 +27,7 @@ public class StateMachineTransition : DiagramNodeItem
         get
         {
             return
-                Node.Data.NodeItems.FirstOrDefault(p => p.Identifier == TransitionToIdentifier) as StateMachineStateData;
+                Node.Project.NodeItems.FirstOrDefault(p => p.Identifier == TransitionToIdentifier) as StateMachineStateData;
 
         }
     }

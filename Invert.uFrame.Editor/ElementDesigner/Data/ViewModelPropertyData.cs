@@ -95,7 +95,7 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
     {
         get
         {
-            var properties = Node.Data.GetElements().SelectMany(p => p.Properties).ToArray();
+            var properties = Node.Project.GetElements().SelectMany(p => p.Properties).ToArray();
             foreach (var property in DependantPropertyIdentifiers)
             {
                 var result = properties.FirstOrDefault(p => p.Identifier == property);
@@ -220,7 +220,7 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
         data.Properties.Remove(this);
 
         // Make sure we remove any properties that are dependent on this
-        var properties = data.Data.GetElements().SelectMany(p=>p.Properties);
+        var properties = data.Project.GetElements().SelectMany(p=>p.Properties);
         foreach (var property in properties)
         {
             if (property.DependantPropertyIdentifiers.Contains(this.Identifier))

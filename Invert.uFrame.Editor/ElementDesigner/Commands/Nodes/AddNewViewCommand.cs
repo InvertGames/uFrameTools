@@ -13,14 +13,14 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             var data = new ViewData()
             {
                 //Data = node.Data,
-                Name = node.Data.GetUniqueName(node.Data.CurrentFilter.Name + "View"),
+                Name = node.DiagramData.GetUniqueName(node.DiagramData.CurrentFilter.Name + "View"),
                 Location = new Vector2(15, 15)
             };
             node.CurrentRepository.AddNode(data);
 
-            if (node.Data.CurrentFilter is ElementData)
+            if (node.DiagramData.CurrentFilter is ElementData)
             {
-                var element = node.Data.CurrentFilter as ElementData;
+                var element = node.DiagramData.CurrentFilter as ElementData;
                 data.SetElement(element);
             }
             

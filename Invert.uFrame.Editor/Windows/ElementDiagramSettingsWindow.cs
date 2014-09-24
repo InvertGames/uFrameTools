@@ -75,8 +75,7 @@ public class ElementDiagramSettingsWindow : EditorWindow
             //GUILayout.Label(_ChangeLog.text, EditorStyles.wordWrappedLabel);
             var s = DesignerData.Settings;
             
-            EditorGUILayout.HelpBox("Turning off 'Generate Default Bindings' will require you to implement all binding methods.",MessageType.Info);
-            s.GenerateDefaultBindings = EditorGUILayout.Toggle("Generate Default Bindings", s.GenerateDefaultBindings);
+            
           
       
             //s.AssociationLinkColor = EditorGUILayout.ColorField("Association Link Color", s.AssociationLinkColor);
@@ -107,7 +106,7 @@ public class ElementDiagramSettingsWindow : EditorWindow
                         EditorApplication.SaveAssets();
                         
                         var newStrategy = uFrameEditor.Container.Resolve<ICodePathStrategy>(names[newIndex]);
-                        DesignerData.Settings.CodePathStrategy.MoveTo(DesignerData.CurrentRepository.GeneratorSettings, newStrategy, names[newIndex], this.DesignerWindow);
+                        DesignerData.DiagramData.CodePathStrategy.MoveTo(DesignerData.CurrentRepository.GeneratorSettings, newStrategy, names[newIndex], this.DesignerWindow);
                     }
 
                 }

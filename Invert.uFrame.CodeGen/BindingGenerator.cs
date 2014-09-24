@@ -12,12 +12,14 @@ namespace Invert.uFrame.Code.Bindings
 {
     public abstract class BindingGenerator : IBindingGenerator
     {
+
         public bool CallBase { get; set; }
 
         public virtual string BindingConditionFieldName
         {
             get { return "_Bind" + Item.Name; }
         }
+
         public ITypeDiagramItem Item { get; set; }
 
         public IDiagramNode RelatedNode
@@ -34,7 +36,7 @@ namespace Invert.uFrame.Code.Bindings
 
         public INodeRepository DiagramData
         {
-            get { return RelatedElement.Data; }
+            get { return RelatedElement.Project; }
         }
         public bool GenerateDefaultImplementation { get; set; }
         public ElementData Element { get; set; }
@@ -60,6 +62,8 @@ namespace Invert.uFrame.Code.Bindings
             return string.Empty;
         }
 
+        public abstract string Title { get; }
+        public abstract string Description { get;  }
         public abstract string MethodName { get; }
 
         public abstract bool IsApplicable { get; }
@@ -110,7 +114,7 @@ namespace Invert.uFrame.Code.Bindings
 
             //});
 
-            var adjusted = new[] { "\t\t// Comment out the base invoke to skip default bindings. "}.Concat(
+            var adjusted = new[] { ""}.Concat(
                 sb.ToString()
                     .Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
                     .Skip(14)
@@ -137,12 +141,33 @@ namespace Invert.uFrame.Code.Bindings
 
         public virtual CodeMemberMethod CreateMethodSignature(CodeTypeReference returnType = null, MemberAttributes attribute = MemberAttributes.Public, bool callBase = true, params CodeParameterDeclarationExpression[] vars)
         {
+            return CreateMethodSignatureWithName(MethodName, returnType, attribute, callBase, vars);
+        }
+
+        public virtual CodeMemberMethod CreateMethodSignatureWithName(string name, params CodeParameterDeclarationExpression[] vars)
+        {
+            return CreateMethodSignatureWithName(name, false, vars);
+        }
+
+        public virtual CodeMemberMethod CreateMethodSignatureWithName(string name, bool callBase = true, params CodeParameterDeclarationExpression[] vars)
+        {
+            return CreateMethodSignatureWithName(name, null, callBase, vars);
+        }
+
+        public virtual CodeMemberMethod CreateMethodSignatureWithName(string name, CodeTypeReference returnType = null, bool callBase = true, params CodeParameterDeclarationExpression[] vars)
+        {
+            return CreateMethodSignatureWithName(name, returnType, (MemberAttributes) 0, callBase, vars);
+        }
+
+        public virtual CodeMemberMethod CreateMethodSignatureWithName(string name, CodeTypeReference returnType = null, MemberAttributes attribute = MemberAttributes.Public, bool callBase = true, params CodeParameterDeclarationExpression[] vars)
+        {
             var createHandlerMethod = new CodeMemberMethod()
             {
                 Attributes = MemberAttributes.Public,
-                Name = MethodName,
+                Name = name,
                 ReturnType = returnType ?? new CodeTypeReference(typeof(void))
             };
+            createHandlerMethod.Comments.Add(new CodeCommentStatement(Description, true));
             foreach (var item in vars)
             {
                 createHandlerMethod.Parameters.Add(item);
@@ -153,23 +178,23 @@ namespace Invert.uFrame.Code.Bindings
 
                 //if (CallBase)
                 //{
-                    var baseInvoker = new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(),
-                        createHandlerMethod.Name);
-                    foreach (var item in vars)
-                    {
-                        baseInvoker.Parameters.Add(new CodeVariableReferenceExpression(item.Name));
-                    }
-                    if (returnType != null)
-                    {
-                        createHandlerMethod.Statements.Add(new CodeMethodReturnStatement(baseInvoker));
-                    }
-                    else
-                    {
-                        createHandlerMethod.Statements.Add(baseInvoker);
-                    }
+                var baseInvoker = new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(),
+                    createHandlerMethod.Name);
+                foreach (var item in vars)
+                {
+                    baseInvoker.Parameters.Add(new CodeVariableReferenceExpression(item.Name));
+                }
+                if (returnType != null)
+                {
+                    createHandlerMethod.Statements.Add(new CodeMethodReturnStatement(baseInvoker));
+                }
+                else
+                {
+                    createHandlerMethod.Statements.Add(baseInvoker);
+                }
                 //}
-                
-          
+
+
 
             }
             return createHandlerMethod;

@@ -93,7 +93,7 @@ public class StateMachineNodeViewModel : DiagramNodeViewModel<StateMachineNodeDa
 
     public bool IsCurrentFilter
     {
-        get { return DiagramViewModel.Data.CurrentFilter == GraphItem; }
+        get { return DiagramViewModel.DiagramData.CurrentFilter == GraphItem; }
     }
 
     //public void AddVariable()
@@ -113,5 +113,15 @@ public class StateMachineNodeViewModel : DiagramNodeViewModel<StateMachineNodeDa
         //list.Add(StateVariableConnector);
         base.GetConnectors(list);
        
+    }
+
+    public void AddTransition()
+    {
+        GraphItem.Transitions.Add(new StateMachineTransition()
+        {
+            Node = GraphItem,
+            Name = GraphItem.Project.GetUniqueName("Transition"),
+            
+        });
     }
 }

@@ -85,7 +85,7 @@ public class HeaderDrawer : Drawer
 
         if (NodeViewModel.IsEditing)
         {
-            GUI.SetNextControlName(NodeViewModel.GraphItemObject.Identifier);
+            GUI.SetNextControlName("EditingField");
 
             EditorGUI.BeginChangeCheck();
             var newText = GUI.TextField(textBounds.Scale(scale), NodeViewModel.Name, style);
@@ -95,8 +95,7 @@ public class HeaderDrawer : Drawer
                 NodeViewModel.Rename(newText);
                 Dirty = true;
             }
-            if (GUI.GetNameOfFocusedControl() != NodeViewModel.GraphItemObject.Identifier)
-                GUI.FocusControl(NodeViewModel.GraphItemObject.Identifier);
+          
 
             textBounds.y += TextSize.y / 2f;
         }
@@ -105,7 +104,7 @@ public class HeaderDrawer : Drawer
             var titleStyle = new GUIStyle(TextStyle);
             titleStyle.normal.textColor = BackgroundStyle.normal.textColor;
             titleStyle.alignment = TextAnchor.MiddleCenter;
-           
+            titleStyle.fontSize = Mathf.RoundToInt(12 * scale);
 
             GUI.Label(textBounds.Scale(scale), NodeViewModel.Label  ?? string.Empty, titleStyle);
             if (NodeViewModel.IsCollapsed)

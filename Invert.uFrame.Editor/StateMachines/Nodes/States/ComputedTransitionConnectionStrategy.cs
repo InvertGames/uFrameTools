@@ -33,6 +33,11 @@ public class StartStateConnectionStrategy :
         get { return Color.white; }
     }
 
+    public override bool IsStateLink
+    {
+        get { return true; }
+    }
+
     protected override bool IsConnected(StateMachineNodeData outputData, StateMachineStateData inputData)
     {
         return outputData.StartStateIdentifier == inputData.Identifier;

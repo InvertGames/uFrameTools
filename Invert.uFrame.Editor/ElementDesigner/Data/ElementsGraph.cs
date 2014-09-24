@@ -1,14 +1,16 @@
+using System.IO;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEditor;
 using UnityEngine;
 
 public class GraphData : ScriptableObject, IElementDesignerData, ISerializationCallbackReceiver
 {
-    [SerializeField,HideInInspector]
+    [SerializeField, HideInInspector]
     public string _jsonData;
 
     [NonSerialized]
@@ -26,6 +28,23 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
     private bool _errors;
     private FilterPositionData _positionData;
     private IDiagramFilter _rootFilter;
+    private ICodePathStrategy _codePathStrategy;
+
+    public ICodePathStrategy CodePathStrategy
+    {
+        get
+        {
+            if (_codePathStrategy != null) return _codePathStrategy;
+
+            _codePathStrategy =
+                uFrameEditor.Container.Resolve<ICodePathStrategy>(Settings.CodePathStrategyName ?? "Default");
+            _codePathStrategy.Data = this;
+            _codePathStrategy.AssetPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(this));
+
+            return _codePathStrategy;
+        }
+        set { _codePathStrategy = value; }
+    }
 
 
     public FilterPositionData PositionData
@@ -120,7 +139,7 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         return Serialize(this);
     }
 
-    public static JSONNode Serialize(IElementDesignerData data)
+    public static JSONNode Serialize(GraphData data)
     {
         // The root class for the diagram data
         var root = new JSONClass
@@ -136,18 +155,17 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
             // Add the settings
             root.AddObject("Settings", data.Settings);
 
-        var d = data as GraphData;
-        if (d != null)
+
+
+        if (data.PositionData != null)
         {
-            if (d.PositionData != null)
-            {
-                root.AddObject("PositionData",d.PositionData);
-            }
+            root.AddObject("PositionData", data.PositionData);
         }
+
         // Store the root filter
         root.AddObject("SceneFlow", data.RootFilter as IJsonObject);
         // Nodes
-        root.AddObjectArray("Nodes", data.NodeItems);
+        root.AddObjectArray("Nodes", data.Nodes);
         return root;
     }
 
@@ -216,7 +234,7 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
             Errors = true;
             Error = ex;
         }
-     
+
     }
 
     private void CleanUpDuplicates()
@@ -239,9 +257,9 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
             return;
         }
 
-        
+
         var jsonNode = JSONNode.Parse(jsonData);
-     
+
         if (jsonNode == null)
         {
 
@@ -250,13 +268,13 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         }
 
         Nodes.Clear();
-      
+
         this.Version = jsonNode["Version"].Value;
         this._identifier = jsonNode["Identifier"].Value;
 
         if (jsonNode["Nodes"] is JSONArray)
         {
-    
+
             //uFrameEditor.Log(this.name + jsonNode["Nodes"].ToString());
             Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>(this));
 
@@ -264,14 +282,14 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         else
         {
         }
-            
+
 
         if (jsonNode["SceneFlow"] is JSONClass)
             RootFilter = jsonNode["SceneFlow"].DeserializeObject(this) as IDiagramFilter;
 
         if (jsonNode["PositionData"] != null)
             PositionData = jsonNode["PositionData"].DeserializeObject(this) as FilterPositionData;
-            
+
 
         if (jsonNode["FilterState"] is JSONClass)
         {
@@ -286,7 +304,7 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         }
         if (string.IsNullOrEmpty(Version))
         {
-            foreach (var filter in NodeItems.OfType<IDiagramFilter>().Concat(new [] {RootFilter}).ToArray())
+            foreach (var filter in NodeItems.OfType<IDiagramFilter>().Concat(new[] { RootFilter }).ToArray())
             {
                 var index = 0;
                 foreach (var itemLoction in filter.Locations.Keys)
@@ -311,7 +329,7 @@ public class ElementsGraph : GraphData
 public class JsonElementDesignerData : ElementsGraph
 {
 
- 
+
 
 
 }
@@ -345,7 +363,7 @@ public class FilterPositionData : IJsonObject
                 if (filterData.Keys.Contains(node.Identifier))
                     return filterData[node];
 
-            
+
             }
             return Vector2.zero;
         }
@@ -353,7 +371,7 @@ public class FilterPositionData : IJsonObject
         {
             if (!Positions.ContainsKey(filter.Identifier))
             {
-                Positions.Add(filter.Identifier,new FilterLocations());
+                Positions.Add(filter.Identifier, new FilterLocations());
             }
 
             Positions[filter.Identifier][node] = value;
@@ -407,5 +425,35 @@ public class FilterPositionData : IJsonObject
     public void Remove(IDiagramFilter currentFilter, string identifier)
     {
         Positions[currentFilter.Identifier].Remove(identifier);
+    }
+}
+
+public static class DataExtensions
+{
+    public static GraphData GetDiagram(this IDiagramNode node, IProjectRepository project)
+    {
+        return project.Diagrams.FirstOrDefault(p => p.NodeItems.Contains(node));
+    }
+    public static GraphData GetDiagram(this IDiagramNode node)
+    {
+        return ((IProjectRepository) node.Project).Diagrams.FirstOrDefault(p => p.NodeItems.Contains(node));
+    }
+    public static ICodePathStrategy GetPathStrategy(this IDiagramNode node, IProjectRepository project)
+    {
+        return GetDiagram(node,project).CodePathStrategy;
+    }
+    public static ICodePathStrategy GetPathStrategy(this IDiagramNode node)
+    {
+        return GetDiagram(node, node.Project as IProjectRepository).CodePathStrategy;
+    }
+
+    public static string GetAssetPath(this IDiagramNode node, IProjectRepository project)
+    {
+        return GetDiagram(node, project).CodePathStrategy.AssetPath;
+    }
+
+    public static string GetAssetPath(this IDiagramNode node)
+    {
+        return GetDiagram(node, node.Project as IProjectRepository).CodePathStrategy.AssetPath;
     }
 }

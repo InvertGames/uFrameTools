@@ -10,7 +10,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             var diagramItem = SelectedOption.Value as IDiagramNode;
 
-            node.Data.PositionData[node.Data.CurrentFilter, diagramItem] = uFrameEditor.CurrentMouseEvent.MouseDownPosition;
+            node.DiagramData.PositionData[node.DiagramData.CurrentFilter, diagramItem] = uFrameEditor.CurrentMouseEvent.MouseDownPosition;
         }
 
         public override string CanPerform(DiagramViewModel node)

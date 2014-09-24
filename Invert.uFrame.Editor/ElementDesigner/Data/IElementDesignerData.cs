@@ -42,5 +42,5 @@ public interface IElementDesignerData : IElementFileData
 
     // Filters
     IDiagramFilter RootFilter { get;  }
-
+    ICodePathStrategy CodePathStrategy { get; set; }
 }

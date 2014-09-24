@@ -8,3 +8,12 @@ public class StateMachineTransitionViewModel : ItemViewModel<StateMachineTransit
         DataObject = data;
     }
 }
+
+public class StateTransitionViewModel : ItemViewModel<StateTransitionData>
+{
+    public StateTransitionViewModel(StateTransitionData data, DiagramNodeViewModel nodeViewModel)
+        : base(nodeViewModel)
+    {
+        DataObject = data;
+    }
+}

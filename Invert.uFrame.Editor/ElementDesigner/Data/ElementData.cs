@@ -34,6 +34,7 @@ public static class UFListExtensions
 public interface IDesignerType
 {
     string Identifier { get; }
+    string Name { get; }
 }
 [Serializable]
 public class ElementData : ElementDataBase, IDesignerType
@@ -55,7 +56,7 @@ public class ElementData : ElementDataBase, IDesignerType
         get
         {
             return
-                Data.GetSubSystems().SelectMany(p => p.Instances).Where(p => p.RelatedType == this.Identifier);
+                Project.GetSubSystems().SelectMany(p => p.Instances).Where(p => p.RelatedType == this.Identifier);
         }
     }
 
@@ -225,7 +226,7 @@ public class ElementData : ElementDataBase, IDesignerType
     {
         get
         {
-            foreach (var element in Data.GetElements())
+            foreach (var element in Project.GetElements())
             {
                 foreach (var item in element.ViewModelItems)
                 {
@@ -278,7 +279,7 @@ public class ElementData : ElementDataBase, IDesignerType
     {
         get
         {
-            foreach (var viewComponentData in Data.GetViewComponents())
+            foreach (var viewComponentData in Project.GetViewComponents())
             {
                 if (viewComponentData.ElementIdentifier == this.Identifier ||
                     AllBaseTypes.Any(p => p.Identifier == viewComponentData.ElementIdentifier))
@@ -301,7 +302,7 @@ public class ElementData : ElementDataBase, IDesignerType
     {
         get
         {
-            foreach (var v in Data.GetViews())
+            foreach (var v in Project.GetViews())
             {
                 if (v.ForElementIdentifier == this.Identifier)
                 {
@@ -388,9 +389,9 @@ public class ElementData : ElementDataBase, IDesignerType
     public override void RemoveFromDiagram()
     {
         base.RemoveFromDiagram();
-        Data.RemoveNode(this);
+        Project.RemoveNode(this);
 
-        foreach (var elementData in Data.GetElements())
+        foreach (var elementData in Project.GetElements())
         {
             foreach (var diagramSubItem in elementData.ViewModelItems)
             {

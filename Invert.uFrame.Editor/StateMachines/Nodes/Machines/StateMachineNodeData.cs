@@ -7,6 +7,7 @@ using JSONData = Invert.uFrame.Editor.JSONData;
 
 public class StateMachineNodeData : DiagramNode,IDesignerType
 {
+    private List<StateMachineTransition> _globalTransitions;
     //private List<StateMachineVariableData> _variables;
 
     public override string Label
@@ -14,31 +15,42 @@ public class StateMachineNodeData : DiagramNode,IDesignerType
         get { return Name; }
     }
 
+
+    public List<StateMachineTransition> Transitions
+    {
+        get { return _globalTransitions ?? (_globalTransitions = new List<StateMachineTransition>()); }
+        set { _globalTransitions = value; }
+    }
+
+    public override IEnumerable<IDiagramNodeItem> Items
+    {
+        get { return Transitions.Cast<IDiagramNodeItem>(); }
+    }
+
     public override IEnumerable<IDiagramNodeItem> ContainedItems
     {
-        get
+        get { return Transitions.Cast<IDiagramNodeItem>(); }
+        set
         {
-            yield break;
-            //return Variables.Cast<IDiagramNodeItem>();
+            Transitions = value.OfType<StateMachineTransition>().ToList();
         }
-        set {  }
     }
 
     public override void RemoveFromDiagram()
     {
         base.RemoveFromDiagram();
-        Data.RemoveNode(this);
+        Project.RemoveNode(this);
     }
 
     public IEnumerable<StateMachineStateData> States
     {
-        get { return this.GetContainingNodes(Data).OfType<StateMachineStateData>(); }
+        get { return this.GetContainingNodes(Diagram).OfType<StateMachineStateData>(); }
     }
 
-    public IEnumerable<StateMachineTransition> Transitions
-    {
-        get { return this.States.SelectMany(p => p.Transitions); }
-    } 
+    //public IEnumerable<StateMachineTransition> Transitions
+    //{
+    //    get { return this.States.SelectMany(p => p.Transitions).Concat(GlobalTransitions); }
+    //} 
     public override CodeTypeReference GetFieldType(ITypeDiagramItem itemData)
     {
         return new CodeTypeReference(Name);
@@ -57,7 +69,7 @@ public class StateMachineNodeData : DiagramNode,IDesignerType
 
     public ElementData Element
     {
-        get { return Data.NodeItems.OfType<ElementData>().FirstOrDefault(p => p.Identifier == ElementIdentifier); }
+        get { return Project.NodeItems.OfType<ElementData>().FirstOrDefault(p => p.Identifier == ElementIdentifier); }
     }
     public string ElementIdentifier { get; set; }
     public string StatePropertyIdentifier { get; set; }

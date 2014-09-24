@@ -72,8 +72,6 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     [SerializeField]
     protected List<GraphData> _diagrams;
 
-    [SerializeField]
-    private string _outputDirectory;
 
     private GraphData _currentGraph;
 
@@ -227,11 +225,6 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         set { _currentGraph = value; }
     }
 
-    public string OutputDirectory
-    {
-        get { return _outputDirectory; }
-        set { _outputDirectory = value; }
-    }
 
     public IElementDesignerData LoadDiagram(string path)
     {
@@ -326,20 +319,8 @@ public interface ICodePathStrategy
 
     IElementDesignerData Data { get; set; }
 
-    /// <summary>
-    /// The relative path to the controller designer file
-    /// </summary>
-    string GetControllersFileName(string name);
 
-    /// <summary>
-    /// The relative path to the views designer file
-    /// </summary>
-    string GetViewsFileName(string name);
-
-    /// <summary>
-    /// The relative path to the view-models designer file
-    /// </summary>
-    string GetViewModelsFileName(string name);
+    string GetDesignerFilePath(string postFix);
 
     string GetEditableViewFilename(ViewData nameAsView);
     string GetEditableViewComponentFilename(ViewComponentData name);
@@ -350,7 +331,6 @@ public interface ICodePathStrategy
     string GetEnumsFilename(EnumData name);
 
     void MoveTo(GeneratorSettings settings, ICodePathStrategy strategy, string name, ElementsDesigner designerWindow);
-    string GetSceneManagersFilename(string name);
 }
 
 public class DefaultCodePathStrategy : ICodePathStrategy
@@ -363,24 +343,15 @@ public class DefaultCodePathStrategy : ICodePathStrategy
     {
         get { return Path.Combine(AssetPath, "Behaviours"); }
     }
+
     public virtual string ScenesPath
     {
         get { return Path.Combine(AssetPath, "Scenes"); }
     }
 
-    public virtual string GetControllersFileName(string name)
+    public string GetDesignerFilePath(string postFix)
     {
-        return name + "Controllers.designer.cs";
-    }
-
-    public virtual string GetViewsFileName(string name)
-    {
-        return name + "Views.designer.cs";
-    }
-
-    public virtual string GetViewModelsFileName(string name)
-    {
-        return name + ".designer.cs";
+        return Path.Combine("_DesignerFiles", Data.Name + postFix + ".designer.cs");
     }
 
     public virtual string GetEditableViewFilename(ViewData nameAsView)
@@ -415,15 +386,15 @@ public class DefaultCodePathStrategy : ICodePathStrategy
 
     public virtual string GetEnumsFilename(EnumData name)
     {
-        return GetViewModelsFileName(name.Data.Name);
+        return GetDesignerFilePath(string.Empty);
     }
 
     public virtual void MoveTo(GeneratorSettings settings, ICodePathStrategy strategy, string name, ElementsDesigner designerWindow)
     {
-        var sourceFiles = uFrameEditor.GetAllFileGenerators(settings,this).ToArray();
+        var sourceFiles = uFrameEditor.GetAllFileGenerators(settings).ToArray();
         strategy.Data = Data;
         strategy.AssetPath = AssetPath;
-        var targetFiles = uFrameEditor.GetAllFileGenerators(settings, strategy).ToArray();
+        var targetFiles = uFrameEditor.GetAllFileGenerators(settings).ToArray();
 
         if (sourceFiles.Length == targetFiles.Length)
         {
@@ -434,8 +405,8 @@ public class DefaultCodePathStrategy : ICodePathStrategy
         {
             // Attempt to move non designer files
            // var designerFiles = sourceFiles.Where(p => p.Filename.EndsWith("designer.cs"));
-            sourceFiles = sourceFiles.Where(p => !p.Filename.EndsWith("designer.cs")).ToArray();
-            targetFiles = targetFiles.Where(p => !p.Filename.EndsWith("designer.cs")).ToArray();
+            sourceFiles = sourceFiles.Where(p => !p.SystemPath.EndsWith("designer.cs")).ToArray();
+            targetFiles = targetFiles.Where(p => !p.SystemPath.EndsWith("designer.cs")).ToArray();
             if (sourceFiles.Length == targetFiles.Length)
             {
                 ProcessMove(strategy,name,sourceFiles,targetFiles);
@@ -451,10 +422,6 @@ public class DefaultCodePathStrategy : ICodePathStrategy
         
     }
 
-    public string GetSceneManagersFilename(string name)
-    {
-        return name + "SceneManagers.designer.cs";
-    }
 
     protected virtual void ProcessMove(ICodePathStrategy strategy, string name, CodeFileGenerator[] sourceFiles,
         CodeFileGenerator[] targetFiles)
@@ -464,8 +431,8 @@ public class DefaultCodePathStrategy : ICodePathStrategy
             var sourceFile = sourceFiles[index];
             var targetFile = targetFiles[index];
 
-            var sourceFileInfo = new FileInfo(System.IO.Path.Combine(AssetPath, sourceFile.Filename));
-            var targetFileInfo = new FileInfo(System.IO.Path.Combine(AssetPath, targetFile.Filename));
+            var sourceFileInfo = new FileInfo(System.IO.Path.Combine(AssetPath, sourceFile.SystemPath));
+            var targetFileInfo = new FileInfo(System.IO.Path.Combine(AssetPath, targetFile.SystemPath));
             if (sourceFileInfo.FullName == targetFileInfo.FullName) continue;
             if (!sourceFileInfo.Exists) continue;
             EnsurePath(sourceFileInfo);
@@ -477,10 +444,9 @@ public class DefaultCodePathStrategy : ICodePathStrategy
             uFrameEditor.Log(string.Format("Moving file {0} to {1}",sourceAsset, targetAsset));
             AssetDatabase.MoveAsset(sourceAsset, targetAsset);
         }
- 
-        Data.Settings.CodePathStrategy = strategy;
-        Data.Settings.CodePathStrategyName = name;
 
+        Data.Settings.CodePathStrategyName = name;
+        Data.CodePathStrategy = null;
         EditorUtility.SetDirty(Data as UnityEngine.Object);
         AssetDatabase.SaveAssets();
         EditorApplication.SaveAssets();
@@ -529,7 +495,7 @@ public class SubSystemPathStrategy : DefaultCodePathStrategy
         var allFilters = Data.GetFilters();
         foreach (var diagramFilter in allFilters)
         {
-            if (node != diagramFilter &&  node.Data.PositionData.HasPosition(diagramFilter,node))
+            if (node != diagramFilter &&  node.Project.PositionData.HasPosition(diagramFilter,node))
             {
                 return diagramFilter;
             }
@@ -537,7 +503,7 @@ public class SubSystemPathStrategy : DefaultCodePathStrategy
         return null;
     }
 
-    public SubSystemData FindSubsystem(IDiagramNode node)
+    public SubSystemData FindSubsystem( IDiagramNode node)
     {
         var filter = FindFilter(node);
         if (filter == node) return null;
@@ -563,7 +529,7 @@ public class SubSystemPathStrategy : DefaultCodePathStrategy
 
     public string GetSubSystemPath(IDiagramNode node)
     {
-        var subsystem = FindSubsystem(node);
+        var subsystem = FindSubsystem( node);
         if (subsystem == null) return string.Empty;
         return subsystem.Name;
     }

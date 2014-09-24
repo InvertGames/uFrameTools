@@ -29,7 +29,7 @@ public class ViewComponentDataGeneratorFactory : DesignerGeneratorFactory<ViewCo
             IsDesignerFile = true,
             DiagramData = diagramData,
             ViewComponentData = item,
-            Filename = pathStrategy.GetViewsFileName(diagramData.Name)
+            Filename = pathStrategy.GetDesignerFilePath("Views")
           
         };
     }

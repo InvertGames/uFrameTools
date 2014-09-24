@@ -8,9 +8,10 @@ namespace Invert.uFrame.Editor.Refactoring
         {
             Name = new RenameIdentifierRefactorer() { From = data.Name };
             ViewComponentFileRenamer = new RenameFileRefactorer();
-            ViewComponentFileRenamer.RootPath = data.Data.Settings.CodePathStrategy.AssetPath;
-            ViewComponentFileRenamer.From =
-                data.Data.Settings.CodePathStrategy.GetEditableViewComponentFilename(data);
+            var strategy = data.GetPathStrategy();
+            ViewComponentFileRenamer.RootPath = strategy.AssetPath;
+            ViewComponentFileRenamer.From = strategy.GetEditableViewComponentFilename(data);
+
         }
         public override void Set(ISelectable data)
         {
@@ -19,8 +20,9 @@ namespace Invert.uFrame.Editor.Refactoring
         public void Set(ViewComponentData data)
         {
             Name.To = data.Name;
+            var strategy = data.GetPathStrategy();
             ViewComponentFileRenamer.To =
-             data.Data.Settings.CodePathStrategy.GetEditableViewComponentFilename(data);
+             strategy.GetEditableViewComponentFilename(data);
         }
         public override void PreProcess(RefactorContext context)
         {

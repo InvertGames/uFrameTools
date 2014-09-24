@@ -30,7 +30,7 @@ namespace Invert.uFrame.Editor.ViewModels
             GraphItem.EnumItems.Add(new EnumItem()
             {
                 Node = GraphItem,
-                Name = GraphItem.Data.GetUniqueName("Item")
+                Name = GraphItem.Project.GetUniqueName("Item")
             });
         }
     }

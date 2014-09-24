@@ -4,6 +4,7 @@ namespace Invert.uFrame.Editor.ViewModels
 {
     public interface IConnectionStrategy
     {
+  
         /// <summary>
         /// Try and connect a to b.  If it can't connect return null
         /// </summary>

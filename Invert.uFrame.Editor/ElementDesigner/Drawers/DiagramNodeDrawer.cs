@@ -207,6 +207,7 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
             }
             item.Draw(scale);
         }
+        
         if (!ViewModel.IsLocal)
         {
             ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(Scale), ElementDesignerStyles.BoxHighlighter5, string.Empty, 20);
@@ -363,7 +364,7 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
             startY += child.Bounds.height;
         }
         // Now lets stretch all the content drawers to the maximum width
-        var maxWidth = 0f;
+        var maxWidth = 145f;
         var height = 0f;
 
         foreach (var item in Children)

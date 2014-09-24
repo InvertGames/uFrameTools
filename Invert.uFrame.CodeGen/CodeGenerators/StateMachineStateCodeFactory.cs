@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Invert.uFrame.Editor;
+using UnityEngine;
 
 public class StateMachineStateCodeFactory : DesignerGeneratorFactory<StateMachineStateData>
 {
@@ -16,17 +17,17 @@ public class StateMachineStateCodeFactory : DesignerGeneratorFactory<StateMachin
             StateType = uFrameEditor.UFrameTypes.State,
             IsDesignerFile = true,
             ObjectData = item,
-            Filename = diagramData.Name + "StateMachines.designer.cs"
+            Filename = pathStrategy.GetDesignerFilePath("StateMachines")
         };
-        yield return new StateMachineStateClassGenerator()
-        {
-            Data = item,
-            StateMachineType = uFrameEditor.UFrameTypes.StateMachine,
-            StateType = uFrameEditor.UFrameTypes.State,
-            IsDesignerFile = false,
-            ObjectData = item,
-            Filename = Path.Combine("States", item.Name + "State.cs")
-        };
+        //yield return new StateMachineStateClassGenerator()
+        //{
+        //    Data = item,
+        //    StateMachineType = uFrameEditor.UFrameTypes.StateMachine,
+        //    StateType = uFrameEditor.UFrameTypes.State,
+        //    IsDesignerFile = false,
+        //    ObjectData = item,
+        //    Filename = Path.Combine("States", item.Name + "State.cs")
+        //};
     }
 
 }
@@ -37,9 +38,11 @@ public class StateMachineViewModelProcessor : TypeGeneratorPostProcessor<ViewMod
         var constructor = this.CodeGenerator.WireCommandsMethod;
         if (constructor != null)
         {
+            Debug.Log("Hit Apply");
             var element = CodeGenerator.ElementData;
-            var stateMachines = CodeGenerator.ElementData.GetContainingNodes(CodeGenerator.DiagramData).OfType<StateMachineNodeData>().ToArray();
-            var properties = CodeGenerator.ElementData.SubscribableProperties.ToArray();
+            var stateMachines =
+                CodeGenerator.ElementData.Properties.Select(p => p.RelatedNode()).OfType<StateMachineNodeData>().ToArray();
+            var properties = CodeGenerator.ElementData.ViewModelItems.ToArray();
             // var transitions = stateMachines.SelectMany(p => p.Transitions).ToArray();
 
             foreach (var stateMachine in stateMachines)
@@ -56,9 +59,13 @@ public class StateMachineViewModelProcessor : TypeGeneratorPostProcessor<ViewMod
 
                     foreach (var transitionProperty in transitionProperties)
                     {
-                        if (transition.TransitionTo == null) continue;
-                        constructor.Statements.Add(new CodeSnippetExpression(string.Format("{0}.{1}.AddTrigger({2},{0}.{1}.{3})",
-                            stateMachineProperty.FieldName, transition.StateMachineState.Name, transitionProperty.FieldName, transition.Name)));
+                        //if (transition.TransitionTo == null) continue;
+
+
+                        //constructor.Statements.Add(new CodeSnippetExpression(string.Format("{0}.{1}.AddTrigger({2},{0}.{1}.{3})",
+                        //    stateMachineProperty.FieldName, transition.StateMachineState.Name, transitionProperty.FieldName, transition.Name)));
+
+                        constructor.Statements.Add(new CodeSnippetExpression(string.Format("this.{0}.Subscribe({1}.{2})", transitionProperty.FieldName, stateMachineProperty.FieldName, transition.Name)));
 
                         //constructor.Statements.Add(new CodeSnippetExpression(
                         //    string.Format("{0}.Subscribe((v)=>{{ if (v) {1}.Transition(\"{2}\"); }})", transitionProperty.FieldName,stateMachineProperty.FieldName, transition.Name)

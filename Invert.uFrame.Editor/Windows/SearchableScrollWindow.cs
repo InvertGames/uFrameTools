@@ -11,7 +11,20 @@ public abstract class SearchableScrollWindow : EditorWindow
     protected Func<ElementItemType, string> _labelSelector;
     
     protected string _upperSearchText;
+    public virtual bool AllowSearch { get { return true; } }
     public virtual void OnGUI()
+    {
+        if (AllowSearch)
+        DoSearch();
+
+        _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
+
+        OnGUIScrollView();
+
+        EditorGUILayout.EndScrollView();
+    }
+
+    private void DoSearch()
     {
         EditorGUI.BeginChangeCheck();
         _SearchText = GUILayout.TextField(_SearchText ?? "");
@@ -21,12 +34,6 @@ public abstract class SearchableScrollWindow : EditorWindow
         }
         GUILayout.Label("Search to find more...");
         _upperSearchText = _SearchText.ToUpper();
-        
-        _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
-
-        OnGUIScrollView();
-
-        EditorGUILayout.EndScrollView();
     }
 
     protected abstract void ApplySearch();

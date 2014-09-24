@@ -18,7 +18,7 @@ public class SubSystemViewModel : DiagramNodeViewModel<SubSystemData>
     {
         get
         {
-            if (DiagramViewModel.Data.CurrentFilter == this.GraphItem) return null;
+            if (DiagramViewModel.DiagramData.CurrentFilter == this.GraphItem) return null;
             return base.InputConnector;
         }
     }
@@ -27,7 +27,7 @@ public class SubSystemViewModel : DiagramNodeViewModel<SubSystemData>
     {
         get
         {
-            if (DiagramViewModel.Data.CurrentFilter == this.GraphItem) return null;
+            if (DiagramViewModel.DiagramData.CurrentFilter == this.GraphItem) return null;
             return base.OutputConnector;
         }
     }

@@ -32,11 +32,13 @@ public class DefaultCodeGenerators : DiagramPlugin
         container.Register<DesignerGeneratorFactory, ViewComponentDataGeneratorFactory>("ViewComponentData");
         container.Register<DesignerGeneratorFactory, SceneManagerDataGeneratorFactory>("SceneManagerData");
 
-        container.Register<IBindingGenerator, PropertyBindingGenerator>("PropertyBinding");
+        container.Register<IBindingGenerator, StandardPropertyBindingGenerator>("PropertyBinding");
         container.Register<IBindingGenerator, ComputedPropertyBindingGenerator>("ComputedPropertyBinding");
-        container.Register<IBindingGenerator, CollectionItemAddedBindingGenerator>("Added");
-        container.Register<IBindingGenerator, CollectionItemRemovedBindingGenerator>("Removed");
-        container.Register<IBindingGenerator, CollectionItemCreateBindingGenerator>("Create");
+        //container.Register<IBindingGenerator, CollectionItemAddedBindingGenerator>("Added");
+        //container.Register<IBindingGenerator, CollectionItemRemovedBindingGenerator>("Removed");
+        container.Register<IBindingGenerator, ViewCollectionBindingGenerator>("ViewCollectionBinding");
+        container.Register<IBindingGenerator, DefaultCollectionBindingGenerator>("DefaultCollectionBinding");
+        container.Register<IBindingGenerator, InstantiateViewPropertyBindingGenerator>("InstantiateViewPropertyBindingGenerator");
 
         container.Register<DesignerGeneratorFactory, StateMachineCodeFactory>("StateMachineCodeFactory");
         container.Register<DesignerGeneratorFactory, StateMachineStateCodeFactory>("StateMachineStateCodeFactory");

@@ -206,9 +206,9 @@ public class ViewModelGenerator : ElementCodeGenerator
             if (Settings.GenerateControllers)
             {
                 WireCommandsMethod.Statements.Add(
-                    new CodeSnippetExpression(string.Format("{0}.Calculator = (vm)=> {{ return {1}.{2}(vm as {3}); }}",
+                    new CodeSnippetExpression(string.Format("{0}.ToComputed((vm)=> {{ return {1}.{2}(vm as {3}); }}, {1}.Get{4}Dependents(this).ToArray())",
                         computedProperty.FieldName,
-                        data.NameAsVariable, computedProperty.NameAsComputeMethod, data.NameAsViewModel)));
+                        data.NameAsVariable, computedProperty.NameAsComputeMethod, data.NameAsViewModel,computedProperty.Name)));
             }
             else
             {
@@ -474,14 +474,7 @@ public class ViewModelGenerator : ElementCodeGenerator
         var initExpr = new CodeObjectCreateExpression(t);
         initExpr.Parameters.Add(new CodeThisReferenceExpression());
         initExpr.Parameters.Add(new CodePrimitiveExpression(itemData.Name));
-        var computedPropertyData = itemData as ComputedPropertyData;
-        if (computedPropertyData != null)
-        {
-            foreach (var dependantProperty in computedPropertyData.DependantProperties)
-            {
-                initExpr.Parameters.Add(new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), dependantProperty.FieldName));
-            }
-        }
+
         constructor.Statements.Add(new CodeAssignStatement(new CodeSnippetExpression(field.Name), initExpr));
 
         return field;
@@ -508,7 +501,7 @@ public class ViewModelGenerator : ElementCodeGenerator
 
         property.SetStatements.Add(new CodeSnippetExpression(string.Format("{0}.Value = value", itemData.FieldName)));
 
-        if (typeViewModel is ElementData)
+        if (typeViewModel is ElementData && itemData is ViewModelPropertyData)
         {
             property.SetStatements.Add(new CodeSnippetExpression(string.Format("if (value != null) value.Parent{0} = this", itemData.Node.Name)));
         }
@@ -610,7 +603,10 @@ public class ViewModelGenerator : ElementCodeGenerator
         // Now Generator code here
         foreach (var viewModelPropertyData in data.Properties)
         {
-            Decleration.Members.Add(ToCodeMemberField(viewModelPropertyData, constructor));
+            var field = ToCodeMemberField(viewModelPropertyData, constructor);
+            var property = field.EncapsulateField(viewModelPropertyData.Name + "Property");
+            Decleration.Members.Add(property);
+            Decleration.Members.Add(field);
             Decleration.Members.Add(ToCodeMemberProperty(viewModelPropertyData));
 
             if (viewModelPropertyData.RelatedNode() is ElementData)
@@ -634,7 +630,9 @@ public class ViewModelGenerator : ElementCodeGenerator
         }
         foreach (var viewModelPropertyData in data.ComputedProperties)
         {
-            Decleration.Members.Add(ToCodeMemberField(viewModelPropertyData, constructor));
+            var field = ToCodeMemberField(viewModelPropertyData, constructor);
+            Decleration.Members.Add(field);
+            Decleration.Members.Add(field.EncapsulateField(viewModelPropertyData.Name + "Property",null,null,false));
             Decleration.Members.Add(ToCodeMemberProperty(viewModelPropertyData));
 
             if (viewModelPropertyData.RelatedNode() is ElementData)
@@ -662,7 +660,13 @@ public class ViewModelGenerator : ElementCodeGenerator
 
         foreach (var viewModelPropertyData in data.Collections)
         {
-            Decleration.Members.Add(ToCollectionCodeMemberField(viewModelPropertyData, constructor, unBindMethod));
+            var field = ToCollectionCodeMemberField(viewModelPropertyData, constructor, unBindMethod);
+            //var property = field.EncapsulateField(viewModelPropertyData.Name + "Property");
+            
+            //property.Attributes = MemberAttributes.Public;
+            
+           // Decleration.Members.Add(property);
+            Decleration.Members.Add(field);
             Decleration.Members.Add(ToCollectionCodeMemberProperty(viewModelPropertyData));
             var relatedElement = viewModelPropertyData.RelatedNode() as ElementData;
 

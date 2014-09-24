@@ -57,7 +57,8 @@
     <Compile Include="CodeGenPlugin\DefaultCodeGenerators.cs" />
     <Compile Include="CollectionBindingGenerator.cs" />
     <Compile Include="CollectionItemAddedBindingGenerator.cs" />
-    <Compile Include="CollectionItemCreateBindingGenerator.cs" />
+    <Compile Include="DefaultCollectionBindingGenerator.cs" />
+    <Compile Include="ViewCollectionBindingGenerator.cs" />
     <Compile Include="CollectionItemRemovedBindingGenerator.cs" />
     <Compile Include="ControllerGenerator.cs" />
     <Compile Include="ElementCodeGenerator.cs" />
@@ -65,12 +66,11 @@
     <Compile Include="EnumCodeGenerator.cs" />
     <Compile Include="EnumDataGeneratorFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyBindingGenerator.cs" />
+    <Compile Include="StandardPropertyBindingGenerator.cs" />
     <Compile Include="SceneManagerClassGenerator.cs" />
     <Compile Include="SceneManagerDataGeneratorFactory.cs" />
     <Compile Include="SceneManagerGenerator.cs" />
     <Compile Include="SceneManagerSettingsGenerator.cs" />
-    <Compile Include="CodeGenerators\StateMachinePlugin.cs" />
     <Compile Include="ViewBaseGenerator.cs" />
     <Compile Include="ViewBindingExtender.cs" />
     <Compile Include="ViewClassGenerator.cs" />

@@ -13,7 +13,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             var data = new ViewComponentData()
             {
                 //Data = node.Data,
-                Name = node.Data.GetUniqueName("NewViewComponent"),
+                Name = node.DiagramData.GetUniqueName("NewViewComponent"),
                 Location = new Vector2(15, 15)
             };
             node.CurrentRepository.AddNode(data);

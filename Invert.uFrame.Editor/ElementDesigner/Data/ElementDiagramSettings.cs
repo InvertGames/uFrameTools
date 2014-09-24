@@ -18,7 +18,7 @@ public class ElementDiagramSettings : IJsonObject
         cls.Add("SubSystemLinkColor", SerializeColor(_subSystemLinkColor));
         cls.Add("TransitionLinkColor", SerializeColor(_transitionLinkColor));
         cls.Add("ViewLinkColor", SerializeColor(_viewLinkColor));
-        cls.Add("GemerateDefaultBindings", new JSONData(GenerateDefaultBindings));
+        
         cls.Add("RootNamespace", new JSONData(RootNamespace));
     }
 
@@ -65,10 +65,7 @@ public class ElementDiagramSettings : IJsonObject
 
         GridLinesColor = DeserializeColor(cls["GridLinesColor"], new Color(0.271f, 0.271f, 0.271f));
         GridLinesColorSecondary = DeserializeColor(cls["GridLinesColorSecondary"], new Color(0.169f, 0.169f, 0.169f));
-        if (cls["GemerateDefaultBindings"] != null)
-        {
-            GenerateDefaultBindings = cls["GemerateDefaultBindings"].AsBool;
-        }
+
         if (cls["RootNamespace"] != null)
         {
             RootNamespace = cls["RootNamespace"].Value;
@@ -160,15 +157,12 @@ public class ElementDiagramSettings : IJsonObject
     public string CodePathStrategyName
     {
         get { return string.IsNullOrEmpty(_codePathStrategyName) ? "Default" : _codePathStrategyName; }
-        set { _codePathStrategyName = value; }
+        set { _codePathStrategyName = value;
+            _codePathStrategy = null;
+        }
     }
 
-    public ICodePathStrategy CodePathStrategy
-    {
-        get { return _codePathStrategy; }
-        set { _codePathStrategy = value; }
-    }
-
+   
     public Color GridLinesColor
     {
         get { return _gridLinesColor; }
@@ -176,11 +170,7 @@ public class ElementDiagramSettings : IJsonObject
     }
 
 
-    public bool GenerateDefaultBindings
-    {
-        get { return _generateDefaultBindings; }
-        set { _generateDefaultBindings = value; }
-    }
+
 
     public JSONNode Serialize()
     {

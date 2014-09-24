@@ -55,8 +55,17 @@ namespace Invert.uFrame.Editor.Refactoring
 
         public string RefactorFile(string filename,bool saveFile = true)
         {
-            if (!File.Exists(filename)) return "File does not exist.";
-            CurrentFileText = File.ReadAllText(filename);
+            if (!File.Exists(filename))
+            {
+                CurrentFileText = "public class " + Path.GetFileNameWithoutExtension(filename) + "{" +
+                                  Environment.NewLine + Environment.NewLine + Environment.NewLine + "}";
+
+            }
+            else
+            {
+                CurrentFileText = File.ReadAllText(filename);    
+            }
+            
             CurrentFilename = filename; 
             string strRegex = @"@?[_\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}][\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Cf}]*|\{|\}";
             var myRegex = new Regex(strRegex, RegexOptions.None);

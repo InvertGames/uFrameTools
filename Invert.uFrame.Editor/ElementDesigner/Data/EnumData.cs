@@ -42,7 +42,7 @@ public class EnumData : DiagramNode,IDesignerType
     {
         base.RemoveFromDiagram();
 
-        Data.RemoveNode(this);
+        Project.RemoveNode(this);
     }
 
     public Type CompiledType

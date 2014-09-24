@@ -14,7 +14,7 @@ public class StateMachineCodeFactory : DesignerGeneratorFactory<StateMachineNode
             StateMachineType = uFrameEditor.UFrameTypes.StateMachine,
             IsDesignerFile = true,
             ObjectData = item,
-            Filename = diagramData.Name + "StateMachines.designer.cs"
+            Filename = pathStrategy.GetDesignerFilePath("StateMachines")
         };
         yield return new StateMachineClassGenerator()
         {

@@ -13,6 +13,7 @@ public class ControllerGenerator : ElementCodeGenerator
     {
         base.Initialize(fileGenerator);
         AddController(ElementData);
+        Namespace.Imports.Add(new CodeNamespaceImport("UniRx"));
         
     }
 
@@ -132,7 +133,7 @@ public class ControllerGenerator : ElementCodeGenerator
     public virtual void AddController(ElementData data)
     {
         var viewModelTypeReference = new CodeTypeReference(data.NameAsViewModel);
-        var tDecleration = new CodeTypeDeclaration();
+        Declaration = new CodeTypeDeclaration();
 
         if (IsDesignerFile)
         {
@@ -146,96 +147,78 @@ public class ControllerGenerator : ElementCodeGenerator
                     var element = item.RelatedNode() as ElementData;
                     if (element == null) continue;
 
-                    tDecleration.Members.Add(
+                    Declaration.Members.Add(
                         new CodeSnippetTypeMember(string.Format("[Inject(\"{1}\")] public {0} {1} {{ get; set; }}",element.NameAsViewModel, item.Name)));
                     itemsAdded.Add(item.Name);
                 }
             }
             
 
-            AddDependencyControllers(tDecleration, data);
-            tDecleration.Name = data.NameAsControllerBase;
-            tDecleration.TypeAttributes = TypeAttributes.Abstract | TypeAttributes.Public;
+            AddDependencyControllers(Declaration, data);
+            Declaration.Name = data.NameAsControllerBase;
+            Declaration.TypeAttributes = TypeAttributes.Abstract | TypeAttributes.Public;
             if (data.IsDerived)
             {
-                tDecleration.BaseTypes.Add( data.BaseElement.NameAsController);
+                Declaration.BaseTypes.Add( data.BaseElement.NameAsController);
             }
             else
             {
-                tDecleration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.UFrameTypes.Controller));
+                Declaration.BaseTypes.Add(new CodeTypeReference(uFrameEditor.UFrameTypes.Controller));
             }
-
-            //if (!data.IsMultiInstance)
-            //{
-            //    var property = new CodeMemberProperty
-            //    {
-            //        Name = data.Name,
-            //        Type = new CodeTypeReference(data.NameAsViewModel),
-            //        HasGet = true,
-            //        HasSet = false,
-            //        Attributes = MemberAttributes.Public
-            //    };
-            //    property.GetStatements.Add(
-            //        new CodeMethodReturnStatement(
-            //            new CodeSnippetExpression(string.Format("Container.Resolve<{0}>()", data.NameAsViewModel))));//,data.RootElement.Name))));
-
-                
-            //    tDecleration.Members.Add(property);
-            //}
         }
         else
         {
-            tDecleration.TypeAttributes = TypeAttributes.Public;
-            tDecleration.Name = data.ControllerName;
-            tDecleration.BaseTypes.Add(new CodeTypeReference(data.NameAsControllerBase));
+            Declaration.TypeAttributes = TypeAttributes.Public;
+            Declaration.Name = data.ControllerName;
+            Declaration.BaseTypes.Add(new CodeTypeReference(data.NameAsControllerBase));
         }
 
-        var initializeTypedMethod = new CodeMemberMethod { Name = string.Format("Initialize{0}", data.Name) };
-        tDecleration.Members.Add(initializeTypedMethod);
-        initializeTypedMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(data.NameAsViewModel), data.NameAsVariable));
+        InitializeMethod = new CodeMemberMethod { Name = string.Format("Initialize{0}", data.Name) };
+        Declaration.Members.Add(InitializeMethod);
+        InitializeMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(data.NameAsViewModel), data.NameAsVariable));
         if (IsDesignerFile)
         {
-            initializeTypedMethod.Attributes = MemberAttributes.Abstract | MemberAttributes.Public;
-
-            //AddWireCommandsMethod(data, tDecleration, viewModelTypeReference);
-            AddCreateMethod(data, viewModelTypeReference, initializeTypedMethod, tDecleration);
+            InitializeMethod.Attributes = MemberAttributes.Abstract | MemberAttributes.Public;
+            AddCreateMethod(data, viewModelTypeReference, InitializeMethod, Declaration);
         }
         else
         {
-            initializeTypedMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
+            InitializeMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
         }
         if (IsDesignerFile)
         {
-            var initializeOverrideMethod = new CodeMemberMethod()
+            InitializeDesignerMethod = new CodeMemberMethod()
             {
                 Name = "Initialize",
                 Attributes = MemberAttributes.Public | MemberAttributes.Override
             };
-            tDecleration.Members.Add(initializeOverrideMethod);
-            initializeOverrideMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(uFrameEditor.UFrameTypes.ViewModel), "viewModel"));
+            Declaration.Members.Add(InitializeDesignerMethod);
+            InitializeDesignerMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(uFrameEditor.UFrameTypes.ViewModel), "viewModel"));
 
             if (data.BaseElement != null)
             {
-                initializeOverrideMethod.Statements.Add(new CodeSnippetExpression("base.Initialize(viewModel)"));
+                InitializeDesignerMethod.Statements.Add(new CodeSnippetExpression("base.Initialize(viewModel)"));
             }
-            initializeOverrideMethod.Statements.Add(new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), initializeTypedMethod.Name,
+            InitializeDesignerMethod.Statements.Add(new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), InitializeMethod.Name,
                 new CodeCastExpression(new CodeTypeReference(data.NameAsViewModel), new CodeVariableReferenceExpression("viewModel"))));
 
         }
 
-
-        // Command functions
         if (IsDesignerFile)
         {
-            AddCommandMethods(data, viewModelTypeReference, tDecleration);
-            AddComputedPropertyMethods(data, tDecleration);
+            AddCommandMethods(data, viewModelTypeReference, Declaration);
+            AddComputedPropertyMethods(data, Declaration);
         }
        
-
-        ProcessModifiers(tDecleration);
-
-        Namespace.Types.Add(tDecleration);
+        ProcessModifiers(Declaration);
+        Namespace.Types.Add(Declaration);
     }
+
+    public CodeMemberMethod InitializeDesignerMethod { get; set; }
+
+    public CodeMemberMethod InitializeMethod { get; set; }
+
+    public CodeTypeDeclaration Declaration { get; set; }
 
     private void AddCreateMethod(ElementData data, CodeTypeReference viewModelTypeReference,
         CodeMemberMethod initializeMethod, CodeTypeDeclaration tDecleration)

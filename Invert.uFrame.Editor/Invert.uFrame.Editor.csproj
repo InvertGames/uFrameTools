@@ -181,7 +181,6 @@
     <Compile Include="UI\ContextMenuUI.cs" />
     <Compile Include="CodeGenerator\DesignerGeneratorFactory.cs" />
     <Compile Include="ElementDesigner\Commands\Diagram\AddNewCommand.cs" />
-    <Compile Include="ElementDesigner\Commands\Diagram\AutoLayoutCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Hooks\CommandHook.cs" />
     <Compile Include="ElementDesigner\Commands\Hooks\CommandHookLifetime.cs" />
     <Compile Include="ElementDesigner\Commands\Hooks\CommandHookMode.cs" />
@@ -287,7 +286,7 @@
     <Compile Include="Extensions\UFrameAssetManager.cs" />
     <Compile Include="Windows\ElementDiagramSettingsWindow.cs" />
     <Compile Include="Windows\uFrameComponentSearchWindow.cs" />
-    <Compile Include="Windows\uFrameExtensionsWindow.cs" />
+    <Compile Include="Windows\uFrameSettingsWindow.cs" />
     <Compile Include="Windows\uFrameStartDialog.cs" />
     <Compile Include="Windows\uFrameToolsWindow.cs" />
     <Compile Include="IAssemblyNameProvider.cs" />

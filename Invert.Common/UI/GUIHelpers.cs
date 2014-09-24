@@ -104,9 +104,10 @@ namespace Invert.Common.UI
             GUI.Box(rect, "", UBStyles.ToolbarStyle);
             var labelStyle = new GUIStyle(EditorStyles.label)
             {
+                normal = new GUIStyleState() {textColor = UBStyles.ToolbarStyle.normal.textColor },
                 alignment = TextAnchor.MiddleLeft,
                 fontStyle = FontStyle.Bold,
-                fontSize = 10
+                fontSize = 11
             };
             var labelRect = new Rect(rect.x + 2, rect.y + (rect.height / 2) - 8, rect.width - 50, 16);
             var result = open;
@@ -164,7 +165,7 @@ namespace Invert.Common.UI
 
             var rect = !hasSubLabel
                 ? GetRect(ubTriggerContent.BackgroundStyle,ubTriggerContent.FullWidth && !ubTriggerContent.IsWindow)
-                : GetRect(ubTriggerContent.BackgroundStyle, ubTriggerContent.FullWidth && !ubTriggerContent.IsWindow, GUILayout.Height(35));
+                : GetRect(ubTriggerContent.BackgroundStyle, ubTriggerContent.FullWidth && !ubTriggerContent.IsWindow);
 
             var style = ubTriggerContent.BackgroundStyle;
 
@@ -202,7 +203,7 @@ namespace Invert.Common.UI
                 GUI.Box(seperatorRect, String.Empty, UBStyles.SeperatorStyle);
             }
 
-            var labelStyle =  new GUIStyle(EditorStyles.label) { alignment = ubTriggerContent.TextAnchor, fontSize = 10 };
+            var labelStyle =  new GUIStyle(EditorStyles.label) { alignment = ubTriggerContent.TextAnchor, fontSize = 11,fontStyle = FontStyle.Bold};
             if (!ubTriggerContent.Enabled)
             {
                 labelStyle.normal.textColor = new Color(0.4f,0.4f,0.4f);
@@ -215,8 +216,9 @@ namespace Invert.Common.UI
             if (hasSubLabel)
             {
                 var subLabelRect = new Rect(labelRect);
-                subLabelRect.y += 12;
-
+                subLabelRect.y += 18;
+                subLabelRect.width -= 26;
+                subLabelRect.x += 13;
                 GUI.Label(subLabelRect, ubTriggerContent.SubLabel, UFStyle.SubLabelStyle);
             }
             if (ubTriggerContent.ShowArrow)

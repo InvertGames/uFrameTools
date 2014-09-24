@@ -17,12 +17,13 @@ namespace Invert.uFrame.Editor.Refactoring
             SceneManagerBase = new RenameIdentifierRefactorer() { From = data.NameAsSceneManagerBase };
             Settings = new RenameIdentifierRefactorer() { From = data.NameAsSettings };
             SettingsField = new RenameIdentifierRefactorer() { From = data.NameAsSettingsField };
-            SceneManagerSettingsFileRenamer.RootPath = data.Data.Settings.CodePathStrategy.AssetPath;
-            SceneManagerFileRenamer.RootPath = data.Data.Settings.CodePathStrategy.AssetPath;
+            var strategy = data.GetPathStrategy();
+            SceneManagerSettingsFileRenamer.RootPath = strategy.AssetPath;
+            SceneManagerFileRenamer.RootPath = strategy.AssetPath;
             SceneManagerSettingsFileRenamer.From =
-                data.Data.Settings.CodePathStrategy.GetEditableSceneManagerSettingsFilename(data);
+                strategy.GetEditableSceneManagerSettingsFilename(data);
             SceneManagerFileRenamer.From =
-                data.Data.Settings.CodePathStrategy.GetEditableSceneManagerFilename(data);
+                strategy.GetEditableSceneManagerFilename(data);
            
         }
         public override void Set(ISelectable data)
@@ -35,10 +36,11 @@ namespace Invert.uFrame.Editor.Refactoring
             SceneManagerBase.To = data.NameAsSceneManagerBase;
             Settings.To = data.NameAsSettings;
             SettingsField.To = data.NameAsSettingsField;
+            var strategy = data.GetPathStrategy();
             SceneManagerSettingsFileRenamer.To =
-               data.Data.Settings.CodePathStrategy.GetEditableSceneManagerSettingsFilename(data);
+               strategy.GetEditableSceneManagerSettingsFilename(data);
             SceneManagerFileRenamer.To =
-                data.Data.Settings.CodePathStrategy.GetEditableSceneManagerFilename(data);
+                strategy.GetEditableSceneManagerFilename(data);
            
          
         }

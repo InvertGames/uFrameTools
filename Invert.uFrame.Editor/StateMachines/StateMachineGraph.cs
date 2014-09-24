@@ -39,3 +39,11 @@ public class ExternalElementGraph : GraphData<ElementData>
         get { return RootFilter.Name; }
     }
 }
+
+public class ExternalStateMachineGraph : GraphData<StateMachineNodeData>
+{
+    public override string Name
+    {
+        get { return RootFilter.Name; }
+    }
+}

@@ -9,7 +9,7 @@ namespace Invert.uFrame.Editor.ViewModels
         public ConnectorViewModel ConnectorA { get; set; }
         public ConnectorViewModel ConnectorB { get; set; }
 
-
+        public virtual bool IsStateLink { get; set; }
 
         public Action<ConnectionViewModel> Apply { get; set; }
         public Action<ConnectionViewModel> Remove { get; set; }

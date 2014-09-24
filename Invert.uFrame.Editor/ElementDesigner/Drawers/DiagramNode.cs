@@ -1,16 +1,45 @@
-using System.CodeDom;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+
 /// <summary>
 /// The base data class for all diagram nodes.
 /// </summary>
 public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 {
+    [SerializeField]
+    private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
+
+    [NonSerialized]
+    private IElementDesignerData _data;
+
+    private DataBag _dataBag = new DataBag();
+
+    private FlagsDictionary _flags = new FlagsDictionary();
+
+    [SerializeField]
+    private string _identifier;
+
+    [SerializeField]
+    private bool _isCollapsed;
+
+    private Vector2 _location;
+
+    [SerializeField]
+    private FilterLocations _locations = new FilterLocations();
+
+    [SerializeField]
+    private string _name;
+
+    private Rect _position;
+
+    private List<Refactorer> _refactorings;
+
     public bool this[string flag]
     {
         get
@@ -36,60 +65,38 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
             }
         }
     }
-    public string Title { get { return Name; } }
-    public string SearchTag { get { return Name; } }
-    public bool IsNewNode { get; set; }
 
-    public bool IsExternal
+    public IEnumerable<Refactorer> AllRefactorers
+    {
+        get { return Refactorings.Concat(Items.OfType<IRefactorable>().SelectMany(p => p.Refactorings)); }
+    }
+
+    [Obsolete]
+    public virtual string AssemblyQualifiedName
     {
         get
         {
-            return Data.NodeItems.All(p => p.Identifier != Identifier);
+            return uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name);
         }
     }
 
-    public Vector2 DefaultLocation
+    public FilterCollapsedDictionary CollapsedValues
     {
-        get { return _location; }
+        get { return _collapsedValues; }
+        set { _collapsedValues = value; }
     }
 
-    public virtual string Namespace
-    {
-        get { return uFrameEditor.CurrentProject.GeneratorSettings.NamespaceProvider.RootNamespace; }
-    }
+    /// <summary>
+    /// The items that should be persisted with this diagram node.
+    /// </summary>
+    public abstract IEnumerable<IDiagramNodeItem> ContainedItems { get; set; }
 
-    public virtual string FullName
+    public Type CurrentType
     {
         get
         {
-            if (!string.IsNullOrEmpty(Namespace))
-                return string.Format("{0}.{1}",Namespace, Name);
-
-            return Name;
+            return uFrameEditor.FindType(FullName);
         }
-    }
-
-    public virtual void Serialize(JSONClass cls)
-    {
-        cls.Add("Name", new JSONData(_name));
-        cls.Add("IsCollapsed", new JSONData(_isCollapsed));
-        cls.Add("Identifier", new JSONData(_identifier));
-
-        cls.AddObjectArray("Items", ContainedItems);
-        
-        //cls.Add("Locations", Locations.Serialize());
-        cls.Add("CollapsedValues", CollapsedValues.Serialize());
-
-        cls.AddObject("Flags", Flags);
-        cls.AddObject("DataBag", DataBag);
-    }
-
-    public virtual void MoveItemDown(IDiagramNodeItem nodeItem)
-    {
-    }
-
-    public virtual void MoveItemUp(IDiagramNodeItem nodeItem)
-    {
     }
 
     public DataBag DataBag
@@ -98,7 +105,230 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         set { _dataBag = value; }
     }
 
-    private DataBag _dataBag = new DataBag();
+    public Vector2 DefaultLocation
+    {
+        get { return _location; }
+    }
+
+    /// <summary>
+    /// Gets the diagram file that this node belongs to
+    /// </summary>
+    public virtual IElementDesignerData Diagram
+    {
+        get { return Project.Diagrams.FirstOrDefault(p => p.NodeItems.Contains(this)); }
+    }
+
+    public bool Dirty { get; set; }
+
+    public IDiagramFilter Filter
+    {
+        get
+        {
+            if (Project.CurrentFilter == this)
+                return this;
+            return Project.CurrentFilter;
+        }
+    }
+
+    public FlagsDictionary Flags
+    {
+        get { return _flags ?? (_flags = new FlagsDictionary()); }
+        set { _flags = value; }
+    }
+
+    public string FullLabel { get { return Name; } }
+
+    public virtual string FullName
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Namespace))
+                return string.Format("{0}.{1}", Namespace, Name);
+
+            return Name;
+        }
+    }
+
+    public Rect HeaderPosition { get; set; }
+
+    public string Highlighter { get { return null; } }
+
+    public virtual string Identifier { get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; } }
+
+    public virtual bool ImportedOnly
+    {
+        get { return true; }
+    }
+
+    public bool IsExplorerCollapsed { get; set; }
+
+    public virtual string InfoLabel
+    {
+        get
+        {
+            return null;
+        }
+    }
+
+    public virtual bool IsCollapsed
+    {
+        get { return _isCollapsed; }
+        set
+        {
+            _isCollapsed = value;
+            Filter.CollapsedValues[this] = value;
+            Dirty = true;
+        }
+    }
+
+    public bool IsEditing { get; set; }
+
+    public bool IsExternal
+    {
+        get
+        {
+            return Project.NodeItems.All(p => p.Identifier != Identifier);
+        }
+    }
+
+    public bool IsNewNode { get; set; }
+
+    public bool IsSelectable { get { return true; } }
+
+    public bool IsSelected { get; set; }
+
+    public virtual IEnumerable<IDiagramNodeItem> Items
+    {
+        get { return ContainedItems; }
+    }
+
+    public abstract string Label { get; }
+
+    public Vector2 Location
+    {
+        get
+        {
+            return Filter.Locations[this];
+        }
+        set
+        {
+            _location = value;
+
+            if (_location.x < 0)
+                _location.x = 0;
+            if (_location.y < 0)
+                _location.y = 0;
+            Filter.Locations[this] = _location;
+            Dirty = true;
+        }
+    }
+
+    public FilterLocations Locations
+    {
+        get { return _locations; }
+        set { _locations = value; }
+    }
+
+    public virtual string Name
+    {
+        get { return _name; }
+        set
+        {
+            if (value == null) return;
+            _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
+            Dirty = true;
+        }
+    }
+
+    public virtual string Namespace
+    {
+        get { return uFrameEditor.CurrentProject.GeneratorSettings.NamespaceProvider.RootNamespace; }
+    }
+
+    public virtual DiagramNode Node
+    {
+        get
+        {
+            return this;
+        }
+        set
+        {
+        }
+    }
+
+    public virtual string OldName
+    {
+        get;
+        set;
+    }
+
+    public Rect Position
+    {
+        get
+        {
+            return _position;
+        }
+        set { _position = value; }
+    }
+
+    /// <summary>
+    /// The project this node belongs to
+    /// </summary>
+    public virtual IProjectRepository Project
+    {
+        get
+        {
+            return uFrameEditor.CurrentProject;
+        }
+    }
+
+    public virtual IEnumerable<Refactorer> Refactorings
+    {
+        get
+        {
+            if (RenameRefactorer != null)
+                yield return RenameRefactorer;
+        }
+    }
+
+    public RenameRefactorer RenameRefactorer { get; set; }
+
+    public string SearchTag { get { return Name; } }
+
+    public virtual bool ShouldRenameRefactor { get { return true; } }
+
+    public virtual string SubTitle { get { return string.Empty; } }
+
+    public string Title { get { return Name; } }
+
+    protected DiagramNode()
+    {
+        IsNewNode = true;
+    }
+
+    public virtual void BeginEditing()
+    {
+        if (!IsNewNode)
+        {
+            if (RenameRefactorer == null)
+            {
+                RenameRefactorer = CreateRenameRefactorer();
+            }
+        }
+
+        OldName = Name;
+        IsEditing = true;
+    }
+
+    public void BeginRename()
+    {
+        BeginEditing();
+    }
+
+    public virtual RenameRefactorer CreateRenameRefactorer()
+    {
+        return null;
+    }
 
     public virtual void Deserialize(JSONClass cls, INodeRepository repository)
     {
@@ -134,247 +364,11 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         }
     }
 
-    public FlagsDictionary Flags
-    {
-        get { return _flags ?? (_flags = new FlagsDictionary()); }
-        set { _flags = value; }
-    }
-
-    /// <summary>
-    /// The items that should be persisted with this diagram node.
-    /// </summary>
-    public abstract IEnumerable<IDiagramNodeItem> ContainedItems { get; set; }
-
-    [NonSerialized]
-    private IElementDesignerData _data;
-
-    [SerializeField]
-    private string _identifier;
-
-    [SerializeField]
-    private bool _isCollapsed;
-
-    private Vector2 _location;
-
-    [SerializeField]
-    private string _name;
-
-    private Rect _position;
-
-    private List<Refactorer> _refactorings;
-    private FlagsDictionary _flags = new FlagsDictionary();
-
-    [SerializeField]
-    private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
-
-    [SerializeField]
-    private FilterLocations _locations = new FilterLocations();
-
-    public IEnumerable<Refactorer> AllRefactorers
-    {
-        get { return Refactorings.Concat(Items.OfType<IRefactorable>().SelectMany(p => p.Refactorings)); }
-    }
-
-    [Obsolete]
-    public virtual string AssemblyQualifiedName
-    {
-        get
-        {
-            return uFrameEditor.UFrameTypes.ViewModel.AssemblyQualifiedName.Replace("ViewModel", Name);
-        }
-    }
-
-    public virtual INodeRepository Data
-    {
-        get
-        {
-            return uFrameEditor.CurrentProject;
-        }
-    }
-
-    public bool Dirty { get; set; }
-
-    public IDiagramFilter Filter
-    {
-        get
-        {
-            if (Data.CurrentFilter == this)
-                return this;
-            return Data.CurrentFilter;
-        }
-    }
-
-    public string FullLabel { get { return Name; } }
-
-    public Rect HeaderPosition { get; set; }
-
-    public string Highlighter { get { return null; } }
-
-    public virtual string Identifier { get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; } }
-
-    public virtual string SubTitle { get { return string.Empty; } }
-
-    public virtual string InfoLabel
-    {
-        get
-        {
-            return null;
-        }
-    }
-
-    public virtual bool IsCollapsed
-    {
-        get { return _isCollapsed; }
-        set
-        {
-            _isCollapsed = value;
-            Filter.CollapsedValues[this] = value;
-            Dirty = true;
-        }
-    }
-
-    public bool IsEditing { get; set; }
-
-    public bool IsSelectable { get { return true; } }
-
-    public virtual DiagramNode Node
-    {
-        get
-        {
-            return this;
-        }
-        set
-        {
-            
-        }
-    }
-
-    public bool IsSelected { get; set; }
-
-    public virtual IEnumerable<IDiagramNodeItem> Items
-    {
-        get { return ContainedItems; }
-    }
-
-    public abstract string Label { get; }
-
-    public Vector2 Location
-    {
-        get
-        {
-            return Filter.Locations[this];
-        }
-        set
-        {
-            _location = value;
-
-            if (_location.x < 0)
-                _location.x = 0;
-            if (_location.y < 0)
-                _location.y = 0;
-            Filter.Locations[this] = _location;
-            Dirty = true;
-        }
-    }
-
-    public virtual string Name
-    {
-        get { return _name; }
-        set
-        {
-            if (value == null) return;
-            _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
-            Dirty = true;
-        }
-    }
-
-    public virtual string OldName
-    {
-        get;
-        set;
-    }
-
-    public Rect Position
-    {
-        get
-        {
-            return _position;
-        }
-        set { _position = value; }
-    }
-
-    public virtual IEnumerable<Refactorer> Refactorings
-    {
-        get
-        {
-            if (RenameRefactorer != null)
-                yield return RenameRefactorer;
-        }
-    }
-
-    public RenameRefactorer RenameRefactorer { get; set; }
-
-    public virtual bool ShouldRenameRefactor { get { return true; } }
-
-    public FilterCollapsedDictionary CollapsedValues
-    {
-        get { return _collapsedValues; }
-        set { _collapsedValues = value; }
-    }
-
-    public virtual bool ImportedOnly
-    {
-        get { return true; }
-    }
-
-    public FilterLocations Locations
-    {
-        get { return _locations; }
-        set { _locations = value; }
-    }
-
-    public Type CurrentType
-    {
-        get
-        {
-            return uFrameEditor.FindType(FullName);
-        }
-    }
-
-    protected DiagramNode()
-    {
-        IsNewNode = true;
-    }
-
-    public virtual void BeginEditing()
-    {
-        if (!IsNewNode)
-        {
-            if (RenameRefactorer == null)
-            {
-                RenameRefactorer = CreateRenameRefactorer();
-            }
-        }
-
-        OldName = Name;
-        IsEditing = true;
-    }
-
-    public void BeginRename()
-    {
-        BeginEditing();
-    }
-
-    public virtual RenameRefactorer CreateRenameRefactorer()
-    {
-        return null;
-    }
-
     public virtual bool EndEditing()
     {
         IsEditing = false;
 
-        if (Data.NodeItems.Count(p => p.Name == Name) > 1)
+        if (Project.NodeItems.Count(p => p.Name == Name) > 1)
         {
             Name = OldName;
             return false;
@@ -393,20 +387,27 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         return true;
     }
 
-    public virtual CodeTypeReference GetPropertyType(ITypeDiagramItem itemData)
-    {
-        return new CodeTypeReference(this.Name);
-    }
-
     public virtual CodeTypeReference GetFieldType(ITypeDiagramItem itemData)
     {
-
         var tRef = new CodeTypeReference(uFrameEditor.UFrameTypes.P);
         tRef.TypeArguments.Add(this.Name);
         return tRef;
     }
 
-    public virtual  void NodeRemoved(IDiagramNode enumData)
+    public virtual CodeTypeReference GetPropertyType(ITypeDiagramItem itemData)
+    {
+        return new CodeTypeReference(this.Name);
+    }
+
+    public virtual void MoveItemDown(IDiagramNodeItem nodeItem)
+    {
+    }
+
+    public virtual void MoveItemUp(IDiagramNodeItem nodeItem)
+    {
+    }
+
+    public virtual void NodeRemoved(IDiagramNode enumData)
     {
         foreach (var item in ContainedItems)
         {
@@ -422,7 +423,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 
     public void Remove(IDiagramNode diagramNode)
     {
-        Data.PositionData.Remove(Data.CurrentFilter,diagramNode.Identifier);
+        Project.PositionData.Remove(Project.CurrentFilter, diagramNode.Identifier);
     }
 
     public virtual void RemoveFromDiagram()
@@ -443,5 +444,20 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
     public virtual void Rename(string newName)
     {
         Name = newName;
+    }
+
+    public virtual void Serialize(JSONClass cls)
+    {
+        cls.Add("Name", new JSONData(_name));
+        cls.Add("IsCollapsed", new JSONData(_isCollapsed));
+        cls.Add("Identifier", new JSONData(_identifier));
+
+        cls.AddObjectArray("Items", ContainedItems);
+
+        //cls.Add("Locations", Locations.Serialize());
+        cls.Add("CollapsedValues", CollapsedValues.Serialize());
+
+        cls.AddObject("Flags", Flags);
+        cls.AddObject("DataBag", DataBag);
     }
 }

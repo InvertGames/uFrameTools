@@ -30,7 +30,7 @@ public class ViewComponentData : DiagramNode
 
     public ViewComponentData Base
     {
-        get { return Data.GetViewComponents().FirstOrDefault(p => p.Identifier == this.BaseIdentifier); }
+        get { return Project.GetViewComponents().FirstOrDefault(p => p.Identifier == this.BaseIdentifier); }
     }
 
     public string BaseIdentifier
@@ -62,7 +62,7 @@ public class ViewComponentData : DiagramNode
             {
                 return Base.Element;
             }
-            return Data.GetElements().FirstOrDefault(p => p.Identifier == ElementIdentifier);
+            return Project.GetElements().FirstOrDefault(p => p.Identifier == ElementIdentifier);
         }
     }
 
@@ -112,8 +112,8 @@ public class ViewComponentData : DiagramNode
     public override void RemoveFromDiagram()
     {
         base.RemoveFromDiagram();
-        Data.RemoveNode(this);
-        foreach (var viewComponentData in Data.GetViewComponents())
+        Project.RemoveNode(this);
+        foreach (var viewComponentData in Project.GetViewComponents())
         {
             if (viewComponentData.BaseIdentifier == this.Identifier)
             {

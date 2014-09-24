@@ -16,8 +16,8 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             var generator = SelectedOption.Value as CodeGenerator;
             if (generator == null) return;
-            var pathStrategy = uFrameEditor.CurrentDiagramViewModel.Settings.CodePathStrategy;
-            var filePath = System.IO.Path.Combine(pathStrategy.AssetPath, generator.Filename);
+            var pathStrategy = uFrameEditor.CurrentDiagramViewModel.DiagramData.CodePathStrategy;
+            var filePath = generator.FullPathName;
             //var filename = repository.GetControllerCustomFilename(this.Name);
             var scriptAsset = AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
             AssetDatabase.OpenAsset(scriptAsset);

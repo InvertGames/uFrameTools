@@ -97,6 +97,8 @@ public class ItemDrawer : Drawer
     {
 
     }
+
+    
     public override void Draw(float scale)
     {
         base.Draw(scale);
@@ -104,22 +106,23 @@ public class ItemDrawer : Drawer
         {
             GUI.Box(Bounds.Scale(scale), string.Empty, SelectedItemStyle);
         }
-
+      
         if (ItemViewModel.IsSelected && ItemViewModel.IsEditable)
         {
-
+          
 
             GUILayout.BeginArea(Bounds.Scale(scale));
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.BeginHorizontal();
             DrawOption();
-            GUI.SetNextControlName(ItemViewModel.Name);
+            GUI.SetNextControlName("EditingField");
             var newName = EditorGUILayout.TextField(ItemViewModel.Name, ElementDesignerStyles.ClearItemStyle);
             if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
             {
                 ItemViewModel.Rename(newName);
-                //uFrameEditor.ExecuteCommand(p => );
             }
+            //if (GUI.GetNameOfFocusedControl() != ItemViewModel.NodeItem.Identifier)
+            //    GUI.FocusControl(ItemViewModel.NodeItem.Identifier);
             if (ItemViewModel.AllowRemoving)
                 if (GUILayout.Button(string.Empty, UBStyles.RemoveButtonStyle.Scale(scale)))
                 {
@@ -137,7 +140,7 @@ public class ItemDrawer : Drawer
             DrawOption();
             //var style = new GUIStyle(TextStyle);
             //style.normal.textColor = BackgroundStyle.normal.textColor;
-
+            
             GUILayout.Label(ItemViewModel.Name, ElementDesignerStyles.SelectedItemStyle);
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
@@ -150,6 +153,9 @@ public class ItemDrawer : Drawer
             highlighterPosition.height = Bounds.height - 6;
             GUI.Box(highlighterPosition.Scale(scale), string.Empty, ElementDesignerStyles.GetHighlighter(ItemViewModel.Highlighter));
         }
+    
+
+      
     }
 
     protected virtual void DrawItemLabel(IDiagramNodeItem item)

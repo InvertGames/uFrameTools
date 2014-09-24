@@ -13,7 +13,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             var data = new SubSystemData()
             {
                 //Data = node.Data,
-                Name = node.Data.GetUniqueName("New Sub System"),
+                Name = node.DiagramData.GetUniqueName("New Sub System"),
                 Location = new Vector2(15, 15)
             };
             node.CurrentRepository.AddNode(data);

@@ -218,7 +218,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         // Draw the title box
         GUI.Box(new Rect(0, 0f, Rect.width, 30f), DiagramViewModel.Title, ElementDesignerStyles.DiagramTitle);
 
-        string focusItem = null;
+       
         // Draw all of our drawers
         foreach (var drawer in Children.OrderBy(p => p.ZOrder).ToArray())
         {
@@ -227,14 +227,18 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
                 drawer.Refresh();
                 drawer.Dirty = false;
             }
-            //drawer.CalculateBounds();
-            var shouldFocus = drawer.ShouldFocus;
-            if (shouldFocus != null)
-                focusItem = shouldFocus;
-
             drawer.Draw(Scale);
+            
         }
 
+        EditorGUI.FocusTextInControl("EditingField");
+        //var nodeItem = DiagramViewModel.SelectedNodeItem as ItemViewModel;
+        //if (nodeItem != null)
+        //{
+
+        //    if (GUI.GetNameOfFocusedControl() == string.Empty)
+        //        EditorGUI.FocusTextInControl(nodeItem.NodeItem.Identifier);
+        //}
         //if (focusItem != null)
         //{
         //    EditorGUI.FocusTextInControl(focusItem);
@@ -371,6 +375,14 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
                 if (item.ViewModelObject.IsSelected)
                 {
                     item.ViewModel.Position += e.MousePositionDelta;
+                    if (item.ViewModel.Position.x < 0)
+                    {
+                        item.ViewModel.Position = new Vector2(0f,item.ViewModel.Position.y);
+                    }
+                    if (item.ViewModel.Position.y < 0)
+                    {
+                        item.ViewModel.Position = new Vector2( item.ViewModel.Position.x,0f);
+                    }
                     item.Refresh();
                 }
             }

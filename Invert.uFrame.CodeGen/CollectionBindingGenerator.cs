@@ -8,6 +8,8 @@ namespace Invert.uFrame.Code.Bindings
 {
     public abstract class CollectionBindingGenerator : BindingGenerator
     {
+        
+
         public string NameAsListField
         {
             get { return string.Format("_{0}List", Item.Name); }
@@ -44,59 +46,13 @@ namespace Invert.uFrame.Code.Bindings
         public override void CreateMembers(CodeTypeMemberCollection collection)
         {
             base.CreateMembers(collection);
-
-
+        
         }
 
         public override void CreateBindingStatement(CodeTypeMemberCollection collection, CodeConditionStatement bindingCondition)
         {
-            if (bindingCondition.TrueStatements.Count > 0) return;
-            if (RelatedElement != null && GenerateDefaultImplementation)
-            {
-                if (!HasField(collection, NameAsListField))
-                {
-                    var listField = CreateBindingField(string.Format("List<{0}>",uFrameEditor.UFrameTypes.ViewBase.Name), CollectionProperty.Name, "List", true);
-                    listField.InitExpression = new CodeObjectCreateExpression(string.Format("List<{0}>", uFrameEditor.UFrameTypes.ViewBase.Name));
-                    collection.Add(listField);
-                }
 
-                if (!HasField(collection, NameAsSceneFirstField))
-                {
-                    var sceneFirstField = CreateBindingField(typeof(bool).FullName, CollectionProperty.Name,
-                        "SceneFirst");
-                    collection.Add(sceneFirstField);
-                }
-                if (!HasField(collection, NameAsContainerField))
-                {
-                    var containerField = CreateBindingField(typeof(Transform).FullName, CollectionProperty.Name,
-                        "Container");
-                    collection.Add(containerField);
-                }
-
-                bindingCondition.TrueStatements.Add(
-                    new CodeSnippetExpression(string.Format("var binding = this.BindToViewCollection(() => {0}.{1})", Element.Name, CollectionProperty.FieldName)));
-
-                var containerNullCondition =
-                    new CodeConditionStatement(
-                        new CodeBinaryOperatorExpression(new CodeVariableReferenceExpression(NameAsContainerField),
-                            CodeBinaryOperatorType.ValueEquality, new CodeSnippetExpression("null")));
-
-                containerNullCondition.FalseStatements.Add(new CodeSnippetExpression(string.Format("binding.SetParent({0})", NameAsContainerField)));
-                bindingCondition.TrueStatements.Add(containerNullCondition);
-
-                var sceneFirstCondition =
-                    new CodeConditionStatement(
-                        new CodeVariableReferenceExpression(NameAsSceneFirstField));
-
-                sceneFirstCondition.TrueStatements.Add(new CodeSnippetExpression("binding.ViewFirst()"));
-                bindingCondition.TrueStatements.Add(sceneFirstCondition);
-            }
-            else
-            {
-                bindingCondition.TrueStatements.Add(
-                    new CodeSnippetExpression(string.Format("var binding = this.BindCollection(() => {0}.{1})", Element.Name,
-                        CollectionProperty.FieldName)));
-            }
+            
         }
 
         public string VarTypeName
@@ -104,15 +60,28 @@ namespace Invert.uFrame.Code.Bindings
             get { return RelatedElement == null ? CollectionProperty.RelatedTypeName : RelatedElement.NameAsViewModel; }
         }
 
-        public string ParameterTypeName
+        public virtual string ParameterTypeName
         {
             get { return RelatedElement == null ? CollectionProperty.RelatedTypeName : "ViewBase"; }
         }
 
         public virtual string VarName
         {
-            get { return "value"; }
+            get { return "item"; }
         }
 
+        public string AddMethodName
+        {
+            get { return string.Format("{0}Added", Item.Name); }
+        }
+
+        public string RemovedMethodName
+        {
+            get { return string.Format("{0}Removed", Item.Name); }
+        }
+
+        public abstract void CreateAddMembers(CodeTypeMemberCollection collection);
+
+        public abstract void CreateRemoveMembers(CodeTypeMemberCollection collection);
     }
 }

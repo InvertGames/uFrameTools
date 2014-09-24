@@ -20,7 +20,6 @@ public class UFrameAssetManager : AssetPostprocessor
     public static void NewUFrameProject()
     {
         var project = CreateAsset<ProjectRepository>();
-        project.OutputDirectory = AssetDatabase.GetAssetPath(project);
         project.CreateNewDiagram();
         AssetDatabase.SaveAssets();
         Refresh();
@@ -32,7 +31,6 @@ public class UFrameAssetManager : AssetPostprocessor
         AssetDatabase.CreateFolder("Assets", name);
         var project = ScriptableObject.CreateInstance<ProjectRepository>();
         AssetDatabase.CreateAsset(project, "Assets/" + name + "/" + name + ".asset");
-        project.OutputDirectory = "Assets/" + name + "/";
         project.CreateNewDiagram();
         Selection.activeObject = project;
         Refresh();

@@ -1,3 +1,4 @@
+using System.Linq;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 
@@ -10,22 +11,32 @@ public class StateMachineStateNodeViewModel : DiagramNodeViewModel<StateMachineS
 
     public bool IsCurrentState { get; set; }
 
-    public void AddTransition(ViewModelPropertyData item)
-    {
-        GraphItem.Transitions.Add(new StateMachineTransition()
-        {
-            Node = GraphItem,
-            Name = GraphItem.Data.GetUniqueName("Transition"),
-            PropertyIdentifier = item.Identifier
-        });
-    }
+    //public void AddTransition(ViewModelPropertyData item)
+    //{
+    //    GraphItem.Transitions.Add(new StateMachineTransition()
+    //    {
+    //        Node = GraphItem,
+    //        Name = GraphItem.Project.GetUniqueName("Transition"),
+    //        PropertyIdentifier = item.Identifier
+    //    });
+    //}
     public void AddTransition()
     {
-        GraphItem.Transitions.Add(new StateMachineTransition()
+        var currentFilter = DiagramViewModel.CurrentRepository.CurrentFilter as StateMachineNodeData;
+
+        ItemSelectionWindow.Init("Select Transition",currentFilter.Transitions.Cast<IItem>().ToArray(), (item) =>
         {
-            Node = GraphItem,
-            Name = GraphItem.Data.GetUniqueName("Transition"),
-            
+            uFrameEditor.ExecuteCommand((diagram) =>
+            {
+                GraphItem.Transitions.Add(new StateTransitionData()
+                {
+                    Node = GraphItem,
+                    Name = GraphItem.Project.GetUniqueName("Transition"),
+                    TransitionIdentifier = ((IDiagramNodeItem)item).Identifier,
+                    TransitionToIdentifier = null
+                });
+            });
         });
+      
     }
 }
