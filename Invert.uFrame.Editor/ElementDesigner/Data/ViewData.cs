@@ -49,7 +49,9 @@ public class ViewData : DiagramNode, ISubSystemType
     public string BaseViewIdentifier
     {
         get { return _baseViewIdentifier; }
-        set { _baseViewIdentifier = value;
+        set
+        {
+            _baseViewIdentifier = value;
             _bindingMethods = null;
             _newBindings = new List<IBindingGenerator>();
         }
@@ -64,7 +66,7 @@ public class ViewData : DiagramNode, ISubSystemType
     /// <summary>
     /// The name of the view that this view will derive from
     /// </summary>
-    public string  BaseViewName
+    public string BaseViewName
     {
         get
         {
@@ -98,7 +100,7 @@ public class ViewData : DiagramNode, ISubSystemType
     {
         get
         {
-           // return this.SceneProperties.Cast<IDiagramNodeItem>();
+            // return this.SceneProperties.Cast<IDiagramNodeItem>();
             return Bindings.Cast<IDiagramNodeItem>();
         }
         set
@@ -111,12 +113,12 @@ public class ViewData : DiagramNode, ISubSystemType
     {
         get
         {
-            
+
             return Type.GetType(ViewAssemblyQualifiedName);
         }
     }
 
-    public IEnumerable<ViewModelPropertyData> SceneProperties 
+    public IEnumerable<ViewModelPropertyData> SceneProperties
     {
         get
         {
@@ -177,7 +179,7 @@ public class ViewData : DiagramNode, ISubSystemType
         get
         {
             var sb = new StringBuilder();
-            foreach (var addedGenerator in NewBindings.Select(p=>p.Generator))
+            foreach (var addedGenerator in NewBindings.Select(p => p.Generator))
             {
                 addedGenerator.CallBase = false;
                 sb.AppendLine(addedGenerator.ToString());
@@ -207,7 +209,7 @@ public class ViewData : DiagramNode, ISubSystemType
                     Name = item.Name,
                     RelatedType = item.RelatedType,
                     Node = this,
-                    
+
                 };
             }
             foreach (var binding in Bindings)
@@ -297,17 +299,31 @@ public class ViewData : DiagramNode, ISubSystemType
         {
             ForAssemblyQualifiedName = cls["ForAssemblyQualifiedName"].Value;
         }
-        
+
         if (cls["ForElementIdentifier"] != null)
         {
             _forElementIdentifier = cls["ForElementIdentifier"].Value;
         }
 
         if (cls["BaseViewIdentifier"] != null)
-        _baseViewIdentifier = cls["BaseViewIdentifier"].Value;
+            _baseViewIdentifier = cls["BaseViewIdentifier"].Value;
         if (cls["ComponentIdentifiers"] != null)
-        _componentIdentifiers = cls["ComponentIdentifiers"].AsArray.DeserializePrimitiveArray(n => n.Value).ToList();
+            _componentIdentifiers = cls["ComponentIdentifiers"].AsArray.DeserializePrimitiveArray(n => n.Value).ToList();
 
+    }
+
+    public override void NodeRemoved(IDiagramNode enumData)
+    {
+        base.NodeRemoved(enumData);
+        if (BaseViewIdentifier == enumData.Identifier)
+        {
+            BaseViewIdentifier = null;
+        }
+    }
+
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        Bindings.Remove(item as ViewBindingData);
     }
 
     private void SetBindingMethods()
@@ -323,7 +339,7 @@ public class ViewData : DiagramNode, ISubSystemType
             }
             var methods = vmType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
-            var bindingMethodNames = uFrameEditor.GetBindingGeneratorsFor(element).Select(p => p.MethodName).ToArray();
+            var bindingMethodNames = uFrameEditor.GetPossibleBindingGenerators(element).Select(p => p.MethodName).ToArray();
             foreach (var method in methods)
             {
                 if (bindingMethodNames.Contains(method.Name))
@@ -386,7 +402,7 @@ public class ViewData : DiagramNode, ISubSystemType
 }
 
 public class ViewBindingData : DiagramNodeItem
-{ 
+{
     public override string FullLabel
     {
         get { return Name; }
@@ -408,11 +424,38 @@ public class ViewBindingData : DiagramNodeItem
     public string GeneratorType { get; set; }
 
     public IBindingGenerator Generator { get; set; }
+    public string PropertyIdentifier { get; set; }
+
+    public ViewData View
+    {
+        get { return Node as ViewData; }
+    }
+
+    public ITypeDiagramItem Property
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(PropertyIdentifier)) return null;
+            return View.ViewForElement.ViewModelItems.FirstOrDefault(p => p.Identifier == PropertyIdentifier);
+        }
+    }
+
+    public override void NodeRemoved(IDiagramNode item)
+    {
+        base.NodeRemoved(item);
+        if (item.Identifier == PropertyIdentifier)
+        {
+            PropertyIdentifier = string.Empty;
+        }
+    }
+
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
         if (GeneratorType != null)
-        cls.Add("GeneratorType",new JSONData(GeneratorType));
+            cls.Add("GeneratorType", new JSONData(GeneratorType));
+
+        cls.Add("PropertyIdentifier", new JSONData(PropertyIdentifier ?? string.Empty));
     }
 
     public override void Deserialize(JSONClass cls, INodeRepository repository)
@@ -421,6 +464,14 @@ public class ViewBindingData : DiagramNodeItem
         if (cls["GeneratorType"] != null)
         {
             GeneratorType = cls["GeneratorType"].Value;
+        }
+        if (cls["PropertyIdentifier"] != null)
+        {
+            PropertyIdentifier = cls["PropertyIdentifier"].Value;
+        }
+        else
+        {
+            
         }
     }
 }

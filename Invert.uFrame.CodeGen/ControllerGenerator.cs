@@ -14,6 +14,7 @@ public class ControllerGenerator : ElementCodeGenerator
         base.Initialize(fileGenerator);
         AddController(ElementData);
         Namespace.Imports.Add(new CodeNamespaceImport("UniRx"));
+        Namespace.Imports.Add(new CodeNamespaceImport("UnityEngine"));
         
     }
 

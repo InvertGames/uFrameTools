@@ -160,14 +160,31 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     public void RemoveNode(IDiagramNode enumData)
     {
         _nodeItems = null;
-        
+        foreach (var item in enumData.ContainedItems.ToArray())
+        {
+            RemoveItem(item);
+        }
         CurrentGraph.RemoveNode(enumData);
-        foreach (var item in NodeItems)
+        foreach (var item in NodeItems.ToArray())
         {
             item.NodeRemoved(enumData);
         }
     }
 
+    public void RemoveItem(IDiagramNodeItem nodeItem)
+    {
+        nodeItem.Node.RemoveItem(nodeItem);
+
+        foreach (var node in NodeItems.ToArray())
+        {
+            node.NodeItemRemoved(nodeItem);
+            foreach (var item in node.ContainedItems.ToArray())
+            {
+                item.NodeItemRemoved(nodeItem);
+            }
+
+        }
+    }
     public IDiagramFilter CurrentFilter
     {
         get

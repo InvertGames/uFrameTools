@@ -22,6 +22,11 @@ public class EnumData : DiagramNode,IDesignerType
         set { EnumItems = value.OfType<EnumItem>().ToList(); }
     }
 
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        EnumItems.Remove(item as EnumItem);
+    }
+
     public override void MoveItemDown(IDiagramNodeItem nodeItem)
     {
         base.MoveItemDown(nodeItem);

@@ -10,6 +10,11 @@ public class MissingNodeData : DiagramNode
         _CachedData = cls;
     }
 
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        
+    }
+
     public override void Serialize(JSONClass cls)
     {
         //base.Serialize(cls);

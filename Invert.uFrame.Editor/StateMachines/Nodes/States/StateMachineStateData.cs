@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.uFrame.Editor;
@@ -35,6 +36,23 @@ public class StateMachineStateData : DiagramNode
         {
             return Project.NodeItems.OfType<StateMachineNodeData>().FirstOrDefault(p => p.States.Contains(this));
         }
+    }
+
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        Transitions.Remove(item as StateTransitionData);
+        Transitions.RemoveAll(p => p.TransitionIdentifier == item.Identifier);
+
+    }
+
+    public override void NodeRemoved(IDiagramNode enumData)
+    {
+        base.NodeRemoved(enumData);
+
+        Transitions.RemoveAll(
+            p => p.TransitionIdentifier == enumData.Identifier || p.TransitionToIdentifier == enumData.Identifier);
+
+
     }
 }
 

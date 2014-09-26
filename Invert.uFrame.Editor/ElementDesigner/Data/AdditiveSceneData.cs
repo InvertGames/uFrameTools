@@ -67,6 +67,11 @@ public class AdditiveSceneData : IDiagramNodeItem
         
     }
 
+    public void NodeItemRemoved(IDiagramNodeItem nodeItem)
+    {
+        
+    }
+
 
     public void Serialize(JSONClass cls)
     {

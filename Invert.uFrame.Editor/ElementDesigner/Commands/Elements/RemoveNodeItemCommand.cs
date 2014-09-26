@@ -19,7 +19,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             var diagramNodeItem = arg.SelectedNodeItem as ItemViewModel;
             if (diagramNodeItem != null)
-                diagramNodeItem.Remove();
+                arg.CurrentRepository.RemoveItem(diagramNodeItem.NodeItem);
         }
 
         public override string CanPerform(DiagramViewModel node)

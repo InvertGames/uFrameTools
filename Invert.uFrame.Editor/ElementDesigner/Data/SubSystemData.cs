@@ -120,6 +120,11 @@ public class SubSystemData : DiagramNode
         _imports = cls["Imports"].AsArray.DeserializePrimitiveArray(n => n.Value).ToList();
     }
 
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        Instances.Remove(item as RegisteredInstanceData);
+    }
+
     [SerializeField]
     private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
 

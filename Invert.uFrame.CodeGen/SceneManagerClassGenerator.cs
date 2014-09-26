@@ -163,8 +163,8 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                 }
             }
 
-
-            foreach (var element in Data.SubSystem.AllInstances.Select(p=>p.RelatedNode()).OfType<ElementData>())
+            
+            foreach (var element in Data.AllImportedElements)
             {
                 var controllerField = new CodeMemberField(element.NameAsController, "_" + element.NameAsController);
                 var controllerProperty = controllerField.EncapsulateField(element.NameAsController,

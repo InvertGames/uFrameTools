@@ -39,7 +39,7 @@ public class ConnectionDrawer : Drawer<ConnectionViewModel>
         var _startRight = ViewModel.ConnectorA.Direction == ConnectorDirection.Output;
         var _endRight = ViewModel.ConnectorB.Direction == ConnectorDirection.Output;
         Handles.color = ViewModel.CurrentColor;
-        List<Vector3> points = new List<Vector3>();
+        List<Vector2> points = new List<Vector2>();
         Vector2 curr;
         points.Add(curr = _startPos);
    
@@ -59,10 +59,10 @@ public class ConnectionDrawer : Drawer<ConnectionViewModel>
         
     
         points.Add(_endPos);
-        
-        Handles.DrawPolyLine(points.ToArray());
-        
-        Handles.DrawPolyLine(points.Select(p=>p + new Vector3(1f,1f,0f)).ToArray());
+        var scaled = points.Select(p => new Vector3(p.x * scale,p.y * scale)).ToArray();
+        Handles.DrawPolyLine(scaled);
+
+        Handles.DrawPolyLine(scaled.Select(p => p + new Vector3(1f, 1f, 0f)).ToArray());
         
         
         

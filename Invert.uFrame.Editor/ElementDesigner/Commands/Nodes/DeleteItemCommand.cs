@@ -12,7 +12,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         public override void Perform(ItemViewModel node)
         {
             if (node == null) return;
-            node.Remove();
+            uFrameEditor.CurrentProject.RemoveItem(node.NodeItem);
         }
 
         public override string CanPerform(ItemViewModel node)

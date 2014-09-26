@@ -32,7 +32,10 @@ public class StateMachineActionData : DiagramNode
         }
     }
 
-
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        
+    }
 }
 
 public class StateActionNodeViewModel : DiagramNodeViewModel<StateMachineActionData>

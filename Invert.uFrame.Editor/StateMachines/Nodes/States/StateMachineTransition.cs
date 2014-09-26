@@ -6,7 +6,7 @@ public class StateMachineTransition : DiagramNodeItem
     {
         get { return Name; }
     }
-
+    
     public override void Remove(IDiagramNode diagramNode)
     {
         var node = diagramNode as StateMachineNodeData;

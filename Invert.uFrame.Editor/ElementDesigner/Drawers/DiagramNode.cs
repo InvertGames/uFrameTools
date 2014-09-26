@@ -57,7 +57,12 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         {
             if (Flags.ContainsKey(flag))
             {
-                Flags[flag] = value;
+                if (value == false)
+                {
+                    Flags.Remove(flag);
+                    return;
+                }
+                Flags[flag] = true;
             }
             else
             {
@@ -394,6 +399,15 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         return tRef;
     }
 
+
+
+    public virtual void NodeItemRemoved(IDiagramNodeItem diagramNodeItem)
+    {
+        DataBag[diagramNodeItem.Identifier] = null;
+        Flags[diagramNodeItem.Identifier] = false;
+    }
+
+
     public virtual CodeTypeReference GetPropertyType(ITypeDiagramItem itemData)
     {
         return new CodeTypeReference(this.Name);
@@ -414,6 +428,14 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
             if (item != this)
                 item.NodeRemoved(enumData);
         }
+
+        DataBag[enumData.Identifier] = null;
+        this[enumData.Identifier] = false;
+    }
+
+    void IDiagramNodeItem.NodeItemRemoved(IDiagramNodeItem nodeItem)
+    {
+        NodeItemRemoved(nodeItem);
     }
 
     public virtual void RefactorApplied()
@@ -459,5 +481,10 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
 
         cls.AddObject("Flags", Flags);
         cls.AddObject("DataBag", DataBag);
+    }
+
+    public void RemoveItem(IDiagramNodeItem item)
+    {
+
     }
 }

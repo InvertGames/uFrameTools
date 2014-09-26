@@ -10,6 +10,11 @@ using UnityEngine;
 [Serializable]
 public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializeablePropertyData
 {
+    public string ViewIdentifier
+    {
+        get { return DataBag["ViewIdentifier"]; }
+        set { DataBag["ViewIdentifier"] = value; }
+    }
 
     public override void Serialize(JSONClass cls)
     {
@@ -235,6 +240,11 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
     public override void NodeRemoved(IDiagramNode item)
     {
        base.NodeRemoved(item);
+        if (ViewIdentifier == item.Identifier)
+        {
+            ViewIdentifier = null;
+        }
+
     }
 
     public string NameAsPrefabBindingOption

@@ -244,8 +244,7 @@ namespace Invert.Common
                     {
                         normal = { background = GetSkinTexture("NodeCollapse"), textColor = Color.white },
 
-                        fixedHeight = 18,
-                        fixedWidth = 42
+                      
                     };
                 return _nodeCollapse;
             }
@@ -259,8 +258,7 @@ namespace Invert.Common
                     {
                         normal = { background = GetSkinTexture("NodeExpand"), textColor = Color.white },
                       
-                        fixedHeight = 18,
-                        fixedWidth = 42
+                   
                     };
                 return _nodeExpand;
             }

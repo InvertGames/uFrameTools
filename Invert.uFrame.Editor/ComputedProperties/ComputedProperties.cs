@@ -62,6 +62,14 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
         }
     }
 
+    public override void NodeRemoved(IDiagramNode enumData)
+    {
+        base.NodeRemoved(enumData);
+
+    }
+    
+
+
     public override string Label
     {
         get { return this.Name; }
@@ -186,6 +194,11 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
         }
     }
 
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        DependantPropertyIdentifiers.RemoveAll(p => p == item.Identifier);
+    }
+
     public ElementData Element
     {
         get
@@ -289,7 +302,7 @@ public class ComputedPropertyInputsConnectionStrategy :
 
     protected override bool CanConnect(ITypeDiagramItem output, ComputedPropertyData input)
     {
-        if (!(output is ComputedPropertyData) && !(output is ViewPropertyData)) return false;
+        //if (!(output is ComputedPropertyData) && !(output is ViewPropertyData)) return false;
         return base.CanConnect(output, input);
     }
 
@@ -308,31 +321,3 @@ public class ComputedPropertyInputsConnectionStrategy :
         input.DependantPropertyIdentifiers.Remove(output.Identifier);
     }
 }
-
-//public class ComputedPopertyCodeFactory : DesignerGeneratorFactory<ComputedPropertyData>
-//{
-//    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
-//        ComputedPropertyData item)
-//    {
-//        yield return new ComputedPropertyClassGenerator()
-//        {
-//            Data = item,
-//            IsDesignerFile = true,
-//            Filename = diagramData.Name + "ComputedProperties.designer.cs"
-//        };
-
-//    }
-//}
-
-//public class ComputedPropertyClassGenerator : CodeGenerator
-//{
-//    public ComputedPropertyData Data { get; set; }
-
-//    public override void Initialize(CodeFileGenerator fileGenerator)
-//    {
-//        base.Initialize(fileGenerator);
-//        var decleration = new CodeTypeDeclaration(Data.Name + "ComputedPropertyClass");
-
-//        Namespace.Types.Add(decleration);
-//    }
-//}

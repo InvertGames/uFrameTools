@@ -14,6 +14,7 @@ public interface INodeRepository
     void RemoveNode(IDiagramNode enumData);
     IDiagramFilter CurrentFilter { get; }
     FilterPositionData PositionData { get; }
+    void RemoveItem(IDiagramNodeItem nodeItem);
 }
 
 

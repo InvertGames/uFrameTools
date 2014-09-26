@@ -109,6 +109,11 @@ public class ViewComponentData : DiagramNode
         return base.EndEditing();
     }
 
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        
+    }
+
     public override void RemoveFromDiagram()
     {
         base.RemoveFromDiagram();

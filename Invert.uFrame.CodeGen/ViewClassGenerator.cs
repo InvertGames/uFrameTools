@@ -308,6 +308,8 @@ public abstract class ViewClassGenerator : CodeGenerator
 
         foreach (var property in data.Properties)
         {
+            if (property.ViewIdentifier != null) continue;
+
             var relatedNode = property.RelatedNode();
             var relatedViewModel = relatedNode as ElementData;
 
@@ -475,19 +477,11 @@ public abstract class ViewClassGenerator : CodeGenerator
 
         }
 
-        var bindingGenerators = uFrameEditor.GetBindingGeneratorsFor(data.ViewForElement, isOverride: false, generateDefaultBindings:true, includeBaseItems: data.BaseView == null).ToArray();
+        var bindingGenerators = uFrameEditor.GetBindingGeneratorsForView(data);
 
-        //foreach (var binding in data.Bindings)
-        //{
-            
-            
-
-        //}
         foreach (var bindingGenerator in bindingGenerators)
         {
-            
-            if (data.Bindings.All(p => p.Name != bindingGenerator.MethodName && p.GeneratorType != bindingGenerator.GetType().Name)) continue;
-
+            bindingGenerator.IsOverride = !IsDesignerFile;
             CodeConditionStatement bindingCondition = null;
             if (this.BindingConditionStatements.ContainsKey(bindingGenerator.BindingConditionFieldName))
             {

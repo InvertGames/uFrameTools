@@ -15,7 +15,8 @@ public interface IDiagramNodeItem : ISelectable, IJsonObject,IItem
     /// </summary>
     bool IsEditing { get; set; }
 
-    void Remove(IDiagramNode diagramNode);
+    //void Remove(IDiagramNode diagramNode);
     void Rename(IDiagramNode data, string name);
     void NodeRemoved(IDiagramNode item);
+    void NodeItemRemoved(IDiagramNodeItem nodeItem);
 }

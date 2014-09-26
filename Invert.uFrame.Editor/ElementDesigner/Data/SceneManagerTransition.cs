@@ -110,6 +110,11 @@ public class SceneManagerTransition : IDiagramNodeItem
         
     }
 
+    public void NodeItemRemoved(IDiagramNodeItem nodeItem)
+    {
+        
+    }
+
 
     public void Disconnect()
     {

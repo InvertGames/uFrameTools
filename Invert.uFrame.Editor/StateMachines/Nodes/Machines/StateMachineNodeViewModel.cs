@@ -24,19 +24,8 @@ public class StateMachineNodeViewModel : DiagramNodeViewModel<StateMachineNodeDa
     protected override void DataObjectChanged()
     {
         base.DataObjectChanged();
-        if (uFrameEditor.CurrentProject.CurrentFilter == this.GraphItem) return;
-        foreach (var item in GraphItem.GetContainingNodes(uFrameEditor.CurrentProject).OfType<StateMachineStateData>().SelectMany(p=>p.Transitions))
-        {
-            var vm = GetDataViewModel(item);
-            if (vm == null)
-            {
-                Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
-                continue;
-            }
-            ContentItems.Add(vm);
-        }
-       // ContentItems.Insert(0,ElementConnectionHeader);
-      //  ContentItems.Insert(0, StateVariableHeader);
+        //if (uFrameEditor.CurrentProject.CurrentFilter == this.GraphItem) return;
+
     }
     public ConnectorViewModel StateVariableConnector
     {

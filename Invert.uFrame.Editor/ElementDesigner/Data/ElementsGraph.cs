@@ -53,6 +53,11 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
         set { _positionData = value; }
     }
 
+    public void RemoveItem(IDiagramNodeItem nodeItem)
+    {
+        throw new NotImplementedException();
+    }
+
     public IDiagramFilter CurrentFilter
     {
         get

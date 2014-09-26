@@ -246,6 +246,7 @@ public class ElementData : ElementDataBase, IDesignerType
         set { _properties = value.ToList(); }
     }
 
+
     public IEnumerable<ISerializeablePropertyData> SerializedProperties
     {
         get
@@ -262,6 +263,23 @@ public class ElementData : ElementDataBase, IDesignerType
         {
             return string.Empty;
         }
+    }
+
+    public override void NodeRemoved(IDiagramNode enumData)
+    {
+        base.NodeRemoved(enumData);
+        if (BaseIdentifier == enumData.Identifier)
+        {
+            BaseIdentifier = null;
+        }
+    }
+
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        Properties.Remove(item as ViewModelPropertyData);
+        Collections.Remove(item as ViewModelCollectionData);
+        Commands.Remove(item as ViewModelCommandData);
+
     }
 
     public override CodeTypeReference GetPropertyType(ITypeDiagramItem itemData)

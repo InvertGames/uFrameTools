@@ -42,30 +42,32 @@ public class StateMachineNodeData : DiagramNode,IDesignerType
         Project.RemoveNode(this);
     }
 
+    public override void NodeRemoved(IDiagramNode enumData)
+    {
+        base.NodeRemoved(enumData);
+        if (StartStateIdentifier == enumData.Identifier)
+            StartStateIdentifier = null;
+    }
+
     public IEnumerable<StateMachineStateData> States
     {
         get { return this.GetContainingNodes(Diagram).OfType<StateMachineStateData>(); }
     }
 
-    //public IEnumerable<StateMachineTransition> Transitions
-    //{
-    //    get { return this.States.SelectMany(p => p.Transitions).Concat(GlobalTransitions); }
-    //} 
     public override CodeTypeReference GetFieldType(ITypeDiagramItem itemData)
     {
         return new CodeTypeReference(Name);
+    }
+
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        Transitions.Remove(item as StateMachineTransition);
     }
 
     public override CodeTypeReference GetPropertyType(ITypeDiagramItem itemData)
     {
         return new CodeTypeReference(uFrameEditor.UFrameTypes.State);
     }
-
-    //public List<StateMachineVariableData> Variables
-    //{
-    //    get { return _variables ?? (_variables = new List<StateMachineVariableData>()); }
-    //    set { _variables = value; }
-    //}
 
     public ElementData Element
     {

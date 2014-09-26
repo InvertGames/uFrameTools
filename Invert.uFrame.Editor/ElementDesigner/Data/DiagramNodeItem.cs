@@ -207,8 +207,19 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
                 typeItem.RemoveType();
             }
         }
+
+        if (this[Identifier])
+        {
+            this[Identifier] = false;
+        }
         
     }
-
-
+    
+    public virtual void NodeItemRemoved(IDiagramNodeItem nodeItem)
+    {
+        if (this[Identifier])
+        {
+            this[Identifier] = false;
+        }
+    }
 }

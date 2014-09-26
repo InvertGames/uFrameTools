@@ -71,6 +71,7 @@ namespace Invert.uFrame.Editor.ViewModels
             var binding = new ViewBindingData()
             {
                 GeneratorType = lastSelected.GetType().Name,
+                PropertyIdentifier = lastSelected.Item.Identifier,
                 Name = lastSelected.MethodName,
                 Generator = lastSelected,
                 Node = GraphItem
@@ -85,7 +86,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get
             {
-                return uFrameEditor.GetBindingGeneratorsFor(GraphItem.ViewForElement, true, false, true, false);
+                return uFrameEditor.GetPossibleBindingGenerators(GraphItem.ViewForElement, true, false, true, false);
             }
         }
 

@@ -41,17 +41,12 @@ public class ViewGenerator : ViewClassGenerator
         }
         else
         {
-            var bindingGenerators = uFrameEditor.GetBindingGeneratorsFor(View.ViewForElement, isOverride: true, generateDefaultBindings: true).ToArray();
+            var bindingGenerators = uFrameEditor.GetBindingGeneratorsForView(View).ToArray();
 
             foreach (var bindingGenerator in bindingGenerators)
             {
-                if (View.Bindings.All(p => p.Name != bindingGenerator.MethodName && p.GeneratorType != bindingGenerator.GetType().Name)) continue;
-
-                //bindingGenerator.IsOverride = true;
-
+                bindingGenerator.IsOverride = !IsDesignerFile;
                 bindingGenerator.CreateMembers(Decleration.Members);
-
-
             }
         }
         Namespace.Types.Add(Decleration);
@@ -196,13 +191,11 @@ public class ViewViewBaseGenerator : ViewClassGenerator
     private void AddBindingMembers()
     {
         var bindingGenerators =
-            uFrameEditor.GetBindingGeneratorsFor(View.ViewForElement, isOverride: false, generateDefaultBindings:true,includeBaseItems: View.BaseView == null)
-                .ToArray();
+            uFrameEditor.GetBindingGeneratorsForView(View);
 
         foreach (var bindingGenerator in bindingGenerators)
         {
-            if (View.Bindings.All(p => p.Name != bindingGenerator.MethodName && p.GeneratorType != bindingGenerator.GetType().Name)) continue;
-
+            bindingGenerator.IsOverride = !IsDesignerFile;
             bindingGenerator.CreateMembers(Decleration.Members);
         }
     }

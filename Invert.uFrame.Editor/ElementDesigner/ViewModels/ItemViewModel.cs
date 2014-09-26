@@ -82,10 +82,8 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             NodeItem.Rename(NodeItem.Node, newName);
         }
-        public void Remove()
-        {
-            NodeItem.Remove(((IDiagramNodeItem)DataObject).Node);
-        }
+        
+
 
         public override void Select()
         {

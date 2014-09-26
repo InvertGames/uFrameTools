@@ -62,6 +62,11 @@ public class DataBag : IJsonObject
     {
         if (_dict.ContainsKey(key))
         {
+            if (value == null)
+            {
+                _dict.Remove(key);
+                return;
+            }
             _dict[key] = value;
         }
         else

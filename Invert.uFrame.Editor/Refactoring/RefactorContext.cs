@@ -106,7 +106,9 @@ namespace Invert.uFrame.Editor.Refactoring
             }
             foreach (var filename in filenames)
             {
+                if (!File.Exists(filename)) continue;
                 RefactorFile(filename);
+                UnityEngine.Debug.Log("Refactoring file " + filename);
             }
             foreach (var refactorer in Refactors.OrderBy(p => p.Priority))
             {

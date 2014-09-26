@@ -308,10 +308,35 @@ namespace Invert.uFrame.Editor
             }
         }
 
-
-        public static IEnumerable<IBindingGenerator> GetBindingGeneratorsFor(ElementData data, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
+        public static IEnumerable<IBindingGenerator> GetBindingGeneratorsForView(ViewData view)
         {
+            foreach (var binding in view.Bindings.ToArray())
+            {
+                var generator = Container.Resolve<IBindingGenerator>(binding.GeneratorType);
+                if (generator == null)
+                {
+                    Debug.LogError("Binding Generator Not Found: " + binding.GeneratorType);
+                    continue;
+                }
+                if (binding.Property == null)
+                {
+                    binding.PropertyIdentifier = null;
+                    view.Bindings.Remove(binding);
+                    continue;
+                }
+                generator.Element = view.ViewForElement;
+                
+                generator.Item = binding.Property;
 
+                generator.GenerateDefaultImplementation = false;
+                yield return generator;
+            }
+
+        }
+
+        public static IEnumerable<IBindingGenerator> GetPossibleBindingGenerators(ElementData data, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
+        {
+            
             foreach (var viewModelItem in data.ViewModelItems)
             {
                 var bindingGenerators = Container.ResolveAll<IBindingGenerator>();
@@ -438,13 +463,23 @@ namespace Invert.uFrame.Editor
             }), "Print Objects");
             container.RegisterInstance<IToolbarCommand>(new DebugCommand("Print Generators", d =>
             {
-                var generators =GetAllFileGenerators(CurrentProject.GeneratorSettings,CurrentProject);
-
-                foreach (var item in generators)
+                var view = d.SelectedNode.GraphItemObject as ViewData;
+     
+                var generators = GetBindingGeneratorsForView(view);
+                foreach (var generator in generators)
                 {
-                    Debug.Log(item.SystemPath);
+                    Debug.Log(generator.GetType().Name);
                 }
             }), "Print Objects");
+            //container.RegisterInstance<IToolbarCommand>(new DebugCommand("asdfasdf Generators", d =>
+            //{
+            //    var generators = GetAllFileGenerators(CurrentProject.GeneratorSettings, CurrentProject);
+
+            //    foreach (var item in generators)
+            //    {
+            //        Debug.Log(item.SystemPath);
+            //    }
+            //}), "Print Objects");
 #endif
 
             container.Register<NodeItemHeader, NodeItemHeader>();
@@ -575,7 +610,7 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IConnectionStrategy>(new SceneManagerSubsystemConnectionStrategy(), "SceneManagerSubsystemConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new SubsystemConnectionStrategy(), "SubsystemConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new AssociationConnectionStrategy(), "AssociationConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputStrategy(), "ComputedPropertyInputStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputStrategy(), "ComputedPropertyInputStrategy");
             container.RegisterInstance<IConnectionStrategy>(new ViewComponentElementConnectionStrategy(), "ViewComponentElementConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new ViewComponentInheritanceConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new TwoWayPropertyConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");

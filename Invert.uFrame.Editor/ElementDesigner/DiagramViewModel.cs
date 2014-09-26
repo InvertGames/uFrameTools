@@ -344,6 +344,8 @@ public class DiagramViewModel : ViewModel
 
         foreach (var subsystem in nodes.OfType<SubSystemData>())
         {
+            if (subsystem.Instances.Count > 0) continue;
+
             var containing = subsystem.GetContainingNodes(CurrentRepository).OfType<ElementData>();
             foreach (var node in containing)
             {
@@ -362,7 +364,8 @@ public class DiagramViewModel : ViewModel
         foreach (var viewData in nodes.OfType<ViewData>())
         {
             
-            
+          
+
             var newElement = nodes.OfType<ElementData>().FirstOrDefault(p => p.AssemblyQualifiedName == viewData.ForAssemblyQualifiedName);
             if (newElement != null)
             {
@@ -370,8 +373,9 @@ public class DiagramViewModel : ViewModel
             }
 
             if (viewData.ViewForElement == null) continue;
-            var generators = uFrameEditor.GetBindingGeneratorsFor(viewData.ViewForElement, true, false, true, false).ToArray();
+            var generators = uFrameEditor.GetPossibleBindingGenerators(viewData.ViewForElement, true, false, true, false).ToArray();
 
+            viewData.Bindings.Clear();
             // Upgrade bindings
             foreach (var item in viewData.ReflectionBindingMethods)
             {
@@ -381,13 +385,23 @@ public class DiagramViewModel : ViewModel
                     //Debug.Log("Generator not found for " + item.Name + " Method. You might need to re-add the binding.");
                     continue;
                 }
-
-                viewData.Bindings.Add(new ViewBindingData()
+                if (string.IsNullOrEmpty(generator.Item.Identifier))
                 {
+                    Debug.Log("Error item is null on binding generator. Can't upgrade item.");
+                    continue;
+                }
+                var bindingGenerator = new ViewBindingData()
+                {
+                    PropertyIdentifier = generator.Item.Identifier,
                     GeneratorType = generator.GetType().Name,
                     Name = item.Name,
                     Node = viewData
-                });
+                };
+                viewData.Bindings.Add(bindingGenerator);
+                if (generator.Item.RelatedNode() is ElementData && generator.Item is ViewModelPropertyData)
+                {
+                    bindingGenerator.GeneratorType = "InstantiateViewPropertyBindingGenerator";
+                }
             }
         }
 

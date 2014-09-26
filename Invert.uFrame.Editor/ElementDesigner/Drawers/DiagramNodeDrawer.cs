@@ -182,10 +182,10 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         if (ViewModel.AllowCollapsing)
         {
             
-            var rect = new Rect((Bounds.x + (Bounds.width / 2f)) - (ElementDesignerStyles.NodeCollapse.fixedWidth / 2f),
+            var rect = new Rect((Bounds.x + (Bounds.width / 2f)) - 21f,
                 Bounds.y + Bounds.height, 42f, 18f);
 
-            if (GUI.Button(rect.Scale(Scale), string.Empty,
+            if (GUI.Button(rect.Scale(scale), string.Empty,
                 ViewModel.IsCollapsed ? ElementDesignerStyles.NodeExpand : ElementDesignerStyles.NodeCollapse))
             {
                 uFrameEditor.ExecuteCommand((item) =>

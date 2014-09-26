@@ -21,6 +21,14 @@ public class ViewPropertyData : DiagramNodeItem,ISerializeablePropertyData,IType
         cls.Add("ItemType", new JSONData(_type));
     }
 
+
+    public override void NodeRemoved(IDiagramNode item)
+    {
+        base.NodeRemoved(item);
+        
+
+    }
+
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);

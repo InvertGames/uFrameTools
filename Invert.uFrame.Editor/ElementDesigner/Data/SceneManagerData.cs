@@ -27,8 +27,31 @@ public class SceneManagerData : DiagramNode
     [SerializeField]
     private List<SceneManagerTransition> _transitions = new List<SceneManagerTransition>();
 
+    public IEnumerable<ElementData> AllImportedElements
+    {
+        get
+        {
+            foreach (var subsystem in Subsystems)
+            {
+                foreach (var element in subsystem.GetContainingNodes(Diagram).OfType<ElementData>())
+                {
+                    yield return element;
+                }
+            }
+        }
+    }
 
-
+    public IEnumerable<SubSystemData> Subsystems
+    {
+        get
+        {
+            yield return SubSystem;
+            foreach (var subsystem in SubSystem.GetAllImportedSubSystems(Diagram))
+            {
+                yield return subsystem;
+            }
+        }
+    }
     public override IEnumerable<IDiagramNodeItem> ContainedItems
     {
         get { return Transitions.Cast<IDiagramNodeItem>(); }
@@ -132,7 +155,11 @@ public class SceneManagerData : DiagramNode
         return base.EndEditing();
     }
 
- 
+    public override void NodeItemRemoved(IDiagramNodeItem item)
+    {
+        Transitions.Remove(item as SceneManagerTransition);
+    }
+
 
     public bool IsAllowed(object item, Type t)
     {

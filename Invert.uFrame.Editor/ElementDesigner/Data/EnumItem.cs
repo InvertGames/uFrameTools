@@ -79,6 +79,11 @@ public class EnumItem : IDiagramNodeItem
         
     }
 
+    public void NodeItemRemoved(IDiagramNodeItem nodeItem)
+    {
+        
+    }
+
 
     public Vector2[] ConnectionPoints { get; set; }
 
