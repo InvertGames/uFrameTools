@@ -1,6 +1,7 @@
 ﻿using Invert.uFrame;
 using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
@@ -47,12 +48,13 @@ namespace Invert.uFrame.Editor
             uFrameEditor.RegisterKeyBinding(new MoveUpCommand(), "Move Up", KeyCode.UpArrow);
             uFrameEditor.RegisterKeyBinding(new MoveDownCommand(), "Move Down", KeyCode.DownArrow);
 
-            uFrameEditor.RegisterKeyBinding(new AddNewSceneManagerCommand(), "Add Scene Manager", KeyCode.M,true,true);
-            uFrameEditor.RegisterKeyBinding(new AddNewSubSystemCommand(), "Add Sub System", KeyCode.S,true,true);
-            uFrameEditor.RegisterKeyBinding(new AddNewElementCommand(), "Add Element", KeyCode.E,true);
-            uFrameEditor.RegisterKeyBinding(new AddNewEnumCommand(), "Add Enum", KeyCode.N,true,true);
-            uFrameEditor.RegisterKeyBinding(new AddNewViewCommand(), "Add View", KeyCode.V,true,true);
-            uFrameEditor.RegisterKeyBinding(new AddNewViewComponentCommand(), "Add View Component", KeyCode.W,true,true);
+            uFrameEditor.RegisterKeyBinding(new AddItemCommand2() {SelectedOption = new UFContextMenuItem() {Value=typeof(SceneManagerData) } },"Add Scene Manager", KeyCode.M,true,true);
+
+            uFrameEditor.RegisterKeyBinding(new AddItemCommand2() { SelectedOption = new UFContextMenuItem() { Value = typeof(SubSystemData) } }, "Add Sub System", KeyCode.U, true, true);
+            uFrameEditor.RegisterKeyBinding(new AddItemCommand2() { SelectedOption = new UFContextMenuItem() { Value = typeof(ElementData) } }, "Add Element", KeyCode.E, true);
+            uFrameEditor.RegisterKeyBinding(new AddItemCommand2() { SelectedOption = new UFContextMenuItem() { Value = typeof(EnumData) } }, "Add Enum", KeyCode.N, true, true);
+            uFrameEditor.RegisterKeyBinding(new AddItemCommand2() { SelectedOption = new UFContextMenuItem() { Value = typeof(ViewData) } }, "Add View", KeyCode.V, true, true);
+            uFrameEditor.RegisterKeyBinding(new AddItemCommand2() { SelectedOption = new UFContextMenuItem() { Value = typeof(ViewComponentData) } }, "Add View Component", KeyCode.W, true, true);
 
             uFrameEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
             {
@@ -61,33 +63,7 @@ namespace Invert.uFrame.Editor
 
             uFrameEditor.RegisterKeyBinding(new SaveCommand(), "Save & Compile", KeyCode.S,true,true);
 
-            //  container.RegisterInstance<IKeyBinding>(
-            //new KeyBinding<IEditorCommand>("Save & Compile", KeyCode.S, true, true, false), "SaveCommand");
- 
-
-            //container.RegisterInstance<IKeyBinding>(
-            //    new KeyBinding<IDiagramNodeItemCommand>("Move Item Up", KeyCode.UpArrow, true), "MoveItemUp");
-            //container.RegisterInstance<IKeyBinding>
-            //    (new KeyBinding<IDiagramNodeItemCommand>("Move Item Down", KeyCode.DownArrow, true), "MoveItemDown");
-
-            //container.RegisterInstance<IKeyBinding>(
-            //    new KeyBinding<IDiagramContextCommand>("Add New Element", KeyCode.E, true, true), "AddNewElementCommand");
-            //container.RegisterInstance<IKeyBinding>(
-            //    new KeyBinding<IDiagramContextCommand>("Add New Sub System", KeyCode.S, true, true), "AddNewSubSystemCommand");
-            //container.RegisterInstance<IKeyBinding>
-            //    (new KeyBinding<IDiagramContextCommand>("Add New Scene Manager", KeyCode.C, true, true), "AddNewSceneManagerCommand");
-            //container.RegisterInstance<IKeyBinding>(
-            //    new KeyBinding<IDiagramContextCommand>("Add New View", KeyCode.V, true, true), "AddNewViewCommand");
-            //container.RegisterInstance<IKeyBinding>(
-            //    new KeyBinding<IDiagramContextCommand>("Add New Enum", KeyCode.N, true, true), "AddNewEnumCommand");
-            //container.RegisterInstance<IKeyBinding>(
-            //    new KeyBinding<IDiagramContextCommand>("Add New View Component", KeyCode.W, true, true), "AddNewViewComponentCommand");
-
-            //container.RegisterInstance<IKeyBinding>(
-            //    new KeyBinding<IEditorCommand>("Show/Hide This", KeyCode.F1, true, true, false), "ShowHideHelp");
-
-            //container.RegisterInstance<IKeyBinding>(
-            //new KeyBinding<IEditorCommand>("Save & Compile", KeyCode.S, true, true, false), "SaveCommand");
+          
 
 
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Invert.MVVM;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ElementDesigner;
@@ -66,11 +67,11 @@ public class DiagramViewModel : ViewModel
         }
     }
 
-    public IElementDesignerData DiagramData
+    public IGraphData DiagramData
     {
         get
         {
-            return DataObject as IElementDesignerData;
+            return DataObject as IGraphData;
         }
     }
 
@@ -124,7 +125,7 @@ public class DiagramViewModel : ViewModel
         set;
     }
 
-    public DiagramViewModel(IElementDesignerData diagram, IProjectRepository currentRepository)
+    public DiagramViewModel(IGraphData diagram, IProjectRepository currentRepository)
     {
         var assetPath = AssetDatabase.GetAssetPath(diagram as GraphData);
         var fileExtension = Path.GetExtension(assetPath);
@@ -340,6 +341,12 @@ public class DiagramViewModel : ViewModel
                 if (uFrameType != null)
                     item.RelatedType = uFrameType.Identifier;
             }
+
+            foreach (var command in node.Commands)
+            {
+                command.IsYield = false;
+            }
+
         }
 
         foreach (var subsystem in nodes.OfType<SubSystemData>())
@@ -405,13 +412,31 @@ public class DiagramViewModel : ViewModel
             }
         }
 
-
-
         DiagramData.Version = uFrameVersionProcessor.CURRENT_VERSION_NUMBER.ToString();
         AssetDatabase.SaveAssets();
+
+        var assetPath = DiagramData.CodePathStrategy.AssetPath;
+        var dir = new DirectoryInfo(assetPath);
+        var newDirectory = dir.CreateSubdirectory("_DesignerFiles");
+        foreach (var file in dir.GetFiles(".designer.cs"))
+        {
+            file.MoveTo(Path.Combine(newDirectory.Name,file.Name));
+        }
+        AssetDatabase.Refresh();
     }
     public void AddNode(IDiagramNode newNodeData)
     {
+        
+        newNodeData.Name = uFrameEditor.CurrentProject.GetUniqueName("New" +newNodeData.GetType().Name.Replace("Data",""));
+        CurrentRepository.SetItemLocation(newNodeData, uFrameEditor.CurrentMouseEvent.MouseDownPosition);
         CurrentRepository.AddNode(newNodeData);
+
+        var filterNode = CurrentRepository.CurrentFilter as IDiagramNode;
+        if (filterNode != null)
+        {
+            newNodeData.Name = filterNode.Name + CurrentRepository.GetUniqueName(newNodeData.GetType().Name.Replace("Data", ""));
+            filterNode.NodeAddedInFilter(newNodeData);
+        }
+        
     }
 }

@@ -41,14 +41,14 @@ public class FilterState : IJsonObject {
         _persistedFilterStack.Remove(pop.Name);
     }
 
-    public void Reload(IElementDesignerData elementDesignerData)
+    public void Reload(IGraphData graphData)
     {
         
         if (_persistedFilterStack.Count != (FilterStack.Count))
         {
             foreach (var filterName in _persistedFilterStack)
             {
-                var filter = elementDesignerData.GetFilters().FirstOrDefault(p => p.Name == filterName);
+                var filter = graphData.GetFilters().FirstOrDefault(p => p.Name == filterName);
                 if (filter == null)
                 {
                     _persistedFilterStack.Clear();
@@ -57,7 +57,7 @@ public class FilterState : IJsonObject {
                 }
                 
                 //FilterStack.Push(filter);
-                elementDesignerData.PushFilter(filter);
+                graphData.PushFilter(filter);
             }
         }
     }

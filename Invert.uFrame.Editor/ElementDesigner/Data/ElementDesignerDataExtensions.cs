@@ -35,7 +35,7 @@ public static class ElementDesignerDataExtensions
     //    return t.GetDiagramItems().OfType<ElementDataBase>();
     //}
 
-    public static IEnumerable<IDiagramFilter> GetFilterPath(this IElementDesignerData t)
+    public static IEnumerable<IDiagramFilter> GetFilterPath(this IGraphData t)
     {
         return t.FilterState.FilterStack.Reverse();
     }
@@ -83,12 +83,12 @@ public static class ElementDesignerDataExtensions
                 .Concat(data.NodeItems.SelectMany(p => p.Items).OfType<IRefactorable>().SelectMany(p => p.Refactorings))
                 .ToList();
     }
-    public static void Prepare(this IElementDesignerData designerData)
+    public static void Prepare(this IGraphData designerData)
     {
         designerData.RefactorCount = 0;
         designerData.Initialize();
     }
-    public static IEnumerable<IDiagramNode> FilterItems(this IElementDesignerData designerData, INodeRepository repository)
+    public static IEnumerable<IDiagramNode> FilterItems(this IGraphData designerData, INodeRepository repository)
     {
         return designerData.CurrentFilter.FilterItems(repository);
     }   
@@ -159,7 +159,7 @@ public static class ElementDesignerDataExtensions
         }
     }
 
-    public static void PopFilter(this IElementDesignerData designerData,List<string> filterStack)
+    public static void PopFilter(this IGraphData designerData,List<string> filterStack)
     {
         designerData.FilterLeave();
         //filterStack.Remove(designerData.FilterStack.Peek().Name);
@@ -168,7 +168,7 @@ public static class ElementDesignerDataExtensions
         designerData.ApplyFilter();
     }
 
-    public static void PopToFilter(this IElementDesignerData designerData, IDiagramFilter filter1)
+    public static void PopToFilter(this IGraphData designerData, IDiagramFilter filter1)
     {
         while (designerData.CurrentFilter != filter1)
         {
@@ -176,7 +176,7 @@ public static class ElementDesignerDataExtensions
         }
     }
 
-    public static void PopToFilter(this IElementDesignerData designerData, string filterName)
+    public static void PopToFilter(this IGraphData designerData, string filterName)
     {
         while (designerData.CurrentFilter.Name != filterName)
         {
@@ -184,7 +184,7 @@ public static class ElementDesignerDataExtensions
         }
     }
 
-    public static void PushFilter(this IElementDesignerData designerData, IDiagramFilter filter)
+    public static void PushFilter(this IGraphData designerData, IDiagramFilter filter)
     {
         designerData.FilterLeave();
         designerData.FilterState.FilterStack.Push(filter);
@@ -194,7 +194,7 @@ public static class ElementDesignerDataExtensions
 
 
 
-    public static void ReloadFilterStack(this IElementDesignerData designerData,List<string> filterStack )
+    public static void ReloadFilterStack(this IGraphData designerData,List<string> filterStack )
     {
         if (filterStack.Count != (designerData.FilterState.FilterStack.Count))
         {

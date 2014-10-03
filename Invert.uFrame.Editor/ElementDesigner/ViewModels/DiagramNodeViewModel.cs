@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Invert.Common;
 using Invert.MVVM;
+using UnityEditor;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor.ViewModels
@@ -225,13 +226,20 @@ namespace Invert.uFrame.Editor.ViewModels
 
         }
 
+        public string editText = string.Empty;
         public void Rename(string newText)
         {
+           
             GraphItemObject.Rename(newText);
+            
         }
 
         public void EndEditing()
         {
+            if (string.IsNullOrEmpty(GraphItemObject.Name))
+            {
+                GraphItemObject.Name = "";
+            }
             GraphItemObject.EndEditing();
             Dirty = true;
         }
@@ -268,6 +276,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public void BeginEditing()
         {
+            editText = Name;
             GraphItemObject.BeginEditing();
         }
 
@@ -280,6 +289,37 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             DiagramViewModel.CurrentRepository.HideNode(GraphItemObject.Identifier);
             //DiagramViewModel.Data.CurrentFilter.Locations.Remove(GraphItemObject.Identifier);
+        }
+
+
+        public virtual void CtrlClicked()
+        {
+            uFrameEditor.ExecuteCommand((diagram) =>
+            {
+                var fileGenerator = this.CodeGenerators.FirstOrDefault(p => !p.IsDesignerFile);
+                if (fileGenerator != null)
+                {
+                    var filePath = fileGenerator.FullPathName;
+                    //var filename = repository.GetControllerCustomFilename(this.Name);
+                    var scriptAsset = AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
+                    AssetDatabase.OpenAsset(scriptAsset);
+                }
+            });
+        }
+
+        public void CtrlShiftClicked()
+        {
+            uFrameEditor.ExecuteCommand((diagram) =>
+            {
+                var fileGenerator = this.CodeGenerators.LastOrDefault(p => !p.IsDesignerFile);
+                if (fileGenerator != null)
+                {
+                    var filePath = fileGenerator.FullPathName;
+                    //var filename = repository.GetControllerCustomFilename(this.Name);
+                    var scriptAsset = AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
+                    AssetDatabase.OpenAsset(scriptAsset);
+                }
+            });
         }
 
        

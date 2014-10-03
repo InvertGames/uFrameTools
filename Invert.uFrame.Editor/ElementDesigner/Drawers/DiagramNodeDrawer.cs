@@ -65,6 +65,10 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         this.RefreshContent();
     }
 
+    void IDrawer.OnMouseDown(MouseEvent mouseEvent)
+    {
+        OnMouseDown(mouseEvent);
+    }
 
     public float Scale
     {
@@ -284,6 +288,24 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
     public override void OnMouseDown(MouseEvent mouseEvent)
     {
         ViewModelObject.Select();
+        if (mouseEvent.ModifierKeyStates.Ctrl)
+        {
+            if (mouseEvent.ModifierKeyStates.Alt)
+            {
+                this.ViewModel.CtrlShiftClicked();
+            }
+            else
+            {
+                this.ViewModel.CtrlClicked();
+                
+            }
+            
+        }
+    }
+
+    public override void OnMouseDoubleClick(MouseEvent mouseEvent)
+    {
+        base.OnMouseDoubleClick(mouseEvent);
     }
 
     public override void OnMouseMove(MouseEvent e)

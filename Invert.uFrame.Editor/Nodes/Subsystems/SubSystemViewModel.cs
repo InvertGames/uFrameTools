@@ -37,7 +37,7 @@ public class SubSystemViewModel : DiagramNodeViewModel<SubSystemData>
         get { return true; }
     }
 
-    public void Export(IElementDesignerData data = null)
+    public void Export(IGraphData data = null)
     {
         var d = data ?? uFrameEditor.CurrentProject.CreateNewDiagram();
         d.AddNode(GraphItemObject);

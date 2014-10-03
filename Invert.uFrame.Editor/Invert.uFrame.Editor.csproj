@@ -52,6 +52,8 @@
     <Compile Include="ElementDesigner\Commands\Nodes\ExportCommand.cs" />
     <Compile Include="ElementDesigner\Commands\Nodes\ImportCommand.cs" />
     <Compile Include="ElementDesigner\Data\MissingNodeData.cs" />
+    <Compile Include="ModelData\Class1.cs" />
+    <Compile Include="SimpleType\Class1.cs" />
     <Compile Include="StateMachines\Nodes\Actions\Actions.cs" />
     <Compile Include="StateMachines\Nodes\Machines\StateMachineNodeData.cs" />
     <Compile Include="StateMachines\Nodes\Machines\StateMachineNodeDrawer.cs" />
@@ -167,7 +169,7 @@
     <Compile Include="ElementDesigner\Data\ElementDiagramSettings.cs" />
     <Compile Include="ElementDesigner\Data\FilterState.cs" />
     <Compile Include="ElementDesigner\Data\IDiagramPlugin.cs" />
-    <Compile Include="ElementDesigner\Data\IElementDesignerData.cs" />
+    <Compile Include="ElementDesigner\Data\IGraphData.cs" />
     <Compile Include="ElementDesigner\Data\ElementsGraph.cs" />
     <Compile Include="ElementDesigner\Data\Json\JsonRepository.cs" />
     <Compile Include="ElementDesigner\Data\ViewPropertyData.cs" />

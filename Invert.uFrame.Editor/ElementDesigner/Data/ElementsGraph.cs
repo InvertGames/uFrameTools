@@ -8,9 +8,9 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-public class GraphData : ScriptableObject, IElementDesignerData, ISerializationCallbackReceiver
+public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackReceiver
 {
-    [SerializeField, HideInInspector]
+    [SerializeField]
     public string _jsonData;
 
     [NonSerialized]
@@ -94,7 +94,7 @@ public class GraphData : ScriptableObject, IElementDesignerData, ISerializationC
     {
         get { return Regex.Replace(name, "[^a-zA-Z0-9_.]+", ""); }
     }
-
+     
     public string Namespace { get; set; }
     public string Version { get; set; }
     public int RefactorCount { get; set; }

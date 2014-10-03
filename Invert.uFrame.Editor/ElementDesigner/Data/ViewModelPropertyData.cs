@@ -7,42 +7,9 @@ using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
-[Serializable]
-public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializeablePropertyData
+public class TypedDiagramNodeItem : DiagramNodeItem, ITypeDiagramItem, ISerializeablePropertyData
 {
-    public string ViewIdentifier
-    {
-        get { return DataBag["ViewIdentifier"]; }
-        set { DataBag["ViewIdentifier"] = value; }
-    }
-
-    public override void Serialize(JSONClass cls)
-    {
-        base.Serialize(cls);
-        cls.Add("ItemType", new JSONData(_type));
-        cls.Add("IsRealTime", new JSONData(_isRealTimeProperty));
-        cls.AddPrimitiveArray("DependantOn", _dependantPropertyIdentifiers, i => new JSONData(i));
-    }
-
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
-    {
-        base.Deserialize(cls, repository);
-        _type = cls["ItemType"].Value.Split(',')[0].Split('.').Last();
-        _isRealTimeProperty = cls["IsRealTime"].AsBool;
-        if (cls["DependantOn"] != null)
-        {
-            _dependantPropertyIdentifiers = cls["DependantOn"].DeserializePrimitiveArray(n => n.Value).ToList();
-        }
-        
-    }
-
-    [SerializeField]
-    private string _type = string.Empty;
-
-    [SerializeField]
-    private bool _isRealTimeProperty;
-
-    private List<string> _dependantPropertyIdentifiers = new List<string>();
+    [SerializeField] protected string _type = string.Empty;
 
     public Type Type
     {
@@ -53,24 +20,9 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
         }
     }
 
-    public object DefaultValue { get; set; }
-
     public string NameAsChangedMethod
     {
         get { return string.Format("{0}Changed", Name); }
-    }
-    public string NameAsTwoWayMethod
-    {
-        get { return string.Format("Get{0}TwoWayValue", Name); }
-    }
-    public override string Label
-    {
-        get { return RelatedTypeName + ": " + Name; }
-    }
-
-    public override RenameRefactorer CreateRenameRefactorer()
-    {
-        return new RenamePropertyRefactorer(this);
     }
 
     public string RelatedType
@@ -79,70 +31,20 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
         set { _type = value; }
     }
 
-    public bool IsRealTimeProperty
-    {
-        get { return _isRealTimeProperty; }
-        set { _isRealTimeProperty = value; }
-    }
-
-    //public bool IsComputed
-    //{
-    //    get { return DependantPropertyIdentifiers.Count > 0; }
-    //}
-
-    public List<string> DependantPropertyIdentifiers
-    {
-        get { return _dependantPropertyIdentifiers; }
-        set { _dependantPropertyIdentifiers = value; }
-    }
-
-    public IEnumerable<ViewModelPropertyData> DependantProperties
-    {
-        get
-        {
-            var properties = Node.Project.GetElements().SelectMany(p => p.Properties).ToArray();
-            foreach (var property in DependantPropertyIdentifiers)
-            {
-                var result = properties.FirstOrDefault(p => p.Identifier == property);
-                if (result != null)
-                    yield return result;
-            }
-          
-        }
-    }
-
-    public string RelatedTypeName
+    public virtual string RelatedTypeName
     {
         get
         {
             var relatedNode = this.RelatedNode();
+            var elementData = relatedNode as ElementData;
+            if (elementData != null)
+                return elementData.NameAsViewModel;
+
             if (relatedNode != null)
                 return relatedNode.Name;
 
             return RelatedType;
         }
-    }
-    public string RelatedTypeNameOrViewModel
-    {
-        get
-        {
-            var relatedNode = this.RelatedNode();
-            if (relatedNode != null)
-            {
-                var element = relatedNode as ElementData;
-                if (element != null)
-                    return element.NameAsViewModel;
-
-                return relatedNode.Name;
-            }
-                
-
-            return RelatedType;
-        }
-    }
-    public IDiagramNode TypeNode()
-    {
-        return this.RelatedNode();
     }
 
     public bool AllowEmptyRelatedType
@@ -150,11 +52,19 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
         get { return false; }
     }
 
-    public IEnumerable<string> BindingMethodNames
+    public string FieldName
     {
         get
         {
-            yield return NameAsChangedMethod;
+            return string.Format("_{0}Property", Name);
+        }
+    }
+
+    public string ViewFieldName
+    {
+        get
+        {
+            return string.Format("_{0}", Name);
         }
     }
 
@@ -190,20 +100,141 @@ public class ViewModelPropertyData : DiagramNodeItem, ITypeDiagramItem,ISerializ
         return new CodeTypeReference(RelatedTypeName);
     }
 
+    public IDiagramNode TypeNode()
+    {
+        return this.RelatedNode();
+    }
 
-    public string FieldName
+    public override void Serialize(JSONClass cls)
+    {
+        base.Serialize(cls);
+        cls.Add("ItemType", new JSONData(_type ?? string.Empty));
+    }
+
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    {
+        base.Deserialize(cls, repository);
+       
+        if (cls["ItemType"] != null)
+        _type = cls["ItemType"].Value.Split(',')[0].Split('.').Last();
+    }
+
+    public override string FullLabel
+    {
+        get { return Name; }
+    }
+
+    public override string Label
+    {
+        get { return Name; }
+    }
+
+    public override void Remove(IDiagramNode diagramNode)
+    {
+        
+    }
+}
+
+[Serializable]
+public class ViewModelPropertyData : TypedDiagramNodeItem
+{
+    public string ViewIdentifier
+    {
+        get { return DataBag["ViewIdentifier"]; }
+        set { DataBag["ViewIdentifier"] = value; }
+    }
+
+    public override void Serialize(JSONClass cls)
+    {
+        base.Serialize(cls);
+     
+        cls.Add("IsRealTime", new JSONData(_isRealTimeProperty));
+        
+    }
+
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    {
+        base.Deserialize(cls, repository);
+        _isRealTimeProperty = cls["IsRealTime"].AsBool;
+        
+    }
+
+    [SerializeField]
+    private bool _isRealTimeProperty;
+
+    private List<string> _dependantPropertyIdentifiers = new List<string>();
+
+    public object DefaultValue { get; set; }
+
+    public string NameAsTwoWayMethod
+    {
+        get { return string.Format("Get{0}TwoWayValue", Name); }
+    }
+    public override string Label
+    {
+        get { return RelatedTypeName + ": " + Name; }
+    }
+
+    public override RenameRefactorer CreateRenameRefactorer()
+    {
+        return new RenamePropertyRefactorer(this);
+    }
+
+    public bool IsRealTimeProperty
+    {
+        get { return _isRealTimeProperty; }
+        set { _isRealTimeProperty = value; }
+    }
+
+    //public bool IsComputed
+    //{
+    //    get { return DependantPropertyIdentifiers.Count > 0; }
+    //}
+
+    public List<string> DependantPropertyIdentifiers
+    {
+        get { return _dependantPropertyIdentifiers; }
+        set { _dependantPropertyIdentifiers = value; }
+    }
+
+    public IEnumerable<ViewModelPropertyData> DependantProperties
     {
         get
         {
-            return string.Format("_{0}Property", Name);
+            var properties = Node.Project.GetElements().SelectMany(p => p.Properties).ToArray();
+            foreach (var property in DependantPropertyIdentifiers)
+            {
+                var result = properties.FirstOrDefault(p => p.Identifier == property);
+                if (result != null)
+                    yield return result;
+            }
         }
     }
 
-    public string ViewFieldName
+    public string RelatedTypeNameOrViewModel
     {
         get
         {
-            return string.Format("_{0}", Name);
+            var relatedNode = this.RelatedNode();
+            if (relatedNode != null)
+            {
+                var element = relatedNode as ElementData;
+                if (element != null)
+                    return element.NameAsViewModel;
+
+                return relatedNode.Name;
+            }
+                
+
+            return RelatedType;
+        }
+    }
+
+    public IEnumerable<string> BindingMethodNames
+    {
+        get
+        {
+            yield return NameAsChangedMethod;
         }
     }
 

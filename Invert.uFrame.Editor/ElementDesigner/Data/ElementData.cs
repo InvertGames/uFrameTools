@@ -95,6 +95,8 @@ public class ElementData : ElementDataBase, IDesignerType
         }
     }
 
+    
+
     public override string BaseTypeName
     {
         get
@@ -222,6 +224,16 @@ public class ElementData : ElementDataBase, IDesignerType
         get { return string.Format("I{0}Model", Name); }
     }
 
+    public override void NodeAddedInFilter(IDiagramNode newNodeData)
+    {
+        base.NodeAddedInFilter(newNodeData);
+        var view = newNodeData as ViewData;
+        if (view != null)
+        {
+            view.ForElementIdentifier = this.Identifier;
+        }
+    }
+
     public IEnumerable<ElementData> ParentElements
     {
         get
@@ -345,7 +357,7 @@ public class ElementData : ElementDataBase, IDesignerType
         }
         else
         {
-            _baseIdentifier = cls["BaseIdentifier"];
+            _baseIdentifier = cls["BaseIdentifier"].Value;
         }
 
         IsTemplate = cls["IsTemplate"].AsBool;

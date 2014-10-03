@@ -65,7 +65,7 @@ public class HeaderDrawer : Drawer
         {
             AdjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, 27 * scale);
         }
-        if (NodeViewModel.IsCollapsed)
+        if (NodeViewModel.IsCollapsed )
         {
             ElementDesignerStyles.DrawExpandableBox(AdjustedBounds.Scale(scale), BackgroundStyle, string.Empty, 20 * scale);
         }

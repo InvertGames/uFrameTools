@@ -69,7 +69,7 @@ namespace Invert.uFrame.Editor
 
         public void GoBottom()
         {
-            var scale = GUILayout.HorizontalSlider(ElementDesignerStyles.Scale, 0.55f, 1f, GUILayout.Width(200f));
+            var scale = GUILayout.HorizontalSlider(ElementDesignerStyles.Scale, 0.8f, 1f, GUILayout.Width(200f));
             if (scale != ElementDesignerStyles.Scale)
             {
                 ElementDesignerStyles.Scale = scale;

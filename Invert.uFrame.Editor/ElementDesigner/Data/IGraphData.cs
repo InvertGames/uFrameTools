@@ -30,7 +30,7 @@ public interface IElementFileData : INodeRepository
     void Initialize();
 }
 
-public interface IElementDesignerData : IElementFileData
+public interface IGraphData : IElementFileData
 {
     string Identifier { get; set; }
 

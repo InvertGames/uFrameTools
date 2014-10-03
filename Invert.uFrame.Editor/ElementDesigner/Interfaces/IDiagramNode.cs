@@ -89,6 +89,7 @@ public interface IDiagramNode : IDiagramNodeItem
     //void NodeRemoved(IDiagramNode enumData);
     CodeTypeReference GetPropertyType(ITypeDiagramItem itemData);
     CodeTypeReference GetFieldType(ITypeDiagramItem itemData);
+    void NodeAddedInFilter(IDiagramNode newNodeData);
 }
 
 public interface IRefactorable

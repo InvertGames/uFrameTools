@@ -32,7 +32,7 @@ public class ElementItemDrawer : ItemDrawer
     {
         base.DrawOption();
 
-        if (GUILayout.Button(ElementItemViewModel.TypeLabel,ElementDesignerStyles.ClearItemStyle))
+        if (GUILayout.Button(ElementItemViewModel.TypeLabel + (ElementItemViewModel.IsMouseOver ? "..." : string.Empty),ElementDesignerStyles.ClearItemStyle))
         {
             ElementItemViewModel.NodeViewModel.IsSelected = true;
             OptionClicked();

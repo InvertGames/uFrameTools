@@ -29,14 +29,16 @@ public class ProjectRepositoryInspector : Editor
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-        foreach (var a in CodeGenerators)
-        {
-            GUIHelpers.DoTriggerButton(new UFStyle(a.To.Name, UBStyles.IncludeTriggerBackgroundStyle));
+        //foreach (var a in CodeGenerators)
+        //{
+        //    GUIHelpers.DoTriggerButton(new UFStyle(a.To.Name, UBStyles.IncludeTriggerBackgroundStyle));
 
-        }
+        //}
 
     }
 }
+
+[Serializable]
 public class ProjectRepository : ScriptableObject, IProjectRepository
 {
     public Vector2 GetItemLocation(IDiagramNode node)
@@ -63,7 +65,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public void MarkDirty(INodeRepository data)
     {
-        Debug.Log("Marked Dirty");
+        if (data != null)
         EditorUtility.SetDirty(data as UnityEngine.Object);
     }
 
@@ -92,7 +94,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         return items;
     }
 
-    public IElementDesignerData CreateNewDiagram(Type diagramType = null, IDiagramFilter defaultFilter = null)
+    public IGraphData CreateNewDiagram(Type diagramType = null, IDiagramFilter defaultFilter = null)
     {
         Selection.activeObject = this;
         var t = diagramType ?? typeof (ElementsGraph);
@@ -243,7 +245,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     }
 
 
-    public IElementDesignerData LoadDiagram(string path)
+    public IGraphData LoadDiagram(string path)
     {
         var data = AssetDatabase.LoadAssetAtPath(path, RepositoryFor) as ElementsGraph;
         if (data == null)
@@ -256,31 +258,28 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public void SaveDiagram(INodeRepository data)
     {
-        EditorUtility.SetDirty(data as UnityEngine.Object);
+        if (data != null)
+        {
+            EditorUtility.SetDirty(data as UnityEngine.Object);    
+        }
         AssetDatabase.SaveAssets();
     }
 
     public void RecordUndo(INodeRepository data, string title)
     {
-        Debug.Log("Recording Undo");
+        if (data != null)
         Undo.RecordObject(data as UnityEngine.Object, title);
     }
 
-    public void FastUpdate()
-    {
-
-    }
-
-    public void FastSave()
-    {
-
-    }
 
     public virtual void Refresh()
     {
-        //var assets = uFrameEditor.GetAssets(RepositoryFor);
-        //Diagrams = assets.OfType<JsonElementDesignerData>().ToList();
-
+        //var assets = uFrameEditor.GetAssets(typeof(GraphData));
+        //Diagrams = assets.OfType<GraphData>().ToList();
+        
+        CurrentGraph = null;
+        _nodeItems = null;
+        
         foreach (var diagram in Diagrams)
         {
             diagram.Prepare();
@@ -334,7 +333,7 @@ public interface ICodePathStrategy
     /// </summary>
     string ScenesPath { get; }
 
-    IElementDesignerData Data { get; set; }
+    IGraphData Data { get; set; }
 
 
     string GetDesignerFilePath(string postFix);
@@ -352,7 +351,7 @@ public interface ICodePathStrategy
 
 public class DefaultCodePathStrategy : ICodePathStrategy
 {
-    public IElementDesignerData Data { get; set; }
+    public IGraphData Data { get; set; }
 
     public string AssetPath { get; set; }
 

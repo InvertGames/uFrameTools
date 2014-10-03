@@ -49,7 +49,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                 if (customFileFullPaths.Length > 0)
                 {
                     if (EditorUtility.DisplayDialog("Confirm",
-                        "You have files associated with this. Delete them to?" + Environment.NewLine +
+                        "You have files associated with this. Delete them too?" + Environment.NewLine +
                         string.Join(Environment.NewLine, customFiles), "Yes Delete Them", "Don't Delete them"))
                     {
                         foreach (var customFileFullPath in customFileFullPaths)

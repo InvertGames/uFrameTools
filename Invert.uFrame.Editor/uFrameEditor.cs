@@ -5,6 +5,7 @@ using Invert.uFrame.Editor.ElementDesigner.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Invert.uFrame.Editor.Nodes;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
@@ -180,7 +181,8 @@ namespace Invert.uFrame.Editor
         public static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command)
         {
             var objs = handler.ContextObjects.ToArray();
-            CurrentProject.RecordUndo(CurrentProject, command.Title);
+
+            CurrentProject.RecordUndo(CurrentProject.CurrentGraph,command.Title);
             foreach (var o in objs)
             {
                 if (o == null) continue;
@@ -188,7 +190,7 @@ namespace Invert.uFrame.Editor
 
                 if (command.For.IsAssignableFrom(o.GetType()))
                 {
-                    if (command.CanPerform(o) != null) continue;
+                    if (command.CanPerform(o) != null) continue; 
                     //handler.CommandExecuting(command);
                     command.Execute(o);
                     if (command.Hooks != null)
@@ -196,7 +198,7 @@ namespace Invert.uFrame.Editor
                     handler.CommandExecuted(command);
                 }
             }
-            CurrentProject.MarkDirty(CurrentProject);
+            CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
         }
 
         public static Type FindType(string name)
@@ -447,6 +449,9 @@ namespace Invert.uFrame.Editor
         private static void InitializeContainer(uFrameContainer container)
         {
 #if DEBUG
+            // Obsolete
+            container.RegisterInstance<IDiagramNodeItemCommand>(new MarkIsYieldCommand(), "MarkIsYield");
+
             container.RegisterInstance<IToolbarCommand>(new PrintPlugins(), "Print Plugins");
             container.RegisterInstance<IToolbarCommand>(new ForceUpgradeDiagram(), "Force Upgrade");
             container.RegisterInstance<IToolbarCommand>(new DebugCommand("Identifier", d =>
@@ -471,19 +476,11 @@ namespace Invert.uFrame.Editor
                     Debug.Log(generator.GetType().Name);
                 }
             }), "Print Objects");
-            //container.RegisterInstance<IToolbarCommand>(new DebugCommand("asdfasdf Generators", d =>
-            //{
-            //    var generators = GetAllFileGenerators(CurrentProject.GeneratorSettings, CurrentProject);
-
-            //    foreach (var item in generators)
-            //    {
-            //        Debug.Log(item.SystemPath);
-            //    }
-            //}), "Print Objects");
 #endif
 
             container.Register<NodeItemHeader, NodeItemHeader>();
 
+            // Register the container itself
             container.RegisterInstance<IUFrameContainer>(container);
             container.RegisterInstance<uFrameContainer>(container);
 
@@ -494,40 +491,19 @@ namespace Invert.uFrame.Editor
             container.Register<ToolbarUI, ToolbarUI>();
             container.Register<ContextMenuUI, ContextMenuUI>();
 
-            container.RegisterInstance(new AddElementCommandCommand());
-            container.RegisterInstance(new AddElementCollectionCommand());
-            container.RegisterInstance(new AddElementPropertyCommand());
-
-            container.RegisterInstance(new AddEnumItemCommand());
-
-            container.RegisterInstance(new AddViewPropertyCommand());
-            container.RegisterInstance(new AddBindingCommand());
-            container.RegisterInstance(new AddTransitionCommand());
-            container.RegisterInstance(new AddInstanceCommand());
-
-            container.RegisterInstance<IEditorCommand>(new RemoveNodeItemCommand(), "RemoveNodeItem");
-
             // Toolbar commands
             container.RegisterInstance<IToolbarCommand>(new PopToFilterCommand(), "PopToFilterCommand");
             container.RegisterInstance<IToolbarCommand>(new SaveCommand(), "SaveCommand");
             container.RegisterInstance<IToolbarCommand>(new AddNewCommand(), "AddNewCommand");
             container.RegisterInstance<IToolbarCommand>(new DiagramSettingsCommand() { Title = "Settings" }, "SettingsCommand");
 
-            // For the add new menu
-            container.RegisterInstance<AddNewCommand>(new AddNewSceneManagerCommand(), "AddNewSceneManagerCommand");
-            container.RegisterInstance<AddNewCommand>(new AddNewSubSystemCommand(), "AddNewSubSystemCommand");
-            container.RegisterInstance<AddNewCommand>(new AddNewElementCommand(), "AddNewElementCommand");
-            container.RegisterInstance<AddNewCommand>(new AddNewEnumCommand(), "AddNewEnumCommand");
-            container.RegisterInstance<AddNewCommand>(new AddNewViewCommand(), "AddNewViewCommand");
-            container.RegisterInstance<AddNewCommand>(new AddNewViewComponentCommand(), "AddNewViewComponentCommand");
-
             // For no selection diagram context menu
-            container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddNewFilterItemCommand");
+            container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddItemCommand");
             container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
             container.RegisterInstance<IDiagramNodeCommand>(new PushToCommand(), "Push To Command");
             container.RegisterInstance<IDiagramNodeCommand>(new PullFromCommand(), "Pull From Command");
 
-            // For node context menu
+            // All Nodes
             container.RegisterInstance<IDiagramNodeCommand>(new OpenCommand(), "OpenCode");
             container.RegisterInstance<IDiagramNodeCommand>(new DeleteCommand(), "Delete");
             container.RegisterInstance<IDiagramNodeCommand>(new RenameCommand(), "Reanme");
@@ -536,91 +512,108 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IDiagramNodeCommand>(new SelectViewBaseElement(), "SelectView");
             container.RegisterInstance<IDiagramNodeCommand>(new MarkIsTemplateCommand(), "MarkAsTemplate");
 
-            // For node item context menu
-            container.RegisterInstance<IDiagramNodeItemCommand>(new MarkIsYieldCommand(), "MarkIsYield");
+            // All Node Items
             container.RegisterInstance<IDiagramNodeItemCommand>(new DeleteItemCommand(), "Delete");
-
-
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveUpCommand(), "MoveItemUp");
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveDownCommand(), "MoveItemDown");
-
-            //container.RegisterInstance<IEditorCommand>(,"Show/Hide This Help"),"ShowHideHelp");
+            container.RegisterInstance<IEditorCommand>(new RemoveNodeItemCommand(), "RemoveNodeItem");
 
             // Drawers
             RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
             RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
+            RegisterDrawer<ConnectorHeaderViewModel, InputHeaderDrawer>();
 
+            // Graph Diagrams
             container.Register<GraphData, ElementsGraph>("Element Graph");
             container.Register<GraphData, ExternalSubsystemGraph>("External Subsystem Graph");
             container.Register<GraphData, ExternalElementGraph>("External Element Graph");
             container.Register<GraphData, ExternalStateMachineGraph>("External State Machine Graph");
 
-            RegisterGraphItem<ViewModelPropertyData, TypedItemViewModel, ElementItemDrawer>();
+            // Scene Managers
             RegisterGraphItem<SceneManagerData, SceneManagerViewModel, SceneManagerDrawer>();
-            RegisterGraphItem<SubSystemData, SubSystemViewModel, SubSystemDrawer>();
-            RegisterGraphItem<ElementData, ElementNodeViewModel, ElementDrawer>();
-            RegisterGraphItem<EnumData, EnumNodeViewModel, DiagramEnumDrawer>();
-            RegisterGraphItem<ViewData, ViewNodeViewModel, ViewDrawer>();
-            RegisterGraphItem<ViewComponentData, ViewComponentNodeViewModel, ViewComponentDrawer>();
+            RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
+            RegisterFilterNode<SceneFlowFilter, SceneManagerData>();
+            container.RegisterInstance<IConnectionStrategy>(new SceneTransitionConnectionStrategy(), "SceneTransitionConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new SceneManagerSubsystemConnectionStrategy(), "SceneManagerSubsystemConnectionStrategy");
+            container.RegisterInstance(new AddTransitionCommand());
 
+            // Sub Systems
+            RegisterGraphItem<SubSystemData, SubSystemViewModel, SubSystemDrawer>();
+            RegisterGraphItem<RegisteredInstanceData, RegisterInstanceItemViewModel, ElementItemDrawer>();
+            RegisterFilterNode<SceneFlowFilter, SubSystemData>();
+            container.RegisterInstance<IConnectionStrategy>(new SubsystemConnectionStrategy(), "SubsystemConnectionStrategy");
+            container.RegisterInstance(new AddInstanceCommand());
+
+            // Elements
+            RegisterGraphItem<ElementData, ElementNodeViewModel, ElementDrawer>();
             RegisterGraphItem<ViewModelPropertyData, ElementPropertyItemViewModel, ElementItemDrawer>();
             RegisterGraphItem<ViewModelCommandData, ElementCommandItemViewModel, ElementItemDrawer>();
             RegisterGraphItem<ViewModelCollectionData, ElementCollectionItemViewModel, ElementItemDrawer>();
-            RegisterGraphItem<ViewPropertyData, ElementViewPropertyItemViewModel, ItemDrawer>();
+            RegisterFilterNode<SubSystemData, ElementData>();
+            container.RegisterInstance(new AddElementCommandCommand());
+            container.RegisterInstance(new AddElementCollectionCommand());
+            container.RegisterInstance(new AddElementPropertyCommand());
+            container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritanceConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ElementViewConnectionStrategy(), "ElementViewConnectionStrategy");
+
+            // Computed Properties
             RegisterGraphItem<ComputedPropertyData, ComputedPropertyNodeViewModel, ComputedPropertyDrawer>();
             RegisterFilterNode<ElementData, ComputedPropertyData>();
+            container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputsConnectionStrategy(), "ComputedPropertyInputsConnectionStrategy");
 
-            container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputsConnectionStrategy(),
-                "ComputedPropertyInputsConnectionStrategy");
-
-            RegisterGraphItem<EnumItem, EnumItemViewModel, EnumItemDrawer>();
-            RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
+            // Views
+            RegisterGraphItem<ViewData, ViewNodeViewModel, ViewDrawer>();
+            RegisterGraphItem<ViewPropertyData, ElementViewPropertyItemViewModel, ItemDrawer>();
             RegisterGraphItem<ViewBindingData, ViewBindingItemViewModel, ItemDrawer>();
-            RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
-            RegisterGraphItem<RegisteredInstanceData, RegisterInstanceItemViewModel, ElementItemDrawer>();
+            RegisterFilterNode<ElementData, ViewData>();
+            container.RegisterInstance(new AddBindingCommand());
+            container.RegisterInstance<IConnectionStrategy>(new TwoWayPropertyConnectionStrategy(), "TwoWayPropertyConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ViewInheritanceConnectionStrategy(), "ViewInheritanceConnectionStrategy");
 
+            // View Components
+            RegisterGraphItem<ViewComponentData, ViewComponentNodeViewModel, ViewComponentDrawer>();
+            RegisterFilterNode<ElementData, ViewComponentData>();
+            container.RegisterInstance<IConnectionStrategy>(new ViewComponentElementConnectionStrategy(), "ViewComponentElementConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ViewComponentInheritanceConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");
+
+            // Enums
+            RegisterGraphItem<EnumData, EnumNodeViewModel, DiagramEnumDrawer>();
+            RegisterGraphItem<EnumItem, EnumItemViewModel, EnumItemDrawer>();
+            RegisterFilterNode<SubSystemData, EnumData>();
+            RegisterFilterNode<ElementData, EnumData>();
+            container.RegisterInstance(new AddEnumItemCommand());
+
+            // State Machines
             RegisterGraphItem<StateMachineNodeData, StateMachineNodeViewModel, StateMachineNodeDrawer>();
             RegisterGraphItem<StateMachineStateData, StateMachineStateNodeViewModel, StateMachineStateNodeDrawer>();
             RegisterGraphItem<StateMachineTransition, StateMachineTransitionViewModel, ItemDrawer>();
             RegisterGraphItem<StateTransitionData, StateTransitionViewModel, ItemDrawer>();
             RegisterGraphItem<StateMachineActionData, StateActionNodeViewModel, StateActionNodeDrawer>();
-
-            RegisterFilterNode<StateMachineNodeData, StateMachineStateData>();
             RegisterFilterNode<ElementData, StateMachineNodeData>();
-            RegisterFilterNode<SubSystemData, StateMachineNodeData>();
+            RegisterFilterNode<StateMachineNodeData, StateMachineStateData>();
+            container.RegisterInstance<IConnectionStrategy>(new StartStateConnectionStrategy(), "StartStateConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new StateMachineTransitionConnectionStrategy(), "StateMachineTransitionConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ComputedTransitionConnectionStrategy(), "ComputedTransitionConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ElementStateMachineConnectionStrategy(), "ElementStateMachineConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ElementStateVariableConnectionStrategy(), "ElementStateVariableConnectionStrategy");
 
-            // Filters
-            RegisterFilterNode<SceneFlowFilter, SceneManagerData>();
-            RegisterFilterNode<SceneFlowFilter, SubSystemData>();
+            // Simple Classes
+            RegisterGraphItem<ClassPropertyData, ClassPropertyItemViewModel, ElementItemDrawer>();
+            RegisterGraphItem<ClassCollectionData, ClassCollectionItemViewModel, ElementItemDrawer>();
+            RegisterGraphItem<ClassNodeData, ClassNodeViewModel, ClassNodeDrawer>();
+            RegisterFilterNode<ElementData, ClassNodeData>();
+            RegisterFilterNode<SubSystemData, ClassNodeData>();
+            container.RegisterInstance<IConnectionStrategy>(new ClassNodeInheritanceConnectionStrategy(), "ClassNodeInheritanceConnectionStrategy");
 
-            RegisterFilterNode<SubSystemData, ElementData>();
-            RegisterFilterNode<SubSystemData, EnumData>();
+            // Model Classes ^^
 
-            RegisterFilterNode<ElementData, EnumData>();
-            RegisterFilterNode<ElementData, ViewData>();
-            RegisterFilterNode<ElementData, ViewComponentData>();
+            RegisterGraphItem<ModelClassNodeData, ModelClassNodeViewModel, ModelClassNodeDrawer>();
+            RegisterFilterNode<ElementData, ModelClassNodeData>();
+            RegisterFilterNode<SubSystemData, ModelClassNodeData>();
 
-            RegisterDrawer<ConnectorHeaderViewModel, InputHeaderDrawer>();
-
-            // Connections
-            container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritanceConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ElementViewConnectionStrategy(), "ElementViewConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new SceneTransitionConnectionStrategy(), "SceneTransitionConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ViewInheritanceConnectionStrategy(), "ViewInheritanceConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new SceneManagerSubsystemConnectionStrategy(), "SceneManagerSubsystemConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new SubsystemConnectionStrategy(), "SubsystemConnectionStrategy");
+            // General Connections
             container.RegisterInstance<IConnectionStrategy>(new AssociationConnectionStrategy(), "AssociationConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputStrategy(), "ComputedPropertyInputStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ViewComponentElementConnectionStrategy(), "ViewComponentElementConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ViewComponentInheritanceConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new TwoWayPropertyConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new StateMachineTransitionConnectionStrategy(), "StateMachineTransitionConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ElementStateMachineConnectionStrategy(), "ElementStateMachineConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ElementStateVariableConnectionStrategy(), "ElementStateVariableConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ComputedTransitionConnectionStrategy(), "ComputedTransitionConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new StartStateConnectionStrategy(), "StartStateConnectionStrategy");
-
-
 
             container.RegisterInstance<IUFrameTypeProvider>(new uFrameStringTypeProvider());
             container.RegisterInstance<UFrameSettings>(new UFrameSettings());
@@ -629,7 +622,7 @@ namespace Invert.uFrame.Editor
             container.Register<ICodePathStrategy, DefaultCodePathStrategy>("Default");
             container.Register<ICodePathStrategy, SubSystemPathStrategy>("By Subsystem");
 
-
+            // Load all plugins
             foreach (var diagramPlugin in GetDerivedTypes<DiagramPlugin>(false, false))
             {
                 container.RegisterInstance(Activator.CreateInstance((Type)diagramPlugin) as IDiagramPlugin, diagramPlugin.Name, false);
@@ -643,10 +636,26 @@ namespace Invert.uFrame.Editor
                     diagramPlugin.Initialize(Container);
             }
 
+            var commandKeyBindings = new List<IKeyBinding>();
+            foreach (var item in Container.Instances)
+            {
+                if (typeof (IEditorCommand).IsAssignableFrom(item.Base))
+                {
+                    if (item.Instance != null)
+                    {
+                        var command = item.Instance as IEditorCommand;
+                        if (command != null)
+                        {
+                            var keyBinding = command.GetKeyBinding();
+                            if (keyBinding != null)
+                            commandKeyBindings.Add(keyBinding);
+                        }
+                    }
+                }
+            }
             ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
-            KeyBindings = Container.ResolveAll<IKeyBinding>().ToArray();
+            KeyBindings = Container.ResolveAll<IKeyBinding>().Concat(commandKeyBindings).ToArray();
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
-            // uFrameTypes = Container.Resolve<IUFrameTypeProvider>();
 
             Settings = container.Resolve<UFrameSettings>();
 

@@ -7,11 +7,13 @@ namespace Invert.uFrame.Editor.ViewModels
             get { return (TElementItem)DataObject; }
         }
 
-        public ElementItemViewModel(ITypeDiagramItem viewModelItem, DiagramNodeViewModel nodeViewModel)
+        protected ElementItemViewModel(ITypeDiagramItem viewModelItem, DiagramNodeViewModel nodeViewModel)
             : base(viewModelItem, nodeViewModel)
         {
+
         }
 
+  
         public override bool IsEditable
         {
             get { return base.IsEditable; }

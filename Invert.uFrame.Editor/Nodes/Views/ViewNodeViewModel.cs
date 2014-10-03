@@ -132,7 +132,7 @@ namespace Invert.uFrame.Editor.ViewModels
             {
                 Name = GraphItem.Project.GetUniqueName("NewProperty"),
                 Node = GraphItem,
-
+                IsEditing = true,
             };
             GraphItem.Properties.Add(property);
             Debug.Log("Property Added");

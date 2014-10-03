@@ -119,7 +119,7 @@ public class ViewModelCommandData : DiagramNodeItem, ITypeDiagramItem
 
     public override bool IsSelectable { get { return true; } }
 
-    [DiagramContextMenu("Is Yield Command", 0)]
+    [Obsolete]
     public bool IsYield
     {
         get { return _isYield; }

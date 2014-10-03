@@ -83,8 +83,6 @@ namespace Invert.uFrame.Editor.ViewModels
             NodeItem.Rename(NodeItem.Node, newName);
         }
         
-
-
         public override void Select()
         {
             var items = NodeViewModel.DiagramViewModel.SelectedNodeItems.ToArray();

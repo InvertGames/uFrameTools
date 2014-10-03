@@ -556,7 +556,9 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             {
                 EditorGUILayout.LabelField(keyBinding);
             }
+            EditorGUILayout.LabelField("Open Code: Ctrl+Click");
             GUILayout.EndArea();
+          
         }
     }
 

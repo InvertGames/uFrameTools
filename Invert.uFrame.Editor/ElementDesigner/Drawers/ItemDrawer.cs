@@ -46,10 +46,11 @@ public class ItemDrawer : Drawer
     {
         get
         {
-            if (ViewModelObject.IsMouseOver)
-                return ElementDesignerStyles.Item5;
             if (ViewModelObject.IsSelected)
                 return ElementDesignerStyles.Item1;
+            if (ViewModelObject.IsMouseOver)
+                return ElementDesignerStyles.Item5;
+            
 
             return ElementDesignerStyles.ClearItemStyle;
         }
@@ -102,10 +103,9 @@ public class ItemDrawer : Drawer
     public override void Draw(float scale)
     {
         base.Draw(scale);
-        if (ItemViewModel.IsSelected)
-        {
+       
             GUI.Box(Bounds.Scale(scale), string.Empty, SelectedItemStyle);
-        }
+        
       
         if (ItemViewModel.IsSelected && ItemViewModel.IsEditable)
         {
@@ -116,7 +116,9 @@ public class ItemDrawer : Drawer
             EditorGUILayout.BeginHorizontal();
             DrawOption();
             GUI.SetNextControlName("EditingField");
-            var newName = EditorGUILayout.TextField(ItemViewModel.Name, ElementDesignerStyles.ClearItemStyle);
+            var style = new GUIStyle(SelectedItemStyle);
+            style.normal.background = null;
+            var newName = EditorGUILayout.TextField(ItemViewModel.Name, style);
             if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
             {
                 ItemViewModel.Rename(newName);
@@ -134,7 +136,7 @@ public class ItemDrawer : Drawer
         else
         {
 
-            GUI.Box(Bounds.Scale(scale), string.Empty, SelectedItemStyle);
+            //GUI.Box(Bounds.Scale(scale), string.Empty, SelectedItemStyle);
             GUILayout.BeginArea(Bounds.Scale(scale));
             EditorGUILayout.BeginHorizontal();
             DrawOption();

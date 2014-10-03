@@ -101,6 +101,8 @@ namespace Invert.uFrame.Editor.ViewModels
                 Name = GraphItem.Project.GetUniqueName("String1"),
                 RelatedType = typeof(string).Name
             };
+            
+            property.IsEditing = true;
             this.GraphItem.Properties.Add(property);
         }
 

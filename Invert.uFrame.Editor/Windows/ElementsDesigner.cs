@@ -3,6 +3,7 @@ using Invert.uFrame.Editor.ElementDesigner;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.uFrame.Editor.ElementDesigner.Commands;
 using UnityEditor;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace Invert.uFrame.Editor
 
         public static INodeRepository SelectedElementDiagram
         {
-            get { return Selection.activeObject as IElementDesignerData; }
+            get { return Selection.activeObject as IGraphData; }
         }
 
         public IEnumerable<object> ContextObjects
@@ -264,7 +265,7 @@ namespace Invert.uFrame.Editor
             GUI.enabled = true;
         }
 
-        public void HandleInput()
+        private void HandleInput()
         {
             if (DiagramDrawer == null) return;
 
@@ -311,6 +312,49 @@ namespace Invert.uFrame.Editor
                 handler.OnMouseMove(MouseEvent);
                 MouseEvent.LastMousePosition = mp;
             }
+
+            LastEvent = Event.current;
+            if (LastEvent != null)
+            {
+                if (LastEvent.type == EventType.keyUp)
+                {
+                    if (LastEvent.keyCode == KeyCode.LeftShift || LastEvent.keyCode == KeyCode.RightShift)
+                        ModifierKeyStates.Shift = false;
+                    if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl)
+                        ModifierKeyStates.Ctrl = false;
+                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt)
+                        ModifierKeyStates.Alt = false;
+                }
+            }
+
+            if (LastEvent != null)
+            {
+                if (LastEvent.type == EventType.keyDown)
+                {
+                    if (LastEvent.keyCode == KeyCode.LeftShift || LastEvent.keyCode == KeyCode.RightShift)
+                        ModifierKeyStates.Shift = true;
+                    if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl)
+                        ModifierKeyStates.Ctrl = true;
+                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt)
+                        ModifierKeyStates.Alt = true;
+                }
+                // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));
+            }
+
+            var evt = LastEvent;
+            if (evt != null && evt.isKey && evt.type == EventType.KeyUp && DiagramDrawer != null)
+            {
+                Debug.Log("Sending key command");
+                if (DiagramViewModel != null &&
+                    (DiagramViewModel.SelectedNode == null || !DiagramViewModel.SelectedNode.IsEditing))
+                {
+
+                    if (DiagramDrawer.HandleKeyEvent(evt, ModifierKeyStates))
+                    {
+                        evt.Use();
+                    }
+                }
+            }
         }
 
         public void InfoBox(string message, MessageType type = MessageType.Info)
@@ -318,7 +362,7 @@ namespace Invert.uFrame.Editor
             EditorGUI.HelpBox(new Rect(15, 30, 300, 30), message, type);
         }
 
-        public void LoadDiagram(IElementDesignerData diagram)
+        public void LoadDiagram(IGraphData diagram)
         {
             if (diagram == null) return;
             try
@@ -348,7 +392,7 @@ namespace Invert.uFrame.Editor
             _drawEveryFrame = true;
         }
 
-        public void SwitchDiagram(IElementDesignerData data)
+        public void SwitchDiagram(IGraphData data)
         {
             CurrentProject.CurrentGraph = data as ElementsGraph;
             LoadDiagram(CurrentProject.CurrentGraph);
@@ -358,9 +402,9 @@ namespace Invert.uFrame.Editor
         {
             uFrameEditor.DesignerWindow = this;
         }
+
         public void OnGUI()
         {
-
             uFrameEditor.DesignerWindow = this;
             var style = ElementDesignerStyles.Background;
             style.border = new RectOffset(
@@ -392,23 +436,20 @@ namespace Invert.uFrame.Editor
                 rect.height -= 110;
                 GUILayout.BeginArea(rect);
                 GUILayout.BeginArea(new Rect(padding, padding, width - (padding * 2), height - (padding * 2)));
-       
-                    EditorGUILayout.BeginVertical();
-                    EditorGUILayout.LabelField("Create New Project", ElementDesignerStyles.ViewModelHeaderStyle);
 
-                    GUILayout.Space(20f);
-                    _newProjectName = EditorGUILayout.TextField("New Project Name:", _newProjectName);
-                    if (GUILayout.Button("Create Project"))
-                    {
-                        UFrameAssetManager.NewUFrameProject(_newProjectName);
-                    }
-                    EditorGUILayout.EndVertical();
-                
-             
+                EditorGUILayout.BeginVertical();
+                EditorGUILayout.LabelField("Create New Project", ElementDesignerStyles.ViewModelHeaderStyle);
+
+                GUILayout.Space(20f);
+                _newProjectName = EditorGUILayout.TextField("New Project Name:", _newProjectName);
+                if (GUILayout.Button("Create Project"))
+                {
+                    UFrameAssetManager.NewUFrameProject(_newProjectName);
+                }
+                EditorGUILayout.EndVertical();
+
                 GUILayout.EndArea();
                 GUILayout.EndArea();
-            
-
             }
             if (DiagramDrawer == null)
             {
@@ -475,29 +516,29 @@ namespace Invert.uFrame.Editor
                 DiagramDrawer.Draw(ElementDesignerStyles.Scale);
                 HandleInput();
 
-//#if DEBUG
-//                GUILayout.BeginArea(new Rect(10f, 70f, 500f, 500f));
-//                GUILayout.Label(string.Format("Mouse Position: x = {0}, y = {1}", MouseEvent.MousePosition.x, MouseEvent.MousePosition.y));
-//                GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
-//                GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
-//                GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
-//                if (DiagramDrawer != null)
-//                {
-//                    GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
-//                    if (DiagramDrawer.DrawersAtMouse != null)
-//                        foreach (var drawer in DiagramDrawer.DrawersAtMouse)
-//                        {
-//                            GUILayout.Label(drawer.ToString());
-//                        }
-//                    if (DiagramDrawer.DiagramViewModel != null)
-//                        foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
-//                        {
-//                            GUILayout.Label(drawer.ToString());
-//                        }
-//                }
+                //#if DEBUG
+                //                GUILayout.BeginArea(new Rect(10f, 70f, 500f, 500f));
+                //                GUILayout.Label(string.Format("Mouse Position: x = {0}, y = {1}", MouseEvent.MousePosition.x, MouseEvent.MousePosition.y));
+                //                GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
+                //                GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
+                //                GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
+                //                if (DiagramDrawer != null)
+                //                {
+                //                    GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
+                //                    if (DiagramDrawer.DrawersAtMouse != null)
+                //                        foreach (var drawer in DiagramDrawer.DrawersAtMouse)
+                //                        {
+                //                            GUILayout.Label(drawer.ToString());
+                //                        }
+                //                    if (DiagramDrawer.DiagramViewModel != null)
+                //                        foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
+                //                        {
+                //                            GUILayout.Label(drawer.ToString());
+                //                        }
+                //                }
 
-//                GUILayout.EndArea();
-//#endif
+                //                GUILayout.EndArea();
+                //#endif
                 //EndGUI();
                 GUI.EndScrollView();
                 GUILayout.Space(DiagramRect.height);
@@ -519,42 +560,7 @@ namespace Invert.uFrame.Editor
                     InfoBox(String.Format("You have {0} refactors. Save before recompiling occurs.", refactors), MessageType.Warning);
                 }
             }
-            LastEvent = Event.current;
-            if (LastEvent != null)
-            {
-                if (LastEvent.type == EventType.keyUp)
-                {
-                    if (LastEvent.keyCode == KeyCode.LeftShift || LastEvent.keyCode == KeyCode.RightShift) ModifierKeyStates.Shift = false;
-                    if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl) ModifierKeyStates.Ctrl = false;
-                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt) ModifierKeyStates.Alt = false;
-                }
-            }
-
-            if (LastEvent != null)
-            {
-                if (LastEvent.type == EventType.keyDown)
-                {
-                    if (LastEvent.keyCode == KeyCode.LeftShift || LastEvent.keyCode == KeyCode.RightShift)
-                        ModifierKeyStates.Shift = true;
-                    if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl)
-                        ModifierKeyStates.Ctrl = true;
-                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt)
-                        ModifierKeyStates.Alt = true;
-                }
-                // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));
-            }
-
-            var evt = Event.current;
-            if (evt != null && evt.isKey && evt.type == EventType.KeyUp && DiagramDrawer != null)
-            {
-                if (DiagramViewModel != null && (DiagramViewModel.SelectedNode == null || !DiagramViewModel.SelectedNode.IsEditing))
-                {
-                    if (DiagramDrawer.HandleKeyEvent(evt, ModifierKeyStates))
-                    {
-                        evt.Use();
-                    }
-                }
-            }
+            HandleKeys();
 
             if (Event.current.type == EventType.ValidateCommand && Event.current.commandName == "UndoRedoPerformed")
             {
@@ -563,6 +569,11 @@ namespace Invert.uFrame.Editor
             if (DiagramDrawer != null && DiagramDrawer.Dirty || EditorApplication.isCompiling)
             {
             }
+        }
+
+        private void HandleKeys()
+        {
+
         }
 
         public void OnLostFocus()
@@ -660,18 +671,15 @@ namespace Invert.uFrame.Editor
                 });
             }
             menu.AddItem(new GUIContent("Force Refresh"), false, () => { CurrentProject.Refresh(); });
-            foreach (var graphType in uFrameEditor.Container.Mappings.Where(p => p.From == typeof (GraphData)))
+            foreach (var graphType in uFrameEditor.Container.Mappings.Where(p => p.From == typeof(GraphData)))
             {
                 TypeMapping type = graphType;
                 menu.AddItem(new GUIContent("Create " + graphType.Name), false, () =>
                 {
-                    uFrameEditor.ExecuteCommand((b) =>
-                    {
-                        var diagram = CurrentProject.CreateNewDiagram(type.To);
-                        LoadDiagram(diagram);
-                        DiagramDrawer = null;
-                    });
-                  
+                    var diagram = CurrentProject.CreateNewDiagram(type.To);
+                    DiagramDrawer = null;
+                    SwitchDiagram(diagram);
+                   
                 });
             }
 
@@ -704,23 +712,8 @@ namespace Invert.uFrame.Editor
 
         private void UndoRedoPerformed()
         {
-            Debug.Log("Undo performed");
-            DiagramDrawer = null;
-            uFrameEditor.CurrentProject.Refresh();
-            LoadDiagram(CurrentProject.CurrentGraph);
+            CurrentProject.Refresh();
+            SwitchDiagram(CurrentProject.CurrentGraph);
         }
-
-        //public void LoadDiagramByName(string diagramName)
-        //{
-        //    var repos = uFrameEditor.Container.ResolveAll<IProjectRepository>();
-        //    var diagrams = repos.SelectMany(p => p.GetProjectDiagrams()).ToDictionary(p => p.Key, p => p.Value);
-        //    if (diagrams.ContainsKey(diagramName))
-        //        LoadDiagram(diagrams[diagramName]);
-
-        //    //var diagram = UFrameAssetManager.Diagrams.FirstOrDefault(p => p.Name == diagramName);
-        //    //if (diagram == null) return;
-        //    //LoadDiagram(diagram);
-        //}
     }
 }
-

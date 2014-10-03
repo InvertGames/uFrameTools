@@ -16,7 +16,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
     private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
 
     [NonSerialized]
-    private IElementDesignerData _data;
+    private IGraphData _data;
 
     private DataBag _dataBag = new DataBag();
 
@@ -118,7 +118,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
     /// <summary>
     /// Gets the diagram file that this node belongs to
     /// </summary>
-    public virtual IElementDesignerData Diagram
+    public virtual IGraphData Diagram
     {
         get { return Project.Diagrams.FirstOrDefault(p => p.NodeItems.Contains(this)); }
     }
@@ -399,6 +399,10 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
         return tRef;
     }
 
+    public virtual void NodeAddedInFilter(IDiagramNode newNodeData)
+    {
+        
+    }
 
 
     public virtual void NodeItemRemoved(IDiagramNodeItem diagramNodeItem)
