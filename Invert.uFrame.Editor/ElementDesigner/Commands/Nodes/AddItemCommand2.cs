@@ -6,27 +6,14 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
     public class AddItemCommand2 : EditorCommand<DiagramViewModel>, IDiagramContextCommand,IDynamicOptionsCommand
     {
-        public override void Execute(object item)
-        {
-            
-            base.Execute(item);
-            //var node = item as DiagramViewModel;
-            //if (node == null) return;
-
-            //var data = node.Data.NodeItems.LastOrDefault();
-
-            //if (data == null) return;
-            //data.BeginEditing();
-        }
-
         public override void Perform(DiagramViewModel node)
         {
             if (SelectedOption != null)
             {
                 var newNodeData = Activator.CreateInstance(SelectedOption.Value as Type) as IDiagramNode;
-                newNodeData.Name = uFrameEditor.CurrentProject.GetUniqueName(SelectedOption.Name.Replace("Add ","New"));
-                node.CurrentRepository.SetItemLocation(newNodeData,uFrameEditor.CurrentMouseEvent.MouseDownPosition);
+                
                 node.AddNode(newNodeData);
+                newNodeData.BeginEditing();
             }
         }
 
@@ -53,7 +40,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             {
                 yield return new UFContextMenuItem()
                 {
-                    Name = "Add " + nodeType.Name.Replace("Data",""),
+                    Name = "Add " + nodeType.Name.Replace("Data","").Replace("Node",""),
                     Value = nodeType
                 };
             }
@@ -82,7 +69,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             if (SelectedOption != null)
             {
-                var targetDiagram = SelectedOption.Value as IElementDesignerData;
+                var targetDiagram = SelectedOption.Value as IGraphData;
                 var sourceDiagram = diagram.DiagramData;
                 var selectedNode = diagram.SelectedNode.GraphItemObject;
                 Perform(sourceDiagram, selectedNode, targetDiagram);
@@ -126,7 +113,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             }
         }
 
-        protected abstract void Perform(IElementDesignerData sourceDiagram, IDiagramNode selectedNode, IElementDesignerData targetDiagram);
+        protected abstract void Perform(IGraphData sourceDiagram, IDiagramNode selectedNode, IGraphData targetDiagram);
     }
 
     public class PushToCommand : CrossDiagramCommand
@@ -140,8 +127,8 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             get { return "Push To"; }
         }
 
-        protected override void Perform(IElementDesignerData sourceDiagram, IDiagramNode selectedNode,
-            IElementDesignerData targetDiagram)
+        protected override void Perform(IGraphData sourceDiagram, IDiagramNode selectedNode,
+            IGraphData targetDiagram)
         {
             var position = sourceDiagram.PositionData[sourceDiagram.CurrentFilter, selectedNode.Identifier];
             var sourcePathStrategy = sourceDiagram.CodePathStrategy;

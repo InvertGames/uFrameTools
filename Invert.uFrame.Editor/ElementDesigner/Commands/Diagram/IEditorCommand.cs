@@ -16,7 +16,8 @@ namespace Invert.uFrame.Editor.ElementDesigner
         string Group { get;  }
         string CanPerform(object arg);
 
-        
+
+        IKeyBinding GetKeyBinding();
     }
 
     public abstract class EditorCommand<TFor> : EditorCommand

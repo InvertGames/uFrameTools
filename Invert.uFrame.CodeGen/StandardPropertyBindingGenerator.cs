@@ -35,7 +35,6 @@ namespace Invert.uFrame.Code.Bindings
             get { return PropertyData != null; }
         }
 
-
         public override void CreateBindingStatement(CodeTypeMemberCollection collection, CodeConditionStatement bindingCondition)
         {
             var memberInvoke = new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "BindProperty");

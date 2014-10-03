@@ -164,7 +164,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
             }
 
             
-            foreach (var element in Data.AllImportedElements)
+            foreach (var element in Data.AllImportedElements.Distinct())
             {
                 var controllerField = new CodeMemberField(element.NameAsController, "_" + element.NameAsController);
                 var controllerProperty = controllerField.EncapsulateField(element.NameAsController,

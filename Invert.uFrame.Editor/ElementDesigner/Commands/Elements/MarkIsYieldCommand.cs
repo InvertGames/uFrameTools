@@ -1,13 +1,15 @@
+using Invert.uFrame.Editor.ViewModels;
+
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class MarkIsYieldCommand : EditorCommand<ViewModelCommandData>, IDiagramNodeItemCommand
+    public class MarkIsYieldCommand : EditorCommand<ElementCommandItemViewModel>, IDiagramNodeItemCommand
     {
         public override string Name
         {
             get { return "Is Yield Command"; }
         }
 
-        public override string CanPerform(ViewModelCommandData arg)
+        public override string CanPerform(ElementCommandItemViewModel arg)
         {
             if (arg == null)
             {
@@ -17,14 +19,14 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             return null;
         }
 
-        public override bool IsChecked(ViewModelCommandData arg)
+        public override bool IsChecked(ElementCommandItemViewModel arg)
         {
-            return arg.IsYield;
+            return arg.ElementItem.IsYield;
         }
 
-        public override void Perform(ViewModelCommandData arg)
+        public override void Perform(ElementCommandItemViewModel arg)
         {
-            arg.IsYield = !arg.IsYield;
+            arg.ElementItem.IsYield = !arg.ElementItem.IsYield;
         }
     }
 }

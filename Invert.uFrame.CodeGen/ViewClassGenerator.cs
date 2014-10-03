@@ -443,7 +443,7 @@ public abstract class ViewClassGenerator : CodeGenerator
 
             var getMethod = new CodeMemberMethod()
             {
-                Name = string.Format("Get{0}", viewProperty.Name),
+                Name = string.Format("Calculate{0}", viewProperty.Name),
                 ReturnType = viewProperty.GetPropertyType(),
                 Attributes = MemberAttributes.Family,
 

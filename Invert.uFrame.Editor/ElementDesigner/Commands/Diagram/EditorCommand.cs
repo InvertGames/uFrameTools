@@ -57,6 +57,11 @@ namespace Invert.uFrame.Editor.ElementDesigner
         {
             return false;
         }
+
+        public virtual IKeyBinding GetKeyBinding()
+        {
+            return null;
+        } 
     }
     
 }

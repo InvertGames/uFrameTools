@@ -401,7 +401,7 @@ namespace Invert.Common
         {
             get
             {
-                return _nodeHeader13 ?? (_nodeHeader13 = CreateHeader("Header13", new Color(0.82f, 0.82f, 0.82f)));
+                return _nodeHeader13 ?? (_nodeHeader13 = CreateHeader("Header13", new Color(0.1f, 0.1f, 0.1f)));
             }
         }
         public static GUIStyle CreateHeader(string texture,Color color)

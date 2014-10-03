@@ -98,7 +98,7 @@ public class ViewGenerator : ViewClassGenerator
         {
             var viewViewBase = View.BaseView != null;
             decl.BaseTypes.Add(new CodeTypeReference(viewViewBase ? view.NameAsViewViewBase : view.BaseViewName));
-            decl.Members.Add(CreateUpdateMethod(view, decl));
+            //decl.Members.Add(CreateUpdateMethod(view, decl));
             GenerateBindMethod(decl, view);
         }
         else
@@ -184,7 +184,7 @@ public class ViewViewBaseGenerator : ViewClassGenerator
             AddViewModelTypeProperty(forElement);
             AddDefaultIdentifierProperty(forElement);
         }
-        CreateUpdateMethod(View, Decleration);
+        //CreateUpdateMethod(View, Decleration);
         Namespace.Types.Add(Decleration);
     }
 

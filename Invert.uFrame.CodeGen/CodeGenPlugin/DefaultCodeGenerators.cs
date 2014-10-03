@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Invert.uFrame;
 using Invert.uFrame.Code.Bindings;
+using Invert.uFrame.CodeGen.ClassNodeGenerators;
 using Invert.uFrame.Editor;
 
 
@@ -31,11 +32,15 @@ public class DefaultCodeGenerators : DiagramPlugin
         container.Register<DesignerGeneratorFactory, ViewDataGeneratorFactory>("ViewData");
         container.Register<DesignerGeneratorFactory, ViewComponentDataGeneratorFactory>("ViewComponentData");
         container.Register<DesignerGeneratorFactory, SceneManagerDataGeneratorFactory>("SceneManagerData");
+        container.Register<DesignerGeneratorFactory, SimpleClassNodeCodeFactory>("ClassNodeData");
+
+#if DEBUG
+        container.Register<DesignerGeneratorFactory, ModelClassNodeCodeFactory>("ModelClassNodeData");
+        
+#endif
 
         container.Register<IBindingGenerator, StandardPropertyBindingGenerator>("StandardPropertyBindingGenerator");
         container.Register<IBindingGenerator, ComputedPropertyBindingGenerator>("ComputedPropertyBindingGenerator");
-        //container.Register<IBindingGenerator, CollectionItemAddedBindingGenerator>("Added");
-        //container.Register<IBindingGenerator, CollectionItemRemovedBindingGenerator>("Removed");
         container.Register<IBindingGenerator, ViewCollectionBindingGenerator>("ViewCollectionBindingGenerator");
         container.Register<IBindingGenerator, DefaultCollectionBindingGenerator>("DefaultCollectionBindingGenerator");
         container.Register<IBindingGenerator, InstantiateViewPropertyBindingGenerator>("InstantiateViewPropertyBindingGenerator");

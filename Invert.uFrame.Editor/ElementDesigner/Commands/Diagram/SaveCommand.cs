@@ -94,7 +94,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
             
         }
 
-        public void RefactorApplied(IElementDesignerData data)
+        public void RefactorApplied(IGraphData data)
         {
             data.RefactorCount = 0;
             var refactorables = data.NodeItems.OfType<IRefactorable>()

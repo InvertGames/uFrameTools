@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="BindingGenerator.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="ClassNodeGenerators\ClassNodeCodeFactory.cs" />
     <Compile Include="CodeDomExtensions.cs" />
     <Compile Include="CodeDomHelper.cs" />
     <Compile Include="CodeGenerators\StateMachineClassGenerator.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="CollectionBindingGenerator.cs" />
     <Compile Include="CollectionItemAddedBindingGenerator.cs" />
     <Compile Include="DefaultCollectionBindingGenerator.cs" />
+    <Compile Include="ModelGenerators.cs" />
     <Compile Include="ViewCollectionBindingGenerator.cs" />
     <Compile Include="CollectionItemRemovedBindingGenerator.cs" />
     <Compile Include="ControllerGenerator.cs" />
