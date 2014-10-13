@@ -37,6 +37,36 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
         get { yield break; }
     }
 
+    public IEnumerable<ElementData> DependantNodes
+    {
+        get
+        {
+            foreach (var property in DependantProperties)
+            {
+                var relateType = property.RelatedNode() as ElementData;
+                if (relateType == null) continue;
+                yield return relateType;
+            }
+        }
+    }
+
+    public IEnumerable<ITypeDiagramItem> DependantSubProperties
+    {
+        get
+        {
+            foreach (var node in DependantNodes)
+            {
+                foreach (var item in node.AllProperties)
+                {
+                    if (this[item.Identifier])
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
+    }
+
     public List<string> DependantPropertyIdentifiers
     {
         get { return _dependantPropertyIdentifiers; }
@@ -67,8 +97,6 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
         base.NodeRemoved(enumData);
 
     }
-    
-
 
     public override string Label
     {
@@ -96,7 +124,7 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
 
     public string RelatedType
     {
-        get { return _type ?? (_type = typeof (bool).Name); }
+        get { return _type ?? (_type = typeof(bool).Name); }
         set { _type = value; }
     }
 
@@ -197,6 +225,7 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
     public override void NodeItemRemoved(IDiagramNodeItem item)
     {
         DependantPropertyIdentifiers.RemoveAll(p => p == item.Identifier);
+        this[item.Identifier] = false;
     }
 
     public ElementData Element
@@ -211,11 +240,6 @@ public class ComputedPropertyData : DiagramNode, ITypeDiagramItem
             return dependantProperty.Node as ElementData;
         }
     }
-
-
-
-
-   
 }
 public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeViewModel>
 {
@@ -270,13 +294,69 @@ public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeView
             //ElementItemTypesWindow.InitTypeListWindow("Choose Type",);
         }
     }
+
+    protected override void GetContentDrawers(List<IDrawer> drawers)
+    {
+        base.GetContentDrawers(drawers);
+        foreach (var item in NodeViewModel.DependantNodes)
+        {
+            ElementData item1 = item;
+            drawers.Add(new NodeItemHeader(NodeViewModel)
+            {
+                Label = item.Name,
+                AddCommand = new SimpleEditorCommand<ComputedPropertyNodeViewModel>(node =>
+                {
+                    ItemSelectionWindow.Init("Add Child Dependants", item1.AllProperties.Cast<IItem>().ToArray(),
+                        (i) =>
+                        {
+                            node.AddChildDependant(i as IDiagramNodeItem);
+                        });
+                })
+            });
+
+            foreach (var property in item.AllProperties)
+            {
+                if (NodeViewModel.GraphItem[property.Identifier])
+                {
+                    ViewModelPropertyData property1 = property;
+                    drawers.Add(new ItemDrawer(new ComputedPropertySubItemViewModel(NodeViewModel)
+                    {
+                        Data = property,
+                        RemoveItemCommand = new SimpleEditorCommand<DiagramViewModel>(
+                            d =>
+                            {
+                                NodeViewModel.RemoveChildDependant(property1);
+                            })
+                    }));
+                }
+            }
+        }
+    }
 }
 
+public class ComputedPropertySubItemViewModel : ItemViewModel<IDiagramNodeItem>
+{
+    public ComputedPropertySubItemViewModel(DiagramNodeViewModel nodeViewModel)
+        : base(nodeViewModel)
+    {
+    }
+
+    public override string Name
+    {
+        get { return Data.Name; }
+    }
+
+}
 public class ComputedPropertyNodeViewModel : DiagramNodeViewModel<ComputedPropertyData>
 {
     public ComputedPropertyNodeViewModel(ComputedPropertyData graphItemObject, DiagramViewModel diagramViewModel)
         : base(graphItemObject, diagramViewModel)
     {
+    }
+
+    public IEnumerable<ElementData> DependantNodes
+    {
+        get { return GraphItem.DependantNodes; }
     }
 
     public string RelatedTypeName
@@ -291,7 +371,19 @@ public class ComputedPropertyNodeViewModel : DiagramNodeViewModel<ComputedProper
             return GraphItem.RelatedType;
         }
     }
+
+    public void AddChildDependant(IDiagramNodeItem diagramNodeItem)
+    {
+        GraphItem[diagramNodeItem.Identifier] = true;
+    }
+
+    public void RemoveChildDependant(IDiagramNodeItem diagramNodeItem)
+    {
+        GraphItem[diagramNodeItem.Identifier] = false;
+    }
 }
+
+
 public class ComputedPropertyInputsConnectionStrategy :
        DefaultConnectionStrategy<ITypeDiagramItem, ComputedPropertyData>
 {

@@ -8,4 +8,9 @@
         string PackageName { get; }
         void Initialize(uFrameContainer container);
     }
+
+    public interface IPlaymodePlugin : IDiagramPlugin
+    {
+        void Update();
+    }
 }

@@ -14,7 +14,7 @@ namespace Invert.uFrame.Editor.Nodes
         protected override bool CanConnect(ViewComponentData output, ViewComponentData input)
         {
             if (output.Identifier == input.Identifier) return false;
-            if (output.Element == null)
+            if (output.View == null)
             {
                 return false;
             }

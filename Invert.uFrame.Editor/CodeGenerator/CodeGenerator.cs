@@ -6,6 +6,16 @@ using Invert.uFrame.Editor;
 
 namespace Invert.uFrame.Editor
 {
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ShowInSettings : Attribute
+    {
+        public ShowInSettings(string @group)
+        {
+            Group = @group;
+        }
+
+        public string Group { get; set; }
+    }
     public abstract class CodeGenerator
     {
         private CodeNamespace _ns;
@@ -13,7 +23,7 @@ namespace Invert.uFrame.Editor
 
         public string FullPathName
         {
-            get { return Path.Combine(AssetPath, Filename).Replace("\\","/"); }
+            get { return Path.Combine(AssetPath, Filename).Replace("\\", "/"); }
         }
         public string RelativeFullPathName
         {
@@ -67,9 +77,18 @@ namespace Invert.uFrame.Editor
         public GeneratorSettings Settings { get; set; }
         public string AssetPath { get; set; }
 
+        public bool IsEnabled(IProjectRepository project)
+        {
+
+            var customAttribute = this.GetType().GetCustomAttributes(typeof(ShowInSettings), true).OfType<ShowInSettings>().FirstOrDefault();
+            if (customAttribute == null) return true;
+
+            return project.GetSetting(customAttribute.Group, true);
+
+        }
         public void ProcessModifiers(CodeTypeDeclaration declaration)
         {
-            
+
             var typeDeclerationModifiers = uFrameEditor.Container.ResolveAll<ITypeGeneratorPostProcessor>().Where(p => p.For.IsAssignableFrom(this.GetType()));
             foreach (var typeDeclerationModifier in typeDeclerationModifiers)
             {
@@ -99,6 +118,7 @@ namespace Invert.uFrame.Code.Bindings
         string BindingConditionFieldName { get; }
         bool GenerateDefaultImplementation { get; set; }
         ElementData Element { get; set; }
+        bool IsBase { get; set; }
         void CreateMembers(CodeTypeMemberCollection collection);
         void CreateBindingStatement(CodeTypeMemberCollection collection, CodeConditionStatement bindingCondition);
     }

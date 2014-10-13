@@ -22,6 +22,14 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
     {
         public override void Perform(SceneManagerViewModel nodeViewModel)
         {
+            if (nodeViewModel.GraphItem.SubSystem == null)
+            {
+                EditorUtility.DisplayDialog("Subsystem not linked.",
+                    "In order to add transitions you need to link a subsystem, when the subsystem is linked any instance with commands will be available for scene transitions",
+                    "Okay, I got it");
+                return;
+            }
+            
             var allCommands = nodeViewModel.ImportedInstances.Select(p=>p.RelatedNode()).OfType<ElementData>()
                 .SelectMany(p => p.Commands).ToArray();
 

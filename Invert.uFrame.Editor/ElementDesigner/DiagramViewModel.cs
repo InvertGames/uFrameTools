@@ -207,7 +207,9 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return DiagramData.Name;
+            if (CurrentRepository.CurrentFilter == CurrentRepository.CurrentGraph.RootFilter)
+                return DiagramData.Name;
+            return CurrentRepository.CurrentFilter.Name;
         }
     }
 
@@ -367,12 +369,12 @@ public class DiagramViewModel : ViewModel
                 }
             }
         }
-
+        foreach (var subsystem in nodes.OfType<SceneManagerData>())
+        {
+            subsystem.Transitions.RemoveAll(p => p.Command == null || string.IsNullOrEmpty(p.ToIdentifier));
+        }
         foreach (var viewData in nodes.OfType<ViewData>())
         {
-            
-          
-
             var newElement = nodes.OfType<ElementData>().FirstOrDefault(p => p.AssemblyQualifiedName == viewData.ForAssemblyQualifiedName);
             if (newElement != null)
             {
@@ -380,7 +382,7 @@ public class DiagramViewModel : ViewModel
             }
 
             if (viewData.ViewForElement == null) continue;
-            var generators = uFrameEditor.GetPossibleBindingGenerators(viewData.ViewForElement, true, false, true, false).ToArray();
+            var generators = uFrameEditor.GetPossibleBindingGenerators(viewData, true, false, true, false).ToArray();
 
             viewData.Bindings.Clear();
             // Upgrade bindings

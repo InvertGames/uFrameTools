@@ -95,8 +95,6 @@ public class ElementData : ElementDataBase, IDesignerType
         }
     }
 
-    
-
     public override string BaseTypeName
     {
         get
@@ -238,13 +236,14 @@ public class ElementData : ElementDataBase, IDesignerType
     {
         get
         {
-            foreach (var element in Project.GetElements())
+            HashSet<ElementData> set = new HashSet<ElementData>();
+            foreach (ElementData element in Project.GetElements())
             {
-                foreach (var item in element.ViewModelItems)
+                foreach (ITypeDiagramItem item in element.ViewModelItems)
                 {
                     if (item.RelatedType == this.Identifier)
                     {
-                        yield return element;
+                        if (set.Add(element)) yield return element;
                         break;
                     }
                 }
@@ -258,16 +257,16 @@ public class ElementData : ElementDataBase, IDesignerType
         set { _properties = value.ToList(); }
     }
 
-
     public IEnumerable<ISerializeablePropertyData> SerializedProperties
     {
         get
         {
-            return
-                Properties.Cast<ISerializeablePropertyData>().Concat(ViewProperties.Cast<ISerializeablePropertyData>());
+            foreach (var property in Properties)
+            {
+                yield return property;
+            }
         }
     }
-
 
     public override string SubTitle
     {
@@ -304,20 +303,6 @@ public class ElementData : ElementDataBase, IDesignerType
         var tRef = new CodeTypeReference(uFrameEditor.UFrameTypes.P);
         tRef.TypeArguments.Add(this.NameAsViewModel);
         return tRef;
-    }
-    public IEnumerable<ViewComponentData> ViewComponents
-    {
-        get
-        {
-            foreach (var viewComponentData in Project.GetViewComponents())
-            {
-                if (viewComponentData.ElementIdentifier == this.Identifier ||
-                    AllBaseTypes.Any(p => p.Identifier == viewComponentData.ElementIdentifier))
-                {
-                    yield return viewComponentData;
-                }
-            }
-        }
     }
 
     public IEnumerable<ViewPropertyData> ViewProperties
@@ -366,6 +351,17 @@ public class ElementData : ElementDataBase, IDesignerType
 
     [Obsolete("For Upgrading Old Projects Only")]
     public string BaseType { get; set; }
+
+    public bool IsRegistered
+    {
+        get
+        {
+            return
+                Project.NodeItems.OfType<SubSystemData>()
+                    .SelectMany(p => p.Instances).Any(p => p.RelatedType == this.Identifier);
+
+        }
+    }
 
     public bool IsAllowed(object item, Type t)
     {

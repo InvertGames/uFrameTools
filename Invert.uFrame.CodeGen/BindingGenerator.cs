@@ -40,8 +40,9 @@ namespace Invert.uFrame.Code.Bindings
         }
         public bool GenerateDefaultImplementation { get; set; }
         public ElementData Element { get; set; }
+        public bool IsBase { get; set; }
 
-        public CodeMemberField CreateBindingField(string typeFullName, string propertyName, string name, bool keepHidden = false)
+        public CodeMemberField CreateBindingField(string typeFullName, string propertyName, string name="", bool keepHidden = false)
         {
             var memberField =
                 new CodeMemberField(

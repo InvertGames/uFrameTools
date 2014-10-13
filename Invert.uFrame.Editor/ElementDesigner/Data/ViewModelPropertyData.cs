@@ -16,7 +16,8 @@ public class TypedDiagramNodeItem : DiagramNodeItem, ITypeDiagramItem, ISerializ
         get
         {
             if (string.IsNullOrEmpty(_type)) return null;
-            return Type.GetType(_type);
+
+            return uFrameEditor.FindTypeByName(_type);
         }
     }
 

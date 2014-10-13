@@ -24,23 +24,195 @@ public class ProjectRepositoryInspector : Editor
 
     public TypeMapping[] CodeGenerators
     {
-        get { return _generators ?? (_generators = uFrameEditor.Container.Mappings.Where(p=>p.From == typeof(DesignerGeneratorFactory)).ToArray()); }
+        get { return _generators ?? (_generators = uFrameEditor.Container.Mappings.Where(p => p.From == typeof(DesignerGeneratorFactory)).ToArray()); }
     }
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-        //foreach (var a in CodeGenerators)
-        //{
-        //    GUIHelpers.DoTriggerButton(new UFStyle(a.To.Name, UBStyles.IncludeTriggerBackgroundStyle));
 
-        //}
+        Target.Diagrams.RemoveAll(p => p == null);
 
+        serializedObject.Update();
+        GUIHelpers.IsInsepctor = true;
+
+        if (GUIHelpers.DoToolbarEx("Project Diagrams", ImportDiagram))
+        {
+            for (int index = 0; index < Target.Diagrams.Count; index++)
+            {
+                var diagram = Target.Diagrams[index];
+                int index1 = index;
+                GUIHelpers.DoTriggerButton(new UFStyle()
+                {
+                    Label = diagram.Name,
+                    Enabled = true,
+                    BackgroundStyle = UBStyles.EventButtonStyleSmall,
+                    TextAnchor = TextAnchor.MiddleRight,
+                    IconStyle = UBStyles.RemoveButtonStyle,
+                    ShowArrow = true,
+                    OnShowOptions = () =>
+                    {
+                        var items = Target.Diagrams.ToList();
+                        items.RemoveAt(index1);
+
+                        var so = new SerializedObject(target);
+                        so.Update();
+                        var property = serializedObject.FindProperty("_diagrams");
+                        property.ClearArray();
+                        property.arraySize = items.Count;
+                        for (int i = 0; i < items.Count; i++)
+                        {
+                            var item = items[i];
+                            property.GetArrayElementAtIndex(i).objectReferenceValue = item;
+                        }
+                        so.ApplyModifiedProperties();
+                    }
+                })
+                ;
+            }
+        }
+
+        if (GUIHelpers.DoToolbarEx("Settings"))
+        {
+            var settingsProperty = serializedObject.FindProperty("_generatorSettings");
+
+
+            var property = settingsProperty.FindPropertyRelative("_namespaceProvider").FindPropertyRelative("_rootNamespace");
+            EditorGUILayout.PropertyField(property);
+
+
+            property = settingsProperty.FindPropertyRelative("_generateComments");
+            var newValue = GUIHelpers.DoToggle("Generate Comments", property.boolValue);
+            if (newValue != property.boolValue)
+            {
+                property.boolValue = newValue;
+
+            }
+        }
+        if (GUIHelpers.DoToolbarEx("Code Generators"))
+        {
+            var codeGenerators = uFrameEditor.CodeGenerators;
+            var groupList = new List<ShowInSettings>();
+
+            foreach (var codeGenerator in codeGenerators)
+            {
+                var customAttribute = codeGenerator.GetCustomAttributes(typeof(ShowInSettings), true).OfType<ShowInSettings>().FirstOrDefault();
+                if (customAttribute == null) continue;
+                groupList.Add(customAttribute);
+
+            }
+            foreach (var item in groupList.Select(p => p.Group).Distinct())
+            {
+                var isOn = Target[item, true];
+                var result = GUIHelpers.DoToggle(item, isOn);
+                if (isOn != result)
+                {
+                    Target[item] = result;
+                }
+            }
+        }
+        serializedObject.ApplyModifiedProperties();
+        GUIHelpers.IsInsepctor = false;
+    }
+
+    private void ImportDiagram()
+    {
+        var assets = uFrameEditor.GetAssets(typeof(GraphData)).OfType<GraphData>().ToArray();
+
+        ItemSelectionWindow.Init("Select Diagram", assets, (item) =>
+        {
+            // Mimic the new list
+            var list = Target.Diagrams.ToList();
+            var selectedAsset = item as GraphData;
+            list.Add(selectedAsset);
+
+            var so = new SerializedObject(Target); so.Update();
+
+
+            // Adjust the array
+            var property = so.FindProperty("_diagrams");
+            property.arraySize = list.Count;
+
+            for (int index = 0; index < list.Count; index++)
+            {
+                var diagram = list[index];
+                property.GetArrayElementAtIndex(index).objectReferenceValue = diagram;
+            }
+
+            so.ApplyModifiedProperties();
+        });
     }
 }
 
 [Serializable]
-public class ProjectRepository : ScriptableObject, IProjectRepository
+public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializationCallbackReceiver
 {
+    [SerializeField, HideInInspector]
+    private string[] _settingsKeys;
+    [SerializeField, HideInInspector]
+    private bool[] _settingsValues;
+
+    private Dictionary<string, bool> _settingsBag;
+    public Dictionary<string, bool> SettingsBag
+    {
+        get { return _settingsBag ?? (_settingsBag = new Dictionary<string, bool>()); }
+        set { _settingsBag = value; }
+    }
+    public bool this[string settingsKey, bool def = true]
+    {
+        get
+        {
+            if (SettingsBag.ContainsKey(settingsKey))
+            {
+                return SettingsBag[settingsKey];
+            }
+            return def;
+        }
+        set
+        {
+            if (SettingsBag.ContainsKey(settingsKey))
+            {
+                SettingsBag[settingsKey] = value;
+            }
+            else
+            {
+                SettingsBag.Add(settingsKey, value);
+            }
+        }
+    }
+    public void OnBeforeSerialize()
+    {
+        if (_settingsBag == null) return;
+        _settingsKeys = _settingsBag.Keys.ToArray();
+        _settingsValues = _settingsBag.Values.ToArray();
+    }
+
+    public void OnAfterDeserialize()
+    {
+        if (_settingsKeys == null) return;
+        SettingsBag.Clear();
+        for (var i = 0; i < _settingsKeys.Length; i++)
+        {
+            if (i >= _settingsValues.Length)
+            {
+                break;
+            }
+            var key = _settingsKeys[i];
+            var value = _settingsValues[i];
+            SettingsBag.Add(key, value);
+
+        }
+    }
+
+    public bool GetSetting(string key, bool def = true)
+    {
+        return this[key, def];
+    }
+
+    public bool SetSetting(string key, bool value)
+    {
+        return this[key] = value;
+    }
+
     public Vector2 GetItemLocation(IDiagramNode node)
     {
         //if (!CurrentDiagram.PositionData.HasPosition(CurrentFilter, node))
@@ -66,12 +238,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     public void MarkDirty(INodeRepository data)
     {
         if (data != null)
-        EditorUtility.SetDirty(data as UnityEngine.Object);
+            EditorUtility.SetDirty(data as UnityEngine.Object);
     }
 
     protected string[] _diagramNames;
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     protected List<GraphData> _diagrams;
 
 
@@ -79,16 +251,16 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
     public void RecacheAssets()
     {
-        
+
     }
 
     public Dictionary<string, string> GetProjectDiagrams()
     {
         var items = new Dictionary<string, string>();
-        foreach (var elementDesignerData in Diagrams.Where(p=>p.GetType() == RepositoryFor))
+        foreach (var elementDesignerData in Diagrams.Where(p => p.GetType() == RepositoryFor))
         {
             var asset = AssetDatabase.GetAssetPath(elementDesignerData as UnityEngine.Object);
-            
+
             items.Add(elementDesignerData.Name, asset);
         }
         return items;
@@ -97,7 +269,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     public IGraphData CreateNewDiagram(Type diagramType = null, IDiagramFilter defaultFilter = null)
     {
         Selection.activeObject = this;
-        var t = diagramType ?? typeof (ElementsGraph);
+        var t = diagramType ?? typeof(ElementsGraph);
         var diagram = UFrameAssetManager.CreateAsset(t) as GraphData;
         if (defaultFilter != null && diagram != null)
         {
@@ -120,8 +292,10 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
 
 
     private IDiagramNode[] _nodeItems;
-    [SerializeField]
+    [SerializeField, HideInInspector]
     private GeneratorSettings _generatorSettings;
+
+
 
     public IEnumerable<IDiagramNode> NodeItems
     {
@@ -211,7 +385,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
         {
             if (_diagrams == null)
             {
-               _diagrams = new List<GraphData>();
+                _diagrams = new List<GraphData>();
             }
             return _diagrams;
         }
@@ -241,7 +415,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
             }
             return _currentGraph;
         }
-        set { _currentGraph = value; }
+        set
+        {
+            _currentGraph = value;
+            if (value != null)
+                LastLoadedDiagram = value.name;
+        }
     }
 
 
@@ -260,7 +439,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     {
         if (data != null)
         {
-            EditorUtility.SetDirty(data as UnityEngine.Object);    
+            EditorUtility.SetDirty(data as UnityEngine.Object);
         }
         AssetDatabase.SaveAssets();
     }
@@ -268,7 +447,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     public void RecordUndo(INodeRepository data, string title)
     {
         if (data != null)
-        Undo.RecordObject(data as UnityEngine.Object, title);
+            Undo.RecordObject(data as UnityEngine.Object, title);
     }
 
 
@@ -276,21 +455,23 @@ public class ProjectRepository : ScriptableObject, IProjectRepository
     {
         //var assets = uFrameEditor.GetAssets(typeof(GraphData));
         //Diagrams = assets.OfType<GraphData>().ToList();
-        
+
         CurrentGraph = null;
         _nodeItems = null;
-        
+
         foreach (var diagram in Diagrams)
         {
             diagram.Prepare();
         }
-        
+
     }
 
     public void HideNode(string identifier)
     {
         CurrentGraph.PositionData.Remove(CurrentGraph.CurrentFilter, identifier);
     }
+
+
 }
 
 public interface INamespaceProvider
@@ -420,12 +601,12 @@ public class DefaultCodePathStrategy : ICodePathStrategy
         else
         {
             // Attempt to move non designer files
-           // var designerFiles = sourceFiles.Where(p => p.Filename.EndsWith("designer.cs"));
+            // var designerFiles = sourceFiles.Where(p => p.Filename.EndsWith("designer.cs"));
             sourceFiles = sourceFiles.Where(p => !p.SystemPath.EndsWith("designer.cs")).ToArray();
             targetFiles = targetFiles.Where(p => !p.SystemPath.EndsWith("designer.cs")).ToArray();
             if (sourceFiles.Length == targetFiles.Length)
             {
-                ProcessMove(strategy,name,sourceFiles,targetFiles);
+                ProcessMove(strategy, name, sourceFiles, targetFiles);
                 //// Remove all designer files
                 //foreach (var designerFile in designerFiles)
                 //{
@@ -435,7 +616,7 @@ public class DefaultCodePathStrategy : ICodePathStrategy
                 //saveCommand.Execute();
             }
         }
-        
+
     }
 
 
@@ -454,10 +635,10 @@ public class DefaultCodePathStrategy : ICodePathStrategy
             EnsurePath(sourceFileInfo);
             if (targetFileInfo.Exists) continue;
             EnsurePath(targetFileInfo);
-            
+
             var sourceAsset = "Assets" + sourceFileInfo.FullName.Replace("\\", "/").Replace(Application.dataPath, "").Replace("\\", "/");
             var targetAsset = "Assets" + targetFileInfo.FullName.Replace("\\", "/").Replace(Application.dataPath, "").Replace("\\", "/");
-            uFrameEditor.Log(string.Format("Moving file {0} to {1}",sourceAsset, targetAsset));
+            uFrameEditor.Log(string.Format("Moving file {0} to {1}", sourceAsset, targetAsset));
             AssetDatabase.MoveAsset(sourceAsset, targetAsset);
         }
 
@@ -491,13 +672,13 @@ public class DefaultCodePathStrategy : ICodePathStrategy
 
     protected void EnsurePath(FileInfo fileInfo)
     {
-        
-// Get the path to the directory
+
+        // Get the path to the directory
         var directory = System.IO.Path.GetDirectoryName(fileInfo.FullName);
         // Create it if it doesn't exist
         if (directory != null && !Directory.Exists(directory))
         {
-            
+
             Directory.CreateDirectory(directory);
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         }
@@ -511,7 +692,7 @@ public class SubSystemPathStrategy : DefaultCodePathStrategy
         var allFilters = Data.GetFilters();
         foreach (var diagramFilter in allFilters)
         {
-            if (node != diagramFilter &&  node.Project.PositionData.HasPosition(diagramFilter,node))
+            if (node != diagramFilter && node.Project.PositionData.HasPosition(diagramFilter, node))
             {
                 return diagramFilter;
             }
@@ -519,7 +700,7 @@ public class SubSystemPathStrategy : DefaultCodePathStrategy
         return null;
     }
 
-    public SubSystemData FindSubsystem( IDiagramNode node)
+    public SubSystemData FindSubsystem(IDiagramNode node)
     {
         var filter = FindFilter(node);
         if (filter == node) return null;
@@ -529,7 +710,7 @@ public class SubSystemPathStrategy : DefaultCodePathStrategy
         {
             // Convert to node
             var filterNode = filter as IDiagramNode;
-            
+
             // If its not a node at this point it must be hidden
             if (filterNode == null) return null;
             // Try again with the new filternode
@@ -545,7 +726,7 @@ public class SubSystemPathStrategy : DefaultCodePathStrategy
 
     public string GetSubSystemPath(IDiagramNode node)
     {
-        var subsystem = FindSubsystem( node);
+        var subsystem = FindSubsystem(node);
         if (subsystem == null) return string.Empty;
         return subsystem.Name;
     }
@@ -562,17 +743,17 @@ public class SubSystemPathStrategy : DefaultCodePathStrategy
 
     public override string GetEditableViewFilename(ViewData nameAsView)
     {
-        return Path.Combine(GetSubSystemPath(nameAsView),base.GetEditableViewFilename(nameAsView));
+        return Path.Combine(GetSubSystemPath(nameAsView), base.GetEditableViewFilename(nameAsView));
     }
 
     public override string GetEditableViewModelFilename(ElementData nameAsViewModel)
     {
-        return Path.Combine(GetSubSystemPath(nameAsViewModel),base.GetEditableViewModelFilename(nameAsViewModel));
+        return Path.Combine(GetSubSystemPath(nameAsViewModel), base.GetEditableViewModelFilename(nameAsViewModel));
     }
 
     public override string GetEditableViewComponentFilename(ViewComponentData name)
     {
-        return Path.Combine(GetSubSystemPath(name),base.GetEditableViewComponentFilename(name));
+        return Path.Combine(GetSubSystemPath(name), base.GetEditableViewComponentFilename(name));
     }
-    
+
 }

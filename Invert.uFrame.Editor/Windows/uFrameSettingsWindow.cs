@@ -13,7 +13,7 @@ public class uFrameSettingsWindow : EditorWindow
     {
         var window = GetWindow<uFrameSettingsWindow>();
         window.title = "uFrame Settings";
-        window.minSize = new Vector2(700, 500);
+        window.minSize = new Vector2(400, 500);
 
         window.Show();
     }
@@ -35,45 +35,36 @@ public class uFrameSettingsWindow : EditorWindow
     {
         var s = uFrameEditor.Settings;
         DrawTitleBar("uFrame Settings");
-        GUILayout.BeginHorizontal();
-        GUILayout.BeginVertical();
-        GUIHelpers.DoToolbarEx("Plugins");
-        foreach (var plugin in uFrameEditor.Container.ResolveAll<IDiagramPlugin>())
+        if (GUIHelpers.DoToolbarEx("Color Settings"))
         {
-            if (
-                GUIHelpers.DoTriggerButton(new UFStyle("     " + plugin.Title, UBStyles.EventButtonLargeStyle,
-                    null,
-                    plugin.Enabled ? UBStyles.TriggerActiveButtonStyle : UBStyles.TriggerInActiveButtonStyle, () => { }, false, TextAnchor.MiddleCenter)
-                {
-                    IsWindow = true,
-                    FullWidth = true
-                }))
-            {
-                plugin.Enabled = !plugin.Enabled;
-                uFrameEditor.Container = null;
-            }
-
+            s.BackgroundColor = EditorGUILayout.ColorField("Background Color", s.BackgroundColor);
+            s.GridLinesColor = EditorGUILayout.ColorField("Grid Lines Color", s.GridLinesColor);
+            s.GridLinesColorSecondary = EditorGUILayout.ColorField("Grid Lines Secondary Color", s.GridLinesColorSecondary);
+            s.AssociationLinkColor = EditorGUILayout.ColorField("Association Link Color", s.AssociationLinkColor);
+            s.DefinitionLinkColor = EditorGUILayout.ColorField("Definition Link Color", s.DefinitionLinkColor);
+            s.InheritanceLinkColor = EditorGUILayout.ColorField("Inheritance Link Color", s.InheritanceLinkColor);
+            s.SubSystemLinkColor = EditorGUILayout.ColorField("SubSystem Link Color", s.SubSystemLinkColor);
+            s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
+            s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
         }
-        GUILayout.EndVertical();
-        GUILayout.Space(20);
-        GUILayout.BeginVertical();
-        GUIHelpers.DoToolbarEx("Color Settings");
-        s.BackgroundColor = EditorGUILayout.ColorField("Background Color", s.BackgroundColor);
-        s.GridLinesColor = EditorGUILayout.ColorField("Grid Lines Color", s.GridLinesColor);
-        s.GridLinesColorSecondary = EditorGUILayout.ColorField("Grid Lines Secondary Color", s.GridLinesColorSecondary);
-        s.AssociationLinkColor = EditorGUILayout.ColorField("Association Link Color", s.AssociationLinkColor);
-        s.DefinitionLinkColor = EditorGUILayout.ColorField("Definition Link Color", s.DefinitionLinkColor);
-        s.InheritanceLinkColor = EditorGUILayout.ColorField("Inheritance Link Color", s.InheritanceLinkColor);
-        s.SubSystemLinkColor = EditorGUILayout.ColorField("SubSystem Link Color", s.SubSystemLinkColor);
-        s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
-        s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
-        
-        GUILayout.EndVertical();
-     
-        GUILayout.EndHorizontal();
-   
-      
-   
-        
+        if (GUIHelpers.DoToolbarEx("Plugins"))
+        {
+            foreach (var plugin in uFrameEditor.Container.ResolveAll<IDiagramPlugin>())
+            {
+                if (
+                    GUIHelpers.DoTriggerButton(new UFStyle("     " + plugin.Title, UBStyles.EventButtonStyleSmall,
+                        null,
+                        plugin.Enabled ? UBStyles.TriggerActiveButtonStyle : UBStyles.TriggerInActiveButtonStyle, () => { }, false, TextAnchor.MiddleCenter)
+                    {
+                        IsWindow = true,
+                        FullWidth = true
+                    }))
+                {
+                    plugin.Enabled = !plugin.Enabled;
+                    uFrameEditor.Container = null;
+                }
+            }
+        }
+       
     }
 }

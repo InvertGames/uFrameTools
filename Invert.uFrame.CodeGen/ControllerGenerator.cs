@@ -18,119 +18,6 @@ public class ControllerGenerator : ElementCodeGenerator
         
     }
 
-    public CodeTypeReference GetCommandTypeReference(ViewModelCommandData itemData, CodeTypeReference senderType, ElementData element)
-    {
-        if (!itemData.IsYield)
-        {
-            if (string.IsNullOrEmpty(itemData.RelatedTypeName))
-            {
-                //if (element.IsMultiInstance)
-                //{
-                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWithSenderT);
-                    commandWithType.TypeArguments.Add(senderType);
-                    return commandWithType;
-                //}
-                //else
-                //{
-                //    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.Command);
-                //    return commandWithType;
-                //}
-
-            }
-            else
-            {
-                //if (element.IsMultiInstance)
-               // {
-                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWithSenderAndArgument);
-                    commandWithType.TypeArguments.Add(senderType);
-                    var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
-                    if (typeViewModel == null)
-                    {
-                        commandWithType.TypeArguments.Add(new CodeTypeReference(itemData.RelatedTypeName));
-                    }
-                    else
-                    {
-                        commandWithType.TypeArguments.Add(new CodeTypeReference(typeViewModel.NameAsViewModel));
-                    }
-
-                    return commandWithType;
-               // }
-                //else
-                //{
-                //    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.CommandWith);
-
-                //    var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
-                //    if (typeViewModel == null)
-                //    {
-                //        commandWithType.TypeArguments.Add(new CodeTypeReference(itemData.RelatedTypeName));
-                //    }
-                //    else
-                //    {
-                //        commandWithType.TypeArguments.Add(new CodeTypeReference(typeViewModel.NameAsViewModel));
-                //    }
-
-                //    return commandWithType;
-
-                //}
-
-            }
-        }
-        else
-        {
-            if (string.IsNullOrEmpty(itemData.RelatedTypeName))
-            {
-                //if (element.IsMultiInstance)
-                //{
-                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWithSenderT);
-                    commandWithType.TypeArguments.Add(senderType);
-                    return commandWithType;
-                //}
-                //else
-                //{
-                //    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommand);
-
-                //    return commandWithType;
-                //}
-
-            }
-            else
-            {
-                //if (element.IsMultiInstance)
-                //{
-                    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWithSenderAndArgument);
-                    commandWithType.TypeArguments.Add(senderType);
-                    var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
-                    if (typeViewModel == null)
-                    {
-                        commandWithType.TypeArguments.Add(new CodeTypeReference(itemData.RelatedTypeName));
-                    }
-                    else
-                    {
-                        commandWithType.TypeArguments.Add(new CodeTypeReference(typeViewModel.NameAsViewModel));
-                    }
-                    return commandWithType;
-                //}
-                //else
-                //{
-                //    var commandWithType = new CodeTypeReference(uFrameEditor.UFrameTypes.YieldCommandWith);
-                //    var typeViewModel = DiagramData.GetViewModel(itemData.RelatedTypeName);
-                //    if (typeViewModel == null)
-                //    {
-                //        commandWithType.TypeArguments.Add(new CodeTypeReference(itemData.RelatedTypeName));
-                //    }
-                //    else
-                //    {
-                //        commandWithType.TypeArguments.Add(new CodeTypeReference(typeViewModel.NameAsViewModel));
-                //    }
-                //    return commandWithType;
-                //}
-
-            }
-        }
-
-
-    }
-
     public virtual void AddController(ElementData data)
     {
         var viewModelTypeReference = new CodeTypeReference(data.NameAsViewModel);
@@ -208,7 +95,6 @@ public class ControllerGenerator : ElementCodeGenerator
         if (IsDesignerFile)
         {
             AddCommandMethods(data, viewModelTypeReference, Declaration);
-            AddComputedPropertyMethods(data, Declaration);
         }
        
         ProcessModifiers(Declaration);
@@ -247,7 +133,7 @@ public class ControllerGenerator : ElementCodeGenerator
             };
 
             createEmptyMethod.Statements.Add(
-                new CodeMethodReturnStatement(new CodeObjectCreateExpression(data.NameAsViewModel)));
+                new CodeMethodReturnStatement(new CodeObjectCreateExpression(data.NameAsViewModel, new CodeThisReferenceExpression())));
 
             tDecleration.Members.Add(createEmptyMethod);
         }

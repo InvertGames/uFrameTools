@@ -25,19 +25,19 @@ namespace Invert.uFrame.Editor.ElementDesigner
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
             var generatorSettings = uFrameEditor.CurrentProject.GeneratorSettings;
             var fileGenerators = uFrameEditor.GetAllFileGenerators(generatorSettings, uFrameEditor.CurrentProject).ToArray();
-            Debug.Log(fileGenerators.Length);
+           // Debug.Log(fileGenerators.Length);
             foreach (var codeFileGenerator in fileGenerators)
             {
             
             
                 // Grab the information for the file
                 var fileInfo = new FileInfo(codeFileGenerator.SystemPath);
-                    Debug.Log(codeFileGenerator.SystemPath + ": " + fileInfo.Exists);
+                    //Debug.Log(codeFileGenerator.SystemPath + ": " + fileInfo.Exists);
                 
                 // Make sure we are allowed to generate the file
                 if (!codeFileGenerator.CanGenerate(fileInfo))
                 {
-                    Debug.Log("Can't generate " + fileInfo.FullName);
+                    //Debug.Log("Can't generate " + fileInfo.FullName);
                     continue;
                 }
                  

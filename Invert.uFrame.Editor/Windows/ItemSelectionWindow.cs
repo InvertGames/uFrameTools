@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Common;
 using Invert.Common.UI;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
@@ -35,14 +36,13 @@ public class ItemSelectionWindow : SearchableScrollWindow
         {
             ItemsArray = Items.ToArray();
         }
-        
     }
 
     public override void OnGUIScrollView()
     {
         foreach (var item in ItemsArray)
         {
-            if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.Title, IsWindow = true, FullWidth = true }))
+            if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.Title, IsWindow = true, FullWidth = true,BackgroundStyle = UBStyles.EventButtonStyleSmall}))
             {
                 SelectedAction(item);
                 IsClosing = true;

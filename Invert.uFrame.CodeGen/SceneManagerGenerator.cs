@@ -8,6 +8,5 @@ public class SceneManagerGenerator : SceneManagerClassGenerator
         base.Initialize(fileGenerator);
         Namespace.Imports.Add(new CodeNamespaceImport("UniRx"));
         AddSceneManager(Data);
-
     }
 }

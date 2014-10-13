@@ -128,7 +128,7 @@ public class ItemDrawer : Drawer
             if (ItemViewModel.AllowRemoving)
                 if (GUILayout.Button(string.Empty, UBStyles.RemoveButtonStyle.Scale(scale)))
                 {
-                    uFrameEditor.ExecuteCommand(new RemoveNodeItemCommand());
+                    uFrameEditor.ExecuteCommand(ItemViewModel.RemoveItemCommand);
                 }
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();

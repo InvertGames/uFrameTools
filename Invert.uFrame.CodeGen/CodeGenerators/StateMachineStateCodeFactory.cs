@@ -38,7 +38,6 @@ public class StateMachineViewModelProcessor : TypeGeneratorPostProcessor<ViewMod
         var constructor = this.CodeGenerator.WireCommandsMethod;
         if (constructor != null)
         {
-            Debug.Log("Hit Apply");
             var element = CodeGenerator.ElementData;
             var stateMachines =
                 CodeGenerator.ElementData.Properties.Select(p => p.RelatedNode()).OfType<StateMachineNodeData>().ToArray();
@@ -61,11 +60,18 @@ public class StateMachineViewModelProcessor : TypeGeneratorPostProcessor<ViewMod
                     {
                         //if (transition.TransitionTo == null) continue;
 
-
+                        Debug.Log("TP: "  +transitionProperty.Name);
                         //constructor.Statements.Add(new CodeSnippetExpression(string.Format("{0}.{1}.AddTrigger({2},{0}.{1}.{3})",
                         //    stateMachineProperty.FieldName, transition.StateMachineState.Name, transitionProperty.FieldName, transition.Name)));
-
-                        constructor.Statements.Add(new CodeSnippetExpression(string.Format("this.{0}.Subscribe({1}.{2})", transitionProperty.FieldName, stateMachineProperty.FieldName, transition.Name)));
+                        if (transitionProperty is ComputedPropertyData)
+                        {
+                            constructor.Statements.Add(new CodeSnippetExpression(string.Format("this.{1}.{2}.AddComputer({0})", transitionProperty.FieldName, stateMachineProperty.FieldName, transition.Name)));
+                        }
+                        else
+                        {
+                            constructor.Statements.Add(new CodeSnippetExpression(string.Format("this.{0}.Subscribe({1}.{2})", transitionProperty.FieldName, stateMachineProperty.FieldName, transition.Name)));
+                        }
+                        
 
                         //constructor.Statements.Add(new CodeSnippetExpression(
                         //    string.Format("{0}.Subscribe((v)=>{{ if (v) {1}.Transition(\"{2}\"); }})", transitionProperty.FieldName,stateMachineProperty.FieldName, transition.Name)

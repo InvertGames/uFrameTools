@@ -8,11 +8,12 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             var diagramViewModel = node.DiagramViewModel;
             var nodeData = node.GraphItemObject as IDiagramNode;
+            diagramViewModel.DiagramData.RemoveNode(nodeData);
+
             var exportedDiagram = node.DiagramViewModel.CurrentRepository.CreateNewDiagram(node.ExportGraphType, nodeData as IDiagramFilter);
             var repository = diagramViewModel.CurrentRepository;
 
-            diagramViewModel.DiagramData.RemoveNode(nodeData);
-
+            
 
         }
 
@@ -20,6 +21,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             if (!node.IsLocal) return "Node must be local to export it.";
             if (node.GraphItemObject is IDiagramFilter) return null;
+            if (node.ExportGraphType == null) return null;
             return "Node must be a filter to export it.";
         }
     }

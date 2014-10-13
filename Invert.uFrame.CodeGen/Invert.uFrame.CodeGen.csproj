@@ -50,6 +50,7 @@
     <Compile Include="Class1.cs" />
     <Compile Include="ClassNodeGenerators\ClassNodeCodeFactory.cs" />
     <Compile Include="CodeDomExtensions.cs" />
+    <Compile Include="CodeDomExtensions\ElementExtensions.cs" />
     <Compile Include="CodeDomHelper.cs" />
     <Compile Include="CodeGenerators\StateMachineClassGenerator.cs" />
     <Compile Include="CodeGenerators\StateMachineCodeFactory.cs" />
@@ -98,6 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CodeGenPlugin\NewFolder1\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="documentation\documentation.dxp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -5,6 +5,9 @@ using UnityEngine;
 
 public interface IProjectRepository : INodeRepository
 {
+    bool GetSetting(string key, bool def = true);
+    bool SetSetting(string key, bool value);
+
     Vector2 GetItemLocation(IDiagramNode node);
     void SetItemLocation(IDiagramNode node,Vector2 position);
     IGraphData LoadDiagram(string path);

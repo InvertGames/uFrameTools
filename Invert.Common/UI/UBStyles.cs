@@ -57,6 +57,8 @@ namespace Invert.Common
         private static GUIStyle _treeItemStyleOdd;
         private static GUIStyle _treeviewButtonStyle;
         private static GUIStyle _listButtonStyle;
+        private static GUIStyle _toolbarStyleCollapsed;
+        private static GUIStyle _eventButtonStyleSmall;
 
         public static string SkinName
         {
@@ -496,10 +498,10 @@ namespace Invert.Common
         {
             get
             {
-                if (_eventButtonStyle == null)
-                    _eventButtonStyle = new GUIStyle
+                if (_eventButtonStyleSmall == null)
+                    _eventButtonStyleSmall = new GUIStyle
                     {
-                        normal = { background = GetSkinTexture("CommandBar"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.grey },
+                        normal = { background = GetSkinTexture("Toolbar"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.grey },
                         active = { background = CommandBarClosedStyle.normal.background },
                         stretchHeight = true,
 
@@ -509,7 +511,7 @@ namespace Invert.Common
                         padding = new RectOffset(25, 0, 5, 5)
                     };
 
-                return _eventButtonStyle;
+                return _eventButtonStyleSmall;
             }
         }
         public static Texture2D EventInActiveTexture
@@ -763,7 +765,27 @@ namespace Invert.Common
                 return _subLabelStyle;
             }
         }
+        public static GUIStyle ToolbarStyleCollapsed
+        {
+            get
+            {
+                if (_toolbarStyleCollapsed == null)
+                    _toolbarStyleCollapsed = new GUIStyle
+                    {
 
+                        normal = { background = GetSkinTexture("CommandExpanded"), textColor = new Color(0.7f, 0.7f, 0.7f) },
+                        //active = { background = CommandBarClosedStyle.normal.background },
+                        fixedHeight = 28,
+                        border = new RectOffset(3, 3, 3, 3),
+
+                        stretchHeight = true,
+
+                        //padding = new RectOffset(5, 5, 5, 0)
+                    };
+
+                return _toolbarStyleCollapsed;
+            }
+        }
         public static GUIStyle ToolbarStyle
         {
             get
@@ -773,7 +795,7 @@ namespace Invert.Common
                     {
 
                         normal = { background = GetSkinTexture("CommandExpanded"), textColor = new Color(0.7f, 0.7f, 0.7f) },
-                        active = { background = CommandBarClosedStyle.normal.background },
+                        //active = { background = CommandBarClosedStyle.normal.background },
                         fixedHeight = 28,
                         border = new RectOffset(3, 3, 3, 3),
                         

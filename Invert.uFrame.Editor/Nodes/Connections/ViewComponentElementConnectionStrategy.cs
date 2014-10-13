@@ -3,31 +3,31 @@ using UnityEngine;
 
 namespace Invert.uFrame.Editor.Nodes
 {
-    public class ViewComponentElementConnectionStrategy : DefaultConnectionStrategy<ElementData, ViewComponentData>
+    public class ViewComponentElementConnectionStrategy : DefaultConnectionStrategy<ViewData, ViewComponentData>
     {
         public override Color ConnectionColor
         {
             get { return Color.green; }
         }
 
-        protected override bool CanConnect(ElementData output, ViewComponentData input)
+        protected override bool CanConnect(ViewData output, ViewComponentData input)
         {
             return true;
         }
 
-        protected override bool IsConnected(ElementData outputData, ViewComponentData inputData)
+        protected override bool IsConnected(ViewData outputData, ViewComponentData inputData)
         {
-            return inputData.ElementIdentifier == outputData.Identifier;
+            return inputData.ViewIdentifier == outputData.Identifier;
         }
 
-        protected override void ApplyConnection(ElementData output, ViewComponentData input)
+        protected override void ApplyConnection(ViewData output, ViewComponentData input)
         {
-            input.SetElement(output);
+            input.SetView(output);
         }
 
-        protected override void RemoveConnection(ElementData output, ViewComponentData input)
+        protected override void RemoveConnection(ViewData output, ViewComponentData input)
         {
-            input.RemoveElement();
+            input.RemoveView();
         }
     }
 }

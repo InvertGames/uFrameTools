@@ -49,7 +49,7 @@ public class AddBindingWindow : SearchableScrollWindow
 
     public override void OnGUI()
     {
-      
+
         if (_ViewData == null)
         {
             if (ElementsDesigner != null && ElementsDesigner.DiagramDrawer != null)
@@ -72,7 +72,7 @@ public class AddBindingWindow : SearchableScrollWindow
 
 
         }
-   
+
         if (!_ViewData.HasElement)
         {
             EditorGUILayout.HelpBox("This view must be associated with an element in order to add bindings.",
@@ -106,9 +106,9 @@ public class AddBindingWindow : SearchableScrollWindow
 
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
-        GUILayout.Space(13);
-        EditorGUILayout.BeginVertical(GUILayout.Width(250));
-        GUIHelpers.DoToolbar("Bindings");
+        
+        EditorGUILayout.BeginVertical(GUILayout.Width(400));
+        
         _bindingsScrollPosition = EditorGUILayout.BeginScrollView(_bindingsScrollPosition);
         DoCurrentBindings();
         EditorGUILayout.EndScrollView();
@@ -119,30 +119,37 @@ public class AddBindingWindow : SearchableScrollWindow
 
     private void DoCurrentBindings()
     {
-         foreach (var item in _ViewData.Bindings.ToArray())
+        foreach (var group in _ViewData.AllBindings.GroupBy(p=>p.Generator != null ? "Bindings To Add" : "Current Bindings"))
         {
-            if (GUIHelpers.DoTriggerButton(new UFStyle()
+            if (GUIHelpers.DoToolbarEx(group.Key))
             {
-                Label = item.Name,
-                SubLabel = item.GeneratorType,
-                Tag = item,
-                BackgroundStyle = UBStyles.EventButtonStyleSmall,
-                //SubLabel = item.Description,
-                FullWidth = false,
-                IsWindow = false,
-                Enabled = true
-            }))
-            {
-                LastSelected = item;
-                _ViewData.RemoveBinding(item);
-                ApplySearch();
+                foreach (var item in group)
+                {
+                    if (GUIHelpers.DoTriggerButton(new UFStyle()
+                    {
+                        Label = item.Name,
+                        SubLabel = item.Generator != null ? item.Generator.Description : item.GeneratorType,
+                        Tag = item,
+                        BackgroundStyle = UBStyles.EventButtonStyle,
+                        FullWidth = false,
+                        IsWindow = false,
+                        Enabled = item.Node == _ViewData.GraphItem
+                    }))
+                    {
+                        LastSelected = item;
+                        _ViewData.RemoveBinding(item);
+                        ApplySearch();
+                    }
+                }
             }
+           
+            
         }
     }
 
     public void Apply()
     {
-        //_ViewData.NewBindings.AddRange(AddedGenerators.Select(p=>p.Tag as IBindingGenerator));
+
     }
 
     public override void OnGUIScrollView()
@@ -150,17 +157,19 @@ public class AddBindingWindow : SearchableScrollWindow
 
         foreach (var group in Items.Where(p => !_ViewData.NewBindings.Contains(p.Tag as IBindingGenerator) && p.Enabled == true).GroupBy(p => p.Group))
         {
-            GUIHelpers.DoToolbar(group.Key);
-            foreach (var item in group)
+            
+            if (GUIHelpers.DoToolbarEx(group.Key))
             {
-                if (GUIHelpers.DoTriggerButton(item))
+                foreach (var item in group)
                 {
-                    uFrameEditor.ExecuteCommand(n =>
+                    if (GUIHelpers.DoTriggerButton(item))
                     {
-                        LastSelected = _ViewData.AddNewBinding(item.Tag as IBindingGenerator);
-                    });
-                    
-              
+                        UFStyle item1 = item;
+                        uFrameEditor.ExecuteCommand(n =>
+                        {
+                            LastSelected = _ViewData.AddNewBinding(item1.Tag as IBindingGenerator);
+                        });
+                    }
                 }
             }
         }
@@ -170,7 +179,7 @@ public class AddBindingWindow : SearchableScrollWindow
     protected override void ApplySearch()
     {
         if (_ViewData == null) return;
-        
+
         Generators = _ViewData.BindingGenerators;
 
         //Where(p => _MemberMethods.FirstOrDefault(x => x.Name == p.MethodName) != null)
@@ -178,17 +187,17 @@ public class AddBindingWindow : SearchableScrollWindow
         {
             Label = item.MethodName,
             Tag = item,
-            BackgroundStyle = UBStyles.EventButtonStyle,
-            SubLabel = item.Description,
+            BackgroundStyle = UBStyles.EventButtonStyleSmall,
+            //SubLabel = item.Description,
             Group = item.Title,
-            FullWidth = true,
+            FullWidth = false,
             IsWindow = true,
-            Enabled = _ViewData.Bindings.FirstOrDefault(p=>p.GeneratorType == item.GetType().Name && item.MethodName == p.Name) == null
+            Enabled = _ViewData.Bindings.FirstOrDefault(p=>p.Name == item.MethodName) == null
         }).ToArray();
 
 
     }
 
-    
+
     public IEnumerable<IBindingGenerator> Generators { get; set; }
 }

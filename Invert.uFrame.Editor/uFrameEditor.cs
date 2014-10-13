@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
@@ -48,6 +49,7 @@ namespace Invert.uFrame.Editor
         private static UFrameSettings _settings;
         private static IUFrameTypeProvider _uFrameTypes;
         private static IConnectionStrategy[] _connectionStrategies;
+        private static Type[] _codeGenerators;
 
         public static IEditorCommand[] Commands
         {
@@ -182,7 +184,7 @@ namespace Invert.uFrame.Editor
         {
             var objs = handler.ContextObjects.ToArray();
 
-            CurrentProject.RecordUndo(CurrentProject.CurrentGraph,command.Title);
+            CurrentProject.RecordUndo(CurrentProject.CurrentGraph, command.Title);
             foreach (var o in objs)
             {
                 if (o == null) continue;
@@ -190,7 +192,7 @@ namespace Invert.uFrame.Editor
 
                 if (command.For.IsAssignableFrom(o.GetType()))
                 {
-                    if (command.CanPerform(o) != null) continue; 
+                    if (command.CanPerform(o) != null) continue;
                     //handler.CommandExecuting(command);
                     command.Execute(o);
                     if (command.Hooks != null)
@@ -215,8 +217,22 @@ namespace Invert.uFrame.Editor
             }
             return null;
         }
+        public static Type FindTypeByName(string name)
+        {
+            //if (string.IsNullOrEmpty(name)) return null;
 
-        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, IProjectRepository diagramData)
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var item in assembly.GetTypes())
+                {
+                    if (item.Name == name)
+                        return item;
+                }
+               
+            }
+            return null;
+        }
+        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, IProjectRepository project)
         {
             // Grab all the code generators
             var diagramItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
@@ -225,7 +241,7 @@ namespace Invert.uFrame.Editor
             {
                 DesignerGeneratorFactory generator = diagramItemGenerator;
                 // If its a generator for the entire diagram
-                var project = diagramData as IProjectRepository;
+               
                 if (typeof(GraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
                 {
                     var diagrams = project.Diagrams;
@@ -233,12 +249,14 @@ namespace Invert.uFrame.Editor
                     {
                         if (generator.DiagramItemType.IsAssignableFrom(diagram.GetType()))
                         {
-                            var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, diagramData, diagram);
+                            var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, diagram);
                             foreach (var codeGenerator in codeGenerators)
                             {
+                                if (!codeGenerator.IsEnabled(project)) continue;
+                                
                                 codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                                 codeGenerator.Settings = settings;
-                                codeGenerator.ObjectData = diagramData;
+                                codeGenerator.ObjectData = project;
                                 codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                                 yield return codeGenerator;
                             }
@@ -247,14 +265,15 @@ namespace Invert.uFrame.Editor
                 }
                 else if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
                 {
-                    foreach (var diagram in diagramData.Diagrams)
+                    foreach (var diagram in project.Diagrams)
                     {
-                        var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, diagramData, diagram);
+                        var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, diagram);
                         foreach (var codeGenerator in codeGenerators)
                         {
-                            codeGenerator.AssetPath =  diagram.CodePathStrategy.AssetPath;
+                            if (!codeGenerator.IsEnabled(project)) continue;
+                            codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                             codeGenerator.Settings = settings;
-                            codeGenerator.ObjectData = diagramData;
+                            codeGenerator.ObjectData = project;
                             codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                             yield return codeGenerator;
                         }
@@ -266,16 +285,17 @@ namespace Invert.uFrame.Editor
                 // If its a generator for a specific node type
                 else
                 {
-                    foreach (var diagram in diagramData.Diagrams)
+                    foreach (var diagram in project.Diagrams)
                     {
                         var items = diagram.NodeItems.Where(p => p.GetType() == generator.DiagramItemType);
 
                         foreach (var item in items)
                         {
-                            var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, diagramData, item);
+                            var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, item);
                             foreach (var codeGenerator in codeGenerators)
                             {
-                                codeGenerator.AssetPath =diagram.CodePathStrategy.AssetPath;
+                                if (!codeGenerator.IsEnabled(project)) continue;
+                                codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                                 codeGenerator.Settings = settings;
                                 codeGenerator.ObjectData = item;
                                 codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
@@ -299,10 +319,9 @@ namespace Invert.uFrame.Editor
             var groups = codeGenerators.GroupBy(p => p.FullPathName);
             foreach (var @group in groups)
             {
-                Debug.Log(@group.Key);
                 var generator = new CodeFileGenerator(settings.NamespaceProvider.RootNamespace)
                 {
-                    AssetPath = @group.Key.Replace("\\","/"),
+                    AssetPath = @group.Key.Replace("\\", "/"),
                     SystemPath = Path.Combine(Application.dataPath, @group.Key.Substring(7)).Replace("\\", "/"),
                     Generators = @group.ToArray()
                 };
@@ -324,10 +343,11 @@ namespace Invert.uFrame.Editor
                 {
                     binding.PropertyIdentifier = null;
                     view.Bindings.Remove(binding);
+                    Debug.Log("Couldnt find property for " + binding.Name);
                     continue;
                 }
                 generator.Element = view.ViewForElement;
-                
+
                 generator.Item = binding.Property;
 
                 generator.GenerateDefaultImplementation = false;
@@ -336,23 +356,54 @@ namespace Invert.uFrame.Editor
 
         }
 
-        public static IEnumerable<IBindingGenerator> GetPossibleBindingGenerators(ElementData data, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
+        public static IEnumerable<IBindingGenerator> GetPossibleBindingGenerators(ViewData view, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
         {
-            
-            foreach (var viewModelItem in data.ViewModelItems)
-            {
-                var bindingGenerators = Container.ResolveAll<IBindingGenerator>();
-                foreach (var bindingGenerator in bindingGenerators)
-                {
-                    bindingGenerator.IsOverride = isOverride;
-                    bindingGenerator.Item = viewModelItem;
-                    bindingGenerator.Element = data;
-                    bindingGenerator.GenerateDefaultImplementation = generateDefaultBindings;
+            var mainElement = view.ViewForElement;
 
-                    if (bindingGenerator.IsApplicable)
-                        yield return bindingGenerator;
+            if (view.BaseView != null)
+            {
+                foreach (var viewModelItem in mainElement.ViewModelItems)
+                {
+                    var bindingGenerators = Container.ResolveAll<IBindingGenerator>();
+                    foreach (var bindingGenerator in bindingGenerators)
+                    {
+                        bindingGenerator.IsBase = mainElement != view.ViewForElement;
+                        bindingGenerator.IsOverride = isOverride;
+                        bindingGenerator.Item = viewModelItem;
+                        bindingGenerator.Element = mainElement;
+                        bindingGenerator.GenerateDefaultImplementation = generateDefaultBindings;
+
+                        if (bindingGenerator.IsApplicable)
+                            yield return bindingGenerator;
+                    }
                 }
             }
+            else
+            {
+                foreach (var element in mainElement.AllBaseTypes.Concat(new[] {mainElement}))
+                {
+                    foreach (var viewModelItem in element.ViewModelItems)
+                    {
+                        var bindingGenerators = Container.ResolveAll<IBindingGenerator>();
+                        foreach (var bindingGenerator in bindingGenerators)
+                        {
+                            bindingGenerator.IsBase = mainElement != view.ViewForElement;
+                            bindingGenerator.IsOverride = isOverride;
+                            bindingGenerator.Item = viewModelItem;
+                            bindingGenerator.Element = mainElement;
+                            bindingGenerator.GenerateDefaultImplementation = generateDefaultBindings;
+
+                            if (bindingGenerator.IsApplicable)
+                                yield return bindingGenerator;
+                        }
+                    }
+                }
+               
+            }
+
+          
+
+
         }
 
         public static IEnumerable<IEditorCommand> GetContextCommandsFor<T>()
@@ -469,7 +520,7 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IToolbarCommand>(new DebugCommand("Print Generators", d =>
             {
                 var view = d.SelectedNode.GraphItemObject as ViewData;
-     
+
                 var generators = GetBindingGeneratorsForView(view);
                 foreach (var generator in generators)
                 {
@@ -494,12 +545,14 @@ namespace Invert.uFrame.Editor
             // Toolbar commands
             container.RegisterInstance<IToolbarCommand>(new PopToFilterCommand(), "PopToFilterCommand");
             container.RegisterInstance<IToolbarCommand>(new SaveCommand(), "SaveCommand");
+            
             container.RegisterInstance<IToolbarCommand>(new AddNewCommand(), "AddNewCommand");
             container.RegisterInstance<IToolbarCommand>(new DiagramSettingsCommand() { Title = "Settings" }, "SettingsCommand");
 
             // For no selection diagram context menu
             container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddItemCommand");
             container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
+            container.RegisterInstance<IDiagramContextCommand>(new ExportCommand(), "Export");
             container.RegisterInstance<IDiagramNodeCommand>(new PushToCommand(), "Push To Command");
             container.RegisterInstance<IDiagramNodeCommand>(new PullFromCommand(), "Pull From Command");
 
@@ -605,12 +658,12 @@ namespace Invert.uFrame.Editor
             RegisterFilterNode<SubSystemData, ClassNodeData>();
             container.RegisterInstance<IConnectionStrategy>(new ClassNodeInheritanceConnectionStrategy(), "ClassNodeInheritanceConnectionStrategy");
 
+#if DEBUG
             // Model Classes ^^
-
             RegisterGraphItem<ModelClassNodeData, ModelClassNodeViewModel, ModelClassNodeDrawer>();
             RegisterFilterNode<ElementData, ModelClassNodeData>();
             RegisterFilterNode<SubSystemData, ModelClassNodeData>();
-
+#endif
             // General Connections
             container.RegisterInstance<IConnectionStrategy>(new AssociationConnectionStrategy(), "AssociationConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputStrategy(), "ComputedPropertyInputStrategy");
@@ -639,7 +692,7 @@ namespace Invert.uFrame.Editor
             var commandKeyBindings = new List<IKeyBinding>();
             foreach (var item in Container.Instances)
             {
-                if (typeof (IEditorCommand).IsAssignableFrom(item.Base))
+                if (typeof(IEditorCommand).IsAssignableFrom(item.Base))
                 {
                     if (item.Instance != null)
                     {
@@ -648,7 +701,7 @@ namespace Invert.uFrame.Editor
                         {
                             var keyBinding = command.GetKeyBinding();
                             if (keyBinding != null)
-                            commandKeyBindings.Add(keyBinding);
+                                commandKeyBindings.Add(keyBinding);
                         }
                     }
                 }
@@ -656,7 +709,6 @@ namespace Invert.uFrame.Editor
             ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
             KeyBindings = Container.ResolveAll<IKeyBinding>().Concat(commandKeyBindings).ToArray();
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
-
             Settings = container.Resolve<UFrameSettings>();
 
 
@@ -682,6 +734,12 @@ namespace Invert.uFrame.Editor
                 }
                 AllowedFilterItems[filterMapping.From].Add(filterMapping.Concrete);
             }
+        }
+
+        public static Type[] CodeGenerators
+        {
+            get { return _codeGenerators ?? (_codeGenerators = GetDerivedTypes<CodeGenerator>().ToArray()); }
+            set { _codeGenerators = value; }
         }
 
 

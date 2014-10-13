@@ -53,6 +53,7 @@
     <Compile Include="ElementDesigner\Commands\Nodes\ImportCommand.cs" />
     <Compile Include="ElementDesigner\Data\MissingNodeData.cs" />
     <Compile Include="ModelData\Class1.cs" />
+    <Compile Include="ProxyNode\ProxyNode.cs" />
     <Compile Include="SimpleType\Class1.cs" />
     <Compile Include="StateMachines\Nodes\Actions\Actions.cs" />
     <Compile Include="StateMachines\Nodes\Machines\StateMachineNodeData.cs" />

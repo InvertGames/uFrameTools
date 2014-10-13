@@ -105,42 +105,113 @@ namespace Invert.uFrame.Code.Bindings
         {
             get { return RelatedElement != null && base.IsApplicable; }
         }
-
+        
         public override void CreateMembers(CodeTypeMemberCollection collection)
         {
             base.CreateMembers(collection);
             if (GenerateDefaultImplementation)
             {
-                SetterMethod.Statements.Add(
-               new CodeConditionStatement(
-                   new CodeSnippetExpression(string.Format(
-                       "value == null && {0} != null && {0}.gameObject != null", Item.ViewFieldName)),
-                   new CodeExpressionStatement(
-                       new CodeMethodInvokeExpression(null,
-                           "Destroy",
-                           new CodeSnippetExpression(string.Format("{0}.gameObject", Item.ViewFieldName))))));
-
-                var prefabSetCondition =
-                    new CodeConditionStatement(
-                        new CodeSnippetExpression(String.Format((string)"{0} == null ", (object)NameAsPrefabField)));
-
-                prefabSetCondition.TrueStatements.Add(new CodeAssignStatement(
-                    new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), Item.ViewFieldName),
-                    new CodeCastExpression(new CodeTypeReference(RelatedElement.NameAsViewBase),
-                        new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "InstantiateView",
-                            new CodeVariableReferenceExpression("value"))
-                        )));
-
-                prefabSetCondition.FalseStatements.Add(new CodeAssignStatement(
-                    new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), Item.ViewFieldName),
-                    new CodeCastExpression(new CodeTypeReference(RelatedElement.NameAsViewBase),
-                        new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "InstantiateView",
-                            new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), NameAsPrefabField),
-                            new CodeVariableReferenceExpression("value"))
-                        )));
-                SetterMethod.Statements.Add(prefabSetCondition);
+                collection.Add(this.CreateBindingField(typeof(GameObject).FullName, PropertyData.NameAsPrefabBindingOption));
+                SetterMethod.Statements.Add(new CodeSnippetExpression(string.Format("this.ReplaceView({0}, value, {1})",PropertyData.ViewFieldName, PropertyData.NameAsPrefabBindingOption)));
             }
-           
+
+        }
+    }
+
+    public class CommandExecutedBindingGenerator : BindingGenerator
+    {
+        public override string Title
+        {
+            get { return "Command Executed Binding"; }
+        }
+
+        public override string Description
+        {
+            get { return string.Format("Invokes {0} when the {1} command is executed.", MethodName,Item.Name); }
+        }
+
+        public override string MethodName
+        {
+            get { return string.Format("{0}Executed", Item.Name); }
+        }
+
+        public override bool IsApplicable
+        {
+            get { return Item is ViewModelCommandData; }
+        }
+
+        public override void CreateBindingStatement(CodeTypeMemberCollection collection, CodeConditionStatement bindingCondition)
+        {
+            bindingCondition.TrueStatements.Add(
+                new CodeSnippetExpression(string.Format("this.BindCommandExecuted({0}.{1}, {2})", Element.Name,
+                    Item.Name, MethodName)));
+        }
+
+        public override void CreateMembers(CodeTypeMemberCollection collection)
+        {
+            base.CreateMembers(collection);
+
+            collection.Add(CreateMethodSignature(null));
+        }
+    }
+
+    public class StateMachinePropertyBindingGenerator : StandardPropertyBindingGenerator
+    {
+        public override string Title
+        {
+            get { return "State Machine Property Binding"; }
+        }
+
+        public override string Description
+        {
+            get { return "Subscribes to the state machine property and executes a method for each state."; }
+        }
+
+        public override bool IsApplicable
+        {
+            get { return StateMachine != null; }
+        }
+
+        public StateMachineNodeData StateMachine
+        {
+            get
+            {
+                return RelatedNode as StateMachineNodeData;
+            }
+        }
+        public override void CreateMembers(CodeTypeMemberCollection collection)
+        {
+            base.CreateMembers(collection);
+            foreach (var state in StateMachine.States)
+            {
+                var method = new CodeMemberMethod()
+                {
+                   Name = "On" + state.Name,
+                   Attributes = MemberAttributes.Public
+                };
+                
+
+                if (IsOverride)
+                {
+                    method.Attributes = MemberAttributes.Public | MemberAttributes.Override;
+                    method.Statements.Add(new CodeSnippetExpression(string.Format("base.{0}()", method.Name)));
+
+                }
+                else
+                {
+                    var conditionStatement =
+                    new CodeConditionStatement(
+                        new CodeSnippetExpression(string.Format("value is {0}", state.Name)));
+                    conditionStatement.TrueStatements.Add(
+                        new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), method.Name));
+
+                    SetterMethod.Statements.Add(conditionStatement);
+                }
+
+
+                collection.Add(method);
+
+            }
         }
     }
 }

@@ -36,7 +36,6 @@ public class DefaultCodeGenerators : DiagramPlugin
 
 #if DEBUG
         container.Register<DesignerGeneratorFactory, ModelClassNodeCodeFactory>("ModelClassNodeData");
-        
 #endif
 
         container.Register<IBindingGenerator, StandardPropertyBindingGenerator>("StandardPropertyBindingGenerator");
@@ -44,10 +43,12 @@ public class DefaultCodeGenerators : DiagramPlugin
         container.Register<IBindingGenerator, ViewCollectionBindingGenerator>("ViewCollectionBindingGenerator");
         container.Register<IBindingGenerator, DefaultCollectionBindingGenerator>("DefaultCollectionBindingGenerator");
         container.Register<IBindingGenerator, InstantiateViewPropertyBindingGenerator>("InstantiateViewPropertyBindingGenerator");
+        container.Register<IBindingGenerator, CommandExecutedBindingGenerator>("CommandExecutedBindingGenerator");
+        container.Register<IBindingGenerator, StateMachinePropertyBindingGenerator>("StateMachinePropertyBindingGenerator");
 
         container.Register<DesignerGeneratorFactory, StateMachineCodeFactory>("StateMachineCodeFactory");
         container.Register<DesignerGeneratorFactory, StateMachineStateCodeFactory>("StateMachineStateCodeFactory");
-        container.RegisterInstance<ITypeGeneratorPostProcessor>(new StateMachineViewModelProcessor(),
-            "StateMachineViewModelPostProcessor");
+        //container.RegisterInstance<ITypeGeneratorPostProcessor>(new StateMachineViewModelProcessor(),
+        //    "StateMachineViewModelPostProcessor");
     }
 }

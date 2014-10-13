@@ -45,7 +45,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             }
             if (EditorUtility.DisplayDialog("Confirm", "Are you sure you want to delete this?", "Yes", "No"))
             {
-                selected.Remove();
+                node.CurrentRepository.RemoveNode(selected.GraphItemObject);
                 if (customFileFullPaths.Length > 0)
                 {
                     if (EditorUtility.DisplayDialog("Confirm",
@@ -58,7 +58,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                         }
                         var saveCommand = uFrameEditor.Container.Resolve<IToolbarCommand>("SaveCommand");
                         //Execute the save command
-                        EditorWindow.GetWindow<ElementsDesigner>().ExecuteCommand(saveCommand);
+                        uFrameEditor.ExecuteCommand(saveCommand);
                     }
                 }
             }

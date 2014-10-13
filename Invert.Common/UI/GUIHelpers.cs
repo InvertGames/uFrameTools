@@ -100,8 +100,8 @@ namespace Invert.Common.UI
         }
         public static bool DoToolbar(string label, bool open, Action add = null, Action leftButton = null, Action paste = null, GUIStyle addButtonStyle = null, GUIStyle pasteButtonStyle = null,bool fullWidth = true)
         {
-            var rect = GetRect(UBStyles.ToolbarStyle,fullWidth);
-            GUI.Box(rect, "", UBStyles.ToolbarStyle);
+            var rect = GetRect(open ? UBStyles.ToolbarStyle : UBStyles.ToolbarStyleCollapsed, GUIHelpers.IsInsepctor);
+            GUI.Box(rect, "", open ? UBStyles.ToolbarStyle : UBStyles.ToolbarStyleCollapsed);
             var labelStyle = new GUIStyle(EditorStyles.label)
             {
                 normal = new GUIStyleState() {textColor = UBStyles.ToolbarStyle.normal.textColor },
@@ -146,13 +146,15 @@ namespace Invert.Common.UI
             return result;
         }
 
+        public static bool IsInsepctor { get; set; }
+
         public static bool DoToolbar(string label, Action add = null, Action leftButton = null, Action paste = null)
         {
             return DoToolbar(label, true, add, leftButton, paste);
         }
         public static bool DoToolbarEx(string label, Action add = null, Action leftButton = null, Action paste = null)
         {
-            var tBar = DoToolbar(label, EditorPrefs.GetBool(label, true), add, leftButton, paste);
+            var tBar = DoToolbar(label, EditorPrefs.GetBool(label, false), add, leftButton, paste);
             if (tBar)
             {
                 EditorPrefs.SetBool(label,!EditorPrefs.GetBool(label));
@@ -163,9 +165,7 @@ namespace Invert.Common.UI
         {
             var hasSubLabel = !String.IsNullOrEmpty(ubTriggerContent.SubLabel);
 
-            var rect = !hasSubLabel
-                ? GetRect(ubTriggerContent.BackgroundStyle,ubTriggerContent.FullWidth && !ubTriggerContent.IsWindow)
-                : GetRect(ubTriggerContent.BackgroundStyle, ubTriggerContent.FullWidth && !ubTriggerContent.IsWindow);
+            var rect = GetRect(ubTriggerContent.BackgroundStyle,ubTriggerContent.FullWidth && !ubTriggerContent.IsWindow);
 
             var style = ubTriggerContent.BackgroundStyle;
 
@@ -228,6 +228,20 @@ namespace Invert.Common.UI
                 return result;
             }
             return result;
+        }
+
+        public static bool DoToggle(string name, bool on)
+        {
+            if (DoTriggerButton(new UFStyle()
+            {
+                Label = name,
+                BackgroundStyle = UBStyles.EventButtonStyleSmall,
+                IconStyle = on ? UBStyles.TriggerActiveButtonStyle : UBStyles.TriggerInActiveButtonStyle
+            }))
+            {
+                return !on;
+            }
+            return on;
         }
     }
 }

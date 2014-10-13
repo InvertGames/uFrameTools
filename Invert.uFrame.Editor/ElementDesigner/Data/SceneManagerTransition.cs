@@ -45,6 +45,10 @@ public class SceneManagerTransition : IDiagramNodeItem
         set { _fromCommand = value; }
     }
 
+    public ViewModelCommandData Command
+    {
+        get { return Node.Project.GetElements().SelectMany(p=>p.Commands).FirstOrDefault(p=>p.Identifier == CommandIdentifier); }
+    }
     public string ToIdentifier
     {
         get { return _toIdentifier; }

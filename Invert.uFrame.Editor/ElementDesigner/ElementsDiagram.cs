@@ -216,7 +216,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         // Make sure they've upgraded to the latest json format
         if (UpgradeOldProject()) return;
         // Draw the title box
-        GUI.Box(new Rect(0, 0f, Rect.width, 30f), DiagramViewModel.Title, ElementDesignerStyles.DiagramTitle);
+        GUI.Box(new Rect(0, 0f, DiagramSize.width, 30f), DiagramViewModel.Title , ElementDesignerStyles.DiagramTitle);
 
        
         // Draw all of our drawers
@@ -244,26 +244,26 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         //    EditorGUI.FocusTextInControl(focusItem);
         //}
 
-        if (IsMouseDown)
-        {
-            var items = DiagramViewModel.SelectedGraphItems.ToArray();
-            var allSelected = items;
+        //if (IsMouseDown)
+        //{
+        //    var items = DiagramViewModel.SelectedGraphItems.ToArray();
+        //    var allSelected = items;
 
-            var newPosition = DragDelta;//CurrentMousePosition - SelectionOffset;
+        //    var newPosition = DragDelta;//CurrentMousePosition - SelectionOffset;
 
-            foreach (var diagramItem in allSelected)
-            {
-                diagramItem.Position += (newPosition * (1f / Scale));
-                diagramItem.Position = new Vector2(Mathf.Round((diagramItem.Position.x) / SnapSize) * SnapSize, Mathf.Round(diagramItem.Position.y / SnapSize) * SnapSize);
-            }
+        //    foreach (var diagramItem in allSelected)
+        //    {
+        //        diagramItem.Position += (newPosition * (1f / Scale));
+        //        diagramItem.Position = new Vector2(Mathf.Round((diagramItem.Position.x) / SnapSize) * SnapSize, Mathf.Round(diagramItem.Position.y / SnapSize) * SnapSize);
+        //    }
 
-            foreach (var viewModelDrawer in Children.Where(p => p.IsSelected))
-            {
-                viewModelDrawer.Refresh();
-            }
-            DidDrag = true;
-            LastDragPosition = CurrentMousePosition;
-        }
+        //    foreach (var viewModelDrawer in Children.Where(p => p.IsSelected))
+        //    {
+        //        viewModelDrawer.Refresh();
+        //    }
+        //    DidDrag = true;
+        //    LastDragPosition = CurrentMousePosition;
+        //}
 
         DrawErrors();
         DrawHelp();
@@ -368,7 +368,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
     {
         base.OnMouseMove(e);
 
-        if (e.IsMouseDown && e.MouseButton == 0)
+        if (e.IsMouseDown && e.MouseButton == 0 && !e.ModifierKeyStates.Any)
         {
             foreach (var item in Children.OfType<DiagramNodeDrawer>())
             {

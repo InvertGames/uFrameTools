@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class EnumData : DiagramNode,IDesignerType
+public class EnumData : DiagramNode,IDesignerType, IViewPropertyType
 {
     
     [SerializeField]
@@ -67,4 +67,8 @@ public class EnumData : DiagramNode,IDesignerType
         get { return EnumItems.Cast<IDiagramNodeItem>(); }
     }
 
+}
+
+public interface IViewPropertyType
+{
 }

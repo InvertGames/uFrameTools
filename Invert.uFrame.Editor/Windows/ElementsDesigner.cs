@@ -348,11 +348,14 @@ namespace Invert.uFrame.Editor
                 if (DiagramViewModel != null &&
                     (DiagramViewModel.SelectedNode == null || !DiagramViewModel.SelectedNode.IsEditing))
                 {
-
-                    if (DiagramDrawer.HandleKeyEvent(evt, ModifierKeyStates))
+                    if (DiagramViewModel.SelectedNodeItem == null)
                     {
-                        evt.Use();
+                        if (DiagramDrawer.HandleKeyEvent(evt, ModifierKeyStates))
+                        {
+                            evt.Use();
+                        }
                     }
+                    
                 }
             }
         }
@@ -362,7 +365,7 @@ namespace Invert.uFrame.Editor
             EditorGUI.HelpBox(new Rect(15, 30, 300, 30), message, type);
         }
 
-        public void LoadDiagram(IGraphData diagram)
+        private void LoadDiagram(IGraphData diagram)
         {
             if (diagram == null) return;
             try
@@ -582,7 +585,8 @@ namespace Invert.uFrame.Editor
             if (DiagramViewModel != null)
                 DiagramViewModel.DeselectAll();
 
-            MouseEvent.IsMouseDown = false;
+            ModifierKeyStates = new ModifierKeyState();
+            MouseEvent = null;
             _drawEveryFrame = false;
         }
 

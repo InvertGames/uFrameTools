@@ -17,7 +17,7 @@ public class ViewComponentGenerator : ViewClassGenerator
 
     public void AddViewComponent(ViewComponentData componentData)
     {
-        var element = componentData.Element;
+        var element = componentData.View;
         if (element == null) return;
 
         var baseComponent = componentData.Base;
@@ -39,8 +39,8 @@ public class ViewComponentGenerator : ViewClassGenerator
 
             if (baseComponent == null)
             {
-                decl.CreateViewModelProperty(element);
-                AddExecuteMethods(element, decl, true);
+                decl.CreateViewModelProperty(ViewComponentData.View.ViewForElement);
+                AddExecuteMethods(ViewComponentData.View.ViewForElement, decl, true);
             }
         }
         Namespace.Types.Add(decl);

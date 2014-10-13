@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Invert.uFrame.Editor;
+using UnityEngine;
 
 public class ViewGenerator : ViewClassGenerator
 {
@@ -161,7 +162,7 @@ public class ViewViewBaseGenerator : ViewClassGenerator
         //    Attributes = MemberAttributes.Override | MemberAttributes.Public
         //};
         //Decleration.Members.Add(bindMethod);
-
+        AddComponentReferences(Decleration);
         AddBindingMembers();
         
         //foreach (var viewBindingExtender in BindingExtenders)
@@ -179,13 +180,49 @@ public class ViewViewBaseGenerator : ViewClassGenerator
         if (View.BaseView != null)
         {
             AddViewModelProperty(forElement);
+          
             AddInitializeViewModelMethod(forElement);
             AddExecuteMethods(forElement, Decleration);
             AddViewModelTypeProperty(forElement);
-            AddDefaultIdentifierProperty(forElement);
+            if (forElement.IsRegistered)
+            {
+                AddDefaultIdentifierProperty(forElement);
+            }
         }
         //CreateUpdateMethod(View, Decleration);
         Namespace.Types.Add(Decleration);
+    }
+    protected void AddComponentReferences(CodeTypeDeclaration decl)
+    {
+        
+        
+        foreach (var viewComponentData in this.View.ViewComponents)
+        {
+            decl.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof (RequireComponent)),
+                new CodeAttributeArgument(new CodeSnippetExpression(
+                    string.Format("typeof({0})",viewComponentData.Name)))));
+
+            var backingField = new CodeMemberField(viewComponentData.Name, "_" + viewComponentData.Name);
+            backingField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(SerializeField))));
+            backingField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(HideInInspector))));
+            var property = new CodeMemberProperty()
+            {
+                Type = new CodeTypeReference(viewComponentData.Name),
+                Name = viewComponentData.Name,
+                Attributes = MemberAttributes.Public,
+                HasGet = true,
+                HasSet = true
+            };
+
+            property.GetStatements.Add(new CodeMethodReturnStatement(new CodeSnippetExpression(
+                string.Format("{0} ?? ({0} = this.gameObject.EnsureComponent<{1}>())", backingField.Name, viewComponentData.Name))));
+            property.SetStatements.Add(
+                new CodeAssignStatement(
+                    new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), backingField.Name),
+                    new CodePropertySetValueReferenceExpression()));
+            decl.Members.Add(backingField);
+            decl.Members.Add(property);
+        }
     }
 
     private void AddBindingMembers()

@@ -5,7 +5,8 @@ public class ViewComponentDataGeneratorFactory : DesignerGeneratorFactory<ViewCo
 {
     public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, ViewComponentData item)
     {
-        if (item.Element == null) yield break;
+        if (item.View == null) yield break;
+        if (item.View.ViewForElement == null) yield break;
         yield return CreateEditableGenerator(pathStrategy, diagramData, item);
         yield return CreateDesignerGenerator(pathStrategy, diagramData, item);
     }

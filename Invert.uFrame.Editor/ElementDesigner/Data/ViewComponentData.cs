@@ -13,7 +13,7 @@ public class ViewComponentData : DiagramNode
     private string _baseIdentifier;
 
     [SerializeField]
-    private string _elementIdentifier;
+    private string _viewIdentifier;
 
     public IEnumerable<ViewComponentData> AllBaseTypes
     {
@@ -54,22 +54,22 @@ public class ViewComponentData : DiagramNode
         get { return Type.GetType(AssemblyQualifiedName); }
     }
 
-    public ElementData Element
+    public ViewData View
     {
         get
         {
             if (Base != null)
             {
-                return Base.Element;
+                return Base.View;
             }
-            return Project.GetElements().FirstOrDefault(p => p.Identifier == ElementIdentifier);
+            return Project.GetViews().FirstOrDefault(p => p.Identifier == ViewIdentifier);
         }
     }
 
-    public string ElementIdentifier
+    public string ViewIdentifier
     {
-        get { return _elementIdentifier; }
-        set { _elementIdentifier = value; }
+        get { return _viewIdentifier; }
+        set { _viewIdentifier = value; }
     }
 
     public override IEnumerable<IDiagramNodeItem> Items
@@ -90,18 +90,18 @@ public class ViewComponentData : DiagramNode
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
-        _elementIdentifier = cls["ElementIdentifier"].Value;
+        _viewIdentifier = cls["ViewIdentifier"].Value;
         _baseIdentifier = cls["BaseIdentifier"].Value;
     }
 
-    public void SetElement(ElementData element)
+    public void SetView(ViewData view)
     {
-        ElementIdentifier = element.Identifier;
+        ViewIdentifier = view.Identifier;
     }
 
-    public void RemoveElement()
+    public void RemoveView()
     {
-        ElementIdentifier = null;
+        ViewIdentifier = null;
     }
 
     public override bool EndEditing()
@@ -130,7 +130,7 @@ public class ViewComponentData : DiagramNode
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
-        cls.Add("ElementIdentifier", new JSONData(_elementIdentifier));
+        cls.Add("ViewIdentifier", new JSONData(_viewIdentifier));
         cls.Add("BaseIdentifier", new JSONData(_baseIdentifier));
     }
 

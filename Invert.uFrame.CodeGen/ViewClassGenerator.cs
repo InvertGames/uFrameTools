@@ -154,7 +154,7 @@ public abstract class ViewClassGenerator : CodeGenerator
 
         AddViewModelTypeProperty(data);
 
-        AddComponentReferences(Decleration, data);
+        
 
         //AddMultiInstanceProperty(data);
 
@@ -223,51 +223,25 @@ public abstract class ViewClassGenerator : CodeGenerator
         Namespace.Imports.Add(new CodeNamespaceImport("UniRx"));
     }
 
-    protected void AddComponentReferences(CodeTypeDeclaration decl, ElementData data)
-    {
-        if (data.IsDerived) return;
 
-        foreach (var viewComponentData in data.ViewComponents)
-        {
-            var backingField = new CodeMemberField(viewComponentData.Name, "_" + viewComponentData.Name);
-            backingField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(SerializeField))));
-            var property = new CodeMemberProperty()
-            {
-                Type = new CodeTypeReference(viewComponentData.Name),
-                Name = viewComponentData.Name,
-                Attributes = MemberAttributes.Public,
-                HasGet = true,
-                HasSet = true
-            };
-
-            property.GetStatements.Add(new CodeMethodReturnStatement(new CodeSnippetExpression(
-                string.Format("{0} ?? ({0} = GetComponent<{1}>())", backingField.Name, viewComponentData.Name))));
-            property.SetStatements.Add(
-                new CodeAssignStatement(
-                    new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), backingField.Name),
-                    new CodePropertySetValueReferenceExpression()));
-            decl.Members.Add(backingField);
-            decl.Members.Add(property);
-        }
-    }
 
     protected void AddDefaultIdentifierProperty(ElementData data)
     {
         var defaultInstance = data.RegisteredInstances.FirstOrDefault();
         if (defaultInstance == null) return;
-        
+
         var defaultIdentifierProperty = new CodeMemberProperty()
         {
             Name = "DefaultIdentifier",
             Attributes = MemberAttributes.Public | MemberAttributes.Override,
             Type = new CodeTypeReference(typeof(string))
         };
-        
+
         defaultIdentifierProperty.GetStatements.Add(
             new CodeMethodReturnStatement(new CodePrimitiveExpression(defaultInstance.Name)));
-        
+
         Decleration.Members.Add(defaultIdentifierProperty);
-        
+
     }
 
     protected void AddExecuteMethods(ElementData data, CodeTypeDeclaration decl, bool useViewReference = false)
@@ -315,10 +289,12 @@ public abstract class ViewClassGenerator : CodeGenerator
 
             if (relatedViewModel == null) // Non ViewModel Properties
             {
-                if (relatedNode != null) continue;
+                if (relatedNode != null && !(relatedNode is IViewPropertyType)) continue;
+               
 
                 var field = new CodeMemberField(new CodeTypeReference(property.RelatedTypeName),
                     property.ViewFieldName) { Attributes = MemberAttributes.Public };
+
                 field.CustomAttributes.Add(
                     new CodeAttributeDeclaration(new CodeTypeReference(uFrameEditor.UFrameTypes.UFGroup),
                         new CodeAttributeArgument(new CodePrimitiveExpression("View Model Properties"))));
@@ -435,12 +411,25 @@ public abstract class ViewClassGenerator : CodeGenerator
 
         foreach (var viewProperty in data.SceneProperties)
         {
+            var resetMethod = new CodeMemberMethod()
+            {
+                Name = string.Format("Reset{0}", viewProperty.Name),
+                Attributes = MemberAttributes.Public
+            };
+            Decleration.Members.Add(resetMethod);
+            var disposeField = new CodeMemberField()
+            {
+                Name = string.Format("_{0}Disposable", viewProperty.Name),
+                Attributes = MemberAttributes.Private,
+                Type = new CodeTypeReference("IDisposable")
 
-            Decleration.Members.Add(
-                new CodeSnippetTypeMember(string.Format("public IObservable<{0}> {1} {{ get; set; }}",
-                    viewProperty.RelatedTypeName, viewProperty.Name)));
+            };
+            Decleration.Members.Add(disposeField);
 
+            resetMethod.Statements.Add(
+                  new CodeSnippetExpression(string.Format("if ({0} != null) {0}.Dispose()", disposeField.Name)));
 
+           
             var getMethod = new CodeMemberMethod()
             {
                 Name = string.Format("Calculate{0}", viewProperty.Name),
@@ -469,12 +458,11 @@ public abstract class ViewClassGenerator : CodeGenerator
 
             Decleration.Members.Add(createObservableMethod);
 
-            preBindMethod.Statements.Add(
-                new CodeSnippetExpression(string.Format("{0} = {1}()", viewProperty.Name, createObservableMethod.Name)));
-            preBindMethod.Statements.Add(
-                new CodeSnippetExpression(string.Format("{0}.Subscribe({1}.{2})", viewProperty.Name,
-                    data.ViewForElement.Name, viewProperty.FieldName)));
-
+            
+            resetMethod.Statements.Add(
+                new CodeSnippetExpression(string.Format("{3} = {0}().Subscribe({1}.{2}).DisposeWith(this)", createObservableMethod.Name,
+                    data.ViewForElement.Name, viewProperty.FieldName,disposeField.Name)));
+            preBindMethod.Statements.Add(new CodeSnippetExpression(string.Format("{0}()", resetMethod.Name)));
         }
 
         var bindingGenerators = uFrameEditor.GetBindingGeneratorsForView(data);

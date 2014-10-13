@@ -10,22 +10,23 @@ public class StateMachineClassGenerator : CodeGenerator
     public INodeRepository Repository { get; set; }
     public StateMachineNodeData Data { get; set; }
     public Type StateMachineType { get; set; }
+
     public override void Initialize(CodeFileGenerator fileGenerator)
     {
         base.Initialize(fileGenerator);
         Namespace.Imports.Add(new CodeNamespaceImport("Invert.StateMachine"));
-        Decleration = new CodeTypeDeclaration(Data.Name);
+        BaseTypeDecleration = new CodeTypeDeclaration(Data.Name);
 
         Constructor = new CodeConstructor()
         {
-            Name = Decleration.Name,
+            Name = BaseTypeDecleration.Name,
             Attributes = MemberAttributes.Public,
         };
         Constructor.Parameters.Add(new CodeParameterDeclarationExpression(uFrameEditor.UFrameTypes.ViewModel, "vm"));
         Constructor.Parameters.Add(new CodeParameterDeclarationExpression(typeof(string), "propertyName"));
         Constructor.BaseConstructorArgs.Add(new CodeSnippetExpression("vm"));
         Constructor.BaseConstructorArgs.Add(new CodeSnippetExpression("propertyName"));
-        Decleration.Members.Add(Constructor);
+        BaseTypeDecleration.Members.Add(Constructor);
 
         if (IsDesignerFile)
         {
@@ -35,12 +36,12 @@ public class StateMachineClassGenerator : CodeGenerator
                 var field = new CodeMemberField("StateMachineTrigger", "_" + item.Name);
                 var property = field.EncapsulateField(item.Name,
                     new CodeSnippetExpression(string.Format("new StateMachineTrigger(this, \"{0}\")", item.Name)));
-                Decleration.Members.Add(field);
-                Decleration.Members.Add(property);
+                BaseTypeDecleration.Members.Add(field);
+                BaseTypeDecleration.Members.Add(property);
             }
 
-            Decleration.BaseTypes.Add(StateMachineType);
-            Decleration.Name += "Base";
+            BaseTypeDecleration.BaseTypes.Add(StateMachineType);
+            BaseTypeDecleration.Name += "Base";
 
 
             var startState = Data.StartState;
@@ -55,7 +56,7 @@ public class StateMachineClassGenerator : CodeGenerator
                 StartStateProperty.GetStatements.Add(new CodeMethodReturnStatement(
                    new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), Data.StartState.Name)
                 ));
-                Decleration.Members.Add(StartStateProperty);
+                BaseTypeDecleration.Members.Add(StartStateProperty);
             }
 
 
@@ -67,7 +68,7 @@ public class StateMachineClassGenerator : CodeGenerator
 
             ComposeMethod.Parameters.Add(new CodeParameterDeclarationExpression("List<State>", "states"));
             ComposeMethod.Statements.Add(new CodeSnippetExpression("base.Compose(states)"));
-            Decleration.Members.Add(ComposeMethod);
+            BaseTypeDecleration.Members.Add(ComposeMethod);
 
             foreach (var state in Data.States)
             {
@@ -94,8 +95,8 @@ public class StateMachineClassGenerator : CodeGenerator
                     ComposeMethod.Statements.Add(new CodeSnippetExpression(string.Format("{0}.AddTrigger({1}, {0}.{1})", property.Name, t.Transition.Name)));
                 }
                 ComposeMethod.Statements.Add(new CodeSnippetExpression(string.Format("states.Add({0})", state.Name)));
-                Decleration.Members.Add(field);
-                Decleration.Members.Add(property);
+                BaseTypeDecleration.Members.Add(field);
+                BaseTypeDecleration.Members.Add(property);
             }
 
             //foreach (var variable in Data.Variables)
@@ -112,9 +113,9 @@ public class StateMachineClassGenerator : CodeGenerator
         }
         else
         {
-            Decleration.BaseTypes.Add(Data.Name + "Base");
+            BaseTypeDecleration.BaseTypes.Add(Data.Name + "Base");
         }
-        Namespace.Types.Add(Decleration);
+        Namespace.Types.Add(BaseTypeDecleration);
     }
 
     public CodeMemberProperty StartStateProperty { get; set; }
@@ -123,5 +124,5 @@ public class StateMachineClassGenerator : CodeGenerator
 
     public CodeConstructor Constructor { get; set; }
 
-    public CodeTypeDeclaration Decleration { get; set; }
+    public CodeTypeDeclaration BaseTypeDecleration { get; set; }
 }

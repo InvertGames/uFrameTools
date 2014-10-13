@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackReceiver
+public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackReceiver, IItem
 {
     [SerializeField]
     public string _jsonData;
@@ -30,6 +30,8 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
     private IDiagramFilter _rootFilter;
     private ICodePathStrategy _codePathStrategy;
 
+
+   
     public ICodePathStrategy CodePathStrategy
     {
         get
@@ -38,6 +40,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
 
             _codePathStrategy =
                 uFrameEditor.Container.Resolve<ICodePathStrategy>(Settings.CodePathStrategyName ?? "Default");
+
             _codePathStrategy.Data = this;
             _codePathStrategy.AssetPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(this));
 
@@ -318,6 +321,22 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
                     index++;
                 }
             }
+        }
+    }
+
+    public string Title
+    {
+        get
+        {
+            return Name;
+        }
+    }
+
+    public string SearchTag
+    {
+        get
+        {
+            return Name;
         }
     }
 }

@@ -1,12 +1,8 @@
-using System.Collections;
+using Invert.uFrame.Code.Bindings;
+using Invert.uFrame.Editor.Refactoring;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Invert.MVVM;
-using Invert.uFrame.Code.Bindings;
-using Invert.uFrame.Editor.ElementDesigner;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
-using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor.ViewModels
@@ -19,13 +15,11 @@ namespace Invert.uFrame.Editor.ViewModels
         public ViewNodeViewModel(ViewData data, DiagramViewModel diagramViewModel)
             : base(data, diagramViewModel)
         {
-
         }
 
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
-
         }
 
         public override bool AllowCollapsing
@@ -50,12 +44,12 @@ namespace Invert.uFrame.Editor.ViewModels
                 return GraphItem.NewBindings.Select(p => p.Generator);
             }
         }
+
         public string GetViewPreview()
         {
-
             var refactorContext = new RefactorContext(GraphItem.BindingInsertMethodRefactorer);
             var pathStrategy = GraphItem.GetPathStrategy();
-            var viewFilePath = System.IO.Path.Combine(pathStrategy.AssetPath, pathStrategy.GetEditableViewFilename(GraphItem)).Replace("\\","/");
+            var viewFilePath = System.IO.Path.Combine(pathStrategy.AssetPath, pathStrategy.GetEditableViewFilename(GraphItem)).Replace("\\", "/");
             Debug.Log(viewFilePath);
             return refactorContext.RefactorFile(viewFilePath, false);
         }
@@ -76,7 +70,9 @@ namespace Invert.uFrame.Editor.ViewModels
                 Generator = lastSelected,
                 Node = GraphItem
             };
+
             GraphItem.Bindings.Add(binding);
+
             Preview = null;
             _bindings = null;
             return binding;
@@ -86,20 +82,21 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get
             {
-                return uFrameEditor.GetPossibleBindingGenerators(GraphItem.ViewForElement, true, false, true, false);
+                return uFrameEditor.GetPossibleBindingGenerators(GraphItem, true, false, GraphItem.BaseViewIdentifier == null, false);
             }
         }
 
-        public IEnumerable<MethodInfo> BindingMethods
+        public IEnumerable<ViewBindingData> Bindings
+        {
+            get { return GraphItem.Bindings; }
+        }
+
+        public IEnumerable<ViewBindingData> AllBindings
         {
             get
             {
-                return GraphItem.ReflectionBindingMethods;
+                return GraphItem.AllBindings;
             }
-        }
-        public List<ViewBindingData> Bindings
-        {
-            get { return GraphItem.Bindings; }
         }
 
         public IEnumerable<ViewPropertyData> Properties
@@ -109,8 +106,16 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public void RemoveBinding(ViewBindingData item)
         {
+            uFrameEditor.ExecuteCommand((d) =>
+            {
+                var view = GraphItem;
+                while (view != null)
+                {
+                    view.Bindings.RemoveAll(p => p == item);
+                    view = view.BaseView;
+                }
+            });
 
-            GraphItem.Bindings.RemoveAll(p => p == item);
             Preview = null;
             _bindings = null;
         }
@@ -139,4 +144,3 @@ namespace Invert.uFrame.Editor.ViewModels
         }
     }
 }
-

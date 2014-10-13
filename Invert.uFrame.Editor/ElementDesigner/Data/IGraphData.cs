@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
-public interface INodeRepository
+public interface INodeRepository 
 {
     // Basic Information
     string Name { get; }

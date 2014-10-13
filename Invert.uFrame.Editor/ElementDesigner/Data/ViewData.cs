@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor;
@@ -42,7 +43,19 @@ public class ViewData : DiagramNode, ISubSystemType
             return Project.GetViews().FirstOrDefault(p => p.Identifier == BaseViewIdentifier);
         }
     }
-
+    public IEnumerable<ViewComponentData> ViewComponents
+    {
+        get
+        {
+            foreach (var viewComponentData in Project.GetViewComponents())
+            {
+                if (viewComponentData.ViewIdentifier == this.Identifier)
+                {
+                    yield return viewComponentData;
+                }
+            }
+        }
+    }
     /// <summary>
     /// The identifier to the base view this view will derived from
     /// </summary>
@@ -198,6 +211,21 @@ public class ViewData : DiagramNode, ISubSystemType
         set { _bindings = value; }
     }
 
+    public IEnumerable<ViewBindingData> AllBindings
+    {
+        get
+        {
+            var baseView = this;
+            while (baseView != null)
+            {
+                foreach (var binding in baseView.Bindings)
+                {
+                    yield return binding;
+                }
+                baseView = baseView.BaseView;
+            }
+        }
+    }
     public override IEnumerable<IDiagramNodeItem> Items
     {
         get
@@ -212,7 +240,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
                 };
             }
-            foreach (var binding in Bindings)
+            foreach (var binding in AllBindings)
                 yield return binding;
         }
     }
@@ -339,7 +367,7 @@ public class ViewData : DiagramNode, ISubSystemType
             }
             var methods = vmType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
-            var bindingMethodNames = uFrameEditor.GetPossibleBindingGenerators(element).Select(p => p.MethodName).ToArray();
+            var bindingMethodNames = uFrameEditor.GetPossibleBindingGenerators(this).Select(p => p.MethodName).ToArray();
             foreach (var method in methods)
             {
                 if (bindingMethodNames.Contains(method.Name))
@@ -436,7 +464,10 @@ public class ViewBindingData : DiagramNodeItem
         get
         {
             if (string.IsNullOrEmpty(PropertyIdentifier)) return null;
-            return View.ViewForElement.ViewModelItems.FirstOrDefault(p => p.Identifier == PropertyIdentifier);
+            return
+                Node.Project.NodeItems.OfType<ElementData>()
+                    .SelectMany(p => p.ViewModelItems)
+                    .FirstOrDefault(p => p.Identifier == PropertyIdentifier);
         }
     }
 
