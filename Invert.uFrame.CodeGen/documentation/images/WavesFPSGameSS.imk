@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImageMap>
+  <IsExcludeBackgroundImageFromOutputEnabled>true</IsExcludeBackgroundImageFromOutputEnabled>
+  <BackgroundImageFileName>WavesFPSGameSS.png</BackgroundImageFileName>
+  <OutputFileName>WavesFPSGameSS_markedup.png</OutputFileName>
+  <AddOutputImagesToProject>true</AddOutputImagesToProject>
+  <DefaultFontFamily>Verdana</DefaultFontFamily>
+  <DefaultFontSize>12</DefaultFontSize>
+  <DefaultForeground>#FFF5F5F5</DefaultForeground>
+  <DefaultBackground>#FF000000</DefaultBackground>
+  <BuildThumbnail>true</BuildThumbnail>
+  <ThumbnailSize>
+    <Width>0</Width>
+    <Height>0</Height>
+  </ThumbnailSize>
+  <AddDropShadow>false</AddDropShadow>
+  <MarkupItems />
+</ImageMap>

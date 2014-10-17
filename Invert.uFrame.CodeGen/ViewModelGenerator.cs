@@ -65,6 +65,7 @@ public class ViewModelGenerator : ElementCodeGenerator
         BaseTypeDeclaration = new CodeTypeDeclaration(data.NameAsViewModel) { IsPartial = true };
         if (IsDesignerFile)
         {
+            AddConstructors(BaseTypeDeclaration);
             CreateBindMethod();
             BaseTypeDeclaration.Name = data.NameAsViewModelBase;
             BaseTypeDeclaration.IsPartial = false;
@@ -103,9 +104,6 @@ public class ViewModelGenerator : ElementCodeGenerator
     private void AddConstructors(CodeTypeDeclaration decleration)
     {
         
-
-       
-
         ConstructorWithController = new CodeConstructor()
         {
             Name = decleration.Name,
@@ -115,11 +113,13 @@ public class ViewModelGenerator : ElementCodeGenerator
         ConstructorWithController.Parameters.Add(new CodeParameterDeclarationExpression(ElementData.NameAsControllerBase,
             "controller"));
 
-        ConstructorWithController.Statements.Add(
-            new CodeAssignStatement(
-                new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Controller"),
-                new CodeSnippetExpression("controller")));
-        
+        //ConstructorWithController.Statements.Add(
+        //    new CodeAssignStatement(
+        //        new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Controller"),
+        //        new CodeSnippetExpression("controller")));
+
+        ConstructorWithController.BaseConstructorArgs.Add(new CodeSnippetExpression("controller"));
+
         decleration.Members.Add(ConstructorWithController);
 
         ConstructorWithOutController = new CodeConstructor()
@@ -127,11 +127,11 @@ public class ViewModelGenerator : ElementCodeGenerator
             Name = decleration.Name,
             Attributes = MemberAttributes.Public
         };
-
-        ConstructorWithOutController.Statements.Add(
-            new CodeAssignStatement(
-                new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Controller"),
-                new CodeSnippetExpression("null")));
+        ConstructorWithOutController.BaseConstructorArgs.Add(new CodeSnippetExpression(""));
+        //ConstructorWithOutController.Statements.Add(
+        //    new CodeAssignStatement(
+        //        new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Controller"),
+        //        new CodeSnippetExpression("null")));
 
         decleration.Members.Add(ConstructorWithOutController);
     }

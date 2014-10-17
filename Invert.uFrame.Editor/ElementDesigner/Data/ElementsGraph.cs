@@ -10,7 +10,7 @@ using UnityEngine;
 
 public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackReceiver, IItem
 {
-    [SerializeField]
+    [SerializeField,HideInInspector]
     public string _jsonData;
 
     [NonSerialized]

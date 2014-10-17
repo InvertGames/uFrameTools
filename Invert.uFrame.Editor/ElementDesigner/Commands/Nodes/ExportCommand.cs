@@ -2,7 +2,7 @@ using Invert.uFrame.Editor.ViewModels;
 
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
-    public class ExportCommand : EditorCommand<DiagramNodeViewModel>, IDiagramContextCommand
+    public class ExportCommand : EditorCommand<DiagramNodeViewModel>, IDiagramNodeCommand
     {
         public override void Perform(DiagramNodeViewModel node)
         {

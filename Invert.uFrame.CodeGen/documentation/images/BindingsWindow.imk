@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImageMap>
+  <IsExcludeBackgroundImageFromOutputEnabled>true</IsExcludeBackgroundImageFromOutputEnabled>
+  <BackgroundImageFileName>BindingsWindow.png</BackgroundImageFileName>
+  <OutputFileName>BindingsWindow_markedup.png</OutputFileName>
+  <AddOutputImagesToProject>true</AddOutputImagesToProject>
+  <DefaultFontFamily>Verdana</DefaultFontFamily>
+  <DefaultFontSize>12</DefaultFontSize>
+  <DefaultForeground>#FFF5F5F5</DefaultForeground>
+  <DefaultBackground>#FF000000</DefaultBackground>
+  <BuildThumbnail>true</BuildThumbnail>
+  <ThumbnailSize>
+    <Width>0</Width>
+    <Height>0</Height>
+  </ThumbnailSize>
+  <AddDropShadow>false</AddDropShadow>
+  <DropShadowEffect IsXaml="true">
+    <DropShadowEffect ShadowDepth="5" Color="#FF808080" Direction="315" Opacity="0.7" BlurRadius="7" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+  </DropShadowEffect>
+  <MarkupItems>
+    <MarkupItem Layer="1" Opacity="1" OutputAsImage="true" Rotation="0" RegionShape="Rectangle" OutputFileName="BindingsWindow-BindingTypes" Type="Innovasys.ContentAuthoring.ImageMarkup.OriginalRegion" Assembly="Innovasys.ContentAuthoring.ImageMarkup">
+      <Position>152,227,327,597</Position>
+    </MarkupItem>
+    <MarkupItem Layer="2" Opacity="1" OutputAsImage="true" Rotation="0" RegionShape="Rectangle" OutputFileName="BindingsWindow-CurrentBindings" Type="Innovasys.ContentAuthoring.ImageMarkup.OriginalRegion" Assembly="Innovasys.ContentAuthoring.ImageMarkup">
+      <Position>1064,229,399,192</Position>
+    </MarkupItem>
+  </MarkupItems>
+</ImageMap>

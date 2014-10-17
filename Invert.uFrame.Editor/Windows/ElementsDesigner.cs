@@ -202,12 +202,12 @@ namespace Invert.uFrame.Editor
             stack.RemoveAt(stack.Count - 1);
         }
 
-        [MenuItem("Window/Element Designer", false, 1)]
+        [MenuItem("Window/uFrame Designer", false, 1)]
         public static void Init()
         {
             // Get existing open window or if none, make a new one:
             var window = (ElementsDesigner)GetWindow(typeof(ElementsDesigner));
-            window.title = "Elements";
+            window.title = "uFrame";
             //uFrameEditor.ProjectChanged += window.UFrameEditorOnProjectChanged;
             //window.DesignerViewModel = uFrameEditor.Application.Designer;
 
@@ -320,9 +320,9 @@ namespace Invert.uFrame.Editor
                 {
                     if (LastEvent.keyCode == KeyCode.LeftShift || LastEvent.keyCode == KeyCode.RightShift)
                         ModifierKeyStates.Shift = false;
-                    if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl)
+                    if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl || LastEvent.keyCode == KeyCode.LeftCommand || LastEvent.keyCode == KeyCode.RightCommand)
                         ModifierKeyStates.Ctrl = false;
-                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt)
+                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt || LastEvent.keyCode == KeyCode.LeftApple || LastEvent.keyCode == KeyCode.RightApple)
                         ModifierKeyStates.Alt = false;
                 }
             }
@@ -674,7 +674,7 @@ namespace Invert.uFrame.Editor
                     LoadDiagram(CurrentProject.CurrentGraph);
                 });
             }
-            menu.AddItem(new GUIContent("Force Refresh"), false, () => { CurrentProject.Refresh(); });
+            menu.AddSeparator("");
             foreach (var graphType in uFrameEditor.Container.Mappings.Where(p => p.From == typeof(GraphData)))
             {
                 TypeMapping type = graphType;
@@ -686,6 +686,8 @@ namespace Invert.uFrame.Editor
                    
                 });
             }
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent("Force Refresh"), false, () => { CurrentProject.Refresh(); });
 
             menu.ShowAsContext();
         }

@@ -552,7 +552,7 @@ namespace Invert.uFrame.Editor
             // For no selection diagram context menu
             container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddItemCommand");
             container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
-            container.RegisterInstance<IDiagramContextCommand>(new ExportCommand(), "Export");
+            container.RegisterInstance<IDiagramNodeCommand>(new ExportCommand(), "Export");
             container.RegisterInstance<IDiagramNodeCommand>(new PushToCommand(), "Push To Command");
             container.RegisterInstance<IDiagramNodeCommand>(new PullFromCommand(), "Pull From Command");
 
@@ -577,7 +577,7 @@ namespace Invert.uFrame.Editor
             RegisterDrawer<ConnectorHeaderViewModel, InputHeaderDrawer>();
 
             // Graph Diagrams
-            container.Register<GraphData, ElementsGraph>("Element Graph");
+            container.Register<GraphData, ElementsGraph>("Graph");
             container.Register<GraphData, ExternalSubsystemGraph>("External Subsystem Graph");
             container.Register<GraphData, ExternalElementGraph>("External Element Graph");
             container.Register<GraphData, ExternalStateMachineGraph>("External State Machine Graph");
@@ -644,6 +644,7 @@ namespace Invert.uFrame.Editor
             RegisterGraphItem<StateMachineActionData, StateActionNodeViewModel, StateActionNodeDrawer>();
             RegisterFilterNode<ElementData, StateMachineNodeData>();
             RegisterFilterNode<StateMachineNodeData, StateMachineStateData>();
+
             container.RegisterInstance<IConnectionStrategy>(new StartStateConnectionStrategy(), "StartStateConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new StateMachineTransitionConnectionStrategy(), "StateMachineTransitionConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new ComputedTransitionConnectionStrategy(), "ComputedTransitionConnectionStrategy");

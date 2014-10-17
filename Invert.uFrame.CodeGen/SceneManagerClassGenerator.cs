@@ -260,7 +260,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
         {
             var controllerField = new CodeMemberField(element.NameAsController, "_" + element.NameAsController);
             var controllerProperty = controllerField.EncapsulateField(element.NameAsController,
-                new CodeSnippetExpression(string.Format("new {0}() {{ Container = Container, Context = Context }}",
+                new CodeSnippetExpression(string.Format("new {0}() {{ Container = Container }}",
                     element.NameAsController)), null, true);
             controllerProperty.CustomAttributes.Add(
                 new CodeAttributeDeclaration(new CodeTypeReference("Inject")));

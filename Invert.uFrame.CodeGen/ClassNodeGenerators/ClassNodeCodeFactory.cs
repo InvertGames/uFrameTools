@@ -115,7 +115,7 @@ namespace Invert.uFrame.CodeGen.ClassNodeGenerators
 
         protected virtual  CodeMemberField CreateCollectionPropertyField(ClassCollectionData p)
         {
-            var field = new CodeMemberField(string.Format("ObservableCollection<{0}>", p.RelatedTypeName), "_" + p.Name);
+            var field = new CodeMemberField(string.Format("List<{0}>", p.RelatedTypeName), "_" + p.Name);
             return field;
         }
 

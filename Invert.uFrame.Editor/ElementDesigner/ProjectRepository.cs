@@ -277,6 +277,9 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         }
         diagram.Version = uFrameVersionProcessor.CURRENT_VERSION_NUMBER.ToString();
         Diagrams.Add(diagram);
+        EditorUtility.SetDirty(diagram);
+        EditorUtility.SetDirty(this);
+        AssetDatabase.SaveAssets();
         Refresh();
         return diagram;
     }

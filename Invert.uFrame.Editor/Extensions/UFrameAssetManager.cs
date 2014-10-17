@@ -33,6 +33,7 @@ public class UFrameAssetManager : AssetPostprocessor
         AssetDatabase.CreateAsset(project, "Assets/" + name + "/" + name + ".asset");
         project.CreateNewDiagram();
         Selection.activeObject = project;
+        AssetDatabase.SaveAssets();
         Refresh();
 
     }

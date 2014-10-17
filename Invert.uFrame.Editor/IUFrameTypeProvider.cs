@@ -22,10 +22,10 @@ namespace Invert.uFrame.Editor
         Type CommandWithSenderT { get; }
         Type CommandWith { get; }
         Type CommandWithSenderAndArgument { get; }
-        Type YieldCommandWithSenderT { get; }
-        Type YieldCommandWith { get; }
-        Type YieldCommandWithSenderAndArgument { get; }
-        Type YieldCommand { get; }
+        //Type YieldCommandWithSenderT { get; }
+        //Type YieldCommandWith { get; }
+        //Type YieldCommandWithSenderAndArgument { get; }
+        //Type YieldCommand { get; }
         Type Command { get; }
         Type ICommand { get; }
         Type ListOfViewModel { get; }
