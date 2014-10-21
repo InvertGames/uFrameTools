@@ -68,17 +68,20 @@ namespace Invert.uFrame.Code.Bindings
             var createHandlerMethod = CreateMethodSignature(new CodeTypeReference(uFrameEditor.UFrameTypes.ViewBase),
                 new CodeParameterDeclarationExpression(RelatedElement.NameAsViewModel, VarName));
 
-            if (GenerateDefaultImplementation)
+            
+            if (!IsOverride)
             {
                 createHandlerMethod.Statements.Clear();
                 createHandlerMethod.Statements.Add(
                     new CodeMethodReturnStatement(new CodeMethodInvokeExpression(new CodeThisReferenceExpression(),
                         "InstantiateView", new CodeVariableReferenceExpression(VarName))));
+             
             }
-            else if (!IsOverride)
+            else
             {
                 createHandlerMethod.Statements.Add(
-                   new CodeMethodReturnStatement(new CodeSnippetExpression("null")));
+                   new CodeMethodReturnStatement(new CodeSnippetExpression(string.Format("base.{0}({1})", createHandlerMethod.Name, VarName))));
+                
             }
             collection.Add(createHandlerMethod);
 

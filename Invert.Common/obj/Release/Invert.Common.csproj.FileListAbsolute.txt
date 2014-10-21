@@ -20,3 +20,4 @@ D:\Invert\uFrameGit\uFrameTools\Invert.Common\bin\Release\Invert.Common.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.Common\obj\Release\Invert.Common.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.Common\obj\Release\Invert.Common.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.Common\obj\Release\Invert.Common.csprojResolveAssemblyReference.cache
+D:\Invert\uFrameGit\uFrameTools\Invert.Common\bin\Release\Invert.Common.XML
