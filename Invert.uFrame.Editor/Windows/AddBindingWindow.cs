@@ -102,7 +102,7 @@ public class AddBindingWindow : SearchableScrollWindow
         _previewScrollPosition = EditorGUILayout.BeginScrollView(_previewScrollPosition);
         GUIHelpers.DoToolbar(_ViewData.Name + " Preview");
         if (LastSelected != null)
-            EditorGUILayout.TextArea(_ViewData.Preview, GUILayout.Height(Screen.height - 55f));
+            EditorGUILayout.LabelField(_ViewData.Preview,EditorStyles.textArea, GUILayout.Height(Screen.height - 55f));
 
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
@@ -168,6 +168,7 @@ public class AddBindingWindow : SearchableScrollWindow
                         uFrameEditor.ExecuteCommand(n =>
                         {
                             LastSelected = _ViewData.AddNewBinding(item1.Tag as IBindingGenerator);
+                            ApplySearch();
                         });
                     }
                 }
@@ -181,9 +182,10 @@ public class AddBindingWindow : SearchableScrollWindow
         if (_ViewData == null) return;
 
         Generators = _ViewData.BindingGenerators;
+        var bindings = _ViewData.Bindings.Select(p => p.Property).ToArray();
 
         //Where(p => _MemberMethods.FirstOrDefault(x => x.Name == p.MethodName) != null)
-        Items = Generators.Select(item => new UFStyle()
+        Items = Generators.Where(p=>!bindings.Contains(p.Item)).Select(item => new UFStyle()
         {
             Label = item.MethodName,
             Tag = item,

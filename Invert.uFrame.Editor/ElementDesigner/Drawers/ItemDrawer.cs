@@ -116,9 +116,8 @@ public class ItemDrawer : Drawer
             EditorGUILayout.BeginHorizontal();
             DrawOption();
             GUI.SetNextControlName("EditingField");
-            var style = new GUIStyle(SelectedItemStyle);
-            style.normal.background = null;
-            var newName = EditorGUILayout.TextField(ItemViewModel.Name, style);
+            ElementsDiagram.IsEditingField = true;
+            var newName = EditorGUILayout.TextField(ItemViewModel.Name, ElementDesignerStyles.ItemTextEditingStyle);
             if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
             {
                 ItemViewModel.Rename(newName);

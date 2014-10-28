@@ -83,6 +83,8 @@ namespace Invert.Common
         private static GUIStyle _boxHighlighter5;
         private static GUIStyle _tag1;
         private static GUIStyle _tag2;
+        private static GUIStyle _viewModelHeaderEditingStyle;
+        private static GUIStyle _itemTextEditingStyle;
 
         public static float Scale
         {
@@ -965,6 +967,43 @@ namespace Invert.Common
                     };
                 }
                 return _viewModelHeaderStyle;
+            }
+        }   
+        public static GUIStyle ViewModelHeaderEditingStyle
+        {
+            get
+            {
+                if (_viewModelHeaderEditingStyle == null)
+                {
+                    _viewModelHeaderEditingStyle = new GUIStyle(EditorStyles.textField);
+                    _viewModelHeaderEditingStyle.normal.background = null;
+                    _viewModelHeaderEditingStyle.active.background = null;
+                    _viewModelHeaderEditingStyle.hover.background = null;
+                    _viewModelHeaderEditingStyle.focused.background = null;
+                    _viewModelHeaderEditingStyle.alignment = TextAnchor.MiddleCenter;
+                    _viewModelHeaderEditingStyle.fontStyle = FontStyle.Bold;
+                    //_viewModelHeaderEditingStyle.fontSize = Mathf.RoundToInt(12*Scale);
+                }
+                return _viewModelHeaderEditingStyle;
+            }
+        }
+        public static GUIStyle ItemTextEditingStyle
+        {
+            get
+            {
+                if (_itemTextEditingStyle == null)
+                {
+                    _itemTextEditingStyle = new GUIStyle(EditorStyles.miniTextField);
+                    _itemTextEditingStyle.normal.background = null;
+                    _itemTextEditingStyle.active.background = null;
+                    _itemTextEditingStyle.hover.background = null;
+                    _itemTextEditingStyle.focused.background = null;
+                    _itemTextEditingStyle.alignment = TextAnchor.MiddleCenter;
+                    _itemTextEditingStyle.fontStyle = FontStyle.Bold;
+                    _itemTextEditingStyle.padding = new RectOffset(0,0,0,0);
+                    //_viewModelHeaderEditingStyle.fontSize = Mathf.RoundToInt(12*Scale);
+                }
+                return _itemTextEditingStyle;
             }
         }
         public static Texture2D ArrowLeftTexture

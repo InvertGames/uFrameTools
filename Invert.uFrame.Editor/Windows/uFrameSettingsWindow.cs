@@ -38,14 +38,19 @@ public class uFrameSettingsWindow : EditorWindow
         if (GUIHelpers.DoToolbarEx("Color Settings"))
         {
             s.BackgroundColor = EditorGUILayout.ColorField("Background Color", s.BackgroundColor);
-            s.GridLinesColor = EditorGUILayout.ColorField("Grid Lines Color", s.GridLinesColor);
-            s.GridLinesColorSecondary = EditorGUILayout.ColorField("Grid Lines Secondary Color", s.GridLinesColorSecondary);
-            s.AssociationLinkColor = EditorGUILayout.ColorField("Association Link Color", s.AssociationLinkColor);
-            s.DefinitionLinkColor = EditorGUILayout.ColorField("Definition Link Color", s.DefinitionLinkColor);
-            s.InheritanceLinkColor = EditorGUILayout.ColorField("Inheritance Link Color", s.InheritanceLinkColor);
-            s.SubSystemLinkColor = EditorGUILayout.ColorField("SubSystem Link Color", s.SubSystemLinkColor);
-            s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
-            s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
+            s.UseGrid = EditorGUILayout.BeginToggleGroup("Grid", s.UseGrid);
+           
+                s.GridLinesColor = EditorGUILayout.ColorField("Grid Lines Color", s.GridLinesColor);
+                s.GridLinesColorSecondary = EditorGUILayout.ColorField("Grid Lines Secondary Color", s.GridLinesColorSecondary);    
+            EditorGUILayout.EndToggleGroup();
+            
+
+            //s.AssociationLinkColor = EditorGUILayout.ColorField("Association Link Color", s.AssociationLinkColor);
+            //s.DefinitionLinkColor = EditorGUILayout.ColorField("Definition Link Color", s.DefinitionLinkColor);
+            //s.InheritanceLinkColor = EditorGUILayout.ColorField("Inheritance Link Color", s.InheritanceLinkColor);
+            //s.SubSystemLinkColor = EditorGUILayout.ColorField("SubSystem Link Color", s.SubSystemLinkColor);
+            //s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
+            //s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
         }
         if (GUIHelpers.DoToolbarEx("Plugins"))
         {

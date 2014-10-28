@@ -61,7 +61,11 @@ namespace Invert.uFrame.Editor
                 uFrameEditor.ShowHelp = !uFrameEditor.ShowHelp;
             }),"Show/Hide This Help", KeyCode.F1);
 
-            uFrameEditor.RegisterKeyBinding(new SaveCommand(), "Save & Compile", KeyCode.S,true,true);
+            uFrameEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            {
+                var saveCommand = uFrameEditor.Container.Resolve<IToolbarCommand>("Save");
+                uFrameEditor.ExecuteCommand(saveCommand);
+            }), "Save & Compile", KeyCode.S, true, true);
 
           
 

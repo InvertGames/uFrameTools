@@ -11,7 +11,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
 
         public override Type For
         {
-            get { return typeof (ElementsDiagram); }
+            get { return typeof (DiagramViewModel); }
         }
 
         public Action Action { get; set; }

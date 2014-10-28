@@ -42,6 +42,7 @@ namespace Invert.uFrame.Editor
         public Vector2 MouseUpPosition { get; set; }
 
         public bool NoBubble { get; set; }
+        public Vector2 MousePositionDeltaSnapped { get; set; }
 
         public MouseEvent(ModifierKeyState modifierKeyStates, IInputHandler defaultHandler)
         {

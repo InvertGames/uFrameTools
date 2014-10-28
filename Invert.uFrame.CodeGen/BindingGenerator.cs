@@ -176,9 +176,6 @@ namespace Invert.uFrame.Code.Bindings
             if (IsOverride)
             {
                 createHandlerMethod.Attributes |= MemberAttributes.Override;
-
-                //if (CallBase)
-                //{
                 var baseInvoker = new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(),
                     createHandlerMethod.Name);
                 foreach (var item in vars)
@@ -193,10 +190,6 @@ namespace Invert.uFrame.Code.Bindings
                 {
                     createHandlerMethod.Statements.Add(baseInvoker);
                 }
-                //}
-
-
-
             }
             return createHandlerMethod;
         }

@@ -7,7 +7,7 @@ namespace Invert.uFrame.Editor.Nodes
     {
         public override Color ConnectionColor
         {
-            get { return Color.green; }
+            get { return Color.white; }
         }
 
         protected override bool CanConnect(ViewData output, ViewComponentData input)

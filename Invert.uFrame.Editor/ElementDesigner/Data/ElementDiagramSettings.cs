@@ -8,6 +8,7 @@ public class ElementDiagramSettings : IJsonObject
     public void Serialize(JSONClass cls)
     {
         cls.Add("SnapSize", new JSONData(_snapSize));
+        cls.Add("Snap", new JSONData(_snap));
         cls.Add("CodePathStrategyName", new JSONData(_codePathStrategyName));
         cls.Add("GridLinesColor", SerializeColor(GridLinesColor));
         cls.Add("GridLinesColorSecondary", SerializeColor(GridLinesColorSecondary));
@@ -62,7 +63,7 @@ public class ElementDiagramSettings : IJsonObject
         TransitionLinkColor = DeserializeColor(cls["TransitionLinkColor"]);
         ViewLinkColor = DeserializeColor(cls["ViewLinkColor"]);
         SnapSize = cls["SnapSize"].AsInt;
-
+        Snap = cls["Snap"].AsBool;
         GridLinesColor = DeserializeColor(cls["GridLinesColor"], new Color(0.271f, 0.271f, 0.271f));
         GridLinesColorSecondary = DeserializeColor(cls["GridLinesColorSecondary"], new Color(0.169f, 0.169f, 0.169f));
 
@@ -105,6 +106,7 @@ public class ElementDiagramSettings : IJsonObject
     private Color _gridLinesColorSecondary = new Color(0.169f, 0.169f, 0.169f);
     private bool _generateDefaultBindings = true;
     private string _rootNamespace = string.Empty;
+    private bool _snap = true;
 
     public Color AssociationLinkColor
     {
@@ -154,6 +156,12 @@ public class ElementDiagramSettings : IJsonObject
         set { _snapSize = value; }
     }
 
+    public bool Snap
+    {
+        get { return _snap; }
+        set { _snap = value; }
+    }
+
     public string CodePathStrategyName
     {
         get { return string.IsNullOrEmpty(_codePathStrategyName) ? "Default" : _codePathStrategyName; }
@@ -169,7 +177,7 @@ public class ElementDiagramSettings : IJsonObject
         set { _gridLinesColor = value; }
     }
 
-
+    
 
 
     public JSONNode Serialize()

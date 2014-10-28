@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.Linq;
+using Invert.uFrame.Editor.ViewModels;
 
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
@@ -50,7 +52,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         public MultiOptionType OptionsType { get; private set; }
     }
 
-    public abstract class CrossDiagramCommand : EditorCommand<DiagramViewModel>, IDiagramContextCommand, IDynamicOptionsCommand, IDiagramNodeCommand
+    public abstract class CrossDiagramCommand : EditorCommand<DiagramNodeViewModel>, IDiagramContextCommand, IDynamicOptionsCommand, IDiagramNodeCommand
     {
         public override void Execute(object item)
         {
@@ -65,13 +67,13 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             //data.BeginEditing();
         }
 
-        public override void Perform(DiagramViewModel diagram)
+        public override void Perform(DiagramNodeViewModel diagram)
         {
             if (SelectedOption != null)
             {
                 var targetDiagram = SelectedOption.Value as IGraphData;
-                var sourceDiagram = diagram.DiagramData;
-                var selectedNode = diagram.SelectedNode.GraphItemObject;
+                var sourceDiagram = diagram.DiagramViewModel.DiagramData;
+                var selectedNode = diagram.GraphItemObject;
                 Perform(sourceDiagram, selectedNode, targetDiagram);
 
                 //diagram.CurrentRepository.SetItemLocation(newNodeData, uFrameEditor.CurrentMouseEvent.MouseDownPosition);
@@ -79,10 +81,10 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             }
         }
 
-        public override string CanPerform(DiagramViewModel node)
+        public override string CanPerform(DiagramNodeViewModel node)
         {
             if (node == null) return "Diagram must be loaded first.";
-
+            
             //if (!node.Data.CurrentFilter.IsAllowed(null, typeof(TType)))
             //    return "Item is not allowed in this part of the diagram.";
 
@@ -99,9 +101,9 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
         public IEnumerable<UFContextMenuItem> GetOptions(object item)
         {
-            var viewModel = item as DiagramViewModel;
+            var viewModel = item as DiagramNodeViewModel;
             if (viewModel == null) yield break;
-            var diagrams = viewModel.CurrentRepository.Diagrams;
+            var diagrams = viewModel.DiagramViewModel.CurrentRepository.Diagrams;
 
             foreach (var diagram in diagrams)
             {
@@ -127,22 +129,26 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             get { return "Push To"; }
         }
 
+        public override void Perform(DiagramNodeViewModel diagram)
+        {
+            base.Perform(diagram);
+            diagram.IsLocal = false;
+        }
+
         protected override void Perform(IGraphData sourceDiagram, IDiagramNode selectedNode,
             IGraphData targetDiagram)
         {
-            var position = sourceDiagram.PositionData[sourceDiagram.CurrentFilter, selectedNode.Identifier];
-            var sourcePathStrategy = sourceDiagram.CodePathStrategy;
-            var targetPathStrategy = targetDiagram.CodePathStrategy;
-
-            var sourceFiles = uFrameEditor.GetAllFileGenerators(uFrameEditor.CurrentProject.GeneratorSettings).Where(p=>!p.AssetPath.EndsWith(".designer.cs"));
-            
-            sourceDiagram.RemoveNode(selectedNode);
-            sourceDiagram.PositionData[sourceDiagram.CurrentFilter, selectedNode.Identifier] = position;
-            targetDiagram.AddNode(selectedNode);
+            sourceDiagram.PushNode(targetDiagram,selectedNode);
 
         }
+
+        public override string CanPerform(DiagramNodeViewModel node)
+        {
+            if (!node.IsLocal) return "Node must be local to push it.";
+            return base.CanPerform(node);
+        }
     }
-    public class PullFromCommand : EditorCommand<DiagramViewModel>,  IDiagramNodeCommand
+    public class PullFromCommand : EditorCommand<DiagramNodeViewModel>,  IDiagramNodeCommand
     {
         public override string Group
         {
@@ -158,28 +164,34 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         {
             get { return "Pull From Command"; }
         }
-
+        
         //protected override void Perform(IElementDesignerData sourceDiagram, IDiagramNode selectedNode,
         //    INodeRepository targetDiagram)
         //{
             
         //}
 
-        public override void Perform(DiagramViewModel node)
+        public override void Perform(DiagramNodeViewModel node)
         {
-            var sourceDiagram = node.DiagramData;
-            var targetDiagram = node.CurrentRepository.Diagrams.FirstOrDefault(p=>p.NodeItems.Contains(node.SelectedNode.GraphItemObject));
+            var sourceDiagram = node.DiagramViewModel.DiagramData;
+            var targetDiagram = node.DiagramViewModel.CurrentRepository.Diagrams.FirstOrDefault(p=>p.NodeItems.Contains(node.GraphItemObject));
             if (targetDiagram == null) return;
 
-            targetDiagram.RemoveNode(node.SelectedNode.GraphItemObject);
-            sourceDiagram.AddNode(node.SelectedNode.GraphItemObject);
+            targetDiagram.RemoveNode(node.GraphItemObject);
+            sourceDiagram.AddNode(node.GraphItemObject);
+            node.IsLocal = true;
         }
 
-        public override string CanPerform(DiagramViewModel node)
+        public override string CanPerform(DiagramNodeViewModel node)
         {
-            if (node == null) return "Can't be null.";
+
+            if (node.GraphItemObject == node.DiagramViewModel.DiagramData.RootFilter)
+                return "This node is the main part of a diagram and can't be removed.";
+            if(node.IsLocal) 
+                return "The node must be external to pull it.";
             return null;
         }
 
     }
+
 }

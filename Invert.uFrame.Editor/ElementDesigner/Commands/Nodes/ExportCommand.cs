@@ -1,20 +1,22 @@
+using System.Collections.Generic;
 using Invert.uFrame.Editor.ViewModels;
+using UnityEditor;
 
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
     public class ExportCommand : EditorCommand<DiagramNodeViewModel>, IDiagramNodeCommand
     {
+        public override string Group
+        {
+            get { return "Moving"; }
+        }
         public override void Perform(DiagramNodeViewModel node)
         {
             var diagramViewModel = node.DiagramViewModel;
             var nodeData = node.GraphItemObject as IDiagramNode;
-            diagramViewModel.DiagramData.RemoveNode(nodeData);
-
-            var exportedDiagram = 
-                node.DiagramViewModel
-                .CurrentRepository
-                .CreateNewDiagram(node.ExportGraphType, nodeData as IDiagramFilter);
             var repository = diagramViewModel.CurrentRepository;
+            var filter = nodeData as IDiagramFilter;
+            repository.ExportNode(node.ExportGraphType,diagramViewModel.DiagramData,node.DataObject as IDiagramNode,true);
 
         }
 

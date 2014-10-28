@@ -88,6 +88,7 @@ public class ElementDiagramSettingsWindow : EditorWindow
             //s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
             //s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
             s.SnapSize = Math.Max(1, EditorGUILayout.IntField("Snap Size", s.SnapSize));
+            s.Snap = EditorGUILayout.Toggle("Snap",s.Snap);
          
             var pathStrategies =
                 uFrameEditor.Container.Mappings.Where(p => p.From == typeof (ICodePathStrategy)).ToArray();

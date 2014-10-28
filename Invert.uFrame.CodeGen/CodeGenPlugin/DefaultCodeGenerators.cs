@@ -42,7 +42,7 @@ public class DefaultCodeGenerators : DiagramPlugin
         container.Register<IBindingGenerator, ComputedPropertyBindingGenerator>("ComputedPropertyBindingGenerator");
         container.Register<IBindingGenerator, ViewCollectionBindingGenerator>("ViewCollectionBindingGenerator");
         container.Register<IBindingGenerator, DefaultCollectionBindingGenerator>("DefaultCollectionBindingGenerator");
-        container.Register<IBindingGenerator, InstantiateViewPropertyBindingGenerator>("InstantiateViewPropertyBindingGenerator");
+        //container.Register<IBindingGenerator, InstantiateViewPropertyBindingGenerator>("InstantiateViewPropertyBindingGenerator");
         container.Register<IBindingGenerator, CommandExecutedBindingGenerator>("CommandExecutedBindingGenerator");
         container.Register<IBindingGenerator, StateMachinePropertyBindingGenerator>("StateMachinePropertyBindingGenerator");
 

@@ -40,16 +40,27 @@ namespace Invert.uFrame.Editor
                     var dynamicCommand = command as IDynamicOptionsCommand;
                     if (dynamicCommand != null)
                     {
-                        foreach (var option in dynamicCommand.GetOptions(argument).OrderBy(p=>p.Name))
+                        var canPerform = command.CanPerform(argument);
+                        if (canPerform == null)
                         {
-                            groupCount++;
-                            UFContextMenuItem option1 = option;
-                            genericMenu.AddItem(new GUIContent(Flatten ? editorCommand.Title : option.Name), option.Checked, () =>
+                            foreach (var option in dynamicCommand.GetOptions(argument).OrderBy(p => p.Name))
                             {
-                                dynamicCommand.SelectedOption = option1;
-                                Handler.ExecuteCommand(command);
-                            });
+                                groupCount++;
+                                UFContextMenuItem option1 = option;
+                                genericMenu.AddItem(new GUIContent(Flatten ? editorCommand.Title : option.Name),
+                                    option.Checked, () =>
+                                    {
+                                        dynamicCommand.SelectedOption = option1;
+                                        Handler.ExecuteCommand(command);
+                                    });
+                            }
                         }
+                        else
+                        {
+                            if (command.ShowAsDiabled)
+                                genericMenu.AddDisabledItem(new GUIContent((Flatten ? editorCommand.Title : editorCommand.Path) + " : " + canPerform));
+                        }
+                        
                     }
                     else
                     {

@@ -10,8 +10,14 @@ namespace Invert.uFrame.Editor.Nodes
             get { return Color.white; }
         }
 
+        protected override bool CanConnect(ViewModelPropertyData output, ViewModelPropertyData input)
+        {
+            return !input.DependantPropertyIdentifiers.Contains(output.Identifier);
+        }
+
         protected override bool IsConnected(ViewModelPropertyData outputData, ViewModelPropertyData inputData)
         {
+            
             return inputData.DependantPropertyIdentifiers.Contains(outputData.Identifier);
         }
 

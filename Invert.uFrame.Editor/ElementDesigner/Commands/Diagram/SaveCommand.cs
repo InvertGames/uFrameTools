@@ -66,9 +66,7 @@ namespace Invert.uFrame.Editor.ElementDesigner
             }
             RefactorApplied(diagram.DiagramData);
             AssetDatabase.Refresh();
-            
             diagram.Save();
-            diagram.DeselectAll();
 
         }
 

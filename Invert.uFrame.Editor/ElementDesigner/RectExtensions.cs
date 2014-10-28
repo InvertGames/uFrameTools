@@ -2,7 +2,12 @@ using UnityEngine;
 
 public static class RectExtensions
 {
-
+    public static Vector2 Snap(this Vector2 pos, float snapSize)
+    {
+        var x = Mathf.RoundToInt(pos.x / snapSize) * snapSize;
+        var y = Mathf.RoundToInt(pos.y / snapSize) * snapSize;
+        return new Vector2(x, y);
+    }
     public static Rect Scale(this Rect r, float scale)
     {
         return new Rect(r.x * scale, r.y * scale, r.width * scale, r.height * scale);

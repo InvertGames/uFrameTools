@@ -10,7 +10,7 @@ public class SceneFlowFilter : DiagramFilter
 
     public override string Name
     {
-        get { return "Scene Flow"; }
+        get { return "Root"; }
     }
 
     public override bool IsItemAllowed(object item, Type t)

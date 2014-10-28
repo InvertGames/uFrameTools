@@ -151,6 +151,10 @@ namespace Invert.uFrame.CodeGen.ClassNodeGenerators
 
     public class SimpleClassNodeGenerator : ClassNodeGenerator<ClassNodeData>
     {
-
+        public override void Initialize(CodeFileGenerator fileGenerator)
+        {
+            base.Initialize(fileGenerator);
+            TryAddNamespace("UnityEngine");
+        }
     }
 }

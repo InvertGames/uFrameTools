@@ -209,6 +209,14 @@ namespace Invert.uFrame.Editor
             }
         }
 
+        public virtual bool UseGrid
+        {
+            get { return Convert.ToBoolean(PlayerPrefs.GetInt("UseGrid", Convert.ToInt32(true))); }
+            set
+            {
+                PlayerPrefs.SetInt("UseGrid",Convert.ToInt32(value));
+            }
+        }
      
     }
 }

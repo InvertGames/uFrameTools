@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
@@ -308,12 +309,33 @@ namespace Invert.uFrame.Editor
 
                 MouseEvent.MousePosition = mp;
                 MouseEvent.MousePositionDelta = MouseEvent.MousePosition - MouseEvent.LastMousePosition;
-
+                MouseEvent.MousePositionDeltaSnapped = MouseEvent.MousePosition.Snap(DiagramDrawer.SnapSize * ElementDesignerStyles.Scale) - MouseEvent.LastMousePosition.Snap(DiagramDrawer.SnapSize * ElementDesignerStyles.Scale);
                 handler.OnMouseMove(MouseEvent);
                 MouseEvent.LastMousePosition = mp;
             }
-
+           
             LastEvent = Event.current;
+             if (ElementsDiagram.IsEditingField && LastEvent.keyCode != KeyCode.Return) return;
+            if (DiagramViewModel.SelectedGraphItems.Any(p =>
+            {
+                var viewModel = p as DiagramNodeViewModel;
+                if (viewModel != null)
+                {
+                    return viewModel.IsEditing;
+                }
+                else
+                {
+                    var model = p as ItemViewModel;
+                    if (model != null)
+                    {
+                        return model.IsEditing;
+                    }
+                }
+                return false;
+            }))
+            {
+                return;
+            }
             if (LastEvent != null)
             {
                 if (LastEvent.type == EventType.keyUp)
@@ -481,7 +503,7 @@ namespace Invert.uFrame.Editor
                 _scrollPosition = GUI.BeginScrollView(DiagramRect, _scrollPosition, DiagramDrawer.DiagramSize);
 
                 HandlePanning(DiagramRect);
-                if (DiagramViewModel != null)
+                if (DiagramViewModel != null && uFrameEditor.Settings.UseGrid)
                 {
                     var softColor = uFrameEditor.Settings.GridLinesColor;
                     var hardColor = uFrameEditor.Settings.GridLinesColorSecondary;

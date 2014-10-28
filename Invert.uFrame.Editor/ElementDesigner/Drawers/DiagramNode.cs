@@ -372,13 +372,14 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
     public virtual bool EndEditing()
     {
         IsEditing = false;
-
-        if (Project.NodeItems.Count(p => p.Name == Name) > 1)
+        if (Project != null)
         {
-            Name = OldName;
-            return false;
+            if (Project.NodeItems.Count(p => p.Name == Name) > 1)
+            {
+                Name = OldName;
+                return false;
+            }
         }
-
         if (OldName != Name)
         {
             if (RenameRefactorer == null)

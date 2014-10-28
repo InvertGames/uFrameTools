@@ -196,7 +196,11 @@ namespace Invert.uFrame.Editor
                     //handler.CommandExecuting(command);
                     command.Execute(o);
                     if (command.Hooks != null)
-                        command.Hooks.ForEach(p => ExecuteCommand(handler, p));
+                        command.Hooks.ForEach(p =>
+                        {
+                            Debug.Log(p.Name);
+                            ExecuteCommand(handler, p);
+                        });
                     handler.CommandExecuted(command);
                 }
             }
@@ -359,7 +363,7 @@ namespace Invert.uFrame.Editor
         public static IEnumerable<IBindingGenerator> GetPossibleBindingGenerators(ViewData view, bool isOverride = true, bool generateDefaultBindings = true, bool includeBaseItems = true, bool callBase = true)
         {
             var mainElement = view.ViewForElement;
-
+            
             if (view.BaseView != null)
             {
                 foreach (var viewModelItem in mainElement.ViewModelItems)
@@ -372,7 +376,7 @@ namespace Invert.uFrame.Editor
                         bindingGenerator.Item = viewModelItem;
                         bindingGenerator.Element = mainElement;
                         bindingGenerator.GenerateDefaultImplementation = generateDefaultBindings;
-
+                        
                         if (bindingGenerator.IsApplicable)
                             yield return bindingGenerator;
                     }
@@ -552,9 +556,10 @@ namespace Invert.uFrame.Editor
             // For no selection diagram context menu
             container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddItemCommand");
             container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
-            container.RegisterInstance<IDiagramNodeCommand>(new ExportCommand(), "Export");
+            
             container.RegisterInstance<IDiagramNodeCommand>(new PushToCommand(), "Push To Command");
             container.RegisterInstance<IDiagramNodeCommand>(new PullFromCommand(), "Pull From Command");
+            //container.RegisterInstance<IDiagramNodeCommand>(new ExportCommand(), "Export");
 
             // All Nodes
             container.RegisterInstance<IDiagramNodeCommand>(new OpenCommand(), "OpenCode");

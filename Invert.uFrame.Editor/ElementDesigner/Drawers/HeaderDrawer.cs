@@ -74,11 +74,11 @@ public class HeaderDrawer : Drawer
             ElementDesignerStyles.DrawExpandableBox(AdjustedBounds.Scale(scale), BackgroundStyle, string.Empty, new RectOffset(Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(20 * scale),Mathf.RoundToInt( 27 * scale), 0));
         }
 
-        var style = new GUIStyle(TextStyle)
-        {
-            normal = {textColor = BackgroundStyle.normal.textColor},
-            alignment = TextAnchor.MiddleCenter
-        };
+        //var style = new GUIStyle(TextStyle)
+        //{
+        //    normal = {textColor = BackgroundStyle.normal.textColor},
+        //    alignment = TextAnchor.UpperLeft
+        //};
         // The bounds for the main text
         var textBounds = new Rect(Bounds.x, Bounds.y + ((Bounds.height / 2f) - (TextSize.y / 2f)), Bounds.width,
             Bounds.height);
@@ -86,9 +86,10 @@ public class HeaderDrawer : Drawer
         if (NodeViewModel.IsEditing)
         {
             GUI.SetNextControlName("EditingField");
-
+            ElementsDiagram.IsEditingField = true;
             EditorGUI.BeginChangeCheck();
-            var newText = GUI.TextField(textBounds.Scale(scale), NodeViewModel.Name, style);
+
+            var newText = GUI.TextField(textBounds.Scale(scale), NodeViewModel.Name, ElementDesignerStyles.ViewModelHeaderEditingStyle);
 
             if (EditorGUI.EndChangeCheck())
             {

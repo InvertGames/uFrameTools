@@ -213,6 +213,8 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
 
     public override void Draw(float scale)
     {
+        bool shouldEditField = IsEditingField;
+        IsEditingField = false;
         // Make sure they've upgraded to the latest json format
         if (UpgradeOldProject()) return;
         // Draw the title box
@@ -230,8 +232,17 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             drawer.Draw(Scale);
             
         }
-
-        EditorGUI.FocusTextInControl("EditingField");
+        if (IsEditingField)
+        {
+            //GUI.FocusControl("EditingField");
+            EditorGUI.FocusTextInControl("EditingField");
+            EditorGUI.FocusTextInControl("EditingField");
+        }
+        else
+        {
+            
+        }
+        
         //var nodeItem = DiagramViewModel.SelectedNodeItem as ItemViewModel;
         //if (nodeItem != null)
         //{
@@ -374,7 +385,17 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             {
                 if (item.ViewModelObject.IsSelected)
                 {
-                    item.ViewModel.Position += e.MousePositionDelta;
+                    if (DiagramViewModel.Settings.Snap)
+                    {
+                        item.ViewModel.Position += e.MousePositionDeltaSnapped;
+                    }
+                    else
+                    {
+                        item.ViewModel.Position += e.MousePositionDelta;
+                    }
+                    
+                    
+
                     if (item.ViewModel.Position.x < 0)
                     {
                         item.ViewModel.Position = new Vector2(0f,item.ViewModel.Position.y);
@@ -383,6 +404,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
                     {
                         item.ViewModel.Position = new Vector2( item.ViewModel.Position.x,0f);
                     }
+           
                     item.Refresh();
                 }
             }
@@ -587,6 +609,8 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
         get { return _selectionRectHandler ?? (_selectionRectHandler = new SelectionRectHandler(DiagramViewModel)); }
         set { _selectionRectHandler = value; }
     }
+
+    public static bool IsEditingField { get; set; }
 
     //    if (CurrentEvent.keyCode == KeyCode.Return)
     //    {

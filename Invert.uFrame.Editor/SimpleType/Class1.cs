@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Invert.Common;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ViewModels;
@@ -221,13 +222,14 @@ public class ClassNodeViewModel : DiagramNodeViewModel<ClassNodeData>
 
 public class ClassPropertyItemViewModel : ElementItemViewModel<ClassPropertyData>
 {
+
     public ClassPropertyItemViewModel(ClassPropertyData viewModelItem, DiagramNodeViewModel nodeViewModel) : base(viewModelItem, nodeViewModel)
     {
     }
 
     public override string TypeLabel
     {
-        get { return ElementItem.RelatedTypeName; }
+        get { return ElementDataBase.TypeAlias(Data.RelatedTypeName); }
     }
 }
 public class ClassCollectionItemViewModel : ElementItemViewModel<ClassCollectionData>
@@ -239,12 +241,16 @@ public class ClassCollectionItemViewModel : ElementItemViewModel<ClassCollection
 
     public override string TypeLabel
     {
-        get { return ElementItem.RelatedTypeName; }
+        get { return ElementDataBase.TypeAlias(Data.RelatedTypeName); }
     }
 }
 
 public class ClassNodeDrawer : DiagramNodeDrawer<ClassNodeViewModel>
 {
+    protected override GUIStyle HeaderStyle
+    {
+        get { return ElementDesignerStyles.NodeHeader12; }
+    }
 
     public ClassNodeDrawer(ClassNodeViewModel viewModelObject) : base(viewModelObject)
     {

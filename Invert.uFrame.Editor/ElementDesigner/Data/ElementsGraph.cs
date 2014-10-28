@@ -194,6 +194,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
 
     public void RemoveNode(IDiagramNode enumData)
     {
+        if (enumData == RootFilter) return;
         //foreach (var item in Nodes)
         //{
         //    if (item.Locations.Keys.Contains(item.Identifier))
@@ -367,7 +368,7 @@ public class FilterPositionData : IJsonObject
         get { return _positions ?? (_positions = new Dictionary<string, FilterLocations>()); }
         set { _positions = value; }
     }
-
+    
     public bool HasPosition(IDiagramFilter filter, IDiagramNode node)
     {
         if (Positions.ContainsKey(filter.Identifier))

@@ -122,14 +122,15 @@ public class ViewData : DiagramNode, ISubSystemType
         }
     }
 
-    public Type CurrentViewType
-    {
-        get
-        {
 
-            return Type.GetType(ViewAssemblyQualifiedName);
-        }
-    }
+    //public Type CurrentViewType
+    //{
+    //    get
+    //    {
+
+    //        return Type.GetType(ViewAssemblyQualifiedName);
+    //    }
+    //}
 
     public IEnumerable<ViewModelPropertyData> SceneProperties
     {

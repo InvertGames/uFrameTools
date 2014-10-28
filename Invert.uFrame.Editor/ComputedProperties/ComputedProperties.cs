@@ -394,6 +394,7 @@ public class ComputedPropertyInputsConnectionStrategy :
 
     protected override bool CanConnect(ITypeDiagramItem output, ComputedPropertyData input)
     {
+        if (output.Identifier == input.Identifier) return false;
         //if (!(output is ComputedPropertyData) && !(output is ViewPropertyData)) return false;
         return base.CanConnect(output, input);
     }
