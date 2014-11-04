@@ -12,4 +12,6 @@ public class ElementItemType
     }
 
     public string Name { get; set; }
+    public bool IsPrimitive { get; set; }
+    public bool IsUnityEngine { get; set; }
 }

@@ -50,6 +50,7 @@ namespace Invert.uFrame.Editor
         private static IUFrameTypeProvider _uFrameTypes;
         private static IConnectionStrategy[] _connectionStrategies;
         private static Type[] _codeGenerators;
+        private static uFrameContainer _TypesContainer;
 
         public static IEditorCommand[] Commands
         {
@@ -70,6 +71,22 @@ namespace Invert.uFrame.Editor
                 return _container;
             }
             set { _container = value; }
+        }
+        public static uFrameContainer TypesContainer
+        {
+            get
+            {
+                if (_TypesContainer != null) return _TypesContainer;
+                _TypesContainer = new uFrameContainer();
+                InitializeTypesContainer(_TypesContainer);
+                return _TypesContainer;
+            }
+            set { _TypesContainer = value; }
+        }
+
+        private static void InitializeTypesContainer(uFrameContainer container)
+        {
+            
         }
 
         public static DiagramViewModel CurrentDiagramViewModel

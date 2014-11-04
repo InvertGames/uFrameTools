@@ -7,7 +7,7 @@ public abstract class SearchableScrollWindow : EditorWindow
     public string _SearchText = "";
     public int _SelectedIndex;
     private Vector2 _scrollPosition;
-    protected int _limit = 50;
+    protected int _limit = 25;
     protected Func<ElementItemType, string> _labelSelector;
     
     protected string _upperSearchText;

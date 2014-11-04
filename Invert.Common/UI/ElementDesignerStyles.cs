@@ -937,8 +937,8 @@ namespace Invert.Common
                 {
                     _selectedItemStyle = new GUIStyle()
                     {
-                        normal = { background = GetSkinTexture("SelectedNodeItem"), textColor = new Color(0.7f,0.7f,0.7f) },
-                        active = { background = GetSkinTexture("SelectedNodeItem"), textColor = new Color(0.7f, 0.7f, 0.7f) },
+                        normal = {  textColor = new Color(0.7f,0.7f,0.7f) },
+                        active = {  textColor = new Color(0.7f, 0.7f, 0.7f) },
                         stretchHeight = true,
                         padding = new RectOffset(0,5,0,0),
                         fixedHeight = Mathf.RoundToInt(18 * Scale),

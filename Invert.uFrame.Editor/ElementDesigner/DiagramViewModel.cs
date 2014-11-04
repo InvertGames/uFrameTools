@@ -409,7 +409,7 @@ public class DiagramViewModel : ViewModel
                 viewData.Bindings.Add(bindingGenerator);
                 if (generator.Item.RelatedNode() is ElementData && generator.Item is ViewModelPropertyData)
                 {
-                    bindingGenerator.GeneratorType = "InstantiateViewPropertyBindingGenerator";
+                    bindingGenerator.GeneratorType = "StandardPropertyBindingGenerator";
                 }
             }
         }

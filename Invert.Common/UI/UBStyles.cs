@@ -794,7 +794,11 @@ namespace Invert.Common
                     _toolbarStyle = new GUIStyle
                     {
 
-                        normal = { background = GetSkinTexture("CommandExpanded"), textColor = new Color(0.7f, 0.7f, 0.7f) },
+                        normal = { 
+                            background = GetSkinTexture("CommandExpanded"), 
+                            textColor = !EditorGUIUtility.isProSkin ? 
+                            new Color(0.2f,0.2f,0.2f) : new Color(0.7f, 0.7f, 0.7f) 
+                        },
                         //active = { background = CommandBarClosedStyle.normal.background },
                         fixedHeight = 28,
                         border = new RectOffset(3, 3, 3, 3),

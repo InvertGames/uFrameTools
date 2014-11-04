@@ -61,13 +61,10 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
         {
             CreateTransitionMethods(sceneManager);
             RegisterInstances();
-            RegisterControllers();
+            
 
 
-            SetupMethod.Statements.Add(
-                new CodeMethodInvokeExpression(
-                    new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Container"),
-                    "InjectAll"));
+            
 
             CreateSettingsField(sceneManager);
             AddSceneManagerSettings(sceneManager);
@@ -197,7 +194,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
 
         var transitionCommands = Data.Transitions.Where(p => p.Command != null && !string.IsNullOrEmpty(p.ToIdentifier)).Select(p => p.Command).ToArray();
         var instancesRegistered = new List<string>();
-
+        var initializeStatements = new CodeStatementCollection();
         foreach (var instanceGroup in Data.SubSystem.AllInstances.GroupBy(p => p.Name))
         {
             foreach (var instance in instanceGroup)
@@ -208,16 +205,17 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                 {
                     var instanceField = new CodeMemberField(element.NameAsViewModel, "_" + instance.Name);
                     var instanceProperty = instanceField.EncapsulateField(instance.Name, new CodeSnippetExpression(
-                        string.Format("SetupViewModel<{0}>({1}, \"{2}\")",
+                        string.Format("CreateInstanceViewModel<{0}>({1}, \"{2}\")",
                             element.NameAsViewModel, element.NameAsController, instance.Name)
                         ), null, true);
                     instanceProperty.CustomAttributes.Add(
                         new CodeAttributeDeclaration(new CodeTypeReference("Inject"),
                             new CodeAttributeArgument(new CodePrimitiveExpression(instance.Name))));
-
+                    initializeStatements.Add(
+                        new CodeSnippetExpression(string.Format("{0}.Initialize({1})", element.NameAsController,
+                            instanceProperty.Name)));
                     Declaration.Members.Add(instanceField);
                     Declaration.Members.Add(instanceProperty);
-
                 }
 
                 instancesRegistered.Add(instanceGroup.Key);
@@ -230,6 +228,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
 
                     if (!string.IsNullOrEmpty(command.RelatedTypeName))
                     {
+
                         initializeMethod.Statements.Add(
                             new CodeSnippetExpression(
                                 string.Format(
@@ -247,11 +246,17 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
                 }
 
                 SetupMethod.Statements.Add(
-                    new CodeSnippetExpression(string.Format("Container.RegisterInstance<{0}>({1},\"{1}\")",
+                    new CodeSnippetExpression(string.Format("Container.RegisterViewModel<{0}>({1},\"{1}\")",
                         instance.RelatedTypeName, instanceGroup.Key)));
             }
         }
+        RegisterControllers();
 
+        SetupMethod.Statements.Add(
+                new CodeMethodInvokeExpression(
+                    new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Container"),
+                    "InjectAll"));
+        SetupMethod.Statements.AddRange(initializeStatements);
     }
 
     private void RegisterControllers()
@@ -268,7 +273,7 @@ public abstract class SceneManagerClassGenerator : CodeGenerator
             Declaration.Members.Add(controllerProperty);
 
             SetupMethod.Statements.Add(
-                new CodeSnippetExpression(string.Format("Container.RegisterInstance({0},false)",
+                new CodeSnippetExpression(string.Format("Container.RegisterController<{0}>({0})",
                     element.NameAsController)));
         }
     }

@@ -113,12 +113,17 @@ public class ViewModelGenerator : ElementCodeGenerator
         ConstructorWithController.Parameters.Add(new CodeParameterDeclarationExpression(ElementData.NameAsControllerBase,
             "controller"));
 
+
+        ConstructorWithController.Parameters.Add(new CodeParameterDeclarationExpression(typeof(bool),
+            "initialize = true"));
+
         //ConstructorWithController.Statements.Add(
         //    new CodeAssignStatement(
         //        new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "Controller"),
         //        new CodeSnippetExpression("controller")));
 
         ConstructorWithController.BaseConstructorArgs.Add(new CodeSnippetExpression("controller"));
+        ConstructorWithController.BaseConstructorArgs.Add(new CodeSnippetExpression("initialize"));
 
         decleration.Members.Add(ConstructorWithController);
 
