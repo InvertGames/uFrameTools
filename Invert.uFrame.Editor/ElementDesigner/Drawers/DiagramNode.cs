@@ -94,7 +94,16 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
     /// <summary>
     /// The items that should be persisted with this diagram node.
     /// </summary>
-    public abstract IEnumerable<IDiagramNodeItem> ContainedItems { get; set; }
+    public virtual IEnumerable<IDiagramNodeItem> ContainedItems {
+        get
+        {
+            yield break;
+        }
+        set
+        {
+            
+        }
+    }
 
     public Type CurrentType
     {

@@ -102,6 +102,57 @@ namespace Invert.uFrame.Editor
 
         }
     }
+
+    public abstract class NodeCodeGenerator<TData> : CodeGenerator where TData : DiagramNode
+    {
+        private CodeTypeDeclaration _decleration;
+        public TData Data { get; set; }
+
+        public virtual string NameAsClass
+        {
+            get { return Data.Name; }
+        }
+
+        public virtual string NameAsDesignerClass
+        {
+            get { return Data.Name + "Base"; }
+        }
+
+        public override void Initialize(CodeFileGenerator fileGenerator)
+        {
+            base.Initialize(fileGenerator);
+            if (IsDesignerFile)
+            {
+                InitializeDesignerFile();
+                Namespace.Types.Add(Decleration);
+            }
+            else
+            {
+                Decleration.BaseTypes.Add(NameAsDesignerClass);
+                InitializeEditableFile();
+                Namespace.Types.Add(Decleration);
+            }
+        }
+
+        protected abstract void InitializeEditableFile();
+
+        protected abstract void InitializeDesignerFile();
+
+        public CodeTypeDeclaration Decleration
+        {
+            get
+            {
+                if (_decleration == null)
+                {
+                    _decleration = new CodeTypeDeclaration(IsDesignerFile ? NameAsClass : NameAsDesignerClass);
+                    _decleration.IsPartial = true;
+                }
+                return _decleration;
+            }
+            set { _decleration = value; }
+        }
+    }
+
 }
 
 namespace Invert.uFrame.Code.Bindings

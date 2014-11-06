@@ -777,15 +777,31 @@ namespace Invert.uFrame.Editor
             get { return _connectionStrategies ?? (_connectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray()); }
             set { _connectionStrategies = value; }
         }
-
+        public static void RegisterDrawer<TViewModel, TDrawer>(this uFrameContainer container)
+        {
+            container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
+        }
         public static void RegisterDrawer<TViewModel, TDrawer>()
         {
             Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
+        }
+        public static void RegisterGraphItem<TModel, TViewModel, TDrawer>(this uFrameContainer container)
+        {
+            container.RegisterRelation<TModel, ViewModel, TViewModel>();
+            RegisterDrawer<TViewModel, TDrawer>();
         }
         public static void RegisterGraphItem<TModel, TViewModel, TDrawer>()
         {
             Container.RegisterRelation<TModel, ViewModel, TViewModel>();
             RegisterDrawer<TViewModel, TDrawer>();
+        }
+        public static void RegisterFilterNode<TFilterData, TAllowedItem>(this uFrameContainer container)
+        {
+            if (!AllowedFilterNodes.ContainsKey(typeof(TFilterData)))
+            {
+                AllowedFilterNodes.Add(typeof(TFilterData), new List<Type>());
+            }
+            AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
         }
 
         public static void RegisterFilterNode<TFilterData, TAllowedItem>()
@@ -800,6 +816,10 @@ namespace Invert.uFrame.Editor
         public static void RegisterFilterItem<TFilterData, TAllowedItem>()
         {
             Container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();
+        }
+        public static void RegisterFilterItem<TFilterData, TAllowedItem>(this uFrameContainer container)
+        {
+           container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();
         }
 
         public static IEnumerable<Type> GetAllowedFilterNodes(Type filterType)
