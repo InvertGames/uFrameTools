@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{06E581D4-DAF3-4404-9426-E3BE6478BC48}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Invert.Core.GraphDesigner</RootNamespace>
+    <AssemblyName>Invert.Core.GraphDesigner</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEditor">
+      <HintPath>..\..\Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\Library\UnityAssemblies\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CodeDomHelper.cs" />
+    <Compile Include="CodeGenerator\ClassNodeGenerators\ClassNodeCodeFactory.cs" />
+    <Compile Include="CodeGenerator\CodeFileGenerator.cs" />
+    <Compile Include="CodeGenerator\CodeGenerator.cs" />
+    <Compile Include="CodeGenerator\DefaultNamespaceProvider.cs" />
+    <Compile Include="CodeGenerator\DesignerGeneratorFactory.cs" />
+    <Compile Include="CodeGenerator\EnumCodeGenerator.cs" />
+    <Compile Include="CodeGenerator\EnumDataGeneratorFactory.cs" />
+    <Compile Include="CodeGenerator\GeneratorSettings.cs" />
+    <Compile Include="CodeGenerator\IMemberGenerator.cs" />
+    <Compile Include="CodeGenerator\IMemberItemGenerator.cs" />
+    <Compile Include="CodeGenerator\ITypeGeneratorPostProcessor.cs" />
+    <Compile Include="CodeGenerator\MemberGenerator.cs" />
+    <Compile Include="CodeGenerator\MemberGeneratorLocation.cs" />
+    <Compile Include="CodeGenerator\MemberItemGenerator.cs" />
+    <Compile Include="CodeGenerator\NodeCodeGenerator.cs" />
+    <Compile Include="CodeGenerator\ShowInSettings.cs" />
+    <Compile Include="CodeGenerator\TypeGeneratorPostProcessor.cs" />
+    <Compile Include="Commands\Context\ContextEditorCommand.cs" />
+    <Compile Include="Commands\Context\IContextMenuItem.cs" />
+    <Compile Include="Commands\Context\IContextMenuItemCommand.cs" />
+    <Compile Include="Commands\Context\RemoveNodeItemCommand.cs" />
+    <Compile Include="Commands\Context\UFContextMenuItem.cs" />
+    <Compile Include="Commands\Diagram\AddEnumItemCommand.cs" />
+    <Compile Include="Commands\Diagram\AddNewCommand.cs" />
+    <Compile Include="Commands\Diagram\ContextMenuCommand.cs" />
+    <Compile Include="Commands\Diagram\DebugCommand.cs" />
+    <Compile Include="Commands\Diagram\EditorCommand.cs" />
+    <Compile Include="Commands\Diagram\ElementsDiagramToolbarCommand.cs" />
+    <Compile Include="Commands\Diagram\HookCommand.cs" />
+    <Compile Include="Commands\Diagram\IEditorCommand.cs" />
+    <Compile Include="Commands\Diagram\PopToFilterCommand.cs" />
+    <Compile Include="Commands\Diagram\PrintPlugins.cs" />
+    <Compile Include="Commands\Diagram\SaveCommand.cs" />
+    <Compile Include="Commands\Diagram\SimpleEditorCommand.cs" />
+    <Compile Include="Commands\Hooks\CommandHook.cs" />
+    <Compile Include="Commands\Hooks\CommandHookLifetime.cs" />
+    <Compile Include="Commands\Hooks\CommandHookMode.cs" />
+    <Compile Include="Commands\ICommandHandler.cs" />
+    <Compile Include="Commands\IDynamicOptionsCommand.cs" />
+    <Compile Include="Commands\IParentCommand.cs" />
+    <Compile Include="Commands\MultiOptionType.cs" />
+    <Compile Include="Commands\Nodes\AddItemCommand.cs" />
+    <Compile Include="Commands\Nodes\AddItemCommand2.cs" />
+    <Compile Include="Commands\Nodes\DeleteCommand.cs" />
+    <Compile Include="Commands\Nodes\DeleteItemCommand.cs" />
+    <Compile Include="Commands\Nodes\ExportCommand.cs" />
+    <Compile Include="Commands\Nodes\HideCommand.cs" />
+    <Compile Include="Commands\Nodes\IChildCommand.cs" />
+    <Compile Include="Commands\Nodes\IDiagramContextCommand.cs" />
+    <Compile Include="Commands\Nodes\IDiagramNodeCommand.cs" />
+    <Compile Include="Commands\Nodes\IDiagramNodeItemCommand.cs" />
+    <Compile Include="Commands\Nodes\IKeyBindable.cs" />
+    <Compile Include="Commands\Nodes\ImportCommand.cs" />
+    <Compile Include="Commands\Nodes\MoveDownCommand.cs" />
+    <Compile Include="Commands\Nodes\MoveUpCommand.cs" />
+    <Compile Include="Commands\Nodes\NodeFlagCommand.cs" />
+    <Compile Include="Commands\Nodes\OpenCommand.cs" />
+    <Compile Include="Commands\Nodes\RemoveLinkCommand.cs" />
+    <Compile Include="Commands\Nodes\RenameCommand.cs" />
+    <Compile Include="Commands\Nodes\ScaleCommand.cs" />
+    <Compile Include="Commands\Nodes\ShowExternalItemCommand.cs" />
+    <Compile Include="Commands\Nodes\ShowItemCommand.cs" />
+    <Compile Include="Commands\SelectItemTypeCommand.cs" />
+    <Compile Include="Commands\Toolbar\IToolbarCommand.cs" />
+    <Compile Include="Commands\Toolbar\ToolbarCommand.cs" />
+    <Compile Include="Commands\Toolbar\ToolbarPosition.cs" />
+    <Compile Include="ContextMenuItem.cs" />
+    <Compile Include="Data\DataExtensions.cs" />
+    <Compile Include="Data\DiagramNodeItem.cs" />
+    <Compile Include="Data\DiagramPlugin.cs" />
+    <Compile Include="Data\ElementDiagramSettings.cs" />
+    <Compile Include="Data\EnumData.cs" />
+    <Compile Include="Data\EnumItem.cs" />
+    <Compile Include="Data\FilterPositionData.cs" />
+    <Compile Include="Data\FilterState.cs" />
+    <Compile Include="Data\GenericNodeChildItem.cs" />
+    <Compile Include="Data\GenericTypedChildItem.cs" />
+    <Compile Include="Data\GraphData.cs" />
+    <Compile Include="Data\IDesignerType.cs" />
+    <Compile Include="Data\IElementFileData.cs" />
+    <Compile Include="Data\IGraphData.cs" />
+    <Compile Include="Data\INodeRepository.cs" />
+    <Compile Include="Data\IPlaymodePlugin.cs" />
+    <Compile Include="Data\ISerializeablePropertyData.cs" />
+    <Compile Include="Data\IViewPropertyType.cs" />
+    <Compile Include="Data\JsonElementDesignerData.cs" />
+    <Compile Include="Data\Json\JsonRepository.cs" />
+    <Compile Include="Data\Json\uFrameProject.cs" />
+    <Compile Include="Data\MissingNodeData.cs" />
+    <Compile Include="Data\UFListExtensions.cs" />
+    <Compile Include="Data\Upgrading\Class1.cs" />
+    <Compile Include="DiagramContextMenuAttribute.cs" />
+    <Compile Include="DiagramInputHandler.cs" />
+    <Compile Include="DiagramViewModel.cs" />
+    <Compile Include="Drawers\ConnectionDrawer.cs" />
+    <Compile Include="Drawers\ConnectorDrawer.cs" />
+    <Compile Include="Drawers\DiagramEnumDrawer.cs" />
+    <Compile Include="Drawers\DiagramNode.cs" />
+    <Compile Include="Drawers\DiagramNodeDrawer.cs" />
+    <Compile Include="Drawers\DiagramSubItemGroup.cs" />
+    <Compile Include="Drawers\Drawer.cs" />
+    <Compile Include="Drawers\ElementItemDrawer.cs" />
+    <Compile Include="Drawers\EnumItemDrawer.cs" />
+    <Compile Include="Drawers\ExternalNodeDrawer.cs" />
+    <Compile Include="Drawers\GenericChildItemHeaderDrawer.cs" />
+    <Compile Include="Drawers\GenericInheritableNode.cs" />
+    <Compile Include="Drawers\GenericNode.cs" />
+    <Compile Include="Drawers\HeaderDrawer.cs" />
+    <Compile Include="Drawers\IConnectable.cs" />
+    <Compile Include="Drawers\IDrawer.cs" />
+    <Compile Include="Drawers\IInhertable.cs" />
+    <Compile Include="Drawers\INodeDrawer.cs" />
+    <Compile Include="Drawers\InputHeaderDrawer.cs" />
+    <Compile Include="Drawers\ItemDrawer.cs" />
+    <Compile Include="Drawers\NodeItemHeader.cs" />
+    <Compile Include="Drawers\UFType.cs" />
+    <Compile Include="ElementDesignerDataExtensions.cs" />
+    <Compile Include="ElementItemViewModel.cs" />
+    <Compile Include="Enums\EnumItemViewModel.cs" />
+    <Compile Include="Enums\EnumNodeViewModel.cs" />
+    <Compile Include="Filters\DiagramFilter.cs" />
+    <Compile Include="Filters\FilterCollapsedDictionary.cs" />
+    <Compile Include="Filters\FilterDictionary.cs" />
+    <Compile Include="Filters\FilterLocations.cs" />
+    <Compile Include="GraphDesignerPlugin.cs" />
+    <Compile Include="ICommandUI.cs" />
+    <Compile Include="IJsonSerializable.cs" />
+    <Compile Include="IKeyBinding.cs" />
+    <Compile Include="Interfaces\IConnectionContainer.cs" />
+    <Compile Include="Interfaces\IDiagramFilter.cs" />
+    <Compile Include="Interfaces\IDiagramNode.cs" />
+    <Compile Include="Interfaces\IDiagramNodeItem.cs" />
+    <Compile Include="Interfaces\IProjectRepository.cs" />
+    <Compile Include="Interfaces\IRefactoring.cs" />
+    <Compile Include="Interfaces\ISelectable.cs" />
+    <Compile Include="Interfaces\ISubSystemType.cs" />
+    <Compile Include="Interfaces\ITypeDiagramItem.cs" />
+    <Compile Include="InvertGraphEditor.cs" />
+    <Compile Include="KeyBinding.cs" />
+    <Compile Include="ModifierKeyState.cs" />
+    <Compile Include="MouseEvent.cs" />
+    <Compile Include="NodeConfig\Class1.cs" />
+    <Compile Include="NodeConfig\EncapsulatedFieldGenerator.cs" />
+    <Compile Include="NodeConfig\LambdaMemberGenerator.cs" />
+    <Compile Include="NodeConfig\LambdaMemberItemGenerator.cs" />
+    <Compile Include="NodeConfig\MemberGenerator.cs" />
+    <Compile Include="NodeConfig\NodeChildGeneratorConfig.cs" />
+    <Compile Include="NodeConfig\NodeConfig.cs" />
+    <Compile Include="NodeConfig\NodeConfigExtensions.cs" />
+    <Compile Include="NodeConfig\NodeConfigSection.cs" />
+    <Compile Include="NodeConfig\NodeGeneratorConfig.cs" />
+    <Compile Include="NodeConfig\NodeInputConfig.cs" />
+    <Compile Include="NodeConfig\NodeOutputConfig.cs" />
+    <Compile Include="NodeConfig\StandardFieldGenerator.cs" />
+    <Compile Include="NodeConfig\uFrameContainerExtensions.cs" />
+    <Compile Include="NodeCurvePointStyle.cs" />
+    <Compile Include="Projects\DefaultCodePathStrategy.cs" />
+    <Compile Include="Projects\ICodePathStrategy.cs" />
+    <Compile Include="Projects\INamespaceProvider.cs" />
+    <Compile Include="Projects\ProjectRepository.cs" />
+    <Compile Include="Projects\ProjectUtil.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RectExtensions.cs" />
+    <Compile Include="Refactoring\ChangeParameterTypeRefactor.cs" />
+    <Compile Include="Refactoring\RefactorContext.cs" />
+    <Compile Include="Refactoring\Refactorer.cs" />
+    <Compile Include="Refactoring\RenameRefactorer.cs" />
+    <Compile Include="Settings\IGraphEditorSettings.cs" />
+    <Compile Include="SimpleType\ClassCollectionData.cs" />
+    <Compile Include="SimpleType\ClassCollectionItemViewModel.cs" />
+    <Compile Include="SimpleType\ClassNodeData.cs" />
+    <Compile Include="SimpleType\ClassNodeDrawer.cs" />
+    <Compile Include="SimpleType\ClassNodeInheritanceConnectionStrategy.cs" />
+    <Compile Include="SimpleType\ClassNodeViewModel.cs" />
+    <Compile Include="SimpleType\ClassPropertyData.cs" />
+    <Compile Include="SimpleType\ClassPropertyItemViewModel.cs" />
+    <Compile Include="UFStyles.cs" />
+    <Compile Include="UnitySpecific\Class1.cs" />
+    <Compile Include="UnitySpecific\ConnectionHandler.cs" />
+    <Compile Include="UnitySpecific\DiagramInputHander.cs" />
+    <Compile Include="UnitySpecific\ElementsDiagram.cs" />
+    <Compile Include="UnitySpecific\IInputHandler.cs" />
+    <Compile Include="UnitySpecific\SelectionRectHandler.cs" />
+    <Compile Include="UnitySpecific\SimpleKeyBinding.cs" />
+    <Compile Include="UnitySpecific\UI\ContextMenuUI.cs" />
+    <Compile Include="UnitySpecific\UI\ToolbarUI.cs" />
+    <Compile Include="UnitySpecific\UnityAssetManager.cs" />
+    <Compile Include="ViewModels\ConnectionViewModel.cs" />
+    <Compile Include="ViewModels\ConnectorDirection.cs" />
+    <Compile Include="ViewModels\ConnectorHeaderViewModel.cs" />
+    <Compile Include="ViewModels\ConnectorInfo.cs" />
+    <Compile Include="ViewModels\ConnectorSide.cs" />
+    <Compile Include="ViewModels\ConnectorViewModel.cs" />
+    <Compile Include="ViewModels\DefaultConnectionStrategy.cs" />
+    <Compile Include="ViewModels\DiagramNodeViewModel.cs" />
+    <Compile Include="ViewModels\GenericItemHeaderViewModel.cs" />
+    <Compile Include="ViewModels\GenericItemViewModel.cs" />
+    <Compile Include="ViewModels\GenericNodeViewModel.cs" />
+    <Compile Include="ViewModels\GraphItemViewModel.cs" />
+    <Compile Include="ViewModels\IConnectionStrategy.cs" />
+    <Compile Include="ViewModels\InheritanceConnectionStrategy.cs" />
+    <Compile Include="ViewModels\ItemViewModel.cs" />
+    <Compile Include="ViewModels\OneToManyConnectionStrategy.cs" />
+    <Compile Include="ViewModels\OneToOneConnectionStrategy.cs" />
+    <Compile Include="ViewModels\TypedItemViewModel.cs" />
+    <Compile Include="ViewModels\ViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Invert.Common\Invert.Common.csproj">
+      <Project>{346C6B33-6FB0-40D1-B8A6-EB2144C10A5C}</Project>
+      <Name>Invert.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.Core.Code\Invert.Core.Code.csproj">
+      <Project>{54b29430-e522-457f-b94f-889e2b2ee5c2}</Project>
+      <Name>Invert.Core.Code</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.Core\Invert.Core.csproj">
+      <Project>{cfcc5f2c-7a2f-4fd1-90d8-52420b7eb337}</Project>
+      <Name>Invert.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.MVVM\Invert.MVVM.csproj">
+      <Project>{cb024a98-ee90-4497-8af3-2c574d665a8a}</Project>
+      <Name>Invert.MVVM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\ /Y
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\ /Y</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

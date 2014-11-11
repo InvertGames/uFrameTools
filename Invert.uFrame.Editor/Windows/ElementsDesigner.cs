@@ -1,4 +1,5 @@
 using Invert.Common;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ElementDesigner;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using UnityEngine;
 
 namespace Invert.uFrame.Editor
 {
-    public class ElementsDesigner : EditorWindow, ICommandHandler
+    public class ElementsDesigner : EditorWindow, IGraphWindow
     {
         public event EventHandler ProjectChanged;
 
@@ -62,24 +63,24 @@ namespace Invert.uFrame.Editor
         {
             get
             {
-                if (uFrameEditor.CurrentProject == null)
+                if (InvertGraphEditor.CurrentProject == null)
                 {
                     if (!String.IsNullOrEmpty(LastLoadedProject))
                     {
-                        uFrameEditor.CurrentProject = uFrameEditor.Projects.FirstOrDefault(p => p.name == LastLoadedProject);
+                        InvertGraphEditor.CurrentProject = InvertGraphEditor.Projects.FirstOrDefault(p => p.Name == LastLoadedProject);
                     }
-                    if (uFrameEditor.CurrentProject == null)
+                    if (InvertGraphEditor.CurrentProject == null)
                     {
-                        uFrameEditor.CurrentProject = uFrameEditor.Projects.FirstOrDefault();
+                        InvertGraphEditor.CurrentProject = InvertGraphEditor.Projects.FirstOrDefault();
                     }
                 }
-                return uFrameEditor.CurrentProject;
+                return InvertGraphEditor.CurrentProject;
             }
             set
             {
-                var changed = uFrameEditor.CurrentProject != value;
+                var changed = InvertGraphEditor.CurrentProject != value;
 
-                uFrameEditor.CurrentProject = value;
+                InvertGraphEditor.CurrentProject = value;
                 if (value != null)
                 {
                     if (changed)
@@ -157,8 +158,8 @@ namespace Invert.uFrame.Editor
 
         public MouseEvent MouseEvent
         {
-            get { return _mouseEvent ?? (_mouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer)); }
-            set { _mouseEvent = value; }
+            get { return InvertGraphEditor.CurrentMouseEvent ?? (InvertGraphEditor.CurrentMouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer)); }
+            set { InvertGraphEditor.CurrentMouseEvent = value; }
         }
 
         public Vector2 PanStartPosition { get; set; }
@@ -169,7 +170,7 @@ namespace Invert.uFrame.Editor
             {
                 if (_toolbar != null) return _toolbar;
 
-                return _toolbar = uFrameEditor.CreateCommandUI<ToolbarUI>(this, typeof(IToolbarCommand));
+                return _toolbar = InvertGraphEditor.CreateCommandUI<ToolbarUI>(this, typeof(IToolbarCommand));
             }
             set { _toolbar = value; }
         }
@@ -216,7 +217,7 @@ namespace Invert.uFrame.Editor
             //var diagram = new ElementsDiagram(repo);
             //diagram.Data.ViewModels.Add(repo.GetViewModel(typeof(FPSWeaponViewModel)));
             //diagram.Data.ViewModels.Add(repo.GetViewModel(typeof(FPSBulletViewModel)));
-            uFrameEditor.DesignerWindow = window;
+            InvertGraphEditor.DesignerWindow = window;
             // RemoveFromDiagram when switching to add all
             window.Show();
         }
@@ -254,7 +255,7 @@ namespace Invert.uFrame.Editor
             {
                 if (command is IParentCommand)
                 {
-                    var contextUI = uFrameEditor.CreateCommandUI<ContextMenuUI>(this, command.GetType());
+                    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(this, command.GetType());
                     contextUI.Flatten = true;
                     contextUI.Go();
                 }
@@ -425,12 +426,12 @@ namespace Invert.uFrame.Editor
 
         public void OnEnable()
         {
-            uFrameEditor.DesignerWindow = this;
+            InvertGraphEditor.DesignerWindow = this;
         }
 
         public void OnGUI()
         {
-            uFrameEditor.DesignerWindow = this;
+            InvertGraphEditor.DesignerWindow = this;
             var style = ElementDesignerStyles.Background;
             style.border = new RectOffset(
                 Mathf.RoundToInt(41),
@@ -603,7 +604,7 @@ namespace Invert.uFrame.Editor
 
         public void OnLostFocus()
         {
-            uFrameEditor.DesignerWindow = this;
+            InvertGraphEditor.DesignerWindow = this;
             if (DiagramViewModel != null)
                 DiagramViewModel.DeselectAll();
 
@@ -716,13 +717,13 @@ namespace Invert.uFrame.Editor
 
         private void SelectProject()
         {
-            var projects = uFrameEditor.Projects;
+            var projects = InvertGraphEditor.Projects;
 
             var menu = new GenericMenu();
             foreach (var project in projects)
             {
                 IProjectRepository project1 = project;
-                menu.AddItem(new GUIContent(project.name), project1 == CurrentProject, () =>
+                menu.AddItem(new GUIContent(project.Name), project1 == CurrentProject, () =>
                 {
                     CurrentProject = project1;
                     LoadDiagram(CurrentProject.CurrentGraph);
@@ -730,7 +731,7 @@ namespace Invert.uFrame.Editor
             }
 
             menu.AddSeparator("");
-            menu.AddItem(new GUIContent("Force Refresh"), false, () => { uFrameEditor.Projects = null; });
+            menu.AddItem(new GUIContent("Force Refresh"), false, () => { InvertGraphEditor.Projects = null; });
             menu.ShowAsContext();
         }
 

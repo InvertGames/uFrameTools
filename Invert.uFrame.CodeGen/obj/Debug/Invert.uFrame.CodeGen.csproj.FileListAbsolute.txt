@@ -50,3 +50,9 @@ D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.MVVM.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.uFrame.Editor.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\obj\Debug\Invert.uFrame.CodeGen.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\obj\Debug\Invert.uFrame.CodeGen.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.Core.GraphDesigner.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.Core.GraphDesigner.Unity.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.Core.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.Core.GraphDesigner.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.Core.GraphDesigner.Unity.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.Core.pdb

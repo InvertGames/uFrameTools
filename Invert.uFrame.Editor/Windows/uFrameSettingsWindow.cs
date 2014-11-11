@@ -1,5 +1,8 @@
+using System.Linq;
 using Invert.Common;
 using Invert.Common.UI;
+using Invert.Core;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ElementDesigner;
 using UnityEditor;
@@ -35,41 +38,65 @@ public class uFrameSettingsWindow : EditorWindow
     {
         var s = uFrameEditor.Settings;
         DrawTitleBar("uFrame Settings");
-        if (GUIHelpers.DoToolbarEx("Color Settings"))
+        if (s != null)
         {
-            s.BackgroundColor = EditorGUILayout.ColorField("Background Color", s.BackgroundColor);
-            s.UseGrid = EditorGUILayout.BeginToggleGroup("Grid", s.UseGrid);
-           
-                s.GridLinesColor = EditorGUILayout.ColorField("Grid Lines Color", s.GridLinesColor);
-                s.GridLinesColorSecondary = EditorGUILayout.ColorField("Grid Lines Secondary Color", s.GridLinesColorSecondary);    
-            EditorGUILayout.EndToggleGroup();
-            
-
-            //s.AssociationLinkColor = EditorGUILayout.ColorField("Association Link Color", s.AssociationLinkColor);
-            //s.DefinitionLinkColor = EditorGUILayout.ColorField("Definition Link Color", s.DefinitionLinkColor);
-            //s.InheritanceLinkColor = EditorGUILayout.ColorField("Inheritance Link Color", s.InheritanceLinkColor);
-            //s.SubSystemLinkColor = EditorGUILayout.ColorField("SubSystem Link Color", s.SubSystemLinkColor);
-            //s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
-            //s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
-        }
-        if (GUIHelpers.DoToolbarEx("Plugins"))
-        {
-            foreach (var plugin in uFrameEditor.Container.ResolveAll<IDiagramPlugin>())
+            if (GUIHelpers.DoToolbarEx("Color Settings"))
             {
-                if (
-                    GUIHelpers.DoTriggerButton(new UFStyle("     " + plugin.Title, UBStyles.EventButtonStyleSmall,
-                        null,
-                        plugin.Enabled ? UBStyles.TriggerActiveButtonStyle : UBStyles.TriggerInActiveButtonStyle, () => { }, false, TextAnchor.MiddleCenter)
-                    {
-                        IsWindow = true,
-                        FullWidth = true
-                    }))
-                {
-                    plugin.Enabled = !plugin.Enabled;
-                    uFrameEditor.Container = null;
-                }
+                s.BackgroundColor = EditorGUILayout.ColorField("Background Color", s.BackgroundColor);
+                s.UseGrid = EditorGUILayout.BeginToggleGroup("Grid", s.UseGrid);
+
+                s.GridLinesColor = EditorGUILayout.ColorField("Grid Lines Color", s.GridLinesColor);
+                s.GridLinesColorSecondary = EditorGUILayout.ColorField("Grid Lines Secondary Color",
+                    s.GridLinesColorSecondary);
+                EditorGUILayout.EndToggleGroup();
+
+
+                //s.AssociationLinkColor = EditorGUILayout.ColorField("Association Link Color", s.AssociationLinkColor);
+                //s.DefinitionLinkColor = EditorGUILayout.ColorField("Definition Link Color", s.DefinitionLinkColor);
+                //s.InheritanceLinkColor = EditorGUILayout.ColorField("Inheritance Link Color", s.InheritanceLinkColor);
+                //s.SubSystemLinkColor = EditorGUILayout.ColorField("SubSystem Link Color", s.SubSystemLinkColor);
+                //s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
+                //s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
             }
+
+        }
+        else
+        {
+            EditorGUILayout.HelpBox("Settings not available.",MessageType.Info);
         }
        
+        if (GUIHelpers.DoToolbarEx("Plugins - Enabled"))
+        {
+            foreach (var plugin in InvertApplication.Plugins.Where(p=>!p.Required && p.Enabled).OrderBy(p=>p.LoadPriority))
+            {
+                DoPlugin(plugin);
+            }
+          
+        } if (GUIHelpers.DoToolbarEx("Plugins - Disabled"))
+        {
+            foreach (var plugin in InvertApplication.Plugins.Where(p=>!p.Required && !p.Enabled).OrderBy(p=>p.LoadPriority))
+            {
+                DoPlugin(plugin);
+            }
+          
+        }
+       
+    }
+
+    private static void DoPlugin(ICorePlugin plugin)
+    {
+        if (
+            GUIHelpers.DoTriggerButton(new UFStyle("     " + plugin.Title, UBStyles.EventButtonStyleSmall,
+                null,
+                plugin.Enabled ? UBStyles.TriggerActiveButtonStyle : UBStyles.TriggerInActiveButtonStyle, () => { }, false,
+                TextAnchor.MiddleCenter)
+            {
+                IsWindow = true,
+                FullWidth = true
+            }))
+        {
+            plugin.Enabled = !plugin.Enabled;
+            uFrameEditor.Container = null;
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using Invert.Common;
 using Invert.Common.UI;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
@@ -55,7 +56,7 @@ public class AddBindingWindow : SearchableScrollWindow
             if (ElementsDesigner != null && ElementsDesigner.DiagramDrawer != null)
             {
 
-                _ViewData = uFrameEditor.CurrentDiagramViewModel.SelectedNode as ViewNodeViewModel;
+                _ViewData = InvertGraphEditor.CurrentDiagramViewModel.SelectedNode as ViewNodeViewModel;
             }
             if (_ViewData == null)
             {
@@ -165,7 +166,7 @@ public class AddBindingWindow : SearchableScrollWindow
                     if (GUIHelpers.DoTriggerButton(item))
                     {
                         UFStyle item1 = item;
-                        uFrameEditor.ExecuteCommand(n =>
+                        InvertGraphEditor.ExecuteCommand(n =>
                         {
                             LastSelected = _ViewData.AddNewBinding(item1.Tag as IBindingGenerator);
                             ApplySearch();
