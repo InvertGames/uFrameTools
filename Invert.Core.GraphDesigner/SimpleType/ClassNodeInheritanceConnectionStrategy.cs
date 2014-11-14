@@ -20,7 +20,7 @@ public class ClassNodeInheritanceConnectionStrategy : DefaultConnectionStrategy<
         return base.CanConnect(output, input);
     }
 
-    protected override bool IsConnected(ClassNodeData output, ClassNodeData input)
+    public override bool IsConnected(ClassNodeData output, ClassNodeData input)
     {
         return input.BaseIdentifier == output.Identifier;
     }

@@ -15,7 +15,7 @@ namespace Invert.uFrame.Editor.Nodes
             get { return true; }
         }
 
-        protected override bool IsConnected(SceneManagerTransition output, SceneManagerData input)
+        public override bool IsConnected(SceneManagerTransition output, SceneManagerData input)
         {
             return output.ToIdentifier == input.Identifier;
         }

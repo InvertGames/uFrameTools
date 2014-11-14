@@ -28,6 +28,7 @@ namespace Invert.uFrame.Editor.ViewModels
         public GraphItemViewModel ConnectorFor { get; set; }
 
 
+
         public ConnectorSide Side { get; set; }
 
         /// <summary>
@@ -36,5 +37,6 @@ namespace Invert.uFrame.Editor.ViewModels
         public float SidePercentage { get; set; }
 
         public bool HasConnections { get; set; }
+        public Type ConnectorForType { get; set; }
     }
 }

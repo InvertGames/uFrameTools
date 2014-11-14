@@ -19,7 +19,7 @@ namespace Invert.uFrame.Editor.ViewModels
             return base.CanConnect(output, input);
         }
 
-        protected override bool IsConnected(TSource output, TSource input)
+        public override bool IsConnected(TSource output, TSource input)
         {
             return input.BaseIdentifier == output.Identifier;
         }

@@ -10,7 +10,7 @@ namespace Invert.uFrame.Editor.Nodes
             get { return Color.green; }
         }
 
-        protected override bool IsConnected(SubSystemData output, SceneManagerData input)
+        public override bool IsConnected(SubSystemData output, SceneManagerData input)
         {
             return input.SubSystemIdentifier == output.Identifier;
         }

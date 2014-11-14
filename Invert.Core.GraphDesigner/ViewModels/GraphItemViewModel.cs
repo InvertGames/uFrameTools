@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Invert.MVVM;
@@ -54,6 +55,12 @@ namespace Invert.uFrame.Editor.ViewModels
             IsSelected = true;
 
         }
+
+        public override string ToString()
+        {
+            return GetHashCode().ToString();
+        }
+
         public bool IsMouseOver { get; set; }
 
         public List<ConnectorViewModel> Connectors
@@ -68,6 +75,8 @@ namespace Invert.uFrame.Editor.ViewModels
             set { _contentItems = value; }
         }
 
+        public virtual Type InputConnectorType { get; set; }
+        public virtual Type OutputConnectorType { get; set; }
 
         private ConnectorViewModel _inputConnector;
         public virtual ConnectorViewModel InputConnector
@@ -79,7 +88,7 @@ namespace Invert.uFrame.Editor.ViewModels
                     DataObject = DataObject,
                     Direction = ConnectorDirection.Input,
                     ConnectorFor = this,
-                    
+                    ConnectorForType = InputConnectorType ?? DataObject.GetType(),
                     Side = ConnectorSide.Left,
                     SidePercentage = 0.5f,
                 });
@@ -98,6 +107,7 @@ namespace Invert.uFrame.Editor.ViewModels
                     DataObject = DataObject,
                     Direction = ConnectorDirection.Output,
                     ConnectorFor = this,
+                    ConnectorForType = OutputConnectorType ?? DataObject.GetType(),
                     Side = ConnectorSide.Right,
                     SidePercentage = 0.5f,
                 });

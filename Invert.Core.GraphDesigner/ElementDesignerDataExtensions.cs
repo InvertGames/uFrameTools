@@ -130,6 +130,7 @@ public static class ElementDesignerDataExtensions
 
     public static void PopFilter(this IGraphData designerData,List<string> filterStack)
     {
+        if (designerData.FilterState.FilterStack.Count < 1) return;
         designerData.FilterLeave();
         //filterStack.Remove(designerData.FilterStack.Peek().Name);
 

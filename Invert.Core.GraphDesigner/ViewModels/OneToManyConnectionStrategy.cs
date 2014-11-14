@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor.ViewModels
@@ -24,9 +25,14 @@ namespace Invert.uFrame.Editor.ViewModels
             
         }
 
-        protected override bool IsConnected(TSource output, TTarget input)
+        public override ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
         {
+            return base.Connect(a, b);
+        }
 
+        public override bool IsConnected(TSource output, TTarget input)
+        {
+            
             return output.ConnectedGraphItemIds.Contains(input.Identifier);
         }
 
@@ -41,4 +47,7 @@ namespace Invert.uFrame.Editor.ViewModels
             output.ConnectedGraphItemIds.Remove(input.Identifier);
         }
     }
+
+
+
 }

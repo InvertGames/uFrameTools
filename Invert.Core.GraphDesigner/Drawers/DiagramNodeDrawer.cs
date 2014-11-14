@@ -50,8 +50,8 @@ public abstract class GenericNodeDrawer<TData, TViewModel> : DiagramNodeDrawer<T
     public override void Draw(float scale)
     {
         base.Draw(scale);
-        if (NodeViewModel.IsMouseOver)
-        {
+        //if (NodeViewModel.IsMouseOver || NodeViewModel.IsSelected)
+        //{
             for (int index = 0; index < this.NodeViewModel.NodeConfig.Tags.Count; index++)
             {
                 
@@ -61,7 +61,7 @@ public abstract class GenericNodeDrawer<TData, TViewModel> : DiagramNodeDrawer<T
                 GUI.Label(new Rect((Bounds.x + (Bounds.width / 2)) - (width / 2), Bounds.y - (18f * (index + 1)), width, 15f).Scale(Scale), content,
                     ElementDesignerStyles.Tag1);
             }
-        }
+        //}
        
     }
 }
@@ -390,7 +390,8 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
             BackgroundStyle = HeaderStyle,
             TextStyle = ElementDesignerStyles.ViewModelHeaderStyle,
             ViewModelObject = ViewModelObject,
-            Padding = HeaderPadding
+            Padding = HeaderPadding,
+            
         });
         if (!ViewModel.IsCollapsed)
         {

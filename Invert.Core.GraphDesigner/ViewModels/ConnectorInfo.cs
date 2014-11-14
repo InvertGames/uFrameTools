@@ -40,28 +40,59 @@ namespace Invert.uFrame.Editor.ViewModels
             return Outputs.Where(p => p.DataObject is TData);
         }
 
-        public IEnumerable<ConnectionViewModel> ConnectionsByData<TSource, TTarget>(Color color, Func<TSource, TTarget, bool> isConnected, Action<ConnectionViewModel> remove, Action<ConnectionViewModel> apply = null, bool isStateLink = false)
+        public IEnumerable<ConnectionViewModel> ConnectionsByData<TSource, TTarget>(DefaultConnectionStrategy<TSource,TTarget> strategy ) where TSource : class where TTarget : class
         {
             var alreadyConnected = new List<string>();
             foreach (var output in OutputsWith<TSource>())
             {
                 foreach (var input in InputsWith<TTarget>())
                 {
-                    var tempId = output.DataObject.GetHashCode().ToString() + input.DataObject.GetHashCode().ToString();
+                    //if (strategy.Filter != null)
+                    //{
+                    //    if (!strategy.Filter((TSource) output.DataObject, (TTarget) input.DataObject))
+                    //    {
+                    //        continue;
+                    //    }
+                    //}
+                    var tempId = output.DataObject.GetHashCode().ToString() + input.DataObject.GetHashCode();
                     if (alreadyConnected.Contains(tempId)) continue;
-                    if (isConnected((TSource)output.DataObject, (TTarget)input.DataObject))
+                    if (output.ConnectorForType != null && input.ConnectorForType != null)
                     {
-                        yield return new ConnectionViewModel()
+                        if (output.ConnectorForType == input.ConnectorForType)
                         {
-                            IsStateLink = isStateLink,
-                            Color = color,
-                            ConnectorA = output,
-                            ConnectorB = input,
-                            Remove = remove,
-                            Apply = apply
-                        };
-                        alreadyConnected.Add(tempId);
+                            if (strategy.IsConnected((TSource) output.DataObject, (TTarget) input.DataObject))
+                            {
+                                yield return new ConnectionViewModel()
+                                {
+                                    IsStateLink = strategy.IsStateLink,
+                                    Color = strategy.ConnectionColor,
+                                    ConnectorA = output,
+                                    ConnectorB = input,
+                                    Remove = strategy.Remove,
+                                    Apply = strategy.Apply
+                                };
+                                alreadyConnected.Add(tempId);
+                            }
+                        }
+
                     }
+                    else
+                    {
+                        if (strategy.IsConnected((TSource)output.DataObject, (TTarget)input.DataObject))
+                        {
+                            yield return new ConnectionViewModel()
+                            {
+                                IsStateLink = strategy.IsStateLink,
+                                Color = strategy.ConnectionColor,
+                                ConnectorA = output,
+                                ConnectorB = input,
+                                Remove = strategy.Remove,
+                                Apply = strategy.Apply
+                            };
+                            alreadyConnected.Add(tempId);
+                        }
+                    }
+                  
                 }
             }
         }

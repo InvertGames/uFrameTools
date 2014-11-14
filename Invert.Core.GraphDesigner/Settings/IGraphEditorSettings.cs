@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Settings
 {
@@ -9,5 +10,9 @@ namespace Invert.Core.GraphDesigner.Settings
     {
         bool UseGrid { get; set; }
         bool ShowHelp { get; set; }
+        bool ShowGraphDebug { get; set; }
+        Color BackgroundColor { get; set; }
+        Color GridLinesColor { get; set; }
+        Color GridLinesColorSecondary { get; set; }
     }
 }

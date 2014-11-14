@@ -16,7 +16,7 @@ namespace Invert.uFrame.Editor.Nodes
             return base.CanConnect(output, input);
         }
 
-        protected override bool IsConnected(IBindableTypedItem output, IDesignerType input)
+        public override bool IsConnected(IBindableTypedItem output, IDesignerType input)
         {
             if (string.IsNullOrEmpty(output.RelatedTypeName)) return false;
             return output.RelatedType == input.Identifier;

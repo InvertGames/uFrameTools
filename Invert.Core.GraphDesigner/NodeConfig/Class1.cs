@@ -1,62 +1,98 @@
-﻿using System;
+﻿using Invert.Common;
+using Invert.Core.GraphDesigner;
+using Invert.uFrame.Editor.ElementDesigner;
+using Invert.uFrame.Editor.ElementDesigner.Commands;
+using Invert.uFrame.Editor.ViewModels;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ElementDesigner;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
-using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor
 {
-    public class NodeConfig<TType> : NodeConfig where TType : GenericNode, IConnectable
+    public class NodeChildGeneratorConfig<TNode> : NodeChildGeneratorConfig
+    {
+        public Func<TNode, IEnumerable<IGraphItem>> Selector { get; set; }
+    }
+
+    public class NodeConfig<TNode> : NodeConfig where TNode : GenericNode, IConnectable
     {
         private List<Func<ConfigCodeGeneratorSettings, CodeGenerator>> _codeGenerators;
-        private Dictionary<Type, NodeGeneratorConfig> _typeGeneratorConfigs;
         private List<string> _tags;
+        private Dictionary<Type, NodeGeneratorConfig> _typeGeneratorConfigs;
 
-        public NodeConfig(IUFrameContainer container)
-            : base(container)
+         public GUIStyle GetNodeColorStyle(TNode node)
         {
-            container.Register<DesignerGeneratorFactory, CodeGeneratorFactory>("Config_" + typeof(TType).Name + "_Generator");
-        }
-
-        public class CodeGeneratorFactory : DesignerGeneratorFactory<TType>
-        {
-            public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
-                TType item)
-            {
-                var config = Container.GetNodeConfig<TType>();
-                if (config.CodeGenerators == null) yield break;
-
-                var generatorArgs = new ConfigCodeGeneratorSettings()
+             if (NodeColor == null)
+             {
+                 return ElementDesignerStyles.NodeHeader1;
+             }
+                switch (NodeColor.GetValue(node))
                 {
-                    Settings = settings,
-                    PathStrategy = pathStrategy,
-                    Data = item,
-                    Repository = diagramData
-                };
-                foreach (var generatorMethod in config.CodeGenerators)
-                {
-                    var result = generatorMethod(generatorArgs);
-                    if (result != null)
-                    {
-                        yield return result;
-                    }
+                    case Core.GraphDesigner.NodeColor.DarkGray:
+                        return ElementDesignerStyles.NodeHeader1;
+                    case Core.GraphDesigner.NodeColor.Blue:
+                        return ElementDesignerStyles.NodeHeader2;
+                    case Core.GraphDesigner.NodeColor.Gray:
+                        return ElementDesignerStyles.NodeHeader3;
+                    case Core.GraphDesigner.NodeColor.LightGray:
+                        return ElementDesignerStyles.NodeHeader4;
+                    case Core.GraphDesigner.NodeColor.Black:
+                        return ElementDesignerStyles.NodeHeader5;
+                    case Core.GraphDesigner.NodeColor.DarkDarkGray:
+                        return ElementDesignerStyles.NodeHeader6;
+                    case Core.GraphDesigner.NodeColor.Orange:
+                        return ElementDesignerStyles.NodeHeader7;
+                    case Core.GraphDesigner.NodeColor.Red:
+                        return ElementDesignerStyles.NodeHeader8;
+                    case Core.GraphDesigner.NodeColor.YellowGreen:
+                        return ElementDesignerStyles.NodeHeader9;
+                    case Core.GraphDesigner.NodeColor.Green:
+                        return ElementDesignerStyles.NodeHeader10;
+                    case Core.GraphDesigner.NodeColor.Purple:
+                        return ElementDesignerStyles.NodeHeader11;
+                    case Core.GraphDesigner.NodeColor.Pink:
+                        return ElementDesignerStyles.NodeHeader12;
+                    case Core.GraphDesigner.NodeColor.Yellow:
+                        return ElementDesignerStyles.NodeHeader13;
+
                 }
-
-            }
+                return ElementDesignerStyles.NodeHeader1;
+            
         }
-        public class ConfigCodeGeneratorSettings
+
+        public ConfigProperty<TNode, NodeColor> NodeColor
         {
-            public GeneratorSettings Settings { get; set; }
-            public ICodePathStrategy PathStrategy { get; set; }
-            public INodeRepository Repository { get; set; }
-            public TType Data { get; set; }
+            get { return _nodeColor; }
+            set { _nodeColor = value; }
+        }
+
+        private ConfigProperty<TNode, NodeColor> _nodeColor;
+
+        public NodeConfig<TNode> ColorConfig(ConfigProperty<TNode, NodeColor> color)
+        {
+            NodeColor = color;
+            return this;
+        }
+        public NodeConfig<TNode> Color(NodeColor literal)
+        {
+            NodeColor = new ConfigProperty<TNode, NodeColor>(literal);
+            return this;
+        }
+        public NodeConfig<TNode> ColorConfig(NodeColor literal)
+        {
+            NodeColor = new ConfigProperty<TNode, NodeColor>(literal);
+            return this;
+        }
+
+        public NodeConfig<TNode> ColorConfig(Func<TNode, NodeColor> selector)
+        {
+            NodeColor = new ConfigProperty<TNode, NodeColor>(selector);
+            return this;
         }
 
         public List<Func<ConfigCodeGeneratorSettings, CodeGenerator>> CodeGenerators
@@ -68,61 +104,295 @@ namespace Invert.uFrame.Editor
             set { _codeGenerators = value; }
         }
 
+        public List<string> Tags
+        {
+            get { return _tags ?? (_tags = new List<string>()); }
+            set { _tags = value; }
+        }
 
-        public NodeConfig<TType> AddTag(string name)
+        public Dictionary<Type, NodeGeneratorConfig> TypeGeneratorConfigs
+        {
+            get { return _typeGeneratorConfigs ?? (_typeGeneratorConfigs = new Dictionary<Type, NodeGeneratorConfig>()); }
+            set { _typeGeneratorConfigs = value; }
+        }
+
+        public NodeConfig(IUFrameContainer container)
+            : base(container)
+        {
+            container.Register<DesignerGeneratorFactory, CodeGeneratorFactory>("Config_" + typeof(TNode).Name + "_Generator");
+        }
+
+        public NodeConfig<TNode> AddContextCommand(Action<TNode> action, string name)
+        {
+            Container.RegisterInstance<IDiagramNodeCommand>(new SimpleEditorCommand<TNode>(action, name), name);
+            return this;
+        }
+
+        public NodeConfig<TNode> AddDesignerGenerator<TCodeGenerator>(string designerFile, bool isEditorExtension = false) where TCodeGenerator : NodeCodeGenerator<TNode>, new()
+        {
+            AddGenerator(args =>
+            new TCodeGenerator()
+            {
+                Data = args.Data,
+                Filename = args.PathStrategy.GetDesignerFilePath(designerFile),
+                IsDesignerFile = true
+            });
+            return this;
+        }
+
+        public NodeGeneratorConfig<TNode> AddDesignerOnlyClass<TCodeGenerator>(string name) where TCodeGenerator : NodeCodeGenerator<TNode>, new()
+        {
+            AddDesignerGenerator<TCodeGenerator>(name);
+            return GetGeneratorConfig<TCodeGenerator>();
+        }
+
+        public NodeGeneratorConfig<TNode> AddEditableClass<TCodeGenerator>(string name) where TCodeGenerator : NodeCodeGenerator<TNode>, new()
+        {
+            AddDesignerGenerator<TCodeGenerator>(name);
+            AddEditableGenerator<TCodeGenerator>(name);
+            return GetGeneratorConfig<TCodeGenerator>();
+        }
+
+        public NodeConfig<TNode> AddEditableGenerator<TCodeGenerator>(string folder, bool isEditorExtension = false) where TCodeGenerator : NodeCodeGenerator<TNode>, new()
+        {
+            AddGenerator(args =>
+            new TCodeGenerator()
+            {
+                Data = args.Data,
+                Filename = Path.Combine(folder, args.Data.Name + ".cs"),
+                IsDesignerFile = false
+            });
+            return this;
+        }
+
+        public NodeConfig<TNode> AddEnum<TChildItem>(Func<TNode, IEnumerable<TChildItem>> selector,
+            string designerFile = "Enums") where TChildItem : IDiagramNodeItem
+        {
+            AddGenerator(args =>
+               new GenericEnumCodeGenerator<TNode, TChildItem>()
+               {
+                   Data = args.Data,
+                   Filename = args.PathStrategy.GetDesignerFilePath(designerFile),
+                   IsDesignerFile = true
+               });
+            return this;
+        }
+
+        public NodeConfig<TNode> AddGenerator(
+            Func<ConfigCodeGeneratorSettings, CodeGenerator> createGeneratorFunc)
+        {
+            CodeGenerators.Add(createGeneratorFunc);
+            return this;
+        }
+
+        public NodeConfig<TNode> AddTag(string name)
         {
             Tags.Add(name);
             return this;
         }
-        public NodeConfig<TType> ConnectsTo<TTarget>(bool oneToMany) where TTarget : class, IConnectable
+
+        //public NodeConfig<TType> ConnectsFrom<TSource>(bool oneToMany, Color color) where TSource : class, IConnectable
+        //{
+        //    if (oneToMany)
+        //        Container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TSource, TType>(color)
+        //        , typeof(TSource).Name + "_" + typeof(TType).Name + "Connection");
+        //    else
+        //    {
+        //        Container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TSource, TType>(color)
+        //        , typeof(TSource).Name + "_" + typeof(TType).Name + "Connection");
+        //    }
+        //    return this;
+        //}
+       
+        public NodeConfig<TNode> ConnectsTo<TTarget>(bool oneToMany) where TTarget : class, IConnectable
         {
             return ConnectsTo<TTarget>(oneToMany, UnityEngine.Color.white);
         }
 
-        public NodeConfig<TType> ConnectsTo<TTarget>(bool oneToMany, Color color) where TTarget : class, IConnectable
+        public NodeConfig<TNode> ConnectsTo<TTarget>(bool oneToMany, Color color) where TTarget : class, IConnectable
         {
             if (oneToMany)
-                Container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TType, TTarget>(color), typeof(TType).Name + "_" + typeof(TTarget).Name + "Connection");
+                Container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToManyConnection");
             else
             {
-                Container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TType, TTarget>(color), typeof(TType).Name + "_" + typeof(TTarget).Name + "Connection");
+                Container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToOneConnection");
             }
-            return this;
-        }
-        public NodeConfig<TType> ConnectsFrom<TSource>(bool oneToMany, Color color) where TSource : class, IConnectable
-        {
-            if (oneToMany)
-                Container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TSource, TType>(color), typeof(TSource).Name + "_" + typeof(TType).Name + "Connection");
-            else
-            {
-                Container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TSource, TType>(color), typeof(TSource).Name + "_" + typeof(TType).Name + "Connection");
-            }
-            return this;
-        }
-        public NodeConfig<TType> Color(NodeColor color)
-        {
-            base.Color = color;
             return this;
         }
 
-        public NodeConfig<TType> Section<TChildItem>(string header, Func<TType,IEnumerable<TChildItem>> selector = null)
+        public NodeGeneratorConfig<TNode> GetGeneratorConfig<TCodeGenerator>()
+            where TCodeGenerator : NodeCodeGenerator<TNode>
         {
-            var section = new NodeConfigSection<TType>()
+            if (TypeGeneratorConfigs.ContainsKey(typeof(TCodeGenerator)))
             {
-                ChildType = typeof (TChildItem),
-                Name = header,
-                IsProxy = true
-            };
-            if (selector != null)
-            {
-                section.Selector = p=>selector(p).Cast<IGraphItem>();
+                return TypeGeneratorConfigs[typeof(TCodeGenerator)] as NodeGeneratorConfig<TNode>;
             }
-            Sections.Add(section);
+            var config = new NodeGeneratorConfig<TNode>();
+            TypeGeneratorConfigs.Add(typeof(TCodeGenerator), config);
+            return config;
+        }
+
+        public NodeConfig<TNode> HasSubNode<TSubNodeType>()
+        {
+            Container.RegisterFilterNode<TNode, TSubNodeType>();
             return this;
         }
-        public NodeConfig<TType> Proxy<TChildItem>(string header, Func<TType, IEnumerable<TChildItem>> selector = null)
+
+        public NodeConfig<TNode> Input<TSourceType, TReferenceType>(string inputName, bool allowMultiple)
+            where TReferenceType : GenericConnectionReference, new()
+            where TSourceType : class, IConnectable
         {
-            var section = new NodeConfigSection<TType>()
+            var config = new NodeInputConfig()
+            {
+                Name = inputName,
+                IsInput = true,
+                IsOutput = false,
+                ReferenceType = typeof(TReferenceType),
+                SourceType = typeof(TSourceType)
+            };
+            Inputs.Add(config);
+
+            var cs = new GenericConnectionStrategy<TSourceType, TReferenceType>()
+            {
+                IsConnected = (output, input) =>
+                {
+                    var genericNode = input.Node as GenericNode;
+                    var inputItem = genericNode.GetConnectionReference<TReferenceType>();
+
+                    var result = inputItem.ConnectedGraphItemIds.Contains(output.Identifier);
+                    //Debug.Log(string.Format("Testing Connection::{0}:{1}:{2}", inputItem.GetType().Name, output.Label,result));
+                    return result;
+                },
+                Apply = (output, input) =>
+                {
+                    var genericNode = input.Node as GenericNode;
+                    var inputItem = genericNode.GetConnectionReference<TReferenceType>();
+                    if (!allowMultiple && inputItem.ConnectedGraphItemIds.Count > 0)
+                    {
+                        inputItem.ConnectedGraphItemIds.Clear();
+                    }
+                    if (!inputItem.ConnectedGraphItemIds.Contains(output.Identifier))
+                    {
+                        inputItem.ConnectedGraphItemIds.Add((output.Identifier));
+                    }
+
+                    //Debug.Log(string.Format("{0}:{1}", inputItem.GetType().Name, output.Label));
+                },
+                Remove = (output, input) =>
+                {
+                    var genericNode = input.Node as GenericNode;
+                    genericNode.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Remove((output.Identifier));
+                },
+            };
+            Container.RegisterInstance<IConnectionStrategy>(cs, inputName + typeof(TSourceType).Name + "to" + typeof(TReferenceType).Name + "Connection");
+            //Container.RegisterInstance<IConnectionStrategy>(new InputReferenceConnectionStrategy<TSourceType, TReferenceType>(UnityEngine.Color.white),
+            //    typeof(TSourceType).Name + "_" + typeof(TReferenceType).Name + "InputConnection");
+            //Container.Connectable<TSourceType, TReferenceType>(false);
+            return this;
+        }
+
+        public NodeConfig<TNode> InputAlias(string inputName)
+        {
+            var config = new NodeInputConfig()
+            {
+                Name = inputName,
+                IsInput = true,
+                IsOutput = false,
+                SourceType = typeof(TNode),
+                ReferenceType = typeof(TNode),
+                IsAlias = true
+            };
+            Inputs.Add(config);
+            return this;
+        }
+
+
+        public NodeConfig<TNode> Output<TSourceType, TReferenceType>(string inputName, bool allowMultiple)
+            where TReferenceType : GenericConnectionReference, new()
+            where TSourceType : class, IConnectable
+        {
+            var config = new NodeInputConfig()
+            {
+                Name = inputName,
+                IsInput = false,
+                IsOutput = true,
+                ReferenceType = typeof(TReferenceType),
+                SourceType = typeof(TSourceType)
+            };
+            Inputs.Add(config);
+
+            var cs = new GenericConnectionStrategy<TReferenceType, TSourceType>()
+            {
+                IsConnected = (output, input) =>
+                {
+                    var genericNode = output.Node as GenericNode;
+                    var inputItem = genericNode.GetConnectionReference<TReferenceType>();
+
+                    var result = inputItem.ConnectedGraphItemIds.Contains(input.Identifier);
+                    //Debug.Log(string.Format("Testing Connection::{0}:{1}:{2}", inputItem.GetType().Name, output.Label,result));
+                    return result;
+                },
+                Apply = (output, input) =>
+                {
+                    var genericNode = output.Node as GenericNode;
+                    var inputItem = genericNode.GetConnectionReference<TReferenceType>();
+                    if (!allowMultiple && inputItem.ConnectedGraphItemIds.Count > 0)
+                    {
+                        inputItem.ConnectedGraphItemIds.Clear();
+                    }
+                    if (!inputItem.ConnectedGraphItemIds.Contains(input.Identifier))
+                    {
+                        inputItem.ConnectedGraphItemIds.Add((input.Identifier));
+                    }
+
+                    //Debug.Log(string.Format("{0}:{1}", inputItem.GetType().Name, output.Label));
+                },
+                Remove = (output, input) =>
+                {
+                    var genericNode = output.Node as GenericNode;
+                    genericNode.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Remove((input.Identifier));
+                },
+            };
+            Container.RegisterInstance<IConnectionStrategy>(cs, inputName + typeof(TSourceType).Name + "to" + typeof(TReferenceType).Name + "Connection");
+            //Container.RegisterInstance<IConnectionStrategy>(new InputReferenceConnectionStrategy<TSourceType, TReferenceType>(UnityEngine.Color.white),
+            //    typeof(TSourceType).Name + "_" + typeof(TReferenceType).Name + "InputConnection");
+            //Container.Connectable<TSourceType, TReferenceType>(false);
+            return this;
+        }
+
+        public NodeConfig<TNode> OutputAlias(string outputName)
+        {
+            var config = new NodeInputConfig()
+            {
+                Name = outputName,
+                IsInput = false,
+                IsOutput = true,
+                SourceType = typeof(TNode),
+                ReferenceType = typeof(TNode),
+                IsAlias = true
+            };
+            Inputs.Add(config);
+
+            return this;
+        }
+        public NodeConfig<TNode> OutputAlias<TType>(string outputName)
+        {
+            var config = new NodeInputConfig()
+            {
+                Name = outputName,
+                IsInput = false,
+                IsOutput = true,
+                SourceType = typeof(TType),
+                ReferenceType = typeof(TType),
+                IsAlias = true
+            };
+            Inputs.Add(config);
+
+            return this;
+        }
+        public NodeConfig<TNode> Proxy<TChildItem>(string header, Func<TNode, IEnumerable<TChildItem>> selector = null)
+        {
+            var section = new NodeConfigSection<TNode>()
             {
                 ChildType = typeof(TChildItem),
                 Name = header,
@@ -142,11 +412,12 @@ namespace Invert.uFrame.Editor
         //    Container.RegisterNodeSection<TType, TChildItem>(header, selector);
         //    return this;
         //}
-        public NodeConfig<TType> ReferenceSection<TSourceType, TReferenceItem>(string header, Func<TType, IEnumerable<TSourceType>> selector, bool manual = false)
-            where TReferenceItem : GenericReferenceItem<TSourceType> where TSourceType : IGraphItem
+        public NodeConfig<TNode> ReferenceSection<TSourceType, TReferenceItem>(string header, Func<TNode, IEnumerable<TSourceType>> selector, bool manual = false)
+            where TReferenceItem : GenericReferenceItem<TSourceType>
+            where TSourceType : IGraphItem
         {
             Container.RegisterGraphItem<TReferenceItem, ScaffoldNodeChildItem<TReferenceItem>.ViewModel, ScaffoldNodeChildItem<TReferenceItem>.Drawer>();
-            var section = new NodeConfigSection<TType>()
+            var section = new NodeConfigSection<TNode>()
             {
                 ChildType = typeof(TReferenceItem),
                 Name = header,
@@ -164,155 +435,138 @@ namespace Invert.uFrame.Editor
             Sections.Add(section);
             return this;
         }
-        //public NodeConfig<TType> AddChildItem<TChildItem>(string header = null) where TChildItem : GenericNodeChildItem
-        //{
-        //    if (!string.IsNullOrEmpty(header))
-        //        Container.RegisterNodeSection<TType, TChildItem>(header);
 
-        //    Container.RegisterGraphItem<TChildItem, ScaffoldNodeChildItem<TChildItem>.ViewModel, ScaffoldNodeChildItem<TChildItem>.Drawer>();
-        //    return this;
-        //}
-        public NodeConfig<TType> TypedSection<TChildItem>(string header = null, bool allowNone = false, bool primitiveOnly = false, bool includeUnityEngine = true) where TChildItem : ITypedItem
+        public NodeConfig<TNode> Section<TChildItem>(string header, Func<TNode, IEnumerable<TChildItem>> selector = null, bool allowAdding = true)
         {
-           
-                Section<TChildItem>(header);
-                Container.RegisterInstance<IEditorCommand>(new SelectItemTypeCommand() { AllowNone = allowNone, PrimitiveOnly = primitiveOnly, IncludeUnityEngine = includeUnityEngine }, typeof(TChildItem).Name + "TypeSelection");
-            
-
-            
+            var section = new NodeConfigSection<TNode>()
+            {
+                ChildType = typeof(TChildItem),
+                Name = header,
+                IsProxy = false,
+                AllowAdding = allowAdding
+            };
+            if (selector != null)
+            {
+                section.Selector = p => selector(p).Cast<IGraphItem>();
+            }
+            Sections.Add(section);
             return this;
         }
-        //public NodeConfig<TType> AddChildItem<TChildItem, TChildItemViewModel, TChildItemDrawer>(string header = null) where TChildItem : GenericNodeChildItem
-        //{
-        //    if (!string.IsNullOrEmpty(header))
-        //        Container.RegisterNodeSection<TType, TChildItem>(header);
 
         //    Container.RegisterGraphItem<TChildItem, TChildItemViewModel, TChildItemDrawer>();
         //    return this;
         //}
-        public NodeConfig<TType> SubNodeOf<TNodeType>()
+        public NodeConfig<TNode> SubNodeOf<TNodeType>()
         {
-            Container.RegisterFilterNode<TNodeType, TType>();
-            return this;
-        }
-        public NodeConfig<TType> HasSubNode<TSubNodeType>()
-        {
-            Container.RegisterFilterNode<TType, TSubNodeType>();
-            return this;
-        }
-        public NodeConfig<TType> AddGenerator(
-            Func<ConfigCodeGeneratorSettings, CodeGenerator> createGeneratorFunc)
-        {
-            CodeGenerators.Add(createGeneratorFunc);
-            return this;
-        }
-        public NodeConfig<TType> AddDesignerGenerator<TCodeGenerator>(string designerFile) where TCodeGenerator : NodeCodeGenerator<TType>, new()
-        {
-            AddGenerator(args =>
-            new TCodeGenerator()
-            {
-                Data = args.Data,
-                Filename = args.PathStrategy.GetDesignerFilePath("GameNodes"),
-                IsDesignerFile = true
-            });
-            return this;
-        }
-        public NodeConfig<TType> AddEditableGenerator<TCodeGenerator>(string folder) where TCodeGenerator : NodeCodeGenerator<TType>, new()
-        {
-            AddGenerator(args =>
-            new TCodeGenerator()
-            {
-                Data = args.Data,
-                Filename = Path.Combine(folder, args.Data.Name + ".cs"),
-                IsDesignerFile = false
-            });
+            Container.RegisterFilterNode<TNodeType, TNode>();
             return this;
         }
 
-        public NodeConfig<TType> AddGeneratorWithDesigner<TCodeGenerator>(string name) where TCodeGenerator : NodeCodeGenerator<TType>, new()
+        //    Container.RegisterGraphItem<TChildItem, ScaffoldNodeChildItem<TChildItem>.ViewModel, ScaffoldNodeChildItem<TChildItem>.Drawer>();
+        //    return this;
+        //}
+        public NodeConfig<TNode> TypedSection<TChildItem>(string header = null, bool allowNone = false, bool primitiveOnly = false, bool includeUnityEngine = true) where TChildItem : ITypedItem
         {
-            AddDesignerGenerator<TCodeGenerator>(name);
-            AddEditableGenerator<TCodeGenerator>(name);
+            Section<TChildItem>(header);
+            Container.RegisterInstance<IEditorCommand>(new SelectItemTypeCommand() { AllowNone = allowNone, PrimitiveOnly = primitiveOnly, IncludeUnityEngine = includeUnityEngine }, typeof(TChildItem).Name + "TypeSelection");
+
             return this;
         }
 
-        public NodeGeneratorConfig<TType> GetGeneratorConfig<TCodeGenerator>(string name = null)
-            where TCodeGenerator : NodeCodeGenerator<TType>
+        public class CodeGeneratorFactory : DesignerGeneratorFactory<TNode>
         {
-
-            if (TypeGeneratorConfigs.ContainsKey(typeof(TCodeGenerator)))
+            public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
+                TNode item)
             {
-                return TypeGeneratorConfigs[typeof(TCodeGenerator)] as NodeGeneratorConfig<TType>;
+                var config = Container.GetNodeConfig<TNode>();
+                if (config.CodeGenerators == null) yield break;
+
+                var generatorArgs = new ConfigCodeGeneratorSettings()
+                {
+                    Settings = settings,
+                    PathStrategy = pathStrategy,
+                    Data = item,
+                    Repository = diagramData
+                };
+
+                foreach (var generatorMethod in config.CodeGenerators)
+                {
+                    var result = generatorMethod(generatorArgs);
+
+                    if (result != null)
+                    {
+                        if (config.TypeGeneratorConfigs != null && config.TypeGeneratorConfigs.ContainsKey(result.GetType()))
+                        {
+                            var generatorConfig =
+                                config.TypeGeneratorConfigs[result.GetType()] as NodeGeneratorConfig<TNode>;
+                            if (generatorConfig != null)
+                            {
+                                if (result.IsDesignerFile)
+                                {
+                                    if (generatorConfig.DesignerFilename != null)
+                                        result.Filename = generatorConfig.DesignerFilename.GetValue(item);
+                                }
+                                else
+                                {
+                                    if (generatorConfig.Filename != null)
+                                        result.Filename = generatorConfig.Filename.GetValue(item);
+                                }
+                            }
+                        }
+
+                        yield return result;
+                    }
+                }
             }
-            var config = new NodeGeneratorConfig<TType>();
-            TypeGeneratorConfigs.Add(typeof(TCodeGenerator), config);
-            return config;
         }
 
-        public NodeConfig<TType> AddContextCommand(Action<TType> action, string name)
+        public class ConfigCodeGeneratorSettings
         {
-            Container.RegisterInstance<IDiagramNodeCommand>(new SimpleEditorCommand<TType>(action, name), name);
-            return this;
+            public TNode Data { get; set; }
+
+            public ICodePathStrategy PathStrategy { get; set; }
+
+            public INodeRepository Repository { get; set; }
+
+            public GeneratorSettings Settings { get; set; }
         }
 
-        public Dictionary<Type, NodeGeneratorConfig> TypeGeneratorConfigs
+        //public NodeConfig<TType> AddChildItem<TChildItem>(string header = null) where TChildItem : GenericNodeChildItem
+        //{
+        //    if (!string.IsNullOrEmpty(header))
+        //        Container.RegisterNodeSection<TType, TChildItem>(header);
+        //public NodeConfig<TType> AddChildItem<TChildItem, TChildItemViewModel, TChildItemDrawer>(string header = null) where TChildItem : GenericNodeChildItem
+        //{
+        //    if (!string.IsNullOrEmpty(header))
+        //        Container.RegisterNodeSection<TType, TChildItem>(header);
+        //public NodeConfig<TType> AddInputOutput<T>(string inputName, string outputName)
+        //{
+        //    var config = new NodeInputConfig()
+        //    {
+        //        Name = inputName,
+        //        OutputName = outputName,
+        //        IsInput = true,
+        //        IsOutput = true,
+        //    };
+        //    Inputs.Add(config);
+        //    return this;
+        //}
+        public NodeConfig<TNode> AddFlag(string inheritable)
         {
-            get { return _typeGeneratorConfigs ?? (_typeGeneratorConfigs = new Dictionary<Type, NodeGeneratorConfig>()); }
-            set { _typeGeneratorConfigs = value; }
-        }
-
-        public List<string> Tags
-        {
-            get { return _tags ?? (_tags = new List<string>()); }
-            set { _tags = value; }
-        }
-
-
-        public NodeConfig<TType> Input<T>(string inputName)
-        {
-            var config = new NodeInputConfig()
-            {
-                Name = inputName,
-                IsInput = true,
-                IsOutput = false
-            };
-            Inputs.Add(config);
-            return this;
-        }
-        public NodeConfig<TType> AddOutput<T>(string outputName)
-        {
-            var config = new NodeInputConfig()
-            {
-                Name = outputName,
-                IsInput = false,
-                IsOutput = true
-            };
-            Inputs.Add(config);
-            return this;
-        }
-        public NodeConfig<TType> AddInputOutput<T>(string inputName, string outputName)
-        {
-            var config = new NodeInputConfig()
-            {
-                Name = inputName,
-                OutputName = outputName,
-                IsInput = true,
-                IsOutput = true
-            };
-            Inputs.Add(config);
+            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(inheritable,inheritable),inheritable + "Command");
             return this;
         }
     }
 
-    public class TagConfig
-    {
-        public string Name { get; set; }
-        
-    }
     public class NodeGeneratorConfig
     {
-        private List<IMemberGenerator> _memberGenerators = new List<IMemberGenerator>();
         private List<NodeChildGeneratorConfig> _childItemMemberGenerators = new List<NodeChildGeneratorConfig>();
+        private List<IMemberGenerator> _memberGenerators = new List<IMemberGenerator>();
+
+        public List<NodeChildGeneratorConfig> ChildItemMemberGenerators
+        {
+            get { return _childItemMemberGenerators; }
+        }
 
         public Type GeneratorType { get; set; }
 
@@ -321,24 +575,16 @@ namespace Invert.uFrame.Editor
             get { return _memberGenerators; }
         }
 
-        public List<NodeChildGeneratorConfig> ChildItemMemberGenerators
-        {
-            get { return _childItemMemberGenerators; }
-        }
-
         //public NodeGeneratorConfig<TType> AddMemberGenerator<TMemberGenerator>()
         //    where TMemberGenerator : IMemberGenerator<TType>
         //{
         //    MemberGenerators.Add(typeof(TMemberGenerator));
         //    return this;
         //}
-
     }
 
-    public class NodeChildGeneratorConfig<TNode> : NodeChildGeneratorConfig
+    public class TagConfig
     {
-        public Func<TNode, IEnumerable<IGraphItem>> Selector { get; set; }
+        public string Name { get; set; }
     }
-
-
 }

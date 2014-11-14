@@ -4,27 +4,12 @@ using System.Linq;
 using UnityEngine;
 using JSONData = Invert.uFrame.Editor.JSONData;
 
-public class StateMachineGraph : GraphData<StateMachineNodeData>
+public class StateMachineGraph : GenericGraphData<StateMachineNodeData>
 {
    
 }
 
-public class GraphData<T> : GraphData where T : IDiagramFilter, new()
-{
-    public T FilterNode
-    {
-        get { return (T)RootFilter; }
-    }
-    protected override IDiagramFilter CreateDefaultFilter()
-    {
-        return new T()
-        {
-            Name = name
-        };
-    }
-}
-
-public class ExternalSubsystemGraph : GraphData<SubSystemData>
+public class ExternalSubsystemGraph : GenericGraphData<SubSystemData>
 {
     public override string Name
     {
@@ -32,7 +17,7 @@ public class ExternalSubsystemGraph : GraphData<SubSystemData>
     }
 }
 
-public class ExternalElementGraph : GraphData<ElementData>
+public class ExternalElementGraph : GenericGraphData<ElementData>
 {
     public override string Name
     {
@@ -40,7 +25,7 @@ public class ExternalElementGraph : GraphData<ElementData>
     }
 }
 
-public class ExternalStateMachineGraph : GraphData<StateMachineNodeData>
+public class ExternalStateMachineGraph : GenericGraphData<StateMachineNodeData>
 {
     public override string Name
     {

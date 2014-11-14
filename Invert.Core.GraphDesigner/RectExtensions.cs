@@ -4,8 +4,8 @@ public static class RectExtensions
 {
     public static Vector2 Snap(this Vector2 pos, float snapSize)
     {
-        var x = Mathf.RoundToInt(pos.x / snapSize) * snapSize;
-        var y = Mathf.RoundToInt(pos.y / snapSize) * snapSize;
+        var x = Mathf.Round(pos.x / snapSize) * snapSize;
+        var y = Mathf.Round(pos.y / snapSize) * snapSize;
         return new Vector2(x, y);
     }
     public static Rect Scale(this Rect r, float scale)

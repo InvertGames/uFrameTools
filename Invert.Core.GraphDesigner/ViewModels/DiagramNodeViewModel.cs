@@ -23,7 +23,9 @@ namespace Invert.uFrame.Editor.ViewModels
         public DiagramNodeViewModel(TData graphItemObject, DiagramViewModel diagramViewModel)
             : base(graphItemObject, diagramViewModel)
         {
+
         }
+        
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
@@ -31,6 +33,7 @@ namespace Invert.uFrame.Editor.ViewModels
             foreach (var item in GraphItem.Items)
             {
                 var vm = GetDataViewModel(item);
+                
                 if (vm == null)
                 {
                     Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
@@ -67,6 +70,8 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             GraphItemObject = graphItemObject;
             DiagramViewModel = diagramViewModel;
+            OutputConnectorType = graphItemObject.GetType();
+            InputConnectorType = graphItemObject.GetType();
 
         }
 
@@ -83,7 +88,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
 
         }
-
+        
         public ModelCollection<GraphItemViewModel> PropertyViewModels { get; set; }
 
         public override Vector2 Position
@@ -162,7 +167,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public virtual bool AllowCollapsing
         {
-            get { return true; }
+            get { return ContentItems.Count > 0; }
         }
 
         protected override void DataObjectChanged()
@@ -234,6 +239,11 @@ namespace Invert.uFrame.Editor.ViewModels
         public virtual Type CommandsType
         {
             get { return typeof(IDiagramNode); }
+        }
+
+        public override string ToString()
+        {
+            return GraphItemObject.Identifier;
         }
 
         public override void Select()

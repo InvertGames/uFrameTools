@@ -46,45 +46,9 @@ namespace Invert.uFrame.Editor
             set { _outputs = value; }
         }
 
-        public NodeColor Color { get; set; }
+        //public NodeColor Color { get; set; }
 
-        public GUIStyle NodeStyle
-        {
-            get
-            {
-                switch (Color)
-                {
-                    case NodeColor.DarkGray:
-                        return ElementDesignerStyles.NodeHeader1;
-                    case NodeColor.Blue:
-                        return ElementDesignerStyles.NodeHeader2;
-                    case NodeColor.Gray:
-                        return ElementDesignerStyles.NodeHeader3;
-                    case NodeColor.LightGray:
-                        return ElementDesignerStyles.NodeHeader4;
-                    case NodeColor.Black:
-                        return ElementDesignerStyles.NodeHeader5;
-                    case NodeColor.DarkDarkGray:
-                        return ElementDesignerStyles.NodeHeader6;
-                    case NodeColor.Orange:
-                        return ElementDesignerStyles.NodeHeader7;
-                    case NodeColor.Red:
-                        return ElementDesignerStyles.NodeHeader8;
-                    case NodeColor.YellowGreen:
-                        return ElementDesignerStyles.NodeHeader9;
-                    case NodeColor.Green:
-                        return ElementDesignerStyles.NodeHeader10;
-                    case NodeColor.Purple:
-                        return ElementDesignerStyles.NodeHeader11;
-                    case NodeColor.Pink:
-                        return ElementDesignerStyles.NodeHeader12;
-                    case NodeColor.Yellow:
-                        return ElementDesignerStyles.NodeHeader13;
-
-                }
-                return ElementDesignerStyles.NodeHeader1;
-            }
-        }
+       
 
         public IUFrameContainer Container { get; set; }
     }

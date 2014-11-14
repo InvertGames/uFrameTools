@@ -41,14 +41,24 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
             foreach (var nodeType in InvertGraphEditor.AllowedFilterNodes[viewModel.CurrentRepository.CurrentFilter.GetType()])
             {
+                
                 yield return new UFContextMenuItem()
                 {
-                    Name = "Add " + nodeType.Name.Replace("Data","").Replace("Node",""),
+                    Name = "Add " + GetName(nodeType),
                     Value = nodeType
                 };
             }
         }
 
+        public string GetName(Type nodeType)
+        {
+            var config = InvertGraphEditor.Container.Resolve<NodeConfig>(nodeType.Name);
+            if (config != null)
+            {
+                return config.Name;
+            }
+            return nodeType.Name.Replace("Data", "").Replace("Node", "");
+        }
         public UFContextMenuItem SelectedOption { get; set; }
         public MultiOptionType OptionsType { get; private set; }
     }

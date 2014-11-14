@@ -384,6 +384,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
                     if (DiagramViewModel.Settings.Snap)
                     {
                         item.ViewModel.Position += e.MousePositionDeltaSnapped;
+                        item.ViewModel.Position = item.ViewModel.Position.Snap(DiagramViewModel.Settings.SnapSize);
                     }
                     else
                     {
@@ -474,7 +475,7 @@ public class ElementsDiagram : Drawer, ICommandHandler, IInputHandler
             return;
 
         }
-        var item = DrawersAtMouse.FirstOrDefault();
+        var item = DrawersAtMouse.Reverse().FirstOrDefault();
         if (item != null)
         {
             

@@ -1,39 +1,47 @@
+using Invert.Core;
+using Invert.uFrame.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Invert.Core;
-using Invert.uFrame.Editor;
+using UnityEngine;
+
+public class GenericConnectionReference : GenericNodeChildItem
+{
+    public string InputName { get; set; }
+
+    public override string Name
+    {
+        get { return InputName; }
+        set { base.Name = value; }
+    }
+}
 
 public class GenericNode : DiagramNode, IConnectable
 {
-    private List<string> _connectedGraphItemIds = new List<string>();
     private List<IDiagramNodeItem> _childItems = new List<IDiagramNodeItem>();
+    private List<string> _connectedGraphItemIds = new List<string>();
 
-    public override string Label
+    public List<IDiagramNodeItem> ChildItems
     {
-        get { return Name; }
+        get { return _childItems; }
+        set { _childItems = value; }
     }
-    public IEnumerable<IGraphItem> InputGraphItems
+
+    public NodeConfig Config
     {
         get
         {
-            foreach (var item in Project.NodeItems.OfType<GenericNode>())
-            {
-                if (item.ConnectedGraphItems.Contains(this))
-                {
-                    yield return item;
-                }
-                foreach (var containedItem in item.ContainedItems.OfType<GenericNodeChildItem>())
-                {
-                    if (containedItem.ConnectedGraphItems.Contains(this))
-                    {
-                        yield return containedItem;
-                    }
-                }
-            }
+            return InvertApplication.Container.Resolve<NodeConfig>(this.GetType().Name);
         }
     }
+
+    public List<string> ConnectedGraphItemIds
+    {
+        get { return _connectedGraphItemIds; }
+        set { _connectedGraphItemIds = value; }
+    }
+
     public IEnumerable<IGraphItem> ConnectedGraphItems
     {
         get
@@ -54,23 +62,33 @@ public class GenericNode : DiagramNode, IConnectable
         }
     }
 
-    public List<string> ConnectedGraphItemIds
+    public override IEnumerable<IDiagramNodeItem> ContainedItems
     {
-        get { return _connectedGraphItemIds; }
-        set { _connectedGraphItemIds = value; }
+        get { return ChildItems; }
+        set
+        {
+            ChildItems = value.ToList();
+        }
     }
 
-    public List<IDiagramNodeItem> ChildItems
-    {
-        get { return _childItems; }
-        set { _childItems = value; }
-    }
-
-    public NodeConfig Config
+    public IEnumerable<IGraphItem> InputGraphItems
     {
         get
         {
-            return InvertApplication.Container.Resolve<NodeConfig>(this.GetType().Name);
+            foreach (var item in Project.NodeItems.OfType<GenericNode>())
+            {
+                if (item.ConnectedGraphItems.Contains(this))
+                {
+                    yield return item;
+                }
+                foreach (var containedItem in item.ContainedItems.OfType<GenericNodeChildItem>())
+                {
+                    if (containedItem.ConnectedGraphItems.Contains(this))
+                    {
+                        yield return containedItem;
+                    }
+                }
+            }
         }
     }
 
@@ -78,26 +96,13 @@ public class GenericNode : DiagramNode, IConnectable
     {
         get
         {
-
             return ChildItems;
         }
     }
 
-    public void UpdateReferences()
+    public override string Label
     {
-        foreach (var mirrorSection in Config.Sections.Where(p => p.ReferenceType != null && !p.AllowAdding))
-        {
-            NodeConfigSection section = mirrorSection;
-            var mirrorItems = ChildItems.Where(p => p.GetType() == section.ReferenceType).Cast<GenericReferenceItem>().ToArray();
-            var newItems = mirrorSection.GenericSelector(this).ToArray();
-            foreach (var item in newItems)
-            {
-                AddReferenceItem(mirrorItems, item, mirrorSection);
-            }
-            ChildItems.RemoveAll(p => p.GetType() == section.ChildType && !newItems.Contains(p));
-        }
-
-
+        get { return Name; }
     }
 
     public void AddReferenceItem(IGraphItem item, NodeConfigSection mirrorSection)
@@ -105,34 +110,59 @@ public class GenericNode : DiagramNode, IConnectable
         AddReferenceItem(ChildItems.Where(p => p.GetType() == mirrorSection.ReferenceType).Cast<GenericReferenceItem>().ToArray(), item, mirrorSection);
     }
 
-    internal void AddReferenceItem(GenericReferenceItem[] mirrorItems, IGraphItem item, NodeConfigSection mirrorSection)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        var current = mirrorItems.FirstOrDefault(p => p.SourceIdentifier == item.Identifier);
-        if (current != null && !mirrorSection.AllowDuplicates) return;
-
-        var newMirror = Activator.CreateInstance(mirrorSection.ChildType) as GenericReferenceItem;
-        newMirror.SourceIdentifier = item.Identifier;
-        newMirror.Node = this;
-        ChildItems.Add(newMirror);
+        base.Deserialize(cls, repository);
+        if (cls["ConnectedGraphItems"] != null)
+        {
+            ConnectedGraphItemIds = cls["ConnectedGraphItems"].DeserializePrimitiveArray(n => n.Value).ToList();
+        }
     }
 
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public TItem GetConnection<TConnectionType, TItem>() where TConnectionType : GenericConnectionReference, new()
     {
-        get { return ChildItems; }
-        set { ChildItems = value.ToList(); }
+        return (TItem)GetConnectionReference<TConnectionType>().ConnectedGraphItems.FirstOrDefault();
     }
 
-    public override void NodeRemoved(IDiagramNode nodeData)
+    public TType GetConnectionReference<TType>()
+        where TType : GenericConnectionReference, new()
     {
-        base.NodeRemoved(nodeData);
-        ConnectedGraphItemIds.Remove(nodeData.Identifier);
+        return (TType)GetConnectionReference(typeof(TType));
+    }
+
+    public GenericConnectionReference GetConnectionReference(Type inputType)
+    {
+        var item = ChildItems.FirstOrDefault(p => inputType.IsAssignableFrom(p.GetType()));
+        if (item == null)
+        {
+            var input = Activator.CreateInstance(inputType) as GenericConnectionReference;
+            input.Node = this;
+            ChildItems.Add(input);
+            return input;
+        }
+        return item as GenericConnectionReference;
+    }
+
+    public IEnumerable<TItem> GetConnections<TConnectionType, TItem>() where TConnectionType : GenericConnectionReference, new()
+    {
+        return GetConnectionReference<TConnectionType>().ConnectedGraphItems.Cast<TItem>();
+    }
+
+    public IEnumerable<TChildItem> GetInputChildItems<TSourceNode, TChildItem>()
+        where TSourceNode : GenericNode
+    {
+        return InputGraphItems.OfType<TSourceNode>().SelectMany(p => p.ContainedItems.OfType<TChildItem>());
+    }
+
+    public IEnumerable<TChildItem> GetInputInheritedChildItems<TSourceNode, TChildItem>()
+      where TSourceNode : GenericInheritableNode
+    {
+        return InputGraphItems.OfType<TSourceNode>().SelectMany(p => p.ChildItemsWithInherited.OfType<TChildItem>());
     }
 
     public override void NodeAddedInFilter(IDiagramNode newNodeData)
     {
         base.NodeAddedInFilter(newNodeData);
-
-
     }
 
     public override void NodeItemAdded(IDiagramNodeItem data)
@@ -149,7 +179,12 @@ public class GenericNode : DiagramNode, IConnectable
             p =>
                 p.Identifier == diagramNodeItem.Identifier ||
                 (p is GenericReferenceItem && ((GenericReferenceItem)p).SourceIdentifier == diagramNodeItem.Identifier));
+    }
 
+    public override void NodeRemoved(IDiagramNode nodeData)
+    {
+        base.NodeRemoved(nodeData);
+        ConnectedGraphItemIds.Remove(nodeData.Identifier);
     }
 
     public override void Serialize(JSONClass cls)
@@ -158,25 +193,34 @@ public class GenericNode : DiagramNode, IConnectable
         cls.AddPrimitiveArray("ConnectedGraphItems", ConnectedGraphItemIds, i => new JSONData(i));
     }
 
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    private void UpdateReferences()
     {
-        base.Deserialize(cls, repository);
-        if (cls["ConnectedGraphItems"] != null)
+        foreach (var mirrorSection in Config.Sections.Where(p => p.ReferenceType != null && !p.AllowAdding))
         {
-            ConnectedGraphItemIds = cls["ConnectedGraphItems"].DeserializePrimitiveArray(n => n.Value).ToList();
+            NodeConfigSection section = mirrorSection;
+            var mirrorItems = ChildItems.Where(p => p.GetType() == section.ReferenceType).Cast<GenericReferenceItem>().ToArray();
+            var newItems = mirrorSection.GenericSelector(this).ToArray();
+            var newItemIds = newItems.Select(p => p.Identifier);
+
+            foreach (var item in newItems)
+            {
+                if (ChildItems.OfType<GenericReferenceItem>().Any(p => p.SourceIdentifier == item.Identifier)) continue;
+                AddReferenceItem(mirrorItems, item, mirrorSection);
+            }
+            ChildItems.RemoveAll(p => p.GetType() == section.ChildType && p is GenericReferenceItem && !newItemIds.Contains(((GenericReferenceItem)p).SourceIdentifier));
         }
     }
 
-    public IEnumerable<TChildItem> GetInputChildItems<TSourceNode, TChildItem>()
-        where TSourceNode : GenericNode
+    internal void AddReferenceItem(GenericReferenceItem[] mirrorItems, IGraphItem item, NodeConfigSection mirrorSection)
     {
-        return InputGraphItems.OfType<TSourceNode>().SelectMany(p => p.ContainedItems.OfType<TChildItem>());
-    }
+        var current = mirrorItems.FirstOrDefault(p => p.SourceIdentifier == item.Identifier);
+        if (current != null && !mirrorSection.AllowDuplicates) return;
 
-    public IEnumerable<TChildItem> GetInputInheritedChildItems<TSourceNode, TChildItem>()
-      where TSourceNode : GenericInheritableNode
-    {
-        return InputGraphItems.OfType<TSourceNode>().SelectMany(p => p.ChildItemsWithInherited.OfType<TChildItem>());
+        var newMirror = Activator.CreateInstance(mirrorSection.ChildType) as GenericReferenceItem;
+        newMirror.SourceIdentifier = item.Identifier;
+        newMirror.Node = this;
+        UnityEngine.Debug.Log("Added referenceitem" + newMirror.Name);
+        ChildItems.Add(newMirror);
     }
 }
 
@@ -187,9 +231,22 @@ public class GenericReferenceItem<TSourceType> : GenericReferenceItem
         get { return (TSourceType)SourceItemObject; }
     }
 }
+
 public class GenericReferenceItem : GenericNodeChildItem
 {
     private string _sourceIdentifier;
+
+    public override string Name
+    {
+        get
+        {
+            if (SourceItemObject == null)
+            {
+                return "Missing";
+            }
+            return SourceItemObject.Name;
+        }
+    }
 
     public string SourceIdentifier
     {
@@ -201,18 +258,17 @@ public class GenericReferenceItem : GenericNodeChildItem
     {
         get
         {
-            return Node.Project.NodeItems.SelectMany(p => p.ContainedItems)
+            return Node.Project.NodeItems.Cast<IDiagramNodeItem>().Concat(Node.Project.NodeItems.SelectMany(p => p.ContainedItems))
+
                 .FirstOrDefault(p => p.Identifier == SourceIdentifier);
         }
     }
 
-    public override string Name
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
-        get
-        {
+        base.Deserialize(cls, repository);
 
-            return SourceItemObject.Name;
-        }
+        SourceIdentifier = cls["SourceIdentifier"].Value;
     }
 
     public override void Serialize(JSONClass cls)
@@ -221,13 +277,15 @@ public class GenericReferenceItem : GenericNodeChildItem
         if (!string.IsNullOrEmpty(SourceIdentifier))
             cls.Add("SourceIdentifier", SourceIdentifier);
     }
-
-
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
-    {
-        base.Deserialize(cls, repository);
-
-        SourceIdentifier = cls["SourceIdentifier"].Value;
-
-    }
 }
+
+//public class GenericInheritanceReference : GenericNodeChildItem
+//{
+//    public string InputName { get; set; }
+
+//    public override string Name
+//    {
+//        get { return InputName; }
+//        set { base.Name = value; }
+//    }
+//}

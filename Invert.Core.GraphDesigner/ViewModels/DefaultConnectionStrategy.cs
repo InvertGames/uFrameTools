@@ -13,7 +13,7 @@ namespace Invert.uFrame.Editor.ViewModels
         public abstract Color ConnectionColor { get; }
         public override ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
         {
-            return ConnectIO<TOutputData, TInputData>(a, b, Apply, CanConnect);
+            return TryConnect<TOutputData, TInputData>(a, b, Apply, CanConnect);
         }
 
         protected virtual bool CanConnect(TOutputData output, TInputData input)
@@ -21,7 +21,7 @@ namespace Invert.uFrame.Editor.ViewModels
             return true;
         }
 
-        protected sealed override void Apply(ConnectionViewModel connectionViewModel)
+        public sealed override void Apply(ConnectionViewModel connectionViewModel)
         {
             var output = connectionViewModel.ConnectorA.DataObject as TOutputData;
             var input = connectionViewModel.ConnectorB.DataObject as TInputData;
@@ -34,17 +34,17 @@ namespace Invert.uFrame.Editor.ViewModels
         public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
         {
             base.GetConnections(connections, info);
-            connections.AddRange(info.ConnectionsByData<TOutputData,TInputData>(ConnectionColor,IsConnected,Remove,Apply,IsStateLink));
+            connections.AddRange(info.ConnectionsByData<TOutputData,TInputData>(this));
         }
 
  
 
-        protected abstract bool IsConnected(TOutputData output, TInputData input);
+        public abstract bool IsConnected(TOutputData output, TInputData input);
         
 
         protected abstract void ApplyConnection(TOutputData output, TInputData input);
 
-        protected override void Remove(ConnectionViewModel connectionViewModel)
+        public override void Remove(ConnectionViewModel connectionViewModel)
         {
             var output = connectionViewModel.ConnectorA.DataObject as TOutputData;
             var input = connectionViewModel.ConnectorB.DataObject as TInputData;
@@ -74,13 +74,30 @@ namespace Invert.uFrame.Editor.ViewModels
 
         }
 
-        protected ConnectionViewModel ConnectIO<TOutput,TInput>(ConnectorViewModel a, ConnectorViewModel b, Action<ConnectionViewModel> apply, Func<TOutput,TInput,bool> canConnect = null)
+        protected ConnectionViewModel TryConnect<TOutput,TInput>(ConnectorViewModel a, ConnectorViewModel b, Action<ConnectionViewModel> apply, Func<TOutput,TInput,bool> canConnect = null)
         {
             if (a.ConnectorFor.DataObject is TOutput && b.ConnectorFor.DataObject is TInput)
             {
                 if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
                 {
-                    
+                    if (a.ConnectorForType != null && b.ConnectorForType != null)
+                    {
+                        if (a.ConnectorForType == b.ConnectorForType)
+                        {
+                            if (canConnect != null &&
+                       !canConnect((TOutput)a.ConnectorFor.DataObject, (TInput)b.ConnectorFor.DataObject))
+                                return null;
+
+                            return new ConnectionViewModel()
+                            {
+                                IsStateLink = this.IsStateLink,
+                                ConnectorA = a,
+                                ConnectorB = b,
+                                Apply = apply
+                            };
+                        }
+                        return null;
+                    }
                     if (canConnect != null &&
                         !canConnect((TOutput) a.ConnectorFor.DataObject, (TInput) b.ConnectorFor.DataObject))
                         return null;
@@ -97,7 +114,7 @@ namespace Invert.uFrame.Editor.ViewModels
             return null;
         }
 
-        protected abstract void Apply(ConnectionViewModel connectionViewModel);
-        protected abstract void Remove(ConnectionViewModel connectionViewModel);
+        public abstract void Apply(ConnectionViewModel connectionViewModel);
+        public abstract void Remove(ConnectionViewModel connectionViewModel);
     }
 }

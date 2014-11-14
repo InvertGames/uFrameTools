@@ -20,7 +20,49 @@ public static class CodeDomHelpers
         decleration.Members.Add(method);
         return method;
     }
-
+    public static CodeMemberMethod MethodFromTypeMethod(Type type, string methodName, bool callBase = true)
+    {
+        var m = type.GetMethod(methodName);
+        var method = new CodeMemberMethod()
+        {
+            Name = methodName,
+            ReturnType = new CodeTypeReference(m.ReturnType)
+        };
+        method.Attributes = MemberAttributes.Override;
+        if (m.IsPublic)
+        {
+            method.Attributes |= MemberAttributes.Public;
+        }
+        if (m.IsPrivate)
+        {
+            method.Attributes |= MemberAttributes.Private;
+        }
+        if (m.IsFamily)
+        {
+            method.Attributes |= MemberAttributes.Family;
+        }
+        if (m.IsFamilyAndAssembly)
+        {
+            method.Attributes |= MemberAttributes.FamilyAndAssembly;
+        }
+        if (m.IsFamilyOrAssembly)
+        {
+            method.Attributes |= MemberAttributes.FamilyOrAssembly;
+        }
+        var baseCall = new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(), methodName);
+        var ps = m.GetParameters();
+        foreach (var p in ps)
+        {
+            var parameter = new CodeParameterDeclarationExpression(p.ParameterType, p.Name);
+            method.Parameters.Add(parameter);
+            baseCall.Parameters.Add(new CodeVariableReferenceExpression(parameter.Name));
+        }
+        if (callBase && !m.IsAbstract)
+        {
+            method.Statements.Add(baseCall);
+        }
+        return method;
+    }   
  
 
     //public static CodeMemberMethod Parameter(this CodeMemberMethod method)

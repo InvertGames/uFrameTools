@@ -176,11 +176,6 @@ namespace Invert.uFrame.Editor
 
         }
 
-      
-        public static TGraphType CreateGraph<TGraphType>() where TGraphType : GraphData
-        {
-            return UFrameAssetManager.CreateAsset<TGraphType>();
-        }
 
         public static UFrameSettings Settings
         {
@@ -190,7 +185,7 @@ namespace Invert.uFrame.Editor
         public static void Loaded()
         {
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
-            InvertGraphEditor.Projects = InvertGraphEditor.AssetManager.GetAssets(typeof (ProjectRepository)).Cast<IProjectRepository>().ToArray();
+            
 
         }
 

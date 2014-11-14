@@ -1,3 +1,5 @@
+using System;
+
 namespace Invert.uFrame.Editor
 {
     public class NodeInputConfig
@@ -6,5 +8,8 @@ namespace Invert.uFrame.Editor
         public bool IsInput { get; set; }
         public bool IsOutput { get; set; }
         public string OutputName { get; set; }
+        public Type ReferenceType { get; set; }
+        public Type SourceType { get; set; }
+        public bool IsAlias { get; set; }
     }
 }

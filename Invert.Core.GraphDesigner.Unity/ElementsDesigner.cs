@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Invert.Common;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ElementDesigner;
@@ -316,27 +317,40 @@ namespace Invert.uFrame.Editor
             }
            
             LastEvent = Event.current;
-             if (ElementsDiagram.IsEditingField && LastEvent.keyCode != KeyCode.Return) return;
-            if (DiagramViewModel.SelectedGraphItems.Any(p =>
+            if (ElementsDiagram.IsEditingField)
             {
-                var viewModel = p as DiagramNodeViewModel;
-                if (viewModel != null)
+                if (LastEvent.keyCode == KeyCode.Return)
                 {
-                    return viewModel.IsEditing;
-                }
-                else
-                {
-                    var model = p as ItemViewModel;
-                    if (model != null)
+                    var selectedGraphItem = DiagramViewModel.SelectedGraphItem;
+                    DiagramViewModel.DeselectAll();
+                    if (selectedGraphItem != null)
                     {
-                        return model.IsEditing;
+                        selectedGraphItem.Select();
                     }
+                    return;    
                 }
-                return false;
-            }))
-            {
                 return;
             }
+            //if (DiagramViewModel.SelectedGraphItems.Any(p =>
+            //{
+            //    var viewModel = p as DiagramNodeViewModel;
+            //    if (viewModel != null)
+            //    {
+            //        return viewModel.IsEditing;
+            //    }
+            //    else
+            //    {
+            //        var model = p as ItemViewModel;
+            //        if (model != null)
+            //        {
+            //            return model.IsEditing;
+            //        }
+            //    }
+            //    return false;
+            //}))
+            //{
+            //    return;
+            //}
             if (LastEvent != null)
             {
                 if (LastEvent.type == EventType.keyUp)
@@ -367,12 +381,13 @@ namespace Invert.uFrame.Editor
             var evt = LastEvent;
             if (evt != null && evt.isKey && evt.type == EventType.KeyUp && DiagramDrawer != null)
             {
-                Debug.Log("Sending key command");
+               
                 if (DiagramViewModel != null &&
                     (DiagramViewModel.SelectedNode == null || !DiagramViewModel.SelectedNode.IsEditing))
                 {
                     if (DiagramViewModel.SelectedNodeItem == null)
                     {
+                        Debug.Log("Sending key command");
                         if (DiagramDrawer.HandleKeyEvent(evt, ModifierKeyStates))
                         {
                             evt.Use();
@@ -420,7 +435,7 @@ namespace Invert.uFrame.Editor
 
         public void SwitchDiagram(IGraphData data)
         {
-            CurrentProject.CurrentGraph = data as ElementsGraph;
+            CurrentProject.CurrentGraph = data as GraphData;
             LoadDiagram(CurrentProject.CurrentGraph);
         }
 
@@ -445,38 +460,39 @@ namespace Invert.uFrame.Editor
 
             DiagramRect = new Rect(0f, (EditorStyles.toolbar.fixedHeight) - 1, Screen.width - 3, Screen.height - (EditorStyles.toolbar.fixedHeight * 2) - EditorStyles.toolbar.fixedHeight - 2);
 
-            EditorGUI.DrawRect(DiagramRect, uFrameEditor.Settings.BackgroundColor);
+            EditorGUI.DrawRect(DiagramRect, InvertGraphEditor.Settings.BackgroundColor);
             GUI.Box(DiagramRect, String.Empty, style);
-            if (CurrentProject == null)
-            {
-                DiagramDrawer = null;
-                var width = 400;
-                var height = 300;
-                var x = (Screen.width / 2f) - (width / 2f);
-                var y = (Screen.height / 2f) - (width / 2f);
-                var padding = 30;
-                var rect = new Rect(x, y, width, height);
-                ElementDesignerStyles.DrawExpandableBox(rect, ElementDesignerStyles.NodeBackground, string.Empty);
-                GUI.DrawTexture(new Rect(x, y + 25, width, 100), ElementDesignerStyles.GetSkinTexture("uframeLogoLarge"), ScaleMode.ScaleToFit);
-                rect.y += 110;
-                rect.height -= 110;
-                GUILayout.BeginArea(rect);
-                GUILayout.BeginArea(new Rect(padding, padding, width - (padding * 2), height - (padding * 2)));
+            //if (CurrentProject == null)
+            //{
+            //    DiagramDrawer = null;
+            //    var width = 400;
+            //    var height = 300;
+            //    var x = (Screen.width / 2f) - (width / 2f);
+            //    var y = (Screen.height / 2f) - (width / 2f);
+            //    var padding = 30;
+            //    var rect = new Rect(x, y, width, height);
+            //    ElementDesignerStyles.DrawExpandableBox(rect, ElementDesignerStyles.NodeBackground, string.Empty);
+            //    GUI.DrawTexture(new Rect(x, y + 25, width, 100), ElementDesignerStyles.GetSkinTexture("uframeLogoLarge"), ScaleMode.ScaleToFit);
+            //    rect.y += 110;
+            //    rect.height -= 110;
+            //    GUILayout.BeginArea(rect);
+            //    GUILayout.BeginArea(new Rect(padding, padding, width - (padding * 2), height - (padding * 2)));
 
-                EditorGUILayout.BeginVertical();
-                EditorGUILayout.LabelField("Create New Project", ElementDesignerStyles.ViewModelHeaderStyle);
+            //    EditorGUILayout.BeginVertical();
+            //    EditorGUILayout.LabelField("Create New Project", ElementDesignerStyles.ViewModelHeaderStyle);
 
-                GUILayout.Space(20f);
-                _newProjectName = EditorGUILayout.TextField("New Project Name:", _newProjectName);
-                if (GUILayout.Button("Create Project"))
-                {
-                    UFrameAssetManager.NewUFrameProject(_newProjectName);
-                }
-                EditorGUILayout.EndVertical();
+            //    GUILayout.Space(20f);
+            //    _newProjectName = EditorGUILayout.TextField("New Project Name:", _newProjectName);
+            //    if (GUILayout.Button("Create Project"))
+            //    {
+            //        InvertGraphEditor.AssetManager.CreateAsset()
+            //        UFrameAssetManager.NewUFrameProject(_newProjectName);
+            //    }
+            //    EditorGUILayout.EndVertical();
 
-                GUILayout.EndArea();
-                GUILayout.EndArea();
-            }
+            //    GUILayout.EndArea();
+            //    GUILayout.EndArea();
+            //}
             if (DiagramDrawer == null)
             {
                 if (CurrentProject != null)
@@ -504,10 +520,10 @@ namespace Invert.uFrame.Editor
                 _scrollPosition = GUI.BeginScrollView(DiagramRect, _scrollPosition, DiagramDrawer.DiagramSize);
 
                 HandlePanning(DiagramRect);
-                if (DiagramViewModel != null && uFrameEditor.Settings.UseGrid)
+                if (DiagramViewModel != null && InvertGraphEditor.Settings.UseGrid)
                 {
-                    var softColor = uFrameEditor.Settings.GridLinesColor;
-                    var hardColor = uFrameEditor.Settings.GridLinesColorSecondary;
+                    var softColor = InvertGraphEditor.Settings.GridLinesColor;
+                    var hardColor = InvertGraphEditor.Settings.GridLinesColorSecondary;
                     var x = 0f;
                     var every10 = 0;
 
@@ -542,29 +558,36 @@ namespace Invert.uFrame.Editor
                 DiagramDrawer.Draw(ElementDesignerStyles.Scale);
                 HandleInput();
 
-                //#if DEBUG
-                //                GUILayout.BeginArea(new Rect(10f, 70f, 500f, 500f));
-                //                GUILayout.Label(string.Format("Mouse Position: x = {0}, y = {1}", MouseEvent.MousePosition.x, MouseEvent.MousePosition.y));
-                //                GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
-                //                GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
-                //                GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
-                //                if (DiagramDrawer != null)
-                //                {
-                //                    GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
-                //                    if (DiagramDrawer.DrawersAtMouse != null)
-                //                        foreach (var drawer in DiagramDrawer.DrawersAtMouse)
-                //                        {
-                //                            GUILayout.Label(drawer.ToString());
-                //                        }
-                //                    if (DiagramDrawer.DiagramViewModel != null)
-                //                        foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
-                //                        {
-                //                            GUILayout.Label(drawer.ToString());
-                //                        }
-                //                }
+                if (InvertGraphEditor.Settings.ShowGraphDebug)
+                {
+                    GUILayout.BeginArea(new Rect(10f, 70f, 500f, 10000f));
+                    GUILayout.Label(string.Format("Mouse Position: x = {0}, y = {1}", MouseEvent.MousePosition.x, MouseEvent.MousePosition.y));
+                    GUILayout.Label(string.Format("Mouse Position Delta: x = {0}, y = {1}", MouseEvent.MousePositionDelta.x, MouseEvent.MousePositionDelta.y));
+                    GUILayout.Label(string.Format("Mouse Down: {0}", MouseEvent.IsMouseDown));
+                    GUILayout.Label(string.Format("Last Mouse Down Position: {0}", MouseEvent.LastMousePosition));
+                    if (DiagramDrawer != null)
+                    {
+                        GUILayout.Label(string.Format("Drawer Count: {0}", DiagramDrawer.DiagramViewModel.GraphItems.Count));
+                        if (DiagramDrawer.DrawersAtMouse != null)
+                            foreach (var drawer in DiagramDrawer.DrawersAtMouse)
+                            {
+                                GUILayout.Label(drawer.ToString());
+                            }
+                        if (DiagramDrawer.DiagramViewModel != null)
+                            foreach (var drawer in DiagramDrawer.DiagramViewModel.SelectedGraphItems)
+                            {
+                                GUILayout.Label(drawer.ToString());
+                            }
+                    }
+                    foreach (var item in InvertGraphEditor.Container.Instances.Where(p=>p.Base == typeof(IConnectionStrategy)))
+                    {
+                        GUILayout.Label(item.Name);
+                    }
+                    GUILayout.EndArea();
+                }
+              
 
-                //                GUILayout.EndArea();
-                //#endif
+    
                 //EndGUI();
                 GUI.EndScrollView();
                 GUILayout.Space(DiagramRect.height);
@@ -698,7 +721,7 @@ namespace Invert.uFrame.Editor
                 });
             }
             menu.AddSeparator("");
-            foreach (var graphType in uFrameEditor.Container.Mappings.Where(p => p.From == typeof(GraphData)))
+            foreach (var graphType in InvertGraphEditor.Container.Mappings.Where(p => p.From == typeof(GraphData)))
             {
                 TypeMapping type = graphType;
                 menu.AddItem(new GUIContent("Create " + graphType.Name), false, () =>

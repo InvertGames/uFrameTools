@@ -282,7 +282,7 @@ namespace Invert.Core.GraphDesigner
             }
             return drawer;
         }
-        public static void RegisterDrawer<TViewModel, TDrawer>(this uFrameContainer container)
+        public static void RegisterDrawer<TViewModel, TDrawer>(this IUFrameContainer container)
         {
             container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
         }
@@ -291,7 +291,7 @@ namespace Invert.Core.GraphDesigner
         {
             Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
         }
-        public static void RegisterItemDrawer<TViewModel, TDrawer>(this uFrameContainer container)
+        public static void RegisterItemDrawer<TViewModel, TDrawer>(this IUFrameContainer container)
         {
             Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
         }
@@ -311,7 +311,7 @@ namespace Invert.Core.GraphDesigner
         public static IUFrameContainer RegisterChildGraphItem<TModel, TViewModel, TDrawer>(this IUFrameContainer container)
         {
             container.RegisterRelation<TModel, ItemViewModel, TViewModel>();
-            RegisterDrawer<TViewModel, TDrawer>();
+            container.RegisterItemDrawer<TViewModel, TDrawer>();
             return container;
         }
         public static IUFrameContainer RegisterGraphItem<TModel, TViewModel, TDrawer>()
@@ -320,7 +320,7 @@ namespace Invert.Core.GraphDesigner
             RegisterDrawer<TViewModel, TDrawer>();
             return Container;
         }
-        public static IUFrameContainer RegisterConnection<TSource, TTarget>(this IUFrameContainer container, bool oneToMany = true)
+        public static IUFrameContainer Connectable<TSource, TTarget>(this IUFrameContainer container, bool oneToMany = true, Func<TSource, TTarget, bool> filter = null)
             where TSource : class, IConnectable
             where TTarget : class, IConnectable
         {
@@ -332,6 +332,13 @@ namespace Invert.Core.GraphDesigner
             }
             return container;
         }
+
+        //public static IUFrameContainer ConnectionStrategy<TSource, TTarget>(this IUFrameContainer container, Color connectionColor,
+        //    Func<TSource, TTarget, bool> isConnected, Action<TSource, TTarget> apply, Action<TSource, TTarget> remove) where TSource : class, IConnectable where TTarget : class, IConnectable
+        //{
+        //    container.RegisterInstance<IConnectionStrategy>(new CustomConnectionStrategy<TSource, TTarget>(connectionColor,isConnected,apply,remove), typeof(TSource).Name + "_" + typeof(TTarget).Name + "CustomConnection");
+        //    return container;
+        //}
         public static void RegisterFilterNode<TFilterData, TAllowedItem>(this IUFrameContainer container)
         {
             if (!AllowedFilterNodes.ContainsKey(typeof(TFilterData)))
@@ -470,6 +477,18 @@ namespace Invert.Core.GraphDesigner
                 
             }
         }
+
+        public DefaultGraphSettings()
+        {
+            BackgroundColor = new Color(0.13f, 0.13f, 0.13f);
+            GridLinesColor = new Color(0.1f, 0.1f, 0.1f);
+            GridLinesColorSecondary = new Color(0.08f, 0.08f, 0.08f);
+        }
+
+        public bool ShowGraphDebug { get; set; }
+        public Color BackgroundColor { get; set; }
+        public Color GridLinesColor { get; set; }
+        public Color GridLinesColorSecondary { get; set; }
     }
     public class ScaffoldNode<TData> where TData : GenericNode
     {
@@ -494,8 +513,9 @@ namespace Invert.Core.GraphDesigner
             public Drawer(ViewModel viewModel)
                 : base(viewModel)
             {
-                _headerStyle = InvertGraphEditor.Container.GetNodeConfig<TData>().NodeStyle;
+                _headerStyle = InvertGraphEditor.Container.GetNodeConfig<TData>().GetNodeColorStyle(ViewModelObject.DataObject as TData);
             }
+
         }
 
         public class TypedItemViewModel : ScaffoldNodeTypedChildItem<TData>.ViewModel
@@ -517,9 +537,9 @@ namespace Invert.Core.GraphDesigner
             {
             }
         }
-        public class ItemDrawer : ScaffoldNodeChildItem<TData>.ViewModel
+        public class ItemDrawer : ScaffoldNodeChildItem<TData>.Drawer
         {
-            public ItemDrawer(TData graphItemObject, DiagramNodeViewModel diagramViewModel) : base(graphItemObject, diagramViewModel)
+            public ItemDrawer(ScaffoldNodeChildItem<TData>.ViewModel viewModel) : base(viewModel)
             {
             }
         }
@@ -587,5 +607,18 @@ namespace Invert.Core.GraphDesigner
         Pink,
         YellowGreen
     }
+
+    //public class CustomItemDrawer<TData> : ItemDrawer
+    //{
+    //    public CustomItemDrawer()
+    //    {
+    //        ViewModelObject = new ItemViewModel();
+    //    }
+    //    public Func<CustomItemDrawer<TData>,> 
+    //    public override void Draw(float scale)
+    //    {
+    //        base.Draw(scale);
+    //    }
+    //}
 }
 

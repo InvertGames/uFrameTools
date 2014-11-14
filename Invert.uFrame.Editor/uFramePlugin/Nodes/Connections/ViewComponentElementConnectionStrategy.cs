@@ -15,7 +15,7 @@ namespace Invert.uFrame.Editor.Nodes
             return true;
         }
 
-        protected override bool IsConnected(ViewData output, ViewComponentData input)
+        public override bool IsConnected(ViewData output, ViewComponentData input)
         {
             return input.ViewIdentifier == output.Identifier;
         }

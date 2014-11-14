@@ -30,7 +30,7 @@ namespace Invert.uFrame.Editor.Nodes
             return true;
         }
 
-        protected override bool IsConnected(ViewComponentData output, ViewComponentData input)
+        public override bool IsConnected(ViewComponentData output, ViewComponentData input)
         {
             return input.BaseIdentifier == output.Identifier;
         }

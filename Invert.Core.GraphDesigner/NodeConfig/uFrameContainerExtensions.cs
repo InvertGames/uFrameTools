@@ -8,16 +8,14 @@ namespace Invert.uFrame.Editor
 {
     public static class uFrameContainerExtensions
     {
-        public static uFrameContainer SetNodeColor<TNode>(this uFrameContainer container, NodeColor color) where TNode : GenericNode, IConnectable
-        {
-            ((NodeConfig) container.GetNodeConfig<TNode>()).Color = color;
-            return container;
-        }
+
         public static NodeConfig<TNodeData> AddNode<TNodeData>(this IUFrameContainer container, string tag = null)
             where TNodeData : GenericNode
         {
             var config = container.AddNode<TNodeData, ScaffoldNode<TNodeData>.ViewModel, ScaffoldNode<TNodeData>.Drawer>();
+            if (config.Tags.Count > 0) return config;
             config.Tags.Add(tag ?? typeof(TNodeData).Name);
+            config.Name = tag;
             return config;
         }
         
@@ -55,10 +53,11 @@ namespace Invert.uFrame.Editor
             {
                 var nodeConfig = new NodeConfig<TNode>(container)
                 {
+                    
                     NodeType = typeof(TNode),
                 };
                 container.RegisterInstance<NodeConfig>(nodeConfig, typeof(TNode).Name);
-
+                //nodeConfig.Section(string.Empty, _ => _.ChildItems.OfType<GenericConnectionReference>(), false);
                 return nodeConfig;
             }
             return config;

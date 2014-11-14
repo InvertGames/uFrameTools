@@ -400,7 +400,7 @@ public class ComputedPropertyInputsConnectionStrategy :
         return base.CanConnect(output, input);
     }
 
-    protected override bool IsConnected(ITypedItem output, ComputedPropertyData input)
+    public override bool IsConnected(ITypedItem output, ComputedPropertyData input)
     {
         return input.DependantPropertyIdentifiers.Contains(output.Identifier);
     }

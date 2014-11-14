@@ -28,6 +28,9 @@ namespace Invert.Core.GraphDesigner
         public override void Initialize(uFrameContainer container)
         {
             var typeContainer = InvertGraphEditor.TypesContainer;
+            
+            typeContainer.AddItem<GenericConnectionReference,ConnectorHeaderViewModel,InputHeaderDrawer>();
+
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(int), Group = "", Label = "int", IsPrimitive = true }, "int");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(string), Group = "", Label = "string", IsPrimitive = true }, "string");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(decimal), Group = "", Label = "decimal", IsPrimitive = true }, "decimal");
@@ -85,7 +88,7 @@ namespace Invert.Core.GraphDesigner
 
             // Enums
             container.RegisterGraphItem<EnumData, EnumNodeViewModel, DiagramEnumDrawer>();
-            container.RegisterGraphItem<EnumItem, EnumItemViewModel, EnumItemDrawer>();
+            container.RegisterChildGraphItem<EnumItem, EnumItemViewModel, EnumItemDrawer>();
             container.RegisterInstance(new AddEnumItemCommand());
 
             // Class Nodes
@@ -94,6 +97,35 @@ namespace Invert.Core.GraphDesigner
             container.RegisterGraphItem<ClassNodeData, ClassNodeViewModel, ClassNodeDrawer>();
             container.RegisterInstance<IConnectionStrategy>(new ClassNodeInheritanceConnectionStrategy(), "ClassNodeInheritanceConnectionStrategy");
 
+            InvertGraphEditor.RegisterKeyBinding(new RenameCommand(), "Rename", KeyCode.F2);
+            InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            {
+                p.DeselectAll();
+            }), "End All Editing", KeyCode.Return);
+
+            InvertGraphEditor.RegisterKeyBinding(new DeleteItemCommand(), "Delete Item", KeyCode.X, true);
+            InvertGraphEditor.RegisterKeyBinding(new DeleteCommand(), "Delete", KeyCode.Delete);
+            InvertGraphEditor.RegisterKeyBinding(new MoveUpCommand(), "Move Up", KeyCode.UpArrow);
+            InvertGraphEditor.RegisterKeyBinding(new MoveDownCommand(), "Move Down", KeyCode.DownArrow);
+
+
+            InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            {
+                InvertGraphEditor.Settings.ShowHelp = !InvertGraphEditor.Settings.ShowHelp;
+            }), "Show/Hide This Help", KeyCode.F1);
+#if DEBUG
+            InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            {
+                InvertGraphEditor.Settings.ShowGraphDebug = !InvertGraphEditor.Settings.ShowGraphDebug;
+            }), "Show/Hide Debug", KeyCode.F3);
+#endif
+            InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            {
+                var saveCommand = InvertApplication.Container.Resolve<IToolbarCommand>("Save");
+                InvertGraphEditor.ExecuteCommand(saveCommand);
+            }), "Save & Compile", KeyCode.S, true, true);
+
+          
         }
 
         public override void Loaded()

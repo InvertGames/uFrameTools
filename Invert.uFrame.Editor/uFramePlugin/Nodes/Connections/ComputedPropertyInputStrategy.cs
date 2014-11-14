@@ -15,7 +15,7 @@ namespace Invert.uFrame.Editor.Nodes
             return !input.DependantPropertyIdentifiers.Contains(output.Identifier);
         }
 
-        protected override bool IsConnected(ViewModelPropertyData output, ViewModelPropertyData input)
+        public override bool IsConnected(ViewModelPropertyData output, ViewModelPropertyData input)
         {
             
             return input.DependantPropertyIdentifiers.Contains(output.Identifier);

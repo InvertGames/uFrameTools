@@ -38,7 +38,7 @@ namespace Invert.uFrame.Editor
 
             // Scene Managers
             container.RegisterGraphItem<SceneManagerData, SceneManagerViewModel, SceneManagerDrawer>();
-            container.RegisterGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
+            container.RegisterChildGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
             container.RegisterFilterNode<SceneFlowFilter, SceneManagerData>();
             container.RegisterInstance<IConnectionStrategy>(new SceneTransitionConnectionStrategy(), "SceneTransitionConnectionStrategy");
             container.RegisterInstance<IConnectionStrategy>(new SceneManagerSubsystemConnectionStrategy(), "SceneManagerSubsystemConnectionStrategy");
@@ -46,16 +46,16 @@ namespace Invert.uFrame.Editor
 
             // Sub Systems
             container.RegisterGraphItem<SubSystemData, SubSystemViewModel, SubSystemDrawer>();
-            container.RegisterGraphItem<RegisteredInstanceData, RegisterInstanceItemViewModel, ElementItemDrawer>();
+            container.RegisterChildGraphItem<RegisteredInstanceData, RegisterInstanceItemViewModel, ElementItemDrawer>();
             container.RegisterFilterNode<SceneFlowFilter, SubSystemData>();
             container.RegisterInstance<IConnectionStrategy>(new SubsystemConnectionStrategy(), "SubsystemConnectionStrategy");
             container.RegisterInstance(new AddInstanceCommand());
 
             // Elements
             container.RegisterGraphItem<ElementData, ElementNodeViewModel, ElementDrawer>();
-            container.RegisterGraphItem<ViewModelPropertyData, ElementPropertyItemViewModel, ElementItemDrawer>();
-            container.RegisterGraphItem<ViewModelCommandData, ElementCommandItemViewModel, ElementItemDrawer>();
-            container.RegisterGraphItem<ViewModelCollectionData, ElementCollectionItemViewModel, ElementItemDrawer>();
+            container.RegisterChildGraphItem<ViewModelPropertyData, ElementPropertyItemViewModel, ElementItemDrawer>();
+            container.RegisterChildGraphItem<ViewModelCommandData, ElementCommandItemViewModel, ElementItemDrawer>();
+            container.RegisterChildGraphItem<ViewModelCollectionData, ElementCollectionItemViewModel, ElementItemDrawer>();
             container.RegisterFilterNode<SubSystemData, ElementData>();
             container.RegisterInstance(new AddElementCommandCommand());
             container.RegisterInstance(new AddElementCollectionCommand());
@@ -70,8 +70,8 @@ namespace Invert.uFrame.Editor
 
             // Views
             container.RegisterGraphItem<ViewData, ViewNodeViewModel, ViewDrawer>();
-            container.RegisterGraphItem<ViewPropertyData, ElementViewPropertyItemViewModel, ItemDrawer>();
-            container.RegisterGraphItem<ViewBindingData, ViewBindingItemViewModel, ItemDrawer>();
+            container.RegisterChildGraphItem<ViewPropertyData, ElementViewPropertyItemViewModel, ItemDrawer>();
+            container.RegisterChildGraphItem<ViewBindingData, ViewBindingItemViewModel, ItemDrawer>();
             container.RegisterFilterNode<ElementData, ViewData>();
             container.RegisterInstance(new AddBindingCommand());
             container.RegisterInstance<IConnectionStrategy>(new TwoWayPropertyConnectionStrategy(), "TwoWayPropertyConnectionStrategy");
@@ -90,8 +90,8 @@ namespace Invert.uFrame.Editor
             // State Machines
             container.RegisterGraphItem<StateMachineNodeData, StateMachineNodeViewModel, StateMachineNodeDrawer>();
             container.RegisterGraphItem<StateMachineStateData, StateMachineStateNodeViewModel, StateMachineStateNodeDrawer>();
-            container.RegisterGraphItem<StateMachineTransition, StateMachineTransitionViewModel, ItemDrawer>();
-            container.RegisterGraphItem<StateTransitionData, StateTransitionViewModel, ItemDrawer>();
+            container.RegisterChildGraphItem<StateMachineTransition, StateMachineTransitionViewModel, ItemDrawer>();
+            container.RegisterChildGraphItem<StateTransitionData, StateTransitionViewModel, ItemDrawer>();
             container.RegisterGraphItem<StateMachineActionData, StateActionNodeViewModel, StateActionNodeDrawer>();
             container.RegisterFilterNode<ElementData, StateMachineNodeData>();
             container.RegisterFilterNode<StateMachineNodeData, StateMachineStateData>();
@@ -164,6 +164,7 @@ namespace Invert.uFrame.Editor
         public override void Loaded()
         {
             base.Loaded();
+            
             uFrameEditor.Loaded();
         }
     }

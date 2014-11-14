@@ -24,8 +24,8 @@ public class ElementStateMachineConnectionStrategy : DefaultConnectionStrategy<E
     {
         get { return Color.white; }
     }
-    
-    protected override bool IsConnected(ElementData output, StateMachineNodeData input)
+
+    public override bool IsConnected(ElementData output, StateMachineNodeData input)
     {
         return input.ElementIdentifier == output.Identifier;
     }
@@ -47,7 +47,7 @@ public class ElementStateVariableConnectionStrategy : DefaultConnectionStrategy<
         get { return Color.white; }
     }
 
-    protected override bool IsConnected(ViewModelPropertyData output, StateMachineNodeData input)
+    public override bool IsConnected(ViewModelPropertyData output, StateMachineNodeData input)
     {
         return input.StatePropertyIdentifier == output.Identifier;
     }

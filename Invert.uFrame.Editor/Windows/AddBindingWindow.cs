@@ -27,12 +27,6 @@ public class AddBindingWindow : SearchableScrollWindow
         get { return EditorWindow.GetWindow<ElementsDesigner>(); }
     }
 
-    //public List<UFStyle> AddedGenerators
-    //{
-    //    get { return _addedGenerators; }
-    //    set { _addedGenerators = value; }
-    //}
-
     public static void Init(string title, ViewNodeViewModel data)
     {
         // Get existing open window or if none, make a new one:

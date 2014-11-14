@@ -24,7 +24,7 @@ public class DiagramInputHander : IInputHandler
 
     public virtual void OnMouseMove(MouseEvent e)
     {
-        ViewModelAtMouse = ViewModel.GraphItems.FirstOrDefault(p => p.Bounds.Contains(e.MousePosition));
+        ViewModelAtMouse = ViewModel.GraphItems.Reverse().FirstOrDefault(p => p.Bounds.Contains(e.MousePosition));
 
 
     }

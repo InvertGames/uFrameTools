@@ -9,7 +9,7 @@ public class ConnectorDrawer : Drawer<ConnectorViewModel>
 {
     public override int ZOrder
     {
-        get { return 1; }
+        get { return 5; }
     }
 
     public ConnectorDrawer(ConnectorViewModel viewModelObject) : base(viewModelObject)
@@ -153,6 +153,10 @@ public class ConnectorDrawer : Drawer<ConnectorViewModel>
 
         }
         GUI.DrawTexture(Bounds.Scale(scale), texture, ScaleMode.StretchToFill, true);
+        if (InvertGraphEditor.Settings.ShowGraphDebug)
+        {
+            GUI.Label(new Rect(Bounds.x,Bounds.y,200,50), this.ViewModel.ConnectorForType.Name + " : " + this.ViewModel.DataObject.GetType().Name,ElementDesignerStyles.TitleBarStyle);
+        }
         
     }
 

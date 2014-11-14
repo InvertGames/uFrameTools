@@ -16,8 +16,7 @@ public class StateMachineTransitionConnectionStrategy :
     }
 
 
-
-    protected override bool IsConnected(StateTransitionData output, StateMachineStateData input)
+    public override bool IsConnected(StateTransitionData output, StateMachineStateData input)
     {
         return output.TransitionToIdentifier == input.Identifier;
     }

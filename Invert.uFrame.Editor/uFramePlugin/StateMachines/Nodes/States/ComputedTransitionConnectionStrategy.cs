@@ -9,7 +9,7 @@ public class ComputedTransitionConnectionStrategy :
         get { return Color.white; }
     }
 
-    protected override bool IsConnected(ITypedItem output, StateMachineTransition input)
+    public override bool IsConnected(ITypedItem output, StateMachineTransition input)
     {
         return input[output.Identifier];
     }
@@ -38,7 +38,7 @@ public class StartStateConnectionStrategy :
         get { return true; }
     }
 
-    protected override bool IsConnected(StateMachineNodeData output, StateMachineStateData input)
+    public override bool IsConnected(StateMachineNodeData output, StateMachineStateData input)
     {
         return output.StartStateIdentifier == input.Identifier;
     }

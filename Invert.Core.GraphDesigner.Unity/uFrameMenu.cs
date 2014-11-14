@@ -9,19 +9,13 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 [InitializeOnLoad]
-public class UFrameAssetManager : AssetPostprocessor
+public class uFrameMenu : AssetPostprocessor
 {
 
-    //[MenuItem("Assets/[u]Frame/New Element Diagram", false, 40)]
-    //public static void NewJsonViewModelDiagram()
-    //{
-    //    uFrameEditor.CurrentProject.CreateNewDiagram();
-    //}
-    [MenuItem("Assets/[u]Frame/New uFrame Project", false, 40)]
+    [MenuItem("Assets/[u]Frame/New Project", false, 40)]
     public static void NewUFrameProject()
     {
         var project = CreateAsset<ProjectRepository>();
-        project.CreateNewDiagram(typeof(ElementsGraph));
         AssetDatabase.SaveAssets();
         Refresh();
     }
@@ -32,7 +26,6 @@ public class UFrameAssetManager : AssetPostprocessor
         AssetDatabase.CreateFolder("Assets", name);
         var project = ScriptableObject.CreateInstance<ProjectRepository>();
         AssetDatabase.CreateAsset(project, "Assets/" + name + "/" + name + ".asset");
-        project.CreateNewDiagram(typeof(ElementsGraph));
         Selection.activeObject = project;
         AssetDatabase.SaveAssets();
         Refresh();
@@ -86,6 +79,6 @@ public class UFrameAssetManager : AssetPostprocessor
     private static void Refresh()
     {
         InvertGraphEditor.CurrentProject = null;
-        uFrameEditor.Loaded();
+        InvertGraphEditor.Projects = InvertGraphEditor.AssetManager.GetAssets(typeof(ProjectRepository)).Cast<IProjectRepository>().ToArray();
     }
 }

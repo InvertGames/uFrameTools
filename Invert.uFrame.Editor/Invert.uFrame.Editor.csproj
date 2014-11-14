@@ -76,10 +76,10 @@
     <Compile Include="CodeGenerators\ViewDataGeneratorFactory.cs" />
     <Compile Include="CodeGenerators\ViewGenerator.cs" />
     <Compile Include="CodeGenerators\ViewModelGenerator.cs" />
-    <Compile Include="Editor\Class1.cs" />
     <Compile Include="ElementsGraph.cs" />
     <Compile Include="ForceUpgradeDiagram.cs" />
     <Compile Include="IBindingGenerator.cs" />
+    <Compile Include="JsonElementDesignerData.cs" />
     <Compile Include="SubSystemPathStrategy.cs" />
     <Compile Include="uFrameCorePlugin.cs" />
     <Compile Include="uFramePlugin\ModelData\ModelClassNodeDrawer.cs" />
@@ -154,7 +154,6 @@
     <Compile Include="uFramePlugin\Elements\MarkIsYieldCommand.cs" />
     <Compile Include="uFramePlugin\SelectViewBaseElement.cs" />
     <Compile Include="uFramePlugin\uFrameData\ViewPropertyData.cs" />
-    <Compile Include="Windows\ElementsDesigner.cs" />
     <Compile Include="UFramePluginProcessor.cs" />
     <Compile Include="uFrameStringTypeProvider.cs" />
     <Compile Include="uFramePlugin\Elements\AddElementCollectionCommand.cs" />
@@ -190,7 +189,6 @@
     <Compile Include="uFramePlugin\uFrameData\ViewModelCollectionData.cs" />
     <Compile Include="uFramePlugin\uFrameData\ViewModelCommandData.cs" />
     <Compile Include="uFramePlugin\uFrameData\ViewModelPropertyData.cs" />
-    <Compile Include="UFrameAssetManager.cs" />
     <Compile Include="Windows\uFrameComponentSearchWindow.cs" />
     <Compile Include="Windows\uFrameSettingsWindow.cs" />
     <Compile Include="Windows\uFrameStartDialog.cs" />
@@ -199,13 +197,13 @@
     <Compile Include="uFrameVersionProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Invert.Core.GraphDesigner.Unity\Invert.Core.GraphDesigner.Unity.csproj">
-      <Project>{fd550f66-cd89-4027-bf9a-7454fccafefd}</Project>
-      <Name>Invert.Core.GraphDesigner.Unity</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Invert.Common\Invert.Common.csproj">
       <Project>{346c6b33-6fb0-40d1-b8a6-eb2144c10a5c}</Project>
       <Name>Invert.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.Core.GraphDesigner.Unity\Invert.Core.GraphDesigner.Unity.csproj">
+      <Project>{FD550F66-CD89-4027-BF9A-7454FCCAFEFD}</Project>
+      <Name>Invert.Core.GraphDesigner.Unity</Name>
     </ProjectReference>
     <ProjectReference Include="..\Invert.Core.GraphDesigner\Invert.Core.GraphDesigner.csproj">
       <Project>{06E581D4-DAF3-4404-9426-E3BE6478BC48}</Project>
@@ -220,11 +218,13 @@
       <Name>Invert.MVVM</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Editor\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\ /Y
-copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\ /Y</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

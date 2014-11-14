@@ -20,14 +20,14 @@ public class InputHeaderDrawer : Drawer<GraphItemViewModel>
         var size = ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name));
       
         Bounds = new Rect(position.x + 25, position.y, size.x + 25 , 28);
-        ViewModel.ConnectorBounds = new Rect(position.x + 25, position.y, Bounds.width - 20, 28);
+       
         
     }
 
     public override void Draw(float scale)
     {
         base.Draw(scale);
-        
+        ViewModel.ConnectorBounds = new Rect(Bounds.x , Bounds.y, Bounds.width - 50, 28);
         GUI.Label(Bounds.Scale(scale), ViewModel.Name,ElementDesignerStyles.HeaderStyle);
     }
 }

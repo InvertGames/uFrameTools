@@ -2,7 +2,7 @@ using System.CodeDom;
 
 namespace Invert.uFrame.Editor
 {
-    public class StandardFieldGenerator : MemberItemGenerator<IBindableTypedItem>
+    public class StandardFieldGenerator : MemberGenerator<ITypedItem>
     {
         public StandardFieldGenerator(string formatString)
         {
@@ -26,9 +26,9 @@ namespace Invert.uFrame.Editor
             var field = new CodeMemberField()
             {
                 Attributes = Attributes,
-                Type = Item.GetPropertyType(),
+                Type = Data.GetPropertyType(),
                 CustomAttributes = CustomAttributes,
-                Name = string.Format(FormatString, Item.Name)
+                Name = string.Format(FormatString, Data.Name)
             };
             return field;
         }

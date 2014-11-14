@@ -10,7 +10,7 @@ namespace Invert.uFrame.Editor.Nodes
             get { return Color.green; }
         }
 
-        protected override bool IsConnected(ViewData output, ViewData input)
+        public override bool IsConnected(ViewData output, ViewData input)
         {
             if (input.Identifier == output.Identifier) return false;
 

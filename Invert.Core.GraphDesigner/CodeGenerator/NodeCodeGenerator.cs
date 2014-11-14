@@ -3,7 +3,7 @@ using Invert.Core.GraphDesigner;
 
 namespace Invert.uFrame.Editor
 {
-    public abstract class NodeCodeGenerator<TData> : CodeGenerator where TData : GenericNode
+    public class NodeCodeGenerator<TData> : CodeGenerator where TData : GenericNode
     {
         private CodeTypeDeclaration _decleration;
         private TData _data;
@@ -14,14 +14,41 @@ namespace Invert.uFrame.Editor
             set { ObjectData = value; }
         }
 
+        //public override string Filename
+        //{
+        //    get
+        //    {
+
+        //        if (IsDesignerFile)
+        //        {
+        //            if (GeneratorConfig.DesignerFilename == null)
+        //            {
+        //                return base.Filename;
+        //            }
+        //            return GeneratorConfig.DesignerFilename.GetValue(Data);
+        //        }
+        //        else
+        //        {
+        //            if (GeneratorConfig.Filename == null)
+        //            {
+        //                return base.Filename;
+        //            }
+        //            return GeneratorConfig.Filename.GetValue(Data);
+        //        }
+                
+        //    }
+        //    set { base.Filename = value; }
+            
+        //}
+
         public virtual string NameAsClass
         {
-            get { return Data.Name; }
+            get { return GeneratorConfig.ClassName.GetValue(Data); }
         }
 
         public virtual string NameAsDesignerClass
         {
-            get { return Data.Name + "Base"; }
+            get { return NameAsClass + "Base"; }
         }
 
         public sealed override void Initialize(CodeFileGenerator fileGenerator)
@@ -43,8 +70,23 @@ namespace Invert.uFrame.Editor
 
         protected virtual void Compose()
         {
+            if (GeneratorConfig.Namespaces != null)
+            {
+                foreach (var item in GeneratorConfig.Namespaces.GetValue(Data))
+                {
+                    TryAddNamespace(item);
+                }
+            }
             if (IsDesignerFile)
             {
+                if (GeneratorConfig.DesignerDeclaration != null)
+                {
+                    Decleration = GeneratorConfig.DesignerDeclaration.GetValue(Data);
+                }
+                if (GeneratorConfig.BaseType != null)
+                {
+                    Decleration.BaseTypes.Add(GeneratorConfig.BaseType.GetValue(Data));
+                }
 
                 var designerMemberGenerators = GeneratorConfig.GetChildGenerators(Decleration, Data, MemberGeneratorLocation.DesignerFile);
                 foreach (var generator in designerMemberGenerators)
@@ -61,6 +103,10 @@ namespace Invert.uFrame.Editor
             }
             else
             {
+                if (GeneratorConfig.Declaration != null)
+                {
+                    Decleration = GeneratorConfig.Declaration.GetValue(Data);
+                }
                 Decleration.BaseTypes.Add(NameAsDesignerClass);
                 var designerMemberGenerators = GeneratorConfig.GetChildGenerators(Decleration, Data, MemberGeneratorLocation.EditableFile);
                 foreach (var generator in designerMemberGenerators)
@@ -77,9 +123,15 @@ namespace Invert.uFrame.Editor
             Namespace.Types.Add(Decleration);
         }
 
-        protected abstract void InitializeEditableFile();
+        protected virtual void InitializeEditableFile()
+        {
+            
+        }
 
-        protected abstract void InitializeDesignerFile();
+        protected virtual void InitializeDesignerFile()
+        {
+            
+        }
 
         public CodeTypeDeclaration Decleration
         {

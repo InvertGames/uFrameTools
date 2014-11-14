@@ -24,20 +24,28 @@ namespace Invert.uFrame.Editor.ViewModels
         protected override void DataObjectChanged()
         {
             ContentItems.Clear();
+            InputConnectorType = typeof (TData);
+            OutputConnectorType = typeof (TData);
             IsLocal = InvertGraphEditor.CurrentProject.CurrentGraph.NodeItems.Contains(GraphItemObject);
 
             foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsInput))
             {
+                if (!InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType)) continue;
                 ContentItems.Add(new ConnectorHeaderViewModel()
                 {
                     Name = inputConfig.Name,
-                    DataObject = GraphItem,
+                    DataObject = inputConfig.IsAlias ? DataObject : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
+                    InputConnectorType = inputConfig.ReferenceType,
                     IsInput = true
                 });
             }
+     
             foreach (var section in NodeConfig.Sections)
             {
+                if (InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, section.ChildType)) continue;
                 NodeConfigSection<TData> section1 = section as NodeConfigSection<TData>;
+                //if (typeof(IDiagramNode).IsAssignableFrom(section.ChildType) && !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, section.ChildType)))
+                //continue;
 
                 if (!string.IsNullOrEmpty(section.Name))
                 {
@@ -46,6 +54,7 @@ namespace Invert.uFrame.Editor.ViewModels
                         Name = section.Name,
                         NodeViewModel = this,
                         NodeConfig = this.NodeConfig,
+                        
                         SectionConfig = section1,
                         AddCommand = section1.AllowAdding ? new SimpleEditorCommand<DiagramNodeViewModel>((vm) =>
                         {
@@ -88,19 +97,18 @@ namespace Invert.uFrame.Editor.ViewModels
 
                 if (section1.Selector != null && section1.ReferenceType == null)
                 {
-                    Debug.Log(string.Format("Rendering Section: {0}", section1.ChildType));
+                
                     foreach (var item in section1.Selector(GraphItem))
                     {
 
                         if (section.ChildType.IsAssignableFrom(item.GetType()))
                         {
-                            if (section1.ReferenceType != null)
-                                Debug.Log(string.Format("Rendering Section Item: {0}", item.Label));
+                            
                             var vm = GetDataViewModel(item);
                             
                             if (vm == null)
                             {
-                                Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
+                                Debug.LogError(string.Format("Couldn't find view-model for {0} in section {1} with child type {2}", item.GetType(), section1.Name,section1.ChildType.Name));
                                 continue;
                             }
                             ContentItems.Add(vm);
@@ -129,12 +137,14 @@ namespace Invert.uFrame.Editor.ViewModels
                     }
                 }
             }
-            foreach (var inputConfig in NodeConfig.Inputs.Where(p=>p.IsOutput))
+            foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsOutput))
             {
+                if (!InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType)) continue;
                 ContentItems.Add(new ConnectorHeaderViewModel()
                 {
                     Name = inputConfig.Name,
-                    DataObject = GraphItem,
+                    DataObject = inputConfig.IsAlias ? DataObject : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
+                    OutputConnectorType = inputConfig.ReferenceType,
                     IsInput = false,
                     IsOutput = true
                 });

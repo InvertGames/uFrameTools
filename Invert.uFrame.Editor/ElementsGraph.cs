@@ -1,12 +1,10 @@
-public class ElementsGraph : GraphData
-{
-    protected override IDiagramFilter CreateDefaultFilter()
+
+    using UnityEngine;
+    public class ElementsGraph : GraphData
     {
-        return new SceneFlowFilter();
+        protected override IDiagramFilter CreateDefaultFilter()
+        {
+            return new SceneFlowFilter();
+        }
+
     }
-
-}
-public class JsonElementDesignerData : ElementsGraph
-{
-
-}

@@ -19,7 +19,7 @@ namespace Invert.uFrame.Editor.Nodes
             return base.CanConnect(output, input);
         }
 
-        protected override bool IsConnected(ElementData output, ElementData input)
+        public override bool IsConnected(ElementData output, ElementData input)
         {
             return input.BaseIdentifier == output.Identifier;
         }

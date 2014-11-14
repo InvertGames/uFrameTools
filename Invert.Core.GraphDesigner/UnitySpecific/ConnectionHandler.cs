@@ -97,7 +97,8 @@ public class ConnectionHandler : DiagramInputHander
         }
         else
         {
-
+            if (InvertGraphEditor.Settings.ShowGraphDebug)
+            GUI.Label(new Rect(e.MousePosition.x,e.MousePosition.y,200,50),endViewModel.ConnectorForType.Name,ElementDesignerStyles.HeaderStyle );
             foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
             {
                 //try and connect them

@@ -15,6 +15,11 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             get { return "Flags"; }
         }
 
+        public override decimal Order
+        {
+            get { return -1; }
+        }
+
         public override string Name
         {
             get { return string.IsNullOrEmpty(_title) ? FlagName : _title; }

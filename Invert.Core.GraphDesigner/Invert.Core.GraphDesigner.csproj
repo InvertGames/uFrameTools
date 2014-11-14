@@ -122,6 +122,7 @@
     <Compile Include="Data\EnumItem.cs" />
     <Compile Include="Data\FilterPositionData.cs" />
     <Compile Include="Data\FilterState.cs" />
+    <Compile Include="Data\GenericGraphData.cs" />
     <Compile Include="Data\GenericNodeChildItem.cs" />
     <Compile Include="Data\GenericTypedChildItem.cs" />
     <Compile Include="Data\GraphData.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="NodeConfig\LambdaMemberGenerator.cs" />
     <Compile Include="NodeConfig\LambdaMemberItemGenerator.cs" />
     <Compile Include="NodeConfig\MemberGenerator.cs" />
+    <Compile Include="NodeConfig\MethodGenerator.cs" />
     <Compile Include="NodeConfig\NodeChildGeneratorConfig.cs" />
     <Compile Include="NodeConfig\NodeConfig.cs" />
     <Compile Include="NodeConfig\NodeConfigExtensions.cs" />
@@ -275,8 +277,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\ /Y
-copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\ /Y</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
+copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y
+copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -17,7 +17,7 @@ namespace Invert.uFrame.Editor.Nodes
             return !output.GetAllImports().Contains(input.Identifier);
         }
 
-        protected override bool IsConnected(SubSystemData output, SubSystemData input)
+        public override bool IsConnected(SubSystemData output, SubSystemData input)
         {
             return input.Imports.Contains(output.Identifier);
         }

@@ -16,6 +16,7 @@ namespace Invert.uFrame.Editor.Nodes
 
             if (a.ConnectorFor is ElementNodeViewModel && b.ConnectorFor is ViewNodeViewModel)
             {
+                
                 if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
                 {
                     return new ConnectionViewModel()
@@ -36,7 +37,7 @@ namespace Invert.uFrame.Editor.Nodes
             //connections.AddRange(info.ConnectionsByData<ElementData, ViewData>(Color.white, (o, i) => i.ForElementIdentifier == o.Identifier, Remove));
         }
 
-        protected override bool IsConnected(ElementData output, ViewData input)
+        public override bool IsConnected(ElementData output, ViewData input)
         {
             return input.ForElementIdentifier == output.Identifier;
         }
@@ -67,7 +68,7 @@ namespace Invert.uFrame.Editor.Nodes
             return base.CanConnect(output, input);
         }
 
-        protected override bool IsConnected(ViewModelPropertyData output, ViewData input)
+        public override bool IsConnected(ViewModelPropertyData output, ViewData input)
         {
             return output.DataBag["ViewIdentifier"] == input.Identifier;
         }

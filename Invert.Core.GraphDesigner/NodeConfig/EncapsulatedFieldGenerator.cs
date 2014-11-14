@@ -2,7 +2,7 @@ using System.CodeDom;
 
 namespace Invert.uFrame.Editor
 {
-    public class EncapsulatedFieldGenerator : MemberItemGenerator<ITypedItem>
+    public class EncapsulatedFieldGenerator : MemberGenerator<ITypedItem>
     {
         public EncapsulatedFieldGenerator(string backingFieldFormatString)
         {
@@ -15,6 +15,7 @@ namespace Invert.uFrame.Editor
         }
         private string _backingFieldFormatString = "_{0}";
         private bool _allowSet = true;
+        private string _propertyFormatString = "{0}";
 
         public string BackingFieldFormatString
         {
@@ -22,29 +23,35 @@ namespace Invert.uFrame.Editor
             set { _backingFieldFormatString = value; }
         }
 
+        public string PropertyFormatString
+        {
+            get { return _propertyFormatString; }
+            set { _propertyFormatString = value; }
+        }
+
         protected virtual CodeTypeReference GetFieldType()
         {
-            return Item.GetPropertyType();
+            return Data.GetPropertyType();
         }
         protected virtual CodeTypeReference GetPropertyType()
         {
-            return Item.GetPropertyType();
+            return Data.GetPropertyType();
         }
         public override CodeTypeMember Create(bool isDesignerFile)
         {
             var field = new CodeMemberField()
             {
                 Attributes = Attributes,
-                Type = Item.GetPropertyType(),
+                Type = GetFieldType(),
                 CustomAttributes = CustomAttributes,
-                Name = string.Format(BackingFieldFormatString, Item.Name)
+                Name = string.Format(BackingFieldFormatString, Data.Name)
             };
             Decleration.Members.Add(field);
             var property = new CodeMemberProperty()
             {
                 Attributes = MemberAttributes.Public,
-                Type = Item.GetPropertyType(),
-                Name = Item.Name
+                Type = GetPropertyType(),
+                Name = Data.Name
             };
             property.GetStatements.Add(new CodeSnippetExpression(string.Format("return {0}", field.Name)));
             if (AllowSet)
@@ -64,5 +71,4 @@ namespace Invert.uFrame.Editor
             set { _allowSet = value; }
         }
     }
-
 }

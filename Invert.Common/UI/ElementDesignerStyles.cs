@@ -342,7 +342,7 @@ namespace Invert.Common
         {
             get
             {
-                return _nodeHeader4 ?? (_nodeHeader4 = CreateHeader("Header4", new Color(0.82f, 0.82f, 0.82f)));
+                return _nodeHeader4 ?? (_nodeHeader4 = CreateHeader("Header4", new Color(0.32f, 0.32f, 0.32f)));
             }
         }
         public static GUIStyle NodeHeader5
