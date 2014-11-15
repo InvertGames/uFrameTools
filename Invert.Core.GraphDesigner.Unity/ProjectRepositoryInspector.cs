@@ -106,6 +106,26 @@ public class ProjectRepositoryInspector : Editor
 
             }
         }
+#if DEBUG
+        if (GUIHelpers.DoToolbarEx("Project Connections"))
+        {
+
+            foreach (var item in Target.Connections)
+            {
+                if (item.Output == null || item.Input == null) continue;
+                GUIHelpers.DoTriggerButton(new UFStyle()
+                {
+                    Label = string.Format("{0} -> {1}", item.Output.Label, item.Input.Label),
+                    Enabled = true,
+                    BackgroundStyle = UBStyles.EventButtonStyleSmall,
+                    TextAnchor = TextAnchor.MiddleRight,
+                    //IconStyle = UBStyles.RemoveButtonStyle,
+                    ShowArrow = true
+                });
+
+            }
+        }
+#endif
         //if (GUIHelpers.DoToolbarEx("Code Generators"))
         //{
         //    var codeGenerators = InvertGraphEditor.CodeGenerators;
@@ -134,7 +154,9 @@ public class ProjectRepositoryInspector : Editor
 
     private void ImportDiagram()
     {
-        var assets = InvertGraphEditor.AssetManager.GetAssets(typeof(GraphData)).OfType<GraphData>().ToArray();
+        var projectAssets = InvertGraphEditor.Projects.SelectMany(p => p.Diagrams);
+        var assets = InvertGraphEditor.AssetManager.GetAssets(typeof(GraphData)).OfType<GraphData>().Where(p=>!projectAssets.Contains(p)).ToArray();
+        
 
         ItemSelectionWindow.Init("Select Diagram", assets, (item) =>
         {

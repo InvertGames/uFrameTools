@@ -12,6 +12,7 @@ namespace Invert.uFrame.Editor
         where TNode : GenericNode
     {
 
+        public Func<TNode, bool> Condition { get; set; } 
 
         public ConfigProperty<TNode, IEnumerable<string>> Namespaces
         {
@@ -177,15 +178,27 @@ namespace Invert.uFrame.Editor
                 //.DesignerFilenameConfig(node => Path.Combine("_DesignerFiles", Path.Combine("Editor", designerFilename + ".cs")));
             return this;
         }
+
+        public NodeGeneratorConfig<TNode> OnlyIf(Func<TNode, bool> condition)
+        {
+            Condition = condition;
+            return this;
+        }
         public NodeGeneratorConfig<TNode> AsDerivedEditorEditableClass(
             string nameFormat,
             string designerFilename,
-            Func<TNode, CodeTypeReference> getRootBaseType)
+            Func<TNode, CodeTypeReference> getRootBaseType,string folder = null)
         {
-            this.InheritanceBaseTypeConfig(getRootBaseType)
-                .ClassNameConfig(node => string.Format(nameFormat, node.Name))
-                .FilenameConfig(node => Path.Combine("Editor", string.Format(nameFormat + ".cs", node.Name)))
-                .DesignerFilenameConfig(node => Path.Combine("_DesignerFiles", Path.Combine("Editor", designerFilename + ".cs")));
+            this.InheritanceBaseTypeConfig(getRootBaseType);
+            this.ClassNameConfig(node => string.Format(nameFormat, node.Name));
+            if (string.IsNullOrEmpty(folder))
+                this.FilenameConfig(node => Path.Combine("Editor", string.Format(nameFormat + ".cs", node.Name)));
+            else
+            {
+                this.FilenameConfig(node => Path.Combine("Editor", string.Format(Path.Combine(folder,nameFormat + ".cs"), node.Name)));
+            }
+
+            this.DesignerFilenameConfig(node => Path.Combine("_DesignerFiles", Path.Combine("Editor", designerFilename + ".cs")));
 
             return this;
         }

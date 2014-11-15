@@ -21,23 +21,47 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get { return _nodeConfig ?? (_nodeConfig = InvertGraphEditor.Container.GetNodeConfig<TData>()); }
         }
+
+        public override IEnumerable<string> Tags
+        {
+            get
+            {
+                foreach (var item in GraphItem.Flags)
+                {
+                    if (item.Key.StartsWith("_")) continue;
+                    if (item.Value)
+                        yield return item.Key;
+                }
+                foreach (var item in NodeConfig.Tags)
+                {
+                    yield return item;
+                }
+            }
+        }
         protected override void DataObjectChanged()
         {
             ContentItems.Clear();
             InputConnectorType = typeof (TData);
             OutputConnectorType = typeof (TData);
+
             IsLocal = InvertGraphEditor.CurrentProject.CurrentGraph.NodeItems.Contains(GraphItemObject);
 
             foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsInput))
             {
                 if (!InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType)) continue;
-                ContentItems.Add(new ConnectorHeaderViewModel()
+                var header = new ConnectorHeaderViewModel()
                 {
                     Name = inputConfig.Name,
-                    DataObject = inputConfig.IsAlias ? DataObject : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
-                    InputConnectorType = inputConfig.ReferenceType,
+                    DataObject =
+                        inputConfig.IsAlias ? DataObject : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
+                    InputConnectorType = inputConfig.SourceType,
                     IsInput = true
-                });
+                };
+                ContentItems.Add(header);
+          
+                header.InputConnector.AllowMultiple = inputConfig.AllowMultiple;
+                header.InputConnector.Validator = inputConfig.Validator;
+                header.InputConnector.Configuration = inputConfig;
             }
      
             foreach (var section in NodeConfig.Sections)
@@ -140,14 +164,19 @@ namespace Invert.uFrame.Editor.ViewModels
             foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsOutput))
             {
                 if (!InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType)) continue;
-                ContentItems.Add(new ConnectorHeaderViewModel()
+                var header = new ConnectorHeaderViewModel()
                 {
                     Name = inputConfig.Name,
-                    DataObject = inputConfig.IsAlias ? DataObject : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
-                    OutputConnectorType = inputConfig.ReferenceType,
+                    DataObject =
+                        inputConfig.IsAlias ? DataObject : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
+                    OutputConnectorType = inputConfig.SourceType,
                     IsInput = false,
                     IsOutput = true
-                });
+                };
+                ContentItems.Add(header);
+                header.OutputConnector.AllowMultiple = inputConfig.AllowMultiple;
+                header.OutputConnector.Validator = inputConfig.Validator;
+                header.OutputConnector.Configuration = inputConfig;
             }
 
         }

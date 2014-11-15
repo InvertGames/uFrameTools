@@ -11,5 +11,7 @@ namespace Invert.uFrame.Editor
         public Type ReferenceType { get; set; }
         public Type SourceType { get; set; }
         public bool IsAlias { get; set; }
+        public bool AllowMultiple { get; set; }
+        public Func<IDiagramNodeItem, IDiagramNodeItem, bool> Validator { get; set; }
     }
 }

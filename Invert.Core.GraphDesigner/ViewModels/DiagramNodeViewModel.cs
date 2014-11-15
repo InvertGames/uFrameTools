@@ -14,7 +14,7 @@ using UnityEngine;
 namespace Invert.uFrame.Editor.ViewModels
 {
 
-    public class DiagramNodeViewModel<TData> : DiagramNodeViewModel where TData : IDiagramNode
+    public abstract class DiagramNodeViewModel<TData> : DiagramNodeViewModel where TData : IDiagramNode
     {
         protected DiagramNodeViewModel()
         {
@@ -55,7 +55,7 @@ namespace Invert.uFrame.Editor.ViewModels
         }
     }
 
-    public class DiagramNodeViewModel : GraphItemViewModel
+    public abstract class DiagramNodeViewModel : GraphItemViewModel
     {
         private bool _isSelected = false;
 
@@ -300,6 +300,10 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
 
+        public virtual IEnumerable<string> Tags
+        {
+            get { yield break; }
+        }
 
 
         public void BeginEditing()

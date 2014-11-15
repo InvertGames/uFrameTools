@@ -5,11 +5,11 @@ using Invert.uFrame.Editor.ViewModels;
 public class DiagramInputHander : IInputHandler
 {
     public GraphItemViewModel ViewModelAtMouse { get; set; }
-    public DiagramViewModel ViewModel { get; set; }
+    public DiagramViewModel DiagramViewModel { get; set; }
 
-    public DiagramInputHander(DiagramViewModel viewModel)
+    public DiagramInputHander(DiagramViewModel diagramViewModel)
     {
-        ViewModel = viewModel;
+        DiagramViewModel = diagramViewModel;
     }
 
     public virtual void OnMouseDoubleClick(MouseEvent e)
@@ -24,7 +24,7 @@ public class DiagramInputHander : IInputHandler
 
     public virtual void OnMouseMove(MouseEvent e)
     {
-        ViewModelAtMouse = ViewModel.GraphItems.Reverse().FirstOrDefault(p => p.Bounds.Contains(e.MousePosition));
+        ViewModelAtMouse = DiagramViewModel.GraphItems.Reverse().FirstOrDefault(p => p.Bounds.Contains(e.MousePosition));
 
 
     }

@@ -82,6 +82,9 @@ namespace Invert.uFrame.Editor
                 var changed = InvertGraphEditor.CurrentProject != value;
 
                 InvertGraphEditor.CurrentProject = value;
+
+               
+
                 if (value != null)
                 {
                     if (changed)

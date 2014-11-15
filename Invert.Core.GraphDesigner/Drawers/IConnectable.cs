@@ -1,8 +1,34 @@
 using System.Collections.Generic;
+using System.Linq;
 
 public interface IConnectable : IGraphItem
 {
+    IEnumerable<ConnectionData> Inputs { get; }
+    IEnumerable<ConnectionData> Outputs { get; }
 
-    IEnumerable<IGraphItem> ConnectedGraphItems { get; }
-    List<string> ConnectedGraphItemIds { get; set; }
+
+}
+
+public static class ConnectableExtensions
+{
+    public static IEnumerable<TType> InputsFrom<TType>(this IConnectable connectable)
+        where TType : IGraphItem
+    {
+        return connectable.Inputs.Select(p => p.Output).OfType<TType>();
+    }
+    public static TType InputFrom<TType>(this IConnectable connectable)
+        where TType : IGraphItem
+    {
+        return connectable.Inputs.Select(p => p.Output).OfType<TType>().FirstOrDefault();
+    }
+    public static IEnumerable<TType> OutputsTo<TType>(this IConnectable connectable)
+       where TType : IGraphItem
+    {
+        return connectable.Outputs.Select(p => p.Input).OfType<TType>();
+    }
+    public static TType OutputTo<TType>(this IConnectable connectable)
+     where TType : IGraphItem
+    {
+        return connectable.Outputs.Select(p => p.Input).OfType<TType>().FirstOrDefault();
+    }
 }

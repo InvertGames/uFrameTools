@@ -21,9 +21,13 @@ namespace Invert.Core.GraphDesigner
         public const bool REQUIRE_UPGRADE = true;
         public const string CURRENT_VERSION = "1.501";
         public const double CURRENT_VERSION_NUMBER = 1.501;
-        
 
-        public static IAssetManager AssetManager { get; set; }
+
+        public static IAssetManager AssetManager
+        {
+            get { return _assetManager = Container.Resolve<IAssetManager>(); }
+            set { _assetManager = value; }
+        }
 
         private static Dictionary<Type, List<Type>> _allowedFilterNodes;
         private static Dictionary<Type, List<Type>> _allowedFilterItems;
@@ -44,7 +48,21 @@ namespace Invert.Core.GraphDesigner
             get { return InvertApplication.Container; }
         }
 
-        public static IProjectRepository CurrentProject { get; set; }
+        public static IProjectRepository CurrentProject
+        {
+            get { return _currentProject; }
+            set
+            {
+                _currentProject = value;
+                if (value != null)
+                {
+                    foreach (var diagram in _currentProject.Diagrams)
+                    {
+                        diagram.SetProject(value);
+                    }
+                }
+            }
+        }
 
         public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, IProjectRepository project)
         {
@@ -55,7 +73,7 @@ namespace Invert.Core.GraphDesigner
             {
                 DesignerGeneratorFactory generator = diagramItemGenerator;
                 // If its a generator for the entire diagram
-               
+
                 if (typeof(GraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
                 {
                     var diagrams = project.Diagrams;
@@ -67,7 +85,7 @@ namespace Invert.Core.GraphDesigner
                             foreach (var codeGenerator in codeGenerators)
                             {
                                 if (!codeGenerator.IsEnabled(project)) continue;
-                                
+
                                 codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                                 codeGenerator.Settings = settings;
                                 codeGenerator.ObjectData = project;
@@ -324,12 +342,12 @@ namespace Invert.Core.GraphDesigner
             where TSource : class, IConnectable
             where TTarget : class, IConnectable
         {
-            if (oneToMany)
-                container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
-            else
-            {
-                container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
-            }
+            //if (oneToMany)
+            //    container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
+            //else
+            //{
+            //    container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
+            //}
             return container;
         }
 
@@ -415,12 +433,12 @@ namespace Invert.Core.GraphDesigner
                     }
                 }
             }
-           
-            
+
+
             ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
             KeyBindings = Container.ResolveAll<IKeyBinding>().Concat(commandKeyBindings).ToArray();
-         
-            
+
+
         }
         public static IGraphEditorSettings Settings
         {
@@ -430,7 +448,9 @@ namespace Invert.Core.GraphDesigner
         public static MouseEvent CurrentMouseEvent
         {
             // TODO
-            get; set; }
+            get;
+            set;
+        }
 
         public static IKeyBinding[] KeyBindings { get; set; }
 
@@ -441,6 +461,8 @@ namespace Invert.Core.GraphDesigner
 
         private static uFrameContainer _TypesContainer;
         private static IWindowManager _windowManager;
+        private static IAssetManager _assetManager;
+        private static IProjectRepository _currentProject;
 
         public static uFrameContainer TypesContainer
         {
@@ -474,7 +496,7 @@ namespace Invert.Core.GraphDesigner
             get { return false; }
             set
             {
-                
+
             }
         }
 
@@ -520,26 +542,30 @@ namespace Invert.Core.GraphDesigner
 
         public class TypedItemViewModel : ScaffoldNodeTypedChildItem<TData>.ViewModel
         {
-            public TypedItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel) : base(graphItemObject, diagramViewModel)
+            public TypedItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
+                : base(graphItemObject, diagramViewModel)
             {
             }
         }
 
         public class TypedItemDrawer : ScaffoldNodeTypedChildItem<TData>.Drawer
         {
-            public TypedItemDrawer(ScaffoldNodeTypedChildItem<TData>.ViewModel viewModel) : base(viewModel)
+            public TypedItemDrawer(ScaffoldNodeTypedChildItem<TData>.ViewModel viewModel)
+                : base(viewModel)
             {
             }
         }
         public class ItemViewModel : ScaffoldNodeChildItem<TData>.ViewModel
         {
-            public ItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel) : base(graphItemObject, diagramViewModel)
+            public ItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
+                : base(graphItemObject, diagramViewModel)
             {
             }
         }
         public class ItemDrawer : ScaffoldNodeChildItem<TData>.Drawer
         {
-            public ItemDrawer(ScaffoldNodeChildItem<TData>.ViewModel viewModel) : base(viewModel)
+            public ItemDrawer(ScaffoldNodeChildItem<TData>.ViewModel viewModel)
+                : base(viewModel)
             {
             }
         }

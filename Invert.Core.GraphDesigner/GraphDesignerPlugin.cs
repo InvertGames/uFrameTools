@@ -30,7 +30,7 @@ namespace Invert.Core.GraphDesigner
             var typeContainer = InvertGraphEditor.TypesContainer;
             
             typeContainer.AddItem<GenericConnectionReference,ConnectorHeaderViewModel,InputHeaderDrawer>();
-
+            container.RegisterInstance<IConnectionStrategy>(new InputOutputStrategy(),"InputOutputStrategy");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(int), Group = "", Label = "int", IsPrimitive = true }, "int");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(string), Group = "", Label = "string", IsPrimitive = true }, "string");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(decimal), Group = "", Label = "decimal", IsPrimitive = true }, "decimal");

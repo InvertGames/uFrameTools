@@ -89,15 +89,7 @@ public class GenericInheritableNode : GenericNode, IInhertable
         }
     }
 
-    public IEnumerable<IDiagramNodeItem> ChildItemsWithInherited
-    {
-        get { return BaseNodesWithThis.SelectMany(p => p.ChildItems); }
-    }
 
-    public IEnumerable<IDiagramNodeItem> GetMultiInheritedChildItems<TMultiType>() where TMultiType : GenericNode
-    {
-        return BaseNodesWithThis.SelectMany(p => p.InputGraphItems.OfType<TMultiType>().SelectMany(x => x.ChildItems));
-    } 
     //public IEnumerable<TChildItem> GetInheritedChildren<TChildItem>()
     //{
     //    return BaseNodesWithThis

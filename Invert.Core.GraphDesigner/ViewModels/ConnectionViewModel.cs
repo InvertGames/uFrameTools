@@ -8,11 +8,17 @@ namespace Invert.uFrame.Editor.ViewModels
         private Color _color;
         public ConnectorViewModel ConnectorA { get; set; }
         public ConnectorViewModel ConnectorB { get; set; }
+        public DiagramViewModel DiagramViewModel { get; set;}
 
         public virtual bool IsStateLink { get; set; }
 
         public Action<ConnectionViewModel> Apply { get; set; }
         public Action<ConnectionViewModel> Remove { get; set; }
+
+        public ConnectionViewModel(DiagramViewModel diagramViewModel)
+        {
+            DiagramViewModel = diagramViewModel;
+        }
 
         public override Vector2 Position { get; set; }
 

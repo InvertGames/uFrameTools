@@ -10,9 +10,12 @@ namespace Invert.uFrame.Editor.ViewModels
         private ConnectorViewModel[] _inputs;
         private ConnectorViewModel[] _outputs;
 
-        public ConnectorInfo(ConnectorViewModel[] allConnectors)
+        public ConnectorInfo(ConnectorViewModel[] allConnectors, DiagramViewModel viewModel, IProjectRepository currentRepository)
         {
             AllConnectors = allConnectors;
+            DiagramData = viewModel.DiagramData;
+            DiagramViewModel = viewModel;
+            CurrentRepository = currentRepository;
         }
 
         public ConnectorViewModel[] AllConnectors
@@ -20,6 +23,9 @@ namespace Invert.uFrame.Editor.ViewModels
             get;
             set;
         }
+        public DiagramViewModel DiagramViewModel { get; set; }
+        public IGraphData DiagramData { get; set; }
+        public IProjectRepository CurrentRepository { get; set; }
 
         public ConnectorViewModel[] Inputs
         {
@@ -62,7 +68,7 @@ namespace Invert.uFrame.Editor.ViewModels
                         {
                             if (strategy.IsConnected((TSource) output.DataObject, (TTarget) input.DataObject))
                             {
-                                yield return new ConnectionViewModel()
+                                yield return new ConnectionViewModel(DiagramViewModel)
                                 {
                                     IsStateLink = strategy.IsStateLink,
                                     Color = strategy.ConnectionColor,
@@ -80,7 +86,7 @@ namespace Invert.uFrame.Editor.ViewModels
                     {
                         if (strategy.IsConnected((TSource)output.DataObject, (TTarget)input.DataObject))
                         {
-                            yield return new ConnectionViewModel()
+                            yield return new ConnectionViewModel(DiagramViewModel)
                             {
                                 IsStateLink = strategy.IsStateLink,
                                 Color = strategy.ConnectionColor,

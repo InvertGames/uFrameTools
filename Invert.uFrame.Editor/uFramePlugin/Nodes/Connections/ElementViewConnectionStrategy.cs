@@ -11,7 +11,7 @@ namespace Invert.uFrame.Editor.Nodes
             get { return Color.white; }
         }
 
-        public override ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
+        public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
 
             if (a.ConnectorFor is ElementNodeViewModel && b.ConnectorFor is ViewNodeViewModel)
@@ -19,7 +19,7 @@ namespace Invert.uFrame.Editor.Nodes
                 
                 if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
                 {
-                    return new ConnectionViewModel()
+                    return new ConnectionViewModel(diagramViewModel)
                     {
                         ConnectorA = a,
                         ConnectorB = b,

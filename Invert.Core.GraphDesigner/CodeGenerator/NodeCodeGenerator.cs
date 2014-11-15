@@ -53,11 +53,14 @@ namespace Invert.uFrame.Editor
 
         public sealed override void Initialize(CodeFileGenerator fileGenerator)
         {
-            base.Initialize(fileGenerator);
             var nodeConfig = InvertGraphEditor.Container.GetNodeConfig<TData>();
             if (!nodeConfig.TypeGeneratorConfigs.ContainsKey(this.GetType())) return;
 
             GeneratorConfig = nodeConfig.TypeGeneratorConfigs[this.GetType()] as NodeGeneratorConfig<TData>;
+            if (GeneratorConfig == null) return;
+            if (GeneratorConfig.Condition != null && !GeneratorConfig.Condition(Data)) return;
+            base.Initialize(fileGenerator);
+         
 
             Decleration = new CodeTypeDeclaration(IsDesignerFile ? NameAsDesignerClass : NameAsClass)
             {

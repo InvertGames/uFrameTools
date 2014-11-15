@@ -13,18 +13,18 @@ public class ConnectionHandler : DiagramInputHander
 
     public List<ConnectorViewModel> PossibleConnections { get; set; }
 
-    public ConnectionHandler(DiagramViewModel viewModel, ConnectorViewModel startConnector)
-        : base(viewModel)
+    public ConnectionHandler(DiagramViewModel diagramViewModel, ConnectorViewModel startConnector)
+        : base(diagramViewModel)
     {
         StartConnector = startConnector;
         PossibleConnections = new List<ConnectorViewModel>();
 
-        foreach (var connector in viewModel.GraphItems.OfType<ConnectorViewModel>())
+        foreach (var connector in diagramViewModel.GraphItems.OfType<ConnectorViewModel>())
         {
             foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
             {
 
-                if (strategy.Connect(StartConnector, connector) != null)
+                if (strategy.Connect(diagramViewModel, StartConnector, connector) != null)
                 {
                     PossibleConnections.Add(connector);
                 }
@@ -73,7 +73,7 @@ public class ConnectionHandler : DiagramInputHander
                     {
 
                         //try and connect them
-                        connection = strategy.Connect(StartConnector, connector);
+                        connection = strategy.Connect(DiagramViewModel, StartConnector, connector);
                         if (connection != null)
                             break;
 
@@ -102,7 +102,7 @@ public class ConnectionHandler : DiagramInputHander
             foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
             {
                 //try and connect them
-                var connection = strategy.Connect(StartConnector, endViewModel);
+                var connection = strategy.Connect(DiagramViewModel, StartConnector, endViewModel);
                 if (connection != null)
                 {
                     CurrentConnection = connection;
@@ -144,6 +144,7 @@ public class ConnectionHandler : DiagramInputHander
         {
             InvertGraphEditor.ExecuteCommand((v) =>
             {
+
                 CurrentConnection.Apply(CurrentConnection);
             });
         }

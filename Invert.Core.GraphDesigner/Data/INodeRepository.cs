@@ -5,6 +5,8 @@ public interface INodeRepository
     // Basic Information
     string Name { get; }
     IEnumerable<IDiagramNode> NodeItems { get; }
+    IEnumerable<IGraphItem> AllGraphItems { get; }
+    IEnumerable<ConnectionData> Connections { get; }
 
     // Settings
     ElementDiagramSettings Settings { get; }

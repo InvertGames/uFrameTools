@@ -179,6 +179,34 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         }
     }
 
+    public IEnumerable<IGraphItem> AllGraphItems
+    {
+        get
+        {
+            foreach (var diagram in Diagrams)
+            {
+                foreach (var item in diagram.AllGraphItems)
+                {
+                    yield return item;
+                }
+            }
+        }
+    }
+
+    public IEnumerable<ConnectionData> Connections
+    {
+        get
+        {
+            foreach (var diagram in Diagrams)
+            {
+                foreach (var item in diagram.Connections)
+                {
+                    yield return item;
+                }
+            }
+        }
+    }
+
     public IEnumerable<IDiagramNode> AllNodeItems
     {
         get

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
@@ -11,7 +12,7 @@ using UnityEngine;
 
 public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackReceiver, IItem
 {
-    [SerializeField,HideInInspector]
+    [SerializeField, HideInInspector]
     public string _jsonData;
 
     [NonSerialized]
@@ -30,9 +31,9 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
     private FilterPositionData _positionData;
     private IDiagramFilter _rootFilter;
     private ICodePathStrategy _codePathStrategy;
+    private List<ConnectionData> _connections;
 
 
-   
     public ICodePathStrategy CodePathStrategy
     {
         get
@@ -50,6 +51,24 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         set { _codePathStrategy = value; }
     }
 
+    public IEnumerable<IGraphItem> AllGraphItems
+    {
+        get
+        {
+            foreach (var node in Nodes)
+            {
+                yield return node;
+                foreach (var item in node.ContainedItems)
+                    yield return item;
+            }
+        }
+    }
+
+    public IEnumerable<ConnectionData> Connections
+    {
+        get { return ConnectedItems; }
+    }
+
 
     public FilterPositionData PositionData
     {
@@ -59,12 +78,12 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
 
     public void RemoveItem(IDiagramNodeItem nodeItem)
     {
-        
+
     }
 
     public void AddItem(IDiagramNodeItem item)
     {
-        
+
     }
 
     public IDiagramFilter CurrentFilter
@@ -103,7 +122,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
     {
         get { return Regex.Replace(name, "[^a-zA-Z0-9_.]+", ""); }
     }
-     
+
     public string Namespace { get; set; }
     public string Version { get; set; }
     public int RefactorCount { get; set; }
@@ -180,7 +199,15 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         root.AddObject("SceneFlow", data.RootFilter as IJsonObject);
         // Nodes
         root.AddObjectArray("Nodes", data.Nodes);
+
+        root.AddObjectArray("ConnectedItems", data.ConnectedItems);
         return root;
+    }
+
+    public List<ConnectionData> ConnectedItems
+    {
+        get { return _connections ?? (_connections = new List<ConnectionData>()); }
+        set { _connections = value; }
     }
 
     public void Initialize()
@@ -237,6 +264,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         try
         {
             Deserialize(_jsonData);
+       
             CleanUpDuplicates();
             Errors = false;
         }
@@ -264,6 +292,28 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         }
     }
 
+    public void AddConnection(IGraphItem output, IGraphItem input)
+    {
+        ConnectedItems.Add(new ConnectionData(output.Identifier,input.Identifier)
+        {
+            Graph = this,
+            Output = output,
+            Input = input
+        });
+    }
+
+    public void RemoveConnection(IGraphItem output, IGraphItem input)
+    {
+        ConnectedItems.RemoveAll(p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
+    }
+    public void ClearOutput(IGraphItem output)
+    {
+        ConnectedItems.RemoveAll(p => p.OutputIdentifier == output.Identifier);
+    }
+    public void ClearInput(IGraphItem input)
+    {
+        ConnectedItems.RemoveAll(p => p.InputIdentifier == input.Identifier);
+    }
     private void Deserialize(string jsonData)
     {
 
@@ -282,23 +332,6 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
             return;
         }
 
-        Nodes.Clear();
-
-        this.Version = jsonNode["Version"].Value;
-        this._identifier = jsonNode["Identifier"].Value;
-
-        if (jsonNode["Nodes"] is JSONArray)
-        {
-
-            //uFrameEditor.Log(this.name + jsonNode["Nodes"].ToString());
-            Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>(this));
-
-        }
-        else
-        {
-        }
-
-
         if (jsonNode["SceneFlow"] is JSONClass)
             RootFilter = jsonNode["SceneFlow"].DeserializeObject(this) as IDiagramFilter;
 
@@ -306,6 +339,8 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
             PositionData = jsonNode["PositionData"].DeserializeObject(this) as FilterPositionData;
 
 
+        this.Version = jsonNode["Version"].Value;
+        this._identifier = jsonNode["Identifier"].Value;
         if (jsonNode["FilterState"] is JSONClass)
         {
             FilterState = new FilterState();
@@ -316,6 +351,19 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         {
             Settings = new ElementDiagramSettings();
             Settings.Deserialize(jsonNode["Settings"].AsObject, this);
+        }
+        if (jsonNode["Nodes"] is JSONArray)
+        {
+            Nodes.Clear();
+            //uFrameEditor.Log(this.name + jsonNode["Nodes"].ToString());
+            Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>(this));
+        }
+        if (jsonNode["ConnectedItems"] is JSONArray)
+        {
+            ConnectedItems.Clear();
+            ConnectedItems.AddRange(jsonNode["ConnectedItems"].AsArray.DeserializeObjectArray<ConnectionData>(this));
+
+            
         }
         if (string.IsNullOrEmpty(Version))
         {
@@ -344,6 +392,71 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         get
         {
             return Name;
+        }
+    }
+
+    public void SetProject(IProjectRepository project)
+    {
+        foreach (var item in ConnectedItems)
+        {
+            item.Graph = this;
+            item.Input = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.InputIdentifier);
+            item.Output = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.OutputIdentifier);
+        }
+    }
+}
+
+
+[Serializable]
+public class ConnectionData : IJsonObject
+{
+    [SerializeField]
+    private string _outputIdentifier;
+
+    [SerializeField]
+    private string _inputIdentifier;
+
+    public ConnectionData(string outputIdentifier, string inputIdentifier)
+    {
+        OutputIdentifier = outputIdentifier;
+        InputIdentifier = inputIdentifier;
+    }
+
+    public ConnectionData()
+    {
+    }
+
+    public string OutputIdentifier
+    {
+        get { return _outputIdentifier; }
+        set { _outputIdentifier = value; }
+    }
+
+    public string InputIdentifier
+    {
+        get { return _inputIdentifier; }
+        set { _inputIdentifier = value; }
+    }
+
+    public GraphData Graph { get; set; }
+    public IGraphItem Output { get; set; }
+    public IGraphItem Input { get; set; }
+
+    public void Serialize(JSONClass cls)
+    {
+        cls.Add("OutputIdentifier", OutputIdentifier ?? string.Empty);
+        cls.Add("InputIdentifier", InputIdentifier ?? string.Empty);
+    }
+
+    public void Deserialize(JSONClass cls, INodeRepository repository)
+    {
+        if (cls["InputIdentifier"] != null)
+        {
+            InputIdentifier = cls["InputIdentifier"].Value;
+        }
+        if (cls["OutputIdentifier"] != null)
+        {
+            OutputIdentifier = cls["OutputIdentifier"].Value;
         }
     }
 }

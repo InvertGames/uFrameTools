@@ -52,15 +52,8 @@ public abstract class GenericNodeDrawer<TData, TViewModel> : DiagramNodeDrawer<T
         base.Draw(scale);
         //if (NodeViewModel.IsMouseOver || NodeViewModel.IsSelected)
         //{
-            for (int index = 0; index < this.NodeViewModel.NodeConfig.Tags.Count; index++)
-            {
-                
-                var item = this.NodeViewModel.NodeConfig.Tags[index];
-                var content = new GUIContent(item);
-                var width = ElementDesignerStyles.Tag1.CalcSize(content).x;
-                GUI.Label(new Rect((Bounds.x + (Bounds.width / 2)) - (width / 2), Bounds.y - (18f * (index + 1)), width, 15f).Scale(Scale), content,
-                    ElementDesignerStyles.Tag1);
-            }
+
+ 
         //}
        
     }
@@ -70,6 +63,9 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
     private static GUIStyle _itemStyle;
     
     private string _cachedLabel;
+
+    private string[] _cachedTags;
+    private string _cachedTag;
 
     [Inject]
     public IUFrameContainer Container { get; set; }
@@ -208,8 +204,38 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         //    GUI.Label(offsetPosition.Scale(Scale), label, style);
 
         //}
+        //for (int index = 0; index < _cachedTags.Length; index++)
+        //{
+
+        //    var item = _cachedTags[index];
+        //    var content = new GUIContent(item);
+        //    var width = ElementDesignerStyles.Tag1.CalcSize(content).x;
 
 
+        //    GUI.Label(new Rect((Bounds.x + (Bounds.width / 2)) - (width / 2), Bounds.y - (18f * (index + 1)), width, 15f).Scale(Scale), content,
+        //        ElementDesignerStyles.Tag1);
+
+        //    if (!ViewModel.IsMouseOver && !ViewModel.IsSelected) break;
+        //}
+  
+        var content = new GUIContent(_cachedTag);
+        var width = ElementDesignerStyles.Tag1.CalcSize(content).x;
+        GUI.Label(new Rect((Bounds.x + (Bounds.width / 2)) - (width / 2), Bounds.y - (18f), width, 15f).Scale(Scale), content,
+              ElementDesignerStyles.Tag1);
+
+        //for (int index = 0; index < _cachedTags.Length; index++)
+        //{
+
+        //    var item = _cachedTags[index];
+        //    var content = new GUIContent(item);
+        //    var width = ElementDesignerStyles.Tag1.CalcSize(content).x;
+
+      
+        //    GUI.Label(new Rect((Bounds.x + (Bounds.width / 2)) - (width / 2), Bounds.y - (18f * (index + 1)), width, 15f).Scale(Scale), content,
+        //        ElementDesignerStyles.Tag1);
+
+        //    if (!ViewModel.IsMouseOver && !ViewModel.IsSelected) break;
+        //}
         
        
         var adjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
@@ -407,7 +433,7 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
 
     public override void Refresh(Vector2 position)
     {
-
+        _cachedTag = string.Join(" | ", ViewModel.Tags.ToArray());
         if (Children == null || Children.Count < 1)
         {
             RefreshContent();
@@ -422,7 +448,7 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
             startY += child.Bounds.height;
         }
         // Now lets stretch all the content drawers to the maximum width
-        var maxWidth = 145f;
+        var maxWidth = Math.Max(145f,ElementDesignerStyles.Tag1.CalcSize(new GUIContent(_cachedTag)).x);
         var height = 0f;
 
         foreach (var item in Children)
@@ -450,6 +476,8 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         }
 
         ViewModel.ConnectorBounds = Children[0].Bounds;
+     
+        //_cachedTags = ViewModel.Tags.Reverse().ToArray();
         //ViewModel.HeaderPosition = new Rect(ViewModel.Position.x, ViewModel.Position.y, maxWidth, ViewModel.HeaderSize);
     }
 

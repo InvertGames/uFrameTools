@@ -175,7 +175,7 @@ public class DiagramViewModel : ViewModel
         }
 
         var connections = new List<ConnectionViewModel>();
-        var connectorInfo = new ConnectorInfo(connectors.ToArray());
+        var connectorInfo = new ConnectorInfo(connectors.ToArray(),this,CurrentRepository);
         foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
         {
             strategy.GetConnections(connections, connectorInfo);

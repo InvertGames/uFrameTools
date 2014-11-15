@@ -11,9 +11,9 @@ namespace Invert.uFrame.Editor.ViewModels
 
 
         public abstract Color ConnectionColor { get; }
-        public override ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
+        public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
-            return TryConnect<TOutputData, TInputData>(a, b, Apply, CanConnect);
+            return TryConnect<TOutputData, TInputData>(diagramViewModel, a, b, Apply, CanConnect);
         }
 
         protected virtual bool CanConnect(TOutputData output, TInputData input)
@@ -21,7 +21,7 @@ namespace Invert.uFrame.Editor.ViewModels
             return true;
         }
 
-        public sealed override void Apply(ConnectionViewModel connectionViewModel)
+        public override void Apply(ConnectionViewModel connectionViewModel)
         {
             var output = connectionViewModel.ConnectorA.DataObject as TOutputData;
             var input = connectionViewModel.ConnectorB.DataObject as TInputData;
@@ -35,6 +35,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             base.GetConnections(connections, info);
             connections.AddRange(info.ConnectionsByData<TOutputData,TInputData>(this));
+            //foreach (var item in info.DiagramData.Connections.Cont)
         }
 
  
@@ -64,7 +65,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get { return false; }
         }
-        public virtual ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
+        public virtual ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
             return null;
         }
@@ -74,7 +75,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
         }
 
-        protected ConnectionViewModel TryConnect<TOutput,TInput>(ConnectorViewModel a, ConnectorViewModel b, Action<ConnectionViewModel> apply, Func<TOutput,TInput,bool> canConnect = null)
+        protected ConnectionViewModel TryConnect<TOutput, TInput>(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b, Action<ConnectionViewModel> apply, Func<TOutput, TInput, bool> canConnect = null)
         {
             if (a.ConnectorFor.DataObject is TOutput && b.ConnectorFor.DataObject is TInput)
             {
@@ -88,7 +89,7 @@ namespace Invert.uFrame.Editor.ViewModels
                        !canConnect((TOutput)a.ConnectorFor.DataObject, (TInput)b.ConnectorFor.DataObject))
                                 return null;
 
-                            return new ConnectionViewModel()
+                            return new ConnectionViewModel(diagramViewModel)
                             {
                                 IsStateLink = this.IsStateLink,
                                 ConnectorA = a,
@@ -102,7 +103,7 @@ namespace Invert.uFrame.Editor.ViewModels
                         !canConnect((TOutput) a.ConnectorFor.DataObject, (TInput) b.ConnectorFor.DataObject))
                         return null;
 
-                    return new ConnectionViewModel()
+                    return new ConnectionViewModel(diagramViewModel)
                     {
                         IsStateLink = this.IsStateLink,
                         ConnectorA = a,

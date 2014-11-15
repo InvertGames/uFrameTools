@@ -211,12 +211,12 @@ namespace Invert.uFrame.Editor
 
         public NodeConfig<TNode> ConnectsTo<TTarget>(bool oneToMany, Color color) where TTarget : class, IConnectable
         {
-            if (oneToMany)
-                Container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToManyConnection");
-            else
-            {
-                Container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToOneConnection");
-            }
+            //if (oneToMany)
+            //    Container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToManyConnection");
+            //else
+            //{
+            //    Container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToOneConnection");
+            //}
             return this;
         }
 
@@ -238,7 +238,7 @@ namespace Invert.uFrame.Editor
             return this;
         }
 
-        public NodeConfig<TNode> Input<TSourceType, TReferenceType>(string inputName, bool allowMultiple)
+        public NodeConfig<TNode> Input<TSourceType, TReferenceType>(string inputName, bool allowMultiple, Func<IDiagramNodeItem, IDiagramNodeItem, bool> validator = null)
             where TReferenceType : GenericConnectionReference, new()
             where TSourceType : class, IConnectable
         {
@@ -248,43 +248,56 @@ namespace Invert.uFrame.Editor
                 IsInput = true,
                 IsOutput = false,
                 ReferenceType = typeof(TReferenceType),
-                SourceType = typeof(TSourceType)
+                SourceType = typeof(TSourceType),
+                AllowMultiple = allowMultiple,
+                Validator = validator
             };
             Inputs.Add(config);
 
-            var cs = new GenericConnectionStrategy<TSourceType, TReferenceType>()
-            {
-                IsConnected = (output, input) =>
-                {
-                    var genericNode = input.Node as GenericNode;
-                    var inputItem = genericNode.GetConnectionReference<TReferenceType>();
+            //var cs = new GenericConnectionStrategy<TSourceType, TReferenceType>()
+            //{
+            //    IsConnected = (output, input) =>
+            //    {
+            //        var result = input.ConnectedGraphItemIds.Contains(input.Identifier);
+            //        //var genericNode = input.Node as GenericNode;
+            //        //var inputItem = genericNode.GetConnectionReference<TReferenceType>();
 
-                    var result = inputItem.ConnectedGraphItemIds.Contains(output.Identifier);
-                    //Debug.Log(string.Format("Testing Connection::{0}:{1}:{2}", inputItem.GetType().Name, output.Label,result));
-                    return result;
-                },
-                Apply = (output, input) =>
-                {
-                    var genericNode = input.Node as GenericNode;
-                    var inputItem = genericNode.GetConnectionReference<TReferenceType>();
-                    if (!allowMultiple && inputItem.ConnectedGraphItemIds.Count > 0)
-                    {
-                        inputItem.ConnectedGraphItemIds.Clear();
-                    }
-                    if (!inputItem.ConnectedGraphItemIds.Contains(output.Identifier))
-                    {
-                        inputItem.ConnectedGraphItemIds.Add((output.Identifier));
-                    }
+            //        //var result = inputItem.ConnectedGraphItemIds.Contains(output.Identifier);
+            //       // Debug.Log(string.Format("Testing Connection::{0}:{1}:{2}", inputItem.GetType().Name, output.Label,result));
+            //        //return result;
+            //        return result;
+            //    },
+            //    Apply = (output, input) =>
+            //    {
 
-                    //Debug.Log(string.Format("{0}:{1}", inputItem.GetType().Name, output.Label));
-                },
-                Remove = (output, input) =>
-                {
-                    var genericNode = input.Node as GenericNode;
-                    genericNode.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Remove((output.Identifier));
-                },
-            };
-            Container.RegisterInstance<IConnectionStrategy>(cs, inputName + typeof(TSourceType).Name + "to" + typeof(TReferenceType).Name + "Connection");
+            //        if (!input.ConnectedGraphItemIds.Contains(input.Identifier))
+            //        {
+            //            input.ConnectedGraphItemIds.Add(input.Identifier);
+            //        }
+
+
+
+            //        //var genericNode = input.Node as GenericNode;
+            //        //var inputItem = genericNode.GetConnectionReference<TReferenceType>();
+            //        //if (!allowMultiple && inputItem.ConnectedGraphItemIds.Count > 0)
+            //        //{
+            //        //    inputItem.ConnectedGraphItemIds.Clear();
+            //        //}
+            //        //if (!inputItem.ConnectedGraphItemIds.Contains(output.Identifier))
+            //        //{
+            //        //    inputItem.ConnectedGraphItemIds.Add((output.Identifier));
+            //        //}
+
+            //        //Debug.Log(string.Format("{0}:{1}", output.GetType().Name, input.GetType().Name));
+            //    },
+            //    Remove = (output, input) =>
+            //    {
+            //        input.ConnectedGraphItemIds.Remove(output.Identifier);
+            //        //var genericNode = input.Node as GenericNode;
+            //        //genericNode.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Remove((output.Identifier));
+            //    },
+            //};
+            //Container.RegisterInstance<IConnectionStrategy>(cs, inputName + typeof(IConnectable).Name + "to" + typeof(IConnectable).Name + "Connection");
             //Container.RegisterInstance<IConnectionStrategy>(new InputReferenceConnectionStrategy<TSourceType, TReferenceType>(UnityEngine.Color.white),
             //    typeof(TSourceType).Name + "_" + typeof(TReferenceType).Name + "InputConnection");
             //Container.Connectable<TSourceType, TReferenceType>(false);
@@ -307,7 +320,7 @@ namespace Invert.uFrame.Editor
         }
 
 
-        public NodeConfig<TNode> Output<TSourceType, TReferenceType>(string inputName, bool allowMultiple)
+        public NodeConfig<TNode> Output<TSourceType, TReferenceType>(string inputName, bool allowMultiple, Func<IDiagramNodeItem, IDiagramNodeItem, bool> validator = null)
             where TReferenceType : GenericConnectionReference, new()
             where TSourceType : class, IConnectable
         {
@@ -317,43 +330,49 @@ namespace Invert.uFrame.Editor
                 IsInput = false,
                 IsOutput = true,
                 ReferenceType = typeof(TReferenceType),
-                SourceType = typeof(TSourceType)
+                SourceType = typeof(TSourceType),
+                AllowMultiple = allowMultiple,
+                Validator = validator
             };
             Inputs.Add(config);
+            //var allowMultiple1 = allowMultiple;
+            //var cs = new GenericConnectionStrategy<TReferenceType, TSourceType>()
+            //{
+            //    IsConnected = (output, input) =>
+            //    {
+            //        //var genericNode = output.Node as GenericNode;
+            //        //var inputItem = genericNode.GetConnectionReference<TReferenceType>();
 
-            var cs = new GenericConnectionStrategy<TReferenceType, TSourceType>()
-            {
-                IsConnected = (output, input) =>
-                {
-                    var genericNode = output.Node as GenericNode;
-                    var inputItem = genericNode.GetConnectionReference<TReferenceType>();
+            //        var result = output.ConnectedGraphItemIds.Contains(input.Identifier);
+            //        //Debug.Log(string.Format("Testing Connection::{0}:{1}:{2}", inputItem.GetType().Name, output.Label,result));
+            //        //return result;
+            //        return result;
+            //        return false;
+            //    },
+            //    Apply = (output, input) =>
+            //    {
+            //        //var referenceType = output.ConnectedGraphItems.OfType<TReferenceType>();
+                  
+            //        //var genericNode = output.Node as GenericNode;
+            //        //var inputItem = genericNode.GetConnectionReference<TReferenceType>();
+             
+            //        if (!output.ConnectedGraphItemIds.Contains(input.Identifier))
+            //        {
+            //              output.ConnectedGraphItemIds.Add(input.Identifier);
+            //        }
 
-                    var result = inputItem.ConnectedGraphItemIds.Contains(input.Identifier);
-                    //Debug.Log(string.Format("Testing Connection::{0}:{1}:{2}", inputItem.GetType().Name, output.Label,result));
-                    return result;
-                },
-                Apply = (output, input) =>
-                {
-                    var genericNode = output.Node as GenericNode;
-                    var inputItem = genericNode.GetConnectionReference<TReferenceType>();
-                    if (!allowMultiple && inputItem.ConnectedGraphItemIds.Count > 0)
-                    {
-                        inputItem.ConnectedGraphItemIds.Clear();
-                    }
-                    if (!inputItem.ConnectedGraphItemIds.Contains(input.Identifier))
-                    {
-                        inputItem.ConnectedGraphItemIds.Add((input.Identifier));
-                    }
-
-                    //Debug.Log(string.Format("{0}:{1}", inputItem.GetType().Name, output.Label));
-                },
-                Remove = (output, input) =>
-                {
-                    var genericNode = output.Node as GenericNode;
-                    genericNode.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Remove((input.Identifier));
-                },
-            };
-            Container.RegisterInstance<IConnectionStrategy>(cs, inputName + typeof(TSourceType).Name + "to" + typeof(TReferenceType).Name + "Connection");
+            //        Debug.Log(string.Format("Applied -> {0}:{1}", output.GetType().Name, input.GetType().Name));
+            //    },
+            //    Remove = (output, input) =>
+            //    {
+            //        //var genericNode = output.Node as GenericNode;
+            //        //genericNode.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Remove((input.Identifier));
+            //        output.ConnectedGraphItemIds.Remove(input.Identifier);
+            //    },
+            //    AllowMultipleInputs = false,
+            //    AllowMultipleOutputs = allowMultiple
+            //};
+            //Container.RegisterInstance<IConnectionStrategy>(cs, inputName + typeof(IConnectable).Name + "to" + typeof(IConnectable).Name + "Connection");
             //Container.RegisterInstance<IConnectionStrategy>(new InputReferenceConnectionStrategy<TSourceType, TReferenceType>(UnityEngine.Color.white),
             //    typeof(TSourceType).Name + "_" + typeof(TReferenceType).Name + "InputConnection");
             //Container.Connectable<TSourceType, TReferenceType>(false);
@@ -499,8 +518,10 @@ namespace Invert.uFrame.Editor
                         {
                             var generatorConfig =
                                 config.TypeGeneratorConfigs[result.GetType()] as NodeGeneratorConfig<TNode>;
+
                             if (generatorConfig != null)
                             {
+                                if (generatorConfig.Condition != null && !generatorConfig.Condition(item)) continue;
                                 if (result.IsDesignerFile)
                                 {
                                     if (generatorConfig.DesignerFilename != null)

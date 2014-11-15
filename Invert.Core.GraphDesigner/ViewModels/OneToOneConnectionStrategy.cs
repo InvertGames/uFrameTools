@@ -1,58 +1,59 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Core.GraphDesigner;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor.ViewModels
 {
-    public class OneToOneConnectionStrategy<TSource, TTarget> :
-        DefaultConnectionStrategy<TSource, TTarget>
-        where TSource : class, IConnectable
-        where TTarget : class, IConnectable
-    {
-        private Color _connectionColor;
+    //public class OneToOneConnectionStrategy<TSource, TTarget> :
+    //    DefaultConnectionStrategy<TSource, TTarget>
+    //    where TSource : class, IConnectable
+    //    where TTarget : class, IConnectable
+    //{
+    //    private Color _connectionColor;
 
-        public OneToOneConnectionStrategy()
-            : this(Color.blue)
-        {
-        }
+    //    public OneToOneConnectionStrategy()
+    //        : this(Color.blue)
+    //    {
+    //    }
 
-        public OneToOneConnectionStrategy(Color connectionColor)
-        {
-            _connectionColor = connectionColor;
-        }
+    //    public OneToOneConnectionStrategy(Color connectionColor)
+    //    {
+    //        _connectionColor = connectionColor;
+    //    }
 
-        public override Color ConnectionColor
-        {
-            get { return _connectionColor; }
+    //    public override Color ConnectionColor
+    //    {
+    //        get { return _connectionColor; }
 
-        }
+    //    }
 
-        public override bool IsConnected(TSource output, TTarget input)
-        {
-            return output.ConnectedGraphItemIds.Contains(input.Identifier);
-        }
+    //    public override bool IsConnected(TSource output, TTarget input)
+    //    {
+    //        return output.ConnectedGraphItemIds.Contains(input.Identifier);
+    //    }
 
-        protected override void ApplyConnection(TSource output, TTarget input)
-        {
-            var item = output.ConnectedGraphItems.OfType<TTarget>().FirstOrDefault();
-            if (item == null)
-            {
-                output.ConnectedGraphItemIds.Add(input.Identifier);
-            }
-            else
-            {
-                output.ConnectedGraphItemIds.Remove(item.Identifier);
-                output.ConnectedGraphItemIds.Add(input.Identifier);
-            }
-            
-        }
+    //    protected override void ApplyConnection(TSource output, TTarget input)
+    //    {
+    //        var item = output.ConnectedGraphItems.OfType<TTarget>().FirstOrDefault();
+    //        if (item == null)
+    //        {
+    //            output.ConnectedGraphItemIds.Add(input.Identifier);
+    //        }
+    //        else
+    //        {
+    //            output.ConnectedGraphItemIds.Remove(item.Identifier);
+    //            output.ConnectedGraphItemIds.Add(input.Identifier);
+    //        }
 
-        protected override void RemoveConnection(TSource output, TTarget input)
-        {
-            output.ConnectedGraphItemIds.Remove(input.Identifier);
-        }
-    }
+    //    }
+
+    //    protected override void RemoveConnection(TSource output, TTarget input)
+    //    {
+    //        output.ConnectedGraphItemIds.Remove(input.Identifier);
+    //    }
+    //}
 
     //public class CustomConnectionStrategy<TSource, TTarget> :
     //    DefaultConnectionStrategy<TSource, TTarget>
@@ -68,7 +69,7 @@ namespace Invert.uFrame.Editor.ViewModels
     //        _connectionColor = connectionColor;
     //        Apply = apply;
     //        Remove = remove;
-  
+
     //    }
 
     //    public override Color ConnectionColor
@@ -99,64 +100,9 @@ namespace Invert.uFrame.Editor.ViewModels
     //    }
     //}
 
-
-    public class InputReferenceConnectionStrategy<TSource, TReferenceType> : DefaultConnectionStrategy<TSource, TReferenceType>
-        where TSource : class, IConnectable
-        where TReferenceType : GenericConnectionReference, new()
-    {
-        private Color _connectionColor = Color.white;
-
-        public override Color ConnectionColor
-        {
-            get { return _connectionColor; }
-        }
-
-        public InputReferenceConnectionStrategy(Color color)
-        {
-            _connectionColor = color;
-        }
-
-        protected override bool CanConnect(TSource output, TReferenceType input)
-        {
-            return true;
-            //Debug.Log(output.GetType().Name + " : " + input.GetType().Name);
-            return base.CanConnect(output, input);
-        }
-
-        public override ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
-        {
-            //return CreateConnection(a, b);
-            //Debug.Log(a.DataObject.GetType().Name + " : " + b.DataObject.GetType().Name);
-            return base.Connect(a, b);
-        }
-
-        public override bool IsConnected(TSource output, TReferenceType input)
-        {
-            var node = input.Node as GenericNode;
-
-            return node.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Contains(output.Identifier);
-
-            //node.GetInput<TReferenceType>();
-            //    var inputItem = input.Node.ContainedItems.OfType<TReferenceType>().FirstOrDefault();
-            //    if (inputItem == null) return false;
-            //    return inputItem.ConnectedGraphItemIds.Contains(output.Identifier);
-        }
-
-        protected override void ApplyConnection(TSource output, TReferenceType input)
-        {
-            var node = input.Node as GenericNode;
-
-            node.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Add(output.Identifier);
-        }
-
-        protected override void RemoveConnection(TSource output, TReferenceType input)
-        {
-            var node = input.Node as GenericNode;
-            node.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Remove(output.Identifier);
-        }
-    }
-
-    public class GenericConnectionStrategy<TOutput, TInput> : IConnectionStrategy where TInput : class where TOutput : class
+    public class GenericConnectionStrategy<TOutput, TInput> : IConnectionStrategy
+        where TInput : class
+        where TOutput : class
     {
         private Color _color = UnityEngine.Color.white;
         public bool IsStateLink { get; set; }
@@ -167,48 +113,50 @@ namespace Invert.uFrame.Editor.ViewModels
             set { _color = value; }
         }
 
-        public Action<TOutput,TInput> Apply { get; set; }
-        public Action<TOutput,TInput> Remove { get; set; }
-        public Func<TOutput,TInput,bool> IsConnected { get; set; }
+        public Action<IConnectable, IConnectable> Apply { get; set; }
+        public Action<IConnectable, IConnectable> Remove { get; set; }
+        public Func<IConnectable, IConnectable, bool> IsConnected { get; set; }
 
- 
+        public bool AllowMultipleInputs { get; set; }
+        public bool AllowMultipleOutputs { get; set; }
         public GenericConnectionStrategy()
         {
         }
 
-        public ConnectionViewModel Connect(ConnectorViewModel a, ConnectorViewModel b)
+        public ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
             if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
-            if (typeof(TOutput).IsAssignableFrom(a.ConnectorForType)  &&  typeof(TInput).IsAssignableFrom(b.ConnectorForType))
-            {
-                
-                return new ConnectionViewModel()
-                {
-                    IsStateLink = IsStateLink,
-                    Color = Color,
-                    ConnectorA = a,
-                    ConnectorB = b,
-                    Apply = ApplyConnection,
-                    Remove = RemoveConnection
-                };
-            }
+                if (a.DataObject is TOutput || a.DataObject is TInput || b.DataObject is TOutput || b.DataObject is TInput)
+                    if (a.ConnectorForType == b.ConnectorForType)
+                    {
+
+                        return new ConnectionViewModel(diagramViewModel)
+                        {
+                            IsStateLink = IsStateLink,
+                            Color = Color,
+                            ConnectorA = a,
+                            ConnectorB = b,
+                            Apply = ApplyConnection,
+                            Remove = RemoveConnection
+                        };
+                    }
             return null;
         }
         private void RemoveConnection(ConnectionViewModel connectionViewModel)
         {
-            var output = connectionViewModel.ConnectorA.DataObject as TOutput;
-            var input = connectionViewModel.ConnectorB.DataObject as TInput;
+            var output = connectionViewModel.ConnectorA.DataObject as IConnectable;
+            var input = connectionViewModel.ConnectorB.DataObject as IConnectable;
             if (output != null && input != null)
             {
                 Remove(output, input);
             }
 
         }
-    
+
         public void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
         {
-            var inputs = info.Inputs.Where(p => p.DataObject is TInput).ToArray();
-            var outputs = info.Outputs.Where(p => p.DataObject is TOutput);
+            var inputs = info.Inputs.Where(p => p.DataObject is IConnectable).ToArray();
+            var outputs = info.Outputs.Where(p => p.DataObject is IConnectable);
             var alreadyConnected = new List<string>();
             foreach (var output in outputs)
             {
@@ -217,9 +165,9 @@ namespace Invert.uFrame.Editor.ViewModels
                     var tempId = output.DataObject.GetHashCode().ToString() + input.DataObject.GetHashCode();
                     if (alreadyConnected.Contains(tempId)) continue;
 
-                    if (IsConnected((TOutput)output.DataObject, (TInput)input.DataObject))
+                    if (IsConnected(output.DataObject as IConnectable, input.DataObject as IConnectable))
                     {
-                        connections.Add(new ConnectionViewModel()
+                        connections.Add(new ConnectionViewModel(info.DiagramViewModel)
                         {
                             IsStateLink = IsStateLink,
                             Color = Color,
@@ -236,12 +184,113 @@ namespace Invert.uFrame.Editor.ViewModels
 
         private void ApplyConnection(ConnectionViewModel connectionViewModel)
         {
-            var output = connectionViewModel.ConnectorA.DataObject as TOutput;
-            var input = connectionViewModel.ConnectorB.DataObject as TInput;
+            Debug.Log(string.Format("Applying -> {0}:{1}", connectionViewModel.ConnectorA.ConnectorForType, connectionViewModel.ConnectorB.ConnectorForType));
+            var output = connectionViewModel.ConnectorA.DataObject as IConnectable;
+            var input = connectionViewModel.ConnectorB.DataObject as IConnectable;
+
             if (output != null && input != null)
             {
-                Apply(output, input);
+                var diagram = connectionViewModel.DiagramViewModel.DiagramData;
+                if (!connectionViewModel.ConnectorB.Configuration.AllowMultiple)
+                {
+                    diagram.ClearInput(input);
+                }
+                if (!connectionViewModel.ConnectorA.Configuration.AllowMultiple)
+                {
+                    diagram.ClearOutput(output);
+                }
+                diagram.AddConnection(output, input);
             }
+        }
+    }
+
+    public class InputOutputStrategy : DefaultConnectionStrategy<IConnectable, IConnectable>
+    {
+        public override Color ConnectionColor
+        {
+            get { return Color.white; }
+        }
+
+        public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
+        {
+            if (!(a.DataObject is GenericConnectionReference) && !(b.DataObject is GenericConnectionReference))
+            {
+                return null;
+            }
+            if (a.Validator != null)
+                if (!a.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
+                    return null;
+            if (b.Validator != null)
+                if (!b.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
+                    return null;
+            return base.Connect(diagramViewModel, a, b);
+        }
+
+        //public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
+        //{
+        //    base.GetConnections(connections, info);
+
+        //    foreach (var output in info.Outputs)
+        //    {
+        //        foreach (var intput in info.Inputs)
+        //        {
+        //            if (i)
+        //        }
+        //    }
+        //    foreach (var item in info.Inputs)
+
+        //    foreach (var item in info.CurrentRepository.Connections)
+        //    {
+
+        //    }
+
+        //}
+
+        public override bool IsConnected(IConnectable output, IConnectable input)
+        {
+            return
+                InvertGraphEditor.CurrentProject.Connections.Any(
+                    p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
+        }
+
+        protected override void ApplyConnection(IConnectable output, IConnectable input)
+        {
+            
+        }
+
+
+        public override void Apply(ConnectionViewModel connectionViewModel)
+        {
+            var output = connectionViewModel.ConnectorA.DataObject as IGraphItem;
+            var input = connectionViewModel.ConnectorB.DataObject as IGraphItem;
+            var diagramData = connectionViewModel.DiagramViewModel.DiagramData;
+            if (!connectionViewModel.ConnectorA.AllowMultiple)
+            {
+
+                diagramData.ClearOutput(output);
+            }
+            if (!connectionViewModel.ConnectorB.AllowMultiple)
+            {
+                diagramData.ClearInput(input);
+            }
+
+
+            diagramData.AddConnection(output, input);
+            //base.Apply(connectionViewModel);
+        }
+
+        public override void Remove(ConnectionViewModel connectionViewModel)
+        {
+            var output = connectionViewModel.ConnectorA.DataObject as IGraphItem;
+            var input = connectionViewModel.ConnectorB.DataObject as IGraphItem;
+
+            connectionViewModel.DiagramViewModel.DiagramData.RemoveConnection(output, input);
+
+        }
+
+        protected override void RemoveConnection(IConnectable output, IConnectable input)
+        {
+            
         }
     }
 
