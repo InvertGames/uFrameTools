@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Invert.uFrame;
 
@@ -98,9 +99,11 @@ namespace Invert.Core
         private static void InitializeContainer(IUFrameContainer container)
         {
             container.RegisterInstance<IUFrameContainer>(container);
+            var pluginTypes = GetDerivedTypes<ICorePlugin>(false, false).ToArray();
             // Load all plugins
-            foreach (var diagramPlugin in GetDerivedTypes<ICorePlugin>(false, false))
+            foreach (var diagramPlugin in pluginTypes)
             {
+                if (pluginTypes.Any(p => p.BaseType == diagramPlugin)) continue;
                 container.RegisterInstance(Activator.CreateInstance((Type)diagramPlugin) as ICorePlugin, diagramPlugin.Name, false);
             }
 
@@ -126,6 +129,17 @@ namespace Invert.Core
             File.AppendAllText("uframe-log.txt", s + "\r\n\r\n");
             //Debug.Log(s);
 #endif
+        }
+
+        public static IEnumerable<PropertyInfo> GetPropertiesByAttribute<TAttribute>(this object obj) where TAttribute : Attribute
+        {
+            return GetPropertiesByAttribute<TAttribute>(obj.GetType());
+        }
+
+        public static IEnumerable<PropertyInfo> GetPropertiesByAttribute<TAttribute>(this Type type) where TAttribute : Attribute
+        {
+            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(property => property.GetCustomAttributes(typeof(TAttribute), true).Length > 0);
         }
     }
 }

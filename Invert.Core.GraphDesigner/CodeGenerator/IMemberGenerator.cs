@@ -4,9 +4,15 @@ namespace Invert.uFrame.Editor
 {
     public interface IMemberGenerator
     {
-        CodeTypeDeclaration Decleration { get; set; }
-        MemberGeneratorLocation Location { get; set; }
-        object DataObject { get; set; }
-        CodeTypeMember Create(bool isDesignerFile);
+        MemberGeneratorLocation MemberLocation { get; set; }
+        
+        CodeTypeMember Create(CodeTypeDeclaration decleration, object data, bool isDesignerFile);
+    }
+    public interface IMemberGenerator<in TData> : IMemberGenerator
+    {
+
+
+        CodeTypeMember Create(TData data, bool isDesignerFile);
+
     }
 }

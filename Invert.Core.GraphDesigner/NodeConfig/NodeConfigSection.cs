@@ -5,7 +5,6 @@ namespace Invert.uFrame.Editor
 {
     public class NodeConfigSection<TNode> : NodeConfigSection where TNode : GenericNode
     {
-
         public Func<TNode, IEnumerable<IGraphItem>> Selector
         {
             get
@@ -38,5 +37,6 @@ namespace Invert.uFrame.Editor
         public Func<GenericNode, IEnumerable<IGraphItem>> GenericSelector { get; set; }
         public Type ReferenceType { get; set; }
         public bool AllowDuplicates { get; set; }
+        
     }
 }

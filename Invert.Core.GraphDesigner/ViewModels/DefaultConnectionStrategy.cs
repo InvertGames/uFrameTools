@@ -21,16 +21,6 @@ namespace Invert.uFrame.Editor.ViewModels
             return true;
         }
 
-        public override void Apply(ConnectionViewModel connectionViewModel)
-        {
-            var output = connectionViewModel.ConnectorA.DataObject as TOutputData;
-            var input = connectionViewModel.ConnectorB.DataObject as TInputData;
-            if (output != null && input != null)
-            {
-                ApplyConnection(output, input);
-            }
-        }
-
         public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
         {
             base.GetConnections(connections, info);
@@ -38,25 +28,23 @@ namespace Invert.uFrame.Editor.ViewModels
             //foreach (var item in info.DiagramData.Connections.Cont)
         }
 
- 
-
         public abstract bool IsConnected(TOutputData output, TInputData input);
-        
-
-        protected abstract void ApplyConnection(TOutputData output, TInputData input);
-
-        public override void Remove(ConnectionViewModel connectionViewModel)
+        protected override void ApplyConnection(IGraphData graph, IGraphItem output, IGraphItem input)
         {
-            var output = connectionViewModel.ConnectorA.DataObject as TOutputData;
-            var input = connectionViewModel.ConnectorB.DataObject as TInputData;
-            if (output != null && input != null)
-            {
-                RemoveConnection(output, input);
-            }
-
+            base.ApplyConnection(graph, output, input);
+            ApplyConnection(graph, output as TOutputData, input as TInputData);
         }
 
-        protected abstract void RemoveConnection(TOutputData output, TInputData input);
+        protected virtual void ApplyConnection(IGraphData graph, TOutputData output, TInputData input)
+        {
+            
+        }
+
+        protected virtual void RemoveConnection(IGraphData graph, TOutputData output, TInputData input)
+        {
+            
+        }
+
     }
 
     public abstract class DefaultConnectionStrategy : IConnectionStrategy
@@ -83,7 +71,7 @@ namespace Invert.uFrame.Editor.ViewModels
                 {
                     if (a.ConnectorForType != null && b.ConnectorForType != null)
                     {
-                        if (a.ConnectorForType == b.ConnectorForType)
+                        if (b.ConnectorForType.IsAssignableFrom(a.ConnectorForType))
                         {
                             if (canConnect != null &&
                        !canConnect((TOutput)a.ConnectorFor.DataObject, (TInput)b.ConnectorFor.DataObject))
@@ -115,7 +103,43 @@ namespace Invert.uFrame.Editor.ViewModels
             return null;
         }
 
-        public abstract void Apply(ConnectionViewModel connectionViewModel);
-        public abstract void Remove(ConnectionViewModel connectionViewModel);
+        public virtual void Apply(ConnectionViewModel connectionViewModel)
+        {
+            var output = connectionViewModel.ConnectorA.DataObject as IGraphItem;
+            var input = connectionViewModel.ConnectorB.DataObject as IGraphItem;
+            var diagramData = connectionViewModel.DiagramViewModel.DiagramData;
+
+            if (!connectionViewModel.ConnectorA.AllowMultiple)
+            {
+
+                diagramData.ClearOutput(output);
+            }
+            if (!connectionViewModel.ConnectorB.AllowMultiple)
+            {
+                diagramData.ClearInput(input);
+            }
+
+            ApplyConnection(diagramData, output, input);
+            
+            //base.Apply(connectionViewModel);
+        }
+
+        protected virtual void ApplyConnection(IGraphData graph, IGraphItem output, IGraphItem input)
+        {
+            graph.AddConnection(output, input);
+        }
+
+        protected virtual void RemoveConnection(IGraphData graph, IGraphItem output, IGraphItem input)
+        {
+            graph.RemoveConnection(output, input);
+        }
+        public virtual void Remove(ConnectionViewModel connectionViewModel)
+        {
+            var output = connectionViewModel.ConnectorA.DataObject as IGraphItem;
+            var input = connectionViewModel.ConnectorB.DataObject as IGraphItem;
+
+            RemoveConnection(connectionViewModel.DiagramViewModel.DiagramData,output,input);
+
+        }
     }
 }

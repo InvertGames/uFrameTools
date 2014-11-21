@@ -61,7 +61,7 @@
     <Compile Include="CodeGenerator\MemberGenerator.cs" />
     <Compile Include="CodeGenerator\MemberGeneratorLocation.cs" />
     <Compile Include="CodeGenerator\MemberItemGenerator.cs" />
-    <Compile Include="CodeGenerator\NodeCodeGenerator.cs" />
+    <Compile Include="CodeGenerator\GenericNodeGenerator.cs" />
     <Compile Include="CodeGenerator\ShowInSettings.cs" />
     <Compile Include="CodeGenerator\TypeGeneratorPostProcessor.cs" />
     <Compile Include="Commands\Context\ContextEditorCommand.cs" />
@@ -160,12 +160,14 @@
     <Compile Include="Drawers\IDrawer.cs" />
     <Compile Include="Drawers\IInhertable.cs" />
     <Compile Include="Drawers\INodeDrawer.cs" />
-    <Compile Include="Drawers\InputHeaderDrawer.cs" />
+    <Compile Include="Drawers\PropertyFieldDrawer.cs" />
+    <Compile Include="Drawers\SlotDrawer.cs" />
     <Compile Include="Drawers\ItemDrawer.cs" />
-    <Compile Include="Drawers\NodeItemHeader.cs" />
+    <Compile Include="Drawers\SectionHeaderDrawer.cs" />
     <Compile Include="Drawers\UFType.cs" />
     <Compile Include="ElementDesignerDataExtensions.cs" />
-    <Compile Include="ElementItemViewModel.cs" />
+    <Compile Include="TypedItemDrawer.cs" />
+    <Compile Include="TypedItemViewModel.cs" />
     <Compile Include="Enums\EnumItemViewModel.cs" />
     <Compile Include="Enums\EnumNodeViewModel.cs" />
     <Compile Include="Filters\DiagramFilter.cs" />
@@ -238,7 +240,7 @@
     <Compile Include="UnitySpecific\UnityAssetManager.cs" />
     <Compile Include="ViewModels\ConnectionViewModel.cs" />
     <Compile Include="ViewModels\ConnectorDirection.cs" />
-    <Compile Include="ViewModels\ConnectorHeaderViewModel.cs" />
+    <Compile Include="ViewModels\InputOutputViewModel.cs" />
     <Compile Include="ViewModels\ConnectorInfo.cs" />
     <Compile Include="ViewModels\ConnectorSide.cs" />
     <Compile Include="ViewModels\ConnectorViewModel.cs" />
@@ -252,7 +254,8 @@
     <Compile Include="ViewModels\InheritanceConnectionStrategy.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\OneToManyConnectionStrategy.cs" />
-    <Compile Include="ViewModels\OneToOneConnectionStrategy.cs" />
+    <Compile Include="ViewModels\InputOutputStrategy.cs" />
+    <Compile Include="ViewModels\PropertyFieldViewModel.cs" />
     <Compile Include="ViewModels\TypedItemViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="ViewModels\ViewModelExtensions.cs" />

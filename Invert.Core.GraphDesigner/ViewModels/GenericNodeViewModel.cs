@@ -11,15 +11,16 @@ namespace Invert.uFrame.Editor.ViewModels
     {
         private NodeConfig<TData> _nodeConfig;
 
-        
+
         public GenericNodeViewModel(TData graphItemObject, DiagramViewModel diagramViewModel)
             : base(graphItemObject, diagramViewModel)
         {
         }
 
-        public NodeConfig<TData> NodeConfig
+        public virtual NodeConfig<TData> NodeConfig
         {
-            get { return _nodeConfig ?? (_nodeConfig = InvertGraphEditor.Container.GetNodeConfig<TData>()); }
+            get { return _nodeConfig ?? (
+                _nodeConfig = InvertGraphEditor.Container.GetNodeConfig<TData>()); }
         }
 
         public override IEnumerable<string> Tags
@@ -38,36 +39,83 @@ namespace Invert.uFrame.Editor.ViewModels
                 }
             }
         }
-        protected override void DataObjectChanged()
+
+        public override IEnumerable<KeyValuePair<string, ValidatorType>> Issues
         {
-            ContentItems.Clear();
-            InputConnectorType = typeof (TData);
-            OutputConnectorType = typeof (TData);
+            get
+            {
+                foreach (var item in NodeConfig.Validate(GraphItem))
+                {
+                    yield return new KeyValuePair<string, ValidatorType>(item.Message, item.Type);
+                }
+            }
+        }
+
+        public override NodeColor Color
+        {
+            get
+            {
+                if (NodeConfig.NodeColor == null) return NodeColor.LightGray;
+                return NodeConfig.NodeColor.GetValue(GraphItem);
+            }
+        }
+
+        protected override void CreateContent()
+        {
+            //base.CreateContent();
+            InputConnectorType = typeof(TData);
+            OutputConnectorType = typeof(TData);
 
             IsLocal = InvertGraphEditor.CurrentProject.CurrentGraph.NodeItems.Contains(GraphItemObject);
 
             foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsInput))
             {
-                if (!InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType)) continue;
-                var header = new ConnectorHeaderViewModel()
+                if (typeof(GenericNode).IsAssignableFrom(inputConfig.SourceType) && !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType)) continue;
+
+                var header = new InputOutputViewModel()
                 {
-                    Name = inputConfig.Name,
+                    Name = inputConfig.Name.GetValue(GraphItem),
                     DataObject =
                         inputConfig.IsAlias ? DataObject : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
                     InputConnectorType = inputConfig.SourceType,
                     IsInput = true
                 };
                 ContentItems.Add(header);
-          
+
                 header.InputConnector.AllowMultiple = inputConfig.AllowMultiple;
                 header.InputConnector.Validator = inputConfig.Validator;
                 header.InputConnector.Configuration = inputConfig;
             }
-     
+            foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsOutput))
+            {
+                if (typeof(GenericNode).IsAssignableFrom(inputConfig.SourceType) &&
+                    !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType))
+                {
+                    // Debug.Log("Skipping Output: " + inputConfig.SourceType.Name);
+                    continue;
+                }
+
+                var header = new InputOutputViewModel()
+                {
+                    Name = inputConfig.Name.GetValue(GraphItem),
+                    DataObject =
+                        inputConfig.IsAlias
+                            ? DataObject
+                            : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
+                    OutputConnectorType = inputConfig.SourceType,
+                    IsInput = false,
+                    IsOutput = true
+                };
+                ContentItems.Add(header);
+                header.OutputConnector.AllowMultiple = inputConfig.AllowMultiple;
+                header.OutputConnector.Validator = inputConfig.Validator;
+                header.OutputConnector.Configuration = inputConfig;
+            }
+
             foreach (var section in NodeConfig.Sections)
             {
                 if (InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, section.ChildType)) continue;
-                NodeConfigSection<TData> section1 = section as NodeConfigSection<TData>;
+                var section1 = section as NodeConfigSection<TData>;
                 //if (typeof(IDiagramNode).IsAssignableFrom(section.ChildType) && !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, section.ChildType)))
                 //continue;
 
@@ -77,71 +125,83 @@ namespace Invert.uFrame.Editor.ViewModels
                     {
                         Name = section.Name,
                         NodeViewModel = this,
-                        NodeConfig = this.NodeConfig,
-                        
+                        NodeConfig = NodeConfig,
+
                         SectionConfig = section1,
-                        AddCommand = section1.AllowAdding ? new SimpleEditorCommand<DiagramNodeViewModel>((vm) =>
-                        {
-                            if (section1.AllowAdding && section1.ReferenceType != null)
+                        AddCommand = section1.AllowAdding
+                            ? new SimpleEditorCommand<DiagramNodeViewModel>((vm) =>
                             {
-                                if (section1.AllowDuplicates)
+                                if (section1.AllowAdding && section1.ReferenceType != null)
                                 {
-                                    InvertGraphEditor.WindowManager.InitItemWindow(section1.Selector(GraphItem),
-                                        (selected) =>
-                                        {
-                                            GraphItem.AddReferenceItem(selected, section1);
-                                        });
+                                    if (section1.AllowDuplicates)
+                                    {
+                                        InvertGraphEditor.WindowManager.InitItemWindow(section1.Selector(GraphItem),
+                                            (selected) =>
+                                            {
+                                                GraphItem.AddReferenceItem(selected, section1);
+                                            });
+                                    }
+                                    else
+                                    {
+                                        InvertGraphEditor.WindowManager.InitItemWindow(
+                                            section1.Selector(GraphItem)
+                                                .Where(
+                                                    p =>
+                                                        !GraphItem.ChildItems.OfType<GenericReferenceItem>()
+                                                            .Select(x => x.SourceIdentifier)
+                                                            .Contains(p.Identifier)),
+                                            (selected) =>
+                                            {
+                                                GraphItem.AddReferenceItem(selected, section1);
+                                            });
+                                    }
+
                                 }
                                 else
                                 {
-                                    InvertGraphEditor.WindowManager.InitItemWindow(section1.Selector(GraphItem).Where(p=>!GraphItem.ChildItems.OfType<GenericReferenceItem>().Select(x=>x.SourceIdentifier).Contains(p.Identifier)),
-                                   (selected) =>
-                                   {
-                                       GraphItem.AddReferenceItem(selected, section1);
-                                   });
+
+                                    var item = Activator.CreateInstance(section1.ChildType) as GenericNodeChildItem;
+                                    item.Node = vm.GraphItemObject as DiagramNode;
+                                    item.Name = item.Node.Project.GetUniqueName(section1.Name);
+                                    var node = vm as GenericNodeViewModel<TData>;
+                                    node.GraphItem.Project.AddItem(item);
+                                    item.IsEditing = true;
+                                    OnAdd(section1, item);
                                 }
-                                
-                            }
-                            else
-                            {
-                               
-                                var item = Activator.CreateInstance(section1.ChildType) as GenericNodeChildItem;
-                                item.Node = vm.GraphItemObject as DiagramNode;
-                                item.Name = item.Node.Project.GetUniqueName(section1.Name);
-                                var node = vm as GenericNodeViewModel<TData>;
-                                node.GraphItem.Project.AddItem(item);
-                                item.IsEditing = true;
-                                OnAdd(section1, item);
-                            }
-                            
-                            
-                        }) : null
+
+
+                            })
+                            : null
                     });
                 }
 
                 if (section1.Selector != null && section1.ReferenceType == null)
                 {
-                
+
                     foreach (var item in section1.Selector(GraphItem))
                     {
 
                         if (section.ChildType.IsAssignableFrom(item.GetType()))
                         {
-                            
+
                             var vm = GetDataViewModel(item);
-                            
+
                             if (vm == null)
                             {
-                                Debug.LogError(string.Format("Couldn't find view-model for {0} in section {1} with child type {2}", item.GetType(), section1.Name,section1.ChildType.Name));
+                                Debug.LogError(
+                                    string.Format(
+                                        "Couldn't find view-model for {0} in section {1} with child type {2}",
+                                        item.GetType(), section1.Name, section1.ChildType.Name));
                                 continue;
                             }
                             ContentItems.Add(vm);
                         }
                         else
                         {
-                            Debug.LogError(string.Format("Types do not match {0} and {1}", section.ChildType, item.GetType()));
+                            Debug.LogError(string.Format("Types do not match {0} and {1}", section.ChildType,
+                                item.GetType()));
                         }
-                   
+
                     }
                 }
                 else
@@ -159,27 +219,16 @@ namespace Invert.uFrame.Editor.ViewModels
                             ContentItems.Add(vm);
                         }
                     }
+
                 }
             }
-            foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsOutput))
-            {
-                if (!InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType)) continue;
-                var header = new ConnectorHeaderViewModel()
-                {
-                    Name = inputConfig.Name,
-                    DataObject =
-                        inputConfig.IsAlias ? DataObject : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
-                    OutputConnectorType = inputConfig.SourceType,
-                    IsInput = false,
-                    IsOutput = true
-                };
-                ContentItems.Add(header);
-                header.OutputConnector.AllowMultiple = inputConfig.AllowMultiple;
-                header.OutputConnector.Validator = inputConfig.Validator;
-                header.OutputConnector.Configuration = inputConfig;
-            }
+
+            AddPropertyFields();
+           
 
         }
+
+
 
         protected virtual void OnAdd(NodeConfigSection configSection, GenericNodeChildItem item)
         {

@@ -6,6 +6,7 @@ using UnityEngine;
 namespace Invert.uFrame.Editor.ViewModels
 {
     public class ItemViewModel<TData> : ItemViewModel
+        where TData : IDiagramNodeItem
     {
         public ItemViewModel(DiagramNodeViewModel nodeViewModel)
             : base(nodeViewModel)
@@ -22,6 +23,11 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get { return (TData)DataObject; }
             set { DataObject = value; }
+        }
+
+        public override string Label
+        {
+            get { return Data.Label; }
         }
     }
 
@@ -48,7 +54,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public override Vector2 Position { get; set; }
 
-        public bool IsEditing
+        public virtual bool IsEditing
         {
             get { return NodeItem.IsEditing; }
             set
@@ -90,6 +96,11 @@ namespace Invert.uFrame.Editor.ViewModels
         public virtual bool AllowRemoving
         {
             get { return true; }
+        }
+
+        public virtual string Label
+        {
+            get { return Name; }
         }
 
         public void Rename(string newName)

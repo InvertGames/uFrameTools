@@ -6,10 +6,10 @@ using UnityEngine;
 
 public class StateMachineNodeViewModel : DiagramNodeViewModel<StateMachineNodeData>
 {
-    private ConnectorHeaderViewModel _headerViewModel;
+    private InputOutputViewModel _headerViewModel;
     private ConnectorViewModel _elementConnector;
     private ConnectorViewModel _stateVariableConnector;
-    private ConnectorHeaderViewModel _stateVariableHeader;
+    private InputOutputViewModel _stateVariableHeader;
 
     public StateMachineNodeViewModel(StateMachineNodeData graphItemObject, DiagramViewModel diagramViewModel)
         : base(graphItemObject, diagramViewModel)
@@ -57,22 +57,22 @@ public class StateMachineNodeViewModel : DiagramNodeViewModel<StateMachineNodeDa
         }
         set { _elementConnector = value; }
     }
-    public ConnectorHeaderViewModel StateVariableHeader
+    public InputOutputViewModel StateVariableHeader
     {
         get
         {
-            return _stateVariableHeader ?? (_stateVariableHeader = new ConnectorHeaderViewModel()
+            return _stateVariableHeader ?? (_stateVariableHeader = new InputOutputViewModel()
             {
                 DataObject = GraphItem,
                 Name = "State Variable Input",
             });
         }
     }
-    public ConnectorHeaderViewModel ElementConnectionHeader
+    public InputOutputViewModel ElementConnectionHeader
     {
         get
         {
-            return _headerViewModel ?? (_headerViewModel = new ConnectorHeaderViewModel()
+            return _headerViewModel ?? (_headerViewModel = new InputOutputViewModel()
             {
                 DataObject = GraphItem,
                 Name = "Element Input",

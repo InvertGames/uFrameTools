@@ -2,21 +2,27 @@ using System.CodeDom;
 
 namespace Invert.uFrame.Editor
 {
-    public abstract class MemberGenerator<TNode> : IMemberGenerator
+    public abstract class MemberGenerator<TData> : IMemberGenerator
     {
         protected MemberAttributes _attributes = MemberAttributes.Private;
         private CodeAttributeDeclarationCollection _customAttributes;
 
-        public CodeTypeDeclaration Decleration { get; set; }
+   
         public MemberGeneratorLocation Location { get; set; }
-        public object DataObject { get; set; }
-        public abstract CodeTypeMember Create(bool isDesignerFile);
-
-        public TNode Data
+        public CodeTypeMember Create(CodeTypeDeclaration decleration, object data, bool isDesignerFile)
         {
-            get { return (TNode) DataObject; }
+            return Create(decleration, (TData) data, isDesignerFile);
         }
 
+        public MemberGeneratorLocation MemberLocation { get; set; }
+        
+        public abstract CodeTypeMember Create(CodeTypeDeclaration decleration, TData data, bool isDesignerFile);
+
+        //public TData Data
+        //{
+        //    get { return (TData) DataObject; }
+        //    set { DataObject = value; }
+        //}
         public MemberAttributes Attributes
         {
             get { return _attributes; }
@@ -28,5 +34,6 @@ namespace Invert.uFrame.Editor
             get { return _customAttributes ?? (_customAttributes = new CodeAttributeDeclarationCollection()); }
             set { _customAttributes = value; }
         }
+
     }
 }

@@ -29,29 +29,29 @@ namespace Invert.uFrame.Editor
             set { _propertyFormatString = value; }
         }
 
-        protected virtual CodeTypeReference GetFieldType()
+        protected virtual CodeTypeReference GetFieldType(ITypedItem data)
         {
-            return Data.GetPropertyType();
+            return data.GetPropertyType();
         }
-        protected virtual CodeTypeReference GetPropertyType()
+        protected virtual CodeTypeReference GetPropertyType(ITypedItem data)
         {
-            return Data.GetPropertyType();
+            return data.GetPropertyType();
         }
-        public override CodeTypeMember Create(bool isDesignerFile)
+        public override CodeTypeMember Create(CodeTypeDeclaration decleration, ITypedItem item, bool isDesignerFile)
         {
             var field = new CodeMemberField()
             {
                 Attributes = Attributes,
-                Type = GetFieldType(),
+                Type = GetFieldType(item),
                 CustomAttributes = CustomAttributes,
-                Name = string.Format(BackingFieldFormatString, Data.Name)
+                Name = string.Format(BackingFieldFormatString, item.Name)
             };
-            Decleration.Members.Add(field);
+            decleration.Members.Add(field);
             var property = new CodeMemberProperty()
             {
                 Attributes = MemberAttributes.Public,
-                Type = GetPropertyType(),
-                Name = Data.Name
+                Type = GetPropertyType(item),
+                Name = item.Name
             };
             property.GetStatements.Add(new CodeSnippetExpression(string.Format("return {0}", field.Name)));
             if (AllowSet)

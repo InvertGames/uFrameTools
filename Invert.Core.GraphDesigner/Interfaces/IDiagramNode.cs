@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Reflection;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
@@ -90,6 +91,7 @@ public interface IDiagramNode : IDiagramNodeItem
     CodeTypeReference GetPropertyType(ITypedItem itemData);
     CodeTypeReference GetFieldType(ITypedItem itemData);
     void NodeAddedInFilter(IDiagramNode newNodeData);
+    
 }
 
 public interface IRefactorable

@@ -2,9 +2,6 @@ using System.Collections.Generic;
 
 public interface IInhertable : IDiagramNode
 {
-    string BaseIdentifier { get; }
-
-    void SetBaseType(GenericInheritableNode baseItem);
 
     GenericInheritableNode BaseNode { get; }
 

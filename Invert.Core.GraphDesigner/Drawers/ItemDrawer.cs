@@ -6,6 +6,18 @@ using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
+public class ItemDrawer<TViewModel> : ItemDrawer where TViewModel : ItemViewModel
+{
+    public TViewModel ViewModel
+    {
+        get { return ViewModelObject as TViewModel; }
+    }
+
+    public ItemDrawer(TViewModel viewModelObject)
+        : base(viewModelObject)
+    {
+    }
+}
 public class ItemDrawer : Drawer
 {
     public ItemDrawer(GraphItemViewModel viewModelObject)
@@ -57,7 +69,7 @@ public class ItemDrawer : Drawer
         }
         set { _selectedItemStyle = value; }
     }
-    public GUIStyle TextStyle
+    public virtual GUIStyle TextStyle
     {
         get { return _textStyle ?? (_textStyle = ElementDesignerStyles.ClearItemStyle); }
         set { _textStyle = value; }
@@ -143,7 +155,7 @@ public class ItemDrawer : Drawer
             //var style = new GUIStyle(TextStyle);
             //style.normal.textColor = BackgroundStyle.normal.textColor;
             
-            GUILayout.Label(ItemViewModel.Name, ElementDesignerStyles.SelectedItemStyle);
+            GUILayout.Label(ItemViewModel.Label, ElementDesignerStyles.SelectedItemStyle);
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
         }

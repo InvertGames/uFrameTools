@@ -25,13 +25,13 @@ public class ClassNodeInheritanceConnectionStrategy : DefaultConnectionStrategy<
         return input.BaseIdentifier == output.Identifier;
     }
 
-    protected override void ApplyConnection(ClassNodeData output, ClassNodeData input)
-    {
-        input.SetBaseClass(output);
-    }
+    //protected override void ApplyConnection(ClassNodeData output, ClassNodeData input)
+    //{
+    //    input.SetBaseClass(output);
+    //}
 
-    protected override void RemoveConnection(ClassNodeData output, ClassNodeData input)
-    {
-        input.RemoveBaseClass();
-    }
+    //protected override void RemoveConnection(ClassNodeData output, ClassNodeData input)
+    //{
+    //    input.RemoveBaseClass();
+    //}
 }

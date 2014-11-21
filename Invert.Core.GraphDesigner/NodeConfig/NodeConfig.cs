@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Invert.Common;
 using Invert.Core.GraphDesigner;
+using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
 namespace Invert.uFrame.Editor
@@ -27,6 +28,8 @@ namespace Invert.uFrame.Editor
 
         private List<NodeInputConfig> _inputs;
         private List<NodeOutputConfig> _outputs;
+        private List<Func<GenericNode, Refactorer>> _refactorers;
+        private List<string> _tags;
 
         public List<NodeConfigSection> Sections
         {
@@ -47,10 +50,25 @@ namespace Invert.uFrame.Editor
         }
 
         //public NodeColor Color { get; set; }
+        public List<Func<GenericNode, Refactorer>> Refactorers
+        {
+            get { return _refactorers ?? new List<Func<GenericNode, Refactorer>>(); }
+            set { _refactorers = value; }
+        }
 
-       
 
         public IUFrameContainer Container { get; set; }
+
+        public List<string> Tags
+        {
+            get { return _tags ?? (_tags = new List<string>()); }
+            set { _tags = value; }
+        }
+
+        public abstract bool IsValid(GenericNode node);
+
+        
+
     }
 
 }

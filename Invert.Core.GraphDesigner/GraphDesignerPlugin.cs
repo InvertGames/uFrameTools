@@ -14,6 +14,7 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
+    public class BaseClassReference : GenericSlot { }
     public class GraphDesignerPlugin : DiagramPlugin
     {
         public override decimal LoadPriority
@@ -29,8 +30,13 @@ namespace Invert.Core.GraphDesigner
         {
             var typeContainer = InvertGraphEditor.TypesContainer;
             
-            typeContainer.AddItem<GenericConnectionReference,ConnectorHeaderViewModel,InputHeaderDrawer>();
+            typeContainer.AddItem<GenericSlot,InputOutputViewModel,SlotDrawer>();
+            typeContainer.AddItem<BaseClassReference, InputOutputViewModel, SlotDrawer>();
+
             container.RegisterInstance<IConnectionStrategy>(new InputOutputStrategy(),"InputOutputStrategy");
+            container.RegisterDrawer<SectionHeaderViewModel,SectionHeaderDrawer>();
+
+
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(int), Group = "", Label = "int", IsPrimitive = true }, "int");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(string), Group = "", Label = "string", IsPrimitive = true }, "string");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(decimal), Group = "", Label = "decimal", IsPrimitive = true }, "decimal");
@@ -49,7 +55,7 @@ namespace Invert.Core.GraphDesigner
             container.RegisterInstance<IUFrameContainer>(container);
             container.RegisterInstance<uFrameContainer>(container);
             
-            container.Register<NodeItemHeader, NodeItemHeader>();
+            container.Register<SectionHeaderDrawer, SectionHeaderDrawer>();
             container.RegisterItemDrawer<GenericItemHeaderViewModel, GenericChildItemHeaderDrawer>();
 
             // Toolbar commands
@@ -83,7 +89,7 @@ namespace Invert.Core.GraphDesigner
             // Drawers
             container.RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
             container.RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
-            container.RegisterDrawer<ConnectorHeaderViewModel, InputHeaderDrawer>();
+            container.RegisterDrawer<InputOutputViewModel, SlotDrawer>();
 
 
             // Enums

@@ -12,19 +12,21 @@ namespace Invert.uFrame.Editor
         public static NodeConfig<TNodeData> AddNode<TNodeData>(this IUFrameContainer container, string tag = null)
             where TNodeData : GenericNode
         {
-            var config = container.AddNode<TNodeData, ScaffoldNode<TNodeData>.ViewModel, ScaffoldNode<TNodeData>.Drawer>();
-            if (config.Tags.Count > 0) return config;
-            config.Tags.Add(tag ?? typeof(TNodeData).Name);
-            config.Name = tag;
+            var config = container.AddNode<TNodeData, ScaffoldNode<TNodeData>.ViewModel, ScaffoldNode<TNodeData>.Drawer>(tag);
             return config;
         }
         
-        public static NodeConfig<TNodeData> AddNode<TNodeData, TNodeViewModel, TNodeDrawer>(this IUFrameContainer container) where TNodeData : GenericNode, IConnectable
+        public static NodeConfig<TNodeData> AddNode<TNodeData, TNodeViewModel, TNodeDrawer>(this IUFrameContainer container,string name) where TNodeData : GenericNode, IConnectable
         {
            
             container.AddItem<TNodeData>();
             container.RegisterGraphItem<TNodeData, TNodeViewModel, TNodeDrawer>();
-            return container.GetNodeConfig<TNodeData>();
+            var config = container.GetNodeConfig<TNodeData>();
+            if (config.Tags.Count > 0) 
+                return config;
+            config.Tags.Add(name ?? typeof(TNodeData).Name);
+            config.Name = name;
+            return config;
         }
 
         public static IUFrameContainer AddItem<TNodeData, TNodeViewModel, TNodeDrawer>(this IUFrameContainer container) where TNodeData : IDiagramNodeItem
@@ -45,7 +47,14 @@ namespace Invert.uFrame.Editor
                 ScaffoldNodeTypedChildItem<TNodeData>.Drawer>();
             return container;
         }
-
+        public static IUFrameContainer AddTypeItem<TNodeData, TViewModel,TDrawer>(this IUFrameContainer container) where TNodeData : ITypedItem
+        {
+            container.AddItem<TNodeData>();
+            container.RegisterChildGraphItem<TNodeData,
+                TViewModel,
+                TDrawer>();
+            return container;
+        }
         public static NodeConfig<TNode> GetNodeConfig<TNode>(this IUFrameContainer container) where TNode : GenericNode, IConnectable
         {
             var config = container.Resolve<NodeConfig>(typeof(TNode).Name) as NodeConfig<TNode>;

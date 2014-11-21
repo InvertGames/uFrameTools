@@ -271,12 +271,14 @@ namespace Invert.uFrame.Editor
             {
                 ChildType = typeof(TChildItem),
                 Selector = p => selector(p).Cast<IGraphItem>(),
-                Generator = generater
+                Generator = generater,
+                
             });
             return this;
         }
 
-        public NodeGeneratorConfig<TNode> MembersFor<TChildItem>(Func<TNode, IEnumerable<TChildItem>> selector, Func<LambdaMemberGenerator<TChildItem>, CodeTypeMember> generate)
+        public NodeGeneratorConfig<TNode> MembersFor<TChildItem>(Func<TNode, IEnumerable<TChildItem>> selector, Func<LambdaMemberGenerator<TChildItem>, CodeTypeMember> generate
+            , MemberGeneratorLocation location = MemberGeneratorLocation.DesignerFile)
             where TChildItem : IGraphItem
         {
             ChildItemMemberGenerators.Add(new NodeChildGeneratorConfig<TNode>()
@@ -284,6 +286,9 @@ namespace Invert.uFrame.Editor
                 ChildType = typeof(TChildItem),
                 Selector = p => selector(p).Cast<IGraphItem>(),
                 Generator = new LambdaMemberGenerator<TChildItem>(generate)
+                {
+                    Location = location
+                }
             });
             return this;
         }
@@ -299,40 +304,38 @@ namespace Invert.uFrame.Editor
             return this;
         }
 
-        public NodeGeneratorConfig<TNode> MembersPerChild<TChildItem>(Func<LambdaMemberGenerator<TChildItem>, CodeTypeMember> generate)
+        public NodeGeneratorConfig<TNode> MembersPerChild<TChildItem>(Func<LambdaMemberGenerator<TChildItem>, CodeTypeMember> generate, MemberGeneratorLocation location = MemberGeneratorLocation.DesignerFile)
             where TChildItem : GenericNodeChildItem
         {
             ChildItemMemberGenerators.Add(new NodeChildGeneratorConfig<TNode>()
             {
                 ChildType = typeof(TChildItem),
                 Generator = new LambdaMemberGenerator<TChildItem>(generate)
+                {
+                    Location = location
+                }
             });
             return this;
         }
 
-        public IEnumerable<IMemberGenerator> GetMemberGenerators(CodeTypeDeclaration decleration, GenericNode data, MemberGeneratorLocation location)
+        public IEnumerable<CodeTypeMember> GetMembers(CodeTypeDeclaration decleration, GenericNode data, MemberGeneratorLocation location)
         {
+            if (!data.IsValid) yield break;
             foreach (var generator in MemberGenerators)
             {
 
-                if (generator.Location == location)
+                if (generator.MemberLocation == location || generator.MemberLocation == MemberGeneratorLocation.Both)
                 {
-
-                    generator.Decleration = decleration;
-                    generator.Location = location;
-                    generator.DataObject = data;
-                    //var itemGenerator = generator as IMemberItemGenerator;
-                    //if (itemGenerator != null)
-                    //{
-                    //    itemGenerator.ItemObject
-                    //}
-                    yield return generator;
+                    
+                    
+                    yield return generator.Create(decleration, data,location==MemberGeneratorLocation.DesignerFile);
                 }
             }
         }
 
-        public IEnumerable<IMemberGenerator> GetChildGenerators(CodeTypeDeclaration decleration, TNode data, MemberGeneratorLocation location)
+        public IEnumerable<CodeTypeMember> GetChildMembers(CodeTypeDeclaration decleration, TNode data, MemberGeneratorLocation location)
         {
+            if (!data.IsValid) yield break;
             foreach (var generatorConfig in ChildItemMemberGenerators)
             {
                 var selectorConfig = generatorConfig as NodeChildGeneratorConfig<TNode>;
@@ -341,19 +344,17 @@ namespace Invert.uFrame.Editor
                 var items = selectorConfig.Selector == null ? data.ChildItems.Cast<IGraphItem>() : selectorConfig.Selector(data);
                 foreach (var item in items)
                 {
+                    if (!item.IsValid) continue;
                     if (generatorConfig.ChildType != item.GetType())
                     {
-                        Debug.Log(generatorConfig.ChildType.Name + " -----> " +item.GetType().Name);
+                        //Debug.Log(generatorConfig.ChildType.Name + " -----> " +item.GetType().Name);
                         continue;
                     }
-                    if (generatorConfig.Generator.Location == location)
+                    if (generatorConfig.Generator.MemberLocation == location || generatorConfig.Generator.MemberLocation == MemberGeneratorLocation.Both)
                     {
                         var generator = generatorConfig.Generator as IMemberGenerator;
-                        generator.Decleration = decleration;
-                        generator.Location = location;
-                        generator.DataObject = item;
-                        //generator.DataObject = data;
-                        yield return generator;
+                        
+                        yield return generator.Create(decleration, item,location == MemberGeneratorLocation.DesignerFile);
                     }
                 }
             }
@@ -361,7 +362,7 @@ namespace Invert.uFrame.Editor
         }
 
 
-        public NodeGeneratorConfig<TNode> OverrideTypedMethod(Type type, string methodName,Action<TNode,CodeMemberMethod> fillMethod, bool callBase = true, MemberGeneratorLocation location = MemberGeneratorLocation.DesignerFile)
+        public NodeGeneratorConfig<TNode> OverrideTypedMethod(Type type, string methodName,Action<TNode,CodeMemberMethod> fillMethod = null, bool callBase = true, MemberGeneratorLocation location = MemberGeneratorLocation.DesignerFile)
         {
             MemberGenerators.Add(new LambdaMemberGenerator<TNode>(_ =>
             {
@@ -377,6 +378,8 @@ namespace Invert.uFrame.Editor
             });
             return this;
         }
+
+        
     }
 
     public class ConfigProperty<TData, TType>

@@ -185,6 +185,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         {
             foreach (var diagram in Diagrams)
             {
+                if (diagram == null || Object.Equals(diagram, null)) continue;
                 foreach (var item in diagram.AllGraphItems)
                 {
                     yield return item;
@@ -199,6 +200,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         {
             foreach (var diagram in Diagrams)
             {
+                if (diagram == null || Object.Equals(diagram, null)) continue;
                 foreach (var item in diagram.Connections)
                 {
                     yield return item;
@@ -213,6 +215,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         {
             foreach (var item in Diagrams)
             {
+                if (item == null || Object.Equals(item, null)) continue;
                 foreach (var node in item.NodeItems)
                 {
                     yield return node;

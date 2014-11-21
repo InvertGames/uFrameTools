@@ -1,51 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 
 public class GenericInheritableNode : GenericNode, IInhertable
 {
-    private string _baseIdentifier;
-
-    public string BaseIdentifier
-    {
-        get { return _baseIdentifier; }
-        private set { _baseIdentifier = value; }
-    }
-
-    public void SetBaseType(GenericInheritableNode baseItem)
-    {
-        if (baseItem == null)
-        {
-            BaseIdentifier = null;
-        }
-        else
-        {
-            BaseIdentifier = baseItem.Identifier;
-        }
-        
-    }
-
-    public override void Serialize(JSONClass cls)
-    {
-        base.Serialize(cls);
-        if (BaseIdentifier != null)
-        {
-            cls.Add("BaseIdentifier",BaseIdentifier);
-        }
-    }
-
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
-    {
-        base.Deserialize(cls, repository);
-        if (cls["BaseIdentifier"] != null)
-        {
-            BaseIdentifier = cls["BaseIdentifier"].Value;
-        }
-    }
 
     public GenericInheritableNode BaseNode
     {
-        get { return Project.NodeItems.FirstOrDefault(p => p.Identifier == BaseIdentifier) as GenericInheritableNode; }
+        get
+        {
+            return BaseReference.InputFrom<GenericInheritableNode>();
+        }
+        set
+        {
+            Diagram.ClearInput(BaseReference);
+            Diagram.AddConnection(value,BaseReference);
+        }
     }
 
     public IEnumerable<GenericInheritableNode> BaseNodes
@@ -77,7 +48,7 @@ public class GenericInheritableNode : GenericNode, IInhertable
     {
         get
         {
-            var derived = Project.NodeItems.OfType<GenericInheritableNode>().Where(p => p.BaseIdentifier == Identifier);
+            var derived = Project.NodeItems.OfType<GenericInheritableNode>().Where(p => p.BaseNode == this);
             foreach (var derivedItem in derived)
             {
                 yield return derivedItem;
@@ -88,15 +59,12 @@ public class GenericInheritableNode : GenericNode, IInhertable
             }
         }
     }
+    public BaseClassReference BaseReference
+    {
+        get { return GetConnectionReference<BaseClassReference>(); }
+    }
+
+    
 
 
-    //public IEnumerable<TChildItem> GetInheritedChildren<TChildItem>()
-    //{
-    //    return BaseNodesWithThis
-    //        .SelectMany(p =>
-    //            p.InputGraphItems
-    //                .OfType<GenericInheritableNode>()
-    //                .Where(o => o.GetType() == this.GetType())
-    //                .SelectMany(z => z.ChildItems.OfType<GenericNodeChildItem>()));
-    //}
 }

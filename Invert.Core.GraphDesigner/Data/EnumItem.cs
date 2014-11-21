@@ -46,6 +46,12 @@ public class EnumItem : IDiagramNodeItem
 
     public string FullLabel { get { return  Name; } }
     public string Identifier{ get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier;}}
+
+    public bool IsValid
+    {
+        get { return true; }
+    }
+
     public IGraphItem Copy()
     {
         var jsonNode = new JSONClass();
@@ -67,10 +73,17 @@ public class EnumItem : IDiagramNodeItem
 
     public bool IsEditing { get; set; }
 
+    public FlagsDictionary Flags
+    {
+        get { return _flags ?? (_flags = new FlagsDictionary()); }
+        set { _flags = value; }
+    }
+
     [SerializeField]
     private string _identifier;
 
     private DataBag _dataBag;
+    private FlagsDictionary _flags;
 
     public void Remove(IDiagramNode diagramNode)
     {

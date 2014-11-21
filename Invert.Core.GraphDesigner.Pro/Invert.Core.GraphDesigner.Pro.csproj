@@ -38,14 +38,62 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Invert.Common\bin\Debug\UnityEditor.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\uFrameTools\Invert.Common\bin\Debug\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Nodes\IShellReferenceType.cs" />
+    <Compile Include="Drawers\NodeDesignerDrawer.cs" />
     <Compile Include="PluginDesigner.cs" />
     <Compile Include="PluginGraph.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sections\AddGeneratorNodeCommand.cs" />
+    <Compile Include="Sections\Class1.cs" />
+    <Compile Include="Sections\ShellMemberGeneratorInputSlot.cs" />
+    <Compile Include="Sections\ShellMemberGeneratorNode.cs" />
+    <Compile Include="Sections\ShellMemberGeneratorSectionReference.cs" />
+    <Compile Include="Sections\ShellMemberNodeDrawer.cs" />
+    <Compile Include="Sections\ShellMemberNodeViewModel.cs" />
+    <Compile Include="Sections\ShellMembersGeneratorSectionReference.cs" />
+    <Compile Include="Sections\ShellPropertyGeneratorNode.cs" />
+    <Compile Include="Slots\ReferenceItemType.cs" />
+    <Compile Include="Commands\SelectColorCommand.cs" />
+    <Compile Include="Nodes\ShellChildItemTypeNode.cs" />
+    <Compile Include="Generators\ShellChildItemTypeNodeClassGenerator.cs" />
+    <Compile Include="Generators\ShellChildItemTypeNodeDrawerGenerator.cs" />
+    <Compile Include="Generators\ShellChildItemTypeNodeViewModelGenerator.cs" />
+    <Compile Include="Generators\ShellCodeGeneratorNodeGenerator.cs" />
+    <Compile Include="Nodes\ShellGeneratorTypeNode.cs" />
+    <Compile Include="Generators\ShellGraphClassGenerator.cs" />
+    <Compile Include="Nodes\ShellGraphTypeNode.cs" />
+    <Compile Include="Generators\ShellGraphTypeNodeClassGenerator.cs" />
+    <Compile Include="Nodes\ShellNodeChildTypeNode.cs" />
+    <Compile Include="Slots\ShellNodeGeneratorsSlot.cs" />
+    <Compile Include="Slots\ShellNodeInputsSlot.cs" />
+    <Compile Include="Slots\ShellNodeOutputsSlot.cs" />
+    <Compile Include="Slots\ShellNodeSectionsSlot.cs" />
+    <Compile Include="Slots\ShellNodeSubNodesSlot.cs" />
+    <Compile Include="Generators\ShellNodeTypeClassGenerator.cs" />
+    <Compile Include="Nodes\ShellNodeTypeNode.cs" />
+    <Compile Include="Generators\ShellNodeTypeNodeDrawerGenerator.cs" />
+    <Compile Include="Generators\ShellNodeTypeNodeViewModelGenerator.cs" />
+    <Compile Include="Nodes\ShellNodeTypeReferenceSection.cs" />
+    <Compile Include="Generators\ShellNodeTypeReferenceSectionDrawerGenerator.cs" />
+    <Compile Include="Generators\ShellNodeTypeReferenceSectionViewModelGenerator.cs" />
+    <Compile Include="Nodes\ShellNodeTypeSection.cs" />
+    <Compile Include="Generators\ShellNodeTypeSectionClassGenerator.cs" />
+    <Compile Include="ViewModels\ShellNodeTypeViewModel.cs" />
+    <Compile Include="Generators\ShellPluginClassGenerator.cs" />
+    <Compile Include="Nodes\ShellPluginNode.cs" />
+    <Compile Include="Nodes\ShellSlotTypeNode.cs" />
+    <Compile Include="Generators\ShellSlotTypeNodeClassGenerator.cs" />
+    <Compile Include="Generators\ShellSlotTypeNodeDrawerGenerator.cs" />
+    <Compile Include="Generators\ShellSlotTypeNodeViewModelGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Invert.Common\Invert.Common.csproj">
@@ -60,7 +108,12 @@
       <Project>{CFCC5F2C-7A2F-4FD1-90D8-52420B7EB337}</Project>
       <Name>Invert.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Invert.MVVM\Invert.MVVM.csproj">
+      <Project>{cb024a98-ee90-4497-8af3-2c574d665a8a}</Project>
+      <Name>Invert.MVVM</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y

@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class DiagramEnumDrawer : DiagramNodeDrawer<EnumNodeViewModel>
 {
-    private NodeItemHeader _itemsHeader;
+    private SectionHeaderDrawer _itemsHeader;
 
     protected override GUIStyle HeaderStyle
     {
@@ -24,36 +24,5 @@ public class DiagramEnumDrawer : DiagramNodeDrawer<EnumNodeViewModel>
     {
         ViewModel = viewModel;
     }
-
-    public NodeItemHeader ItemsHeader
-    {
-        get
-        {
-
-            if (_itemsHeader == null)
-            {
-                _itemsHeader = Container.Resolve<NodeItemHeader>(null,false,ViewModel);
-                _itemsHeader.Label = "Items";
-                _itemsHeader.HeaderType = typeof(EnumData);
-                if (NodeViewModel.IsLocal)
-                _itemsHeader.AddCommand = Container.Resolve<AddEnumItemCommand>();
-            }
-
-            return _itemsHeader;
-        }
-        set { _itemsHeader = value; }
-    }
-
-    protected override void GetContentDrawers(List<IDrawer> drawers)
-    {
-        base.GetContentDrawers(drawers);
-        drawers.Insert(1,ItemsHeader);
-        //yield return new DiagramSubItemGroup()
-        //{
-        //    Header = ItemsHeader,
-        //    Items = NodeViewModel.EnumItems.Cast<IDiagramNodeItem>().ToArray()
-        //};
-    }
-
 
 }

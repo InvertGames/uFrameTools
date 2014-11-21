@@ -1,22 +1,28 @@
+using System.Reflection;
 using Invert.Core;
 using Invert.uFrame.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
-public class GenericConnectionReference : GenericNodeChildItem
+public class GenericSlot : GenericNodeChildItem
 {
-    public string InputName { get; set; }
+  
 
-    public override string Name
-    {
-        get { return InputName; }
-        set { base.Name = value; }
-    }
 }
+[AttributeUsage(AttributeTargets.Property)]
+public class JsonProperty : Attribute
+{
 
+}
+[AttributeUsage(AttributeTargets.Property)]
+public class NodeProperty : Attribute
+{
+    
+}
 public class GenericNode : DiagramNode, IConnectable
 {
     private List<IDiagramNodeItem> _childItems = new List<IDiagramNodeItem>();
@@ -75,7 +81,7 @@ public class GenericNode : DiagramNode, IConnectable
     {
         get
         {
-           
+
             foreach (var connectionData in Project.Connections)
             {
                 if (connectionData.InputIdentifier == this.Identifier)
@@ -98,21 +104,22 @@ public class GenericNode : DiagramNode, IConnectable
             }
         }
     }
-    //public IEnumerable<IGraphItem> OutputGraphItems
-    //{
-    //    get
-    //    {
-    //        foreach (var connectionData in Project.Connections)
-    //        {
-    //            if (connectionData.InputIdentifier == this.Identifier)
-    //            {
-    //                var item = Project.AllGraphItems.FirstOrDefault(p => p.Identifier == connectionData.OutputIdentifier);
-    //                if (item != null)
-    //                    yield return item;
-    //            }
-    //        }
-    //    }
-    //}
+
+    public override IEnumerable<Refactorer> Refactorings
+    {
+        get
+        {
+            foreach (var refactorer in Config.Refactorers)
+            {
+                var r = refactorer(this);
+                if (r != null)
+                {
+                    yield return r;
+                }
+            }
+        }
+    }
+
 
     public override IEnumerable<IDiagramNodeItem> Items
     {
@@ -127,7 +134,7 @@ public class GenericNode : DiagramNode, IConnectable
         get { return Name; }
     }
 
-    
+
 
     public void AddReferenceItem(IGraphItem item, NodeConfigSection mirrorSection)
     {
@@ -137,7 +144,47 @@ public class GenericNode : DiagramNode, IConnectable
     public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
-     
+        var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        foreach (var property in properties)
+        {
+            if (property.GetCustomAttributes(typeof(JsonProperty), true).Length < 1) continue;
+            var propertyName = property.Name;
+            if (cls[propertyName] == null) continue;
+            var propertyType = property.PropertyType;
+            if (propertyType == typeof(int))
+            {
+                property.SetValue(this, cls[propertyName].AsInt,null);
+            }
+            else if (propertyType == typeof(string))
+            {
+                property.SetValue(this, cls[propertyName].Value, null);
+            }
+            else if (propertyType == typeof(float))
+            {
+                property.SetValue(this, cls[propertyName].AsFloat, null);
+            }
+            else if (propertyType == typeof(bool))
+            {
+                property.SetValue(this, cls[propertyName].AsBool, null);
+            }
+            else if (propertyType == typeof(double))
+            {
+                property.SetValue(this, cls[propertyName].AsDouble, null);
+            }
+            else if (propertyType == typeof(Vector2))
+            {
+                property.SetValue(this, cls[propertyName].AsVector2, null);
+            }
+            else if (propertyType == typeof(Vector3))
+            {
+                property.SetValue(this, cls[propertyName].AsVector3, null);
+            }
+            else if (propertyType == typeof(Quaternion))
+            {
+                property.SetValue(this, cls[propertyName].AsQuaternion, null);
+            }
+        }
+
     }
 
     //public TItem GetConnection<TConnectionType, TItem>() where TConnectionType : GenericConnectionReference, new()
@@ -146,23 +193,23 @@ public class GenericNode : DiagramNode, IConnectable
     //}
 
     public TType GetConnectionReference<TType>()
-        where TType : GenericConnectionReference, new()
+        where TType : GenericSlot, new()
     {
         return (TType)GetConnectionReference(typeof(TType));
     }
 
-    public GenericConnectionReference GetConnectionReference(Type inputType)
+    public GenericSlot GetConnectionReference(Type inputType)
     {
         var item = ChildItems.FirstOrDefault(p => inputType.IsAssignableFrom(p.GetType()));
         if (item == null)
         {
-            var input = Activator.CreateInstance(inputType) as GenericConnectionReference;
+            var input = Activator.CreateInstance(inputType) as GenericSlot;
             input.Node = this;
             ChildItems.Add(input);
             return input;
         }
 
-        return item as GenericConnectionReference;
+        return item as GenericSlot;
     }
 
     //public IEnumerable<TItem> GetConnections<TConnectionType, TItem>() where TConnectionType : GenericConnectionReference, new()
@@ -203,16 +250,67 @@ public class GenericNode : DiagramNode, IConnectable
                 (p is GenericReferenceItem && ((GenericReferenceItem)p).SourceIdentifier == diagramNodeItem.Identifier));
     }
 
+    public bool IsValid
+    {
+        get { return Config.IsValid(this); }
+    }
     public override void NodeRemoved(IDiagramNode nodeData)
     {
         base.NodeRemoved(nodeData);
-        
+
     }
 
     public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
-        
+        var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        foreach (var property in properties)
+        {
+            if (property.GetCustomAttributes(typeof(JsonProperty), true).Length < 1) continue;
+            var value = property.GetValue(this, null);
+            if (value != null)
+            {
+                var propertyName = property.Name;
+                var propertyType = property.PropertyType;
+                if (propertyType == typeof(int))
+                {
+                    cls.Add(propertyName, new JSONData((int)value));
+                }
+                else if (propertyType == typeof(string))
+                {
+                    cls.Add(propertyName, new JSONData((string)value));
+                }
+                else if (propertyType == typeof(float))
+                {
+                    cls.Add(propertyName, new JSONData((float)value));
+                }
+                else if (propertyType == typeof(bool))
+                {
+                    cls.Add(propertyName, new JSONData((bool)value));
+                }
+                else if (propertyType == typeof(double))
+                {
+                    cls.Add(propertyName, new JSONData((double)value));
+                }
+                else if (propertyType == typeof(Vector2))
+                {
+                    cls.Add(propertyName, new JSONData((Vector2)value));
+                }
+                else if (propertyType == typeof(Vector3))
+                {
+                    cls.Add(propertyName, new JSONData((Vector3)value));
+                }
+                else if (propertyType == typeof(Quaternion))
+                {
+                    cls.Add(propertyName, new JSONData((Quaternion)value));
+                }
+                else
+                {
+                    throw new Exception(string.Format("{0} property can't be serialized. Override Serialize method to serialize it."));
+                }
+            }
+        }
+
     }
 
     private void UpdateReferences()
@@ -254,14 +352,23 @@ public class GenericReferenceItem<TSourceType> : GenericReferenceItem
     }
 }
 
-public class GenericReferenceItem : GenericNodeChildItem
+public class GenericReferenceItem : GenericSlot
 {
     private string _sourceIdentifier;
+
+    public override string Label
+    {
+        get { return SourceItemObject.Name + ": " + base.Label; }
+    }
 
     public override string Name
     {
         get
         {
+            if (!string.IsNullOrEmpty(base.Name))
+            {
+                return base.Name;
+            }
             if (SourceItemObject == null)
             {
                 return "Missing";

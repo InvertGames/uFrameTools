@@ -41,7 +41,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
             foreach (var nodeType in InvertGraphEditor.AllowedFilterNodes[viewModel.CurrentRepository.CurrentFilter.GetType()])
             {
-                
+                if (nodeType.IsAbstract) continue;
                 yield return new UFContextMenuItem()
                 {
                     Name = "Add " + GetName(nodeType),

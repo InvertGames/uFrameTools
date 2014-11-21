@@ -85,6 +85,7 @@ namespace Invert.Common
         private static GUIStyle _tag2;
         private static GUIStyle _viewModelHeaderEditingStyle;
         private static GUIStyle _itemTextEditingStyle;
+        private static GUIStyle _boxHighlighter6;
 
         public static float Scale
         {
@@ -856,6 +857,23 @@ namespace Invert.Common
                     };
 
                 return _boxHighlighter5;
+            }
+        }
+        public static GUIStyle BoxHighlighter6
+        {
+            get
+            {
+                if (_boxHighlighter6 == null)
+                    _boxHighlighter6 = new GUIStyle
+                    {
+                        normal = { background = GetSkinTexture("BoxHighlighter6"), textColor = Color.white },
+                        stretchHeight = true,
+                        stretchWidth = true,
+                        border = new RectOffset(171, 180, 120, 135),
+                        padding = new RectOffset(7, 7, 7, 7)
+                    };
+
+                return _boxHighlighter6;
             }
         }
         public static GUIStyle Background

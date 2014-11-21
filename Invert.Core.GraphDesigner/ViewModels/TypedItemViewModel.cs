@@ -21,6 +21,9 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
 
-        public abstract string TypeLabel { get; }
+        public virtual string TypeLabel
+        {
+            get { return Data.RelatedTypeName; }
+        }
     }
 }

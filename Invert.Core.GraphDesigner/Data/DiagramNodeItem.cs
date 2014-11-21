@@ -37,6 +37,16 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         }
     }
 
+    string IGraphItem.Label
+    {
+        get { return Name; }
+    }
+
+    public bool IsValid
+    {
+        get { return true; }
+    }
+
     public IGraphItem Copy()
     {
         var jsonNode = new JSONClass();
@@ -133,7 +143,10 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         }
     }
 
-    public abstract string Label { get; }
+    public virtual string Label
+    {
+        get { return Name; }
+    }
 
     public virtual string Name
     {

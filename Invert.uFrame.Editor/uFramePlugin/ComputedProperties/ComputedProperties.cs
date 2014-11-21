@@ -302,9 +302,9 @@ public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeView
         foreach (var item in NodeViewModel.DependantNodes)
         {
             ElementData item1 = item;
-            drawers.Add(new NodeItemHeader(NodeViewModel)
+            drawers.Add(new SectionHeaderDrawer(new SectionHeaderViewModel()
             {
-                Label = item.Name,
+                Name = item.Name,
                 AddCommand = new SimpleEditorCommand<ComputedPropertyNodeViewModel>(node =>
                 {
                     ItemSelectionWindow.Init("Add Child Dependants", item1.AllProperties.Cast<IItem>().ToArray(),
@@ -313,8 +313,7 @@ public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeView
                             node.AddChildDependant(i as IDiagramNodeItem);
                         });
                 })
-            });
-
+            }));
             foreach (var property in item.AllProperties)
             {
                 if (NodeViewModel.GraphItem[property.Identifier])
@@ -381,37 +380,5 @@ public class ComputedPropertyNodeViewModel : DiagramNodeViewModel<ComputedProper
     public void RemoveChildDependant(IDiagramNodeItem diagramNodeItem)
     {
         GraphItem[diagramNodeItem.Identifier] = false;
-    }
-}
-
-
-public class ComputedPropertyInputsConnectionStrategy :
-       DefaultConnectionStrategy<ITypedItem, ComputedPropertyData>
-{
-    public override Color ConnectionColor
-    {
-        get { return Color.white; }
-    }
-
-    protected override bool CanConnect(ITypedItem output, ComputedPropertyData input)
-    {
-        if (output.Identifier == input.Identifier) return false;
-        //if (!(output is ComputedPropertyData) && !(output is ViewPropertyData)) return false;
-        return base.CanConnect(output, input);
-    }
-
-    public override bool IsConnected(ITypedItem output, ComputedPropertyData input)
-    {
-        return input.DependantPropertyIdentifiers.Contains(output.Identifier);
-    }
-
-    protected override void ApplyConnection(ITypedItem output, ComputedPropertyData input)
-    {
-        input.DependantPropertyIdentifiers.Add(output.Identifier);
-    }
-
-    protected override void RemoveConnection(ITypedItem output, ComputedPropertyData input)
-    {
-        input.DependantPropertyIdentifiers.Remove(output.Identifier);
     }
 }

@@ -82,6 +82,7 @@
     <Compile Include="JsonElementDesignerData.cs" />
     <Compile Include="SubSystemPathStrategy.cs" />
     <Compile Include="uFrameCorePlugin.cs" />
+    <Compile Include="OldConnectionStrategies\ComputedPropertyInputsConnectionStrategy.cs" />
     <Compile Include="uFramePlugin\ModelData\ModelClassNodeDrawer.cs" />
     <Compile Include="uFramePlugin\ModelData\ModelClassNodeViewModel.cs" />
     <Compile Include="uFramePlugin\RenameCollectionRefactorer.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="uFramePlugin\RenameSceneManagerRefactorer.cs" />
     <Compile Include="uFramePlugin\RenameViewComponentRefactorer.cs" />
     <Compile Include="uFramePlugin\RenameViewRefactorer.cs" />
+    <Compile Include="OldConnectionStrategies\ElementStateMachineConnectionStrategy.cs" />
     <Compile Include="uFramePlugin\uFrameData\BindableTypedNodeItem.cs" />
     <Compile Include="uFramePlugin\uFrameData\DefaultKeyBindings.cs" />
     <Compile Include="uFramePlugin\uFrameData\RegisteredInstanceData.cs" />
@@ -107,24 +109,23 @@
     <Compile Include="uFramePlugin\StateMachines\Nodes\Machines\StateMachineNodeDrawer.cs" />
     <Compile Include="uFramePlugin\StateMachines\Nodes\Machines\StateMachineNodeViewModel.cs" />
     <Compile Include="uFramePlugin\StateMachines\Nodes\Machines\StateMachineVariableData.cs" />
-    <Compile Include="uFramePlugin\StateMachines\Nodes\Machines\StateMachineVariableItemViewModel.cs" />
-    <Compile Include="uFramePlugin\StateMachines\Nodes\States\ComputedTransitionConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\ElementStateVariableConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\ComputedTransitionConnectionStrategy.cs" />
     <Compile Include="uFramePlugin\StateMachines\Nodes\States\StateMachineStateData.cs" />
     <Compile Include="uFramePlugin\StateMachines\Nodes\States\StateMachineStateNodeDrawer.cs" />
     <Compile Include="uFramePlugin\StateMachines\Nodes\States\StateMachineStateNodeViewModel.cs" />
     <Compile Include="uFramePlugin\StateMachines\Nodes\States\StateMachineTransition.cs" />
-    <Compile Include="uFramePlugin\StateMachines\Nodes\States\StateMachineTransitionConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\StateMachineTransitionConnectionStrategy.cs" />
     <Compile Include="uFramePlugin\StateMachines\Nodes\States\StateMachineTransitionViewModel.cs" />
     <Compile Include="uFramePlugin\StateMachines\StateMachineFilter.cs" />
     <Compile Include="uFramePlugin\StateMachines\StateMachineGraph.cs" />
-    <Compile Include="uFramePlugin\ElementItemDrawer.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\AssociationConnectionStrategy.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\ViewComponentElementConnectionStrategy.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\ViewComponentInheritanceConnectionStrategy.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\ComputedPropertyInputStrategy.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\SceneManagerSubsystemConnectionStrategy.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\SubsystemConnectionStrategy.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\ViewInheritanceConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\AssociationConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\ViewComponentElementConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\ViewComponentInheritanceConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\ComputedPropertyInputStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\SceneManagerSubsystemConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\SubsystemConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\ViewInheritanceConnectionStrategy.cs" />
     <Compile Include="uFramePlugin\Nodes\Elements\ElementNodeViewModel.cs" />
     <Compile Include="uFrameContainerExtensions.cs" />
     <Compile Include="Upgrading\Class1.cs" />
@@ -140,11 +141,11 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="uFramePlugin\Nodes\Elements\ElementCollectionItemViewModel.cs" />
     <Compile Include="uFramePlugin\Nodes\Elements\ElementCommandItemViewModel.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\ElementInheritanceConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\ElementInheritanceConnectionStrategy.cs" />
     <Compile Include="uFramePlugin\Nodes\Elements\ElementPropertyItemViewModel.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\ElementViewConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\ElementViewConnectionStrategy.cs" />
     <Compile Include="uFramePlugin\Nodes\SceneManagers\SceneManagerViewModel.cs" />
-    <Compile Include="uFramePlugin\Nodes\Connections\SceneTransitionConnectionStrategy.cs" />
+    <Compile Include="OldConnectionStrategies\SceneTransitionConnectionStrategy.cs" />
     <Compile Include="uFramePlugin\Nodes\SceneManagers\SceneTransitionItemViewModel.cs" />
     <Compile Include="uFramePlugin\Nodes\Subsystems\SubSystemViewModel.cs" />
     <Compile Include="uFramePlugin\Nodes\Views\ViewBindingItemViewModel.cs" />
@@ -190,7 +191,6 @@
     <Compile Include="uFramePlugin\uFrameData\ViewModelCommandData.cs" />
     <Compile Include="uFramePlugin\uFrameData\ViewModelPropertyData.cs" />
     <Compile Include="Windows\uFrameComponentSearchWindow.cs" />
-    <Compile Include="Windows\uFrameSettingsWindow.cs" />
     <Compile Include="Windows\uFrameStartDialog.cs" />
     <Compile Include="Windows\ElementExplorerWindow.cs" />
     <Compile Include="IAssemblyNameProvider.cs" />
@@ -220,6 +220,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Editor\" />
+    <Folder Include="uFramePlugin\Nodes\Connections\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

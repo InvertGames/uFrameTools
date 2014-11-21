@@ -2,6 +2,7 @@
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
+using Invert.uFrame.Editor.Refactoring;
 using Invert.uFrame.Editor.ViewModels;
 using System;
 using System.Collections;
@@ -19,51 +20,60 @@ namespace Invert.uFrame.Editor
         public Func<TNode, IEnumerable<IGraphItem>> Selector { get; set; }
     }
 
+    public enum ValidatorType
+    {
+        Info,
+        Warning,
+        Error
+    }
+    public class NodeValidator<TNode>
+    {
+        public string Message { get; set; }
+        public ValidatorType Type { get; set; }
+        public Func<TNode, bool> Validate { get; set; }
+    }
     public class NodeConfig<TNode> : NodeConfig where TNode : GenericNode, IConnectable
     {
+        public NodeConfig<TNode> AddRefactoring(Func<TNode, bool> condition, Func<TNode, Refactorer> refactorer)
+        {
+            this.Refactorers.Add(node =>
+            {
+                if (condition(node as TNode))
+                {
+                    return refactorer(node as TNode);
+                }
+                return null;
+            });
+            return this;
+        }
+
+        public NodeConfig<TNode> Validator(Func<TNode,bool> validate, string message, ValidatorType validatorType = ValidatorType.Warning)
+        {
+            Validators.Add(new NodeValidator<TNode>()
+            {
+                Validate = validate,
+                Message = message,
+                Type = validatorType
+                
+            });
+            return this;
+        }
+        public List<NodeValidator<TNode>> Validators
+        {
+            get { return _validators ?? (_validators =new List<NodeValidator<TNode>>()); }
+            set { _validators = value; }
+        }
+
+        public IEnumerable<NodeValidator<TNode>> Validate(TNode node)
+        {
+            return Validators.Where(p => p.Validate != null && p.Validate(node));
+        }
+
+    
         private List<Func<ConfigCodeGeneratorSettings, CodeGenerator>> _codeGenerators;
-        private List<string> _tags;
         private Dictionary<Type, NodeGeneratorConfig> _typeGeneratorConfigs;
 
-         public GUIStyle GetNodeColorStyle(TNode node)
-        {
-             if (NodeColor == null)
-             {
-                 return ElementDesignerStyles.NodeHeader1;
-             }
-                switch (NodeColor.GetValue(node))
-                {
-                    case Core.GraphDesigner.NodeColor.DarkGray:
-                        return ElementDesignerStyles.NodeHeader1;
-                    case Core.GraphDesigner.NodeColor.Blue:
-                        return ElementDesignerStyles.NodeHeader2;
-                    case Core.GraphDesigner.NodeColor.Gray:
-                        return ElementDesignerStyles.NodeHeader3;
-                    case Core.GraphDesigner.NodeColor.LightGray:
-                        return ElementDesignerStyles.NodeHeader4;
-                    case Core.GraphDesigner.NodeColor.Black:
-                        return ElementDesignerStyles.NodeHeader5;
-                    case Core.GraphDesigner.NodeColor.DarkDarkGray:
-                        return ElementDesignerStyles.NodeHeader6;
-                    case Core.GraphDesigner.NodeColor.Orange:
-                        return ElementDesignerStyles.NodeHeader7;
-                    case Core.GraphDesigner.NodeColor.Red:
-                        return ElementDesignerStyles.NodeHeader8;
-                    case Core.GraphDesigner.NodeColor.YellowGreen:
-                        return ElementDesignerStyles.NodeHeader9;
-                    case Core.GraphDesigner.NodeColor.Green:
-                        return ElementDesignerStyles.NodeHeader10;
-                    case Core.GraphDesigner.NodeColor.Purple:
-                        return ElementDesignerStyles.NodeHeader11;
-                    case Core.GraphDesigner.NodeColor.Pink:
-                        return ElementDesignerStyles.NodeHeader12;
-                    case Core.GraphDesigner.NodeColor.Yellow:
-                        return ElementDesignerStyles.NodeHeader13;
-
-                }
-                return ElementDesignerStyles.NodeHeader1;
-            
-        }
+     
 
         public ConfigProperty<TNode, NodeColor> NodeColor
         {
@@ -72,6 +82,7 @@ namespace Invert.uFrame.Editor
         }
 
         private ConfigProperty<TNode, NodeColor> _nodeColor;
+        private List<NodeValidator<TNode>> _validators;
 
         public NodeConfig<TNode> ColorConfig(ConfigProperty<TNode, NodeColor> color)
         {
@@ -104,12 +115,6 @@ namespace Invert.uFrame.Editor
             set { _codeGenerators = value; }
         }
 
-        public List<string> Tags
-        {
-            get { return _tags ?? (_tags = new List<string>()); }
-            set { _tags = value; }
-        }
-
         public Dictionary<Type, NodeGeneratorConfig> TypeGeneratorConfigs
         {
             get { return _typeGeneratorConfigs ?? (_typeGeneratorConfigs = new Dictionary<Type, NodeGeneratorConfig>()); }
@@ -128,7 +133,7 @@ namespace Invert.uFrame.Editor
             return this;
         }
 
-        public NodeConfig<TNode> AddDesignerGenerator<TCodeGenerator>(string designerFile, bool isEditorExtension = false) where TCodeGenerator : NodeCodeGenerator<TNode>, new()
+        public NodeConfig<TNode> AddDesignerGenerator<TCodeGenerator>(string designerFile, bool isEditorExtension = false) where TCodeGenerator : GenericNodeGenerator<TNode>, new()
         {
             AddGenerator(args =>
             new TCodeGenerator()
@@ -140,20 +145,20 @@ namespace Invert.uFrame.Editor
             return this;
         }
 
-        public NodeGeneratorConfig<TNode> AddDesignerOnlyClass<TCodeGenerator>(string name) where TCodeGenerator : NodeCodeGenerator<TNode>, new()
+        public NodeGeneratorConfig<TNode> AddDesignerOnlyClass<TCodeGenerator>(string name) where TCodeGenerator : GenericNodeGenerator<TNode>, new()
         {
             AddDesignerGenerator<TCodeGenerator>(name);
             return GetGeneratorConfig<TCodeGenerator>();
         }
 
-        public NodeGeneratorConfig<TNode> AddEditableClass<TCodeGenerator>(string name) where TCodeGenerator : NodeCodeGenerator<TNode>, new()
+        public NodeGeneratorConfig<TNode> AddEditableClass<TCodeGenerator>(string name) where TCodeGenerator : GenericNodeGenerator<TNode>, new()
         {
             AddDesignerGenerator<TCodeGenerator>(name);
             AddEditableGenerator<TCodeGenerator>(name);
             return GetGeneratorConfig<TCodeGenerator>();
         }
 
-        public NodeConfig<TNode> AddEditableGenerator<TCodeGenerator>(string folder, bool isEditorExtension = false) where TCodeGenerator : NodeCodeGenerator<TNode>, new()
+        public NodeConfig<TNode> AddEditableGenerator<TCodeGenerator>(string folder, bool isEditorExtension = false) where TCodeGenerator : GenericNodeGenerator<TNode>, new()
         {
             AddGenerator(args =>
             new TCodeGenerator()
@@ -165,18 +170,18 @@ namespace Invert.uFrame.Editor
             return this;
         }
 
-        public NodeConfig<TNode> AddEnum<TChildItem>(Func<TNode, IEnumerable<TChildItem>> selector,
-            string designerFile = "Enums") where TChildItem : IDiagramNodeItem
-        {
-            AddGenerator(args =>
-               new GenericEnumCodeGenerator<TNode, TChildItem>()
-               {
-                   Data = args.Data,
-                   Filename = args.PathStrategy.GetDesignerFilePath(designerFile),
-                   IsDesignerFile = true
-               });
-            return this;
-        }
+        //public NodeConfig<TNode> AddEnum<TChildItem>(Func<TNode, IEnumerable<TChildItem>> selector,
+        //    string designerFile = "Enums") where TChildItem : IDiagramNodeItem
+        //{
+        //    AddGenerator(args =>
+        //       new GenericEnumCodeGenerator<TNode, TChildItem>()
+        //       {
+        //           Data = args.Data,
+        //           Filename = args.PathStrategy.GetDesignerFilePath(designerFile),
+        //           IsDesignerFile = true
+        //       });
+        //    return this;
+        //}
 
         public NodeConfig<TNode> AddGenerator(
             Func<ConfigCodeGeneratorSettings, CodeGenerator> createGeneratorFunc)
@@ -204,24 +209,24 @@ namespace Invert.uFrame.Editor
         //    return this;
         //}
        
-        public NodeConfig<TNode> ConnectsTo<TTarget>(bool oneToMany) where TTarget : class, IConnectable
-        {
-            return ConnectsTo<TTarget>(oneToMany, UnityEngine.Color.white);
-        }
+        //public NodeConfig<TNode> ConnectsTo<TTarget>(bool oneToMany) where TTarget : class, IConnectable
+        //{
+        //    return ConnectsTo<TTarget>(oneToMany, UnityEngine.Color.white);
+        //}
 
-        public NodeConfig<TNode> ConnectsTo<TTarget>(bool oneToMany, Color color) where TTarget : class, IConnectable
-        {
-            //if (oneToMany)
-            //    Container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToManyConnection");
-            //else
-            //{
-            //    Container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToOneConnection");
-            //}
-            return this;
-        }
+        //public NodeConfig<TNode> ConnectsTo<TTarget>(bool oneToMany, Color color) where TTarget : class, IConnectable
+        //{
+        //    if (oneToMany)
+        //        Container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToManyConnection");
+        //    else
+        //    {
+        //        Container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TNode, TTarget>(color), typeof(TNode).Name + "_" + typeof(TTarget).Name + "OneToOneConnection");
+        //    }
+        //    return this;
+        //}
 
         public NodeGeneratorConfig<TNode> GetGeneratorConfig<TCodeGenerator>()
-            where TCodeGenerator : NodeCodeGenerator<TNode>
+            where TCodeGenerator : GenericNodeGenerator<TNode>
         {
             if (TypeGeneratorConfigs.ContainsKey(typeof(TCodeGenerator)))
             {
@@ -237,14 +242,18 @@ namespace Invert.uFrame.Editor
             Container.RegisterFilterNode<TNode, TSubNodeType>();
             return this;
         }
-
-        public NodeConfig<TNode> Input<TSourceType, TReferenceType>(string inputName, bool allowMultiple, Func<IDiagramNodeItem, IDiagramNodeItem, bool> validator = null)
-            where TReferenceType : GenericConnectionReference, new()
+        public NodeConfig<TNode> HasSubNode(Type subNodeType)
+        {
+            Container.RegisterFilterNode(typeof(TNode),subNodeType);
+            return this;
+        }
+        public NodeConfig<TNode> Input<TSourceType, TReferenceType>(Func<IDiagramNodeItem, string> name, bool allowMultiple, Func<IDiagramNodeItem, IDiagramNodeItem, bool> validator = null)
+            where TReferenceType : GenericSlot, new()
             where TSourceType : class, IConnectable
         {
             var config = new NodeInputConfig()
             {
-                Name = inputName,
+                Name = new ConfigProperty<IDiagramNodeItem, string>(name),
                 IsInput = true,
                 IsOutput = false,
                 ReferenceType = typeof(TReferenceType),
@@ -253,62 +262,33 @@ namespace Invert.uFrame.Editor
                 Validator = validator
             };
             Inputs.Add(config);
-
-            //var cs = new GenericConnectionStrategy<TSourceType, TReferenceType>()
-            //{
-            //    IsConnected = (output, input) =>
-            //    {
-            //        var result = input.ConnectedGraphItemIds.Contains(input.Identifier);
-            //        //var genericNode = input.Node as GenericNode;
-            //        //var inputItem = genericNode.GetConnectionReference<TReferenceType>();
-
-            //        //var result = inputItem.ConnectedGraphItemIds.Contains(output.Identifier);
-            //       // Debug.Log(string.Format("Testing Connection::{0}:{1}:{2}", inputItem.GetType().Name, output.Label,result));
-            //        //return result;
-            //        return result;
-            //    },
-            //    Apply = (output, input) =>
-            //    {
-
-            //        if (!input.ConnectedGraphItemIds.Contains(input.Identifier))
-            //        {
-            //            input.ConnectedGraphItemIds.Add(input.Identifier);
-            //        }
-
-
-
-            //        //var genericNode = input.Node as GenericNode;
-            //        //var inputItem = genericNode.GetConnectionReference<TReferenceType>();
-            //        //if (!allowMultiple && inputItem.ConnectedGraphItemIds.Count > 0)
-            //        //{
-            //        //    inputItem.ConnectedGraphItemIds.Clear();
-            //        //}
-            //        //if (!inputItem.ConnectedGraphItemIds.Contains(output.Identifier))
-            //        //{
-            //        //    inputItem.ConnectedGraphItemIds.Add((output.Identifier));
-            //        //}
-
-            //        //Debug.Log(string.Format("{0}:{1}", output.GetType().Name, input.GetType().Name));
-            //    },
-            //    Remove = (output, input) =>
-            //    {
-            //        input.ConnectedGraphItemIds.Remove(output.Identifier);
-            //        //var genericNode = input.Node as GenericNode;
-            //        //genericNode.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Remove((output.Identifier));
-            //    },
-            //};
-            //Container.RegisterInstance<IConnectionStrategy>(cs, inputName + typeof(IConnectable).Name + "to" + typeof(IConnectable).Name + "Connection");
-            //Container.RegisterInstance<IConnectionStrategy>(new InputReferenceConnectionStrategy<TSourceType, TReferenceType>(UnityEngine.Color.white),
-            //    typeof(TSourceType).Name + "_" + typeof(TReferenceType).Name + "InputConnection");
-            //Container.Connectable<TSourceType, TReferenceType>(false);
             return this;
+        }
+
+        public NodeConfig<TNode> Input<TSourceType, TReferenceType>(string inputName, bool allowMultiple, Func<IDiagramNodeItem, IDiagramNodeItem, bool> validator = null)
+            where TReferenceType : GenericSlot, new()
+            where TSourceType : class, IConnectable
+        {
+            var config = new NodeInputConfig()
+            {
+                Name = new ConfigProperty<IDiagramNodeItem, string>(inputName),
+                IsInput = true,
+                IsOutput = false,
+                ReferenceType = typeof(TReferenceType),
+                SourceType = typeof(TSourceType),
+                AllowMultiple = allowMultiple,
+                Validator = validator
+            };
+            Inputs.Add(config);
+            return this;
+            
         }
 
         public NodeConfig<TNode> InputAlias(string inputName)
         {
             var config = new NodeInputConfig()
             {
-                Name = inputName,
+                Name = new ConfigProperty<IDiagramNodeItem, string>(inputName),
                 IsInput = true,
                 IsOutput = false,
                 SourceType = typeof(TNode),
@@ -321,12 +301,12 @@ namespace Invert.uFrame.Editor
 
 
         public NodeConfig<TNode> Output<TSourceType, TReferenceType>(string inputName, bool allowMultiple, Func<IDiagramNodeItem, IDiagramNodeItem, bool> validator = null)
-            where TReferenceType : GenericConnectionReference, new()
+            where TReferenceType : GenericSlot, new()
             where TSourceType : class, IConnectable
         {
             var config = new NodeInputConfig()
             {
-                Name = inputName,
+                Name = new ConfigProperty<IDiagramNodeItem, string>(inputName),
                 IsInput = false,
                 IsOutput = true,
                 ReferenceType = typeof(TReferenceType),
@@ -335,55 +315,32 @@ namespace Invert.uFrame.Editor
                 Validator = validator
             };
             Inputs.Add(config);
-            //var allowMultiple1 = allowMultiple;
-            //var cs = new GenericConnectionStrategy<TReferenceType, TSourceType>()
-            //{
-            //    IsConnected = (output, input) =>
-            //    {
-            //        //var genericNode = output.Node as GenericNode;
-            //        //var inputItem = genericNode.GetConnectionReference<TReferenceType>();
-
-            //        var result = output.ConnectedGraphItemIds.Contains(input.Identifier);
-            //        //Debug.Log(string.Format("Testing Connection::{0}:{1}:{2}", inputItem.GetType().Name, output.Label,result));
-            //        //return result;
-            //        return result;
-            //        return false;
-            //    },
-            //    Apply = (output, input) =>
-            //    {
-            //        //var referenceType = output.ConnectedGraphItems.OfType<TReferenceType>();
-                  
-            //        //var genericNode = output.Node as GenericNode;
-            //        //var inputItem = genericNode.GetConnectionReference<TReferenceType>();
-             
-            //        if (!output.ConnectedGraphItemIds.Contains(input.Identifier))
-            //        {
-            //              output.ConnectedGraphItemIds.Add(input.Identifier);
-            //        }
-
-            //        Debug.Log(string.Format("Applied -> {0}:{1}", output.GetType().Name, input.GetType().Name));
-            //    },
-            //    Remove = (output, input) =>
-            //    {
-            //        //var genericNode = output.Node as GenericNode;
-            //        //genericNode.GetConnectionReference<TReferenceType>().ConnectedGraphItemIds.Remove((input.Identifier));
-            //        output.ConnectedGraphItemIds.Remove(input.Identifier);
-            //    },
-            //    AllowMultipleInputs = false,
-            //    AllowMultipleOutputs = allowMultiple
-            //};
-            //Container.RegisterInstance<IConnectionStrategy>(cs, inputName + typeof(IConnectable).Name + "to" + typeof(IConnectable).Name + "Connection");
-            //Container.RegisterInstance<IConnectionStrategy>(new InputReferenceConnectionStrategy<TSourceType, TReferenceType>(UnityEngine.Color.white),
-            //    typeof(TSourceType).Name + "_" + typeof(TReferenceType).Name + "InputConnection");
-            //Container.Connectable<TSourceType, TReferenceType>(false);
+           
             return this;
         }
+        public NodeConfig<TNode> Output<TSourceType, TReferenceType>(Func<IDiagramNodeItem,string> inputName, bool allowMultiple, Func<IDiagramNodeItem, IDiagramNodeItem, bool> validator = null)
+            where TReferenceType : GenericSlot, new()
+            where TSourceType : class, IConnectable
+        {
+            var config = new NodeInputConfig()
+            {
+                Name = new ConfigProperty<IDiagramNodeItem, string>(inputName),
+                IsInput = false,
+                IsOutput = true,
+                ReferenceType = typeof(TReferenceType),
+                SourceType = typeof(TSourceType),
+                AllowMultiple = allowMultiple,
+                Validator = validator
+            };
+            Inputs.Add(config);
 
+            return this;
+        }
         public NodeConfig<TNode> OutputAlias(string outputName)
         {
             var config = new NodeInputConfig()
             {
-                Name = outputName,
+                Name = new ConfigProperty<IDiagramNodeItem, string>(outputName),
                 IsInput = false,
                 IsOutput = true,
                 SourceType = typeof(TNode),
@@ -398,7 +355,7 @@ namespace Invert.uFrame.Editor
         {
             var config = new NodeInputConfig()
             {
-                Name = outputName,
+                Name = new ConfigProperty<IDiagramNodeItem, string>(outputName),
                 IsInput = false,
                 IsOutput = true,
                 SourceType = typeof(TType),
@@ -431,7 +388,10 @@ namespace Invert.uFrame.Editor
         //    Container.RegisterNodeSection<TType, TChildItem>(header, selector);
         //    return this;
         //}
-        public NodeConfig<TNode> ReferenceSection<TSourceType, TReferenceItem>(string header, Func<TNode, IEnumerable<TSourceType>> selector, bool manual = false)
+        public NodeConfig<TNode> ReferenceSection<TSourceType, TReferenceItem>(string header, 
+            Func<TNode, IEnumerable<TSourceType>> selector,
+            bool manual = false,
+            bool allowDuplicates = false)
             where TReferenceItem : GenericReferenceItem<TSourceType>
             where TSourceType : IGraphItem
         {
@@ -441,7 +401,8 @@ namespace Invert.uFrame.Editor
                 ChildType = typeof(TReferenceItem),
                 Name = header,
                 AllowAdding = manual,
-                ReferenceType = typeof(TSourceType)
+                ReferenceType = typeof(TSourceType),
+                AllowDuplicates = allowDuplicates
             };
             if (selector != null)
             {
@@ -484,11 +445,10 @@ namespace Invert.uFrame.Editor
         //    Container.RegisterGraphItem<TChildItem, ScaffoldNodeChildItem<TChildItem>.ViewModel, ScaffoldNodeChildItem<TChildItem>.Drawer>();
         //    return this;
         //}
-        public NodeConfig<TNode> TypedSection<TChildItem>(string header = null, bool allowNone = false, bool primitiveOnly = false, bool includeUnityEngine = true) where TChildItem : ITypedItem
+        public NodeConfig<TNode> TypedSection<TChildItem>(string header, SelectItemTypeCommand selectTypeCommand) where TChildItem : ITypedItem
         {
             Section<TChildItem>(header);
-            Container.RegisterInstance<IEditorCommand>(new SelectItemTypeCommand() { AllowNone = allowNone, PrimitiveOnly = primitiveOnly, IncludeUnityEngine = includeUnityEngine }, typeof(TChildItem).Name + "TypeSelection");
-
+            Container.RegisterInstance<IEditorCommand>(selectTypeCommand, typeof(TChildItem).Name + "TypeSelection");
             return this;
         }
 
@@ -497,6 +457,8 @@ namespace Invert.uFrame.Editor
             public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
                 TNode item)
             {
+                if (!item.IsValid) yield break;
+
                 var config = Container.GetNodeConfig<TNode>();
                 if (config.CodeGenerators == null) yield break;
 
@@ -574,8 +536,23 @@ namespace Invert.uFrame.Editor
         //}
         public NodeConfig<TNode> AddFlag(string inheritable)
         {
-            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(inheritable,inheritable),inheritable + "Command");
+            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(inheritable,inheritable),typeof(TNode).Name + inheritable + "FlagCommand");
             return this;
+        }
+        public NodeConfig<TNode> AddFlag(string inheritable, Func<TNode,bool> get, Action<TNode,bool> set )
+        {
+            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(inheritable, inheritable)
+            {
+                IsProperty = true,
+                Get = get,
+                Set = set
+            }, inheritable + "Command");
+            return this;
+        }
+
+        public override bool IsValid(GenericNode node)
+        {
+            return !Validate(node as TNode).Any();
         }
     }
 

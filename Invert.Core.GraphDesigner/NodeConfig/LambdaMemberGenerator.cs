@@ -3,7 +3,7 @@ using System.CodeDom;
 
 namespace Invert.uFrame.Editor
 {
-    public class LambdaMemberGenerator<TData> : MemberGenerator
+    public class LambdaMemberGenerator<TData> : MemberGenerator<TData>
     {
         public LambdaMemberGenerator(Func<LambdaMemberGenerator<TData>, CodeTypeMember> lambda)
         {
@@ -12,16 +12,16 @@ namespace Invert.uFrame.Editor
 
         public Func<LambdaMemberGenerator<TData>, CodeTypeMember> Lambda { get; set; }
         public bool IsDesignerFile { get; set; }
-
-        public TData Data
-        {
-            get { return (TData)DataObject; }
-        }
-
-        public override CodeTypeMember Create(bool isDesignerFile)
+        public TData Data { get; set; }
+        public CodeTypeDeclaration Decleration;
+        public override CodeTypeMember Create(CodeTypeDeclaration decleration, TData data, bool isDesignerFile)
         {
             IsDesignerFile = isDesignerFile;
+            Data = data;
+            Decleration = decleration;
             return Lambda(this);
         }
     }
+
+   
 }

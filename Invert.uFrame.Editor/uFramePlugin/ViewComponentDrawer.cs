@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ViewComponentDrawer : DiagramNodeDrawer<ViewComponentNodeViewModel>
 {
-    private NodeItemHeader _additiveScenesHeader;
+    private SectionHeaderDrawer _additiveScenesHeader;
 
 
     public ViewComponentDrawer(ViewComponentNodeViewModel viewModel)
@@ -19,13 +19,7 @@ public class ViewComponentDrawer : DiagramNodeDrawer<ViewComponentNodeViewModel>
         get { return ElementDesignerStyles.NodeHeader7; }
     }
 
-   
-    public NodeItemHeader AdditiveScenesHeader
-    {
-        get { return _additiveScenesHeader ?? (_additiveScenesHeader = new NodeItemHeader(ViewModel) { Label = "Additive Scenes", HeaderType = typeof(AdditiveSceneData) }); }
-        set { _additiveScenesHeader = value; }
-    }
-
+  
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
         base.GetContentDrawers(drawers);

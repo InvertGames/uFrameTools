@@ -145,7 +145,7 @@ public class ConnectorDrawer : Drawer<ConnectorViewModel>
         //{
         //    EditorGUI.DrawRect(Bounds.Scale(scale), Color.black);
         //}
-        if (!ViewModel.ConnectorFor.IsMouseOver && !ViewModel.IsMouseOver && !ViewModel.HasConnections) return;
+        if (!ViewModel.ConnectorFor.IsMouseOver && !ViewModel.ConnectorFor.IsSelected && !ViewModel.IsMouseOver && !ViewModel.HasConnections) return;
         if (ViewModel.HasConnections)
         {
             GUI.DrawTexture(Bounds.Scale(scale), texture, ScaleMode.StretchToFill, true);

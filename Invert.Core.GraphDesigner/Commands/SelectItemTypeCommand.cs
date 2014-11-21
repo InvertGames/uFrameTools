@@ -11,9 +11,29 @@ using UnityEngine;
 
 public class SelectItemTypeCommand : EditorCommand<DiagramViewModel>
 {
+    private List<GraphTypeInfo> _additionalTypes;
     public bool AllowNone { get; set; }
     public bool PrimitiveOnly { get; set; }
-    public bool IncludeUnityEngine { get; set; }
+    public bool IncludePrimitives { get; set; }
+
+    public SelectItemTypeCommand()
+    {
+    }
+
+    public SelectItemTypeCommand(Func<IDiagramNodeItem, GraphTypeInfo[]> typesSelector)
+    {
+        TypesSelector = typesSelector;
+        AllowNone = false;
+        
+    }
+
+    public List<GraphTypeInfo> AdditionalTypes
+    {
+        get { return _additionalTypes ?? (_additionalTypes = new List<GraphTypeInfo>()); }
+        set { _additionalTypes = value; }
+    }
+    public Func<IDiagramNodeItem, GraphTypeInfo[]> TypesSelector { get; set; }
+
     public override void Perform(DiagramViewModel node)
     {
         var typesList = GetRelatedTypes(node);
@@ -48,59 +68,31 @@ public class SelectItemTypeCommand : EditorCommand<DiagramViewModel>
         {
             yield return new GraphTypeInfo() { Name = null, Group = "", Label = "[ None ]" };
         }
-
-        if (!PrimitiveOnly)
+        if (IncludePrimitives)
         {
-            foreach (var viewModel in diagramData.CurrentRepository.NodeItems.OfType<IDesignerType>())
+            var itemTypes = InvertGraphEditor.TypesContainer.ResolveAll<GraphTypeInfo>();
+            foreach (var elementItemType in itemTypes)
             {
-                yield return new GraphTypeInfo()
-                {
-                    Name = viewModel.Identifier,
-                    Label = viewModel.Name,
-                    Group = diagramData.Title
-                };
+                yield return elementItemType;
             }
         }
-        var itemTypes = InvertGraphEditor.TypesContainer.ResolveAll<GraphTypeInfo>();
-        foreach (var elementItemType in itemTypes)
+        foreach (var item in AdditionalTypes)
         {
-            yield return elementItemType;
+            yield return item;
         }
-
+        if (TypesSelector != null)
+        {
+            foreach (var item in TypesSelector(diagramData.SelectedNodeItem.DataObject as IDiagramNodeItem))
+            {
+                yield return item;
+            }
+        }
         if (PrimitiveOnly) yield break;
-        //if (IncludeUnityEngine)
-        //{
-        //    yield return new ElementItemType() { Type = typeof(UnityEngine.MonoBehaviour), Group = "UnityEngine", Label = "MonoBehaviour" };
-        //    yield return new ElementItemType() { Type = typeof(UnityEngine.Component), Group = "UnityEngine", Label = "Component" };
-
-
-        //}
 
         foreach (var item in diagramData.CurrentRepository.NodeItems.OfType<IDesignerType>())
         {
             yield return new GraphTypeInfo() { Name = item.Identifier, Group = "", Label = item.Name };
         }
-        
-        //foreach (var projectAssembly in AppDomain.CurrentDomain.GetAssemblies())
-        //{
-        //    foreach (var type in projectAssembly.GetTypes())
-        //    {
-        //        if (type.ContainsGenericParameters) continue;
-        //        if (type.Name.Contains("$")) continue;
-        //        if (IncludeUnityEngine && typeof(UnityEngine.Object).IsAssignableFrom(type))
-        //        {
-        //            yield return new ElementItemType() { Type = type, Group = "Components", Label = type.Name }; ;
-        //            continue;
-        //        }
-        //        if (!typeof(Component).IsAssignableFrom(type) && type.IsClass && !type.Name.Contains("<") && !typeof(ViewModel).IsAssignableFrom(type) && !typeof(Controller).IsAssignableFrom(type) && !typeof(ViewBase).IsAssignableFrom(type))
-        //        {
-        //            if (!type.ContainsGenericParameters)
-        //                yield return new ElementItemType() { Type = type, Group = "Project", Label = type.Name };
-        //        }
-        //    }
-        //}
-        
-        
     }
 
     public override string CanPerform(DiagramViewModel node)

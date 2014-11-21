@@ -23,10 +23,7 @@ public class SceneFlowFilter : DiagramFilter
         {
             return true;
         }
-        if (t == typeof(AdditiveSceneData))
-        {
-            return true;
-        }
+ 
         return base.IsItemAllowed(item, t);
     }
 }

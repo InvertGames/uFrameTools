@@ -64,7 +64,7 @@ namespace Invert.uFrame.Editor.ViewModels
                     if (alreadyConnected.Contains(tempId)) continue;
                     if (output.ConnectorForType != null && input.ConnectorForType != null)
                     {
-                        if (output.ConnectorForType == input.ConnectorForType)
+                        if (input.ConnectorForType.IsAssignableFrom(output.ConnectorForType))
                         {
                             if (strategy.IsConnected((TSource) output.DataObject, (TTarget) input.DataObject))
                             {

@@ -1,6 +1,6 @@
 namespace Invert.uFrame.Editor.ViewModels
 {
-    public class ElementCollectionItemViewModel : ElementItemViewModel<ViewModelCollectionData>
+    public class ElementCollectionItemViewModel : TypedItemViewModel<ViewModelCollectionData>
     {
         public ElementCollectionItemViewModel(ViewModelCollectionData data, DiagramNodeViewModel nodeViewModel)
             : base(data, nodeViewModel)

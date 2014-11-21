@@ -57,6 +57,7 @@
     <Compile Include="SearchableScrollWindow.cs" />
     <Compile Include="uFrameMenu.cs" />
     <Compile Include="UFrameSettings.cs" />
+    <Compile Include="uFrameSettingsWindow.cs" />
     <Compile Include="UnityPlatformPlugin.cs" />
     <Compile Include="UnityWindowManager.cs" />
   </ItemGroup>

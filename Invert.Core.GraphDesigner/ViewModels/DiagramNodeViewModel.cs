@@ -5,9 +5,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using Invert.Common;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.MVVM;
+using Invert.uFrame.Editor.ElementDesigner;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,16 +32,46 @@ namespace Invert.uFrame.Editor.ViewModels
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
-            ContentItems.Clear();
+          
+       
+        }
+
+        protected override void CreateContent()
+        {
+            base.CreateContent();
             foreach (var item in GraphItem.Items)
             {
                 var vm = GetDataViewModel(item);
-                
+
                 if (vm == null)
                 {
                     Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
                     continue;
                 }
+                ContentItems.Add(vm);
+            }
+            AddPropertyFields();
+        }
+
+        public void AddPropertyFields(PropertyInfo[] properties = null, string headerText = "Properties")
+        {
+            var ps = properties ?? GraphItem.GetPropertiesByAttribute<NodeProperty>().ToArray();
+            if (ps.Length < 1) return;
+
+            if (!string.IsNullOrEmpty(headerText))
+            ContentItems.Add(new SectionHeaderViewModel()
+            {
+                Name = headerText,
+            });
+            
+            foreach (var property in ps)
+            {
+                var vm = new PropertyFieldViewModel(this);
+                vm.Type = property.PropertyType;
+                vm.Name = property.Name;
+                PropertyInfo property1 = property;
+                vm.Getter = () => property1.GetValue(GraphItem, null);
+                vm.Setter = (v) => property1.SetValue(GraphItem, v, null);
                 ContentItems.Add(vm);
             }
         }
@@ -104,6 +137,13 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
 
+        public virtual NodeColor Color
+        {
+            get
+            {
+                return NodeColor.LightGray;
+            }
+        }
         //public bool Dirty { get; set; }
         public override bool IsSelected
         {
@@ -122,13 +162,29 @@ namespace Invert.uFrame.Editor.ViewModels
         public override void GetConnectors(List<ConnectorViewModel> list)
         {
            // base.GetConnectors(list);
-            if (!IsCollapsed)
-            {
+            //if (!IsCollapsed)
+            //{
                 foreach (var item in ContentItems)
                 {
-                    item.GetConnectors(list);
+                    if (IsCollapsed)
+                    {
+                        item.GetConnectors(list);
+                        if (item.InputConnector != null)
+                            item.InputConnector.ConnectorFor = this;
+                        if (item.OutputConnector != null)
+                            item.OutputConnector.ConnectorFor = this;
+                    }
+                    else
+                    {
+                        item.GetConnectors(list);
+                    
+                    }
+                    
+
+                    
+                    
                 }
-            }
+            //}
             if (InputConnector != null)
                 list.Add(InputConnector);
             if (OutputConnector != null)
@@ -173,8 +229,15 @@ namespace Invert.uFrame.Editor.ViewModels
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
+            ContentItems.Clear();
             IsLocal = InvertGraphEditor.CurrentProject.CurrentGraph.NodeItems.Contains(GraphItemObject);
+            CreateContent();
 
+        }
+
+        protected virtual void CreateContent()
+        {
+            
         }
         public bool IsLocal { get; set; }
         public bool IsEditing
@@ -305,6 +368,14 @@ namespace Invert.uFrame.Editor.ViewModels
             get { yield break; }
         }
 
+        public virtual IEnumerable<KeyValuePair<string, ValidatorType>> Issues
+        {
+            get
+            {
+                yield break;
+            }
+        }
+
 
         public void BeginEditing()
         {
@@ -355,6 +426,15 @@ namespace Invert.uFrame.Editor.ViewModels
         }
 
 
+
+    }
+
+    public class SectionHeaderViewModel : GraphItemViewModel
+    {
+        public override Vector2 Position { get; set; }
+        public override string Name { get; set; }
+
+        public IEditorCommand AddCommand { get; set; }
 
     }
 }

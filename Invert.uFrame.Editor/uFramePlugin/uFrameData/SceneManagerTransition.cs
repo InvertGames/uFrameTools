@@ -80,7 +80,14 @@ public class SceneManagerTransition : IDiagramNodeItem
     private string _identifier;
 
     private DataBag _dataBag = new DataBag();
+    private FlagsDictionary _flags;
     public string Identifier{ get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier;}}
+
+    public bool IsValid
+    {
+        get { return true; }
+    }
+
     public IGraphItem Copy()
     {
         return null;
@@ -96,6 +103,12 @@ public class SceneManagerTransition : IDiagramNodeItem
     }
 
     public bool IsEditing { get; set; }
+
+    public FlagsDictionary Flags
+    {
+        get { return _flags ?? (_flags = new FlagsDictionary()); }
+        set { _flags = value; }
+    }
 
     public string NameAsSettingsField
     {

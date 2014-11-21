@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Invert.uFrame.Editor.ElementDesigner;
 
 namespace Invert.uFrame.Editor.ViewModels
 {
@@ -7,6 +8,17 @@ namespace Invert.uFrame.Editor.ViewModels
         public EnumNodeViewModel(EnumData data, DiagramViewModel diagramViewModel)
             : base(data, diagramViewModel)
         {
+
+        }
+
+        protected override void CreateContent()
+        {
+            ContentItems.Add(new SectionHeaderViewModel()
+            {
+                Name = "Items",
+                AddCommand = new SimpleEditorCommand<EnumNodeViewModel>(_=>_.AddNew())
+            });
+            base.CreateContent();
 
         }
 

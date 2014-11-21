@@ -1,27 +1,75 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using Invert.Common;
 using Invert.Core.GraphDesigner.Settings;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
+    public enum NodeColor
+    {
+        Gray,
+        DarkGray,
+        Blue,
+        LightGray,
+        Black,
+        DarkDarkGray,
+        Orange,
+        Red,
+        Yellow,
+        Green,
+        Purple,
+        Pink,
+        YellowGreen
+    }
+
     public interface IGraphWindow : ICommandHandler
     {
         DiagramViewModel DiagramViewModel { get; }
     }
+
     public static class InvertGraphEditor
     {
-        public const bool REQUIRE_UPGRADE = true;
         public const string CURRENT_VERSION = "1.501";
         public const double CURRENT_VERSION_NUMBER = 1.501;
+        public const bool REQUIRE_UPGRADE = true;
+        private static Dictionary<Type, List<Type>> _allowedFilterItems;
 
+        private static Dictionary<Type, List<Type>> _allowedFilterNodes;
+
+        private static IAssetManager _assetManager;
+
+        private static IEditorCommand[] _commands;
+
+        private static IConnectionStrategy[] _connectionStrategies;
+
+        private static IProjectRepository _currentProject;
+
+        private static IProjectRepository[] _projects;
+
+        private static IGraphEditorSettings _settings;
+
+        private static uFrameContainer _TypesContainer;
+
+        private static IWindowManager _windowManager;
+
+        public static Dictionary<Type, List<Type>> AllowedFilterItems
+        {
+            get { return _allowedFilterItems ?? (_allowedFilterItems = new Dictionary<Type, List<Type>>()); }
+            set { _allowedFilterItems = value; }
+        }
+
+        public static Dictionary<Type, List<Type>> AllowedFilterNodes
+        {
+            get { return _allowedFilterNodes ?? (_allowedFilterNodes = new Dictionary<Type, List<Type>>()); }
+            set { _allowedFilterNodes = value; }
+        }
 
         public static IAssetManager AssetManager
         {
@@ -29,13 +77,23 @@ namespace Invert.Core.GraphDesigner
             set { _assetManager = value; }
         }
 
-        private static Dictionary<Type, List<Type>> _allowedFilterNodes;
-        private static Dictionary<Type, List<Type>> _allowedFilterItems;
-
-        public static IProjectRepository[] Projects
+        public static IEditorCommand[] Commands
         {
-            get { return _projects ?? (_projects = AssetManager.GetAssets(typeof(IProjectRepository)).Cast<IProjectRepository>().ToArray()); }
-            set { _projects = value; }
+            get
+            {
+                return _commands ?? (_commands = Container.ResolveAll<IEditorCommand>().ToArray());
+            }
+        }
+
+        public static IConnectionStrategy[] ConnectionStrategies
+        {
+            get { return _connectionStrategies ?? (_connectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray()); }
+            set { _connectionStrategies = value; }
+        }
+
+        public static IUFrameContainer Container
+        {
+            get { return InvertApplication.Container; }
         }
 
         public static DiagramViewModel CurrentDiagramViewModel
@@ -43,9 +101,11 @@ namespace Invert.Core.GraphDesigner
             get { return DesignerWindow.DiagramViewModel; }
         }
 
-        public static IUFrameContainer Container
+        public static MouseEvent CurrentMouseEvent
         {
-            get { return InvertApplication.Container; }
+            // TODO
+            get;
+            set;
         }
 
         public static IProjectRepository CurrentProject
@@ -62,6 +122,158 @@ namespace Invert.Core.GraphDesigner
                     }
                 }
             }
+        }
+
+        public static IGraphWindow DesignerWindow { get; set; }
+
+        public static IKeyBinding[] KeyBindings { get; set; }
+
+        public static IProjectRepository[] Projects
+        {
+            get { return _projects ?? (_projects = AssetManager.GetAssets(typeof(IProjectRepository)).Cast<IProjectRepository>().ToArray()); }
+            set { _projects = value; }
+        }
+
+        public static IGraphEditorSettings Settings
+        {
+            get { return _settings ?? (_settings = Container.Resolve<IGraphEditorSettings>()); }
+            set { _settings = value; }
+        }
+
+        public static uFrameContainer TypesContainer
+        {
+            get
+            {
+                if (_TypesContainer != null) return _TypesContainer;
+                _TypesContainer = new uFrameContainer();
+                InitializeTypesContainer(_TypesContainer);
+                return _TypesContainer;
+            }
+            set { _TypesContainer = value; }
+        }
+
+        public static IWindowManager WindowManager
+        {
+            get { return _windowManager ?? (_windowManager = Container.Resolve<IWindowManager>()); }
+        }
+
+        public static IUFrameContainer Connectable<TSource, TTarget>(this IUFrameContainer container, bool oneToMany = true, Func<TSource, TTarget, bool> filter = null)
+            where TSource : class, IConnectable
+            where TTarget : class, IConnectable
+        {
+            //if (oneToMany)
+            //    container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
+            //else
+            //{
+            //    container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
+            //}
+            return container;
+        }
+
+        public static IEnumerable<IEditorCommand> CreateCommandsFor<T>()
+        {
+            var commands = Container.ResolveAll<T>();
+
+            return Enumerable.Where(Commands, p => typeof(T).IsAssignableFrom(p.For));
+        }
+
+        public static TCommandUI CreateCommandUI<TCommandUI>(ICommandHandler handler, params Type[] contextTypes) where TCommandUI : class,ICommandUI
+        {
+            var ui = Container.Resolve<TCommandUI>() as ICommandUI;
+            ui.Handler = handler;
+            foreach (var contextType in contextTypes)
+            {
+                var commands = Container.ResolveAll(contextType).Cast<IEditorCommand>().ToArray();
+
+                foreach (var command in commands)
+                {
+                    ui.AddCommand(command);
+                }
+            }
+            return (TCommandUI)ui;
+        }
+
+        public static IDrawer CreateDrawer(ViewModel viewModel)
+        {
+            return CreateDrawer<IDrawer>(viewModel);
+        }
+
+        public static IDrawer CreateDrawer<TDrawerBase>(ViewModel viewModel) where TDrawerBase : IDrawer
+        {
+            if (viewModel == null)
+            {
+                Debug.LogError("Data is null.");
+                return null;
+            }
+            var drawer = Container.ResolveRelation<TDrawerBase>(viewModel.GetType(), viewModel);
+            if (drawer == null)
+            {
+                Debug.Log(String.Format("Couldn't Create drawer for {0}.", viewModel.GetType()));
+            }
+            return drawer;
+        }
+
+        public static void DesignerPluginLoaded()
+        {
+            Settings = Container.Resolve<IGraphEditorSettings>();
+            AssetManager = Container.Resolve<IAssetManager>();
+            OrganizeFilters();
+            var commandKeyBindings = new List<IKeyBinding>();
+            foreach (var item in Container.Instances)
+            {
+                if (typeof(IEditorCommand).IsAssignableFrom(item.Base))
+                {
+                    if (item.Instance != null)
+                    {
+                        var command = item.Instance as IEditorCommand;
+                        if (command != null)
+                        {
+                            var keyBinding = command.GetKeyBinding();
+                            if (keyBinding != null)
+                                commandKeyBindings.Add(keyBinding);
+                        }
+                    }
+                }
+            }
+
+            ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
+            KeyBindings = Container.ResolveAll<IKeyBinding>().Concat(commandKeyBindings).ToArray();
+        }
+
+        public static void ExecuteCommand(IEditorCommand action)
+        {
+            ExecuteCommand(DesignerWindow, action);
+        }
+
+        public static void ExecuteCommand(Action<DiagramViewModel> action)
+        {
+            ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action));
+        }
+
+        public static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command)
+        {
+            var objs = handler.ContextObjects.ToArray();
+
+            CurrentProject.RecordUndo(CurrentProject.CurrentGraph, command.Title);
+            foreach (var o in objs)
+            {
+                if (o == null) continue;
+
+                if (command.For.IsAssignableFrom(o.GetType()))
+                {
+                    if (command.CanPerform(o) != null) continue;
+                    //handler.CommandExecuting(command);
+                    command.Execute(o);
+                    if (command.Hooks != null)
+                        command.Hooks.ForEach(p =>
+                        {
+                            Debug.Log(p.Name);
+                            ExecuteCommand(handler, p);
+                        });
+                    handler.CommandExecuted(command);
+                }
+            }
+            CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
         }
 
         public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, IProjectRepository project)
@@ -109,10 +321,7 @@ namespace Invert.Core.GraphDesigner
                             codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                             yield return codeGenerator;
                         }
-
                     }
-
-
                 }
                 // If its a generator for a specific node type
                 else
@@ -135,7 +344,6 @@ namespace Invert.Core.GraphDesigner
                             }
                         }
                     }
-
                 }
             }
         }
@@ -161,7 +369,22 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public static IGraphWindow DesignerWindow { get; set; }
+        public static IEnumerable<Type> GetAllowedFilterItems(Type filterType)
+        {
+            return Container.RelationshipMappings.Where(
+                p => p.From == filterType && p.To == typeof(IDiagramNodeItem)).Select(p => p.Concrete);
+        }
+
+        public static IEnumerable<Type> GetAllowedFilterNodes(Type filterType)
+        {
+            return Container.RelationshipMappings.Where(
+                p => p.From == filterType && p.To == typeof(IDiagramNode)).Select(p => p.Concrete);
+        }
+
+        public static IEnumerable<IEditorCommand> GetContextCommandsFor<T>()
+        {
+            return Enumerable.Where(Commands, p => p is IContextMenuItemCommand && typeof(T).IsAssignableFrom(p.For));
+        }
 
         public static void HookCommand<TFor>(string name, IEditorCommand hook) where TFor : class, IEditorCommand
         {
@@ -169,46 +392,9 @@ namespace Invert.Core.GraphDesigner
             command.Hooks.Add(hook);
         }
 
-        public static void RegisterKeyBinding(IEditorCommand command, string name, KeyCode code, bool control = false, bool alt = false, bool shift = false)
+        public static bool IsFilter(Type type)
         {
-            Container.RegisterInstance<IKeyBinding>(new SimpleKeyBinding(command, name, code, control, alt, shift), name);
-        }
-
-        public static void ExecuteCommand(IEditorCommand action)
-        {
-            ExecuteCommand(DesignerWindow, action);
-        }
-
-        public static void ExecuteCommand(Action<DiagramViewModel> action)
-        {
-            ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action));
-        }
-
-        public static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command)
-        {
-            var objs = handler.ContextObjects.ToArray();
-
-            CurrentProject.RecordUndo(CurrentProject.CurrentGraph, command.Title);
-            foreach (var o in objs)
-            {
-                if (o == null) continue;
-
-
-                if (command.For.IsAssignableFrom(o.GetType()))
-                {
-                    if (command.CanPerform(o) != null) continue;
-                    //handler.CommandExecuting(command);
-                    command.Execute(o);
-                    if (command.Hooks != null)
-                        command.Hooks.ForEach(p =>
-                        {
-                            Debug.Log(p.Name);
-                            ExecuteCommand(handler, p);
-                        });
-                    handler.CommandExecuted(command);
-                }
-            }
-            CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
+            return AllowedFilterNodes.ContainsKey(type);
         }
 
         public static void OrganizeFilters()
@@ -236,119 +422,33 @@ namespace Invert.Core.GraphDesigner
                 AllowedFilterItems[filterMapping.From].Add(filterMapping.Concrete);
             }
         }
-        private static IConnectionStrategy[] _connectionStrategies;
-        public static IConnectionStrategy[] ConnectionStrategies
-        {
-            get { return _connectionStrategies ?? (_connectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray()); }
-            set { _connectionStrategies = value; }
-        }
-        public static TCommandUI CreateCommandUI<TCommandUI>(ICommandHandler handler, params Type[] contextTypes) where TCommandUI : class,ICommandUI
-        {
-            var ui = Container.Resolve<TCommandUI>() as ICommandUI;
-            ui.Handler = handler;
-            foreach (var contextType in contextTypes)
-            {
-                var commands = Container.ResolveAll(contextType).Cast<IEditorCommand>().ToArray();
 
-                foreach (var command in commands)
-                {
-                    ui.AddCommand(command);
-                }
-            }
-            return (TCommandUI)ui;
-        }
-
-        public static IEnumerable<IEditorCommand> GetContextCommandsFor<T>()
-        {
-            return Enumerable.Where(Commands, p => p is IContextMenuItemCommand && typeof(T).IsAssignableFrom(p.For));
-        }
-
-        public static IEnumerable<IEditorCommand> CreateCommandsFor<T>()
-        {
-            var commands = Container.ResolveAll<T>();
-
-            return Enumerable.Where(Commands, p => typeof(T).IsAssignableFrom(p.For));
-        }
-
-        private static IEditorCommand[] _commands;
-        private static IProjectRepository[] _projects;
-        private static IGraphEditorSettings _settings;
-
-        public static IEditorCommand[] Commands
-        {
-            get
-            {
-                return _commands ?? (_commands = Container.ResolveAll<IEditorCommand>().ToArray());
-            }
-        }
-
-        public static IDrawer CreateDrawer(ViewModel viewModel)
-        {
-            return CreateDrawer<IDrawer>(viewModel);
-        }
-        public static IDrawer CreateDrawer<TDrawerBase>(ViewModel viewModel) where TDrawerBase : IDrawer
-        {
-            if (viewModel == null)
-            {
-                Debug.LogError("Data is null.");
-                return null;
-            }
-            var drawer = Container.ResolveRelation<TDrawerBase>(viewModel.GetType(), viewModel);
-            if (drawer == null)
-            {
-                Debug.Log(String.Format("Couldn't Create drawer for {0}.", viewModel.GetType()));
-            }
-            return drawer;
-        }
-        public static void RegisterDrawer<TViewModel, TDrawer>(this IUFrameContainer container)
-        {
-            container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
-        }
-        [Obsolete]
-        public static void RegisterDrawer<TViewModel, TDrawer>()
-        {
-            Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
-        }
-        public static void RegisterItemDrawer<TViewModel, TDrawer>(this IUFrameContainer container)
-        {
-            Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
-        }
-
-        public static IUFrameContainer RegisterGraphItem<TModel>(this uFrameContainer container) where TModel : GenericNode
-        {
-            container.RegisterGraphItem<TModel, ScaffoldNode<TModel>.ViewModel, ScaffoldNode<TModel>.Drawer>();
-            //RegisterDrawer();
-            return container;
-        }
-        public static IUFrameContainer RegisterGraphItem<TModel, TViewModel, TDrawer>(this IUFrameContainer container)
-        {
-            container.RegisterRelation<TModel, ViewModel, TViewModel>();
-            RegisterDrawer<TViewModel, TDrawer>();
-            return container;
-        }
         public static IUFrameContainer RegisterChildGraphItem<TModel, TViewModel, TDrawer>(this IUFrameContainer container)
         {
             container.RegisterRelation<TModel, ItemViewModel, TViewModel>();
             container.RegisterItemDrawer<TViewModel, TDrawer>();
             return container;
         }
-        public static IUFrameContainer RegisterGraphItem<TModel, TViewModel, TDrawer>()
+
+        public static void RegisterDrawer<TViewModel, TDrawer>(this IUFrameContainer container)
         {
-            Container.RegisterRelation<TModel, ViewModel, TViewModel>();
-            RegisterDrawer<TViewModel, TDrawer>();
-            return Container;
+            container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
         }
-        public static IUFrameContainer Connectable<TSource, TTarget>(this IUFrameContainer container, bool oneToMany = true, Func<TSource, TTarget, bool> filter = null)
-            where TSource : class, IConnectable
-            where TTarget : class, IConnectable
+
+        [Obsolete]
+        public static void RegisterDrawer<TViewModel, TDrawer>()
         {
-            //if (oneToMany)
-            //    container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
-            //else
-            //{
-            //    container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
-            //}
-            return container;
+            Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
+        }
+
+        public static void RegisterFilterItem<TFilterData, TAllowedItem>()
+        {
+            Container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();
+        }
+
+        public static void RegisterFilterItem<TFilterData, TAllowedItem>(this IUFrameContainer container)
+        {
+            container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();
         }
 
         //public static IUFrameContainer ConnectionStrategy<TSource, TTarget>(this IUFrameContainer container, Color connectionColor,
@@ -365,7 +465,14 @@ namespace Invert.Core.GraphDesigner
             }
             AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
         }
-
+        public static void RegisterFilterNode(this IUFrameContainer container,Type filter, Type tnode)
+        {
+            if (!AllowedFilterNodes.ContainsKey(filter))
+            {
+                AllowedFilterNodes.Add(filter, new List<Type>());
+            }
+            AllowedFilterNodes[filter].Add(tnode);
+        }
         public static void RegisterFilterNode<TFilterData, TAllowedItem>()
         {
             if (!AllowedFilterNodes.ContainsKey(typeof(TFilterData)))
@@ -375,129 +482,64 @@ namespace Invert.Core.GraphDesigner
             AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
         }
 
-        public static void RegisterFilterItem<TFilterData, TAllowedItem>()
+        public static IUFrameContainer RegisterGraphItem<TModel>(this uFrameContainer container) where TModel : GenericNode
         {
-            Container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();
-        }
-        public static void RegisterFilterItem<TFilterData, TAllowedItem>(this IUFrameContainer container)
-        {
-            container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();
+            container.RegisterGraphItem<TModel, ScaffoldNode<TModel>.ViewModel, ScaffoldNode<TModel>.Drawer>();
+            //RegisterDrawer();
+            return container;
         }
 
-        public static IEnumerable<Type> GetAllowedFilterNodes(Type filterType)
+        public static IUFrameContainer RegisterGraphItem<TModel, TViewModel, TDrawer>(this IUFrameContainer container)
         {
-            return Container.RelationshipMappings.Where(
-                p => p.From == filterType && p.To == typeof(IDiagramNode)).Select(p => p.Concrete);
-        }
-        public static IEnumerable<Type> GetAllowedFilterItems(Type filterType)
-        {
-            return Container.RelationshipMappings.Where(
-                p => p.From == filterType && p.To == typeof(IDiagramNodeItem)).Select(p => p.Concrete);
+            container.RegisterRelation<TModel, ViewModel, TViewModel>();
+            container.RegisterDrawer<TViewModel, TDrawer>();
+            return container;
         }
 
-        public static Dictionary<Type, List<Type>> AllowedFilterNodes
+        public static IUFrameContainer RegisterGraphItem<TModel, TViewModel, TDrawer>()
         {
-            get { return _allowedFilterNodes ?? (_allowedFilterNodes = new Dictionary<Type, List<Type>>()); }
-            set { _allowedFilterNodes = value; }
+            Container.RegisterRelation<TModel, ViewModel, TViewModel>();
+            RegisterDrawer<TViewModel, TDrawer>();
+            return Container;
         }
 
-        public static Dictionary<Type, List<Type>> AllowedFilterItems
+        public static void RegisterItemDrawer<TViewModel, TDrawer>(this IUFrameContainer container)
         {
-            get { return _allowedFilterItems ?? (_allowedFilterItems = new Dictionary<Type, List<Type>>()); }
-            set { _allowedFilterItems = value; }
-        }
-        public static bool IsFilter(Type type)
-        {
-            return AllowedFilterNodes.ContainsKey(type);
+            Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
         }
 
-        public static void DesignerPluginLoaded()
+        public static void RegisterKeyBinding(IEditorCommand command, string name, KeyCode code, bool control = false, bool alt = false, bool shift = false)
         {
-            Settings = Container.Resolve<IGraphEditorSettings>();
-            AssetManager = Container.Resolve<IAssetManager>();
-            OrganizeFilters();
-            var commandKeyBindings = new List<IKeyBinding>();
-            foreach (var item in Container.Instances)
-            {
-                if (typeof(IEditorCommand).IsAssignableFrom(item.Base))
-                {
-                    if (item.Instance != null)
-                    {
-                        var command = item.Instance as IEditorCommand;
-                        if (command != null)
-                        {
-                            var keyBinding = command.GetKeyBinding();
-                            if (keyBinding != null)
-                                commandKeyBindings.Add(keyBinding);
-                        }
-                    }
-                }
-            }
-
-
-            ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
-            KeyBindings = Container.ResolveAll<IKeyBinding>().Concat(commandKeyBindings).ToArray();
-
-
-        }
-        public static IGraphEditorSettings Settings
-        {
-            get { return _settings ?? (_settings = Container.Resolve<IGraphEditorSettings>()); }
-            set { _settings = value; }
-        }
-        public static MouseEvent CurrentMouseEvent
-        {
-            // TODO
-            get;
-            set;
-        }
-
-        public static IKeyBinding[] KeyBindings { get; set; }
-
-        public static IWindowManager WindowManager
-        {
-            get { return _windowManager ?? (_windowManager = Container.Resolve<IWindowManager>()); }
-        }
-
-        private static uFrameContainer _TypesContainer;
-        private static IWindowManager _windowManager;
-        private static IAssetManager _assetManager;
-        private static IProjectRepository _currentProject;
-
-        public static uFrameContainer TypesContainer
-        {
-            get
-            {
-                if (_TypesContainer != null) return _TypesContainer;
-                _TypesContainer = new uFrameContainer();
-                InitializeTypesContainer(_TypesContainer);
-                return _TypesContainer;
-            }
-            set { _TypesContainer = value; }
+            Container.RegisterInstance<IKeyBinding>(new SimpleKeyBinding(command, name, code, control, alt, shift), name);
         }
 
         private static void InitializeTypesContainer(uFrameContainer container)
         {
-
         }
-
     }
 
     public class DefaultGraphSettings : IGraphEditorSettings
     {
-        public bool UseGrid
-        {
-            get { return true; }
-            set { }
-        }
+        public Color BackgroundColor { get; set; }
+
+        public Color GridLinesColor { get; set; }
+
+        public Color GridLinesColorSecondary { get; set; }
+
+        public bool ShowGraphDebug { get; set; }
 
         public bool ShowHelp
         {
             get { return false; }
             set
             {
-
             }
+        }
+
+        public bool UseGrid
+        {
+            get { return true; }
+            set { }
         }
 
         public DefaultGraphSettings()
@@ -506,38 +548,44 @@ namespace Invert.Core.GraphDesigner
             GridLinesColor = new Color(0.1f, 0.1f, 0.1f);
             GridLinesColorSecondary = new Color(0.08f, 0.08f, 0.08f);
         }
-
-        public bool ShowGraphDebug { get; set; }
-        public Color BackgroundColor { get; set; }
-        public Color GridLinesColor { get; set; }
-        public Color GridLinesColorSecondary { get; set; }
     }
+
     public class ScaffoldNode<TData> where TData : GenericNode
     {
-        public class ViewModel : GenericNodeViewModel<TData>
+      
+        public class Drawer : GenericNodeDrawer<TData, ViewModel>
         {
 
-            public ViewModel(TData graphItemObject, DiagramViewModel diagramViewModel)
+
+            public Drawer(ViewModel viewModel)
+                : base(viewModel)
+            {
+               
+            }
+        }
+
+        public class ItemDrawer : ScaffoldNodeChildItem<TData>.Drawer
+        {
+            public ItemDrawer(ScaffoldNodeChildItem<TData>.ViewModel viewModel)
+                : base(viewModel)
+            {
+            }
+        }
+
+        public class ItemViewModel : ScaffoldNodeChildItem<TData>.ViewModel
+        {
+            public ItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
                 : base(graphItemObject, diagramViewModel)
             {
             }
         }
 
-        public class Drawer : GenericNodeDrawer<TData, ViewModel>
+        public class ScaffoldTypedItemDrawer : ScaffoldNodeTypedChildItem<TData>.Drawer
         {
-            private GUIStyle _headerStyle;
-
-            protected override GUIStyle HeaderStyle
-            {
-                get { return _headerStyle; }
-            }
-
-            public Drawer(ViewModel viewModel)
+            public ScaffoldTypedItemDrawer(ScaffoldNodeTypedChildItem<TData>.ViewModel viewModel)
                 : base(viewModel)
             {
-                _headerStyle = InvertGraphEditor.Container.GetNodeConfig<TData>().GetNodeColorStyle(ViewModelObject.DataObject as TData);
             }
-
         }
 
         public class TypedItemViewModel : ScaffoldNodeTypedChildItem<TData>.ViewModel
@@ -548,90 +596,58 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public class TypedItemDrawer : ScaffoldNodeTypedChildItem<TData>.Drawer
+        public class ViewModel : GenericNodeViewModel<TData>
         {
-            public TypedItemDrawer(ScaffoldNodeTypedChildItem<TData>.ViewModel viewModel)
-                : base(viewModel)
-            {
-            }
-        }
-        public class ItemViewModel : ScaffoldNodeChildItem<TData>.ViewModel
-        {
-            public ItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
+            public ViewModel(TData graphItemObject, DiagramViewModel diagramViewModel)
                 : base(graphItemObject, diagramViewModel)
-            {
-            }
-        }
-        public class ItemDrawer : ScaffoldNodeChildItem<TData>.Drawer
-        {
-            public ItemDrawer(ScaffoldNodeChildItem<TData>.ViewModel viewModel)
-                : base(viewModel)
             {
             }
         }
     }
+
     public class ScaffoldNodeChildItem<TData> where TData : IDiagramNodeItem
     {
-        public class ViewModel : GenericItemViewModel<TData>
-        {
-
-            public ViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
-                : base(graphItemObject, diagramViewModel)
-            {
-            }
-        }
-
         public class Drawer : ItemDrawer
         {
-
             public Drawer(ViewModel viewModel)
                 : base(viewModel)
             {
-
             }
         }
-    }
-    public class ScaffoldNodeTypedChildItem<TData> where TData : ITypedItem
-    {
-        public class ViewModel : TypedItemViewModel
-        {
 
+        public class ViewModel : GenericItemViewModel<TData>
+        {
             public ViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
                 : base(graphItemObject, diagramViewModel)
             {
             }
+        }
+    }
 
+    public class ScaffoldNodeTypedChildItem<TData> where TData : ITypedItem
+    {
+        public class Drawer : ElementItemDrawer
+        {
+            public Drawer(ViewModel viewModel)
+                : base(viewModel)
+            {
+            }
+        }
+
+        public class ViewModel : TypedItemViewModel
+        {
             public override string TypeLabel
             {
                 get { return Data.RelatedTypeName; }
             }
-        }
 
-        public class Drawer : ElementItemDrawer
-        {
-
-            public Drawer(ViewModel viewModel)
-                : base(viewModel)
+            public ViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
+                : base(graphItemObject, diagramViewModel)
             {
-
             }
         }
-    }
-    public enum NodeColor
-    {
-        Gray,
-        DarkGray,
-        Blue,
-        LightGray,
-        Black,
-        DarkDarkGray,
-        Orange,
-        Red,
-        Yellow,
-        Green,
-        Purple,
-        Pink,
-        YellowGreen
+
+      
     }
 
     //public class CustomItemDrawer<TData> : ItemDrawer
@@ -640,11 +656,10 @@ namespace Invert.Core.GraphDesigner
     //    {
     //        ViewModelObject = new ItemViewModel();
     //    }
-    //    public Func<CustomItemDrawer<TData>,> 
+    //    public Func<CustomItemDrawer<TData>,>
     //    public override void Draw(float scale)
     //    {
     //        base.Draw(scale);
     //    }
     //}
 }
-

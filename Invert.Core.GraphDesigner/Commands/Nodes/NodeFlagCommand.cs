@@ -1,3 +1,5 @@
+using System;
+
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
     public class NodeFlagCommand<T> : EditorCommand<T>, IDiagramNodeCommand where T :DiagramNode
@@ -29,16 +31,27 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
         //{
         //    get { return  Name; }
         //}
-
+        public bool IsProperty { get; set; }
+        public Func<T, bool> Get { get; set; }
+        public Action<T, bool> Set { get; set; } 
         public string FlagName { get; set; }
         
         public override bool IsChecked(T node)
         {
+            if (IsProperty)
+            {
+                return Get(node);
+            }
             return node[FlagName];
         }
 
         public override void Perform(T node)
         {
+            if (IsProperty)
+            {
+                Set(node, !Get(node));
+                return;
+            }
             node[FlagName] = !node[FlagName];
         }
 

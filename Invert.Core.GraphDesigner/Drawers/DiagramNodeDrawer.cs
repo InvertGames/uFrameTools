@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -38,6 +39,8 @@ public abstract class DiagramNodeDrawer<TViewModel> : DiagramNodeDrawer where TV
 public abstract class GenericNodeDrawer<TData, TViewModel> : DiagramNodeDrawer<TViewModel>
     where TViewModel : GenericNodeViewModel<TData> where TData : GenericNode
 {
+ 
+
     protected GenericNodeDrawer(TViewModel viewModel) : base(viewModel)
     {
     }
@@ -47,17 +50,23 @@ public abstract class GenericNodeDrawer<TData, TViewModel> : DiagramNodeDrawer<T
         base.Refresh();
     }
 
+    public override void Refresh(Vector2 position)
+    {
+        base.Refresh(position);
+   
+
+    }
+
     public override void Draw(float scale)
     {
         base.Draw(scale);
-        //if (NodeViewModel.IsMouseOver || NodeViewModel.IsSelected)
-        //{
-
- 
-        //}
+        bool hasErrors = false;
+  
        
     }
+    
 }
+
 public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
 {
     private static GUIStyle _itemStyle;
@@ -66,6 +75,7 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
 
     private string[] _cachedTags;
     private string _cachedTag;
+    private KeyValuePair<string,ValidatorType>[]  _cachedIssues;
 
     [Inject]
     public IUFrameContainer Container { get; set; }
@@ -272,7 +282,10 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
             }
             item.Draw(scale);
         }
-        
+        bool hasErrors = _cachedIssues.Length > 0;
+
+      
+      
         if (!ViewModel.IsLocal)
         {
             ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(Scale), ElementDesignerStyles.BoxHighlighter5, string.Empty, 20);
@@ -280,19 +293,72 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         if (ViewModel.IsMouseOver)
         {
             ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(Scale), ElementDesignerStyles.BoxHighlighter3, string.Empty, 20);
+
         }
         if (ViewModel.IsSelected)
         {
             ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(Scale), ElementDesignerStyles.BoxHighlighter2, string.Empty, 20);
         }
-        
-    }
+        if (hasErrors)
+        {
+            ElementDesignerStyles.DrawExpandableBox(adjustedBounds.Scale(Scale), ElementDesignerStyles.BoxHighlighter6, string.Empty, 20);
+        }
 
+        if (ViewModel.IsMouseOver || ViewModel.IsSelected)
+        {
+            for (int index = 0; index < _cachedIssues.Length; index++)
+            {
+
+                var keyValuePair = _cachedIssues[index];
+                var w = EditorStyles.label.CalcSize(new GUIContent(keyValuePair.Key)).x;
+                var x = (Bounds.x + (Bounds.width / 2f)) - (w / 2f);
+                var rect = new Rect(x, (Bounds.y + Bounds.height + 18) + (40f * (index)), w + 20f, 40);
+                EditorGUI.HelpBox(rect, keyValuePair.Key, MessageType.Warning);
+                hasErrors = true;
+            }
+        }
+    }
+    public GUIStyle GetNodeColorStyle()
+    {
+        
+        switch (ViewModel.Color)
+        {
+            case NodeColor.DarkGray:
+                return ElementDesignerStyles.NodeHeader1;
+            case NodeColor.Blue:
+                return ElementDesignerStyles.NodeHeader2;
+            case NodeColor.Gray:
+                return ElementDesignerStyles.NodeHeader3;
+            case NodeColor.LightGray:
+                return ElementDesignerStyles.NodeHeader4;
+            case NodeColor.Black:
+                return ElementDesignerStyles.NodeHeader5;
+            case NodeColor.DarkDarkGray:
+                return ElementDesignerStyles.NodeHeader6;
+            case NodeColor.Orange:
+                return ElementDesignerStyles.NodeHeader7;
+            case NodeColor.Red:
+                return ElementDesignerStyles.NodeHeader8;
+            case NodeColor.YellowGreen:
+                return ElementDesignerStyles.NodeHeader9;
+            case NodeColor.Green:
+                return ElementDesignerStyles.NodeHeader10;
+            case NodeColor.Purple:
+                return ElementDesignerStyles.NodeHeader11;
+            case NodeColor.Pink:
+                return ElementDesignerStyles.NodeHeader12;
+            case NodeColor.Yellow:
+                return ElementDesignerStyles.NodeHeader13;
+
+        }
+        return ElementDesignerStyles.NodeHeader1;
+
+    }
     protected virtual GUIStyle HeaderStyle
     {
         get
         {
-            return ElementDesignerStyles.NodeHeader1;
+            return GetNodeColorStyle();
         }
     }
 
@@ -433,6 +499,7 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
 
     public override void Refresh(Vector2 position)
     {
+        _cachedIssues = ViewModel.Issues.ToArray();
         _cachedTag = string.Join(" | ", ViewModel.Tags.ToArray());
         if (Children == null || Children.Count < 1)
         {
@@ -514,3 +581,4 @@ public abstract class DiagramNodeDrawer : Drawer, INodeDrawer,IDisposable
         ViewModel.ContentItems.CollectionChanged-= ContentItemsOnCollectionChangedWith;
     }
 }
+

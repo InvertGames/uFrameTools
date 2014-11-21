@@ -31,6 +31,10 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
         set { _type = value; }
     }
 
+    public virtual string DefaultTypeName
+    {
+        get { return string.Empty; }
+    }
     public virtual string RelatedTypeName
     {
         get
@@ -40,7 +44,7 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
             if (relatedNode != null)
                 return relatedNode.Name;
 
-            return RelatedType;
+            return string.IsNullOrEmpty(RelatedType) ?  DefaultTypeName : RelatedType;
         }
     }
 

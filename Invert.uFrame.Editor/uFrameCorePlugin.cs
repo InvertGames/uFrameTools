@@ -9,7 +9,7 @@ using Invert.Core.GraphDesigner.Settings;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
-using Invert.uFrame.Editor.Nodes;
+
 using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
@@ -40,33 +40,33 @@ namespace Invert.uFrame.Editor
             container.RegisterGraphItem<SceneManagerData, SceneManagerViewModel, SceneManagerDrawer>();
             container.RegisterChildGraphItem<SceneManagerTransition, SceneTransitionItemViewModel, ItemDrawer>();
             container.RegisterFilterNode<SceneFlowFilter, SceneManagerData>();
-            container.RegisterInstance<IConnectionStrategy>(new SceneTransitionConnectionStrategy(), "SceneTransitionConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new SceneManagerSubsystemConnectionStrategy(), "SceneManagerSubsystemConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new SceneTransitionConnectionStrategy(), "SceneTransitionConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new SceneManagerSubsystemConnectionStrategy(), "SceneManagerSubsystemConnectionStrategy");
             container.RegisterInstance(new AddTransitionCommand());
 
             // Sub Systems
             container.RegisterGraphItem<SubSystemData, SubSystemViewModel, SubSystemDrawer>();
-            container.RegisterChildGraphItem<RegisteredInstanceData, RegisterInstanceItemViewModel, ElementItemDrawer>();
+            container.RegisterChildGraphItem<RegisteredInstanceData, RegisterInstanceItemViewModel, TypedItemDrawer>();
             container.RegisterFilterNode<SceneFlowFilter, SubSystemData>();
-            container.RegisterInstance<IConnectionStrategy>(new SubsystemConnectionStrategy(), "SubsystemConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new SubsystemConnectionStrategy(), "SubsystemConnectionStrategy");
             container.RegisterInstance(new AddInstanceCommand());
 
             // Elements
             container.RegisterGraphItem<ElementData, ElementNodeViewModel, ElementDrawer>();
-            container.RegisterChildGraphItem<ViewModelPropertyData, ElementPropertyItemViewModel, ElementItemDrawer>();
-            container.RegisterChildGraphItem<ViewModelCommandData, ElementCommandItemViewModel, ElementItemDrawer>();
-            container.RegisterChildGraphItem<ViewModelCollectionData, ElementCollectionItemViewModel, ElementItemDrawer>();
+            container.RegisterChildGraphItem<ViewModelPropertyData, ElementPropertyItemViewModel, TypedItemDrawer>();
+            container.RegisterChildGraphItem<ViewModelCommandData, ElementCommandItemViewModel, TypedItemDrawer>();
+            container.RegisterChildGraphItem<ViewModelCollectionData, ElementCollectionItemViewModel, TypedItemDrawer>();
             container.RegisterFilterNode<SubSystemData, ElementData>();
             container.RegisterInstance(new AddElementCommandCommand());
             container.RegisterInstance(new AddElementCollectionCommand());
             container.RegisterInstance(new AddElementPropertyCommand());
-            container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritanceConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ElementViewConnectionStrategy(), "ElementViewConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ElementInheritanceConnectionStrategy(), "ElementInheritanceConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ElementViewConnectionStrategy(), "ElementViewConnectionStrategy");
 
             // Computed Properties
             container.RegisterGraphItem<ComputedPropertyData, ComputedPropertyNodeViewModel, ComputedPropertyDrawer>();
             container.RegisterFilterNode<ElementData, ComputedPropertyData>();
-            container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputsConnectionStrategy(), "ComputedPropertyInputsConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputsConnectionStrategy(), "ComputedPropertyInputsConnectionStrategy");
 
             // Views
             container.RegisterGraphItem<ViewData, ViewNodeViewModel, ViewDrawer>();
@@ -74,14 +74,14 @@ namespace Invert.uFrame.Editor
             container.RegisterChildGraphItem<ViewBindingData, ViewBindingItemViewModel, ItemDrawer>();
             container.RegisterFilterNode<ElementData, ViewData>();
             container.RegisterInstance(new AddBindingCommand());
-            container.RegisterInstance<IConnectionStrategy>(new TwoWayPropertyConnectionStrategy(), "TwoWayPropertyConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ViewInheritanceConnectionStrategy(), "ViewInheritanceConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new TwoWayPropertyConnectionStrategy(), "TwoWayPropertyConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ViewInheritanceConnectionStrategy(), "ViewInheritanceConnectionStrategy");
 
             // View Components
             container.RegisterGraphItem<ViewComponentData, ViewComponentNodeViewModel, ViewComponentDrawer>();
             container.RegisterFilterNode<ElementData, ViewComponentData>();
-            container.RegisterInstance<IConnectionStrategy>(new ViewComponentElementConnectionStrategy(), "ViewComponentElementConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ViewComponentInheritanceConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ViewComponentElementConnectionStrategy(), "ViewComponentElementConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ViewComponentInheritanceConnectionStrategy(), "ViewComponentInheritanceConnectionStrategy");
 
             // Enums
             container.RegisterFilterNode<SubSystemData, EnumData>();
@@ -96,9 +96,9 @@ namespace Invert.uFrame.Editor
             container.RegisterFilterNode<ElementData, StateMachineNodeData>();
             container.RegisterFilterNode<StateMachineNodeData, StateMachineStateData>();
 
-            container.RegisterInstance<IConnectionStrategy>(new StartStateConnectionStrategy(), "StartStateConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new StateMachineTransitionConnectionStrategy(), "StateMachineTransitionConnectionStrategy");
-            container.RegisterInstance<IConnectionStrategy>(new ComputedTransitionConnectionStrategy(), "ComputedTransitionConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new StartStateConnectionStrategy(), "StartStateConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new StateMachineTransitionConnectionStrategy(), "StateMachineTransitionConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new ComputedTransitionConnectionStrategy(), "ComputedTransitionConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new ElementStateMachineConnectionStrategy(), "ElementStateMachineConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new ElementStateVariableConnectionStrategy(), "ElementStateVariableConnectionStrategy");
 
@@ -114,7 +114,7 @@ namespace Invert.uFrame.Editor
             container.RegisterFilterNode<SubSystemData, ModelClassNodeData>();
 #endif
             // General Connections
-            container.RegisterInstance<IConnectionStrategy>(new AssociationConnectionStrategy(), "AssociationConnectionStrategy");
+            //container.RegisterInstance<IConnectionStrategy>(new AssociationConnectionStrategy(), "AssociationConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new ComputedPropertyInputStrategy(), "ComputedPropertyInputStrategy");
 
 
@@ -125,7 +125,7 @@ namespace Invert.uFrame.Editor
             container.RegisterInstance<IEditorCommand>(new SelectItemTypeCommand() { AllowNone = true, PrimitiveOnly = false }, "ViewModelCommandTypeSelection");
             container.RegisterInstance<IEditorCommand>(new SelectItemTypeCommand() { AllowNone = false, PrimitiveOnly = false }, "ViewModelCollectionTypeSelection");
             container.RegisterInstance<IEditorCommand>(new SelectItemTypeCommand() { AllowNone = false, PrimitiveOnly = false }, "ComputedPropertyTypeSelection");
-            container.RegisterInstance<IEditorCommand>(new SelectItemTypeCommand() { AllowNone = false, PrimitiveOnly = false, IncludeUnityEngine = true }, "StateMachineVariableTypeSelection");
+            container.RegisterInstance<IEditorCommand>(new SelectItemTypeCommand() { AllowNone = false, PrimitiveOnly = false }, "StateMachineVariableTypeSelection");
 
 
             container.RegisterInstance<IUFrameTypeProvider>(new uFrameStringTypeProvider());

@@ -45,76 +45,76 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
 
 
 
-    public NodeItemHeader PropertiesHeader
-    {
-        get
-        {
-            if (_propertiesHeader == null)
-            {
-                _propertiesHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
+    //public SectionHeaderDrawer PropertiesHeader
+    //{
+    //    get
+    //    {
+    //        if (_propertiesHeader == null)
+    //        {
+    //            _propertiesHeader = Container.Resolve<SectionHeaderDrawer>(null, false, ElementViewModel);
 
-                _propertiesHeader.Label = "Properties";
-                _propertiesHeader.HeaderType = typeof(ViewModelPropertyData);
-                if (NodeViewModel.IsLocal)
-                    _propertiesHeader.AddCommand = Container.Resolve<AddElementPropertyCommand>();
-            }
-            return _propertiesHeader;
-        }
-        set { _propertiesHeader = value; }
-    }
-    public NodeItemHeader ComputedHeader
-    {
-        get
-        {
-            if (_computedHeader == null)
-            {
-                _computedHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
-                _computedHeader.Label = "Computed";
-                _computedHeader.HeaderType = typeof(ViewModelPropertyData);
-            }
-            return _computedHeader;
-        }
-        set { _computedHeader = value; }
-    }
-    public NodeItemHeader CollectionsHeader
-    {
-        get
-        {
+    //            _propertiesHeader.Label = "Properties";
+    //            _propertiesHeader.HeaderType = typeof(ViewModelPropertyData);
+    //            if (NodeViewModel.IsLocal)
+    //                _propertiesHeader.AddCommand = Container.Resolve<AddElementPropertyCommand>();
+    //        }
+    //        return _propertiesHeader;
+    //    }
+    //    set { _propertiesHeader = value; }
+    //}
+    //public SectionHeaderDrawer ComputedHeader
+    //{
+    //    get
+    //    {
+    //        if (_computedHeader == null)
+    //        {
+    //            _computedHeader = Container.Resolve<SectionHeaderDrawer>(null, false, ElementViewModel);
+    //            _computedHeader.Label = "Computed";
+    //            _computedHeader.HeaderType = typeof(ViewModelPropertyData);
+    //        }
+    //        return _computedHeader;
+    //    }
+    //    set { _computedHeader = value; }
+    //}
+    //public SectionHeaderDrawer CollectionsHeader
+    //{
+    //    get
+    //    {
 
-            if (_collectionsHeader == null)
-            {
-                _collectionsHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
-                _collectionsHeader.Label = "Collections";
-                _collectionsHeader.HeaderType = typeof(ViewModelCollectionData);
-                if (NodeViewModel.IsLocal)
-                    _collectionsHeader.AddCommand = Container.Resolve<AddElementCollectionCommand>();
-            }
-            return _collectionsHeader;
-        }
-        set { _collectionsHeader = value; }
-    }
+    //        if (_collectionsHeader == null)
+    //        {
+    //            _collectionsHeader = Container.Resolve<SectionHeaderDrawer>(null, false, ElementViewModel);
+    //            _collectionsHeader.Label = "Collections";
+    //            _collectionsHeader.HeaderType = typeof(ViewModelCollectionData);
+    //            if (NodeViewModel.IsLocal)
+    //                _collectionsHeader.AddCommand = Container.Resolve<AddElementCollectionCommand>();
+    //        }
+    //        return _collectionsHeader;
+    //    }
+    //    set { _collectionsHeader = value; }
+    //}
 
-    public NodeItemHeader CommandsHeader
-    {
-        get
-        {
-            if (_commandsHeader == null)
-            {
-                _commandsHeader = Container.Resolve<NodeItemHeader>(null, false, ElementViewModel);
-                _commandsHeader.Label = "Commands";
-                _commandsHeader.HeaderType = typeof(ViewModelCommandData);
-                if (NodeViewModel.IsLocal)
-                    _commandsHeader.AddCommand = Container.Resolve<AddElementCommandCommand>();
-            }
-            return _commandsHeader;
-        }
-        set { _commandsHeader = value; }
-    }
+    //public SectionHeaderDrawer CommandsHeader
+    //{
+    //    get
+    //    {
+    //        if (_commandsHeader == null)
+    //        {
+    //            _commandsHeader = Container.Resolve<SectionHeaderDrawer>(null, false, ElementViewModel);
+    //            _commandsHeader.Label = "Commands";
+    //            _commandsHeader.HeaderType = typeof(ViewModelCommandData);
+    //            if (NodeViewModel.IsLocal)
+    //                _commandsHeader.AddCommand = Container.Resolve<AddElementCommandCommand>();
+    //        }
+    //        return _commandsHeader;
+    //    }
+    //    set { _commandsHeader = value; }
+    //}
 
 
-    private NodeItemHeader _propertiesHeader;
-    private NodeItemHeader _collectionsHeader;
-    private NodeItemHeader _commandsHeader;
+    //private SectionHeaderDrawer _propertiesHeader;
+    //private SectionHeaderDrawer _collectionsHeader;
+    //private SectionHeaderDrawer _commandsHeader;
 
     private float _width;
 
@@ -159,7 +159,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
 
     private float _maxTypeWidth;
     private float _maxNameWidth;
-    private NodeItemHeader _computedHeader;
+    private SectionHeaderDrawer _computedHeader;
     private bool _isRegistered;
 
 
@@ -298,73 +298,75 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
 
     protected override void GetContentDrawers(List<IDrawer> drawers)
     {
-        var inheritedProperties =
-              ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
-                  .Where(p => p.NodeItem.Node != NodeViewModel.GraphItem).ToArray();
-        if (inheritedProperties.Length > 0)
-        {
-            drawers.Add(new NodeItemHeader(NodeViewModel)
-            {
-                Label = "Inherited Properties"
-            });
-            foreach (var item in inheritedProperties)
-                drawers.Add(InvertGraphEditor.CreateDrawer(item));
-        }
+        base.GetContentDrawers(drawers);
+        //var inheritedProperties =
+        //      ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
+        //          .Where(p => p.NodeItem.Node != NodeViewModel.GraphItem).ToArray();
+        //if (inheritedProperties.Length > 0)
+        //{
+        //    drawers.Add(new SectionHeaderDrawer(new SectionHeaderViewModel()
+        //    {
+        //        Name = "Inherited Properties"
+        //    }));
+        //    foreach (var item in inheritedProperties)
+        //        drawers.Add(InvertGraphEditor.CreateDrawer(item));
+        //}
 
 
-        drawers.Add(PropertiesHeader);
-        foreach (
-            var item in
-                ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
-                    .Where(p => p.NodeItem.Node == NodeViewModel.GraphItem))
-            drawers.Add(InvertGraphEditor.CreateDrawer(item));
+        //drawers.Add(PropertiesHeader);
+        //foreach (
+        //    var item in
+        //        ElementViewModel.ContentItems.OfType<ElementPropertyItemViewModel>()
+        //            .Where(p => p.NodeItem.Node == NodeViewModel.GraphItem))
+        //    drawers.Add(InvertGraphEditor.CreateDrawer(item));
 
 
 
-        // Collections Here
-        var inheritedCollections =
-              ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>()
-                  .Where(p => p.NodeItem.Node != NodeViewModel.GraphItem).ToArray();
-        if (inheritedCollections.Length > 0)
-        {
-            drawers.Add(new NodeItemHeader(NodeViewModel)
-            {
-                Label = "Inherited Collections"
-            });
-            foreach (var item in inheritedCollections)
-                drawers.Add(InvertGraphEditor.CreateDrawer(item));
-        }
+        //// Collections Here
+        //var inheritedCollections =
+        //      ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>()
+        //          .Where(p => p.NodeItem.Node != NodeViewModel.GraphItem).ToArray();
+        //if (inheritedCollections.Length > 0)
+        //{
+        //    drawers.Add(new SectionHeaderDrawer(new SectionHeaderViewModel()
+        //    {
+        //        Name = "Inherited Collections"
+        //    }));
+        //    foreach (var item in inheritedCollections)
+        //        drawers.Add(InvertGraphEditor.CreateDrawer(item));
+        //}
 
 
-        drawers.Add(CollectionsHeader);
-        foreach (
-            var item in
-                ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>()
-                    .Where(p => p.NodeItem.Node == NodeViewModel.GraphItem))
-            drawers.Add(InvertGraphEditor.CreateDrawer(item));
+        //drawers.Add(CollectionsHeader);
+        //foreach (
+        //    var item in
+        //        ElementViewModel.ContentItems.OfType<ElementCollectionItemViewModel>()
+        //            .Where(p => p.NodeItem.Node == NodeViewModel.GraphItem))
+        //    drawers.Add(InvertGraphEditor.CreateDrawer(item));
 
 
         
-        // COMMANDS HERE
-        var inheritedCommands =
-        ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>()
-            .Where(p => p.NodeItem.Node != NodeViewModel.GraphItem).ToArray();
-        if (inheritedCommands.Length > 0)
-        {
-            drawers.Add(new NodeItemHeader(NodeViewModel)
-            {
-                Label = "Inherited Commands"
-            });
-            foreach (var item in inheritedCommands)
-                drawers.Add(InvertGraphEditor.CreateDrawer(item));
-        }
+        //// COMMANDS HERE
+        //var inheritedCommands =
+        //ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>()
+        //    .Where(p => p.NodeItem.Node != NodeViewModel.GraphItem).ToArray();
+        //if (inheritedCommands.Length > 0)
+        //{
+        //    drawers.Add(new SectionHeaderDrawer(new SectionHeaderViewModel()
+        //    {
+        //          Name = "Inherited Commands"
+        //    }));
 
-        drawers.Add(CommandsHeader);
-        foreach (
-            var item in
-                ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>()
-                    .Where(p => p.NodeItem.Node == NodeViewModel.GraphItem))
-            drawers.Add(InvertGraphEditor.CreateDrawer(item));
+        //    foreach (var item in inheritedCommands)
+        //        drawers.Add(InvertGraphEditor.CreateDrawer(item));
+        //}
+
+        //drawers.Add(CommandsHeader);
+        //foreach (
+        //    var item in
+        //        ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>()
+        //            .Where(p => p.NodeItem.Node == NodeViewModel.GraphItem))
+        //    drawers.Add(InvertGraphEditor.CreateDrawer(item));
 
         //drawers.Add(CommandsHeader);
         //foreach (var item in ElementViewModel.ContentItems.OfType<ElementCommandItemViewModel>())

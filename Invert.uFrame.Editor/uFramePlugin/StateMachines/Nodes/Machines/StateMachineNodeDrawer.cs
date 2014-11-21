@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class StateMachineNodeDrawer : DiagramNodeDrawer<StateMachineNodeViewModel>
 {
-    private NodeItemHeader _transitionsHeader;
+    private SectionHeaderDrawer _transitionsHeader;
 
     public StateMachineNodeDrawer()
     {
@@ -18,37 +18,9 @@ public class StateMachineNodeDrawer : DiagramNodeDrawer<StateMachineNodeViewMode
         get { return ElementDesignerStyles.NodeHeader11; }
     }
 
-    public NodeItemHeader TransitionsHeader
-    {
-        get
-        {
-            if (_transitionsHeader == null)
-            {
-                _transitionsHeader = Container.Resolve<NodeItemHeader>(null, false, ViewModel);
-                _transitionsHeader.Label = "Transitions";
-                _transitionsHeader.HeaderType = typeof(SceneTransitionItemViewModel);
-                if (NodeViewModel.IsLocal)
-                    _transitionsHeader.AddCommand = new SimpleEditorCommand<StateMachineNodeViewModel>((node) =>
-                    {
-                        node.AddTransition();
-                    });
-            }
-            return _transitionsHeader;
-        }
-        set { _transitionsHeader = value; }
-    }
-
     public StateMachineNodeDrawer(StateMachineNodeViewModel viewModel)
         : base(viewModel)
     {
 
-    }
-
-    protected override void GetContentDrawers(List<IDrawer> drawers)
-    {
-        base.GetContentDrawers(drawers);
-        
-        drawers.Insert(1, TransitionsHeader);
-        
     }
 }

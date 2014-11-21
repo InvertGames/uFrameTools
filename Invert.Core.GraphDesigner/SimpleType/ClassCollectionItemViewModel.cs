@@ -1,6 +1,6 @@
 using Invert.uFrame.Editor.ViewModels;
 
-public class ClassCollectionItemViewModel : ElementItemViewModel<ClassCollectionData>
+public class ClassCollectionItemViewModel : TypedItemViewModel<ClassCollectionData>
 {
     public ClassCollectionItemViewModel(ClassCollectionData viewModelItem, DiagramNodeViewModel nodeViewModel)
         : base(viewModelItem, nodeViewModel)

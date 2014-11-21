@@ -1,6 +1,6 @@
 namespace Invert.uFrame.Editor.ViewModels
 {
-    public class ElementPropertyItemViewModel : ElementItemViewModel<ViewModelPropertyData>
+    public class ElementPropertyItemViewModel : TypedItemViewModel<ViewModelPropertyData>
     {
         public ElementPropertyItemViewModel(ViewModelPropertyData data, DiagramNodeViewModel nodeViewModel)
             : base(data, nodeViewModel)
@@ -21,7 +21,7 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
     }
-    public class ElementViewPropertyItemViewModel : ElementItemViewModel<ViewPropertyData>
+    public class ElementViewPropertyItemViewModel : TypedItemViewModel<ViewPropertyData>
     {
         public ElementViewPropertyItemViewModel(ViewPropertyData data, DiagramNodeViewModel nodeViewModel)
             : base(data, nodeViewModel)

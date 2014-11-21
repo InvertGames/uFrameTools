@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 
 
-public class PluginGraph : GenericGraphData<PluginGraphNode> { }
-
-
+public class PluginGraph : GenericGraphData<ShellPluginNode> { }

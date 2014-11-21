@@ -1,3 +1,4 @@
+using System.Reflection;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
@@ -91,6 +92,11 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter,
     {
         get { return _collapsedValues; }
         set { _collapsedValues = value; }
+    }
+
+    public bool IsValid
+    {
+        get { return true; }
     }
 
     public IGraphItem Copy()
@@ -548,4 +554,7 @@ public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter,
     {
         return new CodeTypeReference(this.Name);
     }
+
+   
 }
+

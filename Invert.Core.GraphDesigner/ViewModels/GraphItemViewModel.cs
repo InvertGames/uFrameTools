@@ -83,6 +83,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get
             {
+                if (DataObject == null) return null;
                 return _inputConnector ?? (_inputConnector = new ConnectorViewModel()
                 {
                     DataObject = DataObject,
@@ -91,6 +92,7 @@ namespace Invert.uFrame.Editor.ViewModels
                     ConnectorForType = InputConnectorType ?? DataObject.GetType(),
                     Side = ConnectorSide.Left,
                     SidePercentage = 0.5f,
+                    AllowMultiple = true
                 });
             }
         }
@@ -102,6 +104,7 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get
             {
+                if (DataObject == null) return null;
                 return _outputConnector ?? (_outputConnector = new ConnectorViewModel()
                 {
                     DataObject = DataObject,
@@ -110,6 +113,7 @@ namespace Invert.uFrame.Editor.ViewModels
                     ConnectorForType = OutputConnectorType ?? DataObject.GetType(),
                     Side = ConnectorSide.Right,
                     SidePercentage = 0.5f,
+                    AllowMultiple = true
                 });
             }
         }

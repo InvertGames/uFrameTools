@@ -33,47 +33,11 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
         ViewModel = viewModel;
     }
 
-    private NodeItemHeader _behavioursHeader;
-    private NodeItemHeader _propertiesHeader;
-    private NodeItemHeader _bindingsHeader;
+    private SectionHeaderDrawer _behavioursHeader;
+    private SectionHeaderDrawer _propertiesHeader;
+    private SectionHeaderDrawer _bindingsHeader;
 
-    public NodeItemHeader BindingsHeader
-    {
-        get
-        {
-            if (_bindingsHeader == null)
-            {
-                _bindingsHeader = Container.Resolve<NodeItemHeader>();
-                _bindingsHeader.Label = "Bindings";
-                _bindingsHeader.ViewModelObject = ViewModel;
-                _bindingsHeader.HeaderType = typeof(string);
-                if (NodeViewModel.IsLocal)
-                _bindingsHeader.AddCommand = Container.Resolve<AddBindingCommand>();
-            }
-            return _bindingsHeader;
-        }
-        set { _propertiesHeader = value; }
-    }
-
-    public NodeItemHeader PropertiesHeader
-    {
-        get
-        {
-            if (_propertiesHeader == null)
-            {
-                _propertiesHeader = Container.Resolve<NodeItemHeader>();
-                _propertiesHeader.ViewModelObject = ViewModel;
-                _propertiesHeader.Label = "Scene Properties";
-
-                _propertiesHeader.HeaderType = typeof(ViewModelPropertyData);
-                //if (NodeViewModel.IsLocal)
-                //_propertiesHeader.AddCommand = Container.Resolve<AddViewPropertyCommand>();
-            }
-            return _propertiesHeader;
-        }
-        set { _propertiesHeader = value; }
-    }
-
+  
     //protected override void DrawSelectedItemLabel(IDiagramNodeItem nodeItem)
     //{
     //    //var  bindingDiagramItem = nodeItem as BindingDiagramItem;
@@ -88,27 +52,7 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
         
     //}
 
-    protected override void GetContentDrawers(List<IDrawer> drawers)
-    {
-        //base.GetContentDrawers(drawers);
-        drawers.Add(PropertiesHeader);
-        foreach (var item in ViewModel.ContentItems.OfType<ElementViewPropertyItemViewModel>())
-        {
-            var drawer = InvertGraphEditor.CreateDrawer(item);
-            if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
-            drawers.Add(drawer);
-        }
-
-        drawers.Add(BindingsHeader);
-
-        foreach (var item in ViewModel.ContentItems.OfType<ViewBindingItemViewModel>())
-        {
-            var drawer = InvertGraphEditor.CreateDrawer(item);
-            //if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
-            drawers.Add(drawer);
-        }
-
-    }
+ 
 
 
     [Inject("ViewDoubleClick")]

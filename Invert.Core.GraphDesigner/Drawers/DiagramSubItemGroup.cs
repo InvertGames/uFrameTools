@@ -2,7 +2,7 @@ using System;
 
 public class DiagramSubItemGroup : Drawer
 {
-    public NodeItemHeader Header { get; set; }
+    public SectionHeaderDrawer Header { get; set; }
     public IDiagramNodeItem[] Items { get; set; }
 
     //public GraphItemViewModel ViewModelObject { get; set; }
