@@ -1,5 +1,5 @@
 using System.CodeDom;
-using Invert.uFrame.CodeGen.CodeDomExtensions;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 
 public class ViewComponentGenerator : ViewClassGenerator

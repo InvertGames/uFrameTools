@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class RemoveLinkCommand : EditorCommand<IDiagramNode>, IDynamicOptionsCommand, IDiagramNodeCommand
     {

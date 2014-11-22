@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Invert.Core.GraphDesigner;
+﻿using Invert.uFrame;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     public static class uFrameContainerExtensions
     {
@@ -57,7 +53,7 @@ namespace Invert.uFrame.Editor
         }
         public static NodeConfig<TNode> GetNodeConfig<TNode>(this IUFrameContainer container) where TNode : GenericNode, IConnectable
         {
-            var config = container.Resolve<NodeConfig>(typeof(TNode).Name) as NodeConfig<TNode>;
+            var config = container.Resolve<NodeConfigBase>(typeof(TNode).Name) as NodeConfig<TNode>;
             if (config == null)
             {
                 var nodeConfig = new NodeConfig<TNode>(container)
@@ -65,7 +61,7 @@ namespace Invert.uFrame.Editor
                     
                     NodeType = typeof(TNode),
                 };
-                container.RegisterInstance<NodeConfig>(nodeConfig, typeof(TNode).Name);
+                container.RegisterInstance<NodeConfigBase>(nodeConfig, typeof(TNode).Name);
                 //nodeConfig.Section(string.Empty, _ => _.ChildItems.OfType<GenericConnectionReference>(), false);
                 return nodeConfig;
             }

@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ElementDesigner;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ViewModels
-{
+namespace Invert.Core.GraphDesigner
+{ 
     public class GenericNodeViewModel<TData> : DiagramNodeViewModel<TData> where TData : GenericNode
     {
         private NodeConfig<TData> _nodeConfig;
@@ -58,6 +57,16 @@ namespace Invert.uFrame.Editor.ViewModels
                 if (NodeConfig.NodeColor == null) return NodeColor.LightGray;
                 return NodeConfig.NodeColor.GetValue(GraphItem);
             }
+        }
+
+        public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator
+        {
+            get { return NodeConfig.InputValidator; }
+        }
+
+        public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator
+        {
+            get { return NodeConfig.OutputValidator; }
         }
 
         protected override void CreateContent()
@@ -138,6 +147,7 @@ namespace Invert.uFrame.Editor.ViewModels
                                         InvertGraphEditor.WindowManager.InitItemWindow(section1.Selector(GraphItem),
                                             (selected) =>
                                             {
+                                                
                                                 GraphItem.AddReferenceItem(selected, section1);
                                             });
                                     }
@@ -159,14 +169,39 @@ namespace Invert.uFrame.Editor.ViewModels
                                 }
                                 else
                                 {
+                                    if (section1.Selector != null)
+                                    {
+                                        InvertGraphEditor.WindowManager.InitItemWindow(section1.Selector(GraphItem),
+                                            (selected) =>
+                                            {
+                                                var item = selected as GenericNodeChildItem;
+                                                item.Node = vm.GraphItemObject as DiagramNode;
+                                                
+                                                if (section1.OnAdd != null)
+                                                section1.OnAdd(item);
+                                                else
+                                                {
+                                                    item.Name = item.Node.Project.GetUniqueName(section1.Name);
+                                                }
+                                                
+                                                var node = vm as GenericNodeViewModel<TData>;
+                                                node.GraphItem.Project.AddItem(item);
+                                                item.IsEditing = true;
+                                                OnAdd(section1, item);
+                                            });
+                                    }
+                                    else
+                                    {
+                                        var item = Activator.CreateInstance(section1.ChildType) as GenericNodeChildItem;
+                                        item.Node = vm.GraphItemObject as DiagramNode;
+                                        item.Name = item.Node.Project.GetUniqueName(section1.Name);
+                                        var node = vm as GenericNodeViewModel<TData>;
+                                        node.GraphItem.Project.AddItem(item);
+                                        item.IsEditing = true;
+                                        OnAdd(section1, item);
+                                    }
 
-                                    var item = Activator.CreateInstance(section1.ChildType) as GenericNodeChildItem;
-                                    item.Node = vm.GraphItemObject as DiagramNode;
-                                    item.Name = item.Node.Project.GetUniqueName(section1.Name);
-                                    var node = vm as GenericNodeViewModel<TData>;
-                                    node.GraphItem.Project.AddItem(item);
-                                    item.IsEditing = true;
-                                    OnAdd(section1, item);
+                                  
                                 }
 
 
@@ -175,7 +210,7 @@ namespace Invert.uFrame.Editor.ViewModels
                     });
                 }
 
-                if (section1.Selector != null && section1.ReferenceType == null)
+                if (section1.Selector != null && section1.ReferenceType == null && section1.IsProxy)
                 {
 
                     foreach (var item in section1.Selector(GraphItem))
@@ -185,7 +220,8 @@ namespace Invert.uFrame.Editor.ViewModels
                         {
 
                             var vm = GetDataViewModel(item);
-
+                            vm.InputValidator = section1.InputValidator;
+                            vm.OutputValidator = section1.OutputValidator;
                             if (vm == null)
                             {
                                 Debug.LogError(
@@ -210,7 +246,13 @@ namespace Invert.uFrame.Editor.ViewModels
                     {
                         if (section.ChildType.IsAssignableFrom(item.GetType()))
                         {
-                            var vm = GetDataViewModel(item);
+                            var vm = GetDataViewModel(item) as ItemViewModel;
+                            vm.InputValidator = section1.InputValidator;
+                            vm.OutputValidator = section1.OutputValidator;
+                            if (section1.Selector != null && section1.ReferenceType == null)
+                            {
+                                vm.IsEditable = false;
+                            }
                             if (vm == null)
                             {
                                 Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
@@ -230,7 +272,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
 
 
-        protected virtual void OnAdd(NodeConfigSection configSection, GenericNodeChildItem item)
+        protected virtual void OnAdd(NodeConfigSectionBase configSection, GenericNodeChildItem item)
         {
 
         }

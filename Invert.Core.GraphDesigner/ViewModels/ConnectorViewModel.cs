@@ -1,7 +1,8 @@
 using System;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public class ConnectorViewModel : GraphItemViewModel
     {

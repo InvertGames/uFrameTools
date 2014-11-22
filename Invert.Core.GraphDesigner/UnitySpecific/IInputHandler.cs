@@ -1,10 +1,13 @@
 using Invert.uFrame.Editor;
 
-public interface IInputHandler
+namespace Invert.Core.GraphDesigner
 {
-    void OnMouseDoubleClick(MouseEvent mouseEvent);
-    void OnMouseDown(MouseEvent mouseEvent);
-    void OnMouseMove(MouseEvent e);
-    void OnMouseUp(MouseEvent mouseEvent);
-    void OnRightClick(MouseEvent mouseEvent);
+    public interface IInputHandler
+    {
+        void OnMouseDoubleClick(MouseEvent mouseEvent);
+        void OnMouseDown(MouseEvent mouseEvent);
+        void OnMouseMove(MouseEvent e);
+        void OnMouseUp(MouseEvent mouseEvent);
+        void OnRightClick(MouseEvent mouseEvent);
+    }
 }

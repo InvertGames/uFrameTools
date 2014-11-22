@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 
 public class SceneManagerDataGeneratorFactory : DesignerGeneratorFactory<SceneManagerData>

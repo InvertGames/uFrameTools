@@ -4,11 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.Refactoring;
 using UnityEditor;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ElementDesigner
+namespace Invert.Core.GraphDesigner
 {
     public class SaveCommand : ElementsDiagramToolbarCommand
     {

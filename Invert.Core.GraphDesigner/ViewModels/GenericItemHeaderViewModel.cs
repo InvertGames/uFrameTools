@@ -1,7 +1,7 @@
-using Invert.uFrame.Editor.ElementDesigner;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public class GenericItemHeaderViewModel : GraphItemViewModel
     {
@@ -17,7 +17,7 @@ namespace Invert.uFrame.Editor.ViewModels
         public override string Name { get; set; }
         public ViewModel NodeViewModel { get; set; }
         public IEditorCommand AddCommand { get; set; }
-        public NodeConfig NodeConfig { get; set; }
-        public NodeConfigSection SectionConfig { get; set; }
+        public NodeConfigBase NodeConfig { get; set; }
+        public NodeConfigSectionBase SectionConfig { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;

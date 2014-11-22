@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Invert.uFrame.Editor.Refactoring
+namespace Invert.Core.GraphDesigner
 {
     public class RefactorContext
     {

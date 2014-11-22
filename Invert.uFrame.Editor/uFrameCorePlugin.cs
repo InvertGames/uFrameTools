@@ -5,9 +5,7 @@ using System.Linq;
 using System.Text;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.Core.GraphDesigner.Settings;
 using Invert.uFrame.Code.Bindings;
-using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
 
 using Invert.uFrame.Editor.ViewModels;

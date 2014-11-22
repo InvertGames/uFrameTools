@@ -1,12 +1,9 @@
 using System;
 using System.CodeDom;
-using System.Collections;
 using System.IO;
 using System.Linq;
-using Invert.Core;
-using Invert.uFrame.Editor;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     public abstract class CodeGenerator
     {

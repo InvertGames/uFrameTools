@@ -1,6 +1,7 @@
 using System;
+using Invert.uFrame.Editor;
 
-public class GraphTypeInfo
+public class GraphTypeInfo : IItem
 {
     public string Group { get; set; }
     public string Label { get; set; }
@@ -14,4 +15,14 @@ public class GraphTypeInfo
     public string Name { get; set; }
     public bool IsPrimitive { get; set; }
     public bool IsUnityEngine { get; set; }
+
+    public string Title
+    {
+        get { return Label; }
+    }
+
+    public string SearchTag
+    {
+        get { return Name + Label; }
+    }
 }

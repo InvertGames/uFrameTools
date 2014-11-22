@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom;
 using System.Linq;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 
 public class ShellCodeGeneratorNodeGenerator : GenericNodeGenerator<ShellGeneratorTypeNode>
@@ -14,6 +15,8 @@ public class ShellCodeGeneratorNodeGenerator : GenericNodeGenerator<ShellGenerat
             Name = "InitializeDesignerFile",
             Attributes = MemberAttributes.Override | MemberAttributes.Family
         };
+     
+        AddOverrideFillMethods(method);
 
         var memberGeneratorReferences = Data.ChildItems.OfType<ShellMemberGeneratorSectionReference>();
         foreach (var memberGeneratorReference in memberGeneratorReferences)
@@ -28,11 +31,43 @@ public class ShellCodeGeneratorNodeGenerator : GenericNodeGenerator<ShellGenerat
             }
 
             var reference = generatorNode.CreateGeneratorExpression(method.Statements);
-            method.Statements.Add(
-                new CodeSnippetExpression(string.Format("AddMembers(_=>_.{0}, {1})", itemReference.Name,
-                    reference.VariableName)));
+            method.Add("AddMembers(_=>_.{0}, {1})", itemReference.Name, reference.VariableName);
 
         }
         Decleration.Members.Add(method);
+    }
+
+    protected override void InitializeEditableFile()
+    {
+        base.InitializeEditableFile();
+        AddOverrideFillMethods(null);
+    }
+
+    private void AddOverrideFillMethods(CodeMemberMethod method)
+    {
+        foreach (var item in Data.ChildItems.OfType<OverrideMethodReference>())
+        {
+            //MethodFromTypeMethod
+
+            var fillMethod = new CodeMemberMethod()
+            {
+                Name = "Fill" + item.Name,
+                Attributes = MemberAttributes.Family,
+            };
+            fillMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof (CodeMemberMethod), "method"));
+          
+            if (!IsDesignerFile)
+            {
+                fillMethod.Attributes |= MemberAttributes.Override;
+                fillMethod.Add("base.{0}(method)", fillMethod.Name);
+            } else
+            {
+                method.Add("var {1}Method = typeof({0}).MethodFromTypeMethod(\"{1}\")", Data.BaseType.FullName, item.Name);
+                method.Add("{0}({1}Method)", fillMethod.Name, item.Name);
+                method.Add("Decleration.Members.Add({0}Method)", item.Name);
+
+            }
+            Decleration.Members.Add(fillMethod);
+        }
     }
 }

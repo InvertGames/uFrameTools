@@ -131,6 +131,21 @@ namespace Invert.Core
 #endif
         }
 
+        public static IEnumerable<KeyValuePair<PropertyInfo, TAttribute>> GetPropertiesWithAttribute<TAttribute>(this object obj) where TAttribute : Attribute
+        {
+            return GetPropertiesWithAttribute<TAttribute>(obj.GetType());
+        }
+
+        public static IEnumerable<KeyValuePair<PropertyInfo, TAttribute>> GetPropertiesWithAttribute<TAttribute>(this Type type) where TAttribute : Attribute
+        {
+            foreach (var source in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                var attribute = source.GetCustomAttributes(typeof (TAttribute), true).OfType<TAttribute>().FirstOrDefault();
+                if (attribute == null) continue;
+                yield return new KeyValuePair<PropertyInfo, TAttribute>(source, (TAttribute)attribute);
+            }
+        }
+
         public static IEnumerable<PropertyInfo> GetPropertiesByAttribute<TAttribute>(this object obj) where TAttribute : Attribute
         {
             return GetPropertiesByAttribute<TAttribute>(obj.GetType());

@@ -1,4 +1,4 @@
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     public enum MemberGeneratorLocation
     {

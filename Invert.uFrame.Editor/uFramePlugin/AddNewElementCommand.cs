@@ -1,3 +1,5 @@
+using Invert.Core.GraphDesigner;
+
 namespace Invert.uFrame.Editor.ElementDesigner.Commands
 {
     public class AddNewElementCommand : AddItemCommand<ElementData>

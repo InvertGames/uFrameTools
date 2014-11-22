@@ -1,4 +1,5 @@
 using System.CodeDom;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using System;

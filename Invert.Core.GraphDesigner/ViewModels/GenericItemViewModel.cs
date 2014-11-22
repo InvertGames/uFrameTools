@@ -1,7 +1,7 @@
 using System.Linq;
-using Invert.Core.GraphDesigner;
+using Invert.uFrame.Editor.ViewModels;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public class GenericItemViewModel<TData> : ItemViewModel<TData> where TData : IDiagramNodeItem
     {
@@ -19,11 +19,11 @@ namespace Invert.uFrame.Editor.ViewModels
             set { Data.Name = value; }
         }
 
-        public virtual NodeConfigSection SectionConfig
+        public virtual NodeConfigSectionBase SectionConfig
         {
             get
             {
-                var nodeConfig = InvertGraphEditor.Container.Resolve<NodeConfig>(NodeViewModel.GetType().Name);
+                var nodeConfig = InvertGraphEditor.Container.Resolve<NodeConfigBase>(NodeViewModel.GetType().Name);
                 return nodeConfig.Sections.FirstOrDefault(p=>p.ChildType==typeof(TData));
             }
         } 

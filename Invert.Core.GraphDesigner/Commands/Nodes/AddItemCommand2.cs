@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Data.Odbc;
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class AddItemCommand2 : EditorCommand<DiagramViewModel>, IDiagramContextCommand,IDynamicOptionsCommand
     {
@@ -52,7 +53,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
 
         public string GetName(Type nodeType)
         {
-            var config = InvertGraphEditor.Container.Resolve<NodeConfig>(nodeType.Name);
+            var config = InvertGraphEditor.Container.Resolve<NodeConfigBase>(nodeType.Name);
             if (config != null)
             {
                 return config.Name;

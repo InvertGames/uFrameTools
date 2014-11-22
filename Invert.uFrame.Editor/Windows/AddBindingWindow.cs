@@ -5,6 +5,7 @@ using System.Text;
 using Invert.Common;
 using Invert.Common.UI;
 using Invert.Core.GraphDesigner;
+using Invert.Core.GraphDesigner.Unity;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;

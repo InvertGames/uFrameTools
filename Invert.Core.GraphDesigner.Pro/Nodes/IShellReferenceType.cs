@@ -1,3 +1,5 @@
+using Invert.Core.GraphDesigner;
+
 public interface IShellReferenceType : IDiagramNodeItem, IConnectable {
     string ClassName { get;  }
     IShellReferenceType ReferenceType { get; }

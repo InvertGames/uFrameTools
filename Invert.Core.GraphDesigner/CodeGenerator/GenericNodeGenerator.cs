@@ -1,11 +1,10 @@
 using System;
 using System.CodeDom;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Invert.Core.GraphDesigner;
+using Invert.uFrame.Editor;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     public class GenericNodeGenerator<TData> : CodeGenerator where TData : GenericNode
     {
@@ -55,7 +54,7 @@ namespace Invert.uFrame.Editor
             get { return NameAsClass + "Base"; }
         }
 
-        public sealed override void Initialize(CodeFileGenerator fileGenerator)
+        public override void Initialize(CodeFileGenerator fileGenerator)
         {
             var nodeConfig = InvertGraphEditor.Container.GetNodeConfig<TData>();
             if (!nodeConfig.TypeGeneratorConfigs.ContainsKey(this.GetType())) return;

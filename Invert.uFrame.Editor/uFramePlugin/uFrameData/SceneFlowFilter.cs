@@ -1,4 +1,5 @@
 using System;
+using Invert.Core.GraphDesigner;
 
 [Serializable]
 public class SceneFlowFilter : DiagramFilter

@@ -1,4 +1,6 @@
-namespace Invert.uFrame.Editor.ElementDesigner
+using Invert.Core.GraphDesigner;
+
+namespace Invert.Core.GraphDesigner.Unity
 {
     public class DiagramSettingsCommand : ElementsDiagramToolbarCommand
     {

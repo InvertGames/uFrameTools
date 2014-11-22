@@ -1,6 +1,6 @@
 using Invert.Common;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class ScaleCommand : EditorCommand<float>
     {

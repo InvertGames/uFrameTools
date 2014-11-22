@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 
 namespace Invert.uFrame.CodeGen.ClassNodeGenerators

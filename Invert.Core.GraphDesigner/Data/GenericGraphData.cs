@@ -1,3 +1,5 @@
+using Invert.Core.GraphDesigner;
+
 public class GenericGraphData<T> : GraphData where T : IDiagramFilter, new()
 {
     public T FilterNode

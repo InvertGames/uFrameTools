@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 

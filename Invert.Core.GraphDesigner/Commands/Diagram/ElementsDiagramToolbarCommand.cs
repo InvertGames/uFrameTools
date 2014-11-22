@@ -1,4 +1,4 @@
-namespace Invert.uFrame.Editor.ElementDesigner
+namespace Invert.Core.GraphDesigner
 {
     public abstract class ElementsDiagramToolbarCommand : ToolbarCommand<DiagramViewModel>
     {

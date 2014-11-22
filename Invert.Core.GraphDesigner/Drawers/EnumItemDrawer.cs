@@ -1,14 +1,17 @@
 using Invert.uFrame.Editor.ViewModels;
 
-public class EnumItemDrawer : ItemDrawer
+namespace Invert.Core.GraphDesigner
 {
-    public EnumItemDrawer(EnumItemViewModel viewModel)
+    public class EnumItemDrawer : ItemDrawer
     {
-        DataContext = viewModel;
-    }
+        public EnumItemDrawer(EnumItemViewModel viewModel)
+        {
+            DataContext = viewModel;
+        }
     
-    public override void Draw(float scale)
-    {
-        base.Draw(scale);
+        public override void Draw(float scale)
+        {
+            base.Draw(scale);
+        }
     }
 }

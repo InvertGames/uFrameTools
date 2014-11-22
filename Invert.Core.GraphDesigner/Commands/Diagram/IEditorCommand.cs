@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
+using Invert.uFrame.Editor;
 
-namespace Invert.uFrame.Editor.ElementDesigner
+namespace Invert.Core.GraphDesigner
 {
     public interface IEditorCommand : IContextMenuItemCommand
     {

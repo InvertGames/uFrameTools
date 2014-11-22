@@ -1,4 +1,4 @@
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     //public interface IMemberItemGenerator : IMemberGenerator
     //{

@@ -1,8 +1,6 @@
 ﻿using Invert.Common;
-using Invert.Core.GraphDesigner.Settings;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -32,6 +30,7 @@ namespace Invert.Core.GraphDesigner
     public interface IGraphWindow : ICommandHandler
     {
         DiagramViewModel DiagramViewModel { get; }
+        void RefreshContent();
     }
 
     public static class InvertGraphEditor
@@ -157,12 +156,20 @@ namespace Invert.Core.GraphDesigner
             get { return _windowManager ?? (_windowManager = Container.Resolve<IWindowManager>()); }
         }
 
-        public static IUFrameContainer Connectable<TSource, TTarget>(this IUFrameContainer container, bool oneToMany = true, Func<TSource, TTarget, bool> filter = null)
+        public static IUFrameContainer Connectable<TSource, TTarget>(this IUFrameContainer container, bool oneToMany = true)
             where TSource : class, IConnectable
             where TTarget : class, IConnectable
         {
+            return Connectable<TSource, TTarget>(container, Color.white, oneToMany);
+        }
+
+        public static IUFrameContainer Connectable<TSource, TTarget>(this IUFrameContainer container,Color color, bool oneToMany = true)
+            where TSource : class, IConnectable
+            where TTarget : class, IConnectable
+        {
+            
             //if (oneToMany)
-            //    container.RegisterInstance<IConnectionStrategy>(new OneToManyConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
+            container.RegisterInstance<IConnectionStrategy>(new CustomInputOutputStrategy<TSource, TTarget>(color), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
             //else
             //{
             //    container.RegisterInstance<IConnectionStrategy>(new OneToOneConnectionStrategy<TSource, TTarget>(), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
@@ -267,7 +274,6 @@ namespace Invert.Core.GraphDesigner
                     if (command.Hooks != null)
                         command.Hooks.ForEach(p =>
                         {
-                            Debug.Log(p.Name);
                             ExecuteCommand(handler, p);
                         });
                     handler.CommandExecuted(command);
@@ -326,23 +332,34 @@ namespace Invert.Core.GraphDesigner
                 // If its a generator for a specific node type
                 else
                 {
-                    foreach (var diagram in project.Diagrams)
-                    {
-                        var items = diagram.NodeItems.Where(p => p.GetType() == generator.DiagramItemType);
+                    foreach (var codeGenerator1 in GetCodeGeneratorsForNodes(settings, project, generator, diagramItemGenerator)) yield return codeGenerator1;
+                }
+            }
+        }
 
-                        foreach (var item in items)
-                        {
-                            var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, item);
-                            foreach (var codeGenerator in codeGenerators)
-                            {
-                                if (!codeGenerator.IsEnabled(project)) continue;
-                                codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
-                                codeGenerator.Settings = settings;
-                                codeGenerator.ObjectData = item;
-                                codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
-                                yield return codeGenerator;
-                            }
-                        }
+        public static IEnumerable<CodeGenerator> GetCodeGeneratorsForNode(this IDiagramNode node)
+        {
+            return GetAllCodeGenerators(node.Project.GeneratorSettings,node.Project).Where(p=>p.ObjectData == node);
+        }
+
+        private static IEnumerable<CodeGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, IProjectRepository project,
+            DesignerGeneratorFactory generator, DesignerGeneratorFactory diagramItemGenerator)
+        {
+            foreach (var diagram in project.Diagrams)
+            {
+                var items = diagram.NodeItems.Where(p => p.GetType() == generator.DiagramItemType);
+
+                foreach (var item in items)
+                {
+                    var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, item);
+                    foreach (var codeGenerator in codeGenerators)
+                    {
+                        if (!codeGenerator.IsEnabled(project)) continue;
+                        codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
+                        codeGenerator.Settings = settings;
+                        codeGenerator.ObjectData = item;
+                        codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
+                        yield return codeGenerator;
                     }
                 }
             }

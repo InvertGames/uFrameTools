@@ -1,15 +1,13 @@
-using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ViewModels;
-
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     public static class NodeConfigExtensions
     {
         public static NodeConfig<TType> Inheritable<TType>(this NodeConfig<TType> config,string label = "Base") where TType : GenericInheritableNode
         {
-            config.Input<TType, BaseClassReference>((n) =>
+            config.Input<TType, BaseClassReference>(n =>
             {
                 var inheritable = n.Node as GenericInheritableNode;
+                
                 if (inheritable != null)
                 {
                     var baseNode = inheritable.BaseNode;
@@ -19,7 +17,8 @@ namespace Invert.uFrame.Editor
                 return label;
             },false, (o, i) =>
             {
-                return o is TType && i is BaseClassReference;
+
+                return o is TType && i is BaseClassReference && i.Node != o.Node;
             });
             //config.Container.RegisterInstance<IConnectionStrategy>(new InheritanceConnectionStrategy<TType>(), typeof(TType).Name + "_" + typeof(TType).Name + "InheritanceConnection");
             return config;

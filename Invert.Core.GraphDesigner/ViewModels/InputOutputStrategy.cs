@@ -4,7 +4,7 @@ using System.Linq;
 using Invert.Core.GraphDesigner;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     //public class OneToOneConnectionStrategy<TSource, TTarget> :
     //    DefaultConnectionStrategy<TSource, TTarget>
@@ -210,31 +210,51 @@ namespace Invert.uFrame.Editor.ViewModels
         {
             get { return Color.white; }
         }
-
         public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
-            //if (!(a.DataObject is GenericSlot) && !(b.DataObject is GenericSlot))
-            //{
-            //    return null;
-            //}
             if (a.Validator != null)
                 if (!a.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
                     return null;
             if (b.Validator != null)
                 if (!b.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
                     return null;
-
-            return base.Connect(diagramViewModel, a, b);
-        }
-
-
-        public override bool IsConnected(IConnectable output, IConnectable input)
-        {
-            return
-                InvertGraphEditor.CurrentProject.Connections.Any(
-                    p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
+            if (a.ConnectorForType != null && b.ConnectorForType != null)
+            {
+                if (b.ConnectorForType.IsAssignableFrom(a.ConnectorForType))
+                {
+                    //if (CanConnect((TOutput)a,(TInput)b.DataObject))
+                    return base.Connect(diagramViewModel, a, b);
+                }
+            }
+            return null;
         }
 
     }
+
+    public class CustomInputOutputStrategy<TOutput, TInput> : DefaultConnectionStrategy<TOutput, TInput>
+        where TOutput : IGraphItem
+        where TInput : IGraphItem
+    {
+        public NodeConfigSectionBase Configuration { get; set; }
+
+        private Color _connectionColor = Color.white;
+
+        public CustomInputOutputStrategy(Color connectionColor)
+        {
+            _connectionColor = connectionColor;
+        }
+
+        protected override bool CanConnect(TOutput output, TInput input)
+        {
+            
+            return base.CanConnect(output, input);
+        }
+
+        public override Color ConnectionColor
+        {
+            get { return _connectionColor; }
+        }
+    }
+
 
 }

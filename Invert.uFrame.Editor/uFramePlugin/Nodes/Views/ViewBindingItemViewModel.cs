@@ -1,3 +1,4 @@
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Code.Bindings;
 
 namespace Invert.uFrame.Editor.ViewModels

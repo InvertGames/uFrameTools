@@ -3,47 +3,36 @@ using System.CodeDom;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
-using Invert.uFrame.Editor.ViewModels;
+using UnityEngine;
 
 public class ShellPropertySelectorItem : GenericTypedChildItem
 {
-    
+
 }
 public class PluginDesigner : DiagramPlugin
 {
     public override void Initialize(uFrameContainer container)
     {
         container.RegisterInstance<IDiagramNodeCommand>(new SelectColorCommand(), "SelectColor");
-
-      
-
-
         var pluginConfig = container
             .AddItem<ShellMemberGeneratorSectionReference>()
             .AddItem<ShellNodeSectionsSlot>()
             .AddItem<ShellNodeInputsSlot>()
             .AddItem<ShellNodeOutputsSlot>()
             .AddItem<ShellMemberGeneratorInputSlot>()
+            .AddItem<OverrideMethodReference>()
             .AddTypeItem<ShellPropertySelectorItem>()
             .AddGraph<PluginGraph, ShellPluginNode>("Shell Plugin")
             .Color(NodeColor.Green)
             .HasSubNode<IShellReferenceType>()
             .HasSubNode<ShellNodeTypeNode>()
             .HasSubNode<ShellGraphTypeNode>()
-            
             ;
-
-
-
-        //container.AddNode<ShellPropertyGeneratorNode,
-        //  ShellMemberNodeViewModel,
-        //  ShellMemberNodeDrawer>("Property Generator");
-
 
         var graphConfig = container.AddNode<ShellGraphTypeNode>("Graph Type")
            .Output<ShellNodeTypeNode, ShellNodeSubNodesSlot>("Sub Nodes",true)
@@ -57,11 +46,6 @@ public class PluginDesigner : DiagramPlugin
         var shellNodeConfig = container.AddNode<ShellNodeTypeNode,ShellNodeTypeViewModel,NodeDesignerDrawer>("Node Type")
             .Output<ShellNodeTypeNode, ShellNodeSubNodesSlot>("Sub Nodes", true)
             .Output<ShellGeneratorTypeNode, ShellNodeGeneratorsSlot>("Generators", true)
-            .TypedSection<ShellPropertySelectorItem>("Selectors", new SelectItemTypeCommand(GetPropertySelectorTypes))
-            .ReferenceSection<ShellNodeTypeSection, ShellNodeSectionsSlot>("Sections", _ => _.Project.NodeItems.OfType<ShellNodeTypeSection>(),true)
-            .ReferenceSection<ShellSlotTypeNode, ShellNodeInputsSlot>("Inputs", _ => _.Project.NodeItems.OfType<ShellSlotTypeNode>(), true,true)
-            .ReferenceSection<ShellSlotTypeNode, ShellNodeOutputsSlot>("Outputs", _ => _.Project.NodeItems.OfType<ShellSlotTypeNode>(), true,true)
-            .Proxy("Project Nodes",_=>_.Project.NodeItems.OfType<ShellNodeTypeNode>())
             .AddFlag("Custom")
             .AddFlag("Inheritable")
             .HasSubNode<ShellSlotTypeNode>()
@@ -81,6 +65,17 @@ public class PluginDesigner : DiagramPlugin
             })
             ;
 
+        shellNodeConfig.ReferenceSection<ShellNodeTypeSection, ShellNodeSectionsSlot>("Sections",
+            _ => _.Project.NodeItems.OfType<ShellNodeTypeSection>(), true);
+
+        shellNodeConfig.ReferenceSection<ShellSlotTypeNode, ShellNodeInputsSlot>("Inputs",
+            _ => _.Project.NodeItems.OfType<ShellSlotTypeNode>(), true, true);
+
+        shellNodeConfig.ReferenceSection<ShellSlotTypeNode, ShellNodeOutputsSlot>("Outputs",
+            _ => _.Project.NodeItems.OfType<ShellSlotTypeNode>(), true, true);
+
+        shellNodeConfig.Proxy("Project Nodes", _ => _.Project.NodeItems.OfType<ShellNodeTypeNode>());
+
         ConfigureShellNodeGenerators(shellNodeConfig);
 
         var shellInputReferenceConfig = container.AddNode<ShellSlotTypeNode>("Slot")
@@ -96,12 +91,25 @@ public class PluginDesigner : DiagramPlugin
  
         var shellCodeGeneratorConfig = container.AddNode<ShellGeneratorTypeNode>("Code Generator")
             .Color(NodeColor.Purple)
-            .ReferenceSection<GenericReferenceItem, ShellMemberGeneratorSectionReference>("Members",
-            node => node.InputFrom<ShellNodeGeneratorsSlot>().Node.ContainedItems.OfType<GenericReferenceItem>(), true, false
-            )
+
             .Validator(node=>!node.InputsFrom<ShellNodeGeneratorsSlot>().Any(),"Generator is not connected.")
             //.Proxy("Items",node=>node.InputFrom<ShellNodeTypeNode>().ChildItems.OfType<Shell>())
             .AddFlag("Designer Only");
+        shellCodeGeneratorConfig.ReferenceSection<GenericReferenceItem, ShellMemberGeneratorSectionReference>("Members",
+            node => node.InputFrom<ShellNodeGeneratorsSlot>().Node.ContainedItems.OfType<GenericReferenceItem>(), true,
+            false
+            );
+        shellCodeGeneratorConfig.Section("Overrides",
+            node =>
+                node.BaseType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                    .Where(p => p.IsVirtual || p.IsAbstract)
+                    .Select(p => new OverrideMethodReference()
+                    {
+                        Name = p.Name
+                    }), true, p => { }
+            );
+
+        //container.Connectable<ShellNodeSectionsSlot, ShellGeneratorTypeNode>(Color.blue, true);
 
         container.RegisterDrawer<ShellMemberNodeViewModel, ShellMemberNodeDrawer>();
         container.RegisterDrawer<PropertyFieldViewModel, PropertyFieldDrawer>();
@@ -111,7 +119,7 @@ public class PluginDesigner : DiagramPlugin
             container.RegisterRelation(item, typeof(ViewModel), typeof(ShellMemberNodeViewModel));
 
             var config = new NodeConfig<ShellMemberGeneratorNode>(container);
-            container.RegisterInstance<NodeConfig>(config, item.Name);
+            container.RegisterInstance<NodeConfigBase>(config, item.Name);
             config.Name = item.Name.Replace("Shell", "").Replace("Node", "");
             config.Tags.Add(config.Name);
             config.Input<ShellMemberGeneratorSectionReference, ShellMemberGeneratorInputSlot>("For",false);
@@ -144,15 +152,13 @@ public class PluginDesigner : DiagramPlugin
         ConfigureChildItemGenerators(shellChildItemConfig);
 
         pluginConfig
-           
             .AddEditableClass<ShellPluginClassGenerator>("Plugin")
-            .NamespacesConfig(new[] { "Invert.Core.GraphDesigner", "Invert.uFrame", "Invert.uFrame.Editor", "Invert.uFrame.Editor.ViewModels" })
+            .NamespacesConfig(new[] { "Invert.Core.GraphDesigner", "Invert.uFrame", "Invert.uFrame.Editor"})
             .BaseTypeConfig(new CodeTypeReference(typeof(DiagramPlugin)))
             .ClassNameConfig(node => string.Format("{0}Plugin", node.Name))
             .FilenameConfig(node => Path.Combine("Editor", string.Format("{0}Plugin.cs", node.Name)))
             .DesignerFilenameConfig(node => Path.Combine("_DesignerFiles", Path.Combine("Editor", "Plugin.cs")))
             .OverrideTypedMethod(typeof(DiagramPlugin), "Initialize", CreatePluginInitializeMethod)
-            
             .MembersFor(p => p.Project.NodeItems.OfType<ShellNodeTypeNode>(), CreateGraphConfigProperty)
             .MembersFor(p => p.Project.NodeItems.OfType<ShellGraphTypeNode>(), CreateConfigProperty)
             .MembersFor(p => p.Project.NodeItems.OfType<ShellGeneratorTypeNode>(), CreateGeneratorConfigProperty)
@@ -183,7 +189,7 @@ public class PluginDesigner : DiagramPlugin
             ;
 
         graphConfig.AddEditableClass<ShellGraphTypeNodeClassGenerator>("GraphNode")
-            .BaseTypeConfig(new CodeTypeReference(typeof (GenericNode)))
+            .BaseTypeConfig(new CodeTypeReference(typeof(GenericNode)))
             .ClassNameConfig(node => string.Format("{0}Node", node.Name))
             .FilenameConfig(node => Path.Combine("Editor", string.Format("{0}Node.cs", node.Name)))
             .DesignerFilenameConfig(node => Path.Combine("_DesignerFiles", Path.Combine("Editor", "Plugin.cs")));
@@ -194,16 +200,16 @@ public class PluginDesigner : DiagramPlugin
         shellChildItemConfig
             .AddEditableClass<ShellChildItemTypeNodeClassGenerator>("Plugin")
             .AsDerivedEditorEditableClass("{0}ChildItem", "Plugin", _ => _["Typed"]
-                ? new CodeTypeReference(typeof (GenericTypedChildItem))
-                : new CodeTypeReference(typeof (GenericNodeChildItem)), "ChildItems")
+                ? new CodeTypeReference(typeof(GenericTypedChildItem))
+                : new CodeTypeReference(typeof(GenericNodeChildItem)), "ChildItems")
             ;
 
         shellChildItemConfig
             .AddEditableClass<ShellChildItemTypeNodeViewModelGenerator>("ChildItemViewModel")
             .AsDerivedEditorEditableClass("{0}ViewModel", "Plugin", _ => _["Typed"]
                 ? new CodeTypeReference(typeof(TypedItemViewModel))
-                : new CodeTypeReference(string.Format("GenericItemViewModel<{0}>",_.ClassName)), "ChildItems")
-            .Member(_=>CreateViewModelConstructor(_.Decleration,_.Data), MemberGeneratorLocation.Both)
+                : new CodeTypeReference(string.Format("GenericItemViewModel<{0}>", _.ClassName)), "ChildItems")
+            .Member(_ => CreateViewModelConstructor(_.Decleration, _.Data), MemberGeneratorLocation.Both)
             .OnlyIf(_ => _["Custom"])
             ;
 
@@ -213,7 +219,7 @@ public class PluginDesigner : DiagramPlugin
                 ? new CodeTypeReference(typeof(TypedItemDrawer))
                 : new CodeTypeReference(typeof(ItemDrawer)), "ChildItems")
             .Member(_ => CreateDrawerConstructor(_.Decleration, _.Data), MemberGeneratorLocation.Both)
-            .OnlyIf(_=>_["Custom"])
+            .OnlyIf(_ => _["Custom"])
             ;
     }
 
@@ -227,13 +233,13 @@ public class PluginDesigner : DiagramPlugin
         constructor.Parameters.Add(new CodeParameterDeclarationExpression(data.ClassName, "item"));
         if (data is ShellNodeTypeNode)
         {
-            constructor.Parameters.Add(new CodeParameterDeclarationExpression(typeof (DiagramViewModel), "parent"));
+            constructor.Parameters.Add(new CodeParameterDeclarationExpression(typeof(DiagramViewModel), "parent"));
         }
         else
         {
             constructor.Parameters.Add(new CodeParameterDeclarationExpression(typeof(DiagramNodeViewModel), "parent"));
         }
-        
+
         constructor.BaseConstructorArgs.Add(new CodeSnippetExpression("item"));
         constructor.BaseConstructorArgs.Add(new CodeSnippetExpression("parent"));
         return constructor;
@@ -271,13 +277,14 @@ public class PluginDesigner : DiagramPlugin
                 _ => new CodeTypeReference(string.Format("GenericNodeGenerator<{0}>", _.GeneratorFor.ClassName)),
                 "Generators")
             .OnlyIf(_ => _.GeneratorFor != null)
+            
             ;
     }
 
     private static void ConfigureShellSlotTypeGenerators(NodeConfig<ShellSlotTypeNode> shellInputReferenceConfig)
     {
         shellInputReferenceConfig.AddEditableClass<ShellSlotTypeNodeClassGenerator>("Plugin")
-            .AsDerivedEditorEditableClass("{0}", "Plugin", _ => new CodeTypeReference(typeof (GenericSlot)), "Slots")
+            .AsDerivedEditorEditableClass("{0}", "Plugin", _ => new CodeTypeReference(typeof(GenericSlot)), "Slots")
             ;
 
         shellInputReferenceConfig
@@ -310,14 +317,14 @@ public class PluginDesigner : DiagramPlugin
         shellNodeConfig.AddEditableClass<ShellNodeTypeNodeViewModelGenerator>("NodeViewModelGenerator")
             .AsDerivedEditorEditableClass("{0}NodeViewModel", "Plugin",
                 _ => new CodeTypeReference(string.Format("GenericNodeViewModel<{0}Node>", _.Name)), "Nodes")
-            .Member(_=>CreateViewModelConstructor(_.Decleration,_.Data), MemberGeneratorLocation.Both)
+            .Member(_ => CreateViewModelConstructor(_.Decleration, _.Data), MemberGeneratorLocation.Both)
             .OnlyIf(_ => _["Custom"])
             ;
 
         shellNodeConfig.AddEditableClass<ShellNodeTypeNodeDrawerGenerator>("NodeDrawerGenerator")
             .AsDerivedEditorEditableClass("{0}Drawer", "Plugin",
                 _ => new CodeTypeReference(string.Format("GenericNodeDrawer<{0}Node, {0}NodeViewModel>", _.Name)), "Nodes")
-            .Member(_=>CreateDrawerConstructor(_.Decleration,_.Data), MemberGeneratorLocation.Both)
+            .Member(_ => CreateDrawerConstructor(_.Decleration, _.Data), MemberGeneratorLocation.Both)
             //.OverrideTypedMethod(typeof (DiagramNodeDrawer), "GetContentDrawers", null, true,
             //    MemberGeneratorLocation.EditableFile)
             .OnlyIf(_ => _["Custom"])
@@ -370,7 +377,7 @@ public class PluginDesigner : DiagramPlugin
         {
             constructor.Parameters.Add(new CodeParameterDeclarationExpression(data.Name + "ViewModel", "viewModel"));
         }
-        
+
         constructor.BaseConstructorArgs.Add(new CodeSnippetExpression("viewModel"));
         return constructor;
     }
@@ -399,11 +406,11 @@ public class PluginDesigner : DiagramPlugin
         var referenceItem = arg1.Data.SourceItem as ShellNodeTypeReferenceSection;
         var property = new CodeMemberProperty()
         {
-             Name = "Possible" + arg1.Data.Name,
-             Attributes = MemberAttributes.Public,
-             HasGet = true,
-             HasSet = false,
-             Type = new CodeTypeReference(string.Format("IEnumerable<{0}>",referenceItem.ReferenceType.ClassName))
+            Name = "Possible" + arg1.Data.Name,
+            Attributes = MemberAttributes.Public,
+            HasGet = true,
+            HasSet = false,
+            Type = new CodeTypeReference(string.Format("IEnumerable<{0}>", referenceItem.ReferenceType.ClassName))
         };
         if (referenceItem["Automatic"])
         {
@@ -416,7 +423,7 @@ public class PluginDesigner : DiagramPlugin
                 new CodeSnippetExpression(string.Format("return Project.AllGraphItems.OfType<{0}>()",
                     referenceItem.ReferenceType.ClassName)));
         }
-            
+
 
         return property;
     }
@@ -427,7 +434,7 @@ public class PluginDesigner : DiagramPlugin
         {
             Name = string.Format("Get{0}SelectionCommand", arg1.Data.Name),
             Attributes = MemberAttributes.Public,
-            ReturnType = new CodeTypeReference(typeof (SelectItemTypeCommand))
+            ReturnType = new CodeTypeReference(typeof(SelectItemTypeCommand))
         };
         method.Statements.Add(new CodeSnippetExpression("return new SelectItemTypeCommand() { IncludePrimitives = true, AllowNone = false }"));
         return method;
@@ -436,7 +443,7 @@ public class PluginDesigner : DiagramPlugin
     private CodeTypeMember GetNodeSectionProperty(LambdaMemberGenerator<ShellNodeSectionsSlot> arg1)
     {
         var isReferenceItem = arg1.Data.SourceItem is ShellNodeTypeReferenceSection;
-        
+
         //var typeName = isReferenceItem ? arg1.Data.SourceItem.ClassName : arg1.Data.SourceItem.ReferenceType.ClassName;
         var typeName = isReferenceItem ? arg1.Data.SourceItem.ClassName : arg1.Data.SourceItem.ReferenceType.ClassName;
         var property = new CodeMemberProperty()
@@ -460,7 +467,7 @@ public class PluginDesigner : DiagramPlugin
         property.GetStatements.Add(
             new CodeSnippetExpression(string.Format("return ChildItems.OfType<{0}>()",
                 typeName)));
-        
+
         return property;
     }
 
@@ -489,7 +496,7 @@ public class PluginDesigner : DiagramPlugin
 
     private void CreatePluginInitializeMethod(ShellPluginNode shellPluginNode, CodeMemberMethod method)
     {
-        foreach (var itemType in shellPluginNode.Project.NodeItems.OfType<IShellReferenceType>().Where(p=>p.IsValid))
+        foreach (var itemType in shellPluginNode.Project.NodeItems.OfType<IShellReferenceType>().Where(p => p.IsValid))
         {
             if (itemType is ShellNodeTypeNode) continue;
             if (itemType is ShellNodeTypeSection && !(itemType is ShellNodeTypeReferenceSection)) continue;
@@ -498,33 +505,33 @@ public class PluginDesigner : DiagramPlugin
                 if (itemType.IsCustom)
                 {
                     method.Statements.Add(
-                        new CodeSnippetExpression(string.Format("container.AddTypeItem<{0},{1}ViewModel,{1}Drawer>()", itemType.ClassName,itemType.Name)));
+                        new CodeSnippetExpression(string.Format("container.AddTypeItem<{0},{1}ViewModel,{1}Drawer>()", itemType.ClassName, itemType.Name)));
                 }
                 else
                 {
                     method.Statements.Add(
                         new CodeSnippetExpression(string.Format("container.AddTypeItem<{0}>()", itemType.ClassName)));
                 }
-                
+
             }
             else
             {
                 if (itemType.Flags.ContainsKey("Custom") && itemType.Flags["Custom"])
                 {
                     method.Statements.Add(
-                    new CodeSnippetExpression(string.Format("container.AddItem<{0}, {1}ViewModel, {1}Drawer>()", itemType.ClassName,itemType.Name))); 
+                    new CodeSnippetExpression(string.Format("container.AddItem<{0}, {1}ViewModel, {1}Drawer>()", itemType.ClassName, itemType.Name)));
                 }
                 else
                 {
                     method.Statements.Add(
-                    new CodeSnippetExpression(string.Format("container.AddItem<{0}>()", itemType.ClassName))); 
+                    new CodeSnippetExpression(string.Format("container.AddItem<{0}>()", itemType.ClassName)));
                 }
-                
-                
+
+
             }
-         
+
         }
-        foreach (var graphType in shellPluginNode.Project.NodeItems.OfType<ShellGraphTypeNode>().Where(p=>p.IsValid))
+        foreach (var graphType in shellPluginNode.Project.NodeItems.OfType<ShellGraphTypeNode>().Where(p => p.IsValid))
         {
             var varName = graphType.Name;
             method.Statements.Add(new CodeSnippetExpression(string.Format("{1} = container.AddGraph<{0}Graph, {0}Node>(\"{0}\")", graphType.Name, varName)));
@@ -555,7 +562,7 @@ public class PluginDesigner : DiagramPlugin
             method.Statements.Add(
               new CodeSnippetExpression(string.Format("{1} = container.AddNode<{0}Node>(\"{0}\")", nodeType.Name, varName)));
         }
-       
+
         if (nodeType["Inheritable"])
         {
             method.Statements.Add(new CodeSnippetExpression(string.Format("{0}.Inheritable()", varName)));
@@ -587,7 +594,7 @@ public class PluginDesigner : DiagramPlugin
         {
             var source = item.SourceItem;
             method.Statements.Add(new CodeSnippetExpression(string.Format("{0}.Output<{1},{2}>(\"{3}\", {4})",
-                varName,source.ReferenceType.ClassName,
+                varName, source.ReferenceType.ClassName,
                 source.ClassName,
                 item.Name,
                 source.Flags.ContainsKey("Multiple") && source.Flags["Multiple"] ? "true" : "false"
@@ -600,7 +607,7 @@ public class PluginDesigner : DiagramPlugin
             if (referenceTypeSection != null)
             {
                 method.Statements.Add(
-                    new CodeSnippetExpression(string.Format("{0}.ReferenceSection<{1},{3}>(\"{2}\",node=>node.Possible{2}, true)", varName, sectionItem.ReferenceType.ClassName, item.Name,sectionItem.ClassName))
+                    new CodeSnippetExpression(string.Format("{0}.ReferenceSection<{1},{3}>(\"{2}\",node=>node.Possible{2}, true)", varName, sectionItem.ReferenceType.ClassName, item.Name, sectionItem.ClassName))
                     );
             }
             else
@@ -608,7 +615,7 @@ public class PluginDesigner : DiagramPlugin
                 if (sectionItem.ReferenceType.Flags.ContainsKey("Typed") && sectionItem.ReferenceType.Flags["Typed"])
                 {
                     method.Statements.Add(
-                           new CodeSnippetExpression(string.Format("{0}.TypedSection<{1}>(\"{2}\", Get{3}SelectionCommand())", varName, sectionItem.ReferenceType.ClassName, item.Name,sectionItem.ReferenceType.Name))
+                           new CodeSnippetExpression(string.Format("{0}.TypedSection<{1}>(\"{2}\", Get{3}SelectionCommand())", varName, sectionItem.ReferenceType.ClassName, item.Name, sectionItem.ReferenceType.Name))
                        );
 
                 }
@@ -618,18 +625,23 @@ public class PluginDesigner : DiagramPlugin
                         new CodeSnippetExpression(string.Format("{0}.Section<{1}>(\"{2}\",node=>node.{2}, true)", varName, sectionItem.ReferenceType.ClassName, item.Name))
                     );
                 }
-                
+
             }
-            
+
         }
 
         foreach (var item in nodeType.Generators)
         {
-            if (item["Designer Only"])
+            if (item.IsDesignerOnly)
             {
                 method.Statements.Add(
                     new CodeSnippetExpression(string.Format("{0}Config = {1}.AddDesignerOnlyClass<{0}Generator>(\"{0}\")", item.Name,
                         varName)));
+
+                //AsDerivedEditorEditableClass("{0}Graph", "Plugin",
+//                p => new CodeTypeReference(string.Format("GenericGraphData<{0}Node>", p.Name)), "Graphs")
+  //          ;
+               // .method.Add("{0}Config.AsDerivedEditableClass()")
             }
             else
             {
@@ -637,6 +649,7 @@ public class PluginDesigner : DiagramPlugin
                     new CodeSnippetExpression(string.Format("{0}Config = {1}.AddEditableClass<{0}Generator>(\"{0}\")", item.Name,
                         varName)));
             }
+
         }
     }
 }

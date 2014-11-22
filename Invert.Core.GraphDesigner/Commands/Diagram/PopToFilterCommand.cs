@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Invert.Core.GraphDesigner;
 
-namespace Invert.uFrame.Editor.ElementDesigner
+namespace Invert.Core.GraphDesigner
 {
     public class PopToFilterCommand : ElementsDiagramToolbarCommand, IDynamicOptionsCommand
     {

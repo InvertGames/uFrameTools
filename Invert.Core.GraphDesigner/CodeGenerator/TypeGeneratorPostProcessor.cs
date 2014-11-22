@@ -1,7 +1,7 @@
 using System;
 using System.CodeDom;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     
     public abstract class TypeGeneratorPostProcessor<TCodeGenerator> : ITypeGeneratorPostProcessor where TCodeGenerator : CodeGenerator

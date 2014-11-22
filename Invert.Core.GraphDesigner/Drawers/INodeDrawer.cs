@@ -5,153 +5,156 @@ using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
-public abstract class Drawer : IDrawer, IItemDrawer
+namespace Invert.Core.GraphDesigner
 {
-
-    private object _dataContext;
-    private List<IDrawer> _children;
-
-    protected Drawer()
+    public abstract class Drawer : IDrawer, IItemDrawer
     {
 
-    }
+        private object _dataContext;
+        private List<IDrawer> _children;
 
-    public object DataContext
-    {
-        get { return _dataContext; }
-        set
+        protected Drawer()
         {
-            _dataContext = value;
-            if (_dataContext != null)
+
+        }
+
+        public object DataContext
+        {
+            get { return _dataContext; }
+            set
             {
-                DataContextChanged();
+                _dataContext = value;
+                if (_dataContext != null)
+                {
+                    DataContextChanged();
+                }
             }
         }
-    }
     
-    protected virtual void DataContextChanged()
-    {
-        
-    }
-
-    public GraphItemViewModel ViewModelObject
-    {
-        get { return DataContext as GraphItemViewModel; }
-        set { DataContext = value; }
-    }
-
-    public virtual Rect Bounds { get; set; }
-
-    public virtual bool IsSelected
-    {
-        get { return ViewModelObject.IsSelected; }
-        set { ViewModelObject.IsSelected = value; }
-    }
-
-    public bool Dirty { get; set; }
-    public string ShouldFocus { get; set; }
-
-    protected Drawer(GraphItemViewModel viewModelObject)
-    {
-        ViewModelObject = viewModelObject;
-    }
-
-    public virtual void Draw(float scale)
-    {
-        
-    }
-
-    public virtual void Refresh()
-    {
-        if (ViewModelObject == null)
+        protected virtual void DataContextChanged()
         {
-            Refresh(Vector3.zero);
+        
         }
-        else
+
+        public GraphItemViewModel ViewModelObject
         {
-            Refresh(Bounds.position);
+            get { return DataContext as GraphItemViewModel; }
+            set { DataContext = value; }
         }
+
+        public virtual Rect Bounds { get; set; }
+
+        public virtual bool IsSelected
+        {
+            get { return ViewModelObject.IsSelected; }
+            set { ViewModelObject.IsSelected = value; }
+        }
+
+        public bool Dirty { get; set; }
+        public string ShouldFocus { get; set; }
+
+        protected Drawer(GraphItemViewModel viewModelObject)
+        {
+            ViewModelObject = viewModelObject;
+        }
+
+        public virtual void Draw(float scale)
+        {
         
-    }
+        }
 
-    public virtual void Refresh(Vector2 position)
-    {
+        public virtual void Refresh()
+        {
+            if (ViewModelObject == null)
+            {
+                Refresh(Vector3.zero);
+            }
+            else
+            {
+                Refresh(Bounds.position);
+            }
         
-    }
+        }
 
-    public virtual int ZOrder { get { return 0; } }
+        public virtual void Refresh(Vector2 position)
+        {
+        
+        }
 
-    public List<IDrawer> Children
-    {
-        get { return _children ?? (_children = new List<IDrawer>()); }
-        set { _children = value; }
-    }
+        public virtual int ZOrder { get { return 0; } }
+
+        public List<IDrawer> Children
+        {
+            get { return _children ?? (_children = new List<IDrawer>()); }
+            set { _children = value; }
+        }
     
 
-    public virtual void OnDeselecting()
-    {
+        public virtual void OnDeselecting()
+        {
        
-    }
+        }
 
-    public virtual void OnSelecting()
-    {
+        public virtual void OnSelecting()
+        {
     
-    }
+        }
 
-    public virtual void OnDeselected()
-    {
+        public virtual void OnDeselected()
+        {
       
         
-    }
+        }
 
-    public virtual void OnSelected()
-    {
-    }
+        public virtual void OnSelected()
+        {
+        }
 
-    public virtual void OnMouseExit(MouseEvent e)
-    {
-        ViewModelObject.IsMouseOver = false;
-    }
+        public virtual void OnMouseExit(MouseEvent e)
+        {
+            ViewModelObject.IsMouseOver = false;
+        }
 
-    public virtual void OnMouseEnter(MouseEvent e)
-    {
-        ViewModelObject.IsMouseOver = true;
-    }
+        public virtual void OnMouseEnter(MouseEvent e)
+        {
+            ViewModelObject.IsMouseOver = true;
+        }
 
-    public virtual void OnMouseMove(MouseEvent e)
-    {
+        public virtual void OnMouseMove(MouseEvent e)
+        {
       
-    }
+        }
 
-    public virtual void OnDrag(MouseEvent e)
-    {
+        public virtual void OnDrag(MouseEvent e)
+        {
      
-    }
+        }
 
-    public virtual void OnMouseUp(MouseEvent e)
-    {
+        public virtual void OnMouseUp(MouseEvent e)
+        {
    
-    }
+        }
 
-    public virtual void OnMouseDoubleClick(MouseEvent mouseEvent)
-    {
+        public virtual void OnMouseDoubleClick(MouseEvent mouseEvent)
+        {
         
-    }
+        }
 
-    public virtual void OnRightClick(MouseEvent mouseEvent)
-    {
+        public virtual void OnRightClick(MouseEvent mouseEvent)
+        {
         
-    }
+        }
 
-    public virtual void OnMouseDown(MouseEvent mouseEvent)
-    {
+        public virtual void OnMouseDown(MouseEvent mouseEvent)
+        {
         
+        }
     }
-}
 
-public interface INodeDrawer : IDrawer
-{
-    ElementsDiagram Diagram { get; set; }
-    //Type CommandsType { get; }
-    DiagramNodeViewModel ViewModel { get; set; }
+    public interface INodeDrawer : IDrawer
+    {
+        ElementsDiagram Diagram { get; set; }
+        //Type CommandsType { get; }
+        DiagramNodeViewModel ViewModel { get; set; }
+    }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Text;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ElementDesigner;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor
-{
+namespace Invert.Core.GraphDesigner
+{ 
     public class KeyBinding<TCommandType> : IKeyBinding where TCommandType : class
     {
         public bool RequireShift { get; set; }

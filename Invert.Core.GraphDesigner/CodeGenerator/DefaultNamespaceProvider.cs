@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     [Serializable]
     public class DefaultNamespaceProvider : INamespaceProvider

@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using Invert.Common;
-using Invert.uFrame.Editor.ElementDesigner;
-using Invert.uFrame.Editor.ViewModels;
+using Invert.Core.GraphDesigner;
 using UnityEngine;
 
 public class StateMachineNodeDrawer : DiagramNodeDrawer<StateMachineNodeViewModel>

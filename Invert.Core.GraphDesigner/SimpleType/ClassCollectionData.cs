@@ -1,26 +1,29 @@
-public class ClassCollectionData : GenericTypedChildItem
+namespace Invert.Core.GraphDesigner
 {
-    public override string FullLabel
+    public class ClassCollectionData : GenericTypedChildItem
     {
-        get { return Name; }
-    }
-
-    public override string Label
-    {
-        get { return Name; }
-    }
-
-    public override string RelatedTypeName
-    {
-        get
+        public override string FullLabel
         {
-            return base.RelatedTypeName;
+            get { return Name; }
         }
-    }
 
-    public override void Remove(IDiagramNode diagramNode)
-    {
-        base.Remove(diagramNode);
+        public override string Label
+        {
+            get { return Name; }
+        }
 
+        public override string RelatedTypeName
+        {
+            get
+            {
+                return base.RelatedTypeName;
+            }
+        }
+
+        public override void Remove(IDiagramNode diagramNode)
+        {
+            base.Remove(diagramNode);
+
+        }
     }
 }

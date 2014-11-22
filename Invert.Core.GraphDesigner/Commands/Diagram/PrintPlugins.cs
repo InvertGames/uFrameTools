@@ -1,8 +1,9 @@
 using System;
 using System.Reflection;
+using Invert.Core.GraphDesigner;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ElementDesigner
+namespace Invert.Core.GraphDesigner
 {
     public class PrintPlugins : ElementsDiagramToolbarCommand
     {

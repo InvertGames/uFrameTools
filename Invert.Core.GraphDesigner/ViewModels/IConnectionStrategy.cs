@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public interface IConnectionStrategy
     {

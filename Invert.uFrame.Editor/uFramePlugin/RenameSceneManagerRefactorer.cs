@@ -1,3 +1,5 @@
+using Invert.Core.GraphDesigner;
+
 namespace Invert.uFrame.Editor.Refactoring
 {
     public class RenameSceneManagerRefactorer : RenameRefactorer

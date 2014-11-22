@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public abstract class AddItemCommand<TType> : AddNewCommand, IDiagramContextCommand
     {

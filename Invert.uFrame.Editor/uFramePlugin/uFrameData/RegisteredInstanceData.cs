@@ -1,5 +1,6 @@
 using System;
 using System.CodeDom;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 
 public class RegisteredInstanceData : DiagramNodeItem,IBindableTypedItem

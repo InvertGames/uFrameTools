@@ -1,7 +1,6 @@
-using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ViewModels;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class DeleteItemCommand : EditorCommand<ItemViewModel>, IDiagramNodeItemCommand, IKeyBindable
     {

@@ -1,23 +1,25 @@
 using System.CodeDom;
-using Invert.uFrame.Editor;
 
-public class EnumCodeGenerator : CodeGenerator
+namespace Invert.Core.GraphDesigner
 {
-    public EnumData EnumData { get; set; }
-
-    public override void Initialize(CodeFileGenerator fileGenerator)
+    public class EnumCodeGenerator : CodeGenerator
     {
-        base.Initialize(fileGenerator);
-        AddEnum(EnumData);
-    }
+        public EnumData EnumData { get; set; }
 
-    public void AddEnum(EnumData data)
-    {
-        var enumDecleration = new CodeTypeDeclaration(data.Name) {IsEnum = true};
-        foreach (var item in data.EnumItems)
+        public override void Initialize(CodeFileGenerator fileGenerator)
         {
-            enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, item.Name));
+            base.Initialize(fileGenerator);
+            AddEnum(EnumData);
         }
-        Namespace.Types.Add(enumDecleration);
+
+        public void AddEnum(EnumData data)
+        {
+            var enumDecleration = new CodeTypeDeclaration(data.Name) {IsEnum = true};
+            foreach (var item in data.EnumItems)
+            {
+                enumDecleration.Members.Add(new CodeMemberField(enumDecleration.Name, item.Name));
+            }
+            Namespace.Types.Add(enumDecleration);
+        }
     }
 }

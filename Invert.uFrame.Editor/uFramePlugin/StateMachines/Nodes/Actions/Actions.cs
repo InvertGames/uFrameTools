@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Invert.Common;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 

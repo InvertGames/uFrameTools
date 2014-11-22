@@ -1,16 +1,13 @@
 using System.ComponentModel;
 using Invert.Common;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ElementDesigner;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
-using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner.Unity
 {
     public class ElementsDesigner : EditorWindow, IGraphWindow
     {
@@ -114,6 +111,14 @@ namespace Invert.uFrame.Editor
             {
                 if (DiagramDrawer == null) return null;
                 return DiagramDrawer.DiagramViewModel;
+            }
+        }
+
+        public void RefreshContent()
+        {
+            if (DiagramDrawer != null)
+            {
+                DiagramDrawer.Refresh();
             }
         }
 
@@ -297,6 +302,14 @@ namespace Invert.uFrame.Editor
                 {
                     handler.OnMouseDoubleClick(MouseEvent);
                 }
+                if (IsFocused)
+                {
+                    if (CurrentProject != null)
+                    {
+                        Selection.activeObject = CurrentProject as UnityEngine.Object;
+                        EditorUtility.SetDirty(Selection.activeObject);
+                    }
+                }
                 LastMouseDownEvent = e;
             }
             if (e.rawType == EventType.MouseUp)
@@ -430,10 +443,12 @@ namespace Invert.uFrame.Editor
         }
 
         public SerializedObject SerializedGraph { get; set; }
+        public bool IsFocused { get; set; }
 
         public void OnFocus()
         {
             _drawEveryFrame = true;
+            IsFocused = true;
         }
 
         public void SwitchDiagram(IGraphData data)
@@ -631,12 +646,13 @@ namespace Invert.uFrame.Editor
         public void OnLostFocus()
         {
             InvertGraphEditor.DesignerWindow = this;
-            if (DiagramViewModel != null)
-                DiagramViewModel.DeselectAll();
+            //if (DiagramViewModel != null)
+            //    DiagramViewModel.DeselectAll();
 
             ModifierKeyStates = new ModifierKeyState();
             MouseEvent = null;
             _drawEveryFrame = false;
+            IsFocused = false;
         }
 
         public void Update()

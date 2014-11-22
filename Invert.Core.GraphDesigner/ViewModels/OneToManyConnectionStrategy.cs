@@ -1,7 +1,4 @@
-using System;
-using UnityEngine;
-
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     //public class OneToManyConnectionStrategy<TSource,TTarget> : 
     //    DefaultConnectionStrategy<TSource,TTarget>

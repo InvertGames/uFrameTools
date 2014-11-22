@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Invert.Core.GraphDesigner;
+using UnityEngine;
 
 public class NodeDesignerDrawer : GenericNodeDrawer<ShellNodeTypeNode, ShellNodeTypeViewModel>
 {

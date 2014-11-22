@@ -3,8 +3,8 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-namespace Invert.uFrame.CodeGen.CodeDomExtensions
+using Invert.Core.GraphDesigner;
+namespace Invert.uFrame.Editor
 {
     public static class ElementExtensions
     {

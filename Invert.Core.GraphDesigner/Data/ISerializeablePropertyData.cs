@@ -1,4 +1,5 @@
 using System;
+using Invert.Core.GraphDesigner;
 
 public interface ISerializeablePropertyData
 {

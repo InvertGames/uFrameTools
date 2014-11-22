@@ -1,4 +1,5 @@
 using Invert.Common;
+using Invert.Core.GraphDesigner;
 using UnityEngine;
 
 public class ModelClassNodeDrawer : ClassNodeDrawer

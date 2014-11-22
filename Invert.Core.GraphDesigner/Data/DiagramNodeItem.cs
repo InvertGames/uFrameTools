@@ -1,6 +1,6 @@
+using Invert.Core.GraphDesigner;
 using Invert.MVVM;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.Refactoring;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;

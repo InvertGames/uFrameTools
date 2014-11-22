@@ -1,3 +1,5 @@
+using Invert.Core.GraphDesigner;
+
 public class ShellChildItemTypeNode : GenericInheritableNode, IShellReferenceType {
     public IShellReferenceType ReferenceType
     {

@@ -1,14 +1,15 @@
-using System;
-
-public class DiagramSubItemGroup : Drawer
+namespace Invert.Core.GraphDesigner
 {
-    public SectionHeaderDrawer Header { get; set; }
-    public IDiagramNodeItem[] Items { get; set; }
+    public class DiagramSubItemGroup : Drawer
+    {
+        public SectionHeaderDrawer Header { get; set; }
+        public IDiagramNodeItem[] Items { get; set; }
 
-    //public GraphItemViewModel ViewModelObject { get; set; }
+        //public GraphItemViewModel ViewModelObject { get; set; }
 
-    //public void Draw(ElementsDiagram elementsDiagram)
-    //{
+        //public void Draw(ElementsDiagram elementsDiagram)
+        //{
         
-    //}
+        //}
+    }
 }

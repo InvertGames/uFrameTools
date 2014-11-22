@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Invert.Core.GraphDesigner;
 
 public interface INodeRepository 
 {

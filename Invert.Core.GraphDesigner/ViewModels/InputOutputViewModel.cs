@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public class InputOutputViewModel : GraphItemViewModel
     {

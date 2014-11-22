@@ -1,3 +1,4 @@
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ViewModels;
 
 namespace Invert.uFrame.Editor.ElementDesigner.Commands

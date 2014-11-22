@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Invert.Core.GraphDesigner.Settings;
 using Invert.Core.GraphDesigner.UnitySpecific;
 using Invert.uFrame;
 using Invert.uFrame.CodeGen.ClassNodeGenerators;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ElementDesigner;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
@@ -35,7 +32,7 @@ namespace Invert.Core.GraphDesigner
 
             container.RegisterInstance<IConnectionStrategy>(new InputOutputStrategy(),"InputOutputStrategy");
             container.RegisterDrawer<SectionHeaderViewModel,SectionHeaderDrawer>();
-
+            
 
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(int), Group = "", Label = "int", IsPrimitive = true }, "int");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(string), Group = "", Label = "string", IsPrimitive = true }, "string");

@@ -1,6 +1,7 @@
-using UnityEngine;
-
-public interface ISelectable : IGraphItem
+namespace Invert.Core.GraphDesigner
 {
-    bool IsSelected { get; set; }
+    public interface ISelectable : IGraphItem
+    {
+        bool IsSelected { get; set; }
+    }
 }

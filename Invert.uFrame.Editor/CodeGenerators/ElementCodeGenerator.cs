@@ -1,7 +1,7 @@
 using System.CodeDom;
 using System.Collections;
 using System.Linq;
-using Invert.uFrame.CodeGen.CodeDomExtensions;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 
 

@@ -1,3 +1,4 @@
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ViewModels;
 
 public class StateMachineTransitionViewModel : ItemViewModel<StateMachineTransition>

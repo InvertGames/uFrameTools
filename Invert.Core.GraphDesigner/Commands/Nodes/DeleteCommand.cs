@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
-using UnityEngine;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class DeleteCommand : EditorCommand<DiagramViewModel>, IDiagramNodeCommand,IKeyBindable
     {

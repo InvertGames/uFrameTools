@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public static class ViewModelExtensions
     {

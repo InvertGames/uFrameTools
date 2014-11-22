@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ElementDesigner;
 using UnityEditor;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner.Unity
 {
     public class ContextMenuUI : ICommandUI
     {

@@ -1,10 +1,13 @@
 using System.Reflection;
 
-public class ContextMenuItem
+namespace Invert.Core.GraphDesigner
 {
-    public MethodInfo ActionMethod { get; set; }
+    public class ContextMenuItem
+    {
+        public MethodInfo ActionMethod { get; set; }
 
-    public DiagramContextMenuAttribute Attribute { get; set; }
+        public DiagramContextMenuAttribute Attribute { get; set; }
 
-    public MethodInfo IsCheckedMethod { get; set; }
+        public MethodInfo IsCheckedMethod { get; set; }
+    }
 }

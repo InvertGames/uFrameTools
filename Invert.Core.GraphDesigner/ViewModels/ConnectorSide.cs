@@ -1,4 +1,4 @@
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public enum ConnectorSide
     {

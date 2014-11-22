@@ -1,70 +1,71 @@
 using System.Collections.Generic;
 using System.Linq;
-using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor;
 
-public class GenericInheritableNode : GenericNode, IInhertable
+namespace Invert.Core.GraphDesigner
 {
-
-    public GenericInheritableNode BaseNode
+    public class GenericInheritableNode : GenericNode, IInhertable
     {
-        get
-        {
-            return BaseReference.InputFrom<GenericInheritableNode>();
-        }
-        set
-        {
-            Diagram.ClearInput(BaseReference);
-            Diagram.AddConnection(value,BaseReference);
-        }
-    }
 
-    public IEnumerable<GenericInheritableNode> BaseNodes
-    {
-        get
+        public GenericInheritableNode BaseNode
         {
-            var baseType = BaseNode;
-            while (baseType != null)
+            get
             {
-                yield return baseType;
-                baseType = baseType.BaseNode;
+                return BaseReference.InputFrom<GenericInheritableNode>();
+            }
+            set
+            {
+                Diagram.ClearInput(BaseReference);
+                Diagram.AddConnection(value,BaseReference);
             }
         }
-    }
-    public IEnumerable<GenericInheritableNode> BaseNodesWithThis
-    {
-        get
+
+        public IEnumerable<GenericInheritableNode> BaseNodes
         {
-            yield return this;
-            var baseType = BaseNode;
-            while (baseType != null)
+            get
             {
-                yield return baseType;
-                baseType = baseType.BaseNode;
-            }
-        }
-    }
-    public IEnumerable<GenericInheritableNode> DerivedNodes
-    {
-        get
-        {
-            var derived = Project.NodeItems.OfType<GenericInheritableNode>().Where(p => p.BaseNode == this);
-            foreach (var derivedItem in derived)
-            {
-                yield return derivedItem;
-                foreach (var another in derivedItem.DerivedNodes)
+                var baseType = BaseNode;
+                while (baseType != null)
                 {
-                    yield return another;
+                    yield return baseType;
+                    baseType = baseType.BaseNode;
                 }
             }
         }
-    }
-    public BaseClassReference BaseReference
-    {
-        get { return GetConnectionReference<BaseClassReference>(); }
-    }
+        public IEnumerable<GenericInheritableNode> BaseNodesWithThis
+        {
+            get
+            {
+                yield return this;
+                var baseType = BaseNode;
+                while (baseType != null)
+                {
+                    yield return baseType;
+                    baseType = baseType.BaseNode;
+                }
+            }
+        }
+        public IEnumerable<GenericInheritableNode> DerivedNodes
+        {
+            get
+            {
+                var derived = Project.NodeItems.OfType<GenericInheritableNode>().Where(p => p.BaseNode == this);
+                foreach (var derivedItem in derived)
+                {
+                    yield return derivedItem;
+                    foreach (var another in derivedItem.DerivedNodes)
+                    {
+                        yield return another;
+                    }
+                }
+            }
+        }
+        public BaseClassReference BaseReference
+        {
+            get { return GetConnectionReference<BaseClassReference>(); }
+        }
 
     
 
 
+    }
 }

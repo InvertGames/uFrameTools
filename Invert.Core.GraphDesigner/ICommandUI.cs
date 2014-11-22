@@ -1,7 +1,7 @@
-using Invert.uFrame.Editor.ElementDesigner;
+using Invert.Core.GraphDesigner;
 
-namespace Invert.uFrame.Editor
-{
+namespace Invert.Core.GraphDesigner
+{ 
     public interface ICommandUI
     {
 

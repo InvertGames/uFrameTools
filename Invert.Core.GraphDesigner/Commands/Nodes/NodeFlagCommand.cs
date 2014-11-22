@@ -1,6 +1,6 @@
 using System;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class NodeFlagCommand<T> : EditorCommand<T>, IDiagramNodeCommand where T :DiagramNode
     {

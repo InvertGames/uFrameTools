@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Invert.uFrame;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     public abstract class DesignerGeneratorFactory
     {

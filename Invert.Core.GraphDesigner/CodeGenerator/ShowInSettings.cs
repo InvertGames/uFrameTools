@@ -1,6 +1,6 @@
 using System;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class ShowInSettings : Attribute

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 
 public class MissingNodeData : DiagramNode

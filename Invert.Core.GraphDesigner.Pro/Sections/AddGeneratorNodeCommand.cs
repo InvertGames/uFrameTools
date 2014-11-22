@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ElementDesigner;
 
 public class AddGeneratorNodeCommand : EditorCommand<ShellNodeTypeNode>, IDynamicOptionsCommand
 {

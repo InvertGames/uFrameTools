@@ -1,5 +1,5 @@
-namespace Invert.uFrame.Editor
-{
+namespace Invert.Core.GraphDesigner
+{ 
     public class ModifierKeyState
     {
         public bool Alt { get; set; }

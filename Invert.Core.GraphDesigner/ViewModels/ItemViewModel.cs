@@ -1,9 +1,7 @@
 using System.Linq;
-using Invert.uFrame.Editor.ElementDesigner;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public class ItemViewModel<TData> : ItemViewModel
         where TData : IDiagramNodeItem
@@ -34,6 +32,7 @@ namespace Invert.uFrame.Editor.ViewModels
     public class ItemViewModel : GraphItemViewModel
     {
         private IEditorCommand _removeItemCommand;
+        private bool _isEditable = true;
 
         public ItemViewModel(DiagramNodeViewModel nodeViewModel)
         {
@@ -82,7 +81,8 @@ namespace Invert.uFrame.Editor.ViewModels
 
         public virtual bool IsEditable
         {
-            get { return true; }
+            get { return _isEditable; }
+            set { _isEditable = value; }
         }
 
         public IEditorCommand RemoveItemCommand

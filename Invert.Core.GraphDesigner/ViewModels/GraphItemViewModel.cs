@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Invert.Core.GraphDesigner;
 using Invert.MVVM;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ViewModels
-{
+namespace Invert.Core.GraphDesigner
+{ 
     public abstract class GraphItemViewModel<TData> : GraphItemViewModel
     {
         public TData Data
@@ -92,13 +93,16 @@ namespace Invert.uFrame.Editor.ViewModels
                     ConnectorForType = InputConnectorType ?? DataObject.GetType(),
                     Side = ConnectorSide.Left,
                     SidePercentage = 0.5f,
-                    AllowMultiple = true
+                    AllowMultiple = true,
+                    Validator = InputValidator
                 });
             }
         }
         private ConnectorViewModel _outputConnector;
         private Rect _bounds;
         private Rect _connectorBounds;
+        private Func<IDiagramNodeItem, IDiagramNodeItem, bool> _inputValidator;
+        private Func<IDiagramNodeItem, IDiagramNodeItem, bool> _outputValidator;
 
         public virtual ConnectorViewModel OutputConnector
         {
@@ -113,7 +117,8 @@ namespace Invert.uFrame.Editor.ViewModels
                     ConnectorForType = OutputConnectorType ?? DataObject.GetType(),
                     Side = ConnectorSide.Right,
                     SidePercentage = 0.5f,
-                    AllowMultiple = true
+                    AllowMultiple = true,
+                    Validator = OutputValidator
                 });
             }
         }
@@ -134,6 +139,18 @@ namespace Invert.uFrame.Editor.ViewModels
                 return _connectorBounds;
             }
             set { _connectorBounds = value; }
+        }
+
+        public virtual  Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator
+        {
+            get { return _inputValidator; }
+            set { _inputValidator = value; }
+        }
+
+        public virtual Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator
+        {
+            get { return _outputValidator; }
+            set { _outputValidator = value; }
         }
 
         public virtual void GetConnectors(List<ConnectorViewModel> list)

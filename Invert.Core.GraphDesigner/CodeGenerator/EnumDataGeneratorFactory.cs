@@ -1,15 +1,17 @@
 using System.Collections.Generic;
-using Invert.uFrame.Editor;
 
-public class EnumDataGeneratorFactory : DesignerGeneratorFactory<EnumData>
+namespace Invert.Core.GraphDesigner
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, EnumData item)
+    public class EnumDataGeneratorFactory : DesignerGeneratorFactory<EnumData>
     {
-        yield return new EnumCodeGenerator()
+        public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, EnumData item)
         {
-            EnumData = item,
-            Filename = pathStrategy.GetEditableFilePath(item),
-        };
+            yield return new EnumCodeGenerator()
+            {
+                EnumData = item,
+                Filename = pathStrategy.GetEditableFilePath(item),
+            };
 
+        }
     }
 }

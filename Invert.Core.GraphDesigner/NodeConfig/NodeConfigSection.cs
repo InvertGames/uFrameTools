@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
-    public class NodeConfigSection<TNode> : NodeConfigSection where TNode : GenericNode
+    public class NodeConfigSection<TNode> : NodeConfigSectionBase where TNode : GenericNode
     {
+        public Action<IDiagramNodeItem> OnAdd { get; set; }
+
         public Func<TNode, IEnumerable<IGraphItem>> Selector
         {
             get
@@ -16,27 +18,5 @@ namespace Invert.uFrame.Editor
         }
 
        
-    }
-    public class NodeConfigSection
-    {
-        public bool IsProxy { get; set; }
-        private bool _allowAdding = true;
-
-        public string Name { get; set; }
-
-        public bool CopyLocal { get; set; }
-
-        public Type ChildType { get; set; }
-
-        public bool AllowAdding
-        {
-            get { return _allowAdding; }
-            set { _allowAdding = value; }
-        }
-
-        public Func<GenericNode, IEnumerable<IGraphItem>> GenericSelector { get; set; }
-        public Type ReferenceType { get; set; }
-        public bool AllowDuplicates { get; set; }
-        
     }
 }

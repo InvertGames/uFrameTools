@@ -1,11 +1,10 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 
-namespace Invert.uFrame.Editor
+namespace Invert.Core.GraphDesigner
 {
-    public class NodeChildGeneratorConfig
+    public class NodeChildGeneratorConfig<TNode> : NodeChildGeneratorConfigBase
     {
-        public virtual Type ChildType { get; set; }
-        public IMemberGenerator Generator { get; set; }
-
+        public Func<TNode, IEnumerable<IGraphItem>> Selector { get; set; }
     }
 }

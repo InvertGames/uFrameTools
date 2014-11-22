@@ -1,30 +1,35 @@
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ViewModels;
 
-public class ClassNodeViewModel : DiagramNodeViewModel<ClassNodeData>
+namespace Invert.Core.GraphDesigner
 {
-    public ClassNodeViewModel(ClassNodeData graphItemObject, DiagramViewModel diagramViewModel) : base(graphItemObject, diagramViewModel)
+    public class ClassNodeViewModel : DiagramNodeViewModel<ClassNodeData>
     {
-    }
-
-    public void AddProperty()
-    {
-        GraphItem.NodeItems.Add(new ClassPropertyData()
+        public ClassNodeViewModel(ClassNodeData graphItemObject, DiagramViewModel diagramViewModel)
+            : base(graphItemObject, diagramViewModel)
         {
-            Name = DiagramViewModel.CurrentRepository.GetUniqueName("NewClassProperty"),
-            Node = GraphItem,
-            RelatedType = typeof(string).Name
-            
-        });
-    }
+        }
 
-    public void AddCollection()
-    {
-        GraphItem.NodeItems.Add(new ClassCollectionData()
+        public void AddProperty()
         {
-            Name = DiagramViewModel.CurrentRepository.GetUniqueName("NewClassCollection"),
-            Node = GraphItem,
-            RelatedType = typeof(string).Name
+            GraphItem.NodeItems.Add(new ClassPropertyData()
+            {
+                Name = DiagramViewModel.CurrentRepository.GetUniqueName("NewClassProperty"),
+                Node = GraphItem,
+                RelatedType = typeof (string).Name
 
-        });
+            });
+        }
+
+        public void AddCollection()
+        {
+            GraphItem.NodeItems.Add(new ClassCollectionData()
+            {
+                Name = DiagramViewModel.CurrentRepository.GetUniqueName("NewClassCollection"),
+                Node = GraphItem,
+                RelatedType = typeof (string).Name
+
+            });
+        }
     }
 }

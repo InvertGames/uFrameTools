@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using Invert.uFrame.Editor.ElementDesigner;
+using Invert.Core.GraphDesigner;
+using Invert.uFrame.Editor.ViewModels;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public class EnumNodeViewModel : DiagramNodeViewModel<EnumData>
     {

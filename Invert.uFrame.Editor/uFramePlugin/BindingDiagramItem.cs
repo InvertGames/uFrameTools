@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor.ViewModels;
 

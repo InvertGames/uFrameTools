@@ -1,4 +1,5 @@
 using System.Linq;
+using Invert.Core.GraphDesigner;
 
 public class StateMachineTransition : DiagramNodeItem
 {

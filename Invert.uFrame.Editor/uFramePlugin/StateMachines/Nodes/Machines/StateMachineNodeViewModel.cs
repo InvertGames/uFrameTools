@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;

@@ -1,8 +1,6 @@
-using System;
-using System.Diagnostics;
 using Invert.uFrame.Editor.ViewModels;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class AddEnumItemCommand : EditorCommand<EnumNodeViewModel>
     {

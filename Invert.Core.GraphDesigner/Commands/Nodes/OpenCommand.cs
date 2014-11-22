@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class OpenCommand : EditorCommand<DiagramNodeViewModel>, IDynamicOptionsCommand, IDiagramNodeCommand
     {

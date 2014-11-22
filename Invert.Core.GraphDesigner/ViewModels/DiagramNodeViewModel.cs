@@ -1,20 +1,14 @@
 using System;
-using System.CodeDom.Compiler;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using Invert.Common;
-using Invert.Core;
-using Invert.Core.GraphDesigner;
-using Invert.MVVM;
-using Invert.uFrame.Editor.ElementDesigner;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
 
     public abstract class DiagramNodeViewModel<TData> : DiagramNodeViewModel where TData : IDiagramNode

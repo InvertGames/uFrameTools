@@ -1,3 +1,5 @@
+using Invert.Core.GraphDesigner;
+
 public class ShellNodeTypeReferenceSection : ShellNodeTypeSection
 {
     [JsonProperty]

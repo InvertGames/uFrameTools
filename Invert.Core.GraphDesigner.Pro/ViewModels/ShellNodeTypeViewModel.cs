@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ElementDesigner;
-using Invert.uFrame.Editor.ViewModels;
 
 public class ShellNodeTypeViewModel : GenericNodeViewModel<ShellNodeTypeNode>
 {

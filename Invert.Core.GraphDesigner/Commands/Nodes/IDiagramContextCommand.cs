@@ -1,4 +1,4 @@
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public interface IDiagramContextCommand
     {

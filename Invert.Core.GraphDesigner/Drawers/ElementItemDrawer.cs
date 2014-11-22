@@ -1,59 +1,58 @@
 using Invert.Common;
-using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ElementDesigner;
 using Invert.uFrame.Editor.ViewModels;
-using UnityEditor;
 using UnityEngine;
 
-public class ElementItemDrawer : ItemDrawer
+namespace Invert.Core.GraphDesigner
 {
-    public TypedItemViewModel ElementItemViewModel
+    public class ElementItemDrawer : ItemDrawer
     {
-        get
+        public TypedItemViewModel ElementItemViewModel
         {
-            return ViewModelObject as TypedItemViewModel;
+            get
+            {
+                return ViewModelObject as TypedItemViewModel;
+            }
         }
-    }
-    public ElementItemDrawer(TypedItemViewModel viewModel)
-    {
-        ViewModelObject = viewModel;
-    }
-
-    public override void Refresh(Vector2 position)
-    {
-        base.Refresh(position);
-        var nameSize = TextStyle.CalcSize(new GUIContent(ElementItemViewModel.Name));
-        var typeSize = TextStyle.CalcSize(new GUIContent(ElementItemViewModel.TypeLabel));
-
-        Bounds = new Rect(position.x, position.y, 5 + nameSize.x + 5 + typeSize.x + 10, 18);
-    }
-
-    public override void DrawOption()
-    {
-        base.DrawOption();
-
-        if (GUILayout.Button(ElementItemViewModel.TypeLabel + (ElementItemViewModel.IsMouseOver ? "..." : string.Empty),ElementDesignerStyles.ClearItemStyle))
+        public ElementItemDrawer(TypedItemViewModel viewModel)
         {
-            ElementItemViewModel.NodeViewModel.IsSelected = true;
-            OptionClicked();
+            ViewModelObject = viewModel;
         }
-    }
 
-    public virtual void OptionClicked()
-    {
-        var commandName = ViewModelObject.DataObject.GetType().Name.Replace("Data","") + "TypeSelection";
+        public override void Refresh(Vector2 position)
+        {
+            base.Refresh(position);
+            var nameSize = TextStyle.CalcSize(new GUIContent(ElementItemViewModel.Name));
+            var typeSize = TextStyle.CalcSize(new GUIContent(ElementItemViewModel.TypeLabel));
 
-        var command = InvertGraphEditor.Container.Resolve<IEditorCommand>(commandName);
-        ElementItemViewModel.Select();
+            Bounds = new Rect(position.x, position.y, 5 + nameSize.x + 5 + typeSize.x + 10, 18);
+        }
 
-        InvertGraphEditor.ExecuteCommand(command);
-    }
+        public override void DrawOption()
+        {
+            base.DrawOption();
 
-    public override void Draw(float scale)
-    {
+            if (GUILayout.Button(ElementItemViewModel.TypeLabel + (ElementItemViewModel.IsMouseOver ? "..." : string.Empty),ElementDesignerStyles.ClearItemStyle))
+            {
+                ElementItemViewModel.NodeViewModel.IsSelected = true;
+                OptionClicked();
+            }
+        }
 
-        base.Draw(scale);
+        public virtual void OptionClicked()
+        {
+            var commandName = ViewModelObject.DataObject.GetType().Name.Replace("Data","") + "TypeSelection";
+
+            var command = InvertGraphEditor.Container.Resolve<IEditorCommand>(commandName);
+            ElementItemViewModel.Select();
+
+            InvertGraphEditor.ExecuteCommand(command);
+        }
+
+        public override void Draw(float scale)
+        {
+
+            base.Draw(scale);
        
+        }
     }
 }

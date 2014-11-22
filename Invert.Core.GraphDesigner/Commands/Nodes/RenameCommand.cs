@@ -1,6 +1,6 @@
 using Invert.uFrame.Editor.ViewModels;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class RenameCommand : EditorCommand<DiagramNodeViewModel>, IDiagramNodeCommand
     {

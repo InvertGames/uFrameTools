@@ -1,9 +1,9 @@
 using System;
-using Invert.uFrame.Editor.ElementDesigner;
+using Invert.Core.GraphDesigner;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor
-{
+namespace Invert.Core.GraphDesigner
+{ 
     public interface IKeyBinding
     {
         bool RequireShift { get; set; }

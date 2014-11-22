@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Core.GraphDesigner;
 
 namespace Invert.uFrame.Editor.ViewModels
 {
@@ -23,7 +24,7 @@ namespace Invert.uFrame.Editor.ViewModels
                 return this.GraphItem.CurrentType;
             }
         }
-        public override Invert.uFrame.Editor.ViewModels.ConnectorViewModel InputConnector
+        public override ConnectorViewModel InputConnector
         {
             get
             {

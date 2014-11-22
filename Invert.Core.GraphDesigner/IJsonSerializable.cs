@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Invert.Core;
+using Invert.uFrame.Editor;
 
-namespace Invert.uFrame.Editor
-{
+namespace Invert.Core.GraphDesigner
+{ 
     public interface IJsonObject
     {
         void Serialize(JSONClass cls);

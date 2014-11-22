@@ -1,18 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
-namespace Invert.uFrame.Editor.ViewModels
+namespace Invert.Core.GraphDesigner
 {
     public abstract class DefaultConnectionStrategy<TOutputData, TInputData> : DefaultConnectionStrategy
-        where TOutputData : class
-        where TInputData : class
+        where TOutputData : IGraphItem
+        where TInputData : IGraphItem
     {
 
 
         public abstract Color ConnectionColor { get; }
         public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
+            if (a.Validator != null)
+                if (!a.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
+                    return null;
+            if (b.Validator != null)
+                if (!b.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
+                    return null;
             return TryConnect<TOutputData, TInputData>(diagramViewModel, a, b, Apply, CanConnect);
         }
 
@@ -24,15 +32,20 @@ namespace Invert.uFrame.Editor.ViewModels
         public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
         {
             base.GetConnections(connections, info);
-            connections.AddRange(info.ConnectionsByData<TOutputData,TInputData>(this));
+            connections.AddRange(info.ConnectionsByData(this));
             //foreach (var item in info.DiagramData.Connections.Cont)
         }
 
-        public abstract bool IsConnected(TOutputData output, TInputData input);
+        public virtual bool IsConnected(TOutputData output, TInputData input)
+        {
+            return
+               InvertGraphEditor.CurrentProject.Connections.Any(
+                   p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
+        }
         protected override void ApplyConnection(IGraphData graph, IGraphItem output, IGraphItem input)
         {
             base.ApplyConnection(graph, output, input);
-            ApplyConnection(graph, output as TOutputData, input as TInputData);
+            ApplyConnection(graph, (TOutputData)output, (TInputData)input);
         }
 
         protected virtual void ApplyConnection(IGraphData graph, TOutputData output, TInputData input)
@@ -69,38 +82,44 @@ namespace Invert.uFrame.Editor.ViewModels
             {
                 if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
                 {
-                    if (a.ConnectorForType != null && b.ConnectorForType != null)
-                    {
-                        if (b.ConnectorForType.IsAssignableFrom(a.ConnectorForType))
-                        {
+                    //if (a.ConnectorForType != null && b.ConnectorForType != null)
+                    //{
+                        //if (b.ConnectorForType.IsAssignableFrom(a.ConnectorForType))
+                        //{
                             if (canConnect != null &&
-                       !canConnect((TOutput)a.ConnectorFor.DataObject, (TInput)b.ConnectorFor.DataObject))
+                                !canConnect((TOutput)a.ConnectorFor.DataObject, (TInput)b.ConnectorFor.DataObject))
                                 return null;
 
-                            return new ConnectionViewModel(diagramViewModel)
-                            {
-                                IsStateLink = this.IsStateLink,
-                                ConnectorA = a,
-                                ConnectorB = b,
-                                Apply = apply
-                            };
-                        }
-                        return null;
-                    }
-                    if (canConnect != null &&
-                        !canConnect((TOutput) a.ConnectorFor.DataObject, (TInput) b.ConnectorFor.DataObject))
-                        return null;
+                            return CreateConnection<TOutput, TInput>(diagramViewModel, a, b, apply);
+                        //}
+                        //return null;
+                    //}
+                    //if (canConnect != null &&
+                    //    !canConnect((TOutput) a.ConnectorFor.DataObject, (TInput) b.ConnectorFor.DataObject))
+                    //    return null;
 
-                    return new ConnectionViewModel(diagramViewModel)
-                    {
-                        IsStateLink = this.IsStateLink,
-                        ConnectorA = a,
-                        ConnectorB = b,
-                        Apply = apply
-                    };
+                    //return new ConnectionViewModel(diagramViewModel)
+                    //{
+                    //    IsStateLink = this.IsStateLink,
+                    //    ConnectorA = a,
+                    //    ConnectorB = b,
+                    //    Apply = apply
+                    //};
                 }
             }
             return null;
+        }
+
+        protected ConnectionViewModel CreateConnection<TOutput, TInput>(DiagramViewModel diagramViewModel, ConnectorViewModel a,
+            ConnectorViewModel b, Action<ConnectionViewModel> apply)
+        {
+            return new ConnectionViewModel(diagramViewModel)
+            {
+                IsStateLink = this.IsStateLink,
+                ConnectorA = a,
+                ConnectorB = b,
+                Apply = apply
+            };
         }
 
         public virtual void Apply(ConnectionViewModel connectionViewModel)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Core.GraphDesigner;
 
 public class ShellNodeTypeNode : GenericInheritableNode, IShellReferenceType
 {

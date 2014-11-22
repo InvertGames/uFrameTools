@@ -1,4 +1,6 @@
-namespace Invert.uFrame.Editor.ViewModels
+using Invert.uFrame.Editor.ViewModels;
+
+namespace Invert.Core.GraphDesigner
 {
     public class EnumItemViewModel : ItemViewModel<EnumItem>
     {

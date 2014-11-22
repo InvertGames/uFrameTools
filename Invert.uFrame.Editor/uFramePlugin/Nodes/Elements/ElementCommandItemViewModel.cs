@@ -1,3 +1,5 @@
+using Invert.Core.GraphDesigner;
+
 namespace Invert.uFrame.Editor.ViewModels
 {
     public class ElementCommandItemViewModel : TypedItemViewModel<ViewModelCommandData>
@@ -16,7 +18,7 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
 
-        public override Invert.uFrame.Editor.ViewModels.ConnectorViewModel InputConnector
+        public override ConnectorViewModel InputConnector
         {
             get { return null; }
         }

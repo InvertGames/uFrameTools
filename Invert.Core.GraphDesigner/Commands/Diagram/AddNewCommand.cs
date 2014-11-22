@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
-
-namespace Invert.uFrame.Editor.ElementDesigner
+namespace Invert.Core.GraphDesigner
 {
     public class AddNewCommand : ElementsDiagramToolbarCommand, IParentCommand,IDiagramContextCommand
     {

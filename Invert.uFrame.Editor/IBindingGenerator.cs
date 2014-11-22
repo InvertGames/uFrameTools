@@ -1,4 +1,5 @@
 using System.CodeDom;
+using Invert.Core.GraphDesigner;
 
 namespace Invert.uFrame.Code.Bindings
 {

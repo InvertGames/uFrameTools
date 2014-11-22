@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Invert.Core.GraphDesigner.Settings;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ElementDesigner;
 
 namespace Invert.Core.GraphDesigner.Unity
 {

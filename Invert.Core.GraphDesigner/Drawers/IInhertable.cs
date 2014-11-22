@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 
-public interface IInhertable : IDiagramNode
+namespace Invert.Core.GraphDesigner
 {
+    public interface IInhertable : IDiagramNode
+    {
 
-    GenericInheritableNode BaseNode { get; }
+        GenericInheritableNode BaseNode { get; }
 
-    IEnumerable<GenericInheritableNode> BaseNodes { get; }
-    IEnumerable<GenericInheritableNode> DerivedNodes { get; }
+        IEnumerable<GenericInheritableNode> BaseNodes { get; }
+        IEnumerable<GenericInheritableNode> DerivedNodes { get; }
+    }
 }

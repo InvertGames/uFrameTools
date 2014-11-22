@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Invert.uFrame.Editor.ElementDesigner
+namespace Invert.Core.GraphDesigner
 {
     public abstract class ContextMenuCommand<TFor> : EditorCommand<TFor>
     {

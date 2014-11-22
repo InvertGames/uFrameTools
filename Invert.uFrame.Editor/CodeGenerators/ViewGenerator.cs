@@ -2,6 +2,7 @@ using System.CodeDom;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using UnityEngine;
 

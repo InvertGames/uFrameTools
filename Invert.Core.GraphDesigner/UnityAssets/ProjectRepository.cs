@@ -7,8 +7,6 @@ using Invert.Common.UI;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ElementDesigner;
-using Invert.uFrame.Editor.Refactoring;
 using UnityEditor;
 using UnityEngine;
 using Object = System.Object;

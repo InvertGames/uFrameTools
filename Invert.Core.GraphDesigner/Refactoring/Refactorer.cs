@@ -1,4 +1,4 @@
-namespace Invert.uFrame.Editor.Refactoring
+namespace Invert.Core.GraphDesigner
 {
     public abstract class Refactorer
     {

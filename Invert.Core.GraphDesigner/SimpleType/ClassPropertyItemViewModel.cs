@@ -1,14 +1,19 @@
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor.ViewModels;
 
-public class ClassPropertyItemViewModel : TypedItemViewModel<ClassPropertyData>
+namespace Invert.Core.GraphDesigner
 {
-
-    public ClassPropertyItemViewModel(ClassPropertyData viewModelItem, DiagramNodeViewModel nodeViewModel) : base(viewModelItem, nodeViewModel)
+    public class ClassPropertyItemViewModel : TypedItemViewModel<ClassPropertyData>
     {
-    }
 
-    public override string TypeLabel
-    {
-        get { return Data.RelatedTypeName; }
+        public ClassPropertyItemViewModel(ClassPropertyData viewModelItem, DiagramNodeViewModel nodeViewModel)
+            : base(viewModelItem, nodeViewModel)
+        {
+        }
+
+        public override string TypeLabel
+        {
+            get { return Data.RelatedTypeName; }
+        }
     }
 }

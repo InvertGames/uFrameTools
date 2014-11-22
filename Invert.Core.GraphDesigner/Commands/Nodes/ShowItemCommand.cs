@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using Invert.Core.GraphDesigner;
-using UnityEngine;
 
-namespace Invert.uFrame.Editor.ElementDesigner.Commands
+namespace Invert.Core.GraphDesigner
 {
     public class ShowItemCommand : EditorCommand<DiagramViewModel>,
         IToolbarCommand, IDiagramContextCommand, IDynamicOptionsCommand

@@ -1,4 +1,7 @@
-public interface INamespaceProvider
+namespace Invert.Core.GraphDesigner
 {
-    string GetNamespace(IDiagramNode node);
+    public interface INamespaceProvider
+    {
+        string GetNamespace(IDiagramNode node);
+    }
 }

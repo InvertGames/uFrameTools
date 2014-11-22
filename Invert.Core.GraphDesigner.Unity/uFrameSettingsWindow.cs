@@ -3,8 +3,6 @@ using Invert.Common;
 using Invert.Common.UI;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ElementDesigner;
 using UnityEditor;
 using UnityEngine;
 

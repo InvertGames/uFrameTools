@@ -2,6 +2,7 @@ using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.IO;
+using Invert.Core.GraphDesigner;
 
 namespace Invert.uFrame.Editor.Refactoring
 {
