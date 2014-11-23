@@ -99,7 +99,8 @@ public class PluginDesigner : DiagramPlugin
             node => node.InputFrom<ShellNodeGeneratorsSlot>().Node.ContainedItems.OfType<GenericReferenceItem>(), true,
             false
             );
-        shellCodeGeneratorConfig.Section("Overrides",
+       
+        var sec = shellCodeGeneratorConfig.Section("Overrides",
             node =>
                 node.BaseType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                     .Where(p => p.IsVirtual || p.IsAbstract)
@@ -108,7 +109,7 @@ public class PluginDesigner : DiagramPlugin
                         Name = p.Name
                     }), true, p => { }
             );
-
+        sec.HasPredefinedOptions = true;
         //container.Connectable<ShellNodeSectionsSlot, ShellGeneratorTypeNode>(Color.blue, true);
 
         container.RegisterDrawer<ShellMemberNodeViewModel, ShellMemberNodeDrawer>();
@@ -122,7 +123,15 @@ public class PluginDesigner : DiagramPlugin
             container.RegisterInstance<NodeConfigBase>(config, item.Name);
             config.Name = item.Name.Replace("Shell", "").Replace("Node", "");
             config.Tags.Add(config.Name);
-            config.Input<ShellMemberGeneratorSectionReference, ShellMemberGeneratorInputSlot>("For",false);
+            if (item.GetCustomAttributes(typeof (SingleMemberGenerator), true).Length > 0)
+            {
+                config.Input<ShellGeneratorTypeNode, ShellMemberGeneratorInputSlot>("For", false);
+            }
+            else
+            {
+                config.Input<ShellMemberGeneratorSectionReference, ShellMemberGeneratorInputSlot>("For", false);
+            }
+            
 
             shellCodeGeneratorConfig.HasSubNode(item);
         }
@@ -272,7 +281,7 @@ public class PluginDesigner : DiagramPlugin
 
     private static void ConfigureCodeGeneratorGenerators(NodeConfig<ShellGeneratorTypeNode> shellCodeGeneratorConfig)
     {
-        shellCodeGeneratorConfig.AddEditableClass<ShellCodeGeneratorNodeGenerator>("Plugin")
+        shellCodeGeneratorConfig.AddEditableClass<ShellGeneratorTypeNodeGenerator>("Plugin")
             .AsDerivedEditorEditableClass("{0}Generator", "Plugin",
                 _ => new CodeTypeReference(string.Format("GenericNodeGenerator<{0}>", _.GeneratorFor.ClassName)),
                 "Generators")

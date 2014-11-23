@@ -8,7 +8,7 @@ namespace Invert.Core.GraphDesigner
         private CodeAttributeDeclarationCollection _customAttributes;
 
    
-        public MemberGeneratorLocation Location { get; set; }
+      
         public CodeTypeMember Create(CodeTypeDeclaration decleration, object data, bool isDesignerFile)
         {
             return Create(decleration, (TData) data, isDesignerFile);

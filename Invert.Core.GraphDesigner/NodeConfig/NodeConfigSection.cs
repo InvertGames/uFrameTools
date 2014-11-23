@@ -17,6 +17,6 @@ namespace Invert.Core.GraphDesigner
             set { GenericSelector = p => value(p as TNode); }
         }
 
-       
+        public bool HasPredefinedOptions { get; set; }
     }
 }

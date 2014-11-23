@@ -79,8 +79,12 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsInput))
             {
-                if (typeof(GenericNode).IsAssignableFrom(inputConfig.SourceType) && !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType)) continue;
-
+                //if (typeof(GenericNode).IsAssignableFrom(inputConfig.SourceType) &&
+                //  !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType))
+                //{
+                //    if (DiagramViewModel.CurrentRepository.CurrentFilter != inputConfig.SourceType)
+                //        continue;
+                //}
                 var header = new InputOutputViewModel()
                 {
                     Name = inputConfig.Name.GetValue(GraphItem),
@@ -100,7 +104,7 @@ namespace Invert.Core.GraphDesigner
                 if (typeof(GenericNode).IsAssignableFrom(inputConfig.SourceType) &&
                     !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType))
                 {
-                    // Debug.Log("Skipping Output: " + inputConfig.SourceType.Name);
+                    //if (DiagramViewModel.CurrentRepository.CurrentFilter != inputConfig.SourceType)
                     continue;
                 }
 
@@ -169,7 +173,7 @@ namespace Invert.Core.GraphDesigner
                                 }
                                 else
                                 {
-                                    if (section1.Selector != null)
+                                    if (section1.Selector != null && section1.HasPredefinedOptions)
                                     {
                                         InvertGraphEditor.WindowManager.InitItemWindow(section1.Selector(GraphItem),
                                             (selected) =>
@@ -199,6 +203,7 @@ namespace Invert.Core.GraphDesigner
                                         node.GraphItem.Project.AddItem(item);
                                         item.IsEditing = true;
                                         OnAdd(section1, item);
+                      
                                     }
 
                                   
@@ -249,7 +254,7 @@ namespace Invert.Core.GraphDesigner
                             var vm = GetDataViewModel(item) as ItemViewModel;
                             vm.InputValidator = section1.InputValidator;
                             vm.OutputValidator = section1.OutputValidator;
-                            if (section1.Selector != null && section1.ReferenceType == null)
+                            if (section1.HasPredefinedOptions)
                             {
                                 vm.IsEditable = false;
                             }

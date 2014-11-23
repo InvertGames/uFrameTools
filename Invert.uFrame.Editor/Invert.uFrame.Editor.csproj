@@ -48,6 +48,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Class1.cs" />
     <Compile Include="CodeGenerators\BindingGenerator.cs" />
     <Compile Include="CodeGenerators\CollectionBindingGenerator.cs" />
     <Compile Include="CodeGenerators\CollectionItemAddedBindingGenerator.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="ForceUpgradeDiagram.cs" />
     <Compile Include="IBindingGenerator.cs" />
     <Compile Include="JsonElementDesignerData.cs" />
+    <Compile Include="MemberGenerator\Class1.cs" />
     <Compile Include="SubSystemPathStrategy.cs" />
     <Compile Include="uFrameCorePlugin.cs" />
     <Compile Include="OldConnectionStrategies\ComputedPropertyInputsConnectionStrategy.cs" />

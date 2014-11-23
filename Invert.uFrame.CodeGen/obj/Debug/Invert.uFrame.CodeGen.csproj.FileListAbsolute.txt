@@ -56,3 +56,5 @@ D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.Core.Grap
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\obj\Debug\Invert.uFrame.CodeGen.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\obj\Debug\Invert.uFrame.CodeGen.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\obj\Debug\Invert.uFrame.CodeGen.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.Attributes.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.CodeGen\bin\Debug\Invert.Attributes.pdb

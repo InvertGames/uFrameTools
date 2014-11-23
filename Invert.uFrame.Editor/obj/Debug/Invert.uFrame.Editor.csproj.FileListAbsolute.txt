@@ -59,3 +59,5 @@ D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.MVVM.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Attributes.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Attributes.pdb

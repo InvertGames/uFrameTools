@@ -6,6 +6,7 @@ using Invert.uFrame.Editor;
 
 public class ShellCodeGeneratorNodeGenerator : GenericNodeGenerator<ShellGeneratorTypeNode>
 {
+
     protected override void InitializeDesignerFile()
     {
         base.InitializeDesignerFile();
@@ -30,10 +31,17 @@ public class ShellCodeGeneratorNodeGenerator : GenericNodeGenerator<ShellGenerat
                 throw new Exception(string.Format("{0} on {1} Node is not connected to a generator", memberGeneratorReference.Name, memberGeneratorReference.Node.Name));
             }
 
-            var reference = generatorNode.CreateGeneratorExpression(method.Statements);
+            var reference = generatorNode.CreateGeneratorExpression(Decleration, method.Statements);
             method.Add("AddMembers(_=>_.{0}, {1})", itemReference.Name, reference.VariableName);
 
         }
+
+        foreach (var item in Data.OutputsTo<ShellMemberGeneratorInputSlot>().Select(p=>p.Node as ShellMemberGeneratorNode))
+        {
+            var reference = item.CreateGeneratorExpression(Decleration, method.Statements);
+            method.Add("AddMember({0})", reference.VariableName);
+        }
+
         Decleration.Members.Add(method);
     }
 

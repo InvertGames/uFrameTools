@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Schema;
 using Invert.Core;
 using Invert.uFrame.Editor;
 using UnityEngine;
@@ -15,9 +16,14 @@ namespace Invert.Core.GraphDesigner
 
     }
     [AttributeUsage(AttributeTargets.Property)]
-    public class JsonProperty : Attribute
+    public class JsonProperty : GeneratorProperty
     {
 
+    }
+
+    public class GeneratorProperty : Attribute
+    {
+        
     }
     [AttributeUsage(AttributeTargets.Property)]
     public class NodeProperty : InspectorProperty
@@ -72,7 +78,11 @@ namespace Invert.Core.GraphDesigner
                 return InvertApplication.Container.Resolve<NodeConfigBase>(this.GetType().Name);
             }
         }
-
+        [GeneratorProperty]
+        public override string Name {
+            get { return base.Name; }
+            set { base.Name = value; }
+        }
         //public List<string> ConnectedGraphItemIds
         //{
         //    get { return _connectedGraphItemIds; }
@@ -117,7 +127,7 @@ namespace Invert.Core.GraphDesigner
             get
             {
 
-                foreach (var connectionData in Project.Connections)
+                foreach (var connectionData in Node.Project.Connections)
                 {
                     if (connectionData.InputIdentifier == this.Identifier)
                     {
@@ -130,10 +140,11 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                foreach (var connectionData in Project.Connections)
+                foreach (var connectionData in Node.Project.Connections)
                 {
-                    if (connectionData.InputIdentifier == this.Identifier)
+                    if (connectionData.OutputIdentifier == this.Identifier)
                     {
+
                         yield return connectionData;
                     }
                 }
@@ -217,6 +228,10 @@ namespace Invert.Core.GraphDesigner
                 else if (propertyType == typeof(Quaternion))
                 {
                     property.SetValue(this, cls[propertyName].AsQuaternion, null);
+                }
+                else if (propertyType == typeof(Color))
+                {
+                    property.SetValue(this, (Color)cls[propertyName].AsVector4, null);
                 }
             }
 
@@ -327,17 +342,30 @@ namespace Invert.Core.GraphDesigner
                     {
                         cls.Add(propertyName, new JSONData((double)value));
                     }
+                    else if (propertyType == typeof(Color))
+                    {
+                        var vCls = new JSONClass();
+                        var color = (Color) value;
+                        vCls.AsVector4 = new Vector4(color.r,color.g,color.b,color.a);
+                        cls.Add(propertyName, vCls);
+                    }
                     else if (propertyType == typeof(Vector2))
                     {
-                        cls.Add(propertyName, new JSONData((Vector2)value));
+                        var vCls = new JSONClass();
+                        vCls.AsVector2 = (Vector2)value;
+                        cls.Add(propertyName, vCls);
                     }
                     else if (propertyType == typeof(Vector3))
                     {
-                        cls.Add(propertyName, new JSONData((Vector3)value));
+                        var vCls = new JSONClass();
+                        vCls.AsVector3 = (Vector3)value;
+                        cls.Add(propertyName, vCls);
                     }
                     else if (propertyType == typeof(Quaternion))
                     {
-                        cls.Add(propertyName, new JSONData((Quaternion)value));
+                        var vCls = new JSONClass();
+                        vCls.AsQuaternion = (Quaternion)value;
+                        cls.Add(propertyName, vCls);
                     }
                     else
                     {

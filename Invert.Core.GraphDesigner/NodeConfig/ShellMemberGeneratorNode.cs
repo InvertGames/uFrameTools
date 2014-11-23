@@ -3,10 +3,19 @@ using System.CodeDom;
 
 namespace Invert.Core.GraphDesigner
 {
+    [AttributeUsage(AttributeTargets.Class)]
+    public class SingleMemberGenerator : Attribute
+    {
+        
+    }
+    public class ShellMemberGeneratorInputSlot : GenericSlot
+    {
+
+    }
     public abstract class ShellMemberGeneratorNode : GenericNode, IMemberGenerator
     {
         private MemberGeneratorLocation _memberLocation;
-
+        
         [NodeProperty]
         public MemberGeneratorLocation MemberLocation
         {
@@ -14,11 +23,16 @@ namespace Invert.Core.GraphDesigner
             set { _memberLocation = value; }
         }
 
+        public ShellMemberGeneratorInputSlot ForInputSlot
+        {
+            get { return GetConnectionReference<ShellMemberGeneratorInputSlot>(); }
+        }
+        
         public abstract CodeTypeMember Create(CodeTypeDeclaration decleration, object data, bool isDesignerFile);
 
-        public CodeVariableReferenceExpression CreateGeneratorExpression(CodeStatementCollection collection)
+        public virtual CodeVariableReferenceExpression CreateGeneratorExpression(CodeTypeDeclaration decleration, CodeStatementCollection collection)
         {
-            var properties = NodeFor.GetPropertiesByAttribute<NodeProperty>();
+            var properties = NodeFor.GetPropertiesByAttribute<GeneratorProperty>();
             var expression = new CodeObjectCreateExpression(NodeFor);
             var variable = new CodeVariableDeclarationStatement(NodeFor, this.Name, expression);
             var variableReference = new CodeVariableReferenceExpression(variable.Name);
@@ -36,12 +50,9 @@ namespace Invert.Core.GraphDesigner
                 {
                     var statement = new CodeAssignStatement(new CodePropertyReferenceExpression(variableReference, property.Name),
                         new CodePrimitiveExpression(property.GetValue(this, null))
-
                         );
                     collection.Add(statement);
                 }
-
-
             }
             return variableReference;
         }

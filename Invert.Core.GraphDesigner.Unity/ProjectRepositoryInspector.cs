@@ -21,6 +21,7 @@ public class ProjectRepositoryInspector : Editor
     private TypeMapping[] _generators;
     private CodeFileGenerator[] fileGenerators;
     private List<PropertyFieldDrawer> _selectedItemDrawers;
+    private List<IDrawer> _generatorDrawers;
 
     public ProjectRepository Target
     {
@@ -187,19 +188,65 @@ public class ProjectRepositoryInspector : Editor
                 item.DrawInspector(true);
             }
         }
-
-        if (fileGenerators != null)
+        var connectable = SelectedItem as IConnectable;
+        if (connectable != null)
         {
-            foreach (var fileGenerator in fileGenerators)
+            if (GUIHelpers.DoToolbarEx("Outputs"))
             {
-             
-
-                if (fileGenerator.Generators.Length < 1) continue;
-                if (GUIHelpers.DoToolbarEx(fileGenerator.Generators[0].Filename))
+                foreach (var item in connectable.Outputs)
                 {
-                    EditorGUILayout.TextArea(fileGenerator.ToString());
+                    GUIHelpers.DoTriggerButton(new UFStyle()
+                    {
+                        Label = item.Input.GetType().Name,
+                        Enabled = true,
+                        BackgroundStyle = UBStyles.EventButtonStyleSmall,
+                        TextAnchor = TextAnchor.MiddleRight,
+                        //IconStyle = UBStyles.RemoveButtonStyle,
+                        ShowArrow = true
+                    });
                 }
             }
+            if (GUIHelpers.DoToolbarEx("Inputs"))
+            {
+                foreach (var item in connectable.Inputs)
+                {
+                    GUIHelpers.DoTriggerButton(new UFStyle()
+                    {
+                        Label = item.Output.GetType().Name,
+                        Enabled = true,
+                        BackgroundStyle = UBStyles.EventButtonStyleSmall,
+                        TextAnchor = TextAnchor.MiddleRight,
+                        //IconStyle = UBStyles.RemoveButtonStyle,
+                        ShowArrow = true
+                    });
+                }
+            }
+        }
+        
+        if (fileGenerators != null)
+        {
+            foreach (var fileGenerator in GeneratorDrawers)
+            {
+                if (GUIHelpers.DoToolbarEx(fileGenerator.ViewModelObject.Name))
+                {
+                    var lastRect = GUILayoutUtility.GetLastRect();
+                    
+                    fileGenerator.Refresh(new Vector2(lastRect.x,lastRect.y + lastRect.height));
+                    GUILayoutUtility.GetRect(fileGenerator.Bounds.width, fileGenerator.Bounds.height);
+                    fileGenerator.Draw(1f);
+                    //EditorGUILayout.TextArea(fileGenerator.ToString());
+                }
+            }
+            //foreach (var fileGenerator in fileGenerators)
+            //{
+             
+
+            //    if (fileGenerator.Generators.Length < 1) continue;
+            //    if (GUIHelpers.DoToolbarEx(fileGenerator.Generators[0].Filename))
+            //    {
+            //        EditorGUILayout.TextArea(fileGenerator.ToString());
+            //    }
+            //}
         }
     }
 
@@ -222,19 +269,44 @@ public class ProjectRepositoryInspector : Editor
       
             SelectedItemDrawers.Add(drawer);
         }
+        var item = SelectedItem;
 
-        if (!(SelectedItem is IDiagramNode)) return;
+        if (!(item is IDiagramNode))
+        {
+            var nodeItem = item as IDiagramNodeItem;
+            if (nodeItem != null)
+            {
+                item = nodeItem.Node;
+            }
+            else
+            {
+                return;
+            }
+            
+        }
+        if (item == null) return;
 
         fileGenerators = InvertGraphEditor.GetAllFileGenerators(InvertGraphEditor.CurrentProject.GeneratorSettings,
             InvertGraphEditor.CurrentProject).ToArray();
-
+        GeneratorDrawers.Clear();
         foreach (var fileGenerator in fileGenerators)
         {
             var list = fileGenerator.Generators.ToList();
-            list.RemoveAll(p => p.ObjectData != SelectedItem);
+            list.RemoveAll(p => p.ObjectData != item);
             fileGenerator.Generators = list.ToArray();
+            if (fileGenerator.Generators.Length < 1) continue;
+
+            var syntaxViewModel = new SyntaxViewModel(fileGenerator.ToString(), fileGenerator.Generators[0].Filename, 0);
+            var syntaxDrawer = new SyntaxDrawer(syntaxViewModel);
+            GeneratorDrawers.Add(syntaxDrawer);
         }
      
+    }
+
+    public List<IDrawer> GeneratorDrawers
+    {
+        get { return _generatorDrawers ?? (_generatorDrawers = new List<IDrawer>()); }
+        set { _generatorDrawers = value; }
     }
 
     public List<PropertyFieldDrawer> SelectedItemDrawers

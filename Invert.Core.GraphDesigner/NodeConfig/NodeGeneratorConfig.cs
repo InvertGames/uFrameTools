@@ -248,7 +248,7 @@ namespace Invert.Core.GraphDesigner
         {
             MemberGenerators.Add(new LambdaMemberGenerator<TNode>(generate)
             {
-                Location = location
+                MemberLocation = location
             });
             return this;
         }
@@ -287,7 +287,7 @@ namespace Invert.Core.GraphDesigner
                 Selector = p => selector(p).Cast<IGraphItem>(),
                 Generator = new LambdaMemberGenerator<TChildItem>(generate)
                 {
-                    Location = location
+                    MemberLocation = location
                 }
             });
             return this;
@@ -312,13 +312,13 @@ namespace Invert.Core.GraphDesigner
                 ChildType = typeof(TChildItem),
                 Generator = new LambdaMemberGenerator<TChildItem>(generate)
                 {
-                    Location = location
+                    MemberLocation = location
                 }
             });
             return this;
         }
 
-        public IEnumerable<CodeTypeMember> GetMembers(CodeTypeDeclaration decleration, GenericNode data, MemberGeneratorLocation location)
+        public IEnumerable<CodeTypeMember> GetMembers(CodeTypeDeclaration decleration, GenericNode data, MemberGeneratorLocation location, bool isDesignerFile)
         {
             if (!data.IsValid) yield break;
             foreach (var generator in MemberGenerators)
@@ -326,14 +326,14 @@ namespace Invert.Core.GraphDesigner
 
                 if (generator.MemberLocation == location || generator.MemberLocation == MemberGeneratorLocation.Both)
                 {
-                    
-                    
-                    yield return generator.Create(decleration, data,location==MemberGeneratorLocation.DesignerFile);
+                    var result =  generator.Create(decleration, data, isDesignerFile);
+                    if (result == null) continue;
+                    yield return result;
                 }
             }
         }
 
-        public IEnumerable<CodeTypeMember> GetChildMembers(CodeTypeDeclaration decleration, TNode data, MemberGeneratorLocation location)
+        public IEnumerable<CodeTypeMember> GetChildMembers(CodeTypeDeclaration decleration, TNode data, MemberGeneratorLocation location, bool isDesignerFile)
         {
             if (!data.IsValid) yield break;
             foreach (var generatorConfig in ChildItemMemberGenerators)
@@ -353,8 +353,10 @@ namespace Invert.Core.GraphDesigner
                     if (generatorConfig.Generator.MemberLocation == location || generatorConfig.Generator.MemberLocation == MemberGeneratorLocation.Both)
                     {
                         var generator = generatorConfig.Generator as IMemberGenerator;
-                        
-                        yield return generator.Create(decleration, item,location == MemberGeneratorLocation.DesignerFile);
+                        var result = generator.Create(decleration, item, isDesignerFile);
+                        ;
+                        if (result == null) continue;
+                        yield return result;
                     }
                 }
             }
@@ -374,7 +376,7 @@ namespace Invert.Core.GraphDesigner
                 return method;
             })
             {
-                Location = location
+                MemberLocation = location
             });
             return this;
         }

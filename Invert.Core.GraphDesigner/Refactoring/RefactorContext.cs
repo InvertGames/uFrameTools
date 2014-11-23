@@ -8,6 +8,7 @@ namespace Invert.Core.GraphDesigner
 {
     public class RefactorContext
     {
+        public const string CSHARP_TOKENS = @"@?[_\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}][\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Cf}]*|\{|\}";
         //private List<string> _filenames;
 
         //public List<string> Filenames
@@ -64,9 +65,8 @@ namespace Invert.Core.GraphDesigner
                 CurrentFileText = File.ReadAllText(filename);    
             }
             
-            CurrentFilename = filename; 
-            string strRegex = @"@?[_\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}][\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Cf}]*|\{|\}";
-            var myRegex = new Regex(strRegex, RegexOptions.None);
+            CurrentFilename = filename;
+            var myRegex = new Regex(CSHARP_TOKENS, RegexOptions.None);
             CurrentTokens = myRegex.Matches(CurrentFileText).OfType<Match>()
                 .Select(p => p.Value).ToArray();
             for (var i = 0; i < CurrentTokens.Length; i++)

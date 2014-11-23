@@ -94,9 +94,9 @@ namespace Invert.Core.GraphDesigner
                     Decleration.BaseTypes.Add(GeneratorConfig.BaseType.GetValue(Data));
                 }
                 
-                Decleration.Members.AddRange( GeneratorConfig.GetChildMembers(Decleration, Data, MemberGeneratorLocation.DesignerFile).ToArray());
+                Decleration.Members.AddRange( GeneratorConfig.GetChildMembers(Decleration, Data, MemberGeneratorLocation.DesignerFile,true).ToArray());
 
-                var memberGenerators = GeneratorConfig.GetMembers(Decleration, Data, MemberGeneratorLocation.DesignerFile);
+                var memberGenerators = GeneratorConfig.GetMembers(Decleration, Data, MemberGeneratorLocation.DesignerFile,true);
                 foreach (var generator in memberGenerators)
                 {
                     Decleration.Members.Add(generator);
@@ -111,12 +111,12 @@ namespace Invert.Core.GraphDesigner
                     Decleration = GeneratorConfig.Declaration.GetValue(Data);
                 }
                 Decleration.BaseTypes.Add(NameAsDesignerClass);
-                var designerMemberGenerators = GeneratorConfig.GetChildMembers(Decleration, Data, MemberGeneratorLocation.EditableFile);
+                var designerMemberGenerators = GeneratorConfig.GetChildMembers(Decleration, Data, MemberGeneratorLocation.EditableFile,false);
                 foreach (var generator in designerMemberGenerators)
                 {
                     Decleration.Members.Add(generator);
                 }
-                var memberGenerators = GeneratorConfig.GetMembers(Decleration, Data, MemberGeneratorLocation.EditableFile);
+                var memberGenerators = GeneratorConfig.GetMembers(Decleration, Data, MemberGeneratorLocation.EditableFile,false);
                 foreach (var generator in memberGenerators)
                 {
                     Decleration.Members.Add(generator);
@@ -150,13 +150,28 @@ namespace Invert.Core.GraphDesigner
         {
             foreach (var item in selector(Data))
             {
-                Decleration.Members.Add(generator.Create(Decleration, item, IsDesignerFile));
+                var result = generator.Create(Decleration, item, IsDesignerFile);
+                if (result != null)
+                Decleration.Members.Add(result);
             }
         }
 
         public void AddMember<TFor>(Func<TData, TFor> selector, IMemberGenerator generator)
         {
-            Decleration.Members.Add(generator.Create(Decleration, selector(Data), IsDesignerFile));
+            var result = generator.Create(Decleration, selector(Data), IsDesignerFile);
+            if (result != null)
+            Decleration.Members.Add(result);
+        }
+        public void AddMember(IMemberGenerator generator)
+        {
+            var result = generator.Create(Decleration, Data, IsDesignerFile);
+            if (result != null)
+                Decleration.Members.Add(result);
+        }
+        public void AddMethod(CodeMemberMethod method)
+        {   
+            if (method != null)
+                Decleration.Members.Add(method);
         }
     }
 }
