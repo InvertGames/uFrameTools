@@ -22,7 +22,7 @@ namespace Invert.Core.GraphDesigner.Unity
         private IProjectRepository _currentProject;
 
         [SerializeField]
-        private ElementsDiagram _diagramDrawer;
+        private DiagramDrawer _diagramDrawer;
 
         private bool _drawEveryFrame = true;
 
@@ -93,7 +93,7 @@ namespace Invert.Core.GraphDesigner.Unity
             }
         }
 
-        public ElementsDiagram DiagramDrawer
+        public DiagramDrawer DiagramDrawer
         {
             get { return _diagramDrawer; }
             set
@@ -323,7 +323,7 @@ namespace Invert.Core.GraphDesigner.Unity
             }
             else
             {
-                var mp = (e.mousePosition) * (1f / ElementsDiagram.Scale);
+                var mp = (e.mousePosition) * (1f / DiagramDrawer.Scale);
 
                 MouseEvent.MousePosition = mp;
                 MouseEvent.MousePositionDelta = MouseEvent.MousePosition - MouseEvent.LastMousePosition;
@@ -333,7 +333,7 @@ namespace Invert.Core.GraphDesigner.Unity
             }
            
             LastEvent = Event.current;
-            if (ElementsDiagram.IsEditingField)
+            if (DiagramDrawer.IsEditingField)
             {
                 if (LastEvent.keyCode == KeyCode.Return)
                 {
@@ -428,7 +428,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 Undo.undoRedoPerformed += UndoRedoPerformed;
                 SerializedGraph = new SerializedObject(diagram as UnityEngine.Object);
                 //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
-                DiagramDrawer = new ElementsDiagram(new DiagramViewModel(diagram, CurrentProject));
+                DiagramDrawer = new DiagramDrawer(new DiagramViewModel(diagram, CurrentProject));
                 MouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer);
                 DiagramDrawer.Dirty = true;
                 //DiagramDrawer.Data.ApplyFilter();

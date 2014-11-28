@@ -153,7 +153,7 @@ namespace Invert.Core.GraphDesigner
 
     public interface INodeDrawer : IDrawer
     {
-        ElementsDiagram Diagram { get; set; }
+        DiagramDrawer Diagram { get; set; }
         //Type CommandsType { get; }
         DiagramNodeViewModel ViewModel { get; set; }
     }

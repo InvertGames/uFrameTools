@@ -55,7 +55,7 @@ namespace Invert.uFrame.Editor
         //    get { return CurrentDiagram.DiagramViewModel; }
         //}
 
-        public static ElementsDiagram CurrentDiagram
+        public static DiagramDrawer CurrentDiagram
         {
             get
             {

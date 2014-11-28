@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
-namespace Invert.MVVM
+namespace Invert.Core
 {
-    public class Controller
-    {
+#if !UNITY
+    public class Vector3 {
+        public int X
     }
+#endif
 }

@@ -1,18 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Invert.Core;
-using Invert.Core.GraphDesigner;
-using Invert.MVVM;
-using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
-using UnityEngine;
-using ViewModel = Invert.Core.GraphDesigner.ViewModel;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -123,6 +114,7 @@ namespace Invert.Core.GraphDesigner
 
         public DiagramViewModel(IGraphData diagram, IProjectRepository currentRepository)
         {
+            
             var assetPath = AssetDatabase.GetAssetPath(diagram as GraphData);
             var fileExtension = Path.GetExtension(assetPath);
 

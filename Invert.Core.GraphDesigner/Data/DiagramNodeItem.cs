@@ -1,5 +1,4 @@
 using Invert.Core.GraphDesigner;
-using Invert.MVVM;
 using Invert.uFrame.Editor;
 using System;
 using System.Collections.Generic;

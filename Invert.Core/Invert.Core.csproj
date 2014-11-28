@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DLL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DLL UNITY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -57,16 +57,9 @@
     <Compile Include="IItem.cs" />
     <Compile Include="ProjectInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VectorTypes\Class1.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Invert.Common\Invert.Common.csproj">
-      <Project>{346c6b33-6fb0-40d1-b8a6-eb2144c10a5c}</Project>
-      <Name>Invert.Common</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UnityCompatibility\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y

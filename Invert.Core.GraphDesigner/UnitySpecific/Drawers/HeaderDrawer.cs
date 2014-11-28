@@ -91,7 +91,7 @@ namespace Invert.Core.GraphDesigner
             if (NodeViewModel.IsEditing)
             {
                 GUI.SetNextControlName("EditingField");
-                ElementsDiagram.IsEditingField = true;
+                DiagramDrawer.IsEditingField = true;
                 EditorGUI.BeginChangeCheck();
 
                 var newText = GUI.TextField(textBounds.Scale(scale), NodeViewModel.Name,

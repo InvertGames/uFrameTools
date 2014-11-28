@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
-using UnityEditor;
 using UnityEngine;
 
 public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackReceiver, IItem
@@ -44,7 +42,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
                 InvertGraphEditor.Container.Resolve<ICodePathStrategy>(Settings.CodePathStrategyName ?? "Default");
 
             _codePathStrategy.Data = this;
-            _codePathStrategy.AssetPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(this));
+            _codePathStrategy.AssetPath = Path.GetDirectoryName(InvertGraphEditor.Platform.GetAssetPath(this));
 
             return _codePathStrategy;
         }

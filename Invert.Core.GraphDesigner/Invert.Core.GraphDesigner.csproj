@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Class1.cs" />
     <Compile Include="CodeDomHelper.cs" />
     <Compile Include="CodeGenerator\ClassNodeGenerators\ClassNodeCodeFactory.cs" />
     <Compile Include="CodeGenerator\CodeFileGenerator.cs" />
@@ -142,28 +143,28 @@
     <Compile Include="Data\Upgrading\Class1.cs" />
     <Compile Include="DiagramContextMenuAttribute.cs" />
     <Compile Include="DiagramViewModel.cs" />
-    <Compile Include="Drawers\ConnectionDrawer.cs" />
-    <Compile Include="Drawers\ConnectorDrawer.cs" />
-    <Compile Include="Drawers\DiagramEnumDrawer.cs" />
-    <Compile Include="Drawers\DiagramNode.cs" />
-    <Compile Include="Drawers\DiagramNodeDrawer.cs" />
-    <Compile Include="Drawers\DiagramSubItemGroup.cs" />
-    <Compile Include="Drawers\Drawer.cs" />
-    <Compile Include="Drawers\ElementItemDrawer.cs" />
-    <Compile Include="Drawers\EnumItemDrawer.cs" />
-    <Compile Include="Drawers\GenericChildItemHeaderDrawer.cs" />
-    <Compile Include="Drawers\GenericInheritableNode.cs" />
-    <Compile Include="Drawers\GenericNode.cs" />
-    <Compile Include="Drawers\HeaderDrawer.cs" />
-    <Compile Include="Drawers\IConnectable.cs" />
-    <Compile Include="Drawers\IDrawer.cs" />
-    <Compile Include="Drawers\IInhertable.cs" />
-    <Compile Include="Drawers\INodeDrawer.cs" />
-    <Compile Include="Drawers\PropertyFieldDrawer.cs" />
-    <Compile Include="Drawers\SlotDrawer.cs" />
-    <Compile Include="Drawers\ItemDrawer.cs" />
-    <Compile Include="Drawers\SectionHeaderDrawer.cs" />
-    <Compile Include="Drawers\UFType.cs" />
+    <Compile Include="UnitySpecific\Drawers\ConnectionDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\ConnectorDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\DiagramEnumDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\DiagramNode.cs" />
+    <Compile Include="UnitySpecific\Drawers\DiagramNodeDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\DiagramSubItemGroup.cs" />
+    <Compile Include="UnitySpecific\Drawers\Drawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\ElementItemDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\EnumItemDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\GenericChildItemHeaderDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\GenericInheritableNode.cs" />
+    <Compile Include="UnitySpecific\Drawers\GenericNode.cs" />
+    <Compile Include="UnitySpecific\Drawers\HeaderDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\IConnectable.cs" />
+    <Compile Include="UnitySpecific\Drawers\IDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\IInhertable.cs" />
+    <Compile Include="UnitySpecific\Drawers\INodeDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\PropertyFieldDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\SlotDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\ItemDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\SectionHeaderDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\UFType.cs" />
     <Compile Include="ElementDesignerDataExtensions.cs" />
     <Compile Include="NodeConfig\ConfigProperty.cs" />
     <Compile Include="NodeConfig\GenericEnumCodeGenerator.cs" />
@@ -174,7 +175,7 @@
     <Compile Include="NodeConfig\ShellMemberGeneratorNode.cs" />
     <Compile Include="NodeConfig\TagConfig.cs" />
     <Compile Include="NodeConfig\ValidatorType.cs" />
-    <Compile Include="Drawers\TypedItemDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\TypedItemDrawer.cs" />
     <Compile Include="TypedItemViewModel.cs" />
     <Compile Include="Enums\EnumItemViewModel.cs" />
     <Compile Include="Enums\EnumNodeViewModel.cs" />
@@ -216,7 +217,6 @@
     <Compile Include="Projects\DefaultCodePathStrategy.cs" />
     <Compile Include="Projects\ICodePathStrategy.cs" />
     <Compile Include="Projects\INamespaceProvider.cs" />
-    <Compile Include="UnityAssets\ProjectRepository.cs" />
     <Compile Include="Projects\ProjectUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectExtensions.cs" />
@@ -228,7 +228,7 @@
     <Compile Include="SimpleType\ClassCollectionData.cs" />
     <Compile Include="SimpleType\ClassCollectionItemViewModel.cs" />
     <Compile Include="SimpleType\ClassNodeData.cs" />
-    <Compile Include="Drawers\ClassNodeDrawer.cs" />
+    <Compile Include="UnitySpecific\Drawers\ClassNodeDrawer.cs" />
     <Compile Include="SimpleType\ClassNodeInheritanceConnectionStrategy.cs" />
     <Compile Include="SimpleType\ClassNodeViewModel.cs" />
     <Compile Include="SimpleType\ClassPropertyData.cs" />
@@ -236,12 +236,15 @@
     <Compile Include="UnitySpecific\Class1.cs" />
     <Compile Include="UnitySpecific\ConnectionHandler.cs" />
     <Compile Include="UnitySpecific\DiagramInputHander.cs" />
-    <Compile Include="UnityAssets\ElementsDiagram.cs" />
+    <Compile Include="UnityAssets\DiagramDrawer.cs" />
+    <Compile Include="UnitySpecific\ElementDesignerStyles.cs" />
+    <Compile Include="UnitySpecific\GUIHelpers.cs" />
     <Compile Include="UnitySpecific\IInputHandler.cs" />
     <Compile Include="UnitySpecific\SelectionRectHandler.cs" />
     <Compile Include="UnitySpecific\SimpleKeyBinding.cs" />
-    <Compile Include="UnitySpecific\UI\ContextMenuUI.cs" />
-    <Compile Include="UnitySpecific\UI\ToolbarUI.cs" />
+    <Compile Include="UnitySpecific\UFStyle.cs" />
+    <Compile Include="Api\UI\ContextMenuUI.cs" />
+    <Compile Include="Api\UI\ToolbarUI.cs" />
     <Compile Include="UnitySpecific\UnityAssetManager.cs" />
     <Compile Include="ViewModels\ConnectionViewModel.cs" />
     <Compile Include="ViewModels\ConnectorDirection.cs" />
@@ -269,10 +272,6 @@
     <ProjectReference Include="..\Invert.Attributes\Invert.Attributes.csproj">
       <Project>{572E3D0C-06D5-4894-A128-A2032684A0B6}</Project>
       <Name>Invert.Attributes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Invert.Common\Invert.Common.csproj">
-      <Project>{346C6B33-6FB0-40D1-B8A6-EB2144C10A5C}</Project>
-      <Name>Invert.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Invert.Core.Code\Invert.Core.Code.csproj">
       <Project>{54b29430-e522-457f-b94f-889e2b2ee5c2}</Project>

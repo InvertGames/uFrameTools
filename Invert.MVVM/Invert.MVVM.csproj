@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DLL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DLL UNITY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -64,7 +64,6 @@
     <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\ObservableCollection.cs">
       <Link>ObservableCollection.cs</Link>
     </Compile>
-    <Compile Include="Controller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

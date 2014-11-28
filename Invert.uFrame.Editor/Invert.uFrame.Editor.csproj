@@ -199,10 +199,6 @@
     <Compile Include="uFrameVersionProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Invert.Common\Invert.Common.csproj">
-      <Project>{346c6b33-6fb0-40d1-b8a6-eb2144c10a5c}</Project>
-      <Name>Invert.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Invert.Core.GraphDesigner.Unity\Invert.Core.GraphDesigner.Unity.csproj">
       <Project>{FD550F66-CD89-4027-BF9A-7454FCCAFEFD}</Project>
       <Name>Invert.Core.GraphDesigner.Unity</Name>

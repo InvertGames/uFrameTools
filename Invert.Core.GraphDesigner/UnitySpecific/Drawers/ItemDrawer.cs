@@ -130,7 +130,7 @@ namespace Invert.Core.GraphDesigner
             {
                 EditorGUI.BeginChangeCheck();
                 GUI.SetNextControlName("EditingField");
-                ElementsDiagram.IsEditingField = true;
+                DiagramDrawer.IsEditingField = true;
                 var newName = EditorGUILayout.TextField(ItemViewModel.Name, ElementDesignerStyles.ItemTextEditingStyle);
                 if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
                 {

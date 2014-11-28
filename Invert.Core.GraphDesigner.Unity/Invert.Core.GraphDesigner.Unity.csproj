@@ -51,6 +51,8 @@
     <Compile Include="ElementDiagramSettingsWindow.cs" />
     <Compile Include="ElementItemTypesWindow.cs" />
     <Compile Include="ElementsDesigner.cs" />
+    <Compile Include="Impl\ProjectRepository.cs" />
+    <Compile Include="Impl\UnityPlatform.cs" />
     <Compile Include="ItemSelectionWindow.cs" />
     <Compile Include="ProjectRepositoryInspector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,10 +65,6 @@
     <Compile Include="UnityWindowManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Invert.Common\Invert.Common.csproj">
-      <Project>{346c6b33-6fb0-40d1-b8a6-eb2144c10a5c}</Project>
-      <Name>Invert.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Invert.Core.GraphDesigner\Invert.Core.GraphDesigner.csproj">
       <Project>{06E581D4-DAF3-4404-9426-E3BE6478BC48}</Project>
       <Name>Invert.Core.GraphDesigner</Name>

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Invert.Core.GraphDesigner;
-using Invert.MVVM;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner

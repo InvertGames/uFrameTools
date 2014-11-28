@@ -18,7 +18,8 @@ namespace Invert.Core.GraphDesigner
 
         public override void Perform(DiagramViewModel diagram)
         {
-            AssetDatabase.SaveAssets();
+            InvertGraphEditor.Platform.SaveAssets();
+        
             // Go ahead and process any code refactors
             ProcessRefactorings(diagram);
 

@@ -58,6 +58,9 @@ namespace Invert.Core.GraphDesigner
 
         private static IWindowManager _windowManager;
 
+        public static IPlatformOperations Platform { get; set; }
+        public static IPlatformPreferences Prefs { get; set; }
+
         public static Dictionary<Type, List<Type>> AllowedFilterItems
         {
             get { return _allowedFilterItems ?? (_allowedFilterItems = new Dictionary<Type, List<Type>>()); }

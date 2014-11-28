@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Invert.uFrame.Editor.ViewModels;
-using UnityEditor;
-using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -19,8 +16,8 @@ namespace Invert.Core.GraphDesigner
             var pathStrategy = InvertGraphEditor.CurrentDiagramViewModel.DiagramData.CodePathStrategy;
             var filePath = generator.FullPathName;
             //var filename = repository.GetControllerCustomFilename(this.Name);
-            var scriptAsset = AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
-            AssetDatabase.OpenAsset(scriptAsset);
+            InvertGraphEditor.Platform.OpenScriptFile(filePath);
+          
         }
 
         public override string CanPerform(DiagramNodeViewModel node)

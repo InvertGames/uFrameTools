@@ -1,14 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Invert.Common;
-using Invert.Core.GraphDesigner;
-using Invert.MVVM;
-using Invert.uFrame;
-using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
 
@@ -179,7 +173,7 @@ namespace Invert.Core.GraphDesigner
 
 
 
-        public ElementsDiagram Diagram { get; set; }
+        public DiagramDrawer Diagram { get; set; }
 
 
         protected virtual void GetContentDrawers(List<IDrawer> drawers)

@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using UnityEditor;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -35,17 +34,17 @@ namespace Invert.Core.GraphDesigner
                 
                 if (selected.HasFilterItems)
                 {
-                    EditorUtility.DisplayDialog("Delete sub items first.",
+                    InvertGraphEditor.Platform.MessageBox("Delete sub items first.",
                         "There are items defined inside this item please hide or delete them before removing this item.", "OK");
                     return;
                 }
             }
-            if (EditorUtility.DisplayDialog("Confirm", "Are you sure you want to delete this?", "Yes", "No"))
+            if (InvertGraphEditor.Platform.MessageBox("Confirm", "Are you sure you want to delete this?", "Yes", "No"))
             {
                 node.CurrentRepository.RemoveNode(selected.GraphItemObject);
                 if (customFileFullPaths.Length > 0)
                 {
-                    if (EditorUtility.DisplayDialog("Confirm",
+                    if (InvertGraphEditor.Platform.MessageBox("Confirm",
                         "You have files associated with this. Delete them too?" + Environment.NewLine +
                         string.Join(Environment.NewLine, customFiles), "Yes Delete Them", "Don't Delete them"))
                     {
