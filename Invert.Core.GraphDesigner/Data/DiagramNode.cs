@@ -13,28 +13,28 @@ namespace Invert.Core.GraphDesigner
     /// </summary>
     public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter, ITypedItem
     {
-        [SerializeField]
+      
         private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
 
-        [NonSerialized]
+  
         private IGraphData _data;
 
         private DataBag _dataBag = new DataBag();
 
         private FlagsDictionary _flags = new FlagsDictionary();
 
-        [SerializeField]
+
         private string _identifier;
 
-        [SerializeField]
+ 
         private bool _isCollapsed;
 
         private Vector2 _location;
 
-        [SerializeField]
+
         private FilterLocations _locations = new FilterLocations();
 
-        [SerializeField]
+
         private string _name;
 
         private Rect _position;

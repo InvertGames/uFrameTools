@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    [Serializable]
+  
     public class DiagramFilter : IDiagramFilter, IJsonObject
     {
         private Type[] _allowedTypes;
 
-        [SerializeField] private FilterLocations _locations = new FilterLocations();
-        [SerializeField] private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
+        private FilterLocations _locations = new FilterLocations();
+        private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
 
-        [SerializeField] private string _identifier;
+        private string _identifier;
 
         public string Identifier
         {

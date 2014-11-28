@@ -413,13 +413,12 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
 }
 
 
-[Serializable]
+
 public class ConnectionData : IJsonObject
 {
-    [SerializeField]
+
     private string _outputIdentifier;
 
-    [SerializeField]
     private string _inputIdentifier;
 
     public ConnectionData(string outputIdentifier, string inputIdentifier)

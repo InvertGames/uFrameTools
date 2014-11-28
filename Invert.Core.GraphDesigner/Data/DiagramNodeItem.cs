@@ -100,20 +100,16 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         }
     }
 
-    [SerializeField]
     private string _identifier;
 
-    [NonSerialized]
     private bool _isSelected;
-
-    [SerializeField]
     private string _name = string.Empty;
 
-    [NonSerialized]
+
     private RenameRefactorer _renameRefactorer;
-    [NonSerialized]
+
     private string _oldName;
-    [NonSerialized]
+
     private Rect _position;
 
     public abstract string FullLabel { get; }

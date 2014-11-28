@@ -8,7 +8,6 @@ using UnityEngine;
 
 public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, ISerializeablePropertyData
 {
-    [SerializeField]
     protected string _type = string.Empty;
 
     public Type Type

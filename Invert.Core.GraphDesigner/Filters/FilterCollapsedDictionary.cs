@@ -4,7 +4,7 @@ using Invert.uFrame.Editor;
 
 namespace Invert.Core.GraphDesigner
 {
-    [Serializable]
+
     public class FilterCollapsedDictionary : FilterDictionary<bool>
     {
         protected override JSONNode SerializeValue(bool value)

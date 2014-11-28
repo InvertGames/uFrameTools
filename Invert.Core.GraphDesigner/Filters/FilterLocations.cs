@@ -5,13 +5,9 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    [Serializable]
     public class FilterLocations
     {
-        [SerializeField]
         private List<string> _keys = new List<string>();
-
-        [SerializeField]
         private List<Vector2> _values = new List<Vector2>();
 
         public Vector2 this[IDiagramNode node]

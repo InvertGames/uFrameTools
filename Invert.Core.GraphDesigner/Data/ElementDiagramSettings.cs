@@ -3,7 +3,6 @@ using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using UnityEngine;
 
-[Serializable]
 public class ElementDiagramSettings : IJsonObject
 {
     public void Serialize(JSONClass cls)
@@ -86,27 +85,26 @@ public class ElementDiagramSettings : IJsonObject
         set { _gridLinesColorSecondary = value; }
     }
 
-    [SerializeField]
+
     private Color _associationLinkColor = Color.white;
-    [SerializeField, HideInInspector]
+
     private Color _definitionLinkColor = Color.cyan;
-    [SerializeField]
+
     private Color _inheritanceLinkColor = Color.green;
-    [SerializeField]
+
     private Color _sceneManagerLinkColor = Color.gray;
-    [SerializeField]
+
     private Color _subSystemLinkColor = Color.grey;
 
-    [SerializeField, HideInInspector]
+
     private string _codePathStrategyName = "Default";
-    [SerializeField]
+
     private Color _transitionLinkColor = Color.yellow;
-    [SerializeField]
+
     private Color _viewLinkColor = Color.blue;
-    [SerializeField]
+
     private int _snapSize = 10;
 
-    [NonSerialized]
     private ICodePathStrategy _codePathStrategy;
 
     private Color _gridLinesColor = new Color(0.271f, 0.271f, 0.271f);

@@ -30,8 +30,6 @@ public class EnumItem : IDiagramNodeItem
         }
     }
 
-  
-    [SerializeField]
     private string _name;
 
     public string Name
@@ -80,7 +78,6 @@ public class EnumItem : IDiagramNodeItem
         set { _flags = value; }
     }
 
-    [SerializeField]
     private string _identifier;
 
     private DataBag _dataBag;

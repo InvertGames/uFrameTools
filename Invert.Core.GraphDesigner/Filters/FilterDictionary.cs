@@ -5,13 +5,9 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    [Serializable]
     public abstract class FilterDictionary<TValue> : IJsonObject
     {
-        [SerializeField]
         private List<string> _keys = new List<string>();
-
-        [SerializeField]
         private List<TValue> _values = new List<TValue>();
 
         public TValue this[IDiagramNode node]
