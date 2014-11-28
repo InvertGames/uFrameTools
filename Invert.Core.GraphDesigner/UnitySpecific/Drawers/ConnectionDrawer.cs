@@ -47,7 +47,7 @@ namespace Invert.Core.GraphDesigner
 
             var _startRight = ViewModel.ConnectorA.Direction == ConnectorDirection.Output;
             var _endRight = ViewModel.ConnectorB.Direction == ConnectorDirection.Output;
-            Handles.color = ViewModel.CurrentColor;
+            //Handles.color = ViewModel.CurrentColor;
             List<Vector2> points = new List<Vector2>();
             Vector2 curr;
             points.Add(curr = _startPos);
@@ -69,10 +69,9 @@ namespace Invert.Core.GraphDesigner
     
             points.Add(_endPos);
             var scaled = points.Select(p => new Vector3(p.x * scale,p.y * scale)).ToArray();
-            Handles.DrawPolyLine(scaled);
 
-            Handles.DrawPolyLine(scaled.Select(p => p + new Vector3(1f, 1f, 0f)).ToArray());
-        
+            InvertGraphEditor.PlatformDrawer.DrawPolyLine(scaled);
+            InvertGraphEditor.PlatformDrawer.DrawPolyLine(scaled.Select(p => p + new Vector3(1f, 1f, 0f)).ToArray());
         
         
         }
@@ -104,11 +103,11 @@ namespace Invert.Core.GraphDesigner
             var shadowCol = new Color(0, 0, 0, 0.1f);
             if (ViewModel.IsFullColor)
                 for (int i = 0; i < 3; i++) // Draw a shadow
-                    UnityEditor.Handles.DrawBezier(_startPos*scale, _endPos*scale, startTan*ElementDesignerStyles.Scale,
-                        endTan*ElementDesignerStyles.Scale, shadowCol, null, (i + 1)*5);
+                    InvertGraphEditor.PlatformDrawer.DrawBezier(_startPos*scale, _endPos*scale, startTan*ElementDesignerStyles.Scale,
+                        endTan*ElementDesignerStyles.Scale, shadowCol,  (i + 1)*5);
 
-            UnityEditor.Handles.DrawBezier(_startPos*scale, _endPos*scale, startTan*ElementDesignerStyles.Scale,
-                endTan*ElementDesignerStyles.Scale, ViewModel.CurrentColor, null, 3);
+            InvertGraphEditor.PlatformDrawer.DrawBezier(_startPos * scale, _endPos * scale, startTan * ElementDesignerStyles.Scale,
+                endTan*ElementDesignerStyles.Scale, ViewModel.CurrentColor,  3);
         }
     }
 }

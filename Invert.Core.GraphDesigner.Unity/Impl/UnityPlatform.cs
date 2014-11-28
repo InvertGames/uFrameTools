@@ -16,9 +16,9 @@ namespace Invert.Core.GraphDesigner.Unity
             AssetDatabase.OpenAsset(scriptAsset);
         }
 
-        public string GetAssetPath(GraphData graphData)
+        public string GetAssetPath(object graphData)
         {
-            return AssetDatabase.GetAssetPath(graphData);
+            return AssetDatabase.GetAssetPath(graphData as UnityEngine.Object);
         }
         public bool MessageBox(string title, string message, string ok)
         {
@@ -247,4 +247,25 @@ namespace Invert.Core.GraphDesigner.Unity
             GUI.enabled = true;
         }
     }
+
+
+    public class UnityDrawer : IPlatformDrawer
+    {
+        public void DrawPolyLine(Vector3[] lines)
+        {
+            Handles.DrawPolyLine(lines);
+        }
+
+        public void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent,
+            Color color, float width)
+        {
+            Handles.DrawBezier(startPosition,endPosition,startTangent,endTangent,color,null,width);
+        }
+
+        public void DrawConnector(float scale, ConnectorViewModel viewModel)
+        {
+            
+        }
+    }
+
 }

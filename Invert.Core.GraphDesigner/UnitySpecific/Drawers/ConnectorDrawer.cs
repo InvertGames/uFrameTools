@@ -127,6 +127,8 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(float scale)
         {
             base.Draw(scale);
+            //InvertGraphEditor.PlatformDrawer.DrawConnector(scale, ViewModel);
+
             var connectorFor = ViewModel.ConnectorFor;
             var connectorBounds = ViewModel.ConnectorFor.ConnectorBounds;
             var forItem = connectorFor as ItemViewModel;

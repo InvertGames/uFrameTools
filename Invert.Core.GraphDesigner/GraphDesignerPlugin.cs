@@ -83,10 +83,7 @@ namespace Invert.Core.GraphDesigner
             container.RegisterInstance<IDiagramNodeItemCommand>(new MoveDownCommand(), "MoveItemDown");
             container.RegisterInstance<IEditorCommand>(new RemoveNodeItemCommand(), "RemoveNodeItem");
 
-            // Drawers
-            container.RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
-            container.RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
-            container.RegisterDrawer<InputOutputViewModel, SlotDrawer>();
+
 
 
             // Enums

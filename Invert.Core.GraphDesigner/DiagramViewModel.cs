@@ -114,11 +114,8 @@ namespace Invert.Core.GraphDesigner
 
         public DiagramViewModel(IGraphData diagram, IProjectRepository currentRepository)
         {
-            
-            var assetPath = AssetDatabase.GetAssetPath(diagram as GraphData);
-            var fileExtension = Path.GetExtension(assetPath);
 
-
+            var assetPath = InvertGraphEditor.Platform.GetAssetPath(diagram as GraphData);
             if (diagram == null) throw new Exception("Diagram not found");
             CurrentRepository = currentRepository;
             DataObject = diagram;
@@ -148,7 +145,7 @@ namespace Invert.Core.GraphDesigner
                         GraphItemViewModel;
                 if (vm == null)
                 {
-                    if (EditorUtility.DisplayDialog("Node Error", string.Format("Couldn't find view-model for {0} would you like to remove this item?", item.GetType()),"Yes","No"))
+                    if (InvertGraphEditor.Platform.MessageBox("Node Error", string.Format("Couldn't find view-model for {0} would you like to remove this item?", item.GetType()),"Yes","No"))
                     {
                         CurrentRepository.RemoveNode(item);
                     }

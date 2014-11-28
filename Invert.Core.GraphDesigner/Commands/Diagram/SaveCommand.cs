@@ -66,7 +66,7 @@ namespace Invert.Core.GraphDesigner
                 allDiagramItem.IsNewNode = false;
             }
             RefactorApplied(diagram.DiagramData);
-            AssetDatabase.Refresh();
+            InvertGraphEditor.Platform.RefreshAssets();
             diagram.Save();
 
         }

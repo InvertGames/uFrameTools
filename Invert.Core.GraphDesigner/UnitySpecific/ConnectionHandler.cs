@@ -133,12 +133,12 @@ namespace Invert.Core.GraphDesigner
             var shadowCol = new Color(0, 0, 0, 0.1f);
 
             for (int i = 0; i < 3; i++) // Draw a shadow
-                UnityEditor.Handles.DrawBezier(_startPos*ElementDesignerStyles.Scale,
+                InvertGraphEditor.PlatformDrawer.DrawBezier(_startPos*ElementDesignerStyles.Scale,
                     _endPos*ElementDesignerStyles.Scale, startTan*ElementDesignerStyles.Scale,
-                    endTan*ElementDesignerStyles.Scale, shadowCol, null, (i + 1)*5);
+                    endTan*ElementDesignerStyles.Scale, shadowCol, (i + 1)*5);
 
-            UnityEditor.Handles.DrawBezier(_startPos*ElementDesignerStyles.Scale, _endPos*ElementDesignerStyles.Scale,
-                startTan*ElementDesignerStyles.Scale, endTan*ElementDesignerStyles.Scale, color, null, 3);
+            InvertGraphEditor.PlatformDrawer.DrawBezier(_startPos * ElementDesignerStyles.Scale, _endPos * ElementDesignerStyles.Scale,
+                startTan*ElementDesignerStyles.Scale, endTan*ElementDesignerStyles.Scale, color, 3);
 
         }
 

@@ -163,6 +163,8 @@ namespace Invert.Core.GraphDesigner
             get { return _windowManager ?? (_windowManager = Container.Resolve<IWindowManager>()); }
         }
 
+        public static IPlatformDrawer PlatformDrawer { get; set; }
+
         public static IUFrameContainer Connectable<TSource, TTarget>(this IUFrameContainer container, bool oneToMany = true)
             where TSource : class, IConnectable
             where TTarget : class, IConnectable

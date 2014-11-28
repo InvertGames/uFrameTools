@@ -27,7 +27,13 @@ namespace Invert.Core.GraphDesigner.Unity
         public override void Initialize(uFrameContainer container)
         {
             InvertGraphEditor.Platform = new UnityPlatform();
-         
+            InvertGraphEditor.PlatformDrawer = new UnityDrawer();
+
+            // Drawers
+            container.RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
+            container.RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
+            container.RegisterDrawer<InputOutputViewModel, SlotDrawer>();
+
 
             // Command Drawers
             container.Register<ToolbarUI, UnityToolbar>();
