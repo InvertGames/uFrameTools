@@ -455,24 +455,13 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public static IUFrameContainer RegisterChildGraphItem<TModel, TViewModel, TDrawer>(this IUFrameContainer container)
+        public static IUFrameContainer RegisterChildGraphItem<TModel, TViewModel>(this IUFrameContainer container)
         {
             container.RegisterRelation<TModel, ItemViewModel, TViewModel>();
-            container.RegisterItemDrawer<TViewModel, TDrawer>();
             return container;
         }
 
-        public static void RegisterDrawer<TViewModel, TDrawer>(this IUFrameContainer container)
-        {
-            container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
-        }
-
-        [Obsolete]
-        public static void RegisterDrawer<TViewModel, TDrawer>()
-        {
-            Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
-        }
-
+     
         public static void RegisterFilterItem<TFilterData, TAllowedItem>()
         {
             Container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();
@@ -514,30 +503,11 @@ namespace Invert.Core.GraphDesigner
             AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
         }
 
-        public static IUFrameContainer RegisterGraphItem<TModel>(this uFrameContainer container) where TModel : GenericNode
-        {
-            container.RegisterGraphItem<TModel, ScaffoldNode<TModel>.ViewModel, ScaffoldNode<TModel>.Drawer>();
-            //RegisterDrawer();
-            return container;
-        }
-
-        public static IUFrameContainer RegisterGraphItem<TModel, TViewModel, TDrawer>(this IUFrameContainer container)
+       
+        public static IUFrameContainer RegisterGraphItem<TModel, TViewModel>(this IUFrameContainer container)
         {
             container.RegisterRelation<TModel, ViewModel, TViewModel>();
-            container.RegisterDrawer<TViewModel, TDrawer>();
             return container;
-        }
-
-        public static IUFrameContainer RegisterGraphItem<TModel, TViewModel, TDrawer>()
-        {
-            Container.RegisterRelation<TModel, ViewModel, TViewModel>();
-            RegisterDrawer<TViewModel, TDrawer>();
-            return Container;
-        }
-
-        public static void RegisterItemDrawer<TViewModel, TDrawer>(this IUFrameContainer container)
-        {
-            Container.RegisterRelation<TViewModel, IDrawer, TDrawer>();
         }
 
         public static void RegisterKeyBinding(IEditorCommand command, string name, KeyCode code, bool control = false, bool alt = false, bool shift = false)

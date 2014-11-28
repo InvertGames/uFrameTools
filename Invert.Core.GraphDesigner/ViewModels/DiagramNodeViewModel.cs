@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using Invert.Common;
-using Invert.uFrame.Editor.ViewModels;
-using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -395,8 +392,8 @@ namespace Invert.Core.GraphDesigner
                 {
                     var filePath = fileGenerator.FullPathName;
                     //var filename = repository.GetControllerCustomFilename(this.Name);
-                    var scriptAsset = AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
-                    AssetDatabase.OpenAsset(scriptAsset);
+                    InvertGraphEditor.Platform.OpenScriptFile(filePath);
+                
                 }
             });
         }
@@ -409,9 +406,8 @@ namespace Invert.Core.GraphDesigner
                 if (fileGenerator != null)
                 {
                     var filePath = fileGenerator.FullPathName;
-                    //var filename = repository.GetControllerCustomFilename(this.Name);
-                    var scriptAsset = AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
-                    AssetDatabase.OpenAsset(scriptAsset);
+                    InvertGraphEditor.Platform.OpenScriptFile(filePath);
+                 
                 }
             });
         }

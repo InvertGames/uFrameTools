@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Core.GraphDesigner.Unity;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
 

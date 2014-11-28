@@ -369,7 +369,7 @@ namespace Invert.Core.GraphDesigner
             where TReferenceItem : GenericReferenceItem
             //where TSourceType : IGraphItem
         {
-            Container.RegisterGraphItem<TReferenceItem, ScaffoldNodeChildItem<TReferenceItem>.ViewModel, ScaffoldNodeChildItem<TReferenceItem>.Drawer>();
+            //Container.RegisterGraphItem<TReferenceItem, ScaffoldNodeChildItem<TReferenceItem>.ViewModel, ScaffoldNodeChildItem<TReferenceItem>.Drawer>();
             var section = new NodeConfigSection<TNode>()
             {
                 ChildType = typeof(TReferenceItem),

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.CodeDom;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame;
-using Invert.uFrame.Editor;
-using UnityEngine;
+using Invert.Core.GraphDesigner.Unity;
 
 public class ShellPropertySelectorItem : GenericTypedChildItem, IShellNodeItem
 {
@@ -202,7 +199,7 @@ public class PluginDesigner : DiagramPlugin
 
         pluginConfig
             .AddEditableClass<ShellPluginClassGenerator>("Plugin")
-            .NamespacesConfig(new[] { "Invert.Core.GraphDesigner", "Invert.uFrame", "Invert.uFrame.Editor"})
+            .NamespacesConfig(new[] { "Invert.Core.GraphDesigner","Invert.Core.GraphDesigner.Unity", "Invert.uFrame", "Invert.uFrame.Editor"})
             .BaseTypeConfig(new CodeTypeReference(typeof(DiagramPlugin)))
             .ClassNameConfig(node => string.Format("{0}Plugin", node.Name))
             .FilenameConfig(node => Path.Combine("Editor", string.Format("{0}Plugin.cs", node.Name)))

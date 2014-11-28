@@ -27,11 +27,11 @@ namespace Invert.Core.GraphDesigner
         {
             var typeContainer = InvertGraphEditor.TypesContainer;
             
-            typeContainer.AddItem<GenericSlot,InputOutputViewModel,SlotDrawer>();
-            typeContainer.AddItem<BaseClassReference, InputOutputViewModel, SlotDrawer>();
+            //typeContainer.AddItem<GenericSlot,InputOutputViewModel,SlotDrawer>();
+            //typeContainer.AddItem<BaseClassReference, InputOutputViewModel, SlotDrawer>();
 
             container.RegisterInstance<IConnectionStrategy>(new InputOutputStrategy(),"InputOutputStrategy");
-            container.RegisterDrawer<SectionHeaderViewModel,SectionHeaderDrawer>();
+           
             
 
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(int), Group = "", Label = "int", IsPrimitive = true }, "int");
@@ -52,8 +52,7 @@ namespace Invert.Core.GraphDesigner
             container.RegisterInstance<IUFrameContainer>(container);
             container.RegisterInstance<uFrameContainer>(container);
             
-            container.Register<SectionHeaderDrawer, SectionHeaderDrawer>();
-            container.RegisterItemDrawer<GenericItemHeaderViewModel, GenericChildItemHeaderDrawer>();
+        
 
             // Toolbar commands
             container.RegisterInstance<IToolbarCommand>(new PopToFilterCommand(), "PopToFilterCommand");
@@ -87,14 +86,14 @@ namespace Invert.Core.GraphDesigner
 
 
             // Enums
-            container.RegisterGraphItem<EnumData, EnumNodeViewModel, DiagramEnumDrawer>();
-            container.RegisterChildGraphItem<EnumItem, EnumItemViewModel, EnumItemDrawer>();
+            container.RegisterGraphItem<EnumData, EnumNodeViewModel>();
+            container.RegisterChildGraphItem<EnumItem, EnumItemViewModel>();
             container.RegisterInstance(new AddEnumItemCommand());
 
             // Class Nodes
-            container.RegisterGraphItem<ClassPropertyData, ClassPropertyItemViewModel, ElementItemDrawer>();
-            container.RegisterGraphItem<ClassCollectionData, ClassCollectionItemViewModel, ElementItemDrawer>();
-            container.RegisterGraphItem<ClassNodeData, ClassNodeViewModel, ClassNodeDrawer>();
+            container.RegisterGraphItem<ClassPropertyData, ClassPropertyItemViewModel>();
+            container.RegisterGraphItem<ClassCollectionData, ClassCollectionItemViewModel>();
+            container.RegisterGraphItem<ClassNodeData, ClassNodeViewModel>();
             container.RegisterInstance<IConnectionStrategy>(new ClassNodeInheritanceConnectionStrategy(), "ClassNodeInheritanceConnectionStrategy");
 
             InvertGraphEditor.RegisterKeyBinding(new RenameCommand(), "Rename", KeyCode.F2);

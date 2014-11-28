@@ -5,52 +5,7 @@ namespace Invert.Core.GraphDesigner
     public static class uFrameContainerExtensions
     {
 
-        public static NodeConfig<TNodeData> AddNode<TNodeData>(this IUFrameContainer container, string tag = null)
-            where TNodeData : GenericNode
-        {
-            var config = container.AddNode<TNodeData, ScaffoldNode<TNodeData>.ViewModel, ScaffoldNode<TNodeData>.Drawer>(tag);
-            return config;
-        }
-        
-        public static NodeConfig<TNodeData> AddNode<TNodeData, TNodeViewModel, TNodeDrawer>(this IUFrameContainer container,string name) where TNodeData : GenericNode, IConnectable
-        {
-           
-            container.AddItem<TNodeData>();
-            container.RegisterGraphItem<TNodeData, TNodeViewModel, TNodeDrawer>();
-            var config = container.GetNodeConfig<TNodeData>();
-            if (config.Tags.Count > 0) 
-                return config;
-            config.Tags.Add(name ?? typeof(TNodeData).Name);
-            config.Name = name;
-            return config;
-        }
-
-        public static IUFrameContainer AddItem<TNodeData, TNodeViewModel, TNodeDrawer>(this IUFrameContainer container) where TNodeData : IDiagramNodeItem
-        {
-            container.RegisterChildGraphItem<TNodeData, TNodeViewModel, TNodeDrawer>();
-            return container;
-        }
-        public static IUFrameContainer AddItem<TNodeData>(this IUFrameContainer container) where TNodeData : IDiagramNodeItem
-        {
-            container.RegisterChildGraphItem<TNodeData, ScaffoldNodeChildItem<TNodeData>.ViewModel,ScaffoldNodeChildItem<TNodeData>.Drawer>();
-            return container;
-        } 
-        public static IUFrameContainer AddTypeItem<TNodeData>(this IUFrameContainer container) where TNodeData : ITypedItem
-        {
-            container.AddItem<TNodeData>();
-            container.RegisterChildGraphItem<TNodeData, 
-                ScaffoldNodeTypedChildItem<TNodeData>.ViewModel, 
-                ScaffoldNodeTypedChildItem<TNodeData>.Drawer>();
-            return container;
-        }
-        public static IUFrameContainer AddTypeItem<TNodeData, TViewModel,TDrawer>(this IUFrameContainer container) where TNodeData : ITypedItem
-        {
-            container.AddItem<TNodeData>();
-            container.RegisterChildGraphItem<TNodeData,
-                TViewModel,
-                TDrawer>();
-            return container;
-        }
+   
         public static NodeConfig<TNode> GetNodeConfig<TNode>(this IUFrameContainer container) where TNode : GenericNode, IConnectable
         {
             var config = container.Resolve<NodeConfigBase>(typeof(TNode).Name) as NodeConfig<TNode>;
@@ -95,13 +50,6 @@ namespace Invert.Core.GraphDesigner
 
 
 
-        public static NodeConfig<TGraphNode> AddGraph<TGraphType,TGraphNode>(this IUFrameContainer container, string name)
-            where TGraphType : GraphData
-            where TGraphNode : GenericNode
-        {
-            
-            container.Register<GraphData, TGraphType>(name);
-            return AddNode<TGraphNode>(container,name);
-        }
+     
     }
 }
