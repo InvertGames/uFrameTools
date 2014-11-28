@@ -234,7 +234,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         foreach (var item in NodeItems)
         {
             data.NodeAdded(data);
-            foreach (var containedItem in item.ContainedItems)
+            foreach (var containedItem in item.PersistedItems)
             {
                 containedItem.NodeAdded(data);
             }
@@ -248,7 +248,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     public void RemoveNode(IDiagramNode enumData)
     {
         _nodeItems = null;
-        foreach (var item in enumData.ContainedItems.ToArray())
+        foreach (var item in enumData.PersistedItems.ToArray())
         {
             RemoveItem(item);
         }
@@ -266,7 +266,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         foreach (var node in NodeItems.ToArray())
         {
             node.NodeItemRemoved(nodeItem);
-            foreach (var item in node.ContainedItems.ToArray())
+            foreach (var item in node.PersistedItems.ToArray())
             {
                 item.NodeItemRemoved(nodeItem);
             }
@@ -277,7 +277,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     {
         //item.Node = node;
         var node = item.Node;
-        node.ContainedItems = node.ContainedItems.Concat(new[] {item});
+        node.PersistedItems = node.PersistedItems.Concat(new[] {item});
 
         foreach (var nodeItem in NodeItems)
         {
@@ -326,11 +326,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     {
         get
         {
+            if (Diagrams == null) return null;
             if (_currentGraph == null)
             {
                 if (!String.IsNullOrEmpty(LastLoadedDiagram))
                 {
-                    _currentGraph = Diagrams.FirstOrDefault(p => p.name == LastLoadedDiagram);
+                    _currentGraph = Diagrams.FirstOrDefault(p => p!=null&& p.name == LastLoadedDiagram);
                 }
                 if (_currentGraph == null)
                 {

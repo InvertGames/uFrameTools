@@ -126,7 +126,7 @@ public class AddBindingWindow : SearchableScrollWindow
                         Label = item.Name,
                         SubLabel = item.Generator != null ? item.Generator.Description : item.GeneratorType,
                         Tag = item,
-                        BackgroundStyle = UBStyles.EventButtonStyle,
+                        BackgroundStyle = ElementDesignerStyles.EventButtonStyle,
                         FullWidth = false,
                         IsWindow = false,
                         Enabled = item.Node == _ViewData.GraphItem
@@ -185,7 +185,7 @@ public class AddBindingWindow : SearchableScrollWindow
         {
             Label = item.MethodName,
             Tag = item,
-            BackgroundStyle = UBStyles.EventButtonStyleSmall,
+            BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
             //SubLabel = item.Description,
             Group = item.Title,
             FullWidth = false,

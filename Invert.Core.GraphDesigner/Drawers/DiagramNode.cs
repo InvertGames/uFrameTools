@@ -74,7 +74,7 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerable<Refactorer> AllRefactorers
         {
-            get { return Refactorings.Concat(Items.OfType<IRefactorable>().SelectMany(p => p.Refactorings)); }
+            get { return Refactorings.Concat(DisplayedItems.OfType<IRefactorable>().SelectMany(p => p.Refactorings)); }
         }
 
         [Obsolete]
@@ -95,7 +95,7 @@ namespace Invert.Core.GraphDesigner
         [JsonProperty, InspectorProperty(InspectorType.TextArea)]
         public string Comments { get; set; }
 
-        public bool IsValid
+        public virtual bool IsValid
         {
             get { return true; }
         }
@@ -112,7 +112,7 @@ namespace Invert.Core.GraphDesigner
         /// <summary>
         /// The items that should be persisted with this diagram node.
         /// </summary>
-        public virtual IEnumerable<IDiagramNodeItem> ContainedItems
+        public virtual IEnumerable<IDiagramNodeItem> PersistedItems
         {
             get
             {
@@ -122,6 +122,11 @@ namespace Invert.Core.GraphDesigner
             {
 
             }
+        }
+
+        public virtual IEnumerable<IGraphItem> GraphItems
+        {
+            get { return PersistedItems.OfType<IGraphItem>(); }
         }
 
         public Type CurrentType
@@ -230,9 +235,9 @@ namespace Invert.Core.GraphDesigner
 
         public bool IsSelected { get; set; }
 
-        public virtual IEnumerable<IDiagramNodeItem> Items
+        public virtual IEnumerable<IDiagramNodeItem> DisplayedItems
         {
-            get { return ContainedItems; }
+            get { return PersistedItems; }
         }
 
         public abstract string Label { get; }
@@ -369,7 +374,7 @@ namespace Invert.Core.GraphDesigner
             _isCollapsed = cls["IsCollapsed"].AsBool;
             _identifier = cls["Identifier"].Value;
             IsNewNode = false;
-            ContainedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>(repository);
+            PersistedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>(repository);
 
             if (cls["Locations"] != null)
             {
@@ -388,9 +393,9 @@ namespace Invert.Core.GraphDesigner
                 DataBag = new DataBag();
                 DataBag.Deserialize(flags, repository);
             }
-            if (ContainedItems != null)
+            if (PersistedItems != null)
             {
-                foreach (var item in ContainedItems)
+                foreach (var item in PersistedItems)
                 {
                     item.Node = this;
                 }
@@ -466,7 +471,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void NodeRemoved(IDiagramNode nodeData)
         {
-            foreach (var item in ContainedItems)
+            foreach (var item in PersistedItems)
             {
                 if (item != this)
                     item.NodeRemoved(nodeData);
@@ -518,7 +523,7 @@ namespace Invert.Core.GraphDesigner
             cls.Add("IsCollapsed", new JSONData(_isCollapsed));
             cls.Add("Identifier", new JSONData(_identifier));
 
-            cls.AddObjectArray("Items", ContainedItems);
+            cls.AddObjectArray("Items", PersistedItems);
 
             //cls.Add("Locations", Locations.Serialize());
             cls.Add("CollapsedValues", CollapsedValues.Serialize());

@@ -5,6 +5,7 @@ namespace Invert.Core.GraphDesigner
 {
     public class GenericInheritableNode : GenericNode, IInhertable
     {
+        private BaseClassReference _baseReference;
 
         public GenericInheritableNode BaseNode
         {
@@ -59,13 +60,12 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
+
+        [InputSlot("Base Class")]
         public BaseClassReference BaseReference
         {
-            get { return GetConnectionReference<BaseClassReference>(); }
+            get { return _baseReference ?? (_baseReference = new BaseClassReference() { Node = this }); }
+            set { _baseReference = value; }
         }
-
-    
-
-
     }
 }

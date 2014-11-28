@@ -9,7 +9,6 @@ namespace Invert.Core.GraphDesigner
     {
         private CodeNamespace _ns;
         private CodeCompileUnit _unit;
-
         public string FullPathName
         {
             get { return Path.Combine(AssetPath, Filename).Replace("\\", "/"); }

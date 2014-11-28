@@ -10,10 +10,64 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
+    public interface IMultiSlot { }
+    public class MultiOutputSlot<TFor> : GenericSlot, IMultiSlot
+    {
+        public IEnumerable<TFor> Items
+        {
+            get { return Outputs.Select(p => p.Input).OfType<TFor>(); }
+        }
+
+    }
+    public class SingleOutputSlot<TFor> : GenericSlot
+    {
+        public TFor Item
+        {
+            get { return Outputs.Select(p => p.Input).OfType<TFor>().FirstOrDefault(); }
+        }
+
+    }
+    public class MultiInputSlot<TFor> : GenericSlot, IMultiSlot
+    {
+        public IEnumerable<TFor> Items
+        {
+            get { return Inputs.Select(p=>p.Output).OfType<TFor>(); }
+        }
+
+    }
+    public class SingleInputSlot<TFor> : GenericSlot
+    {
+        public TFor Item
+        {
+            get { return Inputs.Select(p => p.Output).OfType<TFor>().FirstOrDefault(); }
+        }
+    }
+    public class InheritanceSlot<TFor> : GenericSlot
+    {
+        public TFor Item
+        {
+            get { return Inputs.Select(p => p.Output).OfType<TFor>().FirstOrDefault(); }
+        }
+
+        public override bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+           
+            var result = a is TFor && b is BaseClassReference && b.Node != a.Node && b.Node.GetType() == a.GetType();
+            return result;
+        }
+    }
+    public class ReferenceSection<TReference> : GenericReferenceItem<TReference>
+    {
+        
+    }
+
     public class GenericSlot : GenericNodeChildItem
     {
-  
-
+        public virtual bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            
+           return a != b;
+        }
     }
     [AttributeUsage(AttributeTargets.Property)]
     public class JsonProperty : GeneratorProperty
@@ -23,7 +77,7 @@ namespace Invert.Core.GraphDesigner
 
     public class GeneratorProperty : Attribute
     {
-        
+
     }
     [AttributeUsage(AttributeTargets.Property)]
     public class NodeProperty : InspectorProperty
@@ -32,7 +86,8 @@ namespace Invert.Core.GraphDesigner
         {
         }
 
-        public NodeProperty(InspectorType inspectorType) : base(inspectorType)
+        public NodeProperty(InspectorType inspectorType)
+            : base(inspectorType)
         {
         }
     }
@@ -40,6 +95,14 @@ namespace Invert.Core.GraphDesigner
     public class InspectorProperty : Attribute
     {
         public InspectorType InspectorType { get; set; }
+
+        public Type CustomDrawerType { get; set; }
+
+
+        public InspectorProperty(Type customDrawerType)
+        {
+            CustomDrawerType = customDrawerType;
+        }
 
         public InspectorProperty()
         {
@@ -65,6 +128,14 @@ namespace Invert.Core.GraphDesigner
         private List<IDiagramNodeItem> _childItems = new List<IDiagramNodeItem>();
         private List<string> _connectedGraphItemIds = new List<string>();
 
+        public virtual bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            return a != b && a.GetType() != b.GetType();
+        }
+        public virtual bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            return a != b && a.GetType() != b.GetType();
+        }
         public List<IDiagramNodeItem> ChildItems
         {
             get { return _childItems; }
@@ -79,7 +150,8 @@ namespace Invert.Core.GraphDesigner
             }
         }
         [GeneratorProperty]
-        public override string Name {
+        public override string Name
+        {
             get { return base.Name; }
             set { base.Name = value; }
         }
@@ -109,7 +181,7 @@ namespace Invert.Core.GraphDesigner
         //    }
         //}
 
-        public override IEnumerable<IDiagramNodeItem> ContainedItems
+        public override IEnumerable<IDiagramNodeItem> PersistedItems
         {
             get { return ChildItems; }
             set
@@ -167,7 +239,7 @@ namespace Invert.Core.GraphDesigner
         }
 
 
-        public override IEnumerable<IDiagramNodeItem> Items
+        public override IEnumerable<IDiagramNodeItem> DisplayedItems
         {
             get
             {
@@ -190,6 +262,54 @@ namespace Invert.Core.GraphDesigner
         public override void Deserialize(JSONClass cls, INodeRepository repository)
         {
             base.Deserialize(cls, repository);
+            var inputSlotInfos = GetInputSlotInfos(this.GetType());
+            foreach (var item in inputSlotInfos)
+            {
+                var propertyName = item.Key.Name;
+                if (cls[propertyName] == null) continue;
+                var slotObject = cls[propertyName].DeserializeObject(repository, item.Key.PropertyType.GetGenericArguments().FirstOrDefault()) as GenericSlot;
+                if (slotObject == null) continue;
+
+                slotObject.Node = this;
+                slotObject.Name = item.Value.Name;
+                if (item.Key.PropertyType.IsAssignableFrom(slotObject.GetType()))
+                {
+                    item.Key.SetValue(this, slotObject, null);
+                }
+                else
+                {
+                    // If the type has changed lets keep that same identifier for connections
+                    var value = Activator.CreateInstance(item.Key.PropertyType) as GenericSlot;
+                    value.Identifier = slotObject.Identifier;
+                    value.Node = this;
+                    item.Key.SetValue(this,value,null);
+                }
+                    
+            }
+            var outputSlotInfos = GetOutputSlotInfos(this.GetType());
+            foreach (var item in outputSlotInfos)
+            {
+                var propertyName = item.Key.Name;
+                if (cls[propertyName] == null) continue;
+                var slotObject = cls[propertyName].DeserializeObject(repository, item.Key.PropertyType.GetGenericArguments().FirstOrDefault()) as GenericSlot;
+                if (slotObject == null) continue;
+                slotObject.Node = this;
+                slotObject.Name = item.Value.Name;
+                if (item.Key.PropertyType.IsAssignableFrom(slotObject.GetType()))
+                {
+                    item.Key.SetValue(this, slotObject, null);
+                }
+                else
+                {
+                    
+                    // If the type has changed lets keep that same identifier for connections
+                    var value = Activator.CreateInstance(item.Key.PropertyType) as GenericSlot;
+                    value.Identifier = slotObject.Identifier;
+                    value.Node = this;
+                    item.Key.SetValue(this, value, null);
+                }
+            }
+
             var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var property in properties)
             {
@@ -197,9 +317,14 @@ namespace Invert.Core.GraphDesigner
                 var propertyName = property.Name;
                 if (cls[propertyName] == null) continue;
                 var propertyType = property.PropertyType;
+                if (typeof (Enum).IsAssignableFrom(property.PropertyType))
+                {
+                    var value = cls[propertyName].Value;
+                    property.SetValue(this,Enum.Parse(propertyType,value),null);
+                }else
                 if (propertyType == typeof(int))
                 {
-                    property.SetValue(this, cls[propertyName].AsInt,null);
+                    property.SetValue(this, cls[propertyName].AsInt, null);
                 }
                 else if (propertyType == typeof(string))
                 {
@@ -300,7 +425,7 @@ namespace Invert.Core.GraphDesigner
                     (p is GenericReferenceItem && ((GenericReferenceItem)p).SourceIdentifier == diagramNodeItem.Identifier));
         }
 
-        public bool IsValid
+        public override bool IsValid
         {
             get { return Config.IsValid(this); }
         }
@@ -310,9 +435,31 @@ namespace Invert.Core.GraphDesigner
 
         }
 
+
         public override void Serialize(JSONClass cls)
         {
             base.Serialize(cls);
+
+            var inputSlotInfos = GetInputSlotInfos(this.GetType());
+            foreach (var item in inputSlotInfos)
+            {
+                if (item.Key == null) continue;
+                var propertyName = item.Key.Name;
+                var slot = item.Key.GetValue(this, null) as GenericSlot;
+                if (slot == null) continue;
+                cls.AddObject(propertyName, slot);
+            }
+            var outputSlotInfos = GetOutputSlotInfos(this.GetType());
+            foreach (var item in outputSlotInfos)
+            {
+                if (item.Key == null) continue;
+                ;
+                var propertyName = item.Key.Name;
+                var slot = item.Key.GetValue(this, null) as GenericSlot;
+                if (slot == null) continue;
+                cls.AddObject(propertyName, slot);
+            }
+
             var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var property in properties)
             {
@@ -322,7 +469,11 @@ namespace Invert.Core.GraphDesigner
                 {
                     var propertyName = property.Name;
                     var propertyType = property.PropertyType;
-                    if (propertyType == typeof(int))
+                    if (typeof (Enum).IsAssignableFrom(propertyType))
+                    {
+                        cls.Add(propertyName, new JSONData(value.ToString()));
+                    }else
+                    if (propertyType == typeof(int)) 
                     {
                         cls.Add(propertyName, new JSONData((int)value));
                     }
@@ -333,7 +484,7 @@ namespace Invert.Core.GraphDesigner
                     else if (propertyType == typeof(float))
                     {
                         cls.Add(propertyName, new JSONData((float)value));
-                    }
+                    } 
                     else if (propertyType == typeof(bool))
                     {
                         cls.Add(propertyName, new JSONData((bool)value));
@@ -345,8 +496,8 @@ namespace Invert.Core.GraphDesigner
                     else if (propertyType == typeof(Color))
                     {
                         var vCls = new JSONClass();
-                        var color = (Color) value;
-                        vCls.AsVector4 = new Vector4(color.r,color.g,color.b,color.a);
+                        var color = (Color)value;
+                        vCls.AsVector4 = new Vector4(color.r, color.g, color.b, color.a);
                         cls.Add(propertyName, vCls);
                     }
                     else if (propertyType == typeof(Vector2))
@@ -356,7 +507,7 @@ namespace Invert.Core.GraphDesigner
                         cls.Add(propertyName, vCls);
                     }
                     else if (propertyType == typeof(Vector3))
-                    {
+                    { 
                         var vCls = new JSONClass();
                         vCls.AsVector3 = (Vector3)value;
                         cls.Add(propertyName, vCls);
@@ -369,7 +520,7 @@ namespace Invert.Core.GraphDesigner
                     }
                     else
                     {
-                        throw new Exception(string.Format("{0} property can't be serialized. Override Serialize method to serialize it.",propertyName));
+                        throw new Exception(string.Format("{0} property can't be serialized. Override Serialize method to serialize it.", propertyName));
                     }
                 }
             }
@@ -402,8 +553,56 @@ namespace Invert.Core.GraphDesigner
             var newMirror = Activator.CreateInstance(mirrorSection.ChildType) as GenericReferenceItem;
             newMirror.SourceIdentifier = item.Identifier;
             newMirror.Node = this;
-            UnityEngine.Debug.Log("Added referenceitem" + newMirror.Name);
             ChildItems.Add(newMirror);
+        }
+
+        public override IEnumerable<IGraphItem> GraphItems
+        {
+            get
+            {
+                foreach (var item in this.PersistedItems)
+                {
+                    yield return item;
+                }
+                foreach (var item in AllSlots)
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public virtual IEnumerable<GenericSlot> AllSlots
+        {
+            get
+            {
+                foreach (var slot in Config.Inputs)
+                {
+                    yield return slot.GetDataObject(this) as GenericSlot;
+                }
+            }
+        }
+        public static IEnumerable<KeyValuePair<PropertyInfo, InputSlot>> GetInputSlotInfos(Type nodeType)
+        {
+            return nodeType.GetPropertiesWithAttribute<InputSlot>();
+        }
+        public static IEnumerable<KeyValuePair<PropertyInfo, OutputSlot>> GetOutputSlotInfos(Type nodeType)
+        {
+            return nodeType.GetPropertiesWithAttribute<OutputSlot>();
+        }
+
+        public static IEnumerable<KeyValuePair<PropertyInfo, Section>> GetSections(Type nodeType)
+        {
+            return nodeType.GetPropertiesWithAttribute<Section>();
+        }
+
+        public static IEnumerable<KeyValuePair<PropertyInfo, ReferenceSection>> GetReferenceSections(Type nodeType)
+        {
+            return nodeType.GetPropertiesWithAttribute<ReferenceSection>();
+        }
+
+        public static IEnumerable<KeyValuePair<PropertyInfo, ReferenceSection>> GetProxySections(Type nodeType)
+        {
+            return nodeType.GetPropertiesWithAttribute<ReferenceSection>();
         }
     }
 
@@ -450,16 +649,13 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return Node.Project.NodeItems.Cast<IDiagramNodeItem>().Concat(Node.Project.NodeItems.SelectMany(p => p.ContainedItems))
-
-                    .FirstOrDefault(p => p.Identifier == SourceIdentifier);
+                return Node.Project.AllGraphItems.FirstOrDefault(p => p.Identifier == SourceIdentifier) as IDiagramNodeItem;
             }
         }
 
         public override void Deserialize(JSONClass cls, INodeRepository repository)
         {
             base.Deserialize(cls, repository);
-
             SourceIdentifier = cls["SourceIdentifier"].Value;
         }
 
@@ -471,14 +667,14 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-//public class GenericInheritanceReference : GenericNodeChildItem
-//{
-//    public string InputName { get; set; }
+    //public class GenericInheritanceReference : GenericNodeChildItem
+    //{
+    //    public string InputName { get; set; }
 
-//    public override string Name
-//    {
-//        get { return InputName; }
-//        set { base.Name = value; }
-//    }
-//}
+    //    public override string Name
+    //    {
+    //        get { return InputName; }
+    //        set { base.Name = value; }
+    //    }
+    //}
 }

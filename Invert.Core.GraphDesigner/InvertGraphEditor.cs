@@ -97,7 +97,11 @@ namespace Invert.Core.GraphDesigner
 
         public static DiagramViewModel CurrentDiagramViewModel
         {
-            get { return DesignerWindow.DiagramViewModel; }
+            get
+            {
+                if (DesignerWindow == null) return null;
+                return DesignerWindow.DiagramViewModel;
+            }
         }
 
         public static MouseEvent CurrentMouseEvent
@@ -282,7 +286,7 @@ namespace Invert.Core.GraphDesigner
             CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
         }
 
-        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, IProjectRepository project)
+        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, IProjectRepository project, bool includeDisabled = false)
         {
             // Grab all the code generators
             var diagramItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
@@ -297,6 +301,8 @@ namespace Invert.Core.GraphDesigner
                     var diagrams = project.Diagrams;
                     foreach (var diagram in diagrams)
                     {
+                        if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
+
                         if (generator.DiagramItemType.IsAssignableFrom(diagram.GetType()))
                         {
                             var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, diagram);
@@ -317,6 +323,8 @@ namespace Invert.Core.GraphDesigner
                 {
                     foreach (var diagram in project.Diagrams)
                     {
+
+                        if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
                         var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, diagram);
                         foreach (var codeGenerator in codeGenerators)
                         {
@@ -332,7 +340,7 @@ namespace Invert.Core.GraphDesigner
                 // If its a generator for a specific node type
                 else
                 {
-                    foreach (var codeGenerator1 in GetCodeGeneratorsForNodes(settings, project, generator, diagramItemGenerator)) yield return codeGenerator1;
+                    foreach (var codeGenerator1 in GetCodeGeneratorsForNodes(settings, project, generator, diagramItemGenerator, includeDisabled)) yield return codeGenerator1;
                 }
             }
         }
@@ -343,10 +351,12 @@ namespace Invert.Core.GraphDesigner
         }
 
         private static IEnumerable<CodeGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, IProjectRepository project,
-            DesignerGeneratorFactory generator, DesignerGeneratorFactory diagramItemGenerator)
+            DesignerGeneratorFactory generator, DesignerGeneratorFactory diagramItemGenerator, bool includeDisabled = false)
         {
             foreach (var diagram in project.Diagrams)
             {
+
+                if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
                 var items = diagram.NodeItems.Where(p => p.GetType() == generator.DiagramItemType);
 
                 foreach (var item in items)
@@ -370,9 +380,9 @@ namespace Invert.Core.GraphDesigner
             return GetAllFileGenerators(settings, CurrentProject);
         }
 
-        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings, IProjectRepository project)
+        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings, IProjectRepository project, bool includeDisabled = false)
         {
-            var codeGenerators = GetAllCodeGenerators(settings, project).ToArray();
+            var codeGenerators = GetAllCodeGenerators(settings, project, includeDisabled).ToArray();
             var groups = codeGenerators.GroupBy(p => p.FullPathName);
             foreach (var @group in groups)
             {

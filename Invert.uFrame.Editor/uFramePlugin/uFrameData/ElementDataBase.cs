@@ -116,7 +116,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         }
     }
 
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
         get
         {

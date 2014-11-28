@@ -53,7 +53,7 @@ namespace Invert.Core.GraphDesigner
                 data.NodeItems.OfType<IRefactorable>()
                     .SelectMany(p => p.Refactorings)
                     .Concat(
-                        data.NodeItems.SelectMany(p => p.Items).OfType<IRefactorable>().SelectMany(p => p.Refactorings))
+                        data.NodeItems.SelectMany(p => p.DisplayedItems).OfType<IRefactorable>().SelectMany(p => p.Refactorings))
                     .ToList();
         }
 

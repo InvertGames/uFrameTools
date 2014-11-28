@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DLL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -40,12 +40,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\GameContainer.cs">
+      <Link>GameContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\IGameContainer.cs">
+      <Link>IGameContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\InjectAttribute.cs">
+      <Link>InjectAttribute.cs</Link>
+    </Compile>
     <Compile Include="Class1.cs" />
     <Compile Include="Class2.cs" />
     <Compile Include="GraphTypeInfo.cs" />
     <Compile Include="IAssetManager.cs" />
     <Compile Include="IDiagramPlugin.cs" />
     <Compile Include="IItem.cs" />
+    <Compile Include="ProjectInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,8 +71,8 @@
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
-copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y
-copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y</PostBuildEvent>
+copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y
+copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

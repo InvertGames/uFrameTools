@@ -107,37 +107,37 @@ namespace Invert.Core.GraphDesigner
             return this;
         }
 
-        public NodeConfig<TNode> AddDesignerGenerator<TCodeGenerator>(string designerFile, bool isEditorExtension = false) where TCodeGenerator : GenericNodeGenerator<TNode>, new()
+        public NodeConfig<TNode> AddDesignerGenerator<TCodeGenerator>(string designerFile, bool isEditorExtension = false) where TCodeGenerator : CodeGenerator, new()
         {
             AddGenerator(args =>
                 new TCodeGenerator()
                 {
-                    Data = args.Data,
+                    ObjectData = args.Data,
                     Filename = args.PathStrategy.GetDesignerFilePath(designerFile),
                     IsDesignerFile = true
                 });
             return this;
         }
 
-        public NodeGeneratorConfig<TNode> AddDesignerOnlyClass<TCodeGenerator>(string name) where TCodeGenerator : GenericNodeGenerator<TNode>, new()
+        public NodeGeneratorConfig<TNode> AddDesignerOnlyClass<TCodeGenerator>(string name) where TCodeGenerator : CodeGenerator, new()
         {
             AddDesignerGenerator<TCodeGenerator>(name);
             return GetGeneratorConfig<TCodeGenerator>();
         }
 
-        public NodeGeneratorConfig<TNode> AddEditableClass<TCodeGenerator>(string name) where TCodeGenerator : GenericNodeGenerator<TNode>, new()
+        public NodeGeneratorConfig<TNode> AddEditableClass<TCodeGenerator>(string name) where TCodeGenerator : CodeGenerator, new()
         {
             AddDesignerGenerator<TCodeGenerator>(name);
             AddEditableGenerator<TCodeGenerator>(name);
             return GetGeneratorConfig<TCodeGenerator>();
         }
 
-        public NodeConfig<TNode> AddEditableGenerator<TCodeGenerator>(string folder, bool isEditorExtension = false) where TCodeGenerator : GenericNodeGenerator<TNode>, new()
+        public NodeConfig<TNode> AddEditableGenerator<TCodeGenerator>(string folder, bool isEditorExtension = false) where TCodeGenerator : CodeGenerator, new()
         {
             AddGenerator(args =>
                 new TCodeGenerator()
                 {
-                    Data = args.Data,
+                    ObjectData = args.Data,
                     Filename = Path.Combine(folder, args.Data.Name + ".cs"),
                     IsDesignerFile = false
                 });
@@ -200,7 +200,7 @@ namespace Invert.Core.GraphDesigner
         //}
 
         public NodeGeneratorConfig<TNode> GetGeneratorConfig<TCodeGenerator>()
-            where TCodeGenerator : GenericNodeGenerator<TNode>
+            where TCodeGenerator : CodeGenerator
         {
             if (TypeGeneratorConfigs.ContainsKey(typeof(TCodeGenerator)))
             {

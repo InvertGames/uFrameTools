@@ -17,7 +17,7 @@ public class EnumData : DiagramNode,IDesignerType, IViewPropertyType
         set { _enumItems = value; }
     }
 
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get { return EnumItems.Cast<IDiagramNodeItem>(); }
         set { EnumItems = value.OfType<EnumItem>().ToList(); }
@@ -63,7 +63,7 @@ public class EnumData : DiagramNode,IDesignerType, IViewPropertyType
 
     public override string Label { get { return Name; }}
 
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
         get { return EnumItems.Cast<IDiagramNodeItem>(); }
     }

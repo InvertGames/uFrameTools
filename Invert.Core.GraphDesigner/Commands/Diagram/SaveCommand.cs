@@ -29,7 +29,7 @@ namespace Invert.Core.GraphDesigner
             foreach (var codeFileGenerator in fileGenerators)
             {
             
-            
+                
                 // Grab the information for the file
                 var fileInfo = new FileInfo(codeFileGenerator.SystemPath);
                     //Debug.Log(codeFileGenerator.SystemPath + ": " + fileInfo.Exists);
@@ -96,7 +96,7 @@ namespace Invert.Core.GraphDesigner
         {
             data.RefactorCount = 0;
             var refactorables = data.NodeItems.OfType<IRefactorable>()
-                .Concat(data.NodeItems.SelectMany(p => p.Items).OfType<IRefactorable>());
+                .Concat(data.NodeItems.SelectMany(p => p.DisplayedItems).OfType<IRefactorable>());
             foreach (var refactorable in refactorables)
             {
                 refactorable.RefactorApplied();

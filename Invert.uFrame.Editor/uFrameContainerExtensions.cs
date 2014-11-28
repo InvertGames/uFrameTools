@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,12 +10,13 @@ namespace Invert.uFrame.Editor
 
     public static class uFrameDataExtensions
     {
+
         public static IEnumerable<ITypedItem> GetAllBaseItems(this INodeRepository designerData, ElementData data)
         {
             var current = data;
             while (current != null)
             {
-                foreach (var item in current.Items)
+                foreach (var item in current.DisplayedItems)
                 {
                     if (item is ITypedItem)
                     {

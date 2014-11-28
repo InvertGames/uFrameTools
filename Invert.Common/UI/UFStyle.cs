@@ -30,7 +30,7 @@ namespace Invert.Common.UI
 
         public GUIStyle BackgroundStyle
         {
-            get { return _backgroundStyle ?? UBStyles.EventButtonStyle; }
+            get { return _backgroundStyle ?? ElementDesignerStyles.EventButtonStyle; }
             set { _backgroundStyle = value; }
         }
 
@@ -40,7 +40,7 @@ namespace Invert.Common.UI
 
         public GUIStyle IconStyle
         {
-            get { return _iconStyle ?? UBStyles.TriggerActiveButtonStyle; }
+            get { return _iconStyle ?? ElementDesignerStyles.TriggerActiveButtonStyle; }
             set { _iconStyle = value; }
         }
 
@@ -62,7 +62,7 @@ namespace Invert.Common.UI
 
         public static GUIStyle SubLabelStyle
         {
-            get { return _subLabelStyle ?? UBStyles.SubLabelStyle; }
+            get { return _subLabelStyle ?? ElementDesignerStyles.SubLabelStyle; }
             set { _subLabelStyle = value; }
         }
 

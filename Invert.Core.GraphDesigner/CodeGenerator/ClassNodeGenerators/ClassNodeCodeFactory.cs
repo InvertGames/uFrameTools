@@ -23,13 +23,13 @@ namespace Invert.uFrame.CodeGen.ClassNodeGenerators
         {
             yield return new TClassGenerator()
             {
-                Data = item,
+                ObjectData = item,
                 IsDesignerFile = false,
                 Filename = Path.Combine(EditableFileDirectory, item.Name + ".cs")
             };
             yield return new TClassGenerator()
             {
-                Data = item,
+                ObjectData = item,
                 IsDesignerFile = true,
                 Filename = pathStrategy.GetDesignerFilePath(DesignerFilePostFix)
             };
@@ -40,7 +40,10 @@ namespace Invert.uFrame.CodeGen.ClassNodeGenerators
 
     public class ClassNodeGenerator<TData> : CodeGenerator where TData : ClassNodeData
     {
-        public TData Data { get; set; }
+        public TData Data
+        {
+            get { return this.ObjectData as TData; }
+        }
 
         public virtual bool ShouldImplementINotifyPropertyChanged
         {

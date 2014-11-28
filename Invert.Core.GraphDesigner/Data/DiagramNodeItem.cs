@@ -121,7 +121,14 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
 
     public virtual string Highlighter { get { return null; } }
 
-    public string Identifier { get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; } }
+    public string Identifier
+    {
+        get
+        {
+            return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier;
+        }
+        protected internal set { _identifier = value; }
+    }
 
     public virtual bool IsSelectable { get { return true; } }
     public DiagramNode Node  { get; set; }

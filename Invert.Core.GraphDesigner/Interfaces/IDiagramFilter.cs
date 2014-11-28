@@ -53,11 +53,17 @@ namespace Invert.Core.GraphDesigner
         }
         public static bool IsAllowed(this IDiagramFilter filter, object item, Type t)
         {
+            
             if (filter == item) return true;
-
+            
             if (!InvertGraphEditor.AllowedFilterNodes.ContainsKey(filter.GetType())) return false;
 
-            return InvertGraphEditor.AllowedFilterNodes[filter.GetType()].Contains(t);
+            foreach (var x in InvertGraphEditor.AllowedFilterNodes[filter.GetType()])
+            {
+                if (t.IsAssignableFrom(x)) return true;
+            }
+            return false;
+            // return InvertGraphEditor.AllowedFilterNodes[filter.GetType()].Contains(t);
         }
 
         public static bool IsItemAllowed(this IDiagramFilter filter, object item, Type t)

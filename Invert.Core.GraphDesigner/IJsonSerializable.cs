@@ -79,7 +79,7 @@ namespace Invert.Core.GraphDesigner
             }
         } 
 
-        public static IJsonObject DeserializeObject(this JSONNode node, INodeRepository repository)
+        public static IJsonObject DeserializeObject(this JSONNode node, INodeRepository repository,Type genericTypeArg = null)
         {
             if (node == null) return null;
             var clrTypeString = node["_CLRType"].Value;
@@ -95,7 +95,14 @@ namespace Invert.Core.GraphDesigner
 
             if (clrType == null)
             throw new Exception("Could not find type " + clrTypeString);
-
+            if (clrType.IsGenericTypeDefinition && genericTypeArg != null) 
+            {
+                clrType = clrType.MakeGenericType(genericTypeArg);
+            }
+            else if (clrType.IsGenericTypeDefinition)
+            {
+                return null;
+            }
             var obj = Activator.CreateInstance(clrType) as IJsonObject;
             if (obj != null)
             {

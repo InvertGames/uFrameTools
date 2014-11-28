@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using UnityEngine;
+
 
 namespace Invert.Common.Utilities
 {
@@ -36,7 +36,7 @@ namespace Invert.Common.Utilities
                     var types = item.GetTypes();
                     foreach (var type in types)
                     {
-                        if (type.IsSubclassOf(typeof(MonoBehaviour)))
+                       // if (type.IsSubclassOf(typeof(MonoBehaviour)))
                         CachedTypeInfos.Add(type);
                         var members = type.GetMembers(BindingFlags.Public | BindingFlags.Instance);
                         foreach (var propertyInfo in members)

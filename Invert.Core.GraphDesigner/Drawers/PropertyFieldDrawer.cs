@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Invert.Common;
 using UnityEditor;
@@ -14,6 +15,7 @@ namespace Invert.Core.GraphDesigner
         {
         }
 
+        public IInspectorPropertyDrawer CustomDrawer { get; set; }
         public object CachedValue { get; set; }
 
         public override GUIStyle TextStyle
@@ -24,6 +26,12 @@ namespace Invert.Core.GraphDesigner
         public override void Refresh(Vector2 position)
         {
             base.Refresh(position);
+            if (ViewModel.CustomDrawerType != null)
+            {
+                CustomDrawer = (IInspectorPropertyDrawer) Activator.CreateInstance(ViewModel.CustomDrawerType);
+                CustomDrawer.Refresh(position,ViewModel);
+                return;
+            }
             CachedValue = ViewModel.Getter();
             var bounds = new Rect(Bounds);
             bounds.width *= 2;
@@ -40,14 +48,17 @@ namespace Invert.Core.GraphDesigner
             GUILayout.BeginArea(Bounds.Scale(scale), ElementDesignerStyles.SelectedItemStyle);
             EditorGUIUtility.labelWidth = this.Bounds.width*0.55f;
 
-        
             DrawInspector();
             GUILayout.EndArea();
         }
 
-        public void DrawInspector(bool refreshGraph = false)
+        public virtual void DrawInspector(bool refreshGraph = false, float scale = 1f)
         {
             EditorGUI.BeginChangeCheck();
+            if (CustomDrawer != null)
+            {
+                CachedValue = CustomDrawer.Draw(scale,ViewModel);
+            } else
             if (ViewModel.Type == typeof (string))
             {
                 if (ViewModel.InspectorType == InspectorType.TextArea)
@@ -57,6 +68,9 @@ namespace Invert.Core.GraphDesigner
                 }
                 else if (ViewModel.InspectorType == InspectorType.TypeSelection)
                 {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(ViewModel.Name);
+
                     if (GUILayout.Button((string) CachedValue))
                     {
                         InvertGraphEditor.WindowManager.InitTypeListWindow(InvertApplication.GetDerivedTypes<System.Object>(true,true).Select(p=>new GraphTypeInfo()
@@ -71,6 +85,7 @@ namespace Invert.Core.GraphDesigner
                             InvertGraphEditor.ExecuteCommand(d=>ViewModel.Setter(type.Name));
                         });
                     }
+                    GUILayout.EndHorizontal();
                 }
                 else
                 {
@@ -172,7 +187,9 @@ namespace Invert.Core.GraphDesigner
             var matchList = Regex.Matches(line, RefactorContext.CSHARP_TOKENS + @"|.|\s+",RegexOptions.None);
             foreach (Match match in matchList)
             {
-                lineViewModel.Tokens.AddLast(new TokenViewModel(lineViewModel, match.Value, GetColor(match.Value)));
+                var token = new TokenViewModel(lineViewModel, match.Value, Color.gray);
+                GetColor(token);
+                lineViewModel.Tokens.AddLast(token);
             }
             return lineViewModel;
         }
@@ -183,6 +200,11 @@ namespace Invert.Core.GraphDesigner
             "int",
             "public",
             "void",
+            "return",
+            "virtual",
+            "protected",
+            "override",
+            "var",
             "partial",
             "private",
             "using",
@@ -205,17 +227,36 @@ namespace Invert.Core.GraphDesigner
             ")",
           
         };
-        private Color GetColor(string value)
+
+        private bool lastWasKeyword = false;
+        private void GetColor(TokenViewModel value)
         {
-            if (Keywords.Contains(value))
+       
+            if (value.Text == "\"")
             {
-                return Color.blue;
+                value.Color = Color.green;
+                return;
             }
-            if (Literals.Contains(value))
+            if (Keywords.Contains(value.Text))
             {
-                return Color.magenta;
+                value.Color = Color.blue;
+                value.Bold = true;
+                lastWasKeyword = true;
+                return;
             }
-            return Color.white;
+            if (lastWasKeyword && !value.Text.Any(char.IsWhiteSpace))
+            {
+                value.Color = Color.grey;
+                lastWasKeyword = false;
+                return;
+            }
+            if (Literals.Contains(value.Text))
+            {
+                value.Color = Color.gray;
+                value.Bold = true;
+
+            }
+            value.Color = Color.white;
         }
 
         public LinkedList<LineViewModel> Lines
@@ -279,7 +320,7 @@ namespace Invert.Core.GraphDesigner
 
         public string Text { get; set; }
         public Color Color { get; set; }
-
+        public bool Bold { get; set; }
         public override Vector2 Position { get; set; }
         public override string Name { get; set; }
 
@@ -315,6 +356,14 @@ namespace Invert.Core.GraphDesigner
                 var maxHeight = 0f;
                 foreach (var token in line.Tokens)
                 {
+                    if (token.Bold)
+                    {
+                        guiStyle.fontStyle = FontStyle.Bold;
+                    }
+                    else
+                    {
+                        guiStyle.fontStyle = FontStyle.Normal;
+                    }
                     if (token.Text.All(char.IsWhiteSpace))
                     {
                         token.TextSize = guiStyle.CalcSize(new GUIContent("f"));
@@ -354,9 +403,23 @@ namespace Invert.Core.GraphDesigner
                 foreach (var token in line.Tokens)
                 {
                     guiStyle.normal.textColor = token.Color;
+                    if (token.Bold)
+                    {
+                        guiStyle.fontStyle = FontStyle.Bold;
+                    }
+                    else
+                    {
+                        guiStyle.fontStyle = FontStyle.Normal;
+                    }
                     GUI.Label(token.Bounds,token.Text,guiStyle);
                 }
             }
         }
+    }
+
+    public interface IInspectorPropertyDrawer
+    {
+        void Refresh(Vector2 position, PropertyFieldViewModel viewModel);
+        object Draw(float scale, PropertyFieldViewModel viewModel);
     }
 }

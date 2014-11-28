@@ -63,6 +63,7 @@
     <Compile Include="Sections\ShellMemberNodeViewModel.cs" />
     <Compile Include="Sections\ShellMembersGeneratorSectionReference.cs" />
     <Compile Include="Sections\ShellPropertyGeneratorNode.cs" />
+    <Compile Include="Slots\IShellNodeItem.cs" />
     <Compile Include="Slots\ReferenceItemType.cs" />
     <Compile Include="Commands\SelectColorCommand.cs" />
     <Compile Include="Nodes\ShellChildItemTypeNode.cs" />
@@ -124,8 +125,8 @@
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
-copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y
-copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y</PostBuildEvent>
+copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y
+copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

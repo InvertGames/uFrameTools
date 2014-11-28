@@ -24,7 +24,7 @@ public class ModelClassNodeCodeFactory : ClassNodeCodeFactory<ModelClassGenerato
         //foreach (var i in list) yield return i;
         yield return new ModelClassInterfaceGenerator()
         {
-            Data = item,
+            ObjectData = item,
             IsDesignerFile = true,
             Filename = pathStrategy.GetDesignerFilePath(DesignerFilePostFix)
         };

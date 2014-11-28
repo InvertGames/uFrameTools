@@ -56,9 +56,9 @@ public class ProjectRepositoryInspector : Editor
                 {
                     Label = diagram.Name,
                     Enabled = true,
-                    BackgroundStyle = UBStyles.EventButtonStyleSmall,
+                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
                     TextAnchor = TextAnchor.MiddleRight,
-                    IconStyle = UBStyles.RemoveButtonStyle,
+                    IconStyle = ElementDesignerStyles.RemoveButtonStyle,
                     ShowArrow = true,
                     OnShowOptions = () =>
                     {
@@ -106,41 +106,42 @@ public class ProjectRepositoryInspector : Editor
 
 
 #if DEBUG
-        //if (GUIHelpers.DoToolbarEx("Project Nodes"))
-        //{
+        if (GUIHelpers.DoToolbarEx("Project Nodes"))
+        {
 
-        //    foreach (var item in Target.NodeItems)
-        //    {
-        //        GUIHelpers.DoTriggerButton(new UFStyle()
-        //        {
-        //            Label = item.Name,
-        //            Enabled = true,
-        //            BackgroundStyle = UBStyles.EventButtonStyleSmall,
-        //            TextAnchor = TextAnchor.MiddleRight,
-        //            //IconStyle = UBStyles.RemoveButtonStyle,
-        //            ShowArrow = true
-        //        });
+            foreach (var item in InvertGraphEditor.CurrentProject.AllGraphItems)
+            {
+                if (item == null) continue;
+                GUIHelpers.DoTriggerButton(new UFStyle()
+                {
+                    Label = item.Label,
+                    Enabled = true,
+                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                    TextAnchor = TextAnchor.MiddleRight,
+                    //IconStyle = UBStyles.RemoveButtonStyle,
+                    ShowArrow = true
+                });
 
-        //    }
-        //}
-        //if (GUIHelpers.DoToolbarEx("Project Connections"))
-        //{
+            }
+        }
+        if (GUIHelpers.DoToolbarEx("Project Connections"))
+        {
 
-        //    foreach (var item in Target.Connections)
-        //    {
-        //        if (item.Output == null || item.Input == null) continue;
-        //        GUIHelpers.DoTriggerButton(new UFStyle()
-        //        {
-        //            Label = string.Format("{0} -> {1}", item.Output.Label, item.Input.Label),
-        //            Enabled = true,
-        //            BackgroundStyle = UBStyles.EventButtonStyleSmall,
-        //            TextAnchor = TextAnchor.MiddleRight,
-        //            //IconStyle = UBStyles.RemoveButtonStyle,
-        //            ShowArrow = true
-        //        });
+            foreach (var item in InvertGraphEditor.CurrentProject.Connections)
+            {
+                if (item.Output == null || item.Input == null) continue;
+                GUIHelpers.DoTriggerButton(new UFStyle()
+                {
+                    Label = string.Format("{0} -> {1}", item.Output.Label, item.Input.Label),
+                    Enabled = true,
+                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                    TextAnchor = TextAnchor.MiddleRight,
+                    //IconStyle = UBStyles.RemoveButtonStyle,
+                    ShowArrow = true
+                });
 
-        //    }
-        //}
+            }
+        }
 #endif
         //if (GUIHelpers.DoToolbarEx("Code Generators"))
         //{
@@ -188,40 +189,41 @@ public class ProjectRepositoryInspector : Editor
                 item.DrawInspector(true);
             }
         }
-        var connectable = SelectedItem as IConnectable;
-        if (connectable != null)
-        {
-            if (GUIHelpers.DoToolbarEx("Outputs"))
-            {
-                foreach (var item in connectable.Outputs)
-                {
-                    GUIHelpers.DoTriggerButton(new UFStyle()
-                    {
-                        Label = item.Input.GetType().Name,
-                        Enabled = true,
-                        BackgroundStyle = UBStyles.EventButtonStyleSmall,
-                        TextAnchor = TextAnchor.MiddleRight,
-                        //IconStyle = UBStyles.RemoveButtonStyle,
-                        ShowArrow = true
-                    });
-                }
-            }
-            if (GUIHelpers.DoToolbarEx("Inputs"))
-            {
-                foreach (var item in connectable.Inputs)
-                {
-                    GUIHelpers.DoTriggerButton(new UFStyle()
-                    {
-                        Label = item.Output.GetType().Name,
-                        Enabled = true,
-                        BackgroundStyle = UBStyles.EventButtonStyleSmall,
-                        TextAnchor = TextAnchor.MiddleRight,
-                        //IconStyle = UBStyles.RemoveButtonStyle,
-                        ShowArrow = true
-                    });
-                }
-            }
-        }
+        return;
+        //var connectable = SelectedItem as IConnectable;
+        //if (connectable != null)
+        //{
+        //    if (GUIHelpers.DoToolbarEx("Outputs"))
+        //    {
+        //        foreach (var item in connectable.Outputs)
+        //        {
+        //            GUIHelpers.DoTriggerButton(new UFStyle()
+        //            {
+        //                Label = item.Input.GetType().Name,
+        //                Enabled = true,
+        //                BackgroundStyle = UBStyles.EventButtonStyleSmall,
+        //                TextAnchor = TextAnchor.MiddleRight,
+        //                //IconStyle = UBStyles.RemoveButtonStyle,
+        //                ShowArrow = true
+        //            });
+        //        }
+        //    }
+        //    if (GUIHelpers.DoToolbarEx("Inputs"))
+        //    {
+        //        foreach (var item in connectable.Inputs)
+        //        {
+        //            GUIHelpers.DoTriggerButton(new UFStyle()
+        //            {
+        //                Label = item.Output.GetType().Name,
+        //                Enabled = true,
+        //                BackgroundStyle = UBStyles.EventButtonStyleSmall,
+        //                TextAnchor = TextAnchor.MiddleRight,
+        //                //IconStyle = UBStyles.RemoveButtonStyle,
+        //                ShowArrow = true
+        //            });
+        //        }
+        //    }
+        //}
         
         if (fileGenerators != null)
         {
@@ -253,12 +255,15 @@ public class ProjectRepositoryInspector : Editor
     private void SelectedItemChanged()
     {
         SelectedItemDrawers.Clear();
+        GeneratorDrawers.Clear();
+
         fileGenerators = null;
         foreach (var property in SelectedItem.GetPropertiesWithAttribute<InspectorProperty>())
         {
             PropertyInfo property1 = property.Key;
             var propertyViewModel = new PropertyFieldViewModel(null)
             {
+                CustomDrawerType = property.Value.CustomDrawerType,
                 InspectorType = property.Value.InspectorType,
                 Type = property1.PropertyType,
                 Name = property1.Name,
@@ -269,6 +274,7 @@ public class ProjectRepositoryInspector : Editor
       
             SelectedItemDrawers.Add(drawer);
         }
+        return;
         var item = SelectedItem;
 
         if (!(item is IDiagramNode))
@@ -287,7 +293,7 @@ public class ProjectRepositoryInspector : Editor
         if (item == null) return;
 
         fileGenerators = InvertGraphEditor.GetAllFileGenerators(InvertGraphEditor.CurrentProject.GeneratorSettings,
-            InvertGraphEditor.CurrentProject).ToArray();
+            InvertGraphEditor.CurrentProject,true).ToArray();
         GeneratorDrawers.Clear();
         foreach (var fileGenerator in fileGenerators)
         {

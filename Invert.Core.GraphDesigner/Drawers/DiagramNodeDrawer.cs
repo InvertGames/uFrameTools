@@ -511,6 +511,31 @@ namespace Invert.Core.GraphDesigner
             }
 
             var startY = ViewModel.Position.y;
+            // Now lets stretch all the content drawers to the maximum width
+            var minWidth = Math.Max(145f, ElementDesignerStyles.Tag1.CalcSize(new GUIContent(_cachedTag)).x);
+            var height = LayoutChildren(startY, ref minWidth);
+
+            _cachedLabel = ViewModel.Label;
+
+            if (!ViewModel.IsCollapsed)
+            {
+                Bounds = new Rect(ViewModel.Position.x, ViewModel.Position.y, minWidth, height + Padding);
+            }
+            else
+            {
+                Bounds = new Rect(ViewModel.Position.x, ViewModel.Position.y, minWidth, height);
+            }
+
+            ViewModel.ConnectorBounds = Children[0].Bounds;
+
+            //_cachedTags = ViewModel.Tags.Reverse().ToArray();
+            //ViewModel.HeaderPosition = new Rect(ViewModel.Position.x, ViewModel.Position.y, maxWidth, ViewModel.HeaderSize);
+        }
+
+        protected virtual float LayoutChildren(float startY, ref float minWidth)
+        {
+            var height = 0f;
+
 
             // Get our content drawers
             foreach (var child in Children)
@@ -518,38 +543,20 @@ namespace Invert.Core.GraphDesigner
                 child.Refresh(new Vector2(ViewModel.Position.x, startY));
                 startY += child.Bounds.height;
             }
-            // Now lets stretch all the content drawers to the maximum width
-            var maxWidth = Math.Max(145f, ElementDesignerStyles.Tag1.CalcSize(new GUIContent(_cachedTag)).x);
-            var height = 0f;
 
             foreach (var item in Children)
             {
-                if (item.Bounds.width > maxWidth) maxWidth = item.Bounds.width;
+                if (item.Bounds.width > minWidth) minWidth = item.Bounds.width;
                 height += item.Bounds.height;
             }
 
 
             foreach (var cachedDrawer in Children)
             {
-                cachedDrawer.Bounds = new Rect(cachedDrawer.Bounds) {width = maxWidth};
+                cachedDrawer.Bounds = new Rect(cachedDrawer.Bounds) {width = minWidth};
                 cachedDrawer.Dirty = false;
             }
-
-            _cachedLabel = ViewModel.Label;
-
-            if (!ViewModel.IsCollapsed)
-            {
-                Bounds = new Rect(ViewModel.Position.x, ViewModel.Position.y, maxWidth, height + Padding);
-            }
-            else
-            {
-                Bounds = new Rect(ViewModel.Position.x, ViewModel.Position.y, maxWidth, height);
-            }
-
-            ViewModel.ConnectorBounds = Children[0].Bounds;
-
-            //_cachedTags = ViewModel.Tags.Reverse().ToArray();
-            //ViewModel.HeaderPosition = new Rect(ViewModel.Position.x, ViewModel.Position.y, maxWidth, ViewModel.HeaderSize);
+            return height;
         }
 
         public bool IsExternal { get; set; }

@@ -33,7 +33,7 @@ namespace Invert.Core.GraphDesigner
         protected override void CreateContent()
         {
             base.CreateContent();
-            foreach (var item in GraphItem.Items)
+            foreach (var item in GraphItem.DisplayedItems)
             {
                 var vm = GetDataViewModel(item);
 
@@ -47,9 +47,9 @@ namespace Invert.Core.GraphDesigner
             AddPropertyFields();
         }
 
-        public void AddPropertyFields(PropertyInfo[] properties = null, string headerText = "Properties")
+        public void AddPropertyFields(string headerText = null)
         {
-            var ps = properties ?? GraphItem.GetPropertiesByAttribute<NodeProperty>().ToArray();
+            var ps = GraphItem.GetPropertiesWithAttribute<NodeProperty>().ToArray();
             if (ps.Length < 1) return;
 
             if (!string.IsNullOrEmpty(headerText))
@@ -60,12 +60,16 @@ namespace Invert.Core.GraphDesigner
             
             foreach (var property in ps)
             {
-                var vm = new PropertyFieldViewModel(this);
-                vm.Type = property.PropertyType;
-                vm.Name = property.Name;
-                PropertyInfo property1 = property;
-                vm.Getter = () => property1.GetValue(GraphItem, null);
-                vm.Setter = (v) => property1.SetValue(GraphItem, v, null);
+                PropertyInfo property1 = property.Key;
+                var vm = new PropertyFieldViewModel(this)
+                {
+                    Type = property.Key.PropertyType,
+                    Name = property.Key.Name,
+                    InspectorType = property.Value.InspectorType,
+                    CustomDrawerType = property.Value.CustomDrawerType,
+                    Getter = () => property1.GetValue(GraphItem, null),
+                    Setter = (v) => property1.SetValue(GraphItem, v, null)
+                };
                 ContentItems.Add(vm);
             }
         }
@@ -188,10 +192,6 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        public float Scale
-        {
-            get { return ElementDesignerStyles.Scale; }
-        }
 
         public bool IsCollapsed
         {
@@ -252,7 +252,7 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerable<IDiagramNodeItem> Items
         {
-            get { return GraphItemObject.Items; }
+            get { return GraphItemObject.DisplayedItems; }
         }
 
         public string SubTitle
@@ -270,10 +270,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public IEnumerable<IDiagramNodeItem> ContainedItems
-        {
-            get { return GraphItemObject.ContainedItems; }
-        }
+
 
         public string InfoLabel
         {

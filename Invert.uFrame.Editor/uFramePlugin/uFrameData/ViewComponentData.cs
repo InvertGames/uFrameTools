@@ -44,7 +44,7 @@ public class ViewComponentData : DiagramNode
         }
     }
 
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get { yield break; }
         set { }
@@ -73,7 +73,7 @@ public class ViewComponentData : DiagramNode
         set { _viewIdentifier = value; }
     }
 
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
         get { yield break; }
     }

@@ -15,7 +15,7 @@ namespace Invert.Core.GraphDesigner
             set { _nodeItems = value; }
         }
 
-        public override IEnumerable<IDiagramNodeItem> ContainedItems
+        public override IEnumerable<IDiagramNodeItem> PersistedItems
         {
             get
             {

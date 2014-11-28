@@ -61,7 +61,7 @@ public class SubSystemData : DiagramNode
     }
     private List<RegisteredInstanceData> _instances;
     
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get { return Instances.Cast<IDiagramNodeItem>(); }
         set { Instances = value.OfType<RegisteredInstanceData>().ToList(); }
@@ -79,9 +79,9 @@ public class SubSystemData : DiagramNode
         get { return string.Format("Items: [{0}]", Locations.Keys.Count - 1); }
     }
 
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
-        get { return ContainedItems; }
+        get { return PersistedItems; }
     }
 
     public override string Label

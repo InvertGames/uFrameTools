@@ -10,7 +10,7 @@ using UnityEngine;
 
 public class StateMachineActionData : DiagramNode
 {
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
         get { yield break; }
     }
@@ -24,7 +24,7 @@ public class StateMachineActionData : DiagramNode
 
 
 
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get { yield break; }
         set

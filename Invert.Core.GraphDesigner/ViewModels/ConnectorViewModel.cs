@@ -42,5 +42,7 @@ namespace Invert.Core.GraphDesigner
 
         public bool HasConnections { get; set; }
         public Type ConnectorForType { get; set; }
+
+        public bool AlwaysVisible { get; set; }
     }
 }

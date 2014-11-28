@@ -4,6 +4,7 @@ namespace Invert.Core.GraphDesigner
 {
     public class PropertyFieldViewModel : ItemViewModel
     {
+        public Type CustomDrawerType { get; set; }
         public InspectorType InspectorType { get; set; }
         public Type Type { get; set; }
         public override string Name { get; set; }

@@ -8,6 +8,7 @@ public class ElementDiagramSettings : IJsonObject
 {
     public void Serialize(JSONClass cls)
     {
+        cls.Add("CodeGenDisabled", new JSONData(CodeGenDisabled));
         cls.Add("SnapSize", new JSONData(_snapSize));
         cls.Add("Snap", new JSONData(_snap));
         cls.Add("CodePathStrategyName", new JSONData(_codePathStrategyName));
@@ -23,6 +24,8 @@ public class ElementDiagramSettings : IJsonObject
         
         cls.Add("RootNamespace", new JSONData(RootNamespace));
     }
+
+    public bool CodeGenDisabled { get; set; }
 
     public JSONNode SerializeColor(Color color)
     {
@@ -54,7 +57,10 @@ public class ElementDiagramSettings : IJsonObject
     }
     public void Deserialize(JSONClass cls, INodeRepository repository)
     {
-       
+        if (cls["CodeGenDisabled"] != null)
+        {
+            CodeGenDisabled = cls["CodeGenDisabled"].AsBool;
+        }
         CodePathStrategyName = cls["CodePathStrategyName"];
         AssociationLinkColor = DeserializeColor(cls["AssociationLinkColor"]);
         DefinitionLinkColor = DeserializeColor(cls["DefinitionLinkColor"]);

@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class BaseClassReference : GenericSlot { }
+    public class BaseClassReference : InheritanceSlot<GenericInheritableNode> { }
     public class GraphDesignerPlugin : DiagramPlugin
     {
         public override decimal LoadPriority

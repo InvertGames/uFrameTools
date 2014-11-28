@@ -84,9 +84,9 @@ public class uFrameSettingsWindow : EditorWindow
     private static void DoPlugin(ICorePlugin plugin)
     {
         if (
-            GUIHelpers.DoTriggerButton(new UFStyle("     " + plugin.Title, UBStyles.EventButtonStyleSmall,
+            GUIHelpers.DoTriggerButton(new UFStyle("     " + plugin.Title, ElementDesignerStyles.EventButtonStyleSmall,
                 null,
-                plugin.Enabled ? UBStyles.TriggerActiveButtonStyle : UBStyles.TriggerInActiveButtonStyle, () => { }, false,
+                plugin.Enabled ? ElementDesignerStyles.TriggerActiveButtonStyle : ElementDesignerStyles.TriggerInActiveButtonStyle, () => { }, false,
                 TextAnchor.MiddleCenter)
             {
                 IsWindow = true,

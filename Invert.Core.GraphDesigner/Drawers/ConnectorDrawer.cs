@@ -11,7 +11,7 @@ namespace Invert.Core.GraphDesigner
     {
         public override int ZOrder
         {
-            get { return 5; }
+            get { return 6; }
         }
 
         public ConnectorDrawer(ConnectorViewModel viewModelObject) : base(viewModelObject)
@@ -22,15 +22,51 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                if (ViewModel.HasConnections || ViewModel.IsMouseOver)
+                {
+                    if (ViewModel.Direction == ConnectorDirection.Input)
+                    {
+                        switch (ViewModel.Side)
+                        {
+                            case ConnectorSide.Left:
+                                return ElementDesignerStyles.ArrowRightTexture;
+                                break;
+                            case ConnectorSide.Right:
+                                return ElementDesignerStyles.ArrowLeftTexture;
+                                break;
+                            case ConnectorSide.Bottom:
+                                return ElementDesignerStyles.ArrowUpTexture;
+                            case ConnectorSide.Top:
+                                return ElementDesignerStyles.ArrowDownTexture;
+                        }
+                    }
+                    else
+                    {
+                        switch (ViewModel.Side)
+                        {
+                            case ConnectorSide.Left:
+                                return ElementDesignerStyles.ArrowLeftTexture;
+                                break;
+                            case ConnectorSide.Right:
+                                return ElementDesignerStyles.ArrowRightTexture;
+                                break;
+                            case ConnectorSide.Bottom:
+                                return ElementDesignerStyles.ArrowDownTexture;
+                            case ConnectorSide.Top:
+                                return ElementDesignerStyles.ArrowUpTexture;
+                        }
+                    }
+                }
+               
                 if (ViewModel.Direction == ConnectorDirection.Input)
                 {
                     switch (ViewModel.Side)
                     {
                         case ConnectorSide.Left:
-                            return ElementDesignerStyles.ArrowRightTexture;
+                            return ElementDesignerStyles.ArrowRightEmptyTexture;
                             break;
                         case ConnectorSide.Right:
-                            return ElementDesignerStyles.ArrowLeftTexture;
+                            return ElementDesignerStyles.ArrowLeftEmptyTexture;
                             break;
                         case ConnectorSide.Bottom:
                             return ElementDesignerStyles.ArrowUpTexture;
@@ -43,10 +79,10 @@ namespace Invert.Core.GraphDesigner
                     switch (ViewModel.Side)
                     {
                         case ConnectorSide.Left:
-                            return ElementDesignerStyles.ArrowLeftTexture;
+                            return ElementDesignerStyles.ArrowLeftEmptyTexture;
                             break;
                         case ConnectorSide.Right:
-                            return ElementDesignerStyles.ArrowRightTexture;
+                            return ElementDesignerStyles.ArrowRightEmptyTexture;
                             break;
                         case ConnectorSide.Bottom:
                             return ElementDesignerStyles.ArrowDownTexture;
@@ -149,8 +185,13 @@ namespace Invert.Core.GraphDesigner
             //{
             //    EditorGUI.DrawRect(Bounds.Scale(scale), Color.black);
             //}
-            if (!ViewModel.ConnectorFor.IsMouseOver && !ViewModel.ConnectorFor.IsSelected && !ViewModel.IsMouseOver &&
-                !ViewModel.HasConnections) return;
+            //if (!ViewModel.HasConnections)
+                //if (!ViewModel.ConnectorFor.IsMouseOver && !ViewModel.ConnectorFor.IsSelected && !ViewModel.IsMouseOver) return;
+            if (!ViewModel.AlwaysVisible)
+            {
+                if (!ViewModel.ConnectorFor.IsMouseOver && !ViewModel.ConnectorFor.IsSelected && !ViewModel.IsMouseOver && !ViewModel.HasConnections) return;
+            }
+
             if (ViewModel.HasConnections)
             {
                 GUI.DrawTexture(Bounds.Scale(scale), texture, ScaleMode.StretchToFill, true);
@@ -160,9 +201,10 @@ namespace Invert.Core.GraphDesigner
             GUI.DrawTexture(Bounds.Scale(scale), texture, ScaleMode.StretchToFill, true);
             if (InvertGraphEditor.Settings.ShowGraphDebug)
             {
-                GUI.Label(new Rect(Bounds.x, Bounds.y, 200, 50),
+                GUI.Label(new Rect(Bounds.x, Bounds.y, 500, 50),
+                    
                     this.ViewModel.ConnectorForType.Name + " : " + this.ViewModel.DataObject.GetType().Name,
-                    ElementDesignerStyles.TitleBarStyle);
+                    EditorStyles.miniBoldLabel);
             }
 
         }

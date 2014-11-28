@@ -41,7 +41,7 @@ public class ItemSelectionWindow : SearchableScrollWindow
     {
         foreach (var item in ItemsArray)
         {
-            if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.Title, IsWindow = true, FullWidth = true,BackgroundStyle = UBStyles.EventButtonStyleSmall}))
+            if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.Title, IsWindow = true, FullWidth = true,BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall}))
             {
                 SelectedAction(item);
                 IsClosing = true;

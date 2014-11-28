@@ -26,7 +26,7 @@ namespace Invert.Core.GraphDesigner
         public IGraphData DiagramData { get; set; }
         public IProjectRepository CurrentRepository { get; set; }
 
-        public ConnectorViewModel[] Inputs
+        public ConnectorViewModel[] Inputs 
         {
             get { return _inputs ?? (_inputs = AllConnectors.Where(p => p.Direction == ConnectorDirection.Input).ToArray()); }
 
@@ -34,7 +34,7 @@ namespace Invert.Core.GraphDesigner
         public ConnectorViewModel[] Outputs
         {
             get { return _outputs ?? (_outputs = AllConnectors.Where(p => p.Direction == ConnectorDirection.Output).ToArray()); }
-        }
+        } 
 
         public IEnumerable<ConnectorViewModel> InputsWith<TData>()
         {
@@ -69,7 +69,7 @@ namespace Invert.Core.GraphDesigner
                     //    {
                             if (strategy.IsConnected((TSource) output.DataObject, (TTarget) input.DataObject))
                             {
-                                yield return new ConnectionViewModel(DiagramViewModel)
+                                yield return new ConnectionViewModel(DiagramViewModel) 
                                 {
                                     IsStateLink = strategy.IsStateLink,
                                     Color = strategy.ConnectionColor,

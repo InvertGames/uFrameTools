@@ -110,7 +110,7 @@ public class ViewData : DiagramNode, ISubSystemType
         get { return Project.GetViewComponents().Where(p => ComponentIdentifiers.Contains(p.Identifier)); }
     }
 
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get
         {
@@ -228,7 +228,7 @@ public class ViewData : DiagramNode, ISubSystemType
             }
         }
     }
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
         get
         {

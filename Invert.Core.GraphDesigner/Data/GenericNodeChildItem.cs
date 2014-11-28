@@ -153,7 +153,10 @@ public class GenericNodeChildItem : DiagramNodeItem, IConnectable
     {
         get
         {
-
+            if (Node == null)
+            {
+                throw new Exception("NODE IS NULL");
+            }
             foreach (var connectionData in Node.Project.Connections)
             {
                 if (connectionData.InputIdentifier == this.Identifier)
@@ -167,9 +170,12 @@ public class GenericNodeChildItem : DiagramNodeItem, IConnectable
     {
         get
         {
-            if (Node == null) yield break;
-            if (Node.Project == null) yield break;
-            
+            //if (Node == null) yield break;
+            //if (Node.Project == null) yield break;
+            if (Node == null)
+            {
+                throw new Exception("NODE IS NULL");
+            }
             foreach (var connectionData in Node.Project.Connections)
             {
                 if (connectionData.OutputIdentifier == this.Identifier)

@@ -101,7 +101,7 @@ public class ElementData : ElementDataBase, IDesignerType
         set { _commands = value.ToList(); }
     }
 
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
         get
         {
@@ -124,7 +124,7 @@ public class ElementData : ElementDataBase, IDesignerType
 
             var baseElement = BaseElement;
             if (baseElement != null)
-                foreach (var baseItem in baseElement.Items)
+                foreach (var baseItem in baseElement.DisplayedItems)
                 {
                     yield return baseItem;
                 }
@@ -138,7 +138,7 @@ public class ElementData : ElementDataBase, IDesignerType
                 yield return item;
         }
     }
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get
         {

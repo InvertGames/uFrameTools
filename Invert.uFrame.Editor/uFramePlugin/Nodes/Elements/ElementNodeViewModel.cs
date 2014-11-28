@@ -40,7 +40,7 @@ namespace Invert.uFrame.Editor.ViewModels
             }
             else
             {
-                foreach (var item in GraphItem.Items)
+                foreach (var item in GraphItem.DisplayedItems)
                 {
                     var vm = GetDataViewModel(item);
                     if (vm == null)

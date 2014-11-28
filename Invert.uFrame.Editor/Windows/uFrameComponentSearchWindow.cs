@@ -78,11 +78,11 @@ public class uFrameComponentSearchWindow : EditorWindow
                 if (memberInfo.DeclaringType != null)
                     if (GUIHelpers.DoTriggerButton(new UFStyle()
                     {
-                        BackgroundStyle = UBStyles.EventSmallButtonStyle,
+                        BackgroundStyle = ElementDesignerStyles.EventSmallButtonStyle,
                         Label = string.Format("{0}.{1}", memberInfo.DeclaringType.Name, memberInfo.Name),
                         ShowArrow = true,
                         FullWidth = false,
-                        IconStyle = SelectedMemberInfos.Contains(memberInfo) ? UBStyles.TriggerActiveButtonStyle : UBStyles.TriggerInActiveButtonStyle
+                        IconStyle = SelectedMemberInfos.Contains(memberInfo) ? ElementDesignerStyles.TriggerActiveButtonStyle : ElementDesignerStyles.TriggerInActiveButtonStyle
                     }))
                     {
 

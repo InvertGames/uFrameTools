@@ -47,28 +47,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\GameContainer.cs">
-      <Link>GameContainer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\IGameContainer.cs">
-      <Link>IGameContainer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\InjectAttribute.cs">
-      <Link>InjectAttribute.cs</Link>
-    </Compile>
     <Compile Include="UI\ElementDesignerStyles.cs" />
-    <Compile Include="UI\UBStyles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\GUIHelpers.cs" />
     <Compile Include="UI\UFStyle.cs" />
-    <Compile Include="Utilities\ProjectInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
-copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y
-copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y</PostBuildEvent>
+copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y
+copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

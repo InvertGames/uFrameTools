@@ -32,6 +32,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
     private ICodePathStrategy _codePathStrategy;
     private List<ConnectionData> _connections;
 
+    public bool CodeGenDisabled { get; set; }
 
     public ICodePathStrategy CodePathStrategy
     {
@@ -50,15 +51,16 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         set { _codePathStrategy = value; }
     }
 
-    public IEnumerable<IGraphItem> AllGraphItems
+    public IEnumerable<IGraphItem> AllGraphItems 
     {
         get
         {
             foreach (var node in Nodes)
             {
                 yield return node;
-                foreach (var item in node.ContainedItems)
+                foreach (var item in node.GraphItems)
                     yield return item;
+                
             }
         }
     }
@@ -168,6 +170,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
 
     public JSONNode Serialize()
     {
+      
         return Serialize(this);
     }
 
@@ -178,7 +181,8 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         {
             {"Name", new JSONData(data.Name)}, // Name of the diagram
             {"Version", new JSONData(data.Version)},// Version of the diagram
-            {"Identifier", new JSONData(data.Identifier)}// Version of the diagram
+            {"Identifier", new JSONData(data.Identifier)},// Version of the diagram
+          // Version of the diagram
         };
         if (data.FilterState != null)
             // Add the filter state
@@ -187,13 +191,11 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
             // Add the settings
             root.AddObject("Settings", data.Settings);
 
-
-
         if (data.PositionData != null)
         {
             root.AddObject("PositionData", data.PositionData);
         }
-
+        
         // Store the root filter
         root.AddObject("SceneFlow", data.RootFilter as IJsonObject);
         // Nodes
@@ -221,6 +223,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
     public void AddNode(IDiagramNode data)
     {
         data.IsCollapsed = true;
+        
         Nodes.Add(data);
     }
 
@@ -247,7 +250,11 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         var backup = _jsonData;
         try
         {
-            _jsonData = Serialize().ToString();
+            if (!Errors)
+            {
+                _jsonData = Serialize().ToString();
+            }
+            
         }
         catch (Exception ex)
         {
@@ -263,7 +270,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         try
         {
             Deserialize(_jsonData);
-       
+            
             CleanUpDuplicates();
             Errors = false;
         }
@@ -402,6 +409,8 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
             item.Input = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.InputIdentifier);
             item.Output = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.OutputIdentifier);
         }
+        ConnectedItems.RemoveAll(p => p.Output == null || p.Input == null);
+
     }
 }
 

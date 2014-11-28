@@ -11,7 +11,15 @@ namespace Invert.Core.GraphDesigner
     {
         public override int ZOrder
         {
-            get { return -1; }
+            get
+            {
+                if (ViewModel.IsFullColor)
+                {
+                    return 5;
+                }
+                
+                return -1;
+            }
         }
 
         public ConnectionDrawer(ConnectionViewModel viewModelObject) : base(viewModelObject)

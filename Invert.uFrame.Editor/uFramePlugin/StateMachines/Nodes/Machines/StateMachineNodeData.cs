@@ -23,12 +23,12 @@ public class StateMachineNodeData : DiagramNode,IDesignerType
         set { _globalTransitions = value; }
     }
 
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
         get { return Transitions.Cast<IDiagramNodeItem>(); }
     }
 
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get { return Transitions.Cast<IDiagramNodeItem>(); }
         set

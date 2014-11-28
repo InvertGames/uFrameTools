@@ -106,13 +106,23 @@ namespace Invert.Core.GraphDesigner
 
         public NodeGeneratorConfig<TNode> DesignerFilenameConfig(string literal)
         {
-            DesignerFilename = new ConfigProperty<TNode, string>(literal);
+            DesignerFilename = new ConfigProperty<TNode, string>(Path.Combine("_DesignerFiles", literal));
             return this;
         }
 
         public NodeGeneratorConfig<TNode> DesignerFilenameConfig(Func<TNode, string> selector)
         {
-            DesignerFilename = new ConfigProperty<TNode, string>(selector);
+            DesignerFilename = new ConfigProperty<TNode, string>(node => Path.Combine( "_DesignerFiles", selector(node)));
+            return this;
+        }
+        public NodeGeneratorConfig<TNode> DesignerFilenameConfigAsEditor(Func<TNode, string> selector)
+        {
+            DesignerFilename = new ConfigProperty<TNode, string>(node=>Path.Combine(Path.Combine("_DesignerFiles","Editor"), selector(node)));
+            return this;
+        }
+        public NodeGeneratorConfig<TNode> DesignerFilenameConfigAsEditor(string fileName)
+        {
+            DesignerFilename = new ConfigProperty<TNode, string>(Path.Combine(Path.Combine("_DesignerFiles", "Editor"), fileName));
             return this;
         }
         public ConfigProperty<TNode, string> Filename
@@ -141,6 +151,13 @@ namespace Invert.Core.GraphDesigner
             return this;
         }
 
+        public NodeGeneratorConfig<TNode> FilenameConfigAsEditor(Func<TNode, string> selector)
+        {
+            Filename = new ConfigProperty<TNode, string>(
+                (node) => Path.Combine("Editor", selector(node)));
+
+            return this;
+        }
 
 
         private ConfigProperty<TNode, CodeTypeReference> _baseType;
@@ -198,7 +215,7 @@ namespace Invert.Core.GraphDesigner
                 this.FilenameConfig(node => Path.Combine("Editor", string.Format(Path.Combine(folder,nameFormat + ".cs"), node.Name)));
             }
 
-            this.DesignerFilenameConfig(node => Path.Combine("_DesignerFiles", Path.Combine("Editor", designerFilename + ".cs")));
+            this.DesignerFilenameConfig(node => Path.Combine("Editor", designerFilename + ".cs"));
 
             return this;
         }
@@ -368,7 +385,7 @@ namespace Invert.Core.GraphDesigner
         {
             MemberGenerators.Add(new LambdaMemberGenerator<TNode>(_ =>
             {
-                var method = CodeDomHelpers.MethodFromTypeMethod(type, methodName, callBase);
+                var method = type.MethodFromTypeMethod(methodName, callBase);
                 if (fillMethod != null)
                 {
                     fillMethod(_.Data, method);

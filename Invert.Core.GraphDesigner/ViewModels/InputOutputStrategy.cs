@@ -218,9 +218,10 @@ namespace Invert.Core.GraphDesigner
             if (b.Validator != null)
                 if (!b.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
                     return null;
+
             if (a.ConnectorForType != null && b.ConnectorForType != null)
             {
-                if (b.ConnectorForType.IsAssignableFrom(a.ConnectorForType))
+                if (b.ConnectorForType.IsAssignableFrom(a.ConnectorForType) || (b.ConnectorForType.IsAssignableFrom(a.DataObject.GetType()) || a.ConnectorForType.IsAssignableFrom(b.DataObject.GetType())))
                 {
                     //if (CanConnect((TOutput)a,(TInput)b.DataObject))
                     return base.Connect(diagramViewModel, a, b);

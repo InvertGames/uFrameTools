@@ -100,11 +100,11 @@ namespace Invert.Common.UI
         }
         public static bool DoToolbar(string label, bool open, Action add = null, Action leftButton = null, Action paste = null, GUIStyle addButtonStyle = null, GUIStyle pasteButtonStyle = null,bool fullWidth = true)
         {
-            var rect = GetRect(open ? UBStyles.ToolbarStyle : UBStyles.ToolbarStyleCollapsed, GUIHelpers.IsInsepctor);
-            GUI.Box(rect, "", open ? UBStyles.ToolbarStyle : UBStyles.ToolbarStyleCollapsed);
+            var rect = GetRect(open ? ElementDesignerStyles.ToolbarStyle : ElementDesignerStyles.ToolbarStyleCollapsed, GUIHelpers.IsInsepctor);
+            GUI.Box(rect, "", open ? ElementDesignerStyles.ToolbarStyle : ElementDesignerStyles.ToolbarStyleCollapsed);
             var labelStyle = new GUIStyle(EditorStyles.label)
             {
-                normal = new GUIStyleState() {textColor = UBStyles.ToolbarStyle.normal.textColor },
+                normal = new GUIStyleState() {textColor = ElementDesignerStyles.ToolbarStyle.normal.textColor },
                 alignment = TextAnchor.MiddleLeft,
                 fontStyle = FontStyle.Bold,
                 fontSize = 11
@@ -115,12 +115,12 @@ namespace Invert.Common.UI
             {
                 result = GUI.Button(labelRect,
                     new GUIContent(label,
-                        open ? UBStyles.ArrowDownTexture : UBStyles.CollapseRightArrowTexture),
+                        open ? ElementDesignerStyles.ArrowDownTexture : ElementDesignerStyles.CollapseRightArrowTexture),
                     labelStyle);
             }
             else
             {
-                if (GUI.Button(labelRect, new GUIContent(label, UBStyles.ArrowLeftTexture), labelStyle))
+                if (GUI.Button(labelRect, new GUIContent(label, ElementDesignerStyles.ArrowLeftTexture), labelStyle))
                 {
                     leftButton();
                 }
@@ -129,7 +129,7 @@ namespace Invert.Common.UI
             if (paste != null)
             {
                 var addButtonRect = new Rect(rect.x + rect.width - 42, rect.y + (rect.height / 2) - 8, 16, 16);
-                if (GUI.Button(addButtonRect, "", pasteButtonStyle ?? UBStyles.PasteButtonStyle))
+                if (GUI.Button(addButtonRect, "", pasteButtonStyle ?? ElementDesignerStyles.PasteButtonStyle))
                 {
                     paste();
                 }
@@ -138,7 +138,7 @@ namespace Invert.Common.UI
             if (add != null)
             {
                 var addButtonRect = new Rect(rect.x + rect.width - 21, rect.y + (rect.height / 2) - 8, 16, 16);
-                if (GUI.Button(addButtonRect, "", addButtonStyle ?? UBStyles.AddButtonStyle))
+                if (GUI.Button(addButtonRect, "", addButtonStyle ?? ElementDesignerStyles.AddButtonStyleUnscaled))
                 {
                     add();
                 }
@@ -200,7 +200,7 @@ namespace Invert.Common.UI
                 seperatorRect.y += 2;
                 seperatorRect.height -= 5;
                 seperatorRect.x = eventOptionsButtonRect.x + 17;
-                GUI.Box(seperatorRect, String.Empty, UBStyles.SeperatorStyle);
+                GUI.Box(seperatorRect, String.Empty, ElementDesignerStyles.SeperatorStyle);
             }
 
             var labelStyle =  new GUIStyle(EditorStyles.label) { alignment = ubTriggerContent.TextAnchor, fontSize = 11,fontStyle = FontStyle.Bold};
@@ -222,7 +222,7 @@ namespace Invert.Common.UI
                 GUI.Label(subLabelRect, ubTriggerContent.SubLabel, UFStyle.SubLabelStyle);
             }
             if (ubTriggerContent.ShowArrow)
-                GUI.DrawTexture(new Rect(rect.x + rect.width - 18f, rect.y + ((rect.height / 2) - 8), 16, 16), UBStyles.ArrowRightTexture);
+                GUI.DrawTexture(new Rect(rect.x + rect.width - 18f, rect.y + ((rect.height / 2) - 8), 16, 16), ElementDesignerStyles.ArrowRightTexture);
             if (ubTriggerContent.Enabled)
             {
                 return result;
@@ -235,8 +235,8 @@ namespace Invert.Common.UI
             if (DoTriggerButton(new UFStyle()
             {
                 Label = name,
-                BackgroundStyle = UBStyles.EventButtonStyleSmall,
-                IconStyle = on ? UBStyles.TriggerActiveButtonStyle : UBStyles.TriggerInActiveButtonStyle
+                BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                IconStyle = on ? ElementDesignerStyles.TriggerActiveButtonStyle : ElementDesignerStyles.TriggerInActiveButtonStyle
             }))
             {
                 return !on;

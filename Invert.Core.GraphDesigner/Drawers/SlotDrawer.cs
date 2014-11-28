@@ -17,6 +17,8 @@ namespace Invert.Core.GraphDesigner
 
     public class SlotDrawer<TViewModel> : Drawer<TViewModel> where TViewModel : GraphItemViewModel
     {
+        private GUIStyle guiStyle;
+
         public SlotDrawer(TViewModel viewModelObject)
             : base(viewModelObject)
         {
@@ -35,7 +37,12 @@ namespace Invert.Core.GraphDesigner
             var size = ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name));
 
             Bounds = new Rect(position.x + 25, position.y, size.x + 25, 28);
-
+             guiStyle = new GUIStyle(ElementDesignerStyles.HeaderStyle);
+            if (ViewModel.OutputConnector != null)
+            {
+                guiStyle.alignment = TextAnchor.MiddleRight;
+               // Bounds = new Rect(position.x, position.y, size.x -25, 28);
+            }
 
         }
 
@@ -43,7 +50,9 @@ namespace Invert.Core.GraphDesigner
         {
             base.Draw(scale);
             ViewModel.ConnectorBounds = new Rect(Bounds.x, Bounds.y, Bounds.width - 50, 28);
-            GUI.Label(Bounds.Scale(scale), ViewModel.Name, ElementDesignerStyles.HeaderStyle);
+            var adjusted = new Rect(Bounds);
+            adjusted.width -= 50;
+            GUI.Label(adjusted.Scale(scale), ViewModel.Name, guiStyle);
         }
     }
 }

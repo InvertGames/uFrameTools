@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditorInternal;
 
 namespace Invert.Core.GraphDesigner
@@ -33,15 +34,71 @@ namespace Invert.Core.GraphDesigner
             return method;
         }
 
+        public static CodeTypeDeclaration ToClassDecleration(this Type type)
+        {
+            var classDecleration = new CodeTypeDeclaration()
+            {
+                Name = type.Name
+            };
+
+            ToClassDecleration(type, classDecleration);
+
+
+            return classDecleration;
+
+        }
+
+        public static void ToClassDecleration(Type type, CodeTypeDeclaration classDecleration)
+        {
+            classDecleration.Name = type.Name;
+            classDecleration.IsInterface = type.IsInterface;
+            classDecleration.IsEnum = type.IsEnum;
+            classDecleration.IsClass = type.IsClass;
+            classDecleration.IsStruct = !type.IsClass && !type.IsEnum && !type.IsInterface && !type.IsPrimitive;
+
+            if (type.BaseType != null)
+            {
+                classDecleration.BaseTypes.Add(new CodeTypeReference(type.BaseType));
+            }
+            var interfaces = type.GetInterfaces();
+            foreach (var item in interfaces)
+            {
+                if (item.DeclaringType == type)
+                    classDecleration.BaseTypes.Add(new CodeTypeReference(item));
+            }
+            if (type.IsAbstract && type.IsSealed)
+            {
+                classDecleration.Attributes |= MemberAttributes.Static;
+            } else if (type.IsAbstract)
+            {
+                classDecleration.Attributes |= MemberAttributes.Abstract;
+            }
+
+            if (type.IsPublic)
+                classDecleration.Attributes |= MemberAttributes.Public;
+            else
+                classDecleration.Attributes |= MemberAttributes.Private;
+
+            
+        }
+
         public static CodeMemberMethod MethodFromTypeMethod(this Type type, string methodName, bool callBase = true)
         {
-            var m = type.GetMethod(methodName);
+            var m = type.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
             var method = new CodeMemberMethod()
             {
                 Name = methodName,
                 ReturnType = new CodeTypeReference(m.ReturnType)
             };
-            method.Attributes = MemberAttributes.Override;
+
+            if (m.IsVirtual && !m.IsFinal)
+            {
+                method.Attributes = MemberAttributes.Override;
+            }
+            else
+            {
+                method.Attributes |= MemberAttributes.Final;
+            }
             if (m.IsPublic)
             {
                 method.Attributes |= MemberAttributes.Public;
@@ -77,6 +134,53 @@ namespace Invert.Core.GraphDesigner
             return method;
         }
 
+        public static CodeMemberProperty PropertyFromTypeProperty(this Type type, string propertyName, bool callBase = true)
+        {
+            var property= type.GetProperty(propertyName,BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+            var m = property.GetGetMethod(true);
+            
+            var codeProperty = new CodeMemberProperty()
+            {
+                Name = propertyName,
+                Type = new CodeTypeReference(property.PropertyType),
+                Attributes = MemberAttributes.Public,
+                HasGet = true
+            };
+            codeProperty.HasSet = property.GetSetMethod(false) != null;
+            
+            if (m.IsPublic)
+            {
+                codeProperty.Attributes |= MemberAttributes.Public;
+            } else
+            if (m.IsPrivate)
+            {
+                codeProperty.Attributes |= MemberAttributes.Private;
+            }
+            if (m.IsFamily)
+            {
+                codeProperty.Attributes |= MemberAttributes.Family;
+            }
+            if (m.IsFamilyAndAssembly)
+            {
+                codeProperty.Attributes |= MemberAttributes.FamilyAndAssembly;
+            }
+            if (m.IsFamilyOrAssembly)
+            {
+                codeProperty.Attributes |= MemberAttributes.FamilyOrAssembly;
+            }
+            if (m.IsFinal || !m.IsVirtual)
+            {
+               codeProperty.Attributes |= MemberAttributes.Final;
+                
+            }
+            else
+            {
+               
+            }
+     
+            return codeProperty;
+        }
+
 
         //public static CodeMemberMethod Parameter(this CodeMemberMethod method)
         //{
@@ -100,7 +204,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         #region methods
-        public static CodeMemberMethod private_func(this CodeTypeDeclaration s, string returnType, string methodName, params object[] parameters)
+        public static CodeMemberMethod private_func(this CodeTypeDeclaration s, object returnType, string methodName, params object[] parameters)
         {
             var method = new CodeMemberMethod()
             {
@@ -108,13 +212,22 @@ namespace Invert.Core.GraphDesigner
                 Attributes = MemberAttributes.Private | MemberAttributes.Final,
                 Name = methodName
             };
-            if (returnType == null || returnType == "void")
+
+            if (returnType == null)
             {
-                method.ReturnType = new CodeTypeReference(typeof (void));
+                method.ReturnType = new CodeTypeReference(typeof(void));
             }
-            else
+            if (returnType is Type)
             {
-                method.ReturnType = new CodeTypeReference(returnType);
+                method.ReturnType = new CodeTypeReference((Type)returnType);
+            }
+            else if (returnType is CodeTypeReference)
+            {
+                method.ReturnType = (CodeTypeReference)returnType;
+            }
+            else if (returnType is string)
+            {
+                method.ReturnType = new CodeTypeReference((string)returnType);
             }
 
             for (var i = 0; i < parameters.Length; i+=2)
@@ -140,14 +253,14 @@ namespace Invert.Core.GraphDesigner
             s.Members.Add(method);
             return method;
         }
-        public static CodeMemberMethod protected_func(this CodeTypeDeclaration s, string returnType, string methodName, params object[] parameters)
+        public static CodeMemberMethod protected_func(this CodeTypeDeclaration s, object returnType, string methodName, params object[] parameters)
         {
             var result = private_func(s, returnType, methodName, parameters);
             result.Attributes = MemberAttributes.Family | MemberAttributes.Final;
             return result;
         }
 
-        public static CodeMemberMethod public_func(this CodeTypeDeclaration s, string returnType, string methodName, params object[] parameters)
+        public static CodeMemberMethod public_func(this CodeTypeDeclaration s, object returnType, string methodName, params object[] parameters)
         {
             var result = private_func(s, returnType, methodName, parameters);
             result.Attributes = MemberAttributes.Public | MemberAttributes.Final;
@@ -178,30 +291,30 @@ namespace Invert.Core.GraphDesigner
         //    m.Statements.Add(baseInvoke);
         //    return m;
         //}
-        public static CodeMemberMethod protected_virtual_func(this CodeTypeDeclaration s, string returnType, string methodName, params object[] parameters)
+        public static CodeMemberMethod protected_virtual_func(this CodeTypeDeclaration s, object returnType, string methodName, params object[] parameters)
         {
             var result = private_func(s, returnType, methodName, parameters);
             result.Attributes = MemberAttributes.Family;
             return result;
         }
 
-        public static CodeMemberMethod public_virtual_func(this CodeTypeDeclaration s, string returnType, string methodName, params object[] parameters)
+        public static CodeMemberMethod public_virtual_func(this CodeTypeDeclaration s, object returnType, string methodName, params object[] parameters)
         {
             var result = private_func(s, returnType, methodName, parameters);
             result.Attributes = MemberAttributes.Public;
             return result;
         }
-        public static CodeMemberMethod protected_override_func(this CodeTypeDeclaration s, string returnType, string methodName, params object[] parameters)
+        public static CodeMemberMethod protected_override_func(this CodeTypeDeclaration s, object returnType, string methodName, params object[] parameters)
         {
             var result = private_func(s, returnType, methodName, parameters);
-            result.Attributes = MemberAttributes.Family;
+            result.Attributes = MemberAttributes.Family | MemberAttributes.Override;
             return result;
         }
 
-        public static CodeMemberMethod public_override_func(this CodeTypeDeclaration s, string returnType, string methodName, params object[] parameters)
+        public static CodeMemberMethod public_override_func(this CodeTypeDeclaration s, object returnType, string methodName, params object[] parameters)
         {
             var result = private_func(s, returnType, methodName, parameters);
-            result.Attributes = MemberAttributes.Public;
+            result.Attributes = MemberAttributes.Public | MemberAttributes.Override;
             return result;
         }
         #endregion
@@ -209,14 +322,35 @@ namespace Invert.Core.GraphDesigner
         #region properties
 
 
-        public static CodeMemberProperty private_(this CodeTypeDeclaration s, string returnType, string propertyName, params object[] nameArgs)
+        public static CodeMemberProperty private_(this CodeTypeDeclaration s, object propertyType, string propertyName, params object[] nameArgs)
         {
             var method = new CodeMemberProperty()
             {
-                Type = new CodeTypeReference(returnType),
                 Attributes = MemberAttributes.Private | MemberAttributes.Final,
                 Name=string.Format(propertyName,nameArgs)
             };
+            if (propertyType == null)
+            {
+                method.Type = new CodeTypeReference(typeof(string));
+            }
+            var type = propertyType as Type;
+            if (type != null)
+            {
+                method.Type = new CodeTypeReference(type);
+            }
+            else
+            {
+                var reference = propertyType as CodeTypeReference;
+                if (reference != null)
+                {
+                    method.Type = reference;
+                }
+                else if (propertyType is string)
+                {
+                    method.Type = new CodeTypeReference((string)propertyType);
+                }
+            }
+
             if (!method.UserData.Contains("Decleration"))
             {
                 method.UserData.Add("Decleration",s);
@@ -224,57 +358,69 @@ namespace Invert.Core.GraphDesigner
             s.Members.Add(method);
             return method;
         }
-        public static CodeMemberProperty protected_(this CodeTypeDeclaration s, string returnType, string propertyName, params object[] nameArgs)
+        public static CodeMemberProperty protected_(this CodeTypeDeclaration s, object returnType, string propertyName, params object[] nameArgs)
         {
             var result = private_(s, returnType, propertyName, nameArgs);
             result.Attributes = MemberAttributes.Family | MemberAttributes.Final;
             return result;
         }
 
-        public static CodeMemberProperty public_(this CodeTypeDeclaration s, string returnType, string propertyName, params object[] nameArgs)
+        public static CodeMemberProperty public_(this CodeTypeDeclaration s, object returnType, string propertyName, params object[] nameArgs)
         {
             var result = private_(s, returnType, propertyName, nameArgs);
             result.Attributes = MemberAttributes.Public | MemberAttributes.Final;
             return result;
         }
 
-        public static CodeMemberProperty protected_virtual_(this CodeTypeDeclaration s, string returnType, string propertyName, params object[] nameArgs)
+        public static CodeMemberProperty protected_virtual_(this CodeTypeDeclaration s, object returnType, string propertyName, params object[] nameArgs)
         {
             var result = private_(s, returnType, propertyName, nameArgs);
             result.Attributes = MemberAttributes.Family;
             return result;
         }
 
-        public static CodeMemberProperty public_virtual_(this CodeTypeDeclaration s, string returnType, string propertyName, params object[] nameArgs)
+        public static CodeMemberProperty public_virtual_(this CodeTypeDeclaration s, object returnType, string propertyName, params object[] nameArgs)
         {
             var result = private_(s, returnType, propertyName, nameArgs);
             result.Attributes = MemberAttributes.Public;
             return result;
         }
-        public static CodeMemberProperty protected_override_(this CodeTypeDeclaration s, string returnType, string propertyName, params object[] nameArgs)
+        public static CodeMemberProperty protected_override_(this CodeTypeDeclaration s, object returnType, string propertyName, params object[] nameArgs)
         {
             var result = private_(s, returnType, propertyName, nameArgs);
-            result.Attributes = MemberAttributes.Family;
+            result.Attributes = MemberAttributes.Family | MemberAttributes.Override;
             return result;
         }
 
-        public static CodeMemberProperty public_override_(this CodeTypeDeclaration s, string returnType, string propertyName, params object[] nameArgs)
+        public static CodeMemberProperty public_override_(this CodeTypeDeclaration s, object returnType, string propertyName, params object[] nameArgs)
         {
             var result = private_(s, returnType, propertyName, nameArgs);
-            result.Attributes = MemberAttributes.Public;
+            result.Attributes = MemberAttributes.Public | MemberAttributes.Override;
             return result;
         }
         #endregion
 
         #region fields
-        public static CodeMemberField _private_(this CodeTypeDeclaration s, string returnType, string fieldName, params object[] nameArgs)
+        public static CodeMemberField _private_(this CodeTypeDeclaration s, object returnType, string fieldName, params object[] nameArgs)
         {
             var method = new CodeMemberField()
             {
-                Type = new CodeTypeReference(returnType),
+                //Type = returnType is CodeTypeReference ? (CodeTypeReference)returnType : new CodeTypeReference((string)returnType),
                 Attributes = MemberAttributes.Private | MemberAttributes.Final,
                 Name = string.Format(fieldName,nameArgs)
             };
+            if (returnType is Type)
+            {
+                method.Type = new CodeTypeReference((Type)returnType);
+            }
+            else if (returnType is CodeTypeReference)
+            {
+                method.Type = (CodeTypeReference)returnType;
+            }
+            else if (returnType is string)
+            {
+                method.Type = new CodeTypeReference((string)returnType);
+            }
             if (!method.UserData.Contains("Decleration"))
             {
                 method.UserData.Add("Decleration", s);
@@ -282,48 +428,47 @@ namespace Invert.Core.GraphDesigner
             s.Members.Add(method);
             return method;
         }
-        public static CodeMemberField _protected_(this CodeTypeDeclaration s, string returnType, string fieldName, params object[] nameArgs)
+        public static CodeMemberField _protected_(this CodeTypeDeclaration s, object returnType, string fieldName, params object[] nameArgs)
         {
             var result = _private_(s, returnType, fieldName, nameArgs);
             result.Attributes = MemberAttributes.Family | MemberAttributes.Final;
             return result;
         }
 
-        public static CodeMemberField _public_(this CodeTypeDeclaration s, string returnType, string fieldName, params object[] nameArgs)
+        public static CodeMemberField _public_(this CodeTypeDeclaration s, object returnType, string fieldName, params object[] nameArgs)
         {
             var result = _private_(s, returnType, fieldName, nameArgs);
             result.Attributes = MemberAttributes.Public | MemberAttributes.Final;
             return result;
         }
 
-        public static CodeMemberField _protected_virtual_(this CodeTypeDeclaration s, string returnType, string fieldName, params object[] nameArgs)
+        public static CodeMemberField _protected_virtual_(this CodeTypeDeclaration s, object returnType, string fieldName, params object[] nameArgs)
         {
             var result = _private_(s, returnType, fieldName, nameArgs);
             result.Attributes = MemberAttributes.Family;
             return result;
         }
 
-        public static CodeMemberField _public_virtual_(this CodeTypeDeclaration s, string returnType, string fieldName, params object[] nameArgs)
+        public static CodeMemberField _public_virtual_(this CodeTypeDeclaration s, object returnType, string fieldName, params object[] nameArgs)
         {
             var result = _private_(s, returnType, fieldName, nameArgs);
             result.Attributes = MemberAttributes.Public;
             return result;
         }
-        public static CodeMemberField _protected_override_(this CodeTypeDeclaration s, string returnType, string fieldName, params object[] nameArgs)
+        public static CodeMemberField _protected_override_(this CodeTypeDeclaration s, object returnType, string fieldName, params object[] nameArgs)
         {
             var result = _private_(s, returnType, fieldName, nameArgs);
             result.Attributes = MemberAttributes.Family;
             return result;
         }
 
-        public static CodeMemberField _public_override_(this CodeTypeDeclaration s, string returnType, string fieldName, params object[] nameArgs)
+        public static CodeMemberField _public_override_(this CodeTypeDeclaration s, object returnType, string fieldName, params object[] nameArgs)
         {
             var result = _private_(s, returnType, fieldName, nameArgs);
             result.Attributes = MemberAttributes.Public;
             return result;
         }
         #endregion
-
 
         #region Statemenets 
         public static CodeConditionStatement _if(this CodeStatementCollection statements, string expression, params object[] args)
@@ -357,6 +502,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         #endregion
+
         public static CodeTypeDeclaration Declare(this CodeNamespace ns, MemberAttributes attributes, string name)
         {
             var decl = new CodeTypeDeclaration

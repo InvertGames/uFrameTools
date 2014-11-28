@@ -47,9 +47,10 @@ public class TemplateProperty : TemplateMember
     }
     
 }
- public enum MemberGeneratorLocation
+[Flags]
+ public enum MemberGeneratorLocation 
     {
-        DesignerFile,
-        EditableFile,
+        DesignerFile = 0,
+        EditableFile = 1,
         Both = DesignerFile | EditableFile
     }

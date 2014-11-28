@@ -144,7 +144,7 @@ namespace Invert.Core
                 if (attribute == null) continue;
                 yield return new KeyValuePair<PropertyInfo, TAttribute>(source, (TAttribute)attribute);
             }
-        }
+        } 
 
         public static IEnumerable<PropertyInfo> GetPropertiesByAttribute<TAttribute>(this object obj) where TAttribute : Attribute
         {
@@ -156,5 +156,19 @@ namespace Invert.Core
             return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(property => property.GetCustomAttributes(typeof(TAttribute), true).Length > 0);
         }
+        public static Type GetGenericParameter(this Type type)
+        {
+            var t = type;
+            while (t != null)
+            {
+                if (t.IsGenericType)
+                {
+                    return t.GetGenericArguments().FirstOrDefault();
+                }
+                t = t.BaseType;
+            }
+            return null;
+        }
+
     }
 }

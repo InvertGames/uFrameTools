@@ -3,13 +3,20 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.uFrame.Editor;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
+    public enum ClassTemplateType
+    {
+        BaseClass,
+        Copy,
+    }
+
     public class GenericNodeGenerator<TData> : CodeGenerator where TData : GenericNode
     {
         private CodeTypeDeclaration _decleration;
-        private TData _data;
+
 
         public TData Data
         {

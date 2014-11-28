@@ -20,7 +20,7 @@ public class StateMachineStateData : DiagramNode
         get { return this.Name; }
     }
 
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get { return Transitions.Cast<IDiagramNodeItem>(); }
         set { Transitions = value.OfType<StateTransitionData>().ToList(); }

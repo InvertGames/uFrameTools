@@ -53,7 +53,7 @@ public class SceneManagerData : DiagramNode
             }
         }
     }
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get { return Transitions.Cast<IDiagramNodeItem>(); }
         set
@@ -77,7 +77,7 @@ public class SceneManagerData : DiagramNode
         get { return true; }
     }
 
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
         get
         {

@@ -142,7 +142,7 @@ namespace Invert.Core.GraphDesigner
                 GUILayout.Label(ItemViewModel.Label, ElementDesignerStyles.SelectedItemStyle);
             } 
             if (ItemViewModel.AllowRemoving && ItemViewModel.IsSelected)
-                if (GUILayout.Button(string.Empty, UBStyles.RemoveButtonStyle.Scale(scale)))
+                if (GUILayout.Button(string.Empty, ElementDesignerStyles.RemoveButtonStyle.Scale(scale)))
                 {
                     InvertGraphEditor.ExecuteCommand(ItemViewModel.RemoveItemCommand);
                 }

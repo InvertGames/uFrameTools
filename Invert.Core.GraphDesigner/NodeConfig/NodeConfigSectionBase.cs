@@ -10,8 +10,6 @@ namespace Invert.Core.GraphDesigner
 
         public string Name { get; set; }
 
-        public bool CopyLocal { get; set; }
-
         public Type ChildType { get; set; }
 
         public bool AllowAdding
@@ -33,7 +31,8 @@ namespace Invert.Core.GraphDesigner
         public Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator { get; set; }
 
         public Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator { get; set; }
-
-        
+        public SectionVisibility Visibility { get; set; }
+        public bool HasPredefinedOptions { get; set; }
+        public Action<IDiagramNodeItem> OnAdd { get; set; }
     }
 }

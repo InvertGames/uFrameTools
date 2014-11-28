@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Invert.Core.GraphDesigner;
 
 public class ShellChildItemTypeNode : GenericInheritableNode, IShellReferenceType {
@@ -11,5 +13,12 @@ public class ShellChildItemTypeNode : GenericInheritableNode, IShellReferenceTyp
     public string ClassName
     {
         get { return this.Name + "ChildItem"; }
+    }
+    public IEnumerable<IReferenceNode> IncludedInSections
+    {
+        get
+        {
+            return Project.NodeItems.OfType<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
+        }
     }
 }

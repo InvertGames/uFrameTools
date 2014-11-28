@@ -53,7 +53,7 @@ public class ShellCodeGeneratorNodeGenerator : GenericNodeGenerator<ShellGenerat
 
     private void AddOverrideFillMethods(CodeMemberMethod method)
     {
-        foreach (var item in Data.ChildItems.OfType<OverrideMethodReference>())
+        foreach (var item in Data.ChildItems.OfType<TemplatePropertyReference>())
         {
             //MethodFromTypeMethod
 

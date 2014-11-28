@@ -89,6 +89,7 @@ public class ElementDiagramSettingsWindow : EditorWindow
             //s.SubSystemLinkColor = EditorGUILayout.ColorField("SubSystem Link Color", s.SubSystemLinkColor);
             //s.TransitionLinkColor = EditorGUILayout.ColorField("Transition Link Color", s.TransitionLinkColor);
             //s.ViewLinkColor = EditorGUILayout.ColorField("View Link Color", s.ViewLinkColor);
+            s.CodeGenDisabled = EditorGUILayout.Toggle("Disable Code Generation", s.CodeGenDisabled);
             s.SnapSize = Math.Max(1, EditorGUILayout.IntField("Snap Size", s.SnapSize));
             s.Snap = EditorGUILayout.Toggle("Snap",s.Snap);
          

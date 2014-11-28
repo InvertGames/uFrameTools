@@ -33,7 +33,7 @@ public class ComputedPropertyData : DiagramNode, IBindableTypedItem
     private List<string> _dependantPropertyIdentifiers = new List<string>();
     private string _type;
 
-    public override IEnumerable<IDiagramNodeItem> Items
+    public override IEnumerable<IDiagramNodeItem> DisplayedItems
     {
         get { yield break; }
     }
@@ -104,7 +104,7 @@ public class ComputedPropertyData : DiagramNode, IBindableTypedItem
         get { return this.Name; }
     }
 
-    public override IEnumerable<IDiagramNodeItem> ContainedItems
+    public override IEnumerable<IDiagramNodeItem> PersistedItems
     {
         get { yield break; }
         set { }

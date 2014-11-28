@@ -23,7 +23,7 @@ namespace Invert.Core.GraphDesigner
         /// <summary>
         /// Any child list items of the node
         /// </summary>
-        IEnumerable<IDiagramNodeItem> Items { get; }
+        IEnumerable<IDiagramNodeItem> DisplayedItems { get; }
 
         /// <summary>
         /// Is this node dirty/modified and should its bounds be recalculated.
@@ -64,7 +64,9 @@ namespace Invert.Core.GraphDesigner
         /// <summary>
         /// The items that should be persisted with this diagram node.
         /// </summary>
-        IEnumerable<IDiagramNodeItem> ContainedItems { get; }
+        IEnumerable<IDiagramNodeItem> PersistedItems { get; }
+
+        IEnumerable<IGraphItem> GraphItems { get; } 
 
         bool IsNewNode { get; set; }
         bool IsExternal { get; }

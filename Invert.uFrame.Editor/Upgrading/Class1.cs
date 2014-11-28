@@ -24,7 +24,7 @@ namespace Invert.uFrame.Editor.Upgrading
                 if (foundElement != null)
                     node.BaseIdentifier = foundElement.Identifier;
 
-                foreach (var item in node.ContainedItems.OfType<IBindableTypedItem>())
+                foreach (var item in node.PersistedItems.OfType<IBindableTypedItem>())
                 {
                     var uFrameType = graphData.NodeItems.FirstOrDefault(p => p.Name == item.RelatedType);
                     if (uFrameType != null)

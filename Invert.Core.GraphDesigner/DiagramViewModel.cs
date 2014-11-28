@@ -149,13 +149,17 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var item in CurrentNodes)
             {
+
                 // Get the ViewModel for the data
                 var vm =
                     InvertApplication.Container.ResolveRelation<ViewModel>(item.GetType(), item, this) as
                         GraphItemViewModel;
                 if (vm == null)
                 {
-                    Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
+                    if (EditorUtility.DisplayDialog("Node Error", string.Format("Couldn't find view-model for {0} would you like to remove this item?", item.GetType()),"Yes","No"))
+                    {
+                        CurrentRepository.RemoveNode(item);
+                    }
                     continue;
                 }
                 GraphItems.Add(vm);

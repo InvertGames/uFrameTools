@@ -61,12 +61,12 @@ namespace Invert.Core.GraphDesigner
 
         public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator
         {
-            get { return NodeConfig.InputValidator; }
+            get { return GraphItem.ValidateInput; }
         }
 
         public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator
         {
-            get { return NodeConfig.OutputValidator; }
+            get { return GraphItem.ValidateOutput; }
         }
 
         protected override void CreateContent()
@@ -79,34 +79,35 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsInput))
             {
-                //if (typeof(GenericNode).IsAssignableFrom(inputConfig.SourceType) &&
-                //  !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType))
-                //{
-                //    if (DiagramViewModel.CurrentRepository.CurrentFilter != inputConfig.SourceType)
-                //        continue;
-                //}
+                if (!IsVisible(inputConfig.Visibility)) continue;
+
                 var header = new InputOutputViewModel()
                 {
                     Name = inputConfig.Name.GetValue(GraphItem),
                     DataObject =
-                        inputConfig.IsAlias ? DataObject : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
+                        inputConfig.IsAlias ? DataObject : inputConfig.GetDataObject(GraphItem),
                     InputConnectorType = inputConfig.SourceType,
                     IsInput = true
                 };
                 ContentItems.Add(header);
 
+                header.InputConnector.AlwaysVisible = true;
                 header.InputConnector.AllowMultiple = inputConfig.AllowMultiple;
-                header.InputConnector.Validator = inputConfig.Validator;
+                var slot = header.DataObject as GenericSlot;
+                if (slot != null)
+                {
+                    header.InputConnector.Validator = slot.Validate;
+                }
+                else
+                {
+                    header.InputConnector.Validator = inputConfig.Validator;
+                }
+                
                 header.InputConnector.Configuration = inputConfig;
             }
             foreach (var inputConfig in NodeConfig.Inputs.Where(p => p.IsOutput))
             {
-                if (typeof(GenericNode).IsAssignableFrom(inputConfig.SourceType) &&
-                    !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, inputConfig.SourceType))
-                {
-                    //if (DiagramViewModel.CurrentRepository.CurrentFilter != inputConfig.SourceType)
-                    continue;
-                }
+                if (!IsVisible(inputConfig.Visibility)) continue;
 
                 var header = new InputOutputViewModel()
                 {
@@ -114,23 +115,33 @@ namespace Invert.Core.GraphDesigner
                     DataObject =
                         inputConfig.IsAlias
                             ? DataObject
-                            : GraphItem.GetConnectionReference(inputConfig.ReferenceType),
+                            : inputConfig.GetDataObject(GraphItem),
                     OutputConnectorType = inputConfig.SourceType,
                     IsInput = false,
                     IsOutput = true
                 };
+
                 ContentItems.Add(header);
+                header.OutputConnector.AlwaysVisible = true;
                 header.OutputConnector.AllowMultiple = inputConfig.AllowMultiple;
-                header.OutputConnector.Validator = inputConfig.Validator;
+                var slot = header.DataObject as GenericSlot;
+                if (slot != null)
+                {
+                    header.OutputConnector.Validator = slot.Validate;
+                }
+                else
+                {
+                    header.OutputConnector.Validator = inputConfig.Validator;
+                }
                 header.OutputConnector.Configuration = inputConfig;
             }
 
             foreach (var section in NodeConfig.Sections)
             {
+
                 if (InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, section.ChildType)) continue;
-                var section1 = section as NodeConfigSection<TData>;
-                //if (typeof(IDiagramNode).IsAssignableFrom(section.ChildType) && !InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, section.ChildType)))
-                //continue;
+                var section1 = section as NodeConfigSectionBase;
+                if (!IsVisible(section.Visibility)) continue;
 
                 if (!string.IsNullOrEmpty(section.Name))
                 {
@@ -148,7 +159,7 @@ namespace Invert.Core.GraphDesigner
                                 {
                                     if (section1.AllowDuplicates)
                                     {
-                                        InvertGraphEditor.WindowManager.InitItemWindow(section1.Selector(GraphItem),
+                                        InvertGraphEditor.WindowManager.InitItemWindow(section1.GenericSelector(GraphItem),
                                             (selected) =>
                                             {
                                                 
@@ -158,7 +169,7 @@ namespace Invert.Core.GraphDesigner
                                     else
                                     {
                                         InvertGraphEditor.WindowManager.InitItemWindow(
-                                            section1.Selector(GraphItem)
+                                            section1.GenericSelector(GraphItem)
                                                 .Where(
                                                     p =>
                                                         !GraphItem.ChildItems.OfType<GenericReferenceItem>()
@@ -173,9 +184,9 @@ namespace Invert.Core.GraphDesigner
                                 }
                                 else
                                 {
-                                    if (section1.Selector != null && section1.HasPredefinedOptions)
+                                    if (section1.GenericSelector != null && section1.HasPredefinedOptions)
                                     {
-                                        InvertGraphEditor.WindowManager.InitItemWindow(section1.Selector(GraphItem),
+                                        InvertGraphEditor.WindowManager.InitItemWindow(section1.GenericSelector(GraphItem),
                                             (selected) =>
                                             {
                                                 var item = selected as GenericNodeChildItem;
@@ -215,10 +226,10 @@ namespace Invert.Core.GraphDesigner
                     });
                 }
 
-                if (section1.Selector != null && section1.ReferenceType == null && section1.IsProxy)
+                if (section1.GenericSelector != null && section1.ReferenceType == null && section1.IsProxy)
                 {
 
-                    foreach (var item in section1.Selector(GraphItem))
+                    foreach (var item in section1.GenericSelector(GraphItem))
                     {
 
                         if (section.ChildType.IsAssignableFrom(item.GetType()))
@@ -275,6 +286,15 @@ namespace Invert.Core.GraphDesigner
 
         }
 
+        private bool IsVisible(SectionVisibility section)
+        {
+            if (section == SectionVisibility.Always) return true;
+            if (section == SectionVisibility.WhenNodeIsFilter)
+            {
+                return InvertGraphEditor.CurrentProject.CurrentFilter == GraphItem;
+            }
+            return InvertGraphEditor.CurrentProject.CurrentFilter != GraphItem;
+        }
 
 
         protected virtual void OnAdd(NodeConfigSectionBase configSection, GenericNodeChildItem item)

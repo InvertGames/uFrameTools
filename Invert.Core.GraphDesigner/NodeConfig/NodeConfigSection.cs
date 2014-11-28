@@ -5,7 +5,7 @@ namespace Invert.Core.GraphDesigner
 {
     public class NodeConfigSection<TNode> : NodeConfigSectionBase where TNode : GenericNode
     {
-        public Action<IDiagramNodeItem> OnAdd { get; set; }
+       
 
         public Func<TNode, IEnumerable<IGraphItem>> Selector
         {
@@ -17,6 +17,7 @@ namespace Invert.Core.GraphDesigner
             set { GenericSelector = p => value(p as TNode); }
         }
 
-        public bool HasPredefinedOptions { get; set; }
+      //  public bool HasPredefinedOptions { get; set; }
+
     }
 }

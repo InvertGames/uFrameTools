@@ -63,6 +63,7 @@
     <Compile Include="CodeGenerator\MemberItemGenerator.cs" />
     <Compile Include="CodeGenerator\GenericNodeGenerator.cs" />
     <Compile Include="CodeGenerator\ShowInSettings.cs" />
+    <Compile Include="CodeGenerator\TypeClassGenerator.cs" />
     <Compile Include="CodeGenerator\TypeGeneratorPostProcessor.cs" />
     <Compile Include="Commands\Context\ContextEditorCommand.cs" />
     <Compile Include="Commands\Context\IContextMenuItem.cs" />
@@ -173,7 +174,7 @@
     <Compile Include="NodeConfig\ShellMemberGeneratorNode.cs" />
     <Compile Include="NodeConfig\TagConfig.cs" />
     <Compile Include="NodeConfig\ValidatorType.cs" />
-    <Compile Include="TypedItemDrawer.cs" />
+    <Compile Include="Drawers\TypedItemDrawer.cs" />
     <Compile Include="TypedItemViewModel.cs" />
     <Compile Include="Enums\EnumItemViewModel.cs" />
     <Compile Include="Enums\EnumNodeViewModel.cs" />
@@ -227,7 +228,7 @@
     <Compile Include="SimpleType\ClassCollectionData.cs" />
     <Compile Include="SimpleType\ClassCollectionItemViewModel.cs" />
     <Compile Include="SimpleType\ClassNodeData.cs" />
-    <Compile Include="SimpleType\ClassNodeDrawer.cs" />
+    <Compile Include="Drawers\ClassNodeDrawer.cs" />
     <Compile Include="SimpleType\ClassNodeInheritanceConnectionStrategy.cs" />
     <Compile Include="SimpleType\ClassNodeViewModel.cs" />
     <Compile Include="SimpleType\ClassPropertyData.cs" />
@@ -286,12 +287,13 @@
       <Name>Invert.MVVM</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
-copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y
-copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Editor\uFrameShell\ /Y</PostBuildEvent>
+copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y
+copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
