@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Invert.Common;
+using Invert.Core.GraphDesigner.Unity;
 using UnityEditor;
 using UnityEngine;
 
@@ -181,7 +182,7 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var item in ViewModel.ContentItems)
             {
-                var drawer = InvertGraphEditor.CreateDrawer(item);
+                var drawer = InvertGraphEditor.Container.CreateDrawer(item);
                 if (drawer == null)
                     Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.",
                         item.GetType().Name));

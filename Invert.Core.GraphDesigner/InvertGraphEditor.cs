@@ -30,6 +30,7 @@ namespace Invert.Core.GraphDesigner
     public interface IGraphWindow : ICommandHandler
     {
         DiagramViewModel DiagramViewModel { get; }
+        float Scale { get; set; }
         void RefreshContent();
     }
 
@@ -122,7 +123,7 @@ namespace Invert.Core.GraphDesigner
                 _currentProject = value;
                 if (value != null)
                 {
-                    foreach (var diagram in _currentProject.Diagrams)
+                    foreach (var diagram in _currentProject.Graphs)
                     {
                         diagram.SetProject(value);
                     }
@@ -209,25 +210,6 @@ namespace Invert.Core.GraphDesigner
             return (TCommandUI)ui;
         }
 
-        public static IDrawer CreateDrawer(ViewModel viewModel)
-        {
-            return CreateDrawer<IDrawer>(viewModel);
-        }
-
-        public static IDrawer CreateDrawer<TDrawerBase>(ViewModel viewModel) where TDrawerBase : IDrawer
-        {
-            if (viewModel == null)
-            {
-                Debug.LogError("Data is null.");
-                return null;
-            }
-            var drawer = Container.ResolveRelation<TDrawerBase>(viewModel.GetType(), viewModel);
-            if (drawer == null)
-            {
-                Debug.Log(String.Format("Couldn't Create drawer for {0}.", viewModel.GetType()));
-            }
-            return drawer;
-        }
 
         public static void DesignerPluginLoaded()
         {
@@ -301,9 +283,9 @@ namespace Invert.Core.GraphDesigner
                 DesignerGeneratorFactory generator = diagramItemGenerator;
                 // If its a generator for the entire diagram
 
-                if (typeof(GraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
+                if (typeof(IGraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
                 {
-                    var diagrams = project.Diagrams;
+                    var diagrams = project.Graphs;
                     foreach (var diagram in diagrams)
                     {
                         if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
@@ -326,7 +308,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 else if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
                 {
-                    foreach (var diagram in project.Diagrams)
+                    foreach (var diagram in project.Graphs)
                     {
 
                         if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
@@ -358,7 +340,7 @@ namespace Invert.Core.GraphDesigner
         private static IEnumerable<CodeGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, IProjectRepository project,
             DesignerGeneratorFactory generator, DesignerGeneratorFactory diagramItemGenerator, bool includeDisabled = false)
         {
-            foreach (var diagram in project.Diagrams)
+            foreach (var diagram in project.Graphs)
             {
 
                 if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
@@ -552,105 +534,6 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    public class ScaffoldNode<TData> where TData : GenericNode
-    {
-      
-        public class Drawer : GenericNodeDrawer<TData, ViewModel>
-        {
-
-
-            public Drawer(ViewModel viewModel)
-                : base(viewModel)
-            {
-               
-            }
-        }
-
-        public class ItemDrawer : ScaffoldNodeChildItem<TData>.Drawer
-        {
-            public ItemDrawer(ScaffoldNodeChildItem<TData>.ViewModel viewModel)
-                : base(viewModel)
-            {
-            }
-        }
-
-        public class ItemViewModel : ScaffoldNodeChildItem<TData>.ViewModel
-        {
-            public ItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
-                : base(graphItemObject, diagramViewModel)
-            {
-            }
-        }
-
-        public class ScaffoldTypedItemDrawer : ScaffoldNodeTypedChildItem<TData>.Drawer
-        {
-            public ScaffoldTypedItemDrawer(ScaffoldNodeTypedChildItem<TData>.ViewModel viewModel)
-                : base(viewModel)
-            {
-            }
-        }
-
-        public class TypedItemViewModel : ScaffoldNodeTypedChildItem<TData>.ViewModel
-        {
-            public TypedItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
-                : base(graphItemObject, diagramViewModel)
-            {
-            }
-        }
-
-        public class ViewModel : GenericNodeViewModel<TData>
-        {
-            public ViewModel(TData graphItemObject, DiagramViewModel diagramViewModel)
-                : base(graphItemObject, diagramViewModel)
-            {
-            }
-        }
-    }
-
-    public class ScaffoldNodeChildItem<TData> where TData : IDiagramNodeItem
-    {
-        public class Drawer : ItemDrawer
-        {
-            public Drawer(ViewModel viewModel)
-                : base(viewModel)
-            {
-            }
-        }
-
-        public class ViewModel : GenericItemViewModel<TData>
-        {
-            public ViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
-                : base(graphItemObject, diagramViewModel)
-            {
-            }
-        }
-    }
-
-    public class ScaffoldNodeTypedChildItem<TData> where TData : ITypedItem
-    {
-        public class Drawer : ElementItemDrawer
-        {
-            public Drawer(ViewModel viewModel)
-                : base(viewModel)
-            {
-            }
-        }
-
-        public class ViewModel : TypedItemViewModel
-        {
-            public override string TypeLabel
-            {
-                get { return Data.RelatedTypeName; }
-            }
-
-            public ViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
-                : base(graphItemObject, diagramViewModel)
-            {
-            }
-        }
-
-      
-    }
 
     //public class CustomItemDrawer<TData> : ItemDrawer
     //{

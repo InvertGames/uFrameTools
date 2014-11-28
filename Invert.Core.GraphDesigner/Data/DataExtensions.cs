@@ -3,13 +3,13 @@ using Invert.Core.GraphDesigner;
 
 public static class DataExtensions
 {
-    public static GraphData GetDiagram(this IDiagramNode node, IProjectRepository project)
+    public static IGraphData GetDiagram(this IDiagramNode node, IProjectRepository project)
     {
-        return project.Diagrams.FirstOrDefault(p => p.NodeItems.Contains(node));
+        return project.Graphs.FirstOrDefault(p => p.NodeItems.Contains(node));
     }
-    public static GraphData GetDiagram(this IDiagramNode node)
+    public static IGraphData GetDiagram(this IDiagramNode node)
     {
-        return ((IProjectRepository) node.Project).Diagrams.FirstOrDefault(p => p.NodeItems.Contains(node));
+        return ((IProjectRepository)node.Project).Graphs.FirstOrDefault(p => p.NodeItems.Contains(node));
     }
     public static ICodePathStrategy GetPathStrategy(this IDiagramNode node, IProjectRepository project)
     {

@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using Invert.Core.GraphDesigner;
-using UnityEngine;
 
 
 public interface IGraphData : IElementFileData
@@ -19,9 +17,10 @@ public interface IGraphData : IElementFileData
     IDiagramFilter RootFilter { get;  }
     ICodePathStrategy CodePathStrategy { get; set; }
 
-    IEnumerable<ConnectionData> Connections { get; }
+    //IEnumerable<ConnectionData> Connections { get; }
     void AddConnection(IGraphItem output, IGraphItem input);
     void RemoveConnection(IGraphItem output, IGraphItem input);
     void ClearOutput(IGraphItem output);
     void ClearInput(IGraphItem input);
+    void SetProject(IProjectRepository value);
 }

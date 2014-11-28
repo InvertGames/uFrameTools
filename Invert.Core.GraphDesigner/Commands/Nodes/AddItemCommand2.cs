@@ -115,7 +115,7 @@ namespace Invert.Core.GraphDesigner
         {
             var viewModel = item as DiagramNodeViewModel;
             if (viewModel == null) yield break;
-            var diagrams = viewModel.DiagramViewModel.CurrentRepository.Diagrams;
+            var diagrams = viewModel.DiagramViewModel.CurrentRepository.Graphs;
 
             foreach (var diagram in diagrams)
             {
@@ -186,7 +186,7 @@ namespace Invert.Core.GraphDesigner
         public override void Perform(DiagramNodeViewModel node)
         {
             var sourceDiagram = node.DiagramViewModel.DiagramData;
-            var targetDiagram = node.DiagramViewModel.CurrentRepository.Diagrams.FirstOrDefault(p=>p.NodeItems.Contains(node.GraphItemObject));
+            var targetDiagram = node.DiagramViewModel.CurrentRepository.Graphs.FirstOrDefault(p => p.NodeItems.Contains(node.GraphItemObject));
             if (targetDiagram == null) return;
 
             targetDiagram.RemoveNode(node.GraphItemObject);

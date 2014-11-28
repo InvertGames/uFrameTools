@@ -3,15 +3,41 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Invert.uFrame;
 
 namespace Invert.Core
 {
+    public interface IDebugLogger
+    {
+        void Log(string message);
+        void LogException(Exception ex);
+    }
+
+    public class DefaultLogger : IDebugLogger
+    {
+        public void Log(string message)
+        {
+            File.AppendAllText("uframe-log.txt", message + "\r\n\r\n");
+        }
+
+        public void LogException(Exception ex)
+        {
+            File.AppendAllText("uframe-log.txt", ex.Message + "\r\n\r\n" + ex.StackTrace +"\r\n\r\n");
+        }
+    }
     public static class InvertApplication
     {
+        public static IDebugLogger Logger
+        {
+            get { return _logger ?? (_logger = new DefaultLogger()); }
+            set { _logger = value; }
+        }
+
         private static uFrameContainer _container;
         private static ICorePlugin[] _plugins;
+        private static IDebugLogger _logger;
 
         public static uFrameContainer Container
         {
@@ -126,7 +152,7 @@ namespace Invert.Core
         public static void Log(string s)
         {
 #if DEBUG
-            File.AppendAllText("uframe-log.txt", s + "\r\n\r\n");
+            Logger.Log(s);
             //Debug.Log(s);
 #endif
         }
@@ -170,5 +196,9 @@ namespace Invert.Core
             return null;
         }
 
+        public static void LogException(Exception exception)
+        {
+            Logger.LogException(exception);
+        }
     }
 }

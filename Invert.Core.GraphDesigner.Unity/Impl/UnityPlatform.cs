@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
-    public class UnityPlatform :IPlatformOperations
+    public class UnityPlatform :IPlatformOperations, IDebugLogger
     {
         public void OpenScriptFile(string filePath)
         {
@@ -37,6 +37,16 @@ namespace Invert.Core.GraphDesigner.Unity
         public void RefreshAssets()
         {
             AssetDatabase.Refresh();
+        }
+
+        public void Log(string message)
+        {
+            Debug.Log(message);
+        }
+
+        public void LogException(Exception ex)
+        {
+            Debug.LogException(ex);
         }
     }
 

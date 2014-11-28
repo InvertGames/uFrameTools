@@ -591,7 +591,7 @@ namespace Invert.Core.GraphDesigner
                 foreach (var item in changeArgs.NewItems.OfType<ViewModel>())
                 {
                     if (item == null) Debug.Log("Graph Item is null");
-                    var drawer = InvertGraphEditor.CreateDrawer<IDrawer>(item);
+                    var drawer = InvertGraphEditor.Container.CreateDrawer<IDrawer>(item);
                     if (drawer == null) Debug.Log("Drawer is null");
                     Children.Add(drawer);
                     drawer.Refresh();

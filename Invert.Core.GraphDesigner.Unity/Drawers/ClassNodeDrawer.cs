@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Common;
-using Invert.uFrame.Editor.ViewModels;
+using Invert.Core.GraphDesigner.Unity;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -33,7 +33,7 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var item in ViewModel.ContentItems.Where(p => p.DataObject is ClassPropertyData))
             {
-                var drawer = InvertGraphEditor.CreateDrawer(item);
+                var drawer = InvertGraphEditor.Container.CreateDrawer(item);
                 if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
                 drawers.Add(drawer);
             }
@@ -47,7 +47,7 @@ namespace Invert.Core.GraphDesigner
             }));
             foreach (var item in ViewModel.ContentItems.Where(p=>p.DataObject is ClassCollectionData))
             {
-                var drawer = InvertGraphEditor.CreateDrawer(item);
+                var drawer = InvertGraphEditor.Container.CreateDrawer(item);
                 if (drawer == null) Debug.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.", item.GetType().Name));
                 drawers.Add(drawer);
             }

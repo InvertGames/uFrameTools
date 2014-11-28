@@ -1,9 +1,4 @@
-﻿using Invert.Core;
-using Invert.uFrame;
-
-using UnityEditor;
-
-namespace Invert.Core.GraphDesigner
+﻿namespace Invert.Core.GraphDesigner
 {
     public abstract class DiagramPlugin : CorePlugin, IDiagramPlugin
     {

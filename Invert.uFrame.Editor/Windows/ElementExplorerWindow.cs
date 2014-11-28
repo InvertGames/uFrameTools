@@ -182,7 +182,7 @@ public class ElementExplorerWindow : SearchableScrollWindow
     public override void OnGUIScrollView()
     {
         if (InvertGraphEditor.CurrentProject == null) return;
-        foreach (var diagram in InvertGraphEditor.CurrentProject.Diagrams)
+        foreach (var diagram in InvertGraphEditor.CurrentProject.Graphs)
         {
             DoFilter(diagram.RootFilter);
         }

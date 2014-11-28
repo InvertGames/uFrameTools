@@ -8,10 +8,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Perform(float node)
         {
-
-            ElementDesignerStyles.Scale = Scale;
-
-            
+            InvertGraphEditor.DesignerWindow.Scale = Scale;
         }
 
         public override string CanPerform(float node)

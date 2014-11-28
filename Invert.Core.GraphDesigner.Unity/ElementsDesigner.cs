@@ -114,6 +114,12 @@ namespace Invert.Core.GraphDesigner.Unity
             }
         }
 
+        public float Scale
+        {
+            get { return ElementDesignerStyles.Scale; }
+            set { ElementDesignerStyles.Scale = value; }
+        }
+
         public void RefreshContent()
         {
             if (DiagramDrawer != null)
@@ -730,9 +736,9 @@ namespace Invert.Core.GraphDesigner.Unity
         private void SelectDiagram()
         {
             var menu = new GenericMenu();
-            foreach (var item in CurrentProject.Diagrams)
+            foreach (var item in CurrentProject.Graphs)
             {
-                GraphData item1 = item;
+                IGraphData item1 = item;
                 menu.AddItem(new GUIContent(item.Name), DiagramDrawer != null && CurrentProject.CurrentGraph == item1, () =>
                 {
                     CurrentProject.CurrentGraph = item1;

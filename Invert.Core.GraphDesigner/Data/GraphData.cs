@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using UnityEngine;
@@ -67,7 +68,6 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
     {
         get { return ConnectedItems; }
     }
-
 
     public FilterPositionData PositionData
     {
@@ -172,7 +172,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         return Serialize(this);
     }
 
-    public static JSONNode Serialize(GraphData data)
+    public static JSONNode Serialize(IGraphData data)
     {
         // The root class for the diagram data
         var root = new JSONClass
@@ -197,9 +197,9 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         // Store the root filter
         root.AddObject("SceneFlow", data.RootFilter as IJsonObject);
         // Nodes
-        root.AddObjectArray("Nodes", data.Nodes);
+        root.AddObjectArray("Nodes", data.NodeItems);
 
-        root.AddObjectArray("ConnectedItems", data.ConnectedItems);
+        root.AddObjectArray("ConnectedItems", data.Connections);
         return root;
     }
 
@@ -257,7 +257,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         catch (Exception ex)
         {
             _jsonData = backup;
-            UnityEngine.Debug.LogException(ex);
+            InvertApplication.LogException(ex);
         }
 
     }
@@ -274,10 +274,10 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         }
         catch (Exception ex)
         {
-            Debug.Log(_jsonData);
-            Debug.Log(this.name + " has a problem.");
+            InvertApplication.Log(_jsonData);
+            InvertApplication.Log(this.name + " has a problem.");
 
-            Debug.LogException(ex);
+            InvertApplication.LogException(ex);
             Errors = true;
             Error = ex;
         }
@@ -332,7 +332,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
         if (jsonNode == null)
         {
 
-            Debug.Log("Couldn't parse file." + this.name);
+            InvertApplication.Log("Couldn't parse file." + this.name);
             return;
         }
 
@@ -444,7 +444,7 @@ public class ConnectionData : IJsonObject
         set { _inputIdentifier = value; }
     }
 
-    public GraphData Graph { get; set; }
+    public IGraphData Graph { get; set; }
     public IGraphItem Output { get; set; }
     public IGraphItem Input { get; set; }
 

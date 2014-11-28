@@ -18,8 +18,8 @@ namespace Invert.Core.GraphDesigner
         //Dictionary<string, string> GetProjectDiagrams();
         IGraphData CreateNewDiagram(Type diagramType,IDiagramFilter defaultFilter = null);
         Type RepositoryFor { get; }
-        GraphData CurrentGraph { get; set; }
-        List<GraphData> Diagrams { get; set; }
+        IGraphData CurrentGraph { get; set; }
+        IEnumerable<IGraphData> Graphs { get; set; }
         GeneratorSettings GeneratorSettings { get; set; }
         void Refresh();
         void HideNode(string identifier);

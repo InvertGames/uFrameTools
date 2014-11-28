@@ -9,6 +9,7 @@ using Invert.Common;
 using Invert.Common.UI;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Core.GraphDesigner.Unity;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
 using UnityEditor;
@@ -270,7 +271,7 @@ public class ProjectRepositoryInspector : Editor
                 Getter = () => property1.GetValue(SelectedItem, null),
                 Setter = v => property1.SetValue(SelectedItem, v, null)
             };
-            var drawer = InvertGraphEditor.CreateDrawer(propertyViewModel) as PropertyFieldDrawer;
+            var drawer = InvertGraphEditor.Container.CreateDrawer(propertyViewModel) as PropertyFieldDrawer;
       
             SelectedItemDrawers.Add(drawer);
         }
@@ -324,7 +325,7 @@ public class ProjectRepositoryInspector : Editor
     public IGraphItem SelectedItem { get; set; }
     private void ImportDiagram()
     {
-        var projectAssets = InvertGraphEditor.Projects.SelectMany(p => p.Diagrams);
+        var projectAssets = InvertGraphEditor.Projects.SelectMany(p => p.Graphs);
         var assets = InvertGraphEditor.AssetManager.GetAssets(typeof(GraphData)).OfType<GraphData>().Where(p => !projectAssets.Contains(p)).ToArray();
 
 

@@ -47,10 +47,32 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompilingWindow.cs" />
+    <Compile Include="ConnectionHandler.cs" />
     <Compile Include="DiagramSettingsCommand.cs" />
+    <Compile Include="Drawers\ClassNodeDrawer.cs" />
+    <Compile Include="Drawers\ConnectionDrawer.cs" />
+    <Compile Include="Drawers\ConnectorDrawer.cs" />
+    <Compile Include="Drawers\DiagramDrawer.cs" />
+    <Compile Include="Drawers\DiagramEnumDrawer.cs" />
+    <Compile Include="Drawers\DiagramNodeDrawer.cs" />
+    <Compile Include="Drawers\Drawer.cs" />
+    <Compile Include="Drawers\ElementItemDrawer.cs" />
+    <Compile Include="Drawers\EnumItemDrawer.cs" />
+    <Compile Include="Drawers\GenericChildItemHeaderDrawer.cs" />
+    <Compile Include="Drawers\HeaderDrawer.cs" />
+    <Compile Include="Drawers\IDrawer.cs" />
+    <Compile Include="Drawers\INodeDrawer.cs" />
+    <Compile Include="Drawers\ItemDrawer.cs" />
+    <Compile Include="Drawers\PropertyFieldDrawer.cs" />
+    <Compile Include="Drawers\SectionHeaderDrawer.cs" />
+    <Compile Include="Drawers\SelectionRectHandler.cs" />
+    <Compile Include="Drawers\SlotDrawer.cs" />
+    <Compile Include="Drawers\TypedItemDrawer.cs" />
+    <Compile Include="ElementDesignerStyles.cs" />
     <Compile Include="ElementDiagramSettingsWindow.cs" />
     <Compile Include="ElementItemTypesWindow.cs" />
     <Compile Include="ElementsDesigner.cs" />
+    <Compile Include="GUIHelpers.cs" />
     <Compile Include="Impl\ProjectRepository.cs" />
     <Compile Include="Impl\UnityPlatform.cs" />
     <Compile Include="ItemSelectionWindow.cs" />
@@ -61,6 +83,8 @@
     <Compile Include="uFrameMenu.cs" />
     <Compile Include="UFrameSettings.cs" />
     <Compile Include="uFrameSettingsWindow.cs" />
+    <Compile Include="UFStyle.cs" />
+    <Compile Include="UnityAssetManager.cs" />
     <Compile Include="UnityPlatformPlugin.cs" />
     <Compile Include="UnityWindowManager.cs" />
   </ItemGroup>

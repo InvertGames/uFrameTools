@@ -116,7 +116,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     protected List<GraphData> _diagrams;
 
 
-    private GraphData _currentGraph;
+    private IGraphData _currentGraph;
 
     public void RecacheAssets()
     {
@@ -134,6 +134,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     //    }
     //    return items;
     //}
+
+    public IEnumerable<IGraphData> Graphs
+    {
+        get { return Diagrams.Cast<IGraphData>(); }
+        set { Diagrams = value.Cast<GraphData>().ToList(); }
+    }
 
     public IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null)
     {
@@ -322,7 +328,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         set { _generatorSettings = value; }
     }
 
-    public GraphData CurrentGraph
+    public IGraphData CurrentGraph
     {
         get
         {
@@ -344,7 +350,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         {
             _currentGraph = value;
             if (value != null)
-                LastLoadedDiagram = value.name;
+                LastLoadedDiagram = value.Name;
         }
     }
 

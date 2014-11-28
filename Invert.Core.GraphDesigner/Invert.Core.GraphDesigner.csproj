@@ -38,9 +38,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEditor">
-      <HintPath>..\..\Library\UnityAssemblies\UnityEditor.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\Library\UnityAssemblies\UnityEngine.dll</HintPath>
     </Reference>
@@ -143,26 +140,11 @@
     <Compile Include="Data\Upgrading\Class1.cs" />
     <Compile Include="DiagramContextMenuAttribute.cs" />
     <Compile Include="DiagramViewModel.cs" />
-    <Compile Include="UnitySpecific\Drawers\ConnectionDrawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\ConnectorDrawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\DiagramEnumDrawer.cs" />
     <Compile Include="Data\DiagramNode.cs" />
-    <Compile Include="UnitySpecific\Drawers\DiagramNodeDrawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\Drawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\ElementItemDrawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\EnumItemDrawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\GenericChildItemHeaderDrawer.cs" />
     <Compile Include="Data\GenericInheritableNode.cs" />
     <Compile Include="Data\GenericNode.cs" />
-    <Compile Include="UnitySpecific\Drawers\HeaderDrawer.cs" />
     <Compile Include="Data\IConnectable.cs" />
-    <Compile Include="UnitySpecific\Drawers\IDrawer.cs" />
     <Compile Include="IInhertable.cs" />
-    <Compile Include="UnitySpecific\Drawers\INodeDrawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\PropertyFieldDrawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\SlotDrawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\ItemDrawer.cs" />
-    <Compile Include="UnitySpecific\Drawers\SectionHeaderDrawer.cs" />
     <Compile Include="UFType.cs" />
     <Compile Include="ElementDesignerDataExtensions.cs" />
     <Compile Include="NodeConfig\ConfigProperty.cs" />
@@ -174,7 +156,6 @@
     <Compile Include="NodeConfig\ShellMemberGeneratorNode.cs" />
     <Compile Include="NodeConfig\TagConfig.cs" />
     <Compile Include="NodeConfig\ValidatorType.cs" />
-    <Compile Include="UnitySpecific\Drawers\TypedItemDrawer.cs" />
     <Compile Include="TypedItemViewModel.cs" />
     <Compile Include="Enums\EnumItemViewModel.cs" />
     <Compile Include="Enums\EnumNodeViewModel.cs" />
@@ -227,24 +208,16 @@
     <Compile Include="SimpleType\ClassCollectionData.cs" />
     <Compile Include="SimpleType\ClassCollectionItemViewModel.cs" />
     <Compile Include="SimpleType\ClassNodeData.cs" />
-    <Compile Include="UnitySpecific\Drawers\ClassNodeDrawer.cs" />
     <Compile Include="SimpleType\ClassNodeInheritanceConnectionStrategy.cs" />
     <Compile Include="SimpleType\ClassNodeViewModel.cs" />
     <Compile Include="SimpleType\ClassPropertyData.cs" />
     <Compile Include="SimpleType\ClassPropertyItemViewModel.cs" />
     <Compile Include="UnitySpecific\Class1.cs" />
-    <Compile Include="UnitySpecific\ConnectionHandler.cs" />
     <Compile Include="UnitySpecific\DiagramInputHander.cs" />
-    <Compile Include="UnityAssets\DiagramDrawer.cs" />
-    <Compile Include="UnitySpecific\ElementDesignerStyles.cs" />
-    <Compile Include="UnitySpecific\GUIHelpers.cs" />
     <Compile Include="UnitySpecific\IInputHandler.cs" />
-    <Compile Include="UnitySpecific\SelectionRectHandler.cs" />
     <Compile Include="UnitySpecific\SimpleKeyBinding.cs" />
-    <Compile Include="UnitySpecific\UFStyle.cs" />
     <Compile Include="Api\UI\ContextMenuUI.cs" />
     <Compile Include="Api\UI\ToolbarUI.cs" />
-    <Compile Include="UnitySpecific\UnityAssetManager.cs" />
     <Compile Include="ViewModels\ConnectionViewModel.cs" />
     <Compile Include="ViewModels\ConnectorDirection.cs" />
     <Compile Include="ViewModels\InputOutputViewModel.cs" />
@@ -285,7 +258,9 @@
       <Name>Invert.MVVM</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="UnityAssets\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y

@@ -1,6 +1,3 @@
-using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ViewModels;
-
 namespace Invert.Core.GraphDesigner
 {
     public class Drawer<TViewModel> : Drawer where TViewModel : GraphItemViewModel

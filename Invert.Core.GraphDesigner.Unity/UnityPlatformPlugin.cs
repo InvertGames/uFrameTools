@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Invert.Core.GraphDesigner.UnitySpecific;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
@@ -22,13 +24,16 @@ namespace Invert.Core.GraphDesigner.Unity
         static UnityPlatformPlugin()
         {
             InvertGraphEditor.Prefs = new UnityPlatformPreferences();
+            InvertApplication.Logger = new UnityPlatform();
+            InvertGraphEditor.Platform = new UnityPlatform();
+            InvertGraphEditor.PlatformDrawer = new UnityDrawer();
         }
         public override bool Enabled { get { return true; } set{} }
         public override void Initialize(uFrameContainer container)
         {
-            InvertGraphEditor.Platform = new UnityPlatform();
-            InvertGraphEditor.PlatformDrawer = new UnityDrawer();
-
+            
+           
+            container.RegisterInstance<IAssetManager>(new UnityAssetManager());
             // Drawers
          
             container.Register<SectionHeaderDrawer, SectionHeaderDrawer>();
@@ -69,6 +74,25 @@ namespace Invert.Core.GraphDesigner.Unity
 
     public static class UnityPlatformContainerExtensions
     {
+        public static IDrawer CreateDrawer(this IUFrameContainer container, ViewModel viewModel)
+        {
+            return CreateDrawer<IDrawer>(container, viewModel);
+        }
+
+        public static IDrawer CreateDrawer<TDrawerBase>(this IUFrameContainer container, ViewModel viewModel) where TDrawerBase : IDrawer
+        {
+            if (viewModel == null)
+            {
+                Debug.LogError("Data is null.");
+                return null;
+            }
+            var drawer = container.ResolveRelation<TDrawerBase>(viewModel.GetType(), viewModel);
+            if (drawer == null)
+            {
+                Debug.Log(String.Format("Couldn't Create drawer for {0}.", viewModel.GetType()));
+            }
+            return drawer;
+        }
 
         public static IUFrameContainer RegisterGraphItem<TModel, TViewModel, TDrawer>(this IUFrameContainer container)
         {
@@ -154,4 +178,104 @@ namespace Invert.Core.GraphDesigner.Unity
             return container;
         }
     }
+    public class ScaffoldNode<TData> where TData : GenericNode
+    {
+
+        public class Drawer : GenericNodeDrawer<TData, ViewModel>
+        {
+
+
+            public Drawer(ViewModel viewModel)
+                : base(viewModel)
+            {
+
+            }
+        }
+
+        public class ItemDrawer : ScaffoldNodeChildItem<TData>.Drawer
+        {
+            public ItemDrawer(ScaffoldNodeChildItem<TData>.ViewModel viewModel)
+                : base(viewModel)
+            {
+            }
+        }
+
+        public class ItemViewModel : ScaffoldNodeChildItem<TData>.ViewModel
+        {
+            public ItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
+                : base(graphItemObject, diagramViewModel)
+            {
+            }
+        }
+
+        public class ScaffoldTypedItemDrawer : ScaffoldNodeTypedChildItem<TData>.Drawer
+        {
+            public ScaffoldTypedItemDrawer(ScaffoldNodeTypedChildItem<TData>.ViewModel viewModel)
+                : base(viewModel)
+            {
+            }
+        }
+
+        public class TypedItemViewModel : ScaffoldNodeTypedChildItem<TData>.ViewModel
+        {
+            public TypedItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
+                : base(graphItemObject, diagramViewModel)
+            {
+            }
+        }
+
+        public class ViewModel : GenericNodeViewModel<TData>
+        {
+            public ViewModel(TData graphItemObject, DiagramViewModel diagramViewModel)
+                : base(graphItemObject, diagramViewModel)
+            {
+            }
+        }
+    }
+
+    public class ScaffoldNodeChildItem<TData> where TData : IDiagramNodeItem
+    {
+        public class Drawer : ItemDrawer
+        {
+            public Drawer(ViewModel viewModel)
+                : base(viewModel)
+            {
+            }
+        }
+
+        public class ViewModel : GenericItemViewModel<TData>
+        {
+            public ViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
+                : base(graphItemObject, diagramViewModel)
+            {
+            }
+        }
+    }
+
+    public class ScaffoldNodeTypedChildItem<TData> where TData : ITypedItem
+    {
+        public class Drawer : ElementItemDrawer
+        {
+            public Drawer(ViewModel viewModel)
+                : base(viewModel)
+            {
+            }
+        }
+
+        public class ViewModel : TypedItemViewModel
+        {
+            public override string TypeLabel
+            {
+                get { return Data.RelatedTypeName; }
+            }
+
+            public ViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
+                : base(graphItemObject, diagramViewModel)
+            {
+            }
+        }
+
+
+    }
+
 }

@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Invert.Core.GraphDesigner.UnitySpecific;
-using Invert.uFrame;
 using Invert.uFrame.CodeGen.ClassNodeGenerators;
-using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -45,7 +38,7 @@ namespace Invert.Core.GraphDesigner
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(Vector3), Group = "", Label = "Vector3", IsPrimitive = true }, "Vector3");
 
             
-            container.RegisterInstance<IAssetManager>(new UnityAssetManager());
+           
             container.Register<DesignerGeneratorFactory, SimpleClassNodeCodeFactory>("ClassNodeData");
             
             // Register the container itself

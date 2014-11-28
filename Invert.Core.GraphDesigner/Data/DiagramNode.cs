@@ -153,7 +153,7 @@ namespace Invert.Core.GraphDesigner
         /// </summary>
         public virtual IGraphData Diagram
         {
-            get { return Project.Diagrams.FirstOrDefault(p => p.NodeItems.Contains(this)); }
+            get { return Project.Graphs.FirstOrDefault(p => p.NodeItems.Contains(this)); }
         }
 
         public bool Dirty { get; set; }
