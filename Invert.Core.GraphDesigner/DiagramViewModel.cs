@@ -2,9 +2,43 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
+    public class DesignerViewModel : ViewModel<IProjectRepository>
+    {
+        private ModelCollection<TabViewModel> _tabs;
+
+        protected override void DataObjectChanged()
+        {
+            base.DataObjectChanged();
+            //Tabs = Data.OpenGraphs;
+        }
+
+        public TabViewModel CurrentTab { get; set; }
+
+        public IEnumerable<OpenGraph> Tabs
+        {
+            get { return Data.OpenGraphs; }
+        }
+
+        public void OpenTab(IGraphData graphData, string[] path = null)
+        {
+            
+            Data.CurrentGraph = graphData;
+            
+
+        }
+    }
+
+    public class TabViewModel : ViewModel
+    {
+        public string Name { get; set; }
+        public string[] Path { get; set; }
+        public Rect Bounds { get; set; }
+        public IGraphData Graph { get; set; }
+    }
     public class DiagramViewModel : Invert.Core.GraphDesigner.ViewModel
     {
         private ModelCollection<GraphItemViewModel> _graphItems = new ModelCollection<GraphItemViewModel>();
@@ -33,6 +67,9 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
+
+
+
 
         public GraphItemViewModel SelectedGraphItem
         {
@@ -66,7 +103,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return InvertGraphEditor.GetAllCodeGenerators(CurrentRepository.GeneratorSettings,
+                return InvertGraphEditor.GetAllCodeGenerators(null,
                     InvertGraphEditor.CurrentProject);
             }
         }
@@ -113,7 +150,7 @@ namespace Invert.Core.GraphDesigner
         public DiagramViewModel(IGraphData diagram, IProjectRepository currentRepository)
         {
 
-            var assetPath = InvertGraphEditor.Platform.GetAssetPath(diagram as GraphData);
+           // var assetPath = InvertGraphEditor.Platform.GetAssetPath(diagram as GraphData);
             if (diagram == null) throw new Exception("Diagram not found");
             CurrentRepository = currentRepository;
             DataObject = diagram;
@@ -201,29 +238,12 @@ namespace Invert.Core.GraphDesigner
 
         public bool HasErrors
         {
-            get
-            {
-                if (DiagramData is GraphData)
-                {
-                    var dd = DiagramData as GraphData;
-                    if (dd.Errors)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
+            get { return DiagramData.Errors; }
         }
 
         public Exception Errors
         {
-            get
-            {
-                var jsonElementDesignerData = (DiagramData) as GraphData;
-                if (jsonElementDesignerData != null)
-                    return jsonElementDesignerData.Error;
-                return null;
-            }
+            get { return DiagramData.Error; }
         }
 
         public bool NeedsUpgrade
@@ -322,7 +342,7 @@ namespace Invert.Core.GraphDesigner
 
             newNodeData.Name =
                 InvertGraphEditor.CurrentProject.GetUniqueName("New" + newNodeData.GetType().Name.Replace("Data", ""));
-            CurrentRepository.SetItemLocation(newNodeData, InvertGraphEditor.CurrentMouseEvent.MouseDownPosition);
+            CurrentRepository.SetItemLocation(newNodeData, InvertGraphEditor.CurrentMouseEvent.MouseUpPosition);
             CurrentRepository.AddNode(newNodeData);
 
             var filterNode = CurrentRepository.CurrentFilter as IDiagramNode;

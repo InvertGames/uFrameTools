@@ -10,7 +10,7 @@ public class ShellNodeTypeViewModel : GenericNodeViewModel<ShellNodeTypeNode>
     protected override void CreateContent()
     {
         base.CreateContent();
-
+        
         if (GraphItem != InvertGraphEditor.CurrentProject.CurrentFilter)
         {
             //ContentItems.Add(new SectionHeaderViewModel()

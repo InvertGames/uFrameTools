@@ -18,6 +18,11 @@ namespace Invert.Core.GraphDesigner
             get { return Outputs.Select(p => p.Input).OfType<TFor>(); }
         }
 
+        public override bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            if (a.Node == b.Node) return false;
+            return base.Validate(a, b);
+        }
     }
     public class SingleOutputSlot<TFor> : GenericSlot
     {
@@ -25,7 +30,11 @@ namespace Invert.Core.GraphDesigner
         {
             get { return Outputs.Select(p => p.Input).OfType<TFor>().FirstOrDefault(); }
         }
-
+        public override bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            if (a.Node == b.Node) return false;
+            return base.Validate(a, b);
+        }
     }
     public class MultiInputSlot<TFor> : GenericSlot, IMultiSlot
     {
@@ -33,7 +42,11 @@ namespace Invert.Core.GraphDesigner
         {
             get { return Inputs.Select(p=>p.Output).OfType<TFor>(); }
         }
-
+        public override bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            if (a.Node == b.Node) return false;
+            return base.Validate(a, b);
+        }
     }
     public class SingleInputSlot<TFor> : GenericSlot
     {
@@ -41,6 +54,12 @@ namespace Invert.Core.GraphDesigner
         {
             get { return Inputs.Select(p => p.Output).OfType<TFor>().FirstOrDefault(); }
         }
+        public override bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            if (a.Node == b.Node) return false;
+            return base.Validate(a, b);
+        }
+
     }
     public class InheritanceSlot<TFor> : GenericSlot
     {
@@ -91,6 +110,7 @@ namespace Invert.Core.GraphDesigner
         {
         }
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class InspectorProperty : Attribute
     {
@@ -119,7 +139,6 @@ namespace Invert.Core.GraphDesigner
     {
         Auto,
         TextArea,
-
         TypeSelection
     }
 
@@ -128,14 +147,6 @@ namespace Invert.Core.GraphDesigner
         private List<IDiagramNodeItem> _childItems = new List<IDiagramNodeItem>();
         private List<string> _connectedGraphItemIds = new List<string>();
 
-        public virtual bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
-        {
-            return a != b && a.GetType() != b.GetType();
-        }
-        public virtual bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
-        {
-            return a != b && a.GetType() != b.GetType();
-        }
         public List<IDiagramNodeItem> ChildItems
         {
             get { return _childItems; }
@@ -149,6 +160,19 @@ namespace Invert.Core.GraphDesigner
                 return InvertApplication.Container.Resolve<NodeConfigBase>(this.GetType().Name);
             }
         }
+
+        public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            //return false;
+            return base.ValidateInput(a, b);
+        }
+
+        public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            //return false;
+            return base.ValidateOutput(a, b);
+        }
+
         [GeneratorProperty]
         public override string Name
         {
@@ -440,7 +464,7 @@ namespace Invert.Core.GraphDesigner
         {
             base.Serialize(cls);
 
-            var inputSlotInfos = GetInputSlotInfos(this.GetType());
+            var inputSlotInfos = Config.InputSlots;
             foreach (var item in inputSlotInfos)
             {
                 if (item.Key == null) continue;
@@ -449,7 +473,7 @@ namespace Invert.Core.GraphDesigner
                 if (slot == null) continue;
                 cls.AddObject(propertyName, slot);
             }
-            var outputSlotInfos = GetOutputSlotInfos(this.GetType());
+            var outputSlotInfos =Config.OutputSlots;
             foreach (var item in outputSlotInfos)
             {
                 if (item.Key == null) continue;
@@ -459,11 +483,11 @@ namespace Invert.Core.GraphDesigner
                 if (slot == null) continue;
                 cls.AddObject(propertyName, slot);
             }
-
-            var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (var property in properties)
+             
+           // var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var property in Config.SerializedProperties)
             {
-                if (property.GetCustomAttributes(typeof(JsonProperty), true).Length < 1) continue;
+               // if (property.GetCustomAttributes(typeof(JsonProperty), true).Length < 1) continue;
                 var value = property.GetValue(this, null);
                 if (value != null)
                 {
@@ -541,7 +565,7 @@ namespace Invert.Core.GraphDesigner
                     if (ChildItems.OfType<GenericReferenceItem>().Any(p => p.SourceIdentifier == item.Identifier)) continue;
                     AddReferenceItem(mirrorItems, item, mirrorSection);
                 }
-                ChildItems.RemoveAll(p => p.GetType() == section.ChildType && p is GenericReferenceItem && !newItemIds.Contains(((GenericReferenceItem)p).SourceIdentifier));
+                ChildItems.RemoveAll(p => p.GetType() == section.SourceType && p is GenericReferenceItem && !newItemIds.Contains(((GenericReferenceItem)p).SourceIdentifier));
             }
         }
 
@@ -550,7 +574,7 @@ namespace Invert.Core.GraphDesigner
             var current = mirrorItems.FirstOrDefault(p => p.SourceIdentifier == item.Identifier);
             if (current != null && !mirrorSection.AllowDuplicates) return;
 
-            var newMirror = Activator.CreateInstance(mirrorSection.ChildType) as GenericReferenceItem;
+            var newMirror = Activator.CreateInstance(mirrorSection.SourceType) as GenericReferenceItem;
             newMirror.SourceIdentifier = item.Identifier;
             newMirror.Node = this;
             ChildItems.Add(newMirror);
@@ -575,14 +599,16 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                foreach (var slot in Config.Inputs)
+                foreach (var slot in Config.GraphItemConfigurations.OfType<NodeInputConfig>())
                 {
                     yield return slot.GetDataObject(this) as GenericSlot;
                 }
+                
             }
-        }
+        } 
         public static IEnumerable<KeyValuePair<PropertyInfo, InputSlot>> GetInputSlotInfos(Type nodeType)
         {
+            
             return nodeType.GetPropertiesWithAttribute<InputSlot>();
         }
         public static IEnumerable<KeyValuePair<PropertyInfo, OutputSlot>> GetOutputSlotInfos(Type nodeType)

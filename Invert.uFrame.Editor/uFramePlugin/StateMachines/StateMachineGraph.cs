@@ -9,7 +9,7 @@ public class StateMachineGraph : GenericGraphData<StateMachineNodeData>
    
 }
 
-public class ExternalSubsystemGraph : GenericGraphData<SubSystemData>
+public class ExternalSubsystemGraph : UnityGraphData<GenericGraphData<SubSystemData>>
 {
     public override string Name
     {
@@ -17,7 +17,7 @@ public class ExternalSubsystemGraph : GenericGraphData<SubSystemData>
     }
 }
 
-public class ExternalElementGraph : GenericGraphData<ElementData>
+public class ExternalElementGraph : UnityGraphData<GenericGraphData<ElementData>>
 {
     public override string Name
     {
@@ -25,7 +25,7 @@ public class ExternalElementGraph : GenericGraphData<ElementData>
     }
 }
 
-public class ExternalStateMachineGraph : GenericGraphData<StateMachineNodeData>
+public class ExternalStateMachineGraph : UnityGraphData<GenericGraphData<StateMachineNodeData>>
 {
     public override string Name
     {

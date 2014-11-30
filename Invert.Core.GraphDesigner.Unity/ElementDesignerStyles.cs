@@ -101,6 +101,8 @@ namespace Invert.Common
         private static GUIStyle _viewModelHeaderEditingStyle;
         private static GUIStyle _viewModelHeaderStyle;
         private static GUIStyle _eventButtonStyleSmall;
+        private static GUIStyle _tabStyle;
+        private static GUIStyle _tabInActiveStyle;
 
         public static GUIStyle AddButtonStyle
         {
@@ -117,7 +119,39 @@ namespace Invert.Common
                 return _addButtonStyle;
             }
         }
-
+        public static GUIStyle TabStyle
+        {
+            get
+            {
+                if (_tabStyle == null)
+                    _tabStyle = new GUIStyle
+                    {
+                        normal = { background = GetSkinTexture("Tab"), textColor = EditorGUIUtility.isProSkin ? new Color(0.8f, 0.8f, 0.8f) : Color.black },
+                        //padding = new RectOffset(10, 10, 10, 10),
+                        border = new RectOffset(11,11,0,0),
+                        alignment = TextAnchor.MiddleCenter,
+                        fixedHeight = 31,
+                        //fixedWidth = 16f * Scale
+                    };
+                return _tabStyle;
+            }
+        }        public static GUIStyle TabInActiveStyle
+        {
+            get
+            {
+                if (_tabInActiveStyle == null)
+                    _tabInActiveStyle = new GUIStyle
+                    {
+                        normal = { background = GetSkinTexture("TabInActive"), textColor = EditorGUIUtility.isProSkin ? new Color(0.7f, 0.7f, 0.7f) : Color.black },
+                        //padding = new RectOffset(10, 10, 10, 10),
+                        border = new RectOffset(11,11,0,0),
+                        alignment = TextAnchor.MiddleCenter,
+                        fixedHeight = 31,
+                        //fixedWidth = 16f * Scale
+                    };
+                return _tabInActiveStyle;
+            }
+        }
         public static GUIStyle AddButtonStyleUnscaled
         {
             get

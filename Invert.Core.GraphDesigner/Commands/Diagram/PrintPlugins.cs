@@ -14,21 +14,15 @@ namespace Invert.Core.GraphDesigner
 
         public override void Perform(DiagramViewModel node)
         {
-  
-            //var subsystem = node.SelectedGraphItem as SubSystemViewModel;
-            //if (subsystem != null)
-            //{
-            //    var data = subsystem.DataObject as SubSystemData;
-            //    var instances = data.AllInstancesDistinct;
-            //    foreach (var instane in instances)
-            //    {
-            //        Debug.Log(instane.RelatedTypeName+" : "+instane.Name);
-            //    }
-            //}
-            //Debug.Log(uFrameEditor.uFrameTypes);
+            foreach (var item in node.CurrentRepository.CurrentGraph.NodeItems)
+            {
+                Debug.Log(item.Name);
+            }
+           
             Type T = typeof(GUIUtility);
             PropertyInfo systemCopyBufferProperty = T.GetProperty("systemCopyBuffer", BindingFlags.Static | BindingFlags.NonPublic);
-            systemCopyBufferProperty.SetValue(null, GraphData.Serialize(node.DiagramData as GraphData).ToString(), null);
+            
+            systemCopyBufferProperty.SetValue(null, InvertGraph.Serialize(node.DiagramData).ToString(), null);
             Debug.Log("Json copied to clipboard.");
         }
     }

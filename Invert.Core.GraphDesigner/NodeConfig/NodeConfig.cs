@@ -95,6 +95,8 @@ namespace Invert.Core.GraphDesigner
             set { _typeGeneratorConfigs = value; }
         }
 
+
+
         public NodeConfig(IUFrameContainer container)
             : base(container)
         {
@@ -127,6 +129,7 @@ namespace Invert.Core.GraphDesigner
 
         public NodeGeneratorConfig<TNode> AddEditableClass<TCodeGenerator>(string name) where TCodeGenerator : CodeGenerator, new()
         {
+            UnityEngine.Debug.Log("Adding editable class " + typeof(TCodeGenerator).Name);
             AddDesignerGenerator<TCodeGenerator>(name);
             AddEditableGenerator<TCodeGenerator>(name);
             return GetGeneratorConfig<TCodeGenerator>();
@@ -221,6 +224,7 @@ namespace Invert.Core.GraphDesigner
             Container.RegisterFilterNode(typeof(TNode),subNodeType);
             return this;
         }
+
         public NodeConfig<TNode> Input<TSourceType, TReferenceType>(Func<IDiagramNodeItem, string> name, bool allowMultiple, Func<IDiagramNodeItem, IDiagramNodeItem, bool> validator = null)
             where TReferenceType : GenericSlot, new()
             where TSourceType : class, IConnectable
@@ -235,7 +239,7 @@ namespace Invert.Core.GraphDesigner
                 AllowMultiple = allowMultiple,
                 Validator = validator
             };
-            Inputs.Add(config);
+            GraphItemConfigurations.Add(config);
             return this;
         }
 
@@ -253,7 +257,7 @@ namespace Invert.Core.GraphDesigner
                 AllowMultiple = allowMultiple,
                 Validator = validator
             };
-            Inputs.Add(config);
+            GraphItemConfigurations.Add(config);
             return this;
             
         }
@@ -269,7 +273,7 @@ namespace Invert.Core.GraphDesigner
                 ReferenceType = typeof(TNode),
                 IsAlias = true
             };
-            Inputs.Add(config);
+            GraphItemConfigurations.Add(config);
             return this;
         }
 
@@ -288,10 +292,11 @@ namespace Invert.Core.GraphDesigner
                 AllowMultiple = allowMultiple,
                 Validator = validator
             };
-            Inputs.Add(config);
+            GraphItemConfigurations.Add(config);
            
             return this;
         }
+
         public NodeConfig<TNode> Output<TSourceType, TReferenceType>(Func<IDiagramNodeItem,string> inputName, bool allowMultiple, Func<IDiagramNodeItem, IDiagramNodeItem, bool> validator = null)
             where TReferenceType : GenericSlot, new()
             where TSourceType : class, IConnectable
@@ -306,10 +311,11 @@ namespace Invert.Core.GraphDesigner
                 AllowMultiple = allowMultiple,
                 Validator = validator
             };
-            Inputs.Add(config);
+            GraphItemConfigurations.Add(config);
 
             return this;
         }
+
         public NodeConfig<TNode> OutputAlias(string outputName)
         {
             var config = new NodeInputConfig()
@@ -321,7 +327,7 @@ namespace Invert.Core.GraphDesigner
                 ReferenceType = typeof(TNode),
                 IsAlias = true
             };
-            Inputs.Add(config);
+            GraphItemConfigurations.Add(config);
 
             return this;
         }
@@ -336,7 +342,7 @@ namespace Invert.Core.GraphDesigner
                 ReferenceType = typeof(TType),
                 IsAlias = true
             };
-            Inputs.Add(config);
+            GraphItemConfigurations.Add(config);
 
             return this;
         }
@@ -344,7 +350,7 @@ namespace Invert.Core.GraphDesigner
         {
             var section = new NodeConfigSection<TNode>()
             {
-                ChildType = typeof(TChildItem),
+                SourceType = typeof(TChildItem),
                 Name = header,
                 IsProxy = true,
                 AllowAdding = false
@@ -353,15 +359,10 @@ namespace Invert.Core.GraphDesigner
             {
                 section.Selector = p => selector(p).Cast<IGraphItem>();
             }
-            Sections.Add(section);
+            GraphItemConfigurations.Add(section);
             return section;
         }
 
-        //public NodeConfig<TType> AddChildItem<TChildItem>(string header = null, Func<TType, IEnumerable<TChildItem>> selector = null  ) where TChildItem : IDiagramNodeItem
-        //{
-        //    Container.RegisterNodeSection<TType, TChildItem>(header, selector);
-        //    return this;
-        //}
         public NodeConfigSection<TNode> ReferenceSection<TSourceType, TReferenceItem>(string header, 
             Func<TNode, IEnumerable<TSourceType>> selector,
             bool manual = false,
@@ -372,7 +373,7 @@ namespace Invert.Core.GraphDesigner
             //Container.RegisterGraphItem<TReferenceItem, ScaffoldNodeChildItem<TReferenceItem>.ViewModel, ScaffoldNodeChildItem<TReferenceItem>.Drawer>();
             var section = new NodeConfigSection<TNode>()
             {
-                ChildType = typeof(TReferenceItem),
+                SourceType = typeof(TReferenceItem),
                 Name = header,
                 AllowAdding = manual,
                 ReferenceType = typeof(TSourceType),
@@ -386,7 +387,7 @@ namespace Invert.Core.GraphDesigner
             {
                 throw new Exception("Reference Section must have a selector");
             }
-            Sections.Add(section);
+            GraphItemConfigurations.Add(section);
             return section;
         }
 
@@ -394,7 +395,7 @@ namespace Invert.Core.GraphDesigner
         {
             var section = new NodeConfigSection<TNode>()
             {
-                ChildType = typeof(TChildItem),
+                SourceType = typeof(TChildItem),
                 Name = header,
          
                 IsProxy = false,
@@ -408,22 +409,16 @@ namespace Invert.Core.GraphDesigner
             {
                 section.Selector = p => selector(p).Cast<IGraphItem>();
             }
-            Sections.Add(section);
+            GraphItemConfigurations.Add(section);
             return section;
         }
 
-        //    Container.RegisterGraphItem<TChildItem, TChildItemViewModel, TChildItemDrawer>();
-        //    return this;
-        //}
         public NodeConfig<TNode> SubNodeOf<TNodeType>()
         {
             Container.RegisterFilterNode<TNodeType, TNode>();
             return this;
         }
 
-        //    Container.RegisterGraphItem<TChildItem, ScaffoldNodeChildItem<TChildItem>.ViewModel, ScaffoldNodeChildItem<TChildItem>.Drawer>();
-        //    return this;
-        //}
         public NodeConfigSection<TNode> TypedSection<TChildItem>(string header, SelectItemTypeCommand selectTypeCommand) where TChildItem : ITypedItem
         {
           
@@ -493,26 +488,6 @@ namespace Invert.Core.GraphDesigner
             public GeneratorSettings Settings { get; set; }
         }
 
-        //public NodeConfig<TType> AddChildItem<TChildItem>(string header = null) where TChildItem : GenericNodeChildItem
-        //{
-        //    if (!string.IsNullOrEmpty(header))
-        //        Container.RegisterNodeSection<TType, TChildItem>(header);
-        //public NodeConfig<TType> AddChildItem<TChildItem, TChildItemViewModel, TChildItemDrawer>(string header = null) where TChildItem : GenericNodeChildItem
-        //{
-        //    if (!string.IsNullOrEmpty(header))
-        //        Container.RegisterNodeSection<TType, TChildItem>(header);
-        //public NodeConfig<TType> AddInputOutput<T>(string inputName, string outputName)
-        //{
-        //    var config = new NodeInputConfig()
-        //    {
-        //        Name = inputName,
-        //        OutputName = outputName,
-        //        IsInput = true,
-        //        IsOutput = true,
-        //    };
-        //    Inputs.Add(config);
-        //    return this;
-        //}
         public NodeConfig<TNode> AddFlag(string inheritable)
         {
             Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(inheritable,inheritable),typeof(TNode).Name + inheritable + "FlagCommand");

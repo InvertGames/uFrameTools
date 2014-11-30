@@ -1,25 +1,71 @@
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using UnityEngine;
 
-public class ShellNodeTypeReferenceSection : ShellNodeTypeSection,IReferenceNode
+public interface IShellConnectable : IDiagramNode, IShellNode
 {
-    [JsonProperty, NodeProperty]
+    [ReferenceSection("Connectable To", SectionVisibility.Always, false)]
+    IEnumerable<ShellConnectableReferenceType> ConnectableTo { get; }
+
+    bool AllowMultipleInputs { get; set; }
+
+    bool AllowMultipleOutputs { get; set; }
+}
+
+public class ShellNodeTypeReferenceSection : ShellNodeTypeSection,IReferenceNode, IShellConnectable
+{
+    [JsonProperty, InspectorProperty]
     public bool IsAutomatic { get; set; }
 
-    [JsonProperty,NodeProperty]
+    [JsonProperty, InspectorProperty]
     public bool AllowDuplicates { get; set; }
+
+    [JsonProperty, InspectorProperty]
+    public bool IsEditable { get; set; }
+
+    private bool _allowMultipleInputs = true;
+    private bool _allowMultipleOutputs = true;
+
+    [JsonProperty, InspectorProperty]
+    public bool AllowMultipleInputs
+    {
+        get { return _allowMultipleInputs; }
+        set { _allowMultipleInputs = value; }
+    }
+
+    [JsonProperty, InspectorProperty]
+    public bool AllowMultipleOutputs
+    {
+        get { return _allowMultipleOutputs; }
+        set { _allowMultipleOutputs = value; }
+    }
+
 
     [ReferenceSection("Acceptable Types", SectionVisibility.Always, false)]
     public IEnumerable<ShellAcceptableReferenceType> AcceptableTypes
     {
         get { return ChildItems.OfType<ShellAcceptableReferenceType>(); }
     }
-
-    public IEnumerable<IShellReferenceType> PossibleAcceptableTypes
+    public IEnumerable<IShellNode> PossibleAcceptableTypes
     {
-        get { return Project.NodeItems.OfType<IShellReferenceType>(); }
+        get { return Project.NodeItems.OfType<IShellNode>(); }
     }
+
+
+    [ReferenceSection("Connectable To", SectionVisibility.Always, false)]
+    public IEnumerable<ShellConnectableReferenceType> ConnectableTo
+    {
+        get { return ChildItems.OfType<ShellConnectableReferenceType>(); }
+    }
+
+    public IEnumerable<IShellNode> PossibleConnectableTo
+    {
+        get { return Project.NodeItems.OfType<IShellNode>(); }
+    }
+
+
+  
     public IEnumerable<IReferenceNode> IncludedInSections
     {
         get

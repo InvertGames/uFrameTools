@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Common;
+using Invert.Core.GraphDesigner.Unity;
+using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -61,6 +64,7 @@ namespace Invert.Core.GraphDesigner
             if (endViewModel == null)
             {
                 var nodeAtMouse = ViewModelAtMouse as DiagramNodeViewModel;
+
                 if (nodeAtMouse != null)
                 {
 
@@ -94,6 +98,14 @@ namespace Invert.Core.GraphDesigner
                             ElementDesignerStyles.NodeBackground, string.Empty, 20);
                     }
                 }
+                else
+                {
+                    
+                    CurrentConnection = null;
+                }
+                    
+                
+                
 
             }
             else
@@ -126,19 +138,19 @@ namespace Invert.Core.GraphDesigner
             var _startRight = StartConnector.Direction == ConnectorDirection.Output;
             var _endRight = false;
 
-            var startTan = _startPos + (_endRight ? -Vector2.right*3 : Vector2.right*3)*30;
+            var startTan = _startPos + (_endRight ? -Vector2.right * 3 : Vector2.right * 3) * 30;
 
-            var endTan = _endPos + (_startRight ? -Vector2.right*3 : Vector2.right*3)*30;
+            var endTan = _endPos + (_startRight ? -Vector2.right * 3 : Vector2.right * 3) * 30;
 
             var shadowCol = new Color(0, 0, 0, 0.1f);
 
             for (int i = 0; i < 3; i++) // Draw a shadow
-                InvertGraphEditor.PlatformDrawer.DrawBezier(_startPos*ElementDesignerStyles.Scale,
-                    _endPos*ElementDesignerStyles.Scale, startTan*ElementDesignerStyles.Scale,
-                    endTan*ElementDesignerStyles.Scale, shadowCol, (i + 1)*5);
+                InvertGraphEditor.PlatformDrawer.DrawBezier(_startPos * ElementDesignerStyles.Scale,
+                    _endPos * ElementDesignerStyles.Scale, startTan * ElementDesignerStyles.Scale,
+                    endTan * ElementDesignerStyles.Scale, shadowCol, (i + 1) * 5);
 
             InvertGraphEditor.PlatformDrawer.DrawBezier(_startPos * ElementDesignerStyles.Scale, _endPos * ElementDesignerStyles.Scale,
-                startTan*ElementDesignerStyles.Scale, endTan*ElementDesignerStyles.Scale, color, 3);
+                startTan * ElementDesignerStyles.Scale, endTan * ElementDesignerStyles.Scale, color, 3);
 
         }
 
@@ -147,15 +159,77 @@ namespace Invert.Core.GraphDesigner
             base.OnMouseUp(e);
             if (CurrentConnection != null)
             {
+                
                 InvertGraphEditor.ExecuteCommand((v) =>
                 {
 
                     CurrentConnection.Apply(CurrentConnection);
                 });
             }
+            else
+            {
+                var allowedFilterNodes = InvertGraphEditor.AllowedFilterNodes[this.DiagramViewModel.CurrentRepository.CurrentFilter.GetType()];
+                var genericMenu = new GenericMenu();
+                genericMenu.AddItem(new GUIContent("Cancel"),false,()=>{} );
+                genericMenu.AddSeparator(string.Empty);
+                foreach (var item in allowedFilterNodes)
+                {
+                    if (item.IsInterface) continue;
+                    if (item.IsAbstract) continue;
+                
+                    var node = Activator.CreateInstance(item) as IDiagramNode;
+                    
+                    var vm = InvertGraphEditor.Container.GetNodeViewModel(node, this.DiagramViewModel) as DiagramNodeViewModel;
+                    vm.IsCollapsed = false;
+                    var connectors = new List<ConnectorViewModel>();
+                    vm.GetConnectors(connectors);
+                    
+                    var config = InvertGraphEditor.Container.Resolve<NodeConfigBase>(item.Name);
+                    var name = config == null ? item.Name : config.Name;
+                    foreach (var connector in connectors)
+                    {
+                        foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
+                        {
+                            var connection = strategy.Connect(this.DiagramViewModel, StartConnector, connector);
+                            if (connection == null) continue;
+                            var node1 = node;
+                            var message = string.Format("Create {0}", name);
+                            if (!string.IsNullOrEmpty(connector.Name))
+                            {
+                                message += string.Format(" and connect to {0}", connector.Name);
+                            }
+                            genericMenu.AddItem(new GUIContent(message), false,
+                             new GenericMenu.MenuFunction2((data) =>
+                             {
+                                 var value = (KeyValuePair<IDiagramNode, ConnectionViewModel>)data;
+
+                                 EditorWindow.FocusWindowIfItsOpen(typeof(ElementsDesigner));
+                               
+                                 InvertGraphEditor.ExecuteCommand(_ =>
+                                 {
+                                     
+                                     this.DiagramViewModel.AddNode(value.Key);
+                                     connection.Apply(value.Value as ConnectionViewModel);
+                                     value.Key.IsSelected = true;
+                                     value.Key.IsEditing = true;
+                                     value.Key.Name = "";
+
+                                 });
+                               
+                             }),new KeyValuePair<IDiagramNode,ConnectionViewModel>(node1,connection));
+                        }
+                     
+                    }
+                 
+                }
+                genericMenu.ShowAsContext();
+            }
+
+
             foreach (var a in PossibleConnections)
             {
                 a.IsMouseOver = false;
+                a.IsSelected = false;
             }
             e.Cancel();
         }

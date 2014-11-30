@@ -36,10 +36,28 @@ namespace Invert.Core.GraphDesigner.Unity
 
         private ICommandUI _toolbar;
         private string _newProjectName = "NewProject";
+        private DesignerViewModel _designerViewModel;
 
         public static INodeRepository SelectedElementDiagram
         {
             get { return Selection.activeObject as IGraphData; }
+        }
+
+        public DesignerViewModel Designer
+        {
+            get
+            {
+                if (CurrentProject == null)
+                    return null;
+                if (_designerViewModel == null)
+                {
+                    _designerViewModel = new DesignerViewModel()
+                    {
+                        Data = CurrentProject
+                    };
+                }
+                return _designerViewModel;
+            }
         }
 
         public IEnumerable<object> ContextObjects
@@ -71,6 +89,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     {
                         InvertGraphEditor.CurrentProject = InvertGraphEditor.Projects.FirstOrDefault();
                     }
+                    _designerViewModel = null;
                 }
                 return InvertGraphEditor.CurrentProject;
             }
@@ -80,7 +99,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
                 InvertGraphEditor.CurrentProject = value;
 
-               
+                _designerViewModel = null;
 
                 if (value != null)
                 {
@@ -459,8 +478,10 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void SwitchDiagram(IGraphData data)
         {
-            CurrentProject.CurrentGraph = data as GraphData;
+            Designer.OpenTab(data);
             LoadDiagram(CurrentProject.CurrentGraph);
+            //CurrentProject.CurrentGraph = data as IGraphData;
+            
         }
 
         public void OnEnable()
@@ -481,11 +502,67 @@ namespace Invert.Core.GraphDesigner.Unity
             //DoToolbar(diagramRect);
             DoToolbar();
             GUILayout.EndHorizontal();
+            
+            var rect = new Rect(0f, (EditorStyles.toolbar.fixedHeight) - 1, Screen.width - 3, Screen.height - ((EditorStyles.toolbar.fixedHeight * 2)) - EditorStyles.toolbar.fixedHeight - 2);
+            
+            EditorGUI.DrawRect(rect, InvertGraphEditor.Settings.BackgroundColor);
+            var tabBarRect = new Rect(rect);
+            tabBarRect.height = 31;
+            var color = new Color(InvertGraphEditor.Settings.BackgroundColor.r*0.8f,
+                InvertGraphEditor.Settings.BackgroundColor.g*0.8f, InvertGraphEditor.Settings.BackgroundColor.b*0.8f);
+            EditorGUI.DrawRect(tabBarRect, color);
 
-            DiagramRect = new Rect(0f, (EditorStyles.toolbar.fixedHeight) - 1, Screen.width - 3, Screen.height - (EditorStyles.toolbar.fixedHeight * 2) - EditorStyles.toolbar.fixedHeight - 2);
+            if (Designer != null)
+            {
+                
+                GUILayout.BeginHorizontal();
 
-            EditorGUI.DrawRect(DiagramRect, InvertGraphEditor.Settings.BackgroundColor);
-            GUI.Box(DiagramRect, String.Empty, style);
+                foreach (var tab in Designer.Tabs.ToArray())
+                {
+                    var isCurrent = CurrentProject != null && CurrentProject.CurrentGraph != null && tab.GraphIdentifier == CurrentProject.CurrentGraph.Identifier;
+                    if (GUILayout.Button(tab.GraphName,
+                        isCurrent
+                            ? ElementDesignerStyles.TabStyle
+                            : ElementDesignerStyles.TabInActiveStyle,GUILayout.MinWidth(150)))
+                    {
+                        if (Event.current.button == 1)
+                        {
+                           var isLastGraph = CurrentProject.OpenGraphs.Count() <= 1;
+
+                           if (!isLastGraph)
+                            {
+                                CurrentProject.CloseGraph(tab);
+                                var lastGraph = CurrentProject.OpenGraphs.LastOrDefault();
+                                if (isCurrent && lastGraph != null)
+                                {
+                                    var graph = CurrentProject.Graphs.FirstOrDefault(p => p.Identifier == lastGraph.GraphIdentifier);
+                                    SwitchDiagram(graph);
+                                }
+                            
+                            }
+                        }
+                        else
+                        {
+                            SwitchDiagram(CurrentProject.Graphs.FirstOrDefault(p => p.Identifier == tab.GraphIdentifier));    
+                        }
+                        
+                    }
+
+                }
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+            }
+
+
+
+          
+            rect.y += 31;
+            rect.height -= 31;
+            DiagramRect = rect;
+            
+
+            
+            //GUI.Box(DiagramRect, String.Empty, style);
             //if (CurrentProject == null)
             //{
             //    DiagramDrawer = null;
@@ -741,12 +818,13 @@ namespace Invert.Core.GraphDesigner.Unity
                 IGraphData item1 = item;
                 menu.AddItem(new GUIContent(item.Name), DiagramDrawer != null && CurrentProject.CurrentGraph == item1, () =>
                 {
+                    
                     CurrentProject.CurrentGraph = item1;
                     LoadDiagram(CurrentProject.CurrentGraph);
                 });
             }
             menu.AddSeparator("");
-            foreach (var graphType in InvertGraphEditor.Container.Mappings.Where(p => p.From == typeof(GraphData)))
+            foreach (var graphType in InvertGraphEditor.Container.Mappings.Where(p => p.From == typeof(IGraphData)))
             {
                 TypeMapping type = graphType;
                 menu.AddItem(new GUIContent("Create " + graphType.Name), false, () =>

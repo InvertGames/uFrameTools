@@ -8,19 +8,18 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
 {
     public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
-        if (settings.GenerateControllers)
-        {
-            yield return CreateDesignerControllerGenerator(codePathStrategy, diagramData, item);
-            yield return CreateEditableControllerGenerator(codePathStrategy, diagramData, item);
-        }
-       
+
+        yield return CreateDesignerControllerGenerator(codePathStrategy, diagramData, item);
+        yield return CreateEditableControllerGenerator(codePathStrategy, diagramData, item);
+
+
         yield return CreateDesignerViewModelGenerator(codePathStrategy, diagramData, item);
         yield return CreateEditableViewModelGenerator(codePathStrategy, diagramData, item);
 
         yield return CreateViewBaseGenerator(codePathStrategy, diagramData, item);
     }
 
-    public virtual CodeGenerator CreateDesignerControllerGenerator(ICodePathStrategy codePathStrategy, INodeRepository diagramData,ElementData item)
+    public virtual CodeGenerator CreateDesignerControllerGenerator(ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
 
         return new ControllerGenerator()
@@ -39,7 +38,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
             ElementData = item,
             RelatedType = item.ControllerType,
             DiagramData = diagramData,
-            Filename = codePathStrategy.GetEditableFilePath(item,"Controller"),
+            Filename = codePathStrategy.GetEditableFilePath(item, "Controller"),
             IsDesignerFile = false
         };
     }

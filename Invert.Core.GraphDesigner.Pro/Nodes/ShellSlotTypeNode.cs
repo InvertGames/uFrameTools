@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 
-public interface IReferenceNode : IShellReferenceType
+public interface IReferenceNode : IShellNode
 {
     string ReferenceClassName { get; }
     [ReferenceSection("Acceptable Types", SectionVisibility.Always, false)]
     IEnumerable<ShellAcceptableReferenceType> AcceptableTypes { get; }
+    IEnumerable<IShellNode> PossibleAcceptableTypes { get; }
 
-    IEnumerable<IShellReferenceType> PossibleAcceptableTypes { get; }
 }
-public class ShellSlotTypeNode : GenericInheritableNode, IShellReferenceType, IReferenceNode
+public class ShellSlotTypeNode : ShellNode, IReferenceNode
 {
-    public string ClassName
+    public override string ClassName
     {
         get
         {
             return this.Name;
         }
     }
-    [JsonProperty, NodeProperty]
+    [JsonProperty, InspectorProperty]
     public SectionVisibility Visibility { get; set; }
 
     [ReferenceSection("Acceptable Types",SectionVisibility.Always, false)]
@@ -29,15 +29,16 @@ public class ShellSlotTypeNode : GenericInheritableNode, IShellReferenceType, IR
         get { return ChildItems.OfType<ShellAcceptableReferenceType>(); }
     }
 
-    public IEnumerable<IShellReferenceType> PossibleAcceptableTypes
+    public IEnumerable<IShellNode> PossibleAcceptableTypes
     {
-        get { return Project.NodeItems.OfType<IShellReferenceType>(); }
+        get { return Project.NodeItems.OfType<IShellNode>(); }
     }
 
-    public IShellReferenceType ReferenceType
+    public IShellNode ReferenceType
     {
         get { return AcceptableTypes.Select(p => p.SourceItem).FirstOrDefault(); }
     }
+
     public IEnumerable<IReferenceNode> IncludedInSections
     {
         get
@@ -46,11 +47,6 @@ public class ShellSlotTypeNode : GenericInheritableNode, IShellReferenceType, IR
         }
     }
 
-    public bool IsCustom
-    {
-        get { return this["Custom"]; }
-        set { this["Custom"] = value; }
-    }
 
     public string ReferenceClassName
     {
@@ -67,7 +63,7 @@ public class ShellSlotTypeNode : GenericInheritableNode, IShellReferenceType, IR
         set { this["Multiple"] = value; }
     }
 
-    [JsonProperty,InspectorProperty]
+    [InspectorProperty]
     public bool IsOutput
     {
         get { return this["Output"]; }
@@ -75,7 +71,12 @@ public class ShellSlotTypeNode : GenericInheritableNode, IShellReferenceType, IR
     }
 }
 
-public class ShellAcceptableReferenceType : GenericReferenceItem<IShellReferenceType>
+public class ShellAcceptableReferenceType : GenericReferenceItem<IShellNode>
 {
     
+}
+
+public class ShellConnectableReferenceType : GenericReferenceItem<IShellNode>
+{
+
 }

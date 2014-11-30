@@ -61,7 +61,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        [InputSlot("Base Class")]
+        [InputSlot("Base Class",OrderIndex = -1)]
         public BaseClassReference BaseReference
         {
             get { return _baseReference ?? (_baseReference = new BaseClassReference() { Node = this }); }

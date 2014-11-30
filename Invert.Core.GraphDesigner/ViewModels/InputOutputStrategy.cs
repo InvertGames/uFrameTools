@@ -210,26 +210,70 @@ namespace Invert.Core.GraphDesigner
         {
             get { return Color.white; }
         }
+        private static RegisteredConnection[] _connectionTypes;
+
+        public static RegisteredConnection[] ConnectionTypes
+        {
+            get { return _connectionTypes ?? (_connectionTypes = InvertGraphEditor.Container.ResolveAll<RegisteredConnection>().ToArray()); }
+        }
+
+
         public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
-            if (a.Validator != null)
-                if (!a.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
-                    return null;
-            if (b.Validator != null)
-                if (!b.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
-                    return null;
-
-            if (a.ConnectorForType != null && b.ConnectorForType != null)
+             
+            
+            if (ConnectionTypes.Any(p => p.CanConnect(a.DataObject.GetType(), b.DataObject.GetType())))
             {
-                if (b.ConnectorForType.IsAssignableFrom(a.ConnectorForType) || (b.ConnectorForType.IsAssignableFrom(a.DataObject.GetType()) || a.ConnectorForType.IsAssignableFrom(b.DataObject.GetType())))
-                {
-                    //if (CanConnect((TOutput)a,(TInput)b.DataObject))
-                    return base.Connect(diagramViewModel, a, b);
-                }
+                return base.Connect(diagramViewModel, a, b);
             }
+            //if (a.ConnectorForType != null && b.ConnectorForType != null)
+            //{
+            //    if (b.ConnectorForType.IsAssignableFrom(a.ConnectorForType) || (b.ConnectorForType.IsAssignableFrom(a.DataObject.GetType()) || a.ConnectorForType.IsAssignableFrom(b.DataObject.GetType())))
+            //    {
+            //        //if (CanConnect((TOutput)a,(TInput)b.DataObject))
+            //        return base.Connect(diagramViewModel, a, b);
+            //    }
+            //}
             return null;
         }
 
+    }
+
+    public class RegisteredConnectionStrategy : DefaultConnectionStrategy
+    {
+        private static RegisteredConnection[] _connectionTypes;
+
+        public static RegisteredConnection[] ConnectionTypes
+        {
+            get { return _connectionTypes ?? (_connectionTypes = InvertGraphEditor.Container.ResolveAll<RegisteredConnection>().ToArray()); }
+        }
+
+        public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
+        {
+            if (ConnectionTypes.Any(p => p.CanConnect(a.DataObject.GetType(), b.DataObject.GetType())))
+            {
+                return CreateConnection<IConnectable, IConnectable>(diagramViewModel, a, b, Apply);
+            }
+            return null;
+        }
+    }
+
+    public class RegisteredConnection
+    {
+        public Type TOutputType { get; set; }
+        public Type TInputType { get; set; }
+
+        public bool CanConnect(Type output, Type input)
+        {
+            if (TOutputType.IsAssignableFrom(output))
+            {
+                if (TInputType.IsAssignableFrom(input))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public class CustomInputOutputStrategy<TOutput, TInput> : DefaultConnectionStrategy<TOutput, TInput>

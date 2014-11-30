@@ -3,23 +3,23 @@ using System.Collections.Generic;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class NodeConfigSectionBase
+    public class NodeConfigSectionBase : GraphItemConfiguration
     {
         public bool IsProxy { get; set; }
         private bool _allowAdding = true;
 
         public string Name { get; set; }
 
-        public Type ChildType { get; set; }
-
         public bool AllowAdding
         {
             get { return _allowAdding; }
             set { _allowAdding = value; }
         }
+        public bool AllowMultipleInputs { get; set; }
+        public bool AllowMutlipleOutputs { get; set; }
 
         public Func<GenericNode, IEnumerable<IGraphItem>> GenericSelector { get; set; }
-        public Type ReferenceType { get; set; }
+       // public Type ReferenceType { get; set; }
         public bool AllowDuplicates { get; set; }
 
         public NodeConfigSectionBase()
@@ -29,9 +29,8 @@ namespace Invert.Core.GraphDesigner
         }
 
         public Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator { get; set; }
-
         public Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator { get; set; }
-        public SectionVisibility Visibility { get; set; }
+
         public bool HasPredefinedOptions { get; set; }
         public Action<IDiagramNodeItem> OnAdd { get; set; }
     }

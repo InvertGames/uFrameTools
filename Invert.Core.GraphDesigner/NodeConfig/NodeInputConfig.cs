@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class NodeInputConfig
+    public class NodeInputConfig : GraphItemConfiguration
     {
-
+        public bool AllowMultiple { get; set; }
         public ConfigProperty<IDiagramNodeItem, string> Name
         {
             get { return _name; }
@@ -32,19 +32,13 @@ namespace Invert.Core.GraphDesigner
             return this;
         }
         //public string Name { get; set; }
-        public bool IsInput { get; set; }
-        public bool IsOutput { get; set; }
         public string OutputName { get; set; }
-        public Type ReferenceType { get; set; }
-        public Type SourceType { get; set; }
         public bool IsAlias { get; set; }
-        public bool AllowMultiple { get; set; }
         public Func<IDiagramNodeItem, IDiagramNodeItem, bool> Validator { get; set; }
         public PropertyInfo PropertyInfo { get; set; }
         public Slot AttributeInfo { get; set; }
-        public SectionVisibility Visibility { get; set; }
 
-        public IDiagramNodeItem GetDataObject(GenericNode node) 
+        public IDiagramNodeItem GetDataObject(GenericNode node)
         {
             if (IsAlias) return node;
             if (PropertyInfo != null)
@@ -52,19 +46,23 @@ namespace Invert.Core.GraphDesigner
                 var result = PropertyInfo.GetValue(node, null) as GenericSlot;
                 if (result == null)
                 {
-                    var slot = Activator.CreateInstance(PropertyInfo.PropertyType) as GenericSlot;
+                    var slot = Activator.CreateInstance((Type)PropertyInfo.PropertyType) as GenericSlot;
                     slot.Node = node;
-                    PropertyInfo.SetValue(node,slot,null);
+                    PropertyInfo.SetValue(node, slot, null);
                     return slot;
                 }
                 return result;
             }
             return node.GetConnectionReference(ReferenceType);
         }
+
     }
 
-
-    public class Slot : Attribute
+    public class GraphItemAttribute : Attribute
+    {
+        public int OrderIndex { get; set; }
+    }
+    public class Slot : GraphItemAttribute
     {
         public string Name { get; set; }
         public Type SourceType { get; set; }
@@ -130,7 +128,7 @@ namespace Invert.Core.GraphDesigner
     }
 
 
-    public class Section : Attribute
+    public class Section : GraphItemAttribute
     {
         public string Name { get; set; }
         public SectionVisibility Visibility { get; set; }

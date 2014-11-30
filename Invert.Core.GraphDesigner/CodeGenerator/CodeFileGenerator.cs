@@ -52,7 +52,7 @@ namespace Invert.Core.GraphDesigner
             AddImports();
             foreach (var codeGenerator in Generators)
             {
-               // uFrameEditor.Log(codeGenerator.GetType().Name + " is generating");
+               // UnityEngine.Debug.Log(codeGenerator.GetType().Name + " is generating");
                 codeGenerator.Initialize(this);
             }
             var provider = new CSharpCodeProvider();

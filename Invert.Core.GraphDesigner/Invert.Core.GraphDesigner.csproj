@@ -129,6 +129,7 @@
     <Compile Include="Data\IElementFileData.cs" />
     <Compile Include="Data\IGraphData.cs" />
     <Compile Include="Data\INodeRepository.cs" />
+    <Compile Include="Data\InvertGraph.cs" />
     <Compile Include="Data\IPlaymodePlugin.cs" />
     <Compile Include="Data\ISerializeablePropertyData.cs" />
     <Compile Include="Data\IViewPropertyType.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Data\GenericNode.cs" />
     <Compile Include="Data\IConnectable.cs" />
     <Compile Include="IInhertable.cs" />
+    <Compile Include="NodeConfig\GraphItemConfiguration.cs" />
     <Compile Include="UFType.cs" />
     <Compile Include="ElementDesignerDataExtensions.cs" />
     <Compile Include="NodeConfig\ConfigProperty.cs" />

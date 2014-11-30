@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Invert.uFrame.Editor;
 
 namespace Invert.Core
 {

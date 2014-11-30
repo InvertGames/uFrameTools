@@ -21,8 +21,8 @@ namespace Invert.Core.GraphDesigner
             ProcessRefactorings(diagram);
 
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
-            var generatorSettings = InvertGraphEditor.CurrentProject.GeneratorSettings;
-            var fileGenerators = InvertGraphEditor.GetAllFileGenerators(generatorSettings, InvertGraphEditor.CurrentProject).ToArray();
+            //var generatorSettings = InvertGraphEditor.CurrentProject.GeneratorSettings;
+            var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, InvertGraphEditor.CurrentProject).ToArray();
            // Debug.Log(fileGenerators.Length);
             foreach (var codeFileGenerator in fileGenerators)
             {
@@ -75,7 +75,7 @@ namespace Invert.Core.GraphDesigner
         {
             var refactorer = new RefactorContext(diagram.DiagramData.GetRefactorings());
             
-            var files = InvertGraphEditor.GetAllFileGenerators(diagram.CurrentRepository.GeneratorSettings).Where(p=>!p.AssetPath.EndsWith(".designer.cs")).Select(p => p.SystemPath).ToArray();
+            var files = InvertGraphEditor.GetAllFileGenerators(null).Where(p=>!p.AssetPath.EndsWith(".designer.cs")).Select(p => p.SystemPath).ToArray();
 
 
             

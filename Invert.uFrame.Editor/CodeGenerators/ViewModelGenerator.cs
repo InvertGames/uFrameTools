@@ -225,14 +225,14 @@ public class ViewModelGenerator : ElementCodeGenerator
         }
         if (data.Commands.Count > 0 || data.ComputedProperties.Any())
         {
-            if (Settings.GenerateControllers)
+            //if (Settings.GenerateControllers)
                 WireCommandsMethod.Statements.Add(
                     new CodeSnippetExpression(string.Format("var {0} = controller as {1}", data.NameAsVariable, data.NameAsControllerBase)));
         }
 
         foreach (var command in data.Commands)
         {
-            var commandName = Settings.GenerateControllers ? command.Name : "On" + command.Name;
+            var commandName =  command.Name;
             var assigner = new CodeAssignStatement
             {
                 Left = new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), command.Name)
@@ -243,14 +243,9 @@ public class ViewModelGenerator : ElementCodeGenerator
             // {
             commandWith.Parameters.Add(new CodeThisReferenceExpression());
             // }
-            if (Settings.GenerateControllers)
-            {
+    
                 commandWith.Parameters.Add(new CodeMethodReferenceExpression(new CodeVariableReferenceExpression(data.NameAsVariable), commandName));
-            }
-            else
-            {
-                commandWith.Parameters.Add(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), commandName));
-            }
+
 
             assigner.Right = commandWith;
             WireCommandsMethod.Statements.Add(assigner);

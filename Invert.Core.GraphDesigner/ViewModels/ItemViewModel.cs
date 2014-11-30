@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -61,6 +62,15 @@ namespace Invert.Core.GraphDesigner
                 NodeItem.IsEditing = value;
             }
         }
+
+        //public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator
+        //{
+        //    get
+        //    {
+        //        var item = DataObject as IDiagramNodeItem;
+        //        item.ValidateInput;
+        //    }
+        //}
 
         public override ConnectorViewModel InputConnector
         {

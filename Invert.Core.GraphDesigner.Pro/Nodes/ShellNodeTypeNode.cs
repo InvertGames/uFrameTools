@@ -1,26 +1,75 @@
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 
-public class ShellNodeTypeNode : GenericInheritableNode, IShellReferenceType
+public interface IShellNode : IDiagramNode, IItem, IClassTypeNode, IConnectable
 {
-    private string _classFormat = "{0}";
+    bool IsCustom { get; }
+}
 
-    public IShellReferenceType ReferenceType
+public interface IInputOutpuItem : IShellNode
+{
+}
+public class ShellNode : GenericNode, IShellNode 
+{
+  
+    [ InspectorProperty]
+    public bool IsCustom
     {
-        get { return GetConnectionReference<ReferenceItemType>().InputFrom<IShellReferenceType>(); }
+        get { return this["Custom"]; }
+        set { this["Custom"] = value; }
     }
+
+
+    public virtual string ClassName
+    {
+        get { return string.Format("{0}", Name); }
+    }
+}
+
+public class ShellInheritableNode : GenericInheritableNode, IShellNode
+{
 
     [InspectorProperty]
     public bool IsCustom
     {
-        get
-        {
-            return this["Custom"];
-        }
+        get { return this["Custom"]; }
         set { this["Custom"] = value; }
     }
 
+
+    public virtual string ClassName
+    {
+        get { return string.Format("{0}", Name); }
+    }
+}
+public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnectable
+{
+    private string _classFormat = "{0}";
+    private bool _allowMultipleOutputs;
+
+    [JsonProperty, InspectorProperty]
+    public bool AllowMultipleInputs { get; set; }
+
+    [JsonProperty, InspectorProperty]
+    public bool AllowMultipleOutputs
+    {
+        get
+        {
+            if (this["Inheritable"])
+            {
+                return true;
+            }
+            return _allowMultipleOutputs;
+        }
+        set { _allowMultipleOutputs = value; }
+    }
+
+    public IShellNode ReferenceType
+    {
+        get { return GetConnectionReference<ReferenceItemType>().InputFrom<IShellNode>(); }
+    }
     [InspectorProperty]
     public bool Inheritable
     {
@@ -114,13 +163,42 @@ public class ShellNodeTypeNode : GenericInheritableNode, IShellReferenceType
         }
     }
 
-    public virtual string ClassName
+    public override string ClassName
     {
         get { return Name + "Node"; }
     }
+
+    [ReferenceSection("Connectable To", SectionVisibility.WhenNodeIsFilter, false)]
+    public IEnumerable<ShellConnectableReferenceType> ConnectableTo
+    {
+        get { return ChildItems.OfType<ShellConnectableReferenceType>(); }
+    }
+
+    public IEnumerable<IShellNode> PossibleConnectableTo
+    {
+        get { return Project.NodeItems.OfType<IShellNode>(); }
+    }
+
 }
 
 public class ShellNodeTypeNodeViewModel
 {
 
+}
+
+public interface IOutputCapable
+{
+    
+}
+
+public interface IInputCapable
+{
+    
+}
+public class ShellConnectionDefitionNode
+{
+    [InputSlot("Output")]
+    public SingleInputSlot<IOutputCapable> OutputItem { get; set; }
+    [OutputSlot("Input")]
+    public SingleInputSlot<IInputCapable> InputItem { get; set; }
 }

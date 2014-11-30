@@ -1,4 +1,9 @@
 ﻿using System.Collections;
 
+public class PluginGraph : UnityGraphData<PluginGraphData>
+{ }
 
-public class PluginGraph : GenericGraphData<ShellPluginNode> { }
+public class PluginGraphData : GenericGraphData<ShellPluginNode>
+{
+    
+}

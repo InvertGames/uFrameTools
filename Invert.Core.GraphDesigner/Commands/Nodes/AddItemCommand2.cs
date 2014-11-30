@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
+using System.Diagnostics;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
@@ -39,8 +40,12 @@ namespace Invert.Core.GraphDesigner
         public IEnumerable<UFContextMenuItem> GetOptions(object item)
         {
             var viewModel = item as DiagramViewModel;
-
-            foreach (var nodeType in InvertGraphEditor.AllowedFilterNodes[viewModel.CurrentRepository.CurrentFilter.GetType()])
+            var filterType = viewModel.CurrentRepository.CurrentFilter.GetType();
+            if (!InvertGraphEditor.AllowedFilterNodes.ContainsKey(filterType))
+            {
+                InvertApplication.Log("The filter type was not find. Make sure the filter is registered, or it has sub nodes for it.");
+            }
+            foreach (var nodeType in InvertGraphEditor.AllowedFilterNodes[filterType])
             {
                 if (nodeType.IsAbstract) continue;
                 yield return new UFContextMenuItem()

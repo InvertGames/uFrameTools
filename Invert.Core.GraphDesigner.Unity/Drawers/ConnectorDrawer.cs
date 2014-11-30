@@ -198,11 +198,11 @@ namespace Invert.Core.GraphDesigner
 
             }
             GUI.DrawTexture(Bounds.Scale(scale), texture, ScaleMode.StretchToFill, true);
-            if (InvertGraphEditor.Settings.ShowGraphDebug)
+            if (InvertGraphEditor.Settings.ShowGraphDebug && ViewModel.IsMouseOver)
             {
-                GUI.Label(new Rect(Bounds.x, Bounds.y, 500, 50),
+                GUI.Label(new Rect(Bounds.x + 20, Bounds.y - 10, 500, 50),
                     
-                    this.ViewModel.ConnectorForType.Name + " : " + this.ViewModel.DataObject.GetType().Name,
+                    this.ViewModel.DataObject.GetType().Name,
                     EditorStyles.miniBoldLabel);
             }
 

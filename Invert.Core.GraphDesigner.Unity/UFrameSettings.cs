@@ -81,7 +81,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 SetColorPref("_backgroundColor", value);
             }
         }
-
+        
         public virtual bool UseGrid
         {
             get { return Convert.ToBoolean(PlayerPrefs.GetInt("UseGrid", Convert.ToInt32(true))); }

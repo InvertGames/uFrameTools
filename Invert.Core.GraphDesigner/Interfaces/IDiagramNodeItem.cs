@@ -24,5 +24,7 @@ namespace Invert.Core.GraphDesigner
         void NodeItemRemoved(IDiagramNodeItem nodeItem);
         void NodeAdded(IDiagramNode data);
         void NodeItemAdded(IDiagramNodeItem data);
+        bool ValidateInput(IDiagramNodeItem arg1, IDiagramNodeItem arg2);
+        bool ValidateOutput(IDiagramNodeItem arg1, IDiagramNodeItem arg2);
     }
 }

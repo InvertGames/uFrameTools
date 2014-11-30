@@ -70,6 +70,8 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
             SettingsBag.Add(key, value);
 
         }
+
+        OpenTabs.RemoveAll(p => string.IsNullOrEmpty(p.GraphIdentifier));
     }
 
     public bool GetSetting(string key, bool def = true)
@@ -113,7 +115,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     protected string[] _diagramNames;
 
     [SerializeField, HideInInspector]
-    protected List<GraphData> _diagrams;
+    protected List<ScriptableObject> _diagrams;
 
 
     private IGraphData _currentGraph;
@@ -138,21 +140,21 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     public IEnumerable<IGraphData> Graphs
     {
         get { return Diagrams.Cast<IGraphData>(); }
-        set { Diagrams = value.Cast<GraphData>().ToList(); }
+        set { Diagrams = value.Cast<ScriptableObject>().ToList(); }
     }
 
     public IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null)
     {
         Selection.activeObject = this;
         var t = diagramType;
-        var diagram = InvertGraphEditor.AssetManager.CreateAsset(t) as GraphData;
+        var diagram = InvertGraphEditor.AssetManager.CreateAsset(t) as IGraphData;
         if (defaultFilter != null && diagram != null)
         {
             diagram.RootFilter = defaultFilter;
         }
         diagram.Version = InvertGraphEditor.CURRENT_VERSION_NUMBER.ToString();
-        Diagrams.Add(diagram);
-        EditorUtility.SetDirty(diagram);
+        Diagrams.Add(diagram as ScriptableObject);
+        EditorUtility.SetDirty(diagram as ScriptableObject);
         EditorUtility.SetDirty(this);
         AssetDatabase.SaveAssets();
         Refresh();
@@ -160,7 +162,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     }
     public virtual Type RepositoryFor
     {
-        get { return typeof(GraphData); }
+        get { return typeof(IGraphData); }
     }
 
     public string Name
@@ -170,10 +172,12 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
 
 
     private IDiagramNode[] _nodeItems;
-    [SerializeField, HideInInspector]
-    private GeneratorSettings _generatorSettings;
 
+    [SerializeField]
+    private string _projectNamespace;
 
+    [SerializeField]
+    private List<OpenGraph> _openTabs;
 
     public IEnumerable<IDiagramNode> NodeItems
     {
@@ -187,7 +191,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     {
         get
         {
-            foreach (var diagram in Diagrams)
+            foreach (var diagram in Graphs)
             {
                 if (diagram == null || Object.Equals(diagram, null)) continue;
                 foreach (var item in diagram.AllGraphItems)
@@ -202,7 +206,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     {
         get
         {
-            foreach (var diagram in Diagrams)
+            foreach (var diagram in Graphs)
             {
                 if (diagram == null || Object.Equals(diagram, null)) continue;
                 foreach (var item in diagram.Connections)
@@ -217,7 +221,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     {
         get
         {
-            foreach (var item in Diagrams)
+            foreach (var item in Graphs)
             {
                 if (item == null || Object.Equals(item, null)) continue;
                 foreach (var node in item.NodeItems)
@@ -248,7 +252,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
 
         _nodeItems = null;
         CurrentGraph.AddNode(data);
-        
+
     }
 
     public void RemoveNode(IDiagramNode enumData)
@@ -279,11 +283,11 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         }
     }
 
-    public void AddItem( IDiagramNodeItem item)
+    public void AddItem(IDiagramNodeItem item)
     {
         //item.Node = node;
         var node = item.Node;
-        node.PersistedItems = node.PersistedItems.Concat(new[] {item});
+        node.PersistedItems = node.PersistedItems.Concat(new[] { item });
 
         foreach (var nodeItem in NodeItems)
         {
@@ -309,23 +313,17 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         get { return EditorPrefs.GetString("UF_LastLoadedDiagram" + this.name, string.Empty); }
         set { EditorPrefs.SetString("UF_LastLoadedDiagram" + this.name, value); }
     }
-    public List<GraphData> Diagrams
+    public List<ScriptableObject> Diagrams
     {
         get
         {
             if (_diagrams == null)
             {
-                _diagrams = new List<GraphData>();
+                _diagrams = new List<ScriptableObject>();
             }
             return _diagrams;
         }
         set { _diagrams = value; }
-    }
-
-    public GeneratorSettings GeneratorSettings
-    {
-        get { return _generatorSettings; }
-        set { _generatorSettings = value; }
     }
 
     public IGraphData CurrentGraph
@@ -337,11 +335,11 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
             {
                 if (!String.IsNullOrEmpty(LastLoadedDiagram))
                 {
-                    _currentGraph = Diagrams.FirstOrDefault(p => p!=null&& p.name == LastLoadedDiagram);
+                    CurrentGraph = Diagrams.FirstOrDefault(p => p != null && p.name == LastLoadedDiagram) as IGraphData;
                 }
                 if (_currentGraph == null)
                 {
-                    _currentGraph = Diagrams.FirstOrDefault();
+                    CurrentGraph = Diagrams.FirstOrDefault() as IGraphData;
                 }
             }
             return _currentGraph;
@@ -349,15 +347,32 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         set
         {
             _currentGraph = value;
-            if (value != null)
-                LastLoadedDiagram = value.Name;
+            if (value == null) return;
+            var openGraph = OpenGraphs.FirstOrDefault(p => p.GraphName == value.Name);
+            if (openGraph == null)
+            {
+                OpenTabs.Add(new OpenGraph()
+                {
+                    GraphName = value.Name,
+                    GraphIdentifier = value.Identifier
+                });
+                Debug.Log("Opened Tab");
+            }
+
+            LastLoadedDiagram = value.Name;
         }
+    }
+
+    public string ProjectNamespace
+    {
+        get { return _projectNamespace; }
+        set { _projectNamespace = value; }
     }
 
 
     public IGraphData LoadDiagram(string path)
     {
-        var data = InvertGraphEditor.AssetManager.LoadAssetAtPath(path, RepositoryFor) as GraphData;
+        var data = InvertGraphEditor.AssetManager.LoadAssetAtPath(path, RepositoryFor) as IGraphData;
         if (data == null)
         {
             return null;
@@ -392,7 +407,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
 
         foreach (var diagram in Diagrams)
         {
-            diagram.Prepare();
+            (diagram as IGraphData).Prepare();
         }
 
     }
@@ -402,5 +417,19 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         CurrentGraph.PositionData.Remove(CurrentGraph.CurrentFilter, identifier);
     }
 
+    public List<OpenGraph> OpenTabs
+    {
+        get { return _openTabs ?? (_openTabs = new List<OpenGraph>()); }
+        set { _openTabs = value; }
+    }
 
+    public IEnumerable<OpenGraph> OpenGraphs
+    {
+        get { return OpenTabs; }
+    }
+
+    public void CloseGraph(OpenGraph tab)
+    {
+        OpenTabs.Remove(tab);
+    }
 }

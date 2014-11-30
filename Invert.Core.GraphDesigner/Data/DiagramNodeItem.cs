@@ -255,4 +255,17 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     {
         
     }
+
+    public virtual bool ValidateInput(IDiagramNodeItem arg1, IDiagramNodeItem arg2)
+    {
+        //if (arg1.GetType() == arg2.GetType()) return false;
+
+        return true;
+    }
+
+    public virtual bool ValidateOutput(IDiagramNodeItem arg1, IDiagramNodeItem arg2)
+    {
+        //if (arg1.GetType() == arg2.GetType()) return false;
+        return true;
+    }
 }

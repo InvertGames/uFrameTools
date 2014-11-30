@@ -10,7 +10,7 @@ using Invert.Core.GraphDesigner;
 using Invert.Core.GraphDesigner.Pro;
 using UnityEngine;
 
-public class ShellGeneratorTypeNode : GenericInheritableNode
+public class ShellGeneratorTypeNode : GenericNode
 {
     private Type _baseType;
     private string _templateType;

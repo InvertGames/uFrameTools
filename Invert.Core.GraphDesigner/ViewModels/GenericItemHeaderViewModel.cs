@@ -13,6 +13,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return null; }
         }
+
         public override Vector2 Position { get; set; }
         public override string Name { get; set; }
         public ViewModel NodeViewModel { get; set; }

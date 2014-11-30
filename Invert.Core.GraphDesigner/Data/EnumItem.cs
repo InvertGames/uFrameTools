@@ -115,6 +115,16 @@ public class EnumItem : IDiagramNodeItem
         
     }
 
+    public bool ValidateInput(IDiagramNodeItem arg1, IDiagramNodeItem arg2)
+    {
+        return false;
+    }
+
+    public bool ValidateOutput(IDiagramNodeItem arg1, IDiagramNodeItem arg2)
+    {
+        return false;
+    }
+
 
     public Vector2[] ConnectionPoints { get; set; }
 

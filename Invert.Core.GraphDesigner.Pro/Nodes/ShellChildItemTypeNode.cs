@@ -2,15 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 
-public class ShellChildItemTypeNode : GenericInheritableNode, IShellReferenceType {
-    public IShellReferenceType ReferenceType
+public class ShellChildItemTypeNode : ShellInheritableNode, IShellNode
+{
+    public IShellNode ReferenceType
     {
-        get { return GetConnectionReference<ReferenceItemType>().InputFrom<IShellReferenceType>(); }
+        get { return GetConnectionReference<ReferenceItemType>().InputFrom<IShellNode>(); }
     }
 
-    public bool IsCustom { get { return this["Custom"]; } }
-
-    public string ClassName
+    public override string ClassName
     {
         get { return this.Name + "ChildItem"; }
     }
@@ -21,4 +20,12 @@ public class ShellChildItemTypeNode : GenericInheritableNode, IShellReferenceTyp
             return Project.NodeItems.OfType<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
         }
     }
+
+
+
+    public string ReferenceClassName
+    {
+        get { return "I" + Name + "Connectable"; }
+    }
+
 }

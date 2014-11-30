@@ -23,7 +23,7 @@ public class ShellCodeGeneratorNodeGenerator : GenericNodeGenerator<ShellGenerat
         foreach (var memberGeneratorReference in memberGeneratorReferences)
         {
             var itemReference = memberGeneratorReference.SourceItem;
-            var itemNode = itemReference.SourceItemObject as IShellReferenceType;
+            var itemNode = itemReference.SourceItemObject as IShellNode;
             if (itemNode == null) continue;
             var generatorNode = memberGeneratorReference.OutputTo<ShellMemberGeneratorInputSlot>().Node as ShellMemberGeneratorNode;
             if (generatorNode == null)

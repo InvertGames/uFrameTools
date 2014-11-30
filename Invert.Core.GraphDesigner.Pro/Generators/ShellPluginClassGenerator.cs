@@ -7,5 +7,6 @@ public class ShellPluginClassGenerator : GenericNodeGenerator<ShellPluginNode>
     {
         base.Initialize(fileGenerator);
         TryAddNamespace("System.IO");
+
     }
 }

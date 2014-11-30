@@ -16,7 +16,6 @@ namespace Invert.Core.GraphDesigner
       
         private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
 
-  
         private IGraphData _data;
 
         private DataBag _dataBag = new DataBag();
@@ -280,7 +279,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual string Namespace
         {
-            get { return InvertGraphEditor.CurrentProject.GeneratorSettings.NamespaceProvider.RootNamespace; }
+            get { return InvertGraphEditor.CurrentProject.ProjectNamespace; }
         }
 
         public virtual DiagramNode Node
@@ -561,7 +560,18 @@ namespace Invert.Core.GraphDesigner
             return new CodeTypeReference(this.Name);
         }
 
-   
+
+        public virtual bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            
+            return a != b && a.GetType() != b.GetType();
+        }
+
+        public virtual bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            
+            return a != b && a.GetType() != b.GetType();
+        }
     }
 }
 

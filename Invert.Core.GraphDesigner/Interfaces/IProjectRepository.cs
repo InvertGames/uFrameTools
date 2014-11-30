@@ -20,8 +20,42 @@ namespace Invert.Core.GraphDesigner
         Type RepositoryFor { get; }
         IGraphData CurrentGraph { get; set; }
         IEnumerable<IGraphData> Graphs { get; set; }
-        GeneratorSettings GeneratorSettings { get; set; }
+        string ProjectNamespace { get; set; }
         void Refresh();
         void HideNode(string identifier);
+        IEnumerable<OpenGraph> OpenGraphs { get;  }
+
+        void CloseGraph(OpenGraph tab);
+    }
+
+    [Serializable]
+    public class OpenGraph
+    {
+        [SerializeField]
+        private string[] _path;
+
+        [SerializeField]
+        private string _graphName;
+
+        [SerializeField]
+        private string _graphIdentifier;
+
+        public string GraphName
+        {
+            get { return _graphName; }
+            set { _graphName = value; }
+        }
+
+        public string[] Path
+        {
+            get { return _path; }
+            set { _path = value; }
+        }
+
+        public string GraphIdentifier
+        {
+            get { return _graphIdentifier; }
+            set { _graphIdentifier = value; }
+        }
     }
 }

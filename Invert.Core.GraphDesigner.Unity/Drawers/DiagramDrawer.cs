@@ -184,8 +184,8 @@ namespace Invert.Core.GraphDesigner
             IsEditingField = false;
             // Make sure they've upgraded to the latest json format
             if (UpgradeOldProject()) return;
-            // Draw the title box
-            GUI.Box(new Rect(0, 0f, DiagramSize.width, 30f), DiagramViewModel.Title , ElementDesignerStyles.DiagramTitle);
+            //// Draw the title box
+            //GUI.Box(new Rect(0, 0f, DiagramSize.width, 30f), DiagramViewModel.Title , ElementDesignerStyles.DiagramTitle);
 
        
             // Draw all of our drawers

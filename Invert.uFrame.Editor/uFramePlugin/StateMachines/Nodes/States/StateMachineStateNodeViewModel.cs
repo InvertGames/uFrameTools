@@ -1,4 +1,5 @@
 using System.Linq;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;

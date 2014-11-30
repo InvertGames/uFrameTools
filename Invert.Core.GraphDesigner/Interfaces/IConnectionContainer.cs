@@ -10,5 +10,6 @@ namespace Invert.Core.GraphDesigner
         string Identifier { get; }
         bool IsValid { get; }
         IGraphItem Copy();
+
     }
 }

@@ -164,11 +164,11 @@ namespace Invert.Core.GraphDesigner.Unity
             return container;
         }
         public static NodeConfig<TGraphNode> AddGraph<TGraphType, TGraphNode>(this IUFrameContainer container, string name)
-            where TGraphType : GraphData
-            where TGraphNode : GenericNode
+            where TGraphType : ScriptableObject
+            where TGraphNode : GenericNode, new()
         {
 
-            container.Register<GraphData, TGraphType>(name);
+            container.Register<IGraphData, TGraphType>(name);
             return AddNode<TGraphNode>(container, name);
         }
         public static IUFrameContainer RegisterGraphItem<TModel>(this uFrameContainer container) where TModel : GenericNode

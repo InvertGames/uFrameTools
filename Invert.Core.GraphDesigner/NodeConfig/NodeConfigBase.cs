@@ -8,16 +8,14 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public abstract class NodeConfigBase
+    public abstract class NodeConfigBase : GraphItemConfiguration
     {
-        public Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator { get; set; }
-        public Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator { get; set; }
+        public bool AllowMultipleInputs { get; set; }
+        public bool AllowMultipleOutputs { get; set; }
 
         protected NodeConfigBase(IUFrameContainer container)
         {
             Container = container;
-            InputValidator = (a,b) => true;
-            OutputValidator = (a, b) => true;
         }
 
         public string Name
@@ -36,134 +34,162 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-      
-        private void LoadByRefelection()
+        public List<GraphItemConfiguration> GraphItemConfigurations
         {
-            var inputs = GenericNode.GetInputSlotInfos(NodeType);
-            var outputs = GenericNode.GetOutputSlotInfos(NodeType);
-            var sections = GenericNode.GetSections(NodeType);
-
-            foreach (var section in sections)
-            {
-                var sectionConfig = new NodeConfigSectionBase();
-                sectionConfig.Name = section.Value.Name;
-                sectionConfig.IsProxy = section.Value is ProxySection;
-                sectionConfig.Visibility = section.Value.Visibility;
-                sectionConfig.ChildType = section.Key.PropertyType.GetGenericParameter();
-
-
-                var referenceSection = section.Value as ReferenceSection;
-                if (referenceSection != null)
-                {
-                    sectionConfig.AllowDuplicates = referenceSection.AllowDuplicates;
-                    sectionConfig.AllowAdding = !referenceSection.Automatic;
-                    sectionConfig.ReferenceType = referenceSection.ReferenceType ??
-                                                  sectionConfig.ChildType.GetGenericParameter() ?? section.Key.PropertyType.GetGenericParameter();
-                    
-                    if (sectionConfig.ReferenceType == null)
-                    {
-                        throw new Exception(string.Format("Reference Section on property {0} doesn't have a valid ReferenceType.",section.Key.Name));
-                    }
-
-                    //sectionConfig.GenericSelector = (node) =>
-                    //{
-
-                    //};
-                }
-                if (sectionConfig.IsProxy)
-                {
-                    
-                    KeyValuePair<PropertyInfo, Section> section1 = section;
-                    sectionConfig.GenericSelector = (node) =>
-                    {
-                        var enumerator = section1.Key.GetValue(node, null) as IEnumerable;
-                        if (enumerator == null) return null;
-                        return enumerator.Cast<IGraphItem>();
-                        
-                    };
-                }
-                else if (referenceSection != null)
-                {
-                    KeyValuePair<PropertyInfo, Section> section1 = section;
-
-                    var possibleSelectorProperty = section1.Key.DeclaringType.GetProperty("Possible" + section1.Key.Name);
-                    if (possibleSelectorProperty != null)
-                    {
-                        sectionConfig.GenericSelector = (node) =>
-                        {
-                            var enumerator = possibleSelectorProperty.GetValue(node, null) as IEnumerable;
-                            if (enumerator == null) return null;
-                            return enumerator.Cast<IGraphItem>();
-
-                        };
-                    }
-                    else
-                    {
-                        sectionConfig.GenericSelector = (node) =>
-                        {
-                            return node.Project.AllGraphItems.Where(p=>referenceSection.ReferenceType.IsAssignableFrom(p.GetType()));
-                        };
-                        
-                    }
-                    
-                }
-                Sections.Add(sectionConfig);
-            }
-
-            foreach (var item in inputs)
-            {
-               
-                var config = new NodeInputConfig()
-                {
-                    Name = new ConfigProperty<IDiagramNodeItem, string>(item.Value.Name),
-                    AllowMultiple = typeof(IMultiSlot).IsAssignableFrom(item.Key.PropertyType) || item.Value.AllowMultiple,
-                    IsInput = true,
-                    IsOutput = false,
-                    Visibility = item.Value.Visibility,
-                    ReferenceType = item.Key.PropertyType,
-                    SourceType = item.Value.SourceType ?? item.Key.PropertyType.GetGenericParameter(),
-                    PropertyInfo = item.Key,
-                    AttributeInfo = item.Value,
-                };
-                
-                Inputs.Add(config);
-            }
-            foreach (var item in outputs)
-            {
-                var config = new NodeInputConfig()
-                {
-                    Name = new ConfigProperty<IDiagramNodeItem, string>(item.Value.Name),
-                    AllowMultiple = typeof(IMultiSlot).IsAssignableFrom(item.Key.PropertyType) || item.Value.AllowMultiple,
-                    IsInput = false,
-                    IsOutput = true,
-                    Visibility = item.Value.Visibility,
-                    ReferenceType = item.Key.PropertyType,
-                    SourceType = item.Value.SourceType ?? item.Key.PropertyType.GetGenericParameter(),
-                    PropertyInfo = item.Key,
-                    AttributeInfo = item.Value
-                };
-                Inputs.Add(config);
-            }
-
-
+            get { return _graphItemConfigurations ?? (_graphItemConfigurations = new List<GraphItemConfiguration>()); }
+            set { _graphItemConfigurations = value; }
         }
 
 
-        private List<NodeConfigSectionBase> _sections = new List<NodeConfigSectionBase>();
+        private void LoadByRefelection()
+        {
+
+            AllAttributes = NodeType.GetPropertiesWithAttribute<GraphItemAttribute>().ToArray();
+            foreach (var item in AllAttributes)
+            {
+
+                var slot = item.Value as Slot;
+                if (slot != null)
+                {
+                    var result = CreateSlotConfiguration(item.Key, slot);
+                    result.OrderIndex = item.Value.OrderIndex;
+                    GraphItemConfigurations.Add(result);
+                    Slots.Add(item.Key, slot);
+                    if (result.IsOutput) {
+                        Debug.Log(string.Format("Registering output {0} : {1}", result.ReferenceType, result.SourceType.Name));
+                        Container.RegisterConnectable(result.ReferenceType, result.SourceType);
+                    }
+                    else
+                    {
+                        Debug.Log(string.Format("Registering input {0} : {1}", result.SourceType.Name, result.ReferenceType));
+                        Container.RegisterConnectable(result.SourceType, result.ReferenceType);
+                    }
+                    
+                    continue;
+                }
+
+                var section = item.Value as Section;
+                if (section != null)
+                {
+                    var property1 = item.Key;
+                    var section1 = section;
+                    var result = CreateSectionConfiguration(property1, section1);
+                    result.OrderIndex = section.OrderIndex;
+                    GraphItemConfigurations.Add(result);
+
+                }
+
+            }
+
+            SerializedProperties = NodeType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p=>p.GetCustomAttributes(typeof(JsonProperty), true).Any()).ToArray();
+        }
+
+        private GraphItemConfiguration CreateSectionConfiguration(PropertyInfo property, Section section)
+        {
+            var sectionConfig = new NodeConfigSectionBase
+            {
+                Name = section.Name,
+                IsProxy = section is ProxySection,
+                Visibility = section.Visibility,
+                SourceType = property.PropertyType.GetGenericParameter()
+            };
+            var referenceSection = section as ReferenceSection;
+            if (referenceSection != null)
+            {
+                sectionConfig.AllowDuplicates = referenceSection.AllowDuplicates;
+                sectionConfig.AllowAdding = !referenceSection.Automatic;
+                sectionConfig.ReferenceType = referenceSection.ReferenceType ??
+                                              sectionConfig.SourceType.GetGenericParameter() ?? property.PropertyType.GetGenericParameter();
+
+                if (sectionConfig.ReferenceType == null)
+                {
+                    throw new Exception(string.Format("Reference Section on property {0} doesn't have a valid ReferenceType.", property.Name));
+                }
+
+                //sectionConfig.GenericSelector = (node) =>
+                //{
+
+                //};
+            }
+            if (sectionConfig.IsProxy)
+            {
+
+                var property1 = property;
+                sectionConfig.GenericSelector = (node) =>
+                {
+                    var enumerator = property1.GetValue(node, null) as IEnumerable;
+                    if (enumerator == null) return null;
+                    return enumerator.Cast<IGraphItem>();
+
+                };
+            }
+            else if (referenceSection != null)
+            {
+              
+
+                var possibleSelectorProperty = NodeType.GetProperty("Possible" + property.Name);
+                if (possibleSelectorProperty != null)
+                {
+                    
+                
+                    sectionConfig.GenericSelector = (node) =>
+                    {
+                        var propertyN = NodeType.GetProperty("Possible" + property.Name);
+                        var enumerator = propertyN.GetValue(node, null) as IEnumerable;
+                        
+                        if (enumerator == null) return null;
+                        return enumerator.OfType<IGraphItem>();
+
+                    };
+                }
+                else
+                {
+                    sectionConfig.GenericSelector = (node) =>
+                    {
+                        return node.Project.AllGraphItems.Where(p => referenceSection.ReferenceType.IsAssignableFrom(p.GetType()));
+                    };
+
+                }
+
+            }
+            return sectionConfig;
+        }
+
+        private GraphItemConfiguration CreateSlotConfiguration(PropertyInfo property, Slot slot)
+        {
+            var config = new NodeInputConfig()
+            {
+                Name = new ConfigProperty<IDiagramNodeItem, string>(slot.Name),
+                AllowMultiple = typeof(IMultiSlot).IsAssignableFrom(property.PropertyType) || slot.AllowMultiple,
+                IsInput = slot is InputSlot,
+                IsOutput = slot is OutputSlot,
+                Visibility = slot.Visibility,
+                ReferenceType = property.PropertyType,
+                SourceType = slot.SourceType ?? property.PropertyType.GetGenericParameter(),
+                PropertyInfo = property,
+                AttributeInfo = slot,
+            };
+
+            return config;
+        }
+
+        public KeyValuePair<PropertyInfo, GraphItemAttribute>[] AllAttributes { get; set; }
+
+        public PropertyInfo[] SerializedProperties { get; set; }
         private string _name;
 
-        private List<NodeInputConfig> _inputs;
-        private List<NodeOutputConfig> _outputs;
+
+
         private List<Func<GenericNode, Refactorer>> _refactorers;
         private List<string> _tags;
         private Type _nodeType;
         private Dictionary<PropertyInfo, Slot> _slots;
+        private List<GraphItemConfiguration> _graphItemConfigurations;
 
-        public List<NodeConfigSectionBase> Sections
+        public IEnumerable<NodeConfigSectionBase> Sections
         {
-            get { return _sections; }
-            set { _sections = value; }
-        }
+            get { return GraphItemConfigurations.OfType<NodeConfigSectionBase>(); }
+        } 
 
         public Dictionary<PropertyInfo, Slot> Slots
         {
@@ -180,19 +206,17 @@ namespace Invert.Core.GraphDesigner
             get { return Slots.Where(p => p.Value is OutputSlot); }
         } 
 
-        public List<NodeInputConfig> Inputs
+        public IEnumerable<NodeInputConfig> Inputs
         {
-            get { return _inputs ?? (_inputs = new List<NodeInputConfig>()); }
-            set { _inputs = value; }
+            get { return GraphItemConfigurations.OfType<NodeInputConfig>().Where(p => p.IsInput); }
+      
+        }
+        public IEnumerable<NodeInputConfig> Outputs
+        {
+            get { return GraphItemConfigurations.OfType<NodeInputConfig>().Where(p => p.IsOutput); }
+
         }
 
-        //public List<NodeOutputConfig> Outputs
-        //{
-        //    get { return _outputs ??(_outputs = new List<NodeOutputConfig>()); }
-        //    set { _outputs = value; }
-        //}
-
-        //public NodeColor Color { get; set; }
         public List<Func<GenericNode, Refactorer>> Refactorers
         {
             get { return _refactorers ?? new List<Func<GenericNode, Refactorer>>(); }
@@ -213,5 +237,6 @@ namespace Invert.Core.GraphDesigner
         
 
     }
+
 
 }

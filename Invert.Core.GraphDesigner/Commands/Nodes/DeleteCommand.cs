@@ -41,20 +41,27 @@ namespace Invert.Core.GraphDesigner
             }
             if (InvertGraphEditor.Platform.MessageBox("Confirm", "Are you sure you want to delete this?", "Yes", "No"))
             {
-                node.CurrentRepository.RemoveNode(selected.GraphItemObject);
+                InvertGraphEditor.ExecuteCommand(_ =>
+                {
+                    node.CurrentRepository.RemoveNode(selected.GraphItemObject);
+                });
+
                 if (customFileFullPaths.Length > 0)
                 {
                     if (InvertGraphEditor.Platform.MessageBox("Confirm",
                         "You have files associated with this. Delete them too?" + Environment.NewLine +
                         string.Join(Environment.NewLine, customFiles), "Yes Delete Them", "Don't Delete them"))
                     {
-                        foreach (var customFileFullPath in customFileFullPaths)
+                        InvertGraphEditor.ExecuteCommand(_ =>
                         {
-                            File.Delete(customFileFullPath);
-                        }
-                        var saveCommand = InvertGraphEditor.Container.Resolve<IToolbarCommand>("SaveCommand");
-                        //Execute the save command
-                        InvertGraphEditor.ExecuteCommand(saveCommand);
+                            foreach (var customFileFullPath in customFileFullPaths)
+                            {
+                                File.Delete(customFileFullPath);
+                            }
+                            var saveCommand = InvertGraphEditor.Container.Resolve<IToolbarCommand>("SaveCommand");
+                            //Execute the save command
+                            InvertGraphEditor.ExecuteCommand(saveCommand);
+                        });
                     }
                 }
             }

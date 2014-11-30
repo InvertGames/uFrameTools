@@ -366,7 +366,7 @@ public static class UFrameGeneratorComments
 
     public static IEnumerable<CodeCommentStatement> CodeComment(string comment)
     {
-        if (!InvertGraphEditor.CurrentProject.GeneratorSettings.GenerateComments) yield break;
+        //if (!InvertGraphEditor.CurrentProject.GeneratorSettings.GenerateComments) yield break;
         var sb = new StringBuilder();
         yield return new CodeCommentStatement("<summary>");
         var whitespace = 0;

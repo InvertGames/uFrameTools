@@ -235,6 +235,7 @@ namespace Invert.Core.GraphDesigner
             }
 
             ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
+            
             KeyBindings = Container.ResolveAll<IKeyBinding>().Concat(commandKeyBindings).ToArray();
         }
 
@@ -334,7 +335,7 @@ namespace Invert.Core.GraphDesigner
 
         public static IEnumerable<CodeGenerator> GetCodeGeneratorsForNode(this IDiagramNode node)
         {
-            return GetAllCodeGenerators(node.Project.GeneratorSettings,node.Project).Where(p=>p.ObjectData == node);
+            return GetAllCodeGenerators(null,node.Project).Where(p=>p.ObjectData == node);
         }
 
         private static IEnumerable<CodeGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, IProjectRepository project,
@@ -370,10 +371,10 @@ namespace Invert.Core.GraphDesigner
         public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings, IProjectRepository project, bool includeDisabled = false)
         {
             var codeGenerators = GetAllCodeGenerators(settings, project, includeDisabled).ToArray();
-            var groups = codeGenerators.GroupBy(p => p.FullPathName);
+            var groups = codeGenerators.GroupBy(p => p.FullPathName).Distinct();
             foreach (var @group in groups)
             {
-                var generator = new CodeFileGenerator(settings.NamespaceProvider.RootNamespace)
+                var generator = new CodeFileGenerator(project.ProjectNamespace)
                 {
                     AssetPath = @group.Key.Replace("\\", "/"),
                     SystemPath = Path.Combine(Application.dataPath, @group.Key.Substring(7)).Replace("\\", "/"),
@@ -382,7 +383,12 @@ namespace Invert.Core.GraphDesigner
                 yield return generator;
             }
         }
-
+        public static GraphItemViewModel GetNodeViewModel(this IUFrameContainer container, IGraphItem item, DiagramViewModel diagram)
+        {
+            var vm = InvertApplication.Container.ResolveRelation<ViewModel>(item.GetType(), item, diagram) as
+                           GraphItemViewModel;
+            return vm;
+        }
         public static IEnumerable<Type> GetAllowedFilterItems(Type filterType)
         {
             return Container.RelationshipMappings.Where(
@@ -443,7 +449,16 @@ namespace Invert.Core.GraphDesigner
             return container;
         }
 
-     
+        public static void RegisterConnectable<TOutput, TInput>(this IUFrameContainer container)
+        {
+            container.RegisterInstance<RegisteredConnection>(new RegisteredConnection() {TInputType = typeof(TInput),TOutputType = typeof(TOutput)}, typeof(TOutput).Name + typeof(TInput).Name);
+
+        }
+        public static void RegisterConnectable(this IUFrameContainer container, Type outputType, Type inputType)
+        {
+            container.RegisterInstance<RegisteredConnection>(new RegisteredConnection() { TInputType = inputType, TOutputType = outputType }, outputType.Name + inputType.Name);
+
+        }
         public static void RegisterFilterItem<TFilterData, TAllowedItem>()
         {
             Container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();

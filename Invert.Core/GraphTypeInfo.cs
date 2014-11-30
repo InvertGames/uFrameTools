@@ -1,5 +1,5 @@
 using System;
-using Invert.uFrame.Editor;
+using Invert.Core;
 
 public class GraphTypeInfo : IItem
 {

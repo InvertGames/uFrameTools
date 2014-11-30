@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 
 
-public interface IGraphData : IElementFileData
+public interface IGraphData : IElementFileData,IItem
 {
     string Identifier { get; set; }
 
@@ -14,8 +16,10 @@ public interface IGraphData : IElementFileData
     FilterState FilterState { get; set; }
 
     // Filters
-    IDiagramFilter RootFilter { get;  }
+    IDiagramFilter RootFilter { get; set; }
     ICodePathStrategy CodePathStrategy { get; set; }
+    bool Errors { get; set; }
+    Exception Error { get; set; }
 
     //IEnumerable<ConnectionData> Connections { get; }
     void AddConnection(IGraphItem output, IGraphItem input);

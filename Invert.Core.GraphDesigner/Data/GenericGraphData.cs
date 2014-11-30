@@ -1,16 +1,17 @@
 using Invert.Core.GraphDesigner;
 
-public class GenericGraphData<T> : GraphData where T : IDiagramFilter, new()
+public class GenericGraphData<T> : InvertGraph where T : IDiagramFilter, new()
 {
     public T FilterNode
     {
         get { return (T)RootFilter; }
     }
-    protected override IDiagramFilter CreateDefaultFilter()
+
+    public override IDiagramFilter CreateDefaultFilter()
     {
         return new T()
         {
-            Name = name
+            Name = Name
         };
     }
 }

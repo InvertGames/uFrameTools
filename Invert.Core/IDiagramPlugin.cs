@@ -1,6 +1,4 @@
-﻿using Invert.uFrame;
-
-namespace Invert.Core
+﻿namespace Invert.Core
 {
     public interface ICorePlugin
     {

@@ -223,6 +223,10 @@ namespace Invert.Core.GraphDesigner
             ContentItems.Clear();
             IsLocal = InvertGraphEditor.CurrentProject.CurrentGraph.NodeItems.Contains(GraphItemObject);
             CreateContent();
+            if (GraphItemObject.IsEditing)
+            {
+                BeginEditing();
+            }
 
         }
 
@@ -317,7 +321,7 @@ namespace Invert.Core.GraphDesigner
         {
             if (string.IsNullOrEmpty(GraphItemObject.Name))
             {
-                GraphItemObject.Name = "";
+                GraphItemObject.Name = "RenameMe";
             }
             GraphItemObject.EndEditing();
             Dirty = true;

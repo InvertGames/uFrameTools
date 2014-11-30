@@ -77,14 +77,15 @@ using UnityEngine;
             {
                 return;
             }
-            var item = SelectedNode.GraphItemObject;
+            var item = SelectedNode == null ? null:SelectedNode.GraphItemObject;
 
-            fileGenerators = InvertGraphEditor.GetAllFileGenerators(InvertGraphEditor.CurrentProject.GeneratorSettings,
+            fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,
                 InvertGraphEditor.CurrentProject, true).ToArray();
          
             foreach (var fileGenerator in fileGenerators)
             {
                 var list = fileGenerator.Generators.ToList();
+                if (item != null)
                 list.RemoveAll(p => p.ObjectData != item);
                 fileGenerator.Generators = list.ToArray();
                 if (fileGenerator.Generators.Length < 1) continue;

@@ -55,7 +55,7 @@ public class ProjectRepositoryInspector : Editor
                 int index1 = index;
                 GUIHelpers.DoTriggerButton(new UFStyle()
                 {
-                    Label = diagram.Name,
+                    Label = diagram.name,
                     Enabled = true,
                     BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
                     TextAnchor = TextAnchor.MiddleRight,
@@ -84,23 +84,23 @@ public class ProjectRepositoryInspector : Editor
 
         }
 
-        if (GUIHelpers.DoToolbarEx("Settings"))
-        {
-            var settingsProperty = serializedObject.FindProperty("_generatorSettings");
+        //if (GUIHelpers.DoToolbarEx("Settings"))
+        //{
+        //    var settingsProperty = serializedObject.FindProperty("_generatorSettings");
 
 
-            var property = settingsProperty.FindPropertyRelative("_namespaceProvider").FindPropertyRelative("_rootNamespace");
-            EditorGUILayout.PropertyField(property);
+        //    var property = settingsProperty.FindPropertyRelative("_namespaceProvider").FindPropertyRelative("_rootNamespace");
+        //    EditorGUILayout.PropertyField(property);
 
 
-            property = settingsProperty.FindPropertyRelative("_generateComments");
-            var newValue = GUIHelpers.DoToggle("Generate Comments", property.boolValue);
-            if (newValue != property.boolValue)
-            {
-                property.boolValue = newValue;
+        //    property = settingsProperty.FindPropertyRelative("_generateComments");
+        //    var newValue = GUIHelpers.DoToggle("Generate Comments", property.boolValue);
+        //    if (newValue != property.boolValue)
+        //    {
+        //        property.boolValue = newValue;
 
-            }
-        }
+        //    }
+        //}
       
         if (InvertGraphEditor.CurrentDiagramViewModel != null)
         DoDiagramInspector();
@@ -293,7 +293,7 @@ public class ProjectRepositoryInspector : Editor
         }
         if (item == null) return;
 
-        fileGenerators = InvertGraphEditor.GetAllFileGenerators(InvertGraphEditor.CurrentProject.GeneratorSettings,
+        fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,
             InvertGraphEditor.CurrentProject,true).ToArray();
         GeneratorDrawers.Clear();
         foreach (var fileGenerator in fileGenerators)
@@ -326,14 +326,14 @@ public class ProjectRepositoryInspector : Editor
     private void ImportDiagram()
     {
         var projectAssets = InvertGraphEditor.Projects.SelectMany(p => p.Graphs);
-        var assets = InvertGraphEditor.AssetManager.GetAssets(typeof(GraphData)).OfType<GraphData>().Where(p => !projectAssets.Contains(p)).ToArray();
+        var assets = InvertGraphEditor.AssetManager.GetAssets(typeof(ScriptableObject)).OfType<IGraphData>().Where(p => !projectAssets.Contains(p)).ToArray();
 
 
         ItemSelectionWindow.Init("Select Diagram", assets, (item) =>
         {
             // Mimic the new list
-            var list = Target.Diagrams.ToList();
-            var selectedAsset = item as GraphData;
+            var list = Target.Graphs.ToList();
+            var selectedAsset = item as IGraphData;
             list.Add(selectedAsset);
 
             var so = new SerializedObject(Target); so.Update();
@@ -346,7 +346,7 @@ public class ProjectRepositoryInspector : Editor
             for (int index = 0; index < list.Count; index++)
             {
                 var diagram = list[index];
-                property.GetArrayElementAtIndex(index).objectReferenceValue = diagram;
+                property.GetArrayElementAtIndex(index).objectReferenceValue = diagram as ScriptableObject;
             }
 
             so.ApplyModifiedProperties();

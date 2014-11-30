@@ -24,7 +24,7 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 var nodeConfig = InvertGraphEditor.Container.Resolve<NodeConfigBase>(NodeViewModel.GetType().Name);
-                return nodeConfig.Sections.FirstOrDefault(p=>p.ChildType==typeof(TData));
+                return nodeConfig.Sections.FirstOrDefault(p=>p.SourceType==typeof(TData));
             }
         } 
         public override ConnectorViewModel InputConnector
