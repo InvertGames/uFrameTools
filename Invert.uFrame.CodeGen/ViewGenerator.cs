@@ -198,9 +198,9 @@ public class ViewViewBaseGenerator : ViewClassGenerator
         
         foreach (var viewComponentData in this.View.ViewComponents)
         {
-            decl.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof (RequireComponent)),
-                new CodeAttributeArgument(new CodeSnippetExpression(
-                    string.Format("typeof({0})",viewComponentData.Name)))));
+            //decl.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof (RequireComponent)),
+            //    new CodeAttributeArgument(new CodeSnippetExpression(
+            //        string.Format("typeof({0})",viewComponentData.Name)))));
 
             var backingField = new CodeMemberField(viewComponentData.Name, "_" + viewComponentData.Name);
             backingField.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(SerializeField))));
