@@ -7,6 +7,7 @@
         decimal LoadPriority { get; }
         string PackageName { get; }
         bool Required { get; }
+        bool Ignore { get; }
         void Initialize(uFrameContainer container);
         void Loaded();
     }
@@ -24,6 +25,11 @@
         }
 
         public virtual bool Required
+        {
+            get { return false; }
+        }
+
+        public virtual bool Ignore
         {
             get { return false; }
         }

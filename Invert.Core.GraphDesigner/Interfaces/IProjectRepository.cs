@@ -26,6 +26,7 @@ namespace Invert.Core.GraphDesigner
         IEnumerable<OpenGraph> OpenGraphs { get;  }
 
         void CloseGraph(OpenGraph tab);
+        void Save();
     }
 
     [Serializable]

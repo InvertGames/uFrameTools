@@ -9,6 +9,7 @@ public class ShellNodeTypeSection : ShellNode, IShellNode
     public bool AllowAdding { get; set; }
 
 
+
     public override string ClassName
     {
         get { return this.Name + "Reference"; }
@@ -21,11 +22,30 @@ public class ShellNodeTypeSection : ShellNode, IShellNode
         get { return "I" + this.Name; }
     }
 }
+public class  ShellSectionReferenceSlot : SingleInputSlot<ShellChildItemTypeNode>
+{
+    public override bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
+    {
+        return true;
+        return base.Validate(a, b);
+    }
 
+    public override bool ValidateInput(IDiagramNodeItem arg1, IDiagramNodeItem arg2)
+    {
+        return true;
+        return base.ValidateInput(arg1, arg2);
+    }
+
+    public override bool ValidateOutput(IDiagramNodeItem arg1, IDiagramNodeItem arg2)
+    {
+        return true;
+        return base.ValidateOutput(arg1, arg2);
+    }
+}
 public class ShellSectionNode : ShellNodeTypeSection, IShellConnectable
 {
     [InputSlot("Reference Type")]
-    public SingleInputSlot<ShellChildItemTypeNode> ReferenceSlot { get; set; }
+    public ShellSectionReferenceSlot ReferenceSlot { get; set; }
 
     public IShellNode ReferenceType
     {
@@ -58,6 +78,16 @@ public class ShellSectionNode : ShellNodeTypeSection, IShellConnectable
             if (ReferenceType == null) return null;
             return ReferenceType.ClassName;
         }
+    }
+
+    string IClassTypeNode.ClassName
+    {
+        get { return ReferenceClassName; }
+    }
+
+    public override string ClassName
+    {
+        get { return ReferenceClassName; }
     }
 
     [ReferenceSection("Connectable To", SectionVisibility.Always, false)]

@@ -4,7 +4,7 @@ using Invert.Core.GraphDesigner;
 public interface INodeRepository 
 {
     // Basic Information
-    string Name { get; }
+    string Name { get; set; }
     IEnumerable<IDiagramNode> NodeItems { get; }
     IEnumerable<IGraphItem> AllGraphItems { get; }
     IEnumerable<ConnectionData> Connections { get; }

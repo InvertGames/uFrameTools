@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="MemberGenerators\Class1.cs" />
+    <Compile Include="Generators\ShellNodeTypeTemplate.cs" />
     <Compile Include="Nodes\IShellReferenceType.cs" />
     <Compile Include="Drawers\NodeDesignerDrawer.cs" />
     <Compile Include="PluginDesigner.cs" />
@@ -120,7 +120,9 @@
       <Name>Invert.MVVM</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Templates\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y

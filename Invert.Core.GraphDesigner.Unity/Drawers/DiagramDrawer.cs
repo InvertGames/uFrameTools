@@ -167,6 +167,7 @@ namespace Invert.Core.GraphDesigner
 
         public void CommandExecuted(IEditorCommand command)
         {
+            Debug.Log("YUPYUPYUP");
             //DiagramViewModel.MarkDirty();
             //uFrameEditor.Log(command.Title + " Executed");
             this.Refresh();

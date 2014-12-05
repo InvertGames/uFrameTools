@@ -105,8 +105,26 @@ public class ProjectRepositoryInspector : Editor
         if (InvertGraphEditor.CurrentDiagramViewModel != null)
         DoDiagramInspector();
 
+        if (GUIHelpers.DoToolbarEx("Project Issues"))
+        {
 
-#if DEBUG
+            foreach (var item in InvertGraphEditor.CurrentProject.NodeItems.Where(p => !p.IsValid))
+            {
+
+                GUIHelpers.DoTriggerButton(new UFStyle()
+                {
+                    Label = item.Name,
+                    Enabled = true,
+                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                    TextAnchor = TextAnchor.MiddleRight,
+                    IconStyle = ElementDesignerStyles.BreakpointButtonStyle,
+                    //IconStyle = UBStyles.RemoveButtonStyle,
+                    ShowArrow = true
+                });
+            }
+        }
+
+#if DEBUGS
         if (GUIHelpers.DoToolbarEx("Project Nodes"))
         {
 
@@ -143,6 +161,7 @@ public class ProjectRepositoryInspector : Editor
 
             }
         }
+ 
 #endif
         //if (GUIHelpers.DoToolbarEx("Code Generators"))
         //{

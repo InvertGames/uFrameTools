@@ -563,12 +563,13 @@ namespace Invert.Core.GraphDesigner
 
         public virtual bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
         {
-            
+            return true;
             return a != b && a.GetType() != b.GetType();
         }
 
         public virtual bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
         {
+            return true;
             
             return a != b && a.GetType() != b.GetType();
         }

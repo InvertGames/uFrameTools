@@ -31,8 +31,9 @@ namespace Invert.Core.GraphDesigner.Unity
         public override bool Enabled { get { return true; } set{} }
         public override void Initialize(uFrameContainer container)
         {
-            
-           
+
+            container.RegisterDrawer<PropertyFieldViewModel, PropertyFieldDrawer>();
+
             container.RegisterInstance<IAssetManager>(new UnityAssetManager());
             // Drawers
          

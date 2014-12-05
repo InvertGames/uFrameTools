@@ -47,7 +47,23 @@ namespace Invert.Core.GraphDesigner
             AllAttributes = NodeType.GetPropertiesWithAttribute<GraphItemAttribute>().ToArray();
             foreach (var item in AllAttributes)
             {
-
+                var proxy = item.Value as ConfigProxy;
+                if (proxy != null)
+                {
+                    var c = new ConfigurationProxyConfiguration()
+                    {
+                        ReferenceType = typeof(GraphItemConfiguration),
+                        SourceType = typeof(GraphItemConfiguration),
+                        IsInput = false,
+                        IsOutput =  false,
+                        OrderIndex = proxy.OrderIndex,
+                        Visibility = proxy.Visibility,
+                        ConfigSelector =
+                            (node) => ((IEnumerable) item.Key.GetValue(node, null)).Cast<GraphItemConfiguration>()
+                    };
+                    GraphItemConfigurations.Add(c);
+                    continue;
+                }
                 var slot = item.Value as Slot;
                 if (slot != null)
                 {
@@ -56,12 +72,12 @@ namespace Invert.Core.GraphDesigner
                     GraphItemConfigurations.Add(result);
                     Slots.Add(item.Key, slot);
                     if (result.IsOutput) {
-                        Debug.Log(string.Format("Registering output {0} : {1}", result.ReferenceType, result.SourceType.Name));
+                        //Debug.Log(string.Format("Registering output {0} : {1}", result.ReferenceType, result.SourceType.Name));
                         Container.RegisterConnectable(result.ReferenceType, result.SourceType);
                     }
                     else
                     {
-                        Debug.Log(string.Format("Registering input {0} : {1}", result.SourceType.Name, result.ReferenceType));
+                       // Debug.Log(string.Format("Registering input {0} : {1}", result.SourceType.Name, result.ReferenceType));
                         Container.RegisterConnectable(result.SourceType, result.ReferenceType);
                     }
                     
@@ -91,8 +107,10 @@ namespace Invert.Core.GraphDesigner
                 Name = section.Name,
                 IsProxy = section is ProxySection,
                 Visibility = section.Visibility,
-                SourceType = property.PropertyType.GetGenericParameter()
+                SourceType = property.PropertyType.GetGenericParameter(),
+                
             };
+
             var referenceSection = section as ReferenceSection;
             if (referenceSection != null)
             {
@@ -100,7 +118,7 @@ namespace Invert.Core.GraphDesigner
                 sectionConfig.AllowAdding = !referenceSection.Automatic;
                 sectionConfig.ReferenceType = referenceSection.ReferenceType ??
                                               sectionConfig.SourceType.GetGenericParameter() ?? property.PropertyType.GetGenericParameter();
-
+                sectionConfig.IsEditable = referenceSection.Editable;
                 if (sectionConfig.ReferenceType == null)
                 {
                     throw new Exception(string.Format("Reference Section on property {0} doesn't have a valid ReferenceType.", property.Name));

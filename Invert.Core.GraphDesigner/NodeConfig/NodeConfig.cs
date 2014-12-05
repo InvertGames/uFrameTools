@@ -32,6 +32,42 @@ namespace Invert.Core.GraphDesigner
             });
             return this;
         }
+
+        public NodeGeneratorConfig<TNode> AddCodeTemplate<TGeneratorTemplate>() where TGeneratorTemplate : class, IClassTemplate<TNode>, new()
+        {
+            var templateAttribute = typeof (TGeneratorTemplate).GetCustomAttributes(typeof (TemplateClass), true)
+                .OfType<TemplateClass>()
+                .FirstOrDefault();
+            var generatorConfig = GetGeneratorConfig<TypeClassGenerator<TNode, TGeneratorTemplate>>();
+            var outputFolderName = templateAttribute.OutputFolderName ?? typeof (TGeneratorTemplate).Name;
+            if (templateAttribute.Location == MemberGeneratorLocation.DesignerFile || templateAttribute.Location == MemberGeneratorLocation.Both)
+            {
+                AddDesignerGenerator<TypeClassGenerator<TNode, TGeneratorTemplate>>(outputFolderName,
+                    templateAttribute.IsEditorExtension);
+                if (templateAttribute.IsEditorExtension)
+                {
+                    generatorConfig.DesignerFilenameConfigAsEditor(outputFolderName + ".designer.cs");
+                }
+                else
+                {
+                    generatorConfig.DesignerFilenameConfig(outputFolderName + ".designer.cs");
+                }
+
+            }
+            if (templateAttribute.Location == MemberGeneratorLocation.EditableFile || templateAttribute.Location == MemberGeneratorLocation.Both)
+            {
+                AddEditableGenerator<TypeClassGenerator<TNode, TGeneratorTemplate>>(outputFolderName);
+                if (templateAttribute.IsEditorExtension)
+                {
+                    generatorConfig.FilenameConfigAsEditor(_=>Path.Combine(outputFolderName, string.Format(templateAttribute.ClassNameFormat,_.Name) + ".cs"));
+                }
+                else
+                {
+                    generatorConfig.FilenameConfig(_=>Path.Combine(outputFolderName, string.Format(templateAttribute.ClassNameFormat,_.Name) + ".cs"));
+                }
+            }
+            return generatorConfig;
+        }
         public List<NodeValidator<TNode>> Validators
         {
             get { return _validators ?? (_validators =new List<NodeValidator<TNode>>()); }
@@ -138,12 +174,14 @@ namespace Invert.Core.GraphDesigner
         public NodeConfig<TNode> AddEditableGenerator<TCodeGenerator>(string folder, bool isEditorExtension = false) where TCodeGenerator : CodeGenerator, new()
         {
             AddGenerator(args =>
-                new TCodeGenerator()
+            {
+                return new TCodeGenerator()
                 {
                     ObjectData = args.Data,
                     Filename = Path.Combine(folder, args.Data.Name + ".cs"),
                     IsDesignerFile = false
-                });
+                };
+            });
             return this;
         }
 

@@ -48,6 +48,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     var slot = Activator.CreateInstance((Type)PropertyInfo.PropertyType) as GenericSlot;
                     slot.Node = node;
+                    slot.Name = AttributeInfo.Name;
                     PropertyInfo.SetValue(node, slot, null);
                     return slot;
                 }
@@ -64,6 +65,7 @@ namespace Invert.Core.GraphDesigner
     }
     public class Slot : GraphItemAttribute
     {
+        
         public string Name { get; set; }
         public Type SourceType { get; set; }
         public bool AllowMultiple { get; set; }
@@ -140,6 +142,16 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+    public class ConfigProxy : GraphItemAttribute
+    {
+        public SectionVisibility Visibility { get; set; }
+
+        public ConfigProxy(SectionVisibility visibility)
+        {
+            Visibility = visibility;
+        }
+    }
+
     public class ProxySection : Section
     {
         public ProxySection(string name, SectionVisibility visibility) : base(name, visibility)
@@ -149,26 +161,37 @@ namespace Invert.Core.GraphDesigner
 
     public class ReferenceSection : Section
     {
-        public ReferenceSection(string name, SectionVisibility visibility, bool allowDuplicates, bool automatic, Type referenceType) : base(name, visibility)
+        private bool _editable = true;
+
+        public ReferenceSection(string name, SectionVisibility visibility, bool allowDuplicates, bool automatic, Type referenceType, bool editable = true)
+            : base(name, visibility)
         {
             AllowDuplicates = allowDuplicates;
             Automatic = automatic;
             ReferenceType = referenceType;
+            Editable = editable;
         }
 
         public Type ReferenceType { get; set; }
         public bool AllowDuplicates { get; set; }
         public bool Automatic { get; set; }
 
+        public bool Editable
+        {
+            get { return _editable; }
+            set { _editable = value; }
+        }
+
         public ReferenceSection(string name, SectionVisibility visibility, bool allowDuplicates) : base(name, visibility)
         {
             AllowDuplicates = allowDuplicates;
         }
 
-        public ReferenceSection(string name, SectionVisibility visibility, bool allowDuplicates, bool automatic) : base(name, visibility)
+        public ReferenceSection(string name, SectionVisibility visibility, bool allowDuplicates, bool automatic, bool editable = true) : base(name, visibility)
         {
             AllowDuplicates = allowDuplicates;
             Automatic = automatic;
+            Editable = editable;
         }
     }
     public enum SectionVisibility
@@ -177,4 +200,7 @@ namespace Invert.Core.GraphDesigner
         WhenNodeIsFilter,
         WhenNodeIsNotFilter
     }
+
+
+
 }

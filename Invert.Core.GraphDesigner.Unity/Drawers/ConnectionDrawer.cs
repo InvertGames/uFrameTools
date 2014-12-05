@@ -11,10 +11,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (ViewModel.IsFullColor)
-                {
-                    return 5;
-                }
+             
                 
                 return -1;
             }

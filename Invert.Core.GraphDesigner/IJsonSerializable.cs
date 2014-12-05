@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Invert.Core;
 using Invert.uFrame.Editor;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 { 
@@ -16,6 +18,117 @@ namespace Invert.Core.GraphDesigner
 
     public static class JsonExtensions
     {
+        public static void DeserializeProperty(this object obj, PropertyInfo property, JSONClass cls)
+        {
+            var propertyName = property.Name;
+            if (cls[propertyName] == null) return;
+            var propertyType = property.PropertyType;
+            if (typeof(Enum).IsAssignableFrom(property.PropertyType))
+            {
+                var value = cls[propertyName].Value;
+                property.SetValue(obj, Enum.Parse(propertyType, value), null);
+            }
+            else if (propertyType == typeof(int))
+            {
+                property.SetValue(obj, cls[propertyName].AsInt, null);
+            }
+            else if (propertyType == typeof(string))
+            {
+                property.SetValue(obj, cls[propertyName].Value, null);
+            }
+            else if (propertyType == typeof(float))
+            {
+                property.SetValue(obj, cls[propertyName].AsFloat, null);
+            }
+            else if (propertyType == typeof(bool))
+            {
+                property.SetValue(obj, cls[propertyName].AsBool, null);
+            }
+            else if (propertyType == typeof(double))
+            {
+                property.SetValue(obj, cls[propertyName].AsDouble, null);
+            }
+            else if (propertyType == typeof(Vector2))
+            {
+                property.SetValue(obj, cls[propertyName].AsVector2, null);
+            }
+            else if (propertyType == typeof(Vector3))
+            {
+                property.SetValue(obj, cls[propertyName].AsVector3, null);
+            }
+            else if (propertyType == typeof(Quaternion))
+            {
+                property.SetValue(obj, cls[propertyName].AsQuaternion, null);
+            }
+            else if (propertyType == typeof(Color))
+            {
+                property.SetValue(obj, (Color)cls[propertyName].AsVector4, null);
+            }
+        }
+        public static void SerializeProperty(this object obj, PropertyInfo property, JSONClass cls)
+        {
+            var value = property.GetValue(obj, null);
+            if (value != null)
+            {
+                var propertyName = property.Name;
+                var propertyType = property.PropertyType;
+                if (typeof(Enum).IsAssignableFrom(propertyType))
+                {
+                    cls.Add(propertyName, new JSONData(value.ToString()));
+                }
+                else if (propertyType == typeof(int))
+                {
+                    cls.Add(propertyName, new JSONData((int)value));
+                }
+                else if (propertyType == typeof(string))
+                {
+                    cls.Add(propertyName, new JSONData((string)value));
+                }
+                else if (propertyType == typeof(float))
+                {
+                    cls.Add(propertyName, new JSONData((float)value));
+                }
+                else if (propertyType == typeof(bool))
+                {
+                    cls.Add(propertyName, new JSONData((bool)value));
+                }
+                else if (propertyType == typeof(double))
+                {
+                    cls.Add(propertyName, new JSONData((double)value));
+                }
+                else if (propertyType == typeof(Color))
+                {
+                    var vCls = new JSONClass();
+                    var color = (Color)value;
+                    vCls.AsVector4 = new Vector4(color.r, color.g, color.b, color.a);
+                    cls.Add(propertyName, vCls);
+                }
+                else if (propertyType == typeof(Vector2))
+                {
+                    var vCls = new JSONClass();
+                    vCls.AsVector2 = (Vector2)value;
+                    cls.Add(propertyName, vCls);
+                }
+                else if (propertyType == typeof(Vector3))
+                {
+                    var vCls = new JSONClass();
+                    vCls.AsVector3 = (Vector3)value;
+                    cls.Add(propertyName, vCls);
+                }
+                else if (propertyType == typeof(Quaternion))
+                {
+                    var vCls = new JSONClass();
+                    vCls.AsQuaternion = (Quaternion)value;
+                    cls.Add(propertyName, vCls);
+                }
+                else
+                {
+                    throw new Exception(
+                        string.Format("{0} property can't be serialized. Override Serialize method to serialize it.",
+                            propertyName));
+                }
+            }
+        }
         public static void AddObject(this JSONClass cls, string name, IJsonObject jsonObject) 
         {
             cls.Add(name, SerializeObject(jsonObject));

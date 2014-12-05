@@ -80,19 +80,36 @@ namespace Invert.Core.GraphDesigner
                 ApplyInputConfiguration(NodeConfig,DataObject as IGraphItem,InputConnector,NodeConfig.AllowMultipleInputs);
             if (NodeConfig.IsOutput)
                 ApplyOutputConfiguration(NodeConfig, DataObject as IGraphItem, InputConnector, NodeConfig.AllowMultipleOutputs);
-            foreach (var item in NodeConfig.GraphItemConfigurations.OrderBy(p=>p.OrderIndex))
+
+            CreateContentByConfiguration(NodeConfig.GraphItemConfigurations, GraphItem);
+
+            AddPropertyFields();
+           
+            
+
+        }
+        
+        protected void CreateContentByConfiguration(IEnumerable<GraphItemConfiguration> graphItemConfigurations, GenericNode node = null)
+        {
+            foreach (var item in graphItemConfigurations.OrderBy(p => p.OrderIndex))
             {
+                var proxyConfig = item as ConfigurationProxyConfiguration;
+                if (proxyConfig != null)
+                {
+                    if (!IsVisible(proxyConfig.Visibility)) continue;
+                    CreateContentByConfiguration(proxyConfig.ConfigSelector(DataObject as GenericNode));
+                    continue;
+                }
                 var inputConfig = item as NodeInputConfig;
                 if (inputConfig != null)
                 {
                     if (inputConfig.IsOutput)
                     {
-                        AddOutput(inputConfig);
-
+                        AddOutput(inputConfig, node);
                     }
                     else if (inputConfig.IsInput)
                     {
-                        AddInput(inputConfig);
+                        AddInput(inputConfig, node);
                     }
                 }
                 var sectionConfig = item as NodeConfigSectionBase;
@@ -101,10 +118,6 @@ namespace Invert.Core.GraphDesigner
                     AddSection(sectionConfig);
                 }
             }
-
-            AddPropertyFields();
-           
-
         }
 
         private void AddSection(NodeConfigSectionBase section)
@@ -115,6 +128,7 @@ namespace Invert.Core.GraphDesigner
 
             if (!string.IsNullOrEmpty(section.Name))
             {
+               
                 ContentItems.Add(new GenericItemHeaderViewModel()
                 {
                     Name = section.Name,
@@ -184,12 +198,21 @@ namespace Invert.Core.GraphDesigner
 
             if (section1.GenericSelector != null && section1.ReferenceType == null && section1.IsProxy)
             {
+                
                 foreach (var item in section1.GenericSelector(GraphItem).OfType<IDiagramNodeItem>())
                 {
+                    
                     if (section.SourceType.IsAssignableFrom(item.GetType()))
                     {
-                        var vm = GetDataViewModel(item);
-
+                        var vm = GetDataViewModel(item) as GraphItemViewModel;
+                        var itemViewModel = vm as ItemViewModel;
+                        if (itemViewModel != null)
+                        {
+                            itemViewModel.IsEditable = section1.IsEditable;
+                            ApplyInputConfiguration(section, item, vm.InputConnector, section.AllowMultipleInputs);
+                            ApplyOutputConfiguration(section, item, vm.OutputConnector, section.AllowMutlipleOutputs);
+                        }
+                        
                         if (vm == null)
                         {
                             Debug.LogError(
@@ -198,9 +221,8 @@ namespace Invert.Core.GraphDesigner
                                     item.GetType(), section1.Name, section1.SourceType.Name));
                             continue;
                         }
-
-                        ApplyInputConfiguration(section,item,vm.InputConnector,section.AllowMultipleInputs);
-                        ApplyOutputConfiguration(section,item,vm.OutputConnector,section.AllowMutlipleOutputs);
+                        
+                        
                         ContentItems.Add(vm);
                     }
                     else
@@ -217,13 +239,14 @@ namespace Invert.Core.GraphDesigner
                     if (section.SourceType.IsAssignableFrom(item.GetType()))
                     {
                         var vm = GetDataViewModel(item) as ItemViewModel;
-
+                       
 
                         if (vm == null)
                         {
                             Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
                             continue;
                         }
+                        vm.IsEditable = section1.IsEditable;
                         if (section1.HasPredefinedOptions)
                         {
                             vm.IsEditable = false;
@@ -236,17 +259,19 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        private void AddOutput(NodeInputConfig inputConfig)
+        
+
+        private void AddOutput(NodeInputConfig inputConfig, GenericNode node = null)
         {
             if (!IsVisible(inputConfig.Visibility)) return;
-
+            var nodeToUse = node ?? GraphItem;
             var header = new InputOutputViewModel()
             {
-                Name = inputConfig.Name.GetValue(GraphItem),
+                Name = inputConfig.Name.GetValue(node),
                 DataObject =
                     inputConfig.IsAlias
                         ? DataObject
-                        : inputConfig.GetDataObject(GraphItem),
+                        : inputConfig.GetDataObject(nodeToUse),
                 OutputConnectorType = inputConfig.SourceType,
                 IsInput = false,
                 IsOutput = true
@@ -268,15 +293,15 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        private void AddInput(NodeInputConfig inputConfig)
+        private void AddInput(NodeInputConfig inputConfig, GenericNode node = null)
         {
             if (!IsVisible(inputConfig.Visibility)) return;
-
+            var nodeToUse = node ?? GraphItem;
             var header = new InputOutputViewModel()
             {
-                Name = inputConfig.Name.GetValue(GraphItem),
+                Name = inputConfig.Name.GetValue(nodeToUse),
                 DataObject =
-                    inputConfig.IsAlias ? DataObject : inputConfig.GetDataObject(GraphItem),
+                    inputConfig.IsAlias ? DataObject : inputConfig.GetDataObject(nodeToUse),
                 InputConnectorType = inputConfig.SourceType,
                 IsInput = true
             };
@@ -300,7 +325,7 @@ namespace Invert.Core.GraphDesigner
        
         }
 
-        private bool IsVisible(SectionVisibility section)
+        protected bool IsVisible(SectionVisibility section)
         {
             if (section == SectionVisibility.Always) return true;
             if (section == SectionVisibility.WhenNodeIsFilter)

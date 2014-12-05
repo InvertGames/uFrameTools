@@ -138,6 +138,7 @@
     <Compile Include="Data\Json\uFrameProject.cs" />
     <Compile Include="Data\MissingNodeData.cs" />
     <Compile Include="Data\UFListExtensions.cs" />
+    <Compile Include="Data\UnityGraphData.cs" />
     <Compile Include="Data\Upgrading\Class1.cs" />
     <Compile Include="DiagramContextMenuAttribute.cs" />
     <Compile Include="DiagramViewModel.cs" />

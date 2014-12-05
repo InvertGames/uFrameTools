@@ -12,4 +12,9 @@ public class ShellGraphTypeNode : ShellNode
             return RootNodeSlot.Item;
         }
     }
+
+    public override string ClassName
+    {
+        get { return string.Format("{0}Graph", Name); }
+    }
 }

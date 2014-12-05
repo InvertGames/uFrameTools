@@ -8,7 +8,7 @@ using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using UnityEngine;
 
-public class UnityGraphData<TData> : ScriptableObject, IGraphData, ISerializationCallbackReceiver, IItem
+public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationCallbackReceiver, IItem
     where TData : InvertGraph, new()
 {
     [SerializeField, HideInInspector]
@@ -30,7 +30,7 @@ public class UnityGraphData<TData> : ScriptableObject, IGraphData, ISerializatio
 
     public UnityGraphData()
     {
-       
+
     }
 
     [NonSerialized]
@@ -48,7 +48,9 @@ public class UnityGraphData<TData> : ScriptableObject, IGraphData, ISerializatio
                 InvertGraphEditor.Container.Resolve<ICodePathStrategy>("Default");
 
             _codePathStrategy.Data = this;
-            _codePathStrategy.AssetPath = Path.GetDirectoryName(InvertGraphEditor.Platform.GetAssetPath(this));
+            //var path = InvertGraphEditor.Platform.GetAssetPath(this);
+
+            _codePathStrategy.AssetPath = Directory;
 
             return _codePathStrategy;
         }
@@ -67,7 +69,21 @@ public class UnityGraphData<TData> : ScriptableObject, IGraphData, ISerializatio
         set { Graph.Error = value; }
     }
 
-  
+    public string Path
+    {
+        get
+        {
+            
+            return InvertGraphEditor.Platform.GetAssetPath(this);
+        }
+        set { Graph.Path = value; }
+    }
+
+    public string Directory
+    {
+        get { return System.IO.Path.GetDirectoryName(Path); }
+
+    }
 
     public IEnumerable<IGraphItem> AllGraphItems
     {
@@ -115,6 +131,7 @@ public class UnityGraphData<TData> : ScriptableObject, IGraphData, ISerializatio
     public virtual string Name
     {
         get { return Regex.Replace(this.name, "[^a-zA-Z0-9_.]+", ""); ; }
+        set { this.name = value; }
     }
 
     public string Version
@@ -175,7 +192,7 @@ public class UnityGraphData<TData> : ScriptableObject, IGraphData, ISerializatio
             {
                 _jsonData = Graph.Serialize().ToString();
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -245,11 +262,16 @@ public class UnityGraphData<TData> : ScriptableObject, IGraphData, ISerializatio
     {
         Graph.SetProject(project);
     }
+
+    public void DeserializeFromJson(JSONNode graphData)
+    {
+        Graph.DeserializeFromJson(graphData);
+    }
 }
 
 public class GraphData : UnityGraphData<InvertGraph>
 {
-     
+
 }
 
 public class ConnectionData : IJsonObject

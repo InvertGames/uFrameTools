@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.uFrame.Editor;
 
 
 public interface IGraphData : IElementFileData,IItem
@@ -20,6 +21,7 @@ public interface IGraphData : IElementFileData,IItem
     ICodePathStrategy CodePathStrategy { get; set; }
     bool Errors { get; set; }
     Exception Error { get; set; }
+    string Path { get; set; }
 
     //IEnumerable<ConnectionData> Connections { get; }
     void AddConnection(IGraphItem output, IGraphItem input);
@@ -27,4 +29,5 @@ public interface IGraphData : IElementFileData,IItem
     void ClearOutput(IGraphItem output);
     void ClearInput(IGraphItem input);
     void SetProject(IProjectRepository value);
+    void DeserializeFromJson(JSONNode graphData);
 }

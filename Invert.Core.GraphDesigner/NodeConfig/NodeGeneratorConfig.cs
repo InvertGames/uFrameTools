@@ -386,6 +386,7 @@ namespace Invert.Core.GraphDesigner
             MemberGenerators.Add(new LambdaMemberGenerator<TNode>(_ =>
             {
                 var method = type.MethodFromTypeMethod(methodName, callBase);
+                method.Attributes |= MemberAttributes.Override;
                 if (fillMethod != null)
                 {
                     fillMethod(_.Data, method);

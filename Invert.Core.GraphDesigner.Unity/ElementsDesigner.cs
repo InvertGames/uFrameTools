@@ -262,6 +262,10 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 DiagramDrawer.Refresh();
             }
+            if (CurrentProject.CurrentGraph != null)
+            {
+                CurrentProject.Save();
+            }
         }
 
         public void CommandExecuting(IEditorCommand command)
@@ -451,7 +455,7 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 if (Undo.undoRedoPerformed != null) Undo.undoRedoPerformed -= UndoRedoPerformed;
                 Undo.undoRedoPerformed += UndoRedoPerformed;
-                SerializedGraph = new SerializedObject(diagram as UnityEngine.Object);
+                //SerializedGraph = new SerializedObject(diagram as UnityEngine.Object);
                 //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
                 DiagramDrawer = new DiagramDrawer(new DiagramViewModel(diagram, CurrentProject));
                 MouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer);
@@ -683,6 +687,10 @@ namespace Invert.Core.GraphDesigner.Unity
                     foreach (var item in InvertGraphEditor.Container.Instances.Where(p=>p.Base == typeof(IConnectionStrategy)))
                     {
                         GUILayout.Label(item.Name);
+                    }
+                    foreach (var item in RegisteredConnectionStrategy.ConnectionTypes)
+                    {
+                        EditorGUILayout.LabelField(item.TOutputType.Name, item.TInputType.Name);
                     }
                     GUILayout.EndArea();
                 }

@@ -7,6 +7,7 @@ namespace Invert.Core.GraphDesigner
     {
         public bool IsProxy { get; set; }
         private bool _allowAdding = true;
+        private bool _isEditable = true;
 
         public string Name { get; set; }
 
@@ -17,6 +18,12 @@ namespace Invert.Core.GraphDesigner
         }
         public bool AllowMultipleInputs { get; set; }
         public bool AllowMutlipleOutputs { get; set; }
+
+        public bool IsEditable
+        {
+            get { return _isEditable; }
+            set { _isEditable = value; }
+        }
 
         public Func<GenericNode, IEnumerable<IGraphItem>> GenericSelector { get; set; }
        // public Type ReferenceType { get; set; }

@@ -120,6 +120,7 @@ public class ElementDiagramSettingsWindow : EditorWindow
                         "Save your diagram first before changing the path strategy.", "OK");
                 }
             }
+            
             GUILayout.EndScrollView();
 
             GUILayout.EndArea();

@@ -17,10 +17,18 @@ namespace Invert.Core.GraphDesigner
         {
             if (a.Validator != null)
                 if (!a.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
+                {
+                    // Debug.Log("Output validator denied this connection");
                     return null;
+                }
+
             if (b.Validator != null)
                 if (!b.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
+                {
+                    // Debug.Log("Input validator denied this connection");
                     return null;
+                }
+                    
             return TryConnect<TOutputData, TInputData>(diagramViewModel, a, b, Apply, CanConnect);
         }
 

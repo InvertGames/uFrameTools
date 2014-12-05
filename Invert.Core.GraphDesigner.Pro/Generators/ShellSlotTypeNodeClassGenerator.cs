@@ -7,6 +7,7 @@ public class ShellSlotTypeNodeClassGenerator : GenericNodeGenerator<ShellSlotTyp
     public override void Initialize(CodeFileGenerator fileGenerator)
     {
         base.Initialize(fileGenerator);
+        
         var i = new CodeTypeDeclaration("I" + Data.Name)
         {
             IsInterface = true,

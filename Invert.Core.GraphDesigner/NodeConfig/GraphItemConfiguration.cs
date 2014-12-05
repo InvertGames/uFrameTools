@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Invert.Core.GraphDesigner
@@ -15,5 +17,10 @@ namespace Invert.Core.GraphDesigner
         public bool IsOutput { get; set; }
 
 
+    }
+
+    public class ConfigurationProxyConfiguration : GraphItemConfiguration
+    {
+        public Func<GenericNode, IEnumerable<GraphItemConfiguration>> ConfigSelector { get; set; }
     }
 }

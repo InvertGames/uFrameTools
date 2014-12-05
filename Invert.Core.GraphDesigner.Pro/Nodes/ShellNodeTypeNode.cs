@@ -66,6 +66,17 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
         set { _allowMultipleOutputs = value; }
     }
 
+    public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
+    {
+        return true;
+        return base.ValidateInput(a, b);
+    }
+
+    public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
+    {
+        return true;
+    }
+
     public IShellNode ReferenceType
     {
         get { return GetConnectionReference<ReferenceItemType>().InputFrom<IShellNode>(); }
@@ -84,8 +95,8 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     //[InputSlot("Base Class")]
     //public SingleInputSlot<ShellNodeTypeNode> BaseSlot { get; set; }
 
-    [OutputSlot("Generators")]
-    public MultiOutputSlot<ShellGeneratorTypeNode> GeneratorsSlot { get; set; }
+    //[OutputSlot("Generators")]
+    //public MultiOutputSlot<ShellGeneratorTypeNode> GeneratorsSlot { get; set; }
 
     [OutputSlot("Sub Nodes")]
     public MultiOutputSlot<ShellNodeTypeNode> SubNodesSlot { get; set; }
@@ -95,13 +106,13 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
         get { return SubNodesSlot.Items; }
     }
 
-    public IEnumerable<ShellGeneratorTypeNode> Generators
-    {
-        get
-        {
-            return GeneratorsSlot.Items;
-        }
-    }
+    //public IEnumerable<ShellGeneratorTypeNode> Generators
+    //{
+    //    get
+    //    {
+    //        return GeneratorsSlot.Items;
+    //    }
+    //}
 
 
     [ReferenceSection("Sections", SectionVisibility.WhenNodeIsFilter, false)]
@@ -154,7 +165,7 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
         get { return Project.NodeItems.OfType<ShellSlotTypeNode>().Where(p => p.IsOutput); }
     }
         
-        [Section("Custom Selectors", SectionVisibility.WhenNodeIsFilter)]
+    [Section("Custom Selectors", SectionVisibility.WhenNodeIsFilter)]
     public IEnumerable<ShellPropertySelectorItem> CustomSelectors
     {
         get

@@ -32,6 +32,12 @@ public class InvertGraph : IGraphData, IItem
         Name = name;
         Deserialize(json);
     }
+    public InvertGraph(string name, JSONClass json)
+    {
+
+        Name = name;
+        Deserialize(json);
+    }
 
     public ICodePathStrategy CodePathStrategy { get; set; }
 
@@ -39,7 +45,7 @@ public class InvertGraph : IGraphData, IItem
     {
         get
         {
-            foreach (var node in Nodes)
+            foreach (var node in NodeItems)
             {
                 yield return node;
                 foreach (var item in node.GraphItems)
@@ -150,6 +156,7 @@ public class InvertGraph : IGraphData, IItem
     }
 
     public Exception Error { get; set; }
+    public string Path { get; set; }
 
     public List<ConnectionData> ConnectedItems
     {
@@ -255,8 +262,10 @@ public class InvertGraph : IGraphData, IItem
             {"Name", new JSONData(data.Name)}, // Name of the diagram
             {"Version", new JSONData(data.Version)},// Version of the diagram
             {"Identifier", new JSONData(data.Identifier)},// Version of the diagram
+            {"Type", new JSONData(data.GetType().FullName)}
             // Version of the diagram
         };
+        
         if (data.FilterState != null)
             // Add the filter state
             root.AddObject("FilterState", data.FilterState);
@@ -301,9 +310,13 @@ public class InvertGraph : IGraphData, IItem
 
         var jsonNode = JSONNode.Parse(jsonData);
 
+        DeserializeFromJson(jsonNode);
+    }
+
+    public void DeserializeFromJson(JSONNode jsonNode)
+    {
         if (jsonNode == null)
         {
-
             InvertApplication.Log("Couldn't parse file." + Name);
             return;
         }
@@ -332,18 +345,18 @@ public class InvertGraph : IGraphData, IItem
         {
             Nodes.Clear();
             //uFrameEditor.Log(this.name + jsonNode["Nodes"].ToString());
-            Nodes.AddRange(JsonExtensions.DeserializeObjectArray<IDiagramNode>(jsonNode["Nodes"].AsArray, (INodeRepository) this));
+            Nodes.AddRange(JsonExtensions.DeserializeObjectArray<IDiagramNode>(jsonNode["Nodes"].AsArray,
+                (INodeRepository) this));
         }
         if (jsonNode["ConnectedItems"] is JSONArray)
         {
             ConnectedItems.Clear();
-            ConnectedItems.AddRange(JsonExtensions.DeserializeObjectArray<ConnectionData>(jsonNode["ConnectedItems"].AsArray, (INodeRepository) this));
-
-            
+            ConnectedItems.AddRange(JsonExtensions.DeserializeObjectArray<ConnectionData>(
+                jsonNode["ConnectedItems"].AsArray, (INodeRepository) this));
         }
         if (string.IsNullOrEmpty(Version))
         {
-            foreach (var filter in NodeItems.OfType<IDiagramFilter>().Concat(new[] { RootFilter }).ToArray())
+            foreach (var filter in NodeItems.OfType<IDiagramFilter>().Concat(new[] {RootFilter}).ToArray())
             {
                 var index = 0;
                 foreach (var itemLoction in filter.Locations.Keys)

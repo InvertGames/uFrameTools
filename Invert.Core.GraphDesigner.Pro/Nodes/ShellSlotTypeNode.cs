@@ -13,6 +13,7 @@ public interface IReferenceNode : IShellNode
 }
 public class ShellSlotTypeNode : ShellNode, IReferenceNode
 {
+
     public override string ClassName
     {
         get

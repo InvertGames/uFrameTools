@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using Invert.Common;
 using Invert.Common.UI;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
@@ -139,10 +141,47 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
 
     public IEnumerable<IGraphData> Graphs
     {
-        get { return Diagrams.Cast<IGraphData>(); }
+        get
+        {
+            //if (_loadedTextGraphs == null)
+            //{
+            //    _loadedTextGraphs = new List<IGraphData>();
+            //    foreach (var item in TextGraphs)
+            //    {
+            //        var graphData = JSON.Parse(item.text);
+                    
+            //        var name = graphData["Name"].Value;
+            //        var type = InvertApplication.FindType(graphData["Type"].Value);
+            //        if (type == null)
+            //        {
+            //            Debug.LogError(string.Format("Couldn't find graph type {0}", graphData["Type"].Value));
+            //        }
+            //        var graph = Activator.CreateInstance(type) as IGraphData;
+            //        graph.Name = item.name; 
+            //        if (graph == null)
+            //        { 
+                     
+            //            Debug.LogError(string.Format("Couldn't load graph {0}", name));
+            //            continue;
+            //            ;
+            //        }
+            //        graph.Path = AssetDatabase.GetAssetPath(item);
+            //        graph.DeserializeFromJson(graphData);
+            //        Debug.Log(string.Format("Loaded graph {0}", name));
+            //        _loadedTextGraphs.Add(graph);
+            //    }
+            //}
+            //foreach (var item in _loadedTextGraphs)
+            //{
+            //    yield return item;
+            //}
+            foreach (var item in Diagrams)
+                yield return item as IGraphData; //Diagrams.Cast<IGraphData>();
+        }
         set { Diagrams = value.Cast<ScriptableObject>().ToList(); }
     }
 
+    [NonSerialized] private List<IGraphData> _loadedTextGraphs;
     public IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null)
     {
         Selection.activeObject = this;
@@ -168,6 +207,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     public string Name
     {
         get { return name; }
+        set { name = value; }
     }
 
 
@@ -178,6 +218,9 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
 
     [SerializeField]
     private List<OpenGraph> _openTabs;
+
+    [NonSerialized]
+    private List<TextAsset> _textGraphs;
 
     public IEnumerable<IDiagramNode> NodeItems
     {
@@ -326,6 +369,13 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         set { _diagrams = value; }
     }
 
+
+    public List<TextAsset> TextGraphs
+    {
+        get { return _textGraphs; }
+        set { _textGraphs = value; }
+    }
+
     public IGraphData CurrentGraph
     {
         get
@@ -372,6 +422,14 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
 
     public IGraphData LoadDiagram(string path)
     {
+        //foreach (var asset in Graphs.OfType<InvertGraph>())
+        //{
+        //    if (asset.Path == path)
+        //    {
+        //        CurrentGraph = asset;
+        //        return asset;
+        //    }
+        //}
         var data = InvertGraphEditor.AssetManager.LoadAssetAtPath(path, RepositoryFor) as IGraphData;
         if (data == null)
         {
@@ -381,6 +439,15 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
         return data;
     }
 
+    public void Save()
+    {
+        var g = CurrentGraph as InvertGraph;
+        if (g != null)
+        {
+            File.WriteAllText(g.Path, InvertGraph.Serialize(g).ToString());
+            Debug.Log(string.Format("Saved {0}", g.Path));
+        }
+    }
     public void SaveDiagram(INodeRepository data)
     {
         if (data != null)
@@ -401,7 +468,7 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
     {
         //var assets = uFrameEditor.GetAssets(typeof(GraphData));
         //Diagrams = assets.OfType<GraphData>().ToList();
-
+        _loadedTextGraphs = null;
         CurrentGraph = null;
         _nodeItems = null;
 

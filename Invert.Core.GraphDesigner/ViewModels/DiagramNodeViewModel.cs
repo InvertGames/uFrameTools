@@ -96,8 +96,9 @@ namespace Invert.Core.GraphDesigner
         public DiagramNodeViewModel(IDiagramNode graphItemObject, DiagramViewModel diagramViewModel)
             : this()
         {
-            GraphItemObject = graphItemObject;
             DiagramViewModel = diagramViewModel;
+            GraphItemObject = graphItemObject;
+        
             OutputConnectorType = graphItemObject.GetType();
             InputConnectorType = graphItemObject.GetType();
 

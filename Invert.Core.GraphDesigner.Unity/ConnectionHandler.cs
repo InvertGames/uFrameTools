@@ -180,6 +180,7 @@ namespace Invert.Core.GraphDesigner
                     var node = Activator.CreateInstance(item) as IDiagramNode;
                     
                     var vm = InvertGraphEditor.Container.GetNodeViewModel(node, this.DiagramViewModel) as DiagramNodeViewModel;
+                    if (vm == null) continue;
                     vm.IsCollapsed = false;
                     var connectors = new List<ConnectorViewModel>();
                     vm.GetConnectors(connectors);

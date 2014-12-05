@@ -1,6 +1,7 @@
 using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
@@ -22,6 +23,7 @@ public class ShellNodeTypeGenerator : TypeClassGenerator<ShellNodeTypeNode, Shel
         base.Initialize(fileGenerator);
         TryAddNamespace("Invert.Core.GraphDesigner");
 
+        return;
         OverrideProperty("CustomSelectorItems", Data.CustomSelectors, DecorateCustomSelectorItemsProperty);
 
         if (IsDesignerFile)
@@ -55,11 +57,11 @@ public class ShellNodeTypeGenerator : TypeClassGenerator<ShellNodeTypeNode, Shel
 
             //if (Data.IsClassType)
             //{
-            foreach (var generator in Data.Generators)
-            {
-                Decleration.public_(typeof(string), "NameAs" + generator.Name)
-                   ._get("return string.Format(\"{0}\",Name)", generator.ClassNameFormat);
-            }
+            //foreach (var generator in Data.Generators)
+            //{
+            //    Decleration.public_(typeof(string), "NameAs" + generator.Name)
+            //       ._get("return string.Format(\"{0}\",Name)", generator.ClassNameFormat);
+            //}
             //Decleration.BaseTypes.Add(new CodeTypeReference(typeof(IClassTypeNode)));
 
             //}
@@ -130,7 +132,7 @@ public class ShellNodeTypeGenerator : TypeClassGenerator<ShellNodeTypeNode, Shel
         var attributeDecleration = new CodeAttributeDeclaration(new CodeTypeReference(typeof(OutputSlot)), new CodeAttributeArgument(new CodePrimitiveExpression(slot.Name)));
         property.CustomAttributes.Add(attributeDecleration);
         attributeDecleration.Arguments.Add(
-     new CodeAttributeArgument(new CodePrimitiveExpression(slot.SourceItem.AllowMultiple)));
+                new CodeAttributeArgument(new CodePrimitiveExpression(slot.SourceItem.AllowMultiple)));
         attributeDecleration.Arguments.Add(
             new CodeAttributeArgument(new CodeSnippetExpression(string.Format("SectionVisibility.{0}", slot.SourceItem.Visibility))));
 
@@ -237,44 +239,4 @@ public class ShellNodeTypeGenerator : TypeClassGenerator<ShellNodeTypeNode, Shel
 
         return property;
     }
-}
-
-public class ShellNodeTypeTemplate : GenericNode
-{
-    public virtual IEnumerable<GenericReferenceItem> SectionItems
-    {
-        get { return null; }
-    }
-
-    public virtual IEnumerable<GenericReferenceItem> InputItems
-    {
-        get { return null; }
-    }
-
-    public virtual IEnumerable<GenericReferenceItem> OutputItems
-    {
-        get { return null; }
-    }
-
-    public virtual IEnumerable<GenericReferenceItem> CustomSelectorItems
-    {
-        get { return null; }
-    }
-
-
-    public virtual GenericReferenceItem InputSlot
-    {
-        get { return null; }
-        set { }
-    }
-
-    public virtual GenericReferenceItem OutputSlot
-    {
-        get { return null; }
-        set { }
-    }
-
-
-
-
 }

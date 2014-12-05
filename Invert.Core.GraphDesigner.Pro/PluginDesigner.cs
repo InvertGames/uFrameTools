@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Core.GraphDesigner.Unity;
@@ -16,7 +17,11 @@ public class ShellPropertySelectorItem : GenericTypedChildItem, IShellNodeItem
 
     public string ReferenceClassName
     {
-        get { return SelectorFor.ClassName; }
+        get
+        {
+            if (SelectorFor == null) return null;
+            return SelectorFor.ClassName;
+        }
     }
 }
 
@@ -50,18 +55,12 @@ public class PluginDesigner : DiagramPlugin
             ;
 
         var graphConfig = container.AddNode<ShellGraphTypeNode>("Graph Type")
-            //.Output<ShellNodeTypeNode, ShellNodeSubNodesSlot>("Sub Nodes",true)
-            //.Output<ShellGeneratorTypeNode, ShellNodeGeneratorsSlot>("Generators", true)
            .HasSubNode<ShellGeneratorTypeNode>()
            .Color(NodeColor.DarkDarkGray)
            .Validator(_=>_.RootNode == null,"A graph must have a root node.")
            ;
 
-        ConfigureGraphTypeGenerators(graphConfig);
-
         var shellNodeConfig = container.AddNode<ShellNodeTypeNode, ShellNodeTypeViewModel, NodeDesignerDrawer>("Node Type")
-            //.Output<ShellNodeTypeNode, ShellNodeSubNodesSlot>("Sub Nodes", true)
-            //.Output<ShellGeneratorTypeNode, ShellNodeGeneratorsSlot>("Generators", true)
             .AddFlag("Custom")
             .AddFlag("Inheritable")
             .HasSubNode<ShellSlotTypeNode>()
@@ -82,123 +81,31 @@ public class PluginDesigner : DiagramPlugin
             })
             ;
 
-        //shellNodeConfig.ReferenceSection<ShellNodeTypeSection, ShellNodeSectionsSlot>("Sections",
-        //    _ => _.Project.NodeItems.OfType<ShellNodeTypeSection>(), true);
-
-        //shellNodeConfig.ReferenceSection<ShellSlotTypeNode, ShellNodeInputsSlot>("Inputs",
-        //    _ => _.Project.NodeItems.OfType<ShellSlotTypeNode>(), true, true);
-
-        //shellNodeConfig.ReferenceSection<ShellSlotTypeNode, ShellNodeOutputsSlot>("Outputs",
-        //    _ => _.Project.NodeItems.OfType<ShellSlotTypeNode>(), true, true);
-
-
-
-        //shellNodeConfig.TypedSection<ShellPropertySelectorItem>("Custom Selectors",
-        //    new SelectItemTypeCommand(GetPropertySelectorTypes));
-
-        //shellNodeConfig.Proxy("Project Nodes", _ => _.Project.NodeItems.OfType<ShellNodeTypeNode>());
-
-        ConfigureShellNodeGenerators(shellNodeConfig);
-
-        var shellInputReferenceConfig = container.AddNode<ShellSlotTypeNode>("Slot")
+        
+        var shellSlotConfig = container.AddNode<ShellSlotTypeNode>("Slot")
             .Color(NodeColor.Black)
-            //.Input<IShellReferenceType, ReferenceItemType>("Reference Type", false)
             .AddFlag("Multiple")
             .AddFlag("Custom")
             .Validator(_ => _.ReferenceType == null, "This must be connected to a reference.")
-
-            //.Inheritable() 
             ;
 
-        ConfigureShellSlotTypeGenerators(shellInputReferenceConfig);
-
-        var shellCodeGeneratorConfig = container.AddNode<ShellGeneratorTypeNode>("Code Generator")
-            .Color(NodeColor.Purple)
-            .Validator(p => p.BaseType == null, "Not a valid base type.")
-            .Validator(node => !node.InputsFrom<MultiOutputSlot<ShellGeneratorTypeNode>>().Any(), "Generator is not connected.")
-            .AddFlag("Designer Only");
-
-        var sec = shellCodeGeneratorConfig.Section("Template Methods",
-            node =>
-                node.BaseType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                //.Where(p => p.IsVirtual || p.IsAbstract || p.is)
-                    .Where(p => p.GetCustomAttributes(typeof(TemplateMethod), true).Length > 0)
-                    .Select(p => new TemplateMethodReference()
-                    {
-                        Name = p.Name
-                    }), true, p => { }
-            );
-
-        sec.HasPredefinedOptions = true;
-        var se2c = shellCodeGeneratorConfig.Section("Template Properties",
-           node =>
-               node.BaseType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-               //.Where(p => p.IsVirtual || p.IsAbstract)
-                   .Where(p => p.GetCustomAttributes(typeof(TemplateProperty), true).Length > 0)
-                   .Select(p => new TemplatePropertyReference()
-                   {
-                       Name = p.Name
-                   }), true, p => { }
-           );
-
-        se2c.HasPredefinedOptions = true;
-
-        container.Connectable<IShellNodeItem, TemplatePropertyReference>();
-        container.Connectable<IShellNodeItem, TemplateMethodReference>();
-        container.RegisterDrawer<ShellMemberNodeViewModel, ShellMemberNodeDrawer>();
-        container.RegisterDrawer<PropertyFieldViewModel, PropertyFieldDrawer>();
-
-        foreach (var item in InvertApplication.GetDerivedTypes<ShellMemberGeneratorNode>(false, false))
-        {
-            container.RegisterRelation(item, typeof(ViewModel), typeof(ShellMemberNodeViewModel));
-
-            var config = new NodeConfig<ShellMemberGeneratorNode>(container);
-            container.RegisterInstance<NodeConfigBase>(config, item.Name);
-            config.Name = item.Name.Replace("Shell", "").Replace("Node", "");
-            config.Tags.Add(config.Name);
-            if (item.GetCustomAttributes(typeof(SingleMemberGenerator), true).Length > 0)
-            {
-                config.Input<ShellGeneratorTypeNode, ShellMemberGeneratorInputSlot>("For", false);
-            }
-            else
-            {
-                config.Input<ShellMemberGeneratorSectionReference, ShellMemberGeneratorInputSlot>("For", false);
-            }
-            shellCodeGeneratorConfig.HasSubNode(item);
-        }
-
-        ConfigureCodeGeneratorGenerators(shellCodeGeneratorConfig);
-
+       
         var shellReferenceConfig = container.AddNode<ShellNodeTypeReferenceSection>("Reference Section")
             .Color(NodeColor.Blue)
             .AddFlag("Automatic")
             .AddFlag("Custom")
-
-            //.Input<IShellReferenceType, ReferenceItemType>("Reference Type", false)
             .Validator(_ => _.ReferenceClassName == null, "This must be connected to a reference.");
 
-        ConfigureReferenceSectionGenerators(shellReferenceConfig);
-
-
-        //foreach (var item in shellReferenceConfig.Inputs.Where(p=>p.ReferenceType.IsAssignableFrom(typeof(ReferenceItemType))))
-        //{
-        //    item.SourceType = typeof(IFloat)
-        //}
         var shellSectionConfig = container.AddNode<ShellSectionNode>("Node Section")
             .Color(NodeColor.Red)
             .AddFlag("Read Only")
-            //.Input<IShellReferenceType, ReferenceItemType>("Reference Type", false)
             .Validator(_ => _.ReferenceType == null, "This must be connected to a reference.")
             ;
-
-
 
         var shellChildItemConfig = container.AddNode<ShellChildItemTypeNode>("Child Item")
             .Color(NodeColor.Blue)
             .AddFlag("Custom")
             .AddFlag("Typed");
-
-        ConfigureChildItemGenerators(shellChildItemConfig);
 
         pluginConfig
             .AddEditableClass<ShellPluginClassGenerator>("Plugin")
@@ -209,19 +116,45 @@ public class PluginDesigner : DiagramPlugin
             .DesignerFilenameConfig(node => Path.Combine("Editor", "Plugin.cs"))
             .OverrideTypedMethod(typeof(DiagramPlugin), "Initialize", CreatePluginInitializeMethod)
             .MembersFor(p => p.Project.NodeItems.OfType<ShellNodeTypeNode>(), CreateGraphConfigProperty)
-            .MembersFor(p => p.Project.NodeItems.OfType<ShellGraphTypeNode>(), CreateConfigProperty)
+            //.MembersFor(p => p.Project.NodeItems.OfType<ShellGraphTypeNode>(), CreateConfigProperty)
             .MembersFor(p => p.Project.NodeItems.OfType<ShellGeneratorTypeNode>(), CreateGeneratorConfigProperty)
             .MembersFor(p => p.Project.NodeItems.OfType<ShellChildItemTypeNode>().Where(x => x["Typed"]),
                     CreateGetSelectionCommandMethod
                 )
             ;
 
-        //container.RegisterConnectable<MultiOutputSlot<ShellGeneratorTypeNode>, ShellGeneratorTypeNode>();
-        //container.RegisterConnectable<MultiOutputSlot<ShellNodeTypeNode>, ShellNodeTypeNode>();
-        container.RegisterConnectable<ShellNodeTypeNode, ShellNodeTypeNode>();
-        container.RegisterConnectable<ShellChildItemTypeNode, SingleInputSlot<ShellChildItemTypeNode>>();
-        //container.RegisterConnectable<ShellNodeSectionsSlot, TemplateReference>();
-        container.RegisterConnectable<SingleOutputSlot<ShellNodeTypeNode>, ShellNodeTypeNode>();
+        // Special connections that aren't slots
+       // container.RegisterConnectable<ShellNodeTypeNode, ShellNodeTypeNode>();
+       // container.RegisterConnectable<ShellChildItemTypeNode, SingleInputSlot<ShellChildItemTypeNode>>();
+
+        graphConfig.AddCodeTemplate<ShellGraphTemplate>();
+        shellNodeConfig.AddCodeTemplate<ShellNodeTypeTemplate>();
+        shellSlotConfig.AddCodeTemplate<ShellSlotItemTemplate>();
+        shellChildItemConfig.AddCodeTemplate<ShellChildTemplate>();
+        shellReferenceConfig.AddCodeTemplate<ShellReferenceSectionTemplate>();
+
+        //container.RegisterDrawer<ShellMemberNodeViewModel, ShellMemberNodeDrawer>();
+        //container.RegisterDrawer<PropertyFieldViewModel, PropertyFieldDrawer>();
+
+        // TODO put this in some kind of automatic node adder extension method
+        //foreach (var item in InvertApplication.GetDerivedTypes<ShellMemberGeneratorNode>(false, false))
+        //{
+        //    container.RegisterRelation(item, typeof(ViewModel), typeof(ShellMemberNodeViewModel));
+
+        //    var config = new NodeConfig<ShellMemberGeneratorNode>(container);
+        //    container.RegisterInstance<NodeConfigBase>(config, item.Name);
+        //    config.Name = item.Name.Replace("Shell", "").Replace("Node", "");
+        //    config.Tags.Add(config.Name);
+        //    if (item.GetCustomAttributes(typeof(SingleMemberGenerator), true).Length > 0)
+        //    {
+        //        config.Input<ShellGeneratorTypeNode, ShellMemberGeneratorInputSlot>("For", false);
+        //    }
+        //    else
+        //    {
+        //        config.Input<ShellMemberGeneratorSectionReference, ShellMemberGeneratorInputSlot>("For", false);
+        //    }
+        //    shellCodeGeneratorConfig.HasSubNode(item);
+        //}
 
 
     }
@@ -365,43 +298,43 @@ public class PluginDesigner : DiagramPlugin
     {
         get { return Path.Combine("Editor", "Plugin.cs"); }
     }
-    private void ConfigureShellNodeGenerators(NodeConfig<ShellNodeTypeNode> shellNodeConfig)
-    {
-        shellNodeConfig.AddEditableClass<ShellNodeTypeGenerator>("Node")
-            .FilenameConfig(node => Path.Combine("Editor", node.ClassName + ".cs"))
-            .DesignerFilenameConfig(PluginClassFilename);
-            ;
+    //private void ConfigureShellNodeGenerators(NodeConfig<ShellNodeTypeNode> shellNodeConfig)
+    //{
+    //    shellNodeConfig.AddEditableClass<ShellNodeTypeGenerator>("Node")
+    //        .FilenameConfig(node => Path.Combine("Editor", node.ClassName + ".cs"))
+    //        .DesignerFilenameConfig(PluginClassFilename);
+    //        ;
 
-        shellNodeConfig.AddEditableClass<ShellNodeTypeNodeViewModelGenerator>("NodeViewModelGenerator")
-          .AsDerivedEditorEditableClass("{0}NodeViewModel", "Plugin",
-              _ => new CodeTypeReference(string.Format("GenericNodeViewModel<{0}Node>", _.Name)), "Nodes")
-          .Member(_ => CreateViewModelConstructor(_.Decleration, _.Data), MemberGeneratorLocation.Both)
-          .OnlyIf(_ => _["Custom"])
-          ;
+    //    shellNodeConfig.AddEditableClass<ShellNodeTypeNodeViewModelGenerator>("NodeViewModelGenerator")
+    //      .AsDerivedEditorEditableClass("{0}NodeViewModel", "Plugin",
+    //          _ => new CodeTypeReference(string.Format("GenericNodeViewModel<{0}Node>", _.Name)), "Nodes")
+    //      .Member(_ => CreateViewModelConstructor(_.Decleration, _.Data), MemberGeneratorLocation.Both)
+    //      .OnlyIf(_ => _["Custom"])
+    //      ;
 
-        shellNodeConfig.AddEditableClass<ShellNodeTypeNodeDrawerGenerator>("NodeDrawerGenerator")
-          .AsDerivedEditorEditableClass("{0}Drawer", "Plugin",
-              _ => new CodeTypeReference(string.Format("GenericNodeDrawer<{0}Node, {0}NodeViewModel>", _.Name)), "Nodes")
-          .Member(_ => CreateDrawerConstructor(_.Decleration, _.Data), MemberGeneratorLocation.Both)
-                //.OverrideTypedMethod(typeof (DiagramNodeDrawer), "GetContentDrawers", null, true,
-                //    MemberGeneratorLocation.EditableFile)
-          .OnlyIf(_ => _["Custom"])
-          ;
-        return;
-        shellNodeConfig.AddEditableClass<ShellNodeTypeClassGenerator>("Node")
-          .AsDerivedEditorEditableClass("{0}Node", "Plugin", node => node["Inheritable"]
-                       ? new CodeTypeReference(typeof(GenericInheritableNode))
-                       : new CodeTypeReference(typeof(GenericNode)), "Nodes")
-          .MembersPerChild<ShellNodeSectionsSlot>(GetNodeSectionProperty)
-          .MembersPerChild<ShellNodeInputsSlot>(CreateInputSlotProperty)
-          .MembersPerChild<ShellNodeOutputsSlot>(CreateOutputSlotProperty)
-          .MembersFor<ShellNodeSectionsSlot>(p => p.Sections.Where(x => x.SourceItem is ShellNodeTypeReferenceSection), CreateReferenceSectionProperty)
-          ;
-
-
+    //    shellNodeConfig.AddEditableClass<ShellNodeTypeNodeDrawerGenerator>("NodeDrawerGenerator")
+    //      .AsDerivedEditorEditableClass("{0}Drawer", "Plugin",
+    //          _ => new CodeTypeReference(string.Format("GenericNodeDrawer<{0}Node, {0}NodeViewModel>", _.Name)), "Nodes")
+    //      .Member(_ => CreateDrawerConstructor(_.Decleration, _.Data), MemberGeneratorLocation.Both)
+    //            //.OverrideTypedMethod(typeof (DiagramNodeDrawer), "GetContentDrawers", null, true,
+    //            //    MemberGeneratorLocation.EditableFile)
+    //      .OnlyIf(_ => _["Custom"])
+    //      ;
+    //    return;
+    //    shellNodeConfig.AddEditableClass<ShellNodeTypeClassGenerator>("Node")
+    //      .AsDerivedEditorEditableClass("{0}Node", "Plugin", node => node["Inheritable"]
+    //                   ? new CodeTypeReference(typeof(GenericInheritableNode))
+    //                   : new CodeTypeReference(typeof(GenericNode)), "Nodes")
+    //      .MembersPerChild<ShellNodeSectionsSlot>(GetNodeSectionProperty)
+    //      .MembersPerChild<ShellNodeInputsSlot>(CreateInputSlotProperty)
+    //      .MembersPerChild<ShellNodeOutputsSlot>(CreateOutputSlotProperty)
+    //      .MembersFor<ShellNodeSectionsSlot>(p => p.Sections.Where(x => x.SourceItem is ShellNodeTypeReferenceSection), CreateReferenceSectionProperty)
+    //      ;
 
 
-    }
+
+
+    //}
 
     private CodeTypeMember CreateOutputSlotProperty(LambdaMemberGenerator<ShellNodeOutputsSlot> arg1)
     {
@@ -545,7 +478,7 @@ public class PluginDesigner : DiagramPlugin
 
     private CodeTypeMember CreateGraphConfigProperty(LambdaMemberGenerator<ShellNodeTypeNode> arg1)
     {
-        return new CodeMemberField(string.Format("NodeConfig<{0}Node>", arg1.Data.Name), arg1.Data.Name)
+        return new CodeMemberField(string.Format("NodeConfig<{0}>", arg1.Data.ClassName), arg1.Data.Name)
         {
             Attributes = MemberAttributes.Public
         };
@@ -553,7 +486,7 @@ public class PluginDesigner : DiagramPlugin
 
     private CodeTypeMember CreateConfigProperty(LambdaMemberGenerator<ShellGraphTypeNode> arg1)
     {
-        return new CodeMemberField(string.Format("NodeConfig<{0}Node>", arg1.Data.Name), arg1.Data.Name)
+        return new CodeMemberField(string.Format("NodeConfig<{0}>", arg1.Data.Name), arg1.Data.RootNode.Name)
         {
             Attributes = MemberAttributes.Public
         };
@@ -579,6 +512,7 @@ public class PluginDesigner : DiagramPlugin
         {
             if (itemType is ShellNodeTypeNode) continue;
             if (itemType is ShellSectionNode) continue;
+            if (itemType is ShellGraphTypeNode) continue;
             if (itemType.Flags.ContainsKey("Typed") && itemType.Flags["Typed"])
             {
                 if (itemType.IsCustom)
@@ -610,20 +544,21 @@ public class PluginDesigner : DiagramPlugin
             }
 
         }
-        //foreach (var graphType in shellPluginNode.Project.NodeItems.OfType<ShellGraphTypeNode>().Where(p => p.IsValid))
+        var graphTypes = shellPluginNode.Project.NodeItems.OfType<ShellGraphTypeNode>().Where(p => p.IsValid).ToArray();
+        //foreach (var graphType in graphTypes)
         //{
         //    var varName = graphType.Name;
-        //    method.Statements.Add(new CodeSnippetExpression(string.Format("{1} = container.AddGraph<{0}Graph, {0}Node>(\"{0}\")", graphType.Name, varName)));
-        //    foreach (var item in graphType.SubNodes)
-        //    {
-        //        method.Statements.Add(
-        //            new CodeSnippetExpression(string.Format("{0}.HasSubNode<{1}Node>()", varName, item.Name)));
-        //    }
+        //    method.Statements.Add(new CodeSnippetExpression(string.Format("{1} = container.AddGraph<{0}Graph, {2}>(\"{0}\")", graphType.RootNode.Name, varName,graphType.RootNode.ClassName)));
+        //    //foreach (var item in graphType.SubNodes)
+        //    //{
+        //    //    method.Statements.Add(
+        //    //        new CodeSnippetExpression(string.Format("{0}.HasSubNode<{1}Node>()", varName, item.Name)));
+        //    //}
 
         //}
         foreach (var nodeType in shellPluginNode.Project.NodeItems.OfType<ShellNodeTypeNode>().Where(p => p.IsValid))
         {
-            InitializeNodeType(method, nodeType);
+            InitializeNodeType(method, nodeType, graphTypes.FirstOrDefault(p => p.RootNode == nodeType));
         }
 
         foreach (var nodeType in shellPluginNode.Project.NodeItems.OfType<IShellConnectable>().Where(p => p.IsValid))
@@ -636,6 +571,8 @@ public class PluginDesigner : DiagramPlugin
         }
         foreach (var nodeType in shellPluginNode.Project.NodeItems.OfType<IReferenceNode>().Where(p => p.IsValid))
         {
+            if (nodeType is ShellSlotTypeNode) continue;
+
             if (nodeType.Flags.ContainsKey("Output") && nodeType.Flags["Output"])
             {
                 method._("container.Connectable<{0},{1}>()", nodeType.ClassName, nodeType.ReferenceClassName);
@@ -654,19 +591,30 @@ public class PluginDesigner : DiagramPlugin
 
     }
 
-    private static void InitializeNodeType(CodeMemberMethod method, ShellNodeTypeNode nodeType)
+    private static void InitializeNodeType(CodeMemberMethod method, ShellNodeTypeNode nodeType, ShellGraphTypeNode graphType)
     {
         var varName = nodeType.Name;
-        if (nodeType["Custom"])
+        var type = graphType == null ? "Node" : "Graph";
+        if (graphType != null)
         {
             method.Statements.Add(
-           new CodeSnippetExpression(string.Format("{1} = container.AddNode<{0}Node,{0}NodeViewModel,{0}Drawer>(\"{0}\")", nodeType.Name, varName)));
+                new CodeSnippetExpression(string.Format("{1} = container.AddGraph<{0}, {2}>(\"{0}\")",
+                    graphType.ClassName, varName, graphType.RootNode.ClassName)));
         }
         else
         {
-            method.Statements.Add(
-              new CodeSnippetExpression(string.Format("{1} = container.AddNode<{0}Node>(\"{0}\")", nodeType.Name, varName)));
+            if (nodeType["Custom"])
+            {
+                method.Statements.Add(
+               new CodeSnippetExpression(string.Format("{1} = container.Add{2}<{0}Node,{0}NodeViewModel,{0}Drawer>(\"{0}\")", nodeType.Name, varName, type)));
+            }
+            else
+            {
+                method.Statements.Add(
+                  new CodeSnippetExpression(string.Format("{1} = container.Add{2}<{0}Node>(\"{0}\")", nodeType.Name, varName, type)));
+            }
         }
+      
 
         if (nodeType["Inheritable"])
         {
@@ -735,30 +683,30 @@ public class PluginDesigner : DiagramPlugin
 
         //}
 
-        foreach (var item in nodeType.Generators)
-        {
-            if (item.IsDesignerOnly)
-            {
-                method.Statements.Add(
-                    new CodeSnippetExpression(string.Format("{0}Config = {1}.AddDesignerOnlyClass<{0}Generator>(\"{0}\")", item.Name,
-                        varName)));
-            }
-            else
-            {
-                method.Statements.Add(
-                    new CodeSnippetExpression(string.Format("{0}Config = {1}.AddEditableClass<{0}Generator>(\"{0}\")", item.Name,
-                        varName)));
-            }
-            if (item.IsEditorExtension)
-            {
-                method._("{0}Config.FilenameConfigAsEditor(node=> Path.Combine(\"{1}\", node.NameAs{0}+ \".cs\"))", item.Name, item.FolderName);
-                method._("{0}Config.DesignerFilenameConfigAsEditor(\"{0}.cs\")", item.Name);
-            }
-            else
-            {
-                method._("{0}Config.FilenameConfig(node=> Path.Combine(\"{1}\", node.NameAs{0} + \".cs\"))", item.Name, item.FolderName);
-                method._("{0}Config.DesignerFilenameConfig(\"{0}.cs\")", item.Name);
-            }
-        }
+        //foreach (var item in nodeType.Generators)
+        //{
+        //    if (item.IsDesignerOnly)
+        //    {
+        //        method.Statements.Add(
+        //            new CodeSnippetExpression(string.Format("{0}Config = {1}.AddDesignerOnlyClass<{0}Generator>(\"{0}\")", item.Name,
+        //                varName)));
+        //    }
+        //    else
+        //    {
+        //        method.Statements.Add(
+        //            new CodeSnippetExpression(string.Format("{0}Config = {1}.AddEditableClass<{0}Generator>(\"{0}\")", item.Name,
+        //                varName)));
+        //    }
+        //    if (item.IsEditorExtension)
+        //    {
+        //        method._("{0}Config.FilenameConfigAsEditor(node=> Path.Combine(\"{1}\", node.NameAs{0}+ \".cs\"))", item.Name, item.FolderName);
+        //        method._("{0}Config.DesignerFilenameConfigAsEditor(\"{0}.cs\")", item.Name);
+        //    }
+        //    else
+        //    {
+        //        method._("{0}Config.FilenameConfig(node=> Path.Combine(\"{1}\", node.NameAs{0} + \".cs\"))", item.Name, item.FolderName);
+        //        method._("{0}Config.DesignerFilenameConfig(\"{0}.cs\")", item.Name);
+        //    }
+        //}
     }
 }

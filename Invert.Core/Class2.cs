@@ -132,13 +132,13 @@ namespace Invert.Core
 
             container.InjectAll();
 
-            foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority))
+            foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority).Where(p=>!p.Ignore))
             {
                 if (diagramPlugin.Enabled)
                     diagramPlugin.Initialize(Container);
             }
 
-            foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority))
+            foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority).Where(p => !p.Ignore))
             {
                 if (diagramPlugin.Enabled)
                     diagramPlugin.Loaded();
@@ -159,16 +159,51 @@ namespace Invert.Core
             return GetPropertiesWithAttribute<TAttribute>(obj.GetType());
         }
 
-        public static IEnumerable<KeyValuePair<PropertyInfo, TAttribute>> GetPropertiesWithAttribute<TAttribute>(this Type type) where TAttribute : Attribute
+        public static IEnumerable<KeyValuePair<PropertyInfo, TAttribute>> GetPropertiesWithAttribute<TAttribute>(this Type type, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance) where TAttribute : Attribute
         {
-            foreach (var source in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var source in type.GetProperties(flags))
             {
                 var attribute = source.GetCustomAttributes(typeof (TAttribute), true).OfType<TAttribute>().FirstOrDefault();
                 if (attribute == null) continue;
                 yield return new KeyValuePair<PropertyInfo, TAttribute>(source, (TAttribute)attribute);
             }
+        }
+        public static IEnumerable<KeyValuePair<ConstructorInfo, TAttribute>> GetConstructorsWithAttribute<TAttribute>(this Type type, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance) where TAttribute : Attribute
+        {
+            foreach (var source in type.GetConstructors(flags))
+            {
+                var attribute = source.GetCustomAttributes(typeof(TAttribute), true).OfType<TAttribute>().FirstOrDefault();
+                if (attribute == null) continue;
+                yield return new KeyValuePair<ConstructorInfo, TAttribute>(source, (TAttribute)attribute);
+            }
+        }
+        public static IEnumerable<KeyValuePair<MethodInfo, TAttribute>> GetMethodsWithAttribute<TAttribute>(this Type type, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance) where TAttribute : Attribute
+        {
+            foreach (var source in type.GetMethods(flags))
+            {
+                var attribute = source.GetCustomAttributes(typeof(TAttribute), true).OfType<TAttribute>().FirstOrDefault();
+                if (attribute == null) continue;
+                yield return new KeyValuePair<MethodInfo, TAttribute>(source, (TAttribute)attribute);
+            }
+        }
+        public static IEnumerable<KeyValuePair<FieldInfo, TAttribute>> GetFieldsWithAttribute<TAttribute>(this Type type, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance) where TAttribute : Attribute
+        {
+            foreach (var source in type.GetFields(flags))
+            {
+                var attribute = source.GetCustomAttributes(typeof(TAttribute), true).OfType<TAttribute>().FirstOrDefault();
+                if (attribute == null) continue;
+                yield return new KeyValuePair<FieldInfo, TAttribute>(source, (TAttribute)attribute);
+            }
+        }
+        public static IEnumerable<KeyValuePair<EventInfo, TAttribute>> GetEventsWithAttribute<TAttribute>(this Type type, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance) where TAttribute : Attribute
+        {
+            foreach (var source in type.GetEvents(flags))
+            {
+                var attribute = source.GetCustomAttributes(typeof(TAttribute), true).OfType<TAttribute>().FirstOrDefault();
+                if (attribute == null) continue;
+                yield return new KeyValuePair<EventInfo, TAttribute>(source, (TAttribute)attribute);
+            }
         } 
-
         public static IEnumerable<PropertyInfo> GetPropertiesByAttribute<TAttribute>(this object obj) where TAttribute : Attribute
         {
             return GetPropertiesByAttribute<TAttribute>(obj.GetType());

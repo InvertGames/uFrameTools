@@ -67,5 +67,28 @@ namespace Invert.Core.GraphDesigner
             get { return _baseReference ?? (_baseReference = new BaseClassReference() { Node = this }); }
             set { _baseReference = value; }
         }
+
+        public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            if (b.Node is GenericInheritableNode)
+            {
+                if (a.GetType() != b.Node.GetType()) return false;
+            }
+            
+            return base.ValidateInput(a, b);
+        }
+
+        public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
+        {
+            if (b.Node is GenericInheritableNode)
+            {
+                if (BaseNodes.Any(p => p == b.Node)) return false;
+
+                if (a.Node == b.Node) return false; // Can't inherit from the same item
+                if (a.GetType() != b.Node.GetType()) return false; // Can't inherit from another type    
+            }
+            
+            return base.ValidateOutput(a, b);
+        }
     }
 }

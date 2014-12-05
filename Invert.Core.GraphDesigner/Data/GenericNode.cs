@@ -338,53 +338,11 @@ namespace Invert.Core.GraphDesigner
             foreach (var property in properties)
             {
                 if (property.GetCustomAttributes(typeof(JsonProperty), true).Length < 1) continue;
-                var propertyName = property.Name;
-                if (cls[propertyName] == null) continue;
-                var propertyType = property.PropertyType;
-                if (typeof (Enum).IsAssignableFrom(property.PropertyType))
-                {
-                    var value = cls[propertyName].Value;
-                    property.SetValue(this,Enum.Parse(propertyType,value),null);
-                }else
-                if (propertyType == typeof(int))
-                {
-                    property.SetValue(this, cls[propertyName].AsInt, null);
-                }
-                else if (propertyType == typeof(string))
-                {
-                    property.SetValue(this, cls[propertyName].Value, null);
-                }
-                else if (propertyType == typeof(float))
-                {
-                    property.SetValue(this, cls[propertyName].AsFloat, null);
-                }
-                else if (propertyType == typeof(bool))
-                {
-                    property.SetValue(this, cls[propertyName].AsBool, null);
-                }
-                else if (propertyType == typeof(double))
-                {
-                    property.SetValue(this, cls[propertyName].AsDouble, null);
-                }
-                else if (propertyType == typeof(Vector2))
-                {
-                    property.SetValue(this, cls[propertyName].AsVector2, null);
-                }
-                else if (propertyType == typeof(Vector3))
-                {
-                    property.SetValue(this, cls[propertyName].AsVector3, null);
-                }
-                else if (propertyType == typeof(Quaternion))
-                {
-                    property.SetValue(this, cls[propertyName].AsQuaternion, null);
-                }
-                else if (propertyType == typeof(Color))
-                {
-                    property.SetValue(this, (Color)cls[propertyName].AsVector4, null);
-                }
+                this.DeserializeProperty(property, cls);
             }
-
         }
+
+       
 
         //public TItem GetConnection<TConnectionType, TItem>() where TConnectionType : GenericConnectionReference, new()
         //{
@@ -487,69 +445,12 @@ namespace Invert.Core.GraphDesigner
            // var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var property in Config.SerializedProperties)
             {
-               // if (property.GetCustomAttributes(typeof(JsonProperty), true).Length < 1) continue;
-                var value = property.GetValue(this, null);
-                if (value != null)
-                {
-                    var propertyName = property.Name;
-                    var propertyType = property.PropertyType;
-                    if (typeof (Enum).IsAssignableFrom(propertyType))
-                    {
-                        cls.Add(propertyName, new JSONData(value.ToString()));
-                    }else
-                    if (propertyType == typeof(int)) 
-                    {
-                        cls.Add(propertyName, new JSONData((int)value));
-                    }
-                    else if (propertyType == typeof(string))
-                    {
-                        cls.Add(propertyName, new JSONData((string)value));
-                    }
-                    else if (propertyType == typeof(float))
-                    {
-                        cls.Add(propertyName, new JSONData((float)value));
-                    } 
-                    else if (propertyType == typeof(bool))
-                    {
-                        cls.Add(propertyName, new JSONData((bool)value));
-                    }
-                    else if (propertyType == typeof(double))
-                    {
-                        cls.Add(propertyName, new JSONData((double)value));
-                    }
-                    else if (propertyType == typeof(Color))
-                    {
-                        var vCls = new JSONClass();
-                        var color = (Color)value;
-                        vCls.AsVector4 = new Vector4(color.r, color.g, color.b, color.a);
-                        cls.Add(propertyName, vCls);
-                    }
-                    else if (propertyType == typeof(Vector2))
-                    {
-                        var vCls = new JSONClass();
-                        vCls.AsVector2 = (Vector2)value;
-                        cls.Add(propertyName, vCls);
-                    }
-                    else if (propertyType == typeof(Vector3))
-                    { 
-                        var vCls = new JSONClass();
-                        vCls.AsVector3 = (Vector3)value;
-                        cls.Add(propertyName, vCls);
-                    }
-                    else if (propertyType == typeof(Quaternion))
-                    {
-                        var vCls = new JSONClass();
-                        vCls.AsQuaternion = (Quaternion)value;
-                        cls.Add(propertyName, vCls);
-                    }
-                    else
-                    {
-                        throw new Exception(string.Format("{0} property can't be serialized. Override Serialize method to serialize it.", propertyName));
-                    }
-                }
+                // if (property.GetCustomAttributes(typeof(JsonProperty), true).Length < 1) continue;
+                this.SerializeProperty(property, cls);
             }
-
         }
+
+       
 
         private void UpdateReferences()
         {
@@ -594,7 +495,30 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
+        public virtual IEnumerable<GenericSlot> AllInputSlots
+        {
+            get
+            {
+                foreach (var slot in Config.GraphItemConfigurations.OfType<NodeInputConfig>())
+                {
+                    if (!slot.IsInput) continue;
+                    yield return slot.GetDataObject(this) as GenericSlot;
+                }
 
+            }
+        }
+        public virtual IEnumerable<GenericSlot> AllOutputSlots
+        {
+            get
+            {
+                foreach (var slot in Config.GraphItemConfigurations.OfType<NodeInputConfig>())
+                {
+                    if (!slot.IsOutput) continue;
+                    yield return slot.GetDataObject(this) as GenericSlot;
+                }
+
+            }
+        }
         public virtual IEnumerable<GenericSlot> AllSlots
         {
             get
@@ -604,6 +528,17 @@ namespace Invert.Core.GraphDesigner
                     yield return slot.GetDataObject(this) as GenericSlot;
                 }
                 
+            }
+        }
+        public virtual IEnumerable<NodeInputConfig> SlotConfigurations
+        {
+            get
+            {
+                foreach (var slot in Config.GraphItemConfigurations.OfType<NodeInputConfig>())
+                {
+                    yield return slot;
+                }
+
             }
         } 
         public static IEnumerable<KeyValuePair<PropertyInfo, InputSlot>> GetInputSlotInfos(Type nodeType)

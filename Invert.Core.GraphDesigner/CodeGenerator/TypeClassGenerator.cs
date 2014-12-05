@@ -1,26 +1,75 @@
 using System;
 using System.CodeDom;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class TypeClassGenerator<TData,TTemplateType> : CodeGenerator where TData : DiagramNode
+    public class TypeClassGenerator<TData,TTemplateType> : CodeGenerator where TData : DiagramNode where TTemplateType : class, IClassTemplate<TData>, new()
     {
         private CodeTypeDeclaration _decleration;
+        private TemplateContext<TData> _templateContext;
+        private TTemplateType _templateClass;
+        private TemplateClass _templateAttribute;
+
         public Type TemplateType
         {
             get { return typeof (TTemplateType); }
+        }
+
+        public TTemplateType TemplateClass
+        {
+            get
+            {
+                if (_templateClass == null)
+                {
+                    _templateClass = new TTemplateType();
+                    _templateClass.Ctx = TemplateContext;
+                    
+                }
+                return _templateClass;
+            }
+            set { _templateClass = value; }
+        }
+
+        public TemplateContext<TData> TemplateContext
+        {
+            get
+            {
+                if (_templateContext == null)
+                {
+                    _templateContext = CreateTemplateContext();
+                    
+                }
+                return _templateContext;
+            }
+            set { _templateContext = value; }
+        }
+
+        protected virtual TemplateContext<TData> CreateTemplateContext()
+        {
+            var context = new TemplateContext<TData>();
+            context.DataObject = Data;
+            context.Namespace = Namespace;
+            context.CurrentDecleration = Decleration;
+            context.IsDesignerFile = IsDesignerFile;
+            return context;
         }
 
         public virtual bool IsDesignerFileOnly
         {
             get { return false; }
         }
+
         public TData Data
         {
             get { return ObjectData as TData; }
             set { ObjectData = value; }
         }
+
         public CodeTypeDeclaration Decleration
         {
             get
@@ -32,7 +81,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual string ClassNameFormat
         {
-            get { return "{0}"; }
+            get { return Attribute.ClassNameFormat; }
         }
 
         public virtual string ClassName(DiagramNode node)
@@ -52,13 +101,24 @@ namespace Invert.Core.GraphDesigner
 
             return ClassName(node) + "Base";
         }
+
+        public TemplateClass Attribute
+        {
+            get
+            {
+                return _templateAttribute ?? (_templateAttribute = typeof(TTemplateType).GetCustomAttributes(typeof(TemplateClass), true)
+                .OfType<TemplateClass>()
+                .FirstOrDefault());
+            }
+        }
+
         public override void Initialize(CodeFileGenerator fileGenerator)
         {
             base.Initialize(fileGenerator);
             if (!string.IsNullOrEmpty(TemplateType.Namespace))
                 TryAddNamespace(TemplateType.Namespace);
             Decleration = TemplateType.ToClassDecleration();
-
+                
             var inheritable = Data as GenericInheritableNode;
 
             if (IsDesignerFile)
@@ -80,9 +140,13 @@ namespace Invert.Core.GraphDesigner
             }
             
             Namespace.Types.Add(Decleration);
+            
+            ProcessTemplate();
+            return; // Skip the stuff below for now
+            
             if (IsDesignerFile)
             {
-                base.Initialize(fileGenerator);
+               // base.Initialize(fileGenerator);
                 
                 if (IsDesignerFile)
                 {
@@ -93,6 +157,7 @@ namespace Invert.Core.GraphDesigner
                     InitializeEditableFile();
                 }
             }
+
         }
 
         protected virtual void InitializeEditableFile()
@@ -104,6 +169,7 @@ namespace Invert.Core.GraphDesigner
         {
             
         }
+
         protected void OverrideMethod<TItem>(string name, IEnumerable<TItem> selector, Func<CodeMemberMethod, TItem, CodeMemberMethod> postProcess)
         {
             foreach (var item in selector)
@@ -122,6 +188,7 @@ namespace Invert.Core.GraphDesigner
                 
             }
         }
+
         protected void OverrideMethod(string name, Func<CodeMemberMethod,CodeMemberMethod> postProcess)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
@@ -161,6 +228,7 @@ namespace Invert.Core.GraphDesigner
             }
 
         }
+        
         protected void OverrideProperty<TItem>(string name, IEnumerable<TItem> selector, Func<CodeMemberProperty, TItem, CodeMemberProperty> postProcess)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
@@ -206,8 +274,391 @@ namespace Invert.Core.GraphDesigner
             } 
             
         }
+
+        public void CallPropertyGet(string name)
+        {
+            TemplateType.GetProperty(name).GetValue(TemplateClass, null);
+            if (TemplateContext.CurrentIterator != null)
+            {
+                
+            }
+        }
+        
+        public static object GetDefault(Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            return null;
+        }
+        
+        public void ProcessTemplate()
+        {
+            // Initialize the template
+            TemplateContext.Iterators.Clear();
+            TemplateClass.TemplateSetup();
+
+            var templateProperties =
+                TemplateType.GetPropertiesWithAttribute<TemplateProperty>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+          
+            foreach (var templateProperty in templateProperties)
+            {
+                if (templateProperty.Value.Location == MemberGeneratorLocation.DesignerFile &&
+                    templateProperty.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) continue;
+                if (templateProperty.Value.Location == MemberGeneratorLocation.EditableFile &&
+                    templateProperty.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) continue;
+                if (TemplateContext.Iterators.ContainsKey(templateProperty.Key.Name))
+                {
+                    //Debug.Log("Found iterators for " + templateProperty.Key.Name);
+                    var iterator = TemplateContext.Iterators[templateProperty.Key.Name];
+                    var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
+
+                    foreach (var item in items)
+                    {
+                        this.TemplateContext.Item = item;
+                        var domObject = DoTemplateProperty(templateProperty);
+                        Decleration.Members.Add(domObject);
+                    }
+                }
+                else
+                {
+                    this.TemplateContext.Item = Data;
+                    var domObject = DoTemplateProperty(templateProperty);
+                    Decleration.Members.Add(domObject);
+
+                }
+            }
+            var templateMethods =
+                TemplateType.GetMethodsWithAttribute<TemplateMethod>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+
+            foreach (var templateMethod in templateMethods)
+            {
+                if (templateMethod.Value.Location == MemberGeneratorLocation.DesignerFile &&
+                    templateMethod.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) continue;
+                if (templateMethod.Value.Location == MemberGeneratorLocation.EditableFile &&
+                    templateMethod.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) continue;
+                if (TemplateContext.Iterators.ContainsKey(templateMethod.Key.Name))
+                {
+                    var iterator = TemplateContext.Iterators[templateMethod.Key.Name];
+                    var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
+
+                    foreach (var item in items)
+                    {
+                        TemplateContext.Item = item;
+                        DoTemplateMethod(templateMethod, item);
+                    }
+                }
+                else
+                {
+                    TemplateContext.Item = Data;
+                    DoTemplateMethod(templateMethod, Data);
+                }
+                
+            }
+
+            var templateConstructors =
+                TemplateType.GetMethodsWithAttribute<TemplateConstructor>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+
+            foreach (var templateConstructor in templateConstructors)
+            {
+                if (templateConstructor.Value.Location == MemberGeneratorLocation.DesignerFile &&
+                    templateConstructor.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) continue;
+                if (templateConstructor.Value.Location == MemberGeneratorLocation.EditableFile &&
+                    templateConstructor.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) continue;
+                if (TemplateContext.Iterators.ContainsKey(templateConstructor.Key.Name))
+                {
+                    var iterator = TemplateContext.Iterators[templateConstructor.Key.Name];
+                    var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
+
+                    foreach (var item in items)
+                    {
+                        TemplateContext.Item = item;
+                        DoTemplateConstructor(templateConstructor, item);
+                    }
+                }
+                else
+                {
+                    TemplateContext.Item = Data;
+                    DoTemplateConstructor(templateConstructor, Data);
+                }
+
+            }
+
+        }
+
+        private CodeMemberProperty DoTemplateProperty(KeyValuePair<PropertyInfo, TemplateProperty> templateProperty)
+        {
+            var domObject = TemplateType.PropertyFromTypeProperty(templateProperty.Key.Name);
+            TemplateContext.CurrentMember = domObject;
+            if (templateProperty.Value.AutoFill != AutoFillType.None)
+            {
+                domObject.Name = string.Format(templateProperty.Value.NameFormat, this.TemplateContext.Item.Name);
+            }
+
+            if (templateProperty.Value.AutoFill == AutoFillType.NameAndType ||
+                templateProperty.Value.AutoFill == AutoFillType.NameAndTypeWithBackingField)
+            {
+                var typedItem = this.TemplateContext.Item as ITypedItem;
+                if (typedItem != null)
+                {
+                    if (domObject.Type.TypeArguments.Count > 0)
+                    {
+                        domObject.Type.TypeArguments.Clear();
+                        domObject.Type.TypeArguments.Add(typedItem.RelatedTypeName);
+                    }
+                    else
+                    {
+                        domObject.Type = new CodeTypeReference(typedItem.RelatedTypeName);
+                    }
+                }
+            }
+            if (templateProperty.Value.AutoFill == AutoFillType.NameAndTypeWithBackingField ||
+                templateProperty.Value.AutoFill == AutoFillType.NameOnlyWithBackingField)
+            {  
+                templateProperty.Key.GetValue(TemplateClass, null);
+                var field = Decleration._private_(domObject.Type, "_{0}", domObject.Name);
+                domObject.GetStatements._("return {0}", field.Name);
+                domObject.SetStatements._("{0} = value", field.Name);
+              
+            }
+            else
+            {
+                this.TemplateContext.CurrentStatements = domObject.GetStatements;
+                templateProperty.Key.GetValue(TemplateClass, null);
+                if (templateProperty.Key.CanWrite)
+                {
+                    this.TemplateContext.CurrentStatements = domObject.SetStatements;
+                    templateProperty.Key.SetValue(TemplateClass,
+                        GetDefault(templateProperty.Key.PropertyType),
+                        null);
+                }
+                if (!IsDesignerFile && domObject.Attributes != MemberAttributes.Final && templateProperty.Value.Location == MemberGeneratorLocation.Both)
+                {
+                    domObject.Attributes |= MemberAttributes.Override;
+                }
+            }
+            return domObject;
+        }
+
+        private void DoTemplateConstructor(KeyValuePair<MethodInfo, TemplateConstructor> templateMethod, IDiagramNodeItem data)
+        {
+            var info = templateMethod.Key;
+            var dom = templateMethod.Key.ToCodeConstructor();
+
+            TemplateContext.CurrentConstructor = dom;
+            TemplateContext.CurrentStatements = dom.Statements;
+            var args = new List<object>();
+            var parameters = info.GetParameters();
+            foreach (var arg in parameters)
+            {
+                args.Add(GetDefault(arg.ParameterType));
+            }
+            foreach (var item in templateMethod.Value.BaseCallArgs)
+            {
+                dom.BaseConstructorArgs.Add(new CodeSnippetExpression(item));
+            }
+
+
+            info.Invoke(TemplateClass, args.ToArray());
+            Decleration.Members.Add(dom);
+        }
+        private void DoTemplateMethod(KeyValuePair<MethodInfo, TemplateMethod> templateMethod, IDiagramNodeItem data)
+        {
+            MethodInfo info;
+            var dom = TemplateType.MethodFromTypeMethod(templateMethod.Key.Name, out info, false);
+            TemplateContext.CurrentMember = dom;
+            TemplateContext.CurrentStatements = dom.Statements;
+            var args = new List<object>();
+            var parameters = info.GetParameters();
+            foreach (var arg in parameters)
+            {
+                args.Add(GetDefault(arg.ParameterType));
+            }
+            if (templateMethod.Value.AutoFill != AutoFillType.None)
+            {
+                dom.Name = string.Format(templateMethod.Value.NameFormat, data.Name);
+            }
+        
+
+            info.Invoke(TemplateClass, args.ToArray());
+
+            var isOverried = false;
+            if (!IsDesignerFile && dom.Attributes != MemberAttributes.Final && templateMethod.Value.Location == MemberGeneratorLocation.Both)
+            {
+                dom.Attributes |= MemberAttributes.Override;
+                isOverried = true;
+            }
+            if ((info.IsVirtual && !IsDesignerFile) || info.IsOverride() )
+            {
+                if (templateMethod.Value.CallBase)
+                {
+                    dom.invoke_base(true);
+                }
+            }
+                
+
+            Decleration.Members.Add(dom);
+        }
     }
 
+    public interface IClassTemplate
+    {
+        void TemplateSetup();
+    }
+    public interface IClassTemplate<TData> : IClassTemplate
+    {
+        TemplateContext<TData> Ctx { get; set; }
+        
+    }
+
+    public class TemplateContext<TData> : TemplateContext
+    {
+        private Dictionary<string, Func<TData, IEnumerable>> _iterators;
+
+        public CodeAttributeDeclaration AddAttribute(object type, params string[] parameters)
+        {
+            var attribute = new CodeAttributeDeclaration(type.ToCodeReference(),
+                parameters.Select(p => new CodeAttributeArgument(new CodeSnippetExpression(p))).ToArray());
+            if (CurrentMember == null)
+            {
+                if (CurrentConstructor == null)
+                {
+                    CurrentDecleration.CustomAttributes.Add(attribute);
+                }
+                else
+                {
+                    CurrentConstructor.CustomAttributes.Add(attribute);
+                }
+                
+            }
+            else
+            {
+                CurrentMember.CustomAttributes.Add(attribute);    
+            }
+            
+            return attribute;
+
+        }
+
+        public TData Data
+        {
+            get { return (TData)DataObject; }
+        }
+
+        public IEnumerable CurrentIterator { get; set; }
+        public Action<TemplateContext> CurrentIteratorAction { get; set; }
+        public Func<TemplateContext> CurrentIteratorCreateContext { get; set; }
+        public void ForEach<TItem>(Func<TData, IEnumerable<TItem>> selector, Action<TemplateContext<TItem>> apply)
+        {
+            if (CurrentIterator != null) return;
+
+            CurrentIterator = selector(Data);
+            CurrentIteratorAction = delegate(TemplateContext context) { apply(context as TemplateContext<TItem>); };
+            CurrentIteratorCreateContext = delegate { return new TemplateContext<TItem>(); };
+        }
+
+        public Dictionary<string, Func<TData, IEnumerable>> Iterators
+        {
+            get { return _iterators ?? (_iterators = new Dictionary<string, Func<TData, IEnumerable>>()); }
+            set { _iterators = value; }
+        }
+
+        public CodeConstructor CurrentConstructor { get; set; }
+
+        public void AddIterator(string memberName, Func<TData, IEnumerable> iterator)
+        {
+            Iterators.Add(memberName, iterator);
+        }
+
+        public T ItemAs<T>()
+        {
+            return (T) Item;
+        }
+    }
+    public class TemplateContext
+    {
+        public bool IsDesignerFile { get; set; }
+        public IDiagramNodeItem DataObject { get; set; }
+        public IDiagramNodeItem Item { get; set; }
+
+        public ITypedItem TypedItem
+        {
+            get { return Item as ITypedItem; }
+        }
+
+        public CodeTypeMember CurrentMember { get; set; }
+
+        public CodeMemberEvent CurrentEvent
+        {
+            get { return CurrentMember as CodeMemberEvent; }
+        }
+
+        public CodeMemberProperty CurrentProperty
+        {
+            get { return CurrentMember as CodeMemberProperty; }
+        }
+
+        public CodeMemberMethod CurrentMethod
+        {
+            get { return CurrentMember as CodeMemberMethod; }
+        }
+
+        public CodeTypeDeclaration CurrentDecleration { get; set; }
+        public CodeNamespace Namespace { get; set; }
+        public void TryAddNamespace(string ns)
+        {
+            foreach (CodeNamespaceImport n in Namespace.Imports)
+            {
+                if (n.Namespace == ns)
+                    return;
+            }
+            Namespace.Imports.Add(new CodeNamespaceImport(ns));
+        }
+        public CodeStatementCollection CurrentStatements { get; set; }
+
+        public void _(string formatString, params object[] args)
+        { 
+            CurrentStatements._(formatString, args);
+        }
+        public void _comment(string formatString, params object[] args)
+        {
+            CurrentStatements.Add(new CodeCommentStatement(string.Format(formatString, args)));
+        }
+        public CodeConditionStatement _if(string formatString, params object[] args)
+        {
+            return CurrentStatements._if(formatString, args);
+        }
+
+        public void AddInterface(object type, params object[] args)
+        {
+            CurrentDecleration.BaseTypes.Add(type.ToCodeReference(args));
+        }
+        public void SetBaseType(object type, params object[] args)
+        {
+            CurrentDecleration.BaseTypes.Clear();
+            CurrentDecleration.BaseTypes.Add(type.ToCodeReference(args));
+        }
+        public void SetBaseTypeArgument(object type, params object[] args)
+        {
+            CurrentDecleration.BaseTypes[0].TypeArguments.Clear();
+            CurrentDecleration.BaseTypes[0].TypeArguments.Add(type.ToCodeReference(args));
+        }
+        public void SetTypeArgument(object type, params object[] args)
+        {
+   
+            CurrentProperty.SetTypeArgument(type, args);
+        }
+        public void SetType(object type, params object[] args)
+        {
+            if (CurrentProperty != null)
+            CurrentProperty.Type = type.ToCodeReference(args);
+            else if (CurrentMethod != null)
+                CurrentMethod.ReturnType = type.ToCodeReference(args);
+            
+        }
+
+    }
     public interface IClassTypeNode
     {
         string ClassName { get; }

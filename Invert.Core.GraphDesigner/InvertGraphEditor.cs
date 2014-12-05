@@ -141,6 +141,10 @@ namespace Invert.Core.GraphDesigner
             set { _projects = value; }
         }
 
+        //public static IProjectRepository[] GetAllProjects()
+        //{
+            
+        //}
         public static IGraphEditorSettings Settings
         {
             get { return _settings ?? (_settings = Container.Resolve<IGraphEditorSettings>()); }

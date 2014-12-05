@@ -1,5 +1,6 @@
 using System;
 using System.CodeDom;
+using System.Linq;
 using System.Reflection;
 
 namespace Invert.Core.GraphDesigner
@@ -82,41 +83,101 @@ namespace Invert.Core.GraphDesigner
 
         public static CodeMemberMethod MethodFromTypeMethod(this Type type, string methodName, bool callBase = true)
         {
-            var m = type.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+            MethodInfo methodInfo;
+            return MethodFromTypeMethod(type, methodName, out methodInfo, callBase);
+        }
+
+        public static CodeConstructor ToCodeConstructor(this MethodInfo constructor)
+        {
+            var code = new CodeConstructor()
+            {
+                Name = constructor.Name,
+                
+            };
+            if (constructor.IsPublic)
+            {
+                code.Attributes = MemberAttributes.Public;
+            }
+            if (constructor.IsPrivate && !constructor.IsPublic)
+            {
+                code.Attributes = MemberAttributes.Private;
+            }
+            if (constructor.IsVirtual && !constructor.IsFinal)
+            {
+                code.Attributes |= MemberAttributes.Override;
+            }
+            else
+            {
+                code.Attributes |= MemberAttributes.Final;
+            }
+
+            if (constructor.IsFamily)
+            {
+                code.Attributes |= MemberAttributes.Family;
+            }
+            if (constructor.IsFamilyAndAssembly)
+            {
+                code.Attributes |= MemberAttributes.FamilyAndAssembly;
+            }
+            if (constructor.IsFamilyOrAssembly)
+            {
+                code.Attributes |= MemberAttributes.FamilyOrAssembly;
+            }
+         
+            var ps = constructor.GetParameters();
+            foreach (var p in ps)
+            {
+                var parameter = new CodeParameterDeclarationExpression(p.ParameterType, p.Name);
+                code.Parameters.Add(parameter);
+                //baseCall.Parameters.Add(new CodeVariableReferenceExpression(parameter.Name));
+            }
+            //constructor.GetParameters()
+            return code;
+        }
+
+        public static bool IsOverride(this MethodInfo m)
+        {
+            return m.GetBaseDefinition().DeclaringType != m.DeclaringType;
+        }
+        public static CodeMemberMethod MethodFromTypeMethod(this Type type, string methodName, out MethodInfo methodInfo, bool callBase = true)
+        {
+            var m = type.GetMethods( BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).FirstOrDefault(p => p.Name == methodName);
+            methodInfo = m;
             var method = new CodeMemberMethod()
             {
                 Name = methodName,
                 ReturnType = new CodeTypeReference(m.ReturnType)
             };
-
-            if (m.IsVirtual && !m.IsFinal)
-            {
-                method.Attributes = MemberAttributes.Override;
-            }
-            else
-            {
-                method.Attributes |= MemberAttributes.Final;
-            }
             if (m.IsPublic)
             {
-                method.Attributes |= MemberAttributes.Public;
-            }
-            if (m.IsPrivate)
-            {
-                method.Attributes |= MemberAttributes.Private;
+                method.Attributes = MemberAttributes.Public;
             }
             if (m.IsFamily)
             {
-                method.Attributes |= MemberAttributes.Family;
+                method.Attributes = MemberAttributes.Family;
             }
             if (m.IsFamilyAndAssembly)
             {
-                method.Attributes |= MemberAttributes.FamilyAndAssembly;
+                method.Attributes = MemberAttributes.FamilyAndAssembly;
             }
             if (m.IsFamilyOrAssembly)
             {
-                method.Attributes |= MemberAttributes.FamilyOrAssembly;
+                method.Attributes = MemberAttributes.FamilyOrAssembly;
             }
+            if (m.IsPrivate && !m.IsPublic)
+            {
+                method.Attributes = MemberAttributes.Private;
+            }
+            if (m.GetBaseDefinition().DeclaringType != m.DeclaringType)
+            {
+                method.Attributes |= MemberAttributes.Override;
+            }
+            if (m.IsFinal)
+            {
+                method.Attributes |= MemberAttributes.Final;
+            }
+       
+           
             var baseCall = new CodeMethodInvokeExpression(new CodeBaseReferenceExpression(), methodName);
             var ps = m.GetParameters();
             foreach (var p in ps)
@@ -179,7 +240,51 @@ namespace Invert.Core.GraphDesigner
             return codeProperty;
         }
 
+        public static CodeAttributeDeclaration AddArgument(this CodeAttributeDeclaration deleration, CodeExpression expression)
+        {
+            deleration.Arguments.Add(new CodeAttributeArgument(expression));
+            return deleration;
+        }
+        public static CodeAttributeDeclaration AddArgument(this CodeAttributeDeclaration deleration, string format, params string[] args)
+        {
+            deleration.Arguments.Add(new CodeAttributeArgument(new CodeSnippetExpression(string.Format(format,args))));
+            return deleration;
+        }
+        public static CodeMemberProperty SetTypeArgument(this CodeMemberProperty property, object type, params object[] args)
+        {
+            property.Type.TypeArguments.Clear();
 
+            if (type is CodeTypeReference)
+            {
+                property.Type.TypeArguments.Add((CodeTypeReference) type);
+            }  else if (type is string)
+            {
+                property.Type.TypeArguments.Add(string.Format((string) type, args));
+            }
+            else if (type is Type)
+            {
+                property.Type.TypeArguments.Add((Type) type);
+            }
+          
+            return property;
+        }
+
+        public static CodeTypeReference ToCodeReference(this object obj,params object[] args)
+        {
+            if (obj is CodeTypeReference)
+            {
+                return obj as CodeTypeReference;
+            }
+            else if (obj is Type)
+            {
+                return new CodeTypeReference((Type)obj);
+            }
+            else if (obj is string)
+            {
+                return new CodeTypeReference(string.Format((string)obj,args));
+            }
+            return new CodeTypeReference((Type)obj.GetType());
+        }
         //public static CodeMemberMethod Parameter(this CodeMemberMethod method)
         //{
 
@@ -265,7 +370,7 @@ namespace Invert.Core.GraphDesigner
             return result;
         }
 
-        public static CodeMemberMethod invoke_base(this CodeMemberMethod m)
+        public static CodeMemberMethod invoke_base(this CodeMemberMethod m, bool insertAtBeginning = false)
         {
             var baseInvoke =
                 new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeBaseReferenceExpression(),
@@ -274,7 +379,15 @@ namespace Invert.Core.GraphDesigner
             {
                 baseInvoke.Parameters.Add(new CodeVariableReferenceExpression(parameter.Name));
             }
-            m.Statements.Add(baseInvoke);
+            if (insertAtBeginning)
+            {
+                m.Statements.Insert(0, new CodeExpressionStatement(baseInvoke));
+            }
+            else
+            {
+                m.Statements.Add(baseInvoke);
+            }
+            
             return m;
         }
         //public static CodeMemberMethod invoke_base_tovar(this CodeMemberMethod m)
