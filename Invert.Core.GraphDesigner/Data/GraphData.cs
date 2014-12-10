@@ -21,7 +21,7 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
         {
             return _graph ?? (_graph = new TData()
             {
-                Name = this.name,
+                //Name = this.name,
 
             });
         }
@@ -128,10 +128,22 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
         get { return Graph.Settings; }
     }
 
+    private string _name;
     public virtual string Name
     {
-        get { return Regex.Replace(this.name, "[^a-zA-Z0-9_.]+", ""); ; }
-        set { this.name = value; }
+        get
+        {
+            if (!InvertApplication.IsMainThread)
+            {
+                return _name;
+            }
+            return (_name = Regex.Replace(this.name, "[^a-zA-Z0-9_.]+", "")); ;
+        }
+        set
+        {
+            this.name = value;
+            _name = value;
+        }
     }
 
     public string Version
@@ -217,7 +229,7 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
         catch (Exception ex)
         {
             InvertApplication.Log(_jsonData);
-            InvertApplication.Log(this.name + " has a problem.");
+            InvertApplication.Log(this.Name + " has a problem.");
 
             InvertApplication.LogException(ex);
             Graph.Errors = true;

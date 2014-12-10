@@ -119,6 +119,7 @@ namespace Invert.Core.GraphDesigner
                 sectionConfig.ReferenceType = referenceSection.ReferenceType ??
                                               sectionConfig.SourceType.GetGenericParameter() ?? property.PropertyType.GetGenericParameter();
                 sectionConfig.IsEditable = referenceSection.Editable;
+                sectionConfig.HasPredefinedOptions = referenceSection.HasPredefinedOptions;
                 if (sectionConfig.ReferenceType == null)
                 {
                     throw new Exception(string.Format("Reference Section on property {0} doesn't have a valid ReferenceType.", property.Name));

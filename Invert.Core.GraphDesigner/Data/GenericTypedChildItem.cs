@@ -14,9 +14,9 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
     {
         get
         {
-            if (string.IsNullOrEmpty(_type)) return null;
+            if (string.IsNullOrEmpty(RelatedType)) return null;
 
-            return InvertApplication.FindTypeByName(_type);
+            return InvertApplication.FindTypeByName(RelatedType);
         }
     }
 
@@ -39,6 +39,11 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
     {
         get
         {
+            var outputClass = RelatedTypeNode;
+            if (outputClass != null)
+            {
+                return outputClass.ClassName;
+            }
             var relatedNode = this.RelatedNode();
 
             if (relatedNode != null)
@@ -48,6 +53,10 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
         }
     }
 
+    public virtual IClassTypeNode RelatedTypeNode
+    {
+        get { return this.OutputTo<IClassTypeNode>(); }
+    }
     public bool AllowEmptyRelatedType
     {
         get { return false; }
@@ -133,4 +142,5 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
     {
 
     }
+
 }

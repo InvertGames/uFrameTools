@@ -69,14 +69,15 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
             var slot = Ctx.ItemAs<ShellNodeSectionsSlot>();
             var referenceSection = slot.SourceItem as ShellNodeTypeReferenceSection;
             Ctx.SetTypeArgument(referenceSection.ClassName);
-            Ctx.AddAttribute(typeof(ReferenceSection))
+            var attributes = Ctx.AddAttribute(typeof(ReferenceSection))
                 .AddArgument(new CodePrimitiveExpression(Ctx.Item.Name))
                 .AddArgument("SectionVisibility.{0}", referenceSection.Visibility.ToString())
                 .AddArgument(new CodePrimitiveExpression(referenceSection.AllowDuplicates))
                 .AddArgument(new CodePrimitiveExpression(referenceSection.IsAutomatic))
                 .AddArgument(string.Format("typeof({0})", referenceSection.ReferenceClassName))
                 .AddArgument(new CodePrimitiveExpression(referenceSection.IsEditable))
-                .Arguments.Add(new CodeAttributeArgument("OrderIndex",new CodePrimitiveExpression(slot.Order)))
+                .AddArgument("OrderIndex", new CodePrimitiveExpression(slot.Order))
+                .AddArgument("HasPredefinedOptions", new CodePrimitiveExpression(referenceSection.HasPredefinedOptions))
                 ;
                 
             Ctx._("return ChildItems.OfType<{0}>()", referenceSection.ClassName);

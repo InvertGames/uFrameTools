@@ -39,6 +39,16 @@ namespace Invert.Core.GraphDesigner.Unity
             AssetDatabase.Refresh();
         }
 
+        public void Progress(float progress, string message)
+        {
+            if (progress > 100f)
+            {
+               EditorUtility.ClearProgressBar();
+                return;
+            }
+            EditorUtility.DisplayProgressBar("Generating",message,progress / 1f);
+        }
+
         public void Log(string message)
         {
             Debug.Log(message);

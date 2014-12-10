@@ -16,18 +16,20 @@ namespace Invert.Core.GraphDesigner
         public override void Perform(DiagramViewModel diagram)
         {
             InvertGraphEditor.Platform.SaveAssets();
-        
+            InvertGraphEditor.Platform.Progress(0, "Refactoring");
             // Go ahead and process any code refactors
             ProcessRefactorings(diagram);
 
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
             //var generatorSettings = InvertGraphEditor.CurrentProject.GeneratorSettings;
             var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, InvertGraphEditor.CurrentProject).ToArray();
+            var length = 100f/(fileGenerators.Length +1);
            // Debug.Log(fileGenerators.Length);
+            var index = 0;
             foreach (var codeFileGenerator in fileGenerators)
             {
-            
-                
+                index++;
+                 InvertGraphEditor.Platform.Progress(length*index,"Generating " + System.IO.Path.GetFileName(codeFileGenerator.AssetPath));
                 // Grab the information for the file
                 var fileInfo = new FileInfo(codeFileGenerator.SystemPath);
                     //Debug.Log(codeFileGenerator.SystemPath + ": " + fileInfo.Exists);
@@ -63,9 +65,11 @@ namespace Invert.Core.GraphDesigner
                 allDiagramItem.IsNewNode = false;
             }
             RefactorApplied(diagram.DiagramData);
+            InvertGraphEditor.Platform.Progress(101f, "Done");
+            
             InvertGraphEditor.Platform.RefreshAssets();
             diagram.Save();
-
+          
         }
 
         /// <summary>

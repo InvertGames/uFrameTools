@@ -10,6 +10,7 @@
         bool Ignore { get; }
         void Initialize(uFrameContainer container);
         void Loaded();
+        
     }
 
     public interface IDiagramPlugin : ICorePlugin

@@ -14,6 +14,7 @@ namespace Invert.Core.GraphDesigner
         bool MessageBox(string title, string message, string ok, string cancel);
         void SaveAssets();
         void RefreshAssets();
+        void Progress(float progress, string message);
     }
 
     public interface IPlatformPreferences

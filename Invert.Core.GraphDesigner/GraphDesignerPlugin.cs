@@ -24,6 +24,7 @@ namespace Invert.Core.GraphDesigner
             //typeContainer.AddItem<BaseClassReference, InputOutputViewModel, SlotDrawer>();
 
             container.RegisterInstance<IConnectionStrategy>(new InputOutputStrategy(),"InputOutputStrategy");
+            container.RegisterConnectable<GenericTypedChildItem, IClassTypeNode>();
             //container.RegisterInstance<IConnectionStrategy>(new ReferenceConnectionStrategy(), "ReferenceConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new RegisteredConnectionStrategy(),"RegisteredConnectablesStrategy");
            

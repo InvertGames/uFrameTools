@@ -138,7 +138,7 @@ namespace Invert.Core.GraphDesigner
                     AddCommand = section1.AllowAdding
                         ? new SimpleEditorCommand<DiagramNodeViewModel>((vm) =>
                         {
-                            if (section1.AllowAdding && section1.ReferenceType != null)
+                            if (section1.AllowAdding && section1.ReferenceType != null && !section1.HasPredefinedOptions)
                             {
                                 if (section1.AllowDuplicates)
                                 {

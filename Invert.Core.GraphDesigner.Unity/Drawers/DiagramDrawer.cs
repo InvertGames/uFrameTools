@@ -56,77 +56,16 @@ namespace Invert.Core.GraphDesigner
 
         public IDiagramNode CurrentMouseOverNode { get; set; }
 
-
-        public Rect DiagramSize
-        {
-            get
-            {
-                Rect size = new Rect();
-                foreach (var diagramItem in Children)
-                {
-                    var rect = diagramItem.Bounds.Scale(Scale);
-
-                    if (rect.x < 0)
-                        rect.x = 0;
-                    if (rect.y < 0)
-                        rect.y = 0;
-                    //if (rect.x < size.x)
-                    //{
-                    //    size.x = rect.x;
-                    //}
-                    //if (rect.y < size.y)
-                    //{
-                    //    size.y = rect.y;
-                    //}
-                    if (rect.x + rect.width > size.x + size.width)
-                    {
-                        size.width = rect.x + rect.width;
-                    }
-                    if (rect.y + rect.height > size.y + size.height)
-                    {
-                        size.height = rect.y + rect.height;
-                    }
-                }
-                size.height += 400f;
-                size.width += 400f;
-                if (size.height < Screen.height)
-                {
-                    size.height = Screen.height;
-                }
-                if (size.width < Screen.width)
-                {
-                    size.width = Screen.width;
-                }
-                return size;
-            }
-        }
-
         public DiagramViewModel DiagramViewModel
         {
             get { return this.DataContext as DiagramViewModel; }
             set { this.DataContext = value; }
         }
 
-        public bool DidDrag { get; set; }
-
-        public bool IsMouseDown { get; set; }
-
-        public Vector2 LastDragPosition { get; set; }
-
-        public Vector2 LastMouseDownPosition { get; set; }
-
-        public Vector2 LastMouseUpPosition { get; set; }
 
         public Rect Rect { get; set; }
 
-        public Vector2 SelectionOffset { get; set; }
 
-        public Rect SelectionRect { get; set; }
-
-        public float SnapSize
-        {
-            get { return DiagramViewModel.Settings.SnapSize * Scale; }
-        }
 
         public DiagramDrawer(DiagramViewModel viewModel)
         {
@@ -167,16 +106,11 @@ namespace Invert.Core.GraphDesigner
 
         public void CommandExecuted(IEditorCommand command)
         {
-            Debug.Log("YUPYUPYUP");
-            //DiagramViewModel.MarkDirty();
-            //uFrameEditor.Log(command.Title + " Executed");
             this.Refresh();
-            //Dirty = true;
         }
 
         public void CommandExecuting(IEditorCommand command)
         {
-            //DiagramViewModel.RecordUndo(command.Title);
         }
 
         public override void Draw(float scale)
@@ -211,39 +145,6 @@ namespace Invert.Core.GraphDesigner
             
             }
         
-            //var nodeItem = DiagramViewModel.SelectedNodeItem as ItemViewModel;
-            //if (nodeItem != null)
-            //{
-
-            //    if (GUI.GetNameOfFocusedControl() == string.Empty)
-            //        EditorGUI.FocusTextInControl(nodeItem.NodeItem.Identifier);
-            //}
-            //if (focusItem != null)
-            //{
-            //    EditorGUI.FocusTextInControl(focusItem);
-            //}
-
-            //if (IsMouseDown)
-            //{
-            //    var items = DiagramViewModel.SelectedGraphItems.ToArray();
-            //    var allSelected = items;
-
-            //    var newPosition = DragDelta;//CurrentMousePosition - SelectionOffset;
-
-            //    foreach (var diagramItem in allSelected)
-            //    {
-            //        diagramItem.Position += (newPosition * (1f / Scale));
-            //        diagramItem.Position = new Vector2(Mathf.Round((diagramItem.Position.x) / SnapSize) * SnapSize, Mathf.Round(diagramItem.Position.y / SnapSize) * SnapSize);
-            //    }
-
-            //    foreach (var viewModelDrawer in Children.Where(p => p.IsSelected))
-            //    {
-            //        viewModelDrawer.Refresh();
-            //    }
-            //    DidDrag = true;
-            //    LastDragPosition = CurrentMousePosition;
-            //}
-
             DrawErrors();
             DrawHelp();
         }

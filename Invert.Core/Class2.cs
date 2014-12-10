@@ -118,9 +118,17 @@ namespace Invert.Core
             }
             set { _plugins = value; }
         }
-
+        public static int MainThreadId
+        {
+            get; set;
+        }
+        public static bool IsMainThread
+        {
+            get { return System.Threading.Thread.CurrentThread.ManagedThreadId == MainThreadId; }
+        }
         private static void InitializeContainer(IUFrameContainer container)
         {
+            MainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
             container.RegisterInstance<IUFrameContainer>(container);
             var pluginTypes = GetDerivedTypes<ICorePlugin>(false, false).ToArray();
             // Load all plugins

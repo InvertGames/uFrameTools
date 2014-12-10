@@ -124,7 +124,7 @@ public class ProjectRepositoryInspector : Editor
             }
         }
 
-#if DEBUGS
+#if DEBUG
         if (GUIHelpers.DoToolbarEx("Project Nodes"))
         {
 
@@ -133,7 +133,7 @@ public class ProjectRepositoryInspector : Editor
                 if (item == null) continue;
                 GUIHelpers.DoTriggerButton(new UFStyle()
                 {
-                    Label = item.Label,
+                    Label = item.Label + " " +item.Identifier,
                     Enabled = true,
                     BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
                     TextAnchor = TextAnchor.MiddleRight,

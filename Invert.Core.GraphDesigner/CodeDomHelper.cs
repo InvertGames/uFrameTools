@@ -245,6 +245,11 @@ namespace Invert.Core.GraphDesigner
             deleration.Arguments.Add(new CodeAttributeArgument(expression));
             return deleration;
         }
+        public static CodeAttributeDeclaration AddArgument(this CodeAttributeDeclaration deleration,string name, CodeExpression expression)
+        {
+            deleration.Arguments.Add(new CodeAttributeArgument(name,expression));
+            return deleration;
+        }
         public static CodeAttributeDeclaration AddArgument(this CodeAttributeDeclaration deleration, string format, params string[] args)
         {
             deleration.Arguments.Add(new CodeAttributeArgument(new CodeSnippetExpression(string.Format(format,args))));

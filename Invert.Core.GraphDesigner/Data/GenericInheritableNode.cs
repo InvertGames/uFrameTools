@@ -70,7 +70,7 @@ namespace Invert.Core.GraphDesigner
 
         public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
         {
-            if (b.Node is GenericInheritableNode)
+            if (b is BaseClassReference)
             {
                 if (a.GetType() != b.Node.GetType()) return false;
             }
@@ -80,7 +80,7 @@ namespace Invert.Core.GraphDesigner
 
         public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
         {
-            if (b.Node is GenericInheritableNode)
+            if (b is BaseClassReference)
             {
                 if (BaseNodes.Any(p => p == b.Node)) return false;
 

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Core.GraphDesigner.Unity;
@@ -186,11 +187,11 @@ namespace Invert.uFrame.Editor
         public static void Loaded()
         {
             BindingGenerators = Container.ResolveAll<IBindingGenerator>().ToArray();
-            
+         
 
         }
-
-
+       
     }
 
+   
 }

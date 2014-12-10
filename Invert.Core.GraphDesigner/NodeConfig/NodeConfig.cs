@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Invert.uFrame;
 
 namespace Invert.Core.GraphDesigner
 {
+
     public class NodeConfig<TNode> : NodeConfigBase where TNode : GenericNode, IConnectable
     {
         public NodeConfig<TNode> AddRefactoring(Func<TNode, bool> condition, Func<TNode, Refactorer> refactorer)
@@ -18,6 +20,32 @@ namespace Invert.Core.GraphDesigner
                 }
                 return null;
             });
+            return this;
+        }
+
+ 
+
+        public NodeConfig<TNode> LoadDerived<TViewModel>(Action<NodeConfig<TNode>,Type> configure = null)
+        {
+            foreach (var item in InvertApplication.GetDerivedTypes<TNode>(false, false))
+            {
+
+                Container.RegisterRelation(item, typeof(ViewModel), typeof(TViewModel));
+
+                var config = new NodeConfig<TNode>(Container);
+                config.NodeType = item;
+                Container.RegisterInstance<NodeConfigBase>(config, item.Name);
+                config.Name = item.Name.Replace("Shell", "").Replace("Node", "");
+                //config.Tags.Add(config.Name);
+                if (configure != null)
+                {
+                    configure(config,item);
+                }
+                else
+                {
+                    HasSubNode(item);
+                }
+            }
             return this;
         }
 

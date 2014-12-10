@@ -139,26 +139,20 @@ public class PluginDesigner : DiagramPlugin
         // TODO put this in some kind of automatic node adder extension method
         //foreach (var item in InvertApplication.GetDerivedTypes<ShellMemberGeneratorNode>(false, false))
         //{
-        //    container.RegisterRelation(item, typeof(ViewModel), typeof(ShellMemberNodeViewModel));
+            
+          //  container.RegisterRelation(item, typeof(ViewModel), typeof(ShellMemberNodeViewModel));
 
-        //    var config = new NodeConfig<ShellMemberGeneratorNode>(container);
+           // var config = new NodeConfig<ShellMemberGeneratorNode>(container);
         //    container.RegisterInstance<NodeConfigBase>(config, item.Name);
         //    config.Name = item.Name.Replace("Shell", "").Replace("Node", "");
         //    config.Tags.Add(config.Name);
-        //    if (item.GetCustomAttributes(typeof(SingleMemberGenerator), true).Length > 0)
-        //    {
-        //        config.Input<ShellGeneratorTypeNode, ShellMemberGeneratorInputSlot>("For", false);
-        //    }
-        //    else
-        //    {
-        //        config.Input<ShellMemberGeneratorSectionReference, ShellMemberGeneratorInputSlot>("For", false);
-        //    }
+
         //    shellCodeGeneratorConfig.HasSubNode(item);
         //}
 
 
     }
-
+    
     private GraphTypeInfo[] GetPropertySelectorTypes(IDiagramNodeItem arg1)
     {
         return arg1.Node.Project.NodeItems.OfType<GenericNode>().Select(p => new GraphTypeInfo()

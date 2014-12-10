@@ -39,10 +39,14 @@ namespace Invert.Core.GraphDesigner
         public Rect Bounds { get; set; }
         public IGraphData Graph { get; set; }
     }
+
     public class DiagramViewModel : Invert.Core.GraphDesigner.ViewModel
     {
         private ModelCollection<GraphItemViewModel> _graphItems = new ModelCollection<GraphItemViewModel>();
-
+        public float SnapSize
+        {
+            get { return Settings.SnapSize * Scale; }
+        }
         public ElementDiagramSettings Settings
         {
             get { return DiagramData.Settings; }
@@ -68,8 +72,54 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public float Scale
+        {
+            get { return InvertGraphEditor.DesignerWindow.Scale; }
+        }
+        public Rect DiagramBounds
+        {
+            get
+            {
+                Rect size = new Rect();
+                foreach (var diagramItem in GraphItems)
+                {
+                    var rect = diagramItem.Bounds.Scale(Scale);
 
+                    if (rect.x < 0)
+                        rect.x = 0;
+                    if (rect.y < 0)
+                        rect.y = 0;
+                    //if (rect.x < size.x)
+                    //{
+                    //    size.x = rect.x;
+                    //}
+                    //if (rect.y < size.y)
+                    //{
+                    //    size.y = rect.y;
+                    //}
+                    if (rect.x + rect.width > size.x + size.width)
+                    {
+                        size.width = rect.x + rect.width;
+                    }
+                    if (rect.y + rect.height > size.y + size.height)
+                    {
+                        size.height = rect.y + rect.height;
+                    }
+                }
+                size.height += 400f;
+                size.width += 400f;
+                if (size.height < Screen.height)
+                {
+                    size.height = Screen.height;
+                }
+                if (size.width < Screen.width)
+                {
+                    size.width = Screen.width;
+                }
+                return size; ;
+            }
 
+        }
 
         public GraphItemViewModel SelectedGraphItem
         {

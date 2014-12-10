@@ -25,7 +25,6 @@ namespace Invert.Core.GraphDesigner
 
         private string _identifier;
 
- 
         private bool _isCollapsed;
 
         private Vector2 _location;

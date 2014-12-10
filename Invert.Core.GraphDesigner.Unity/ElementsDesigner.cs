@@ -246,7 +246,7 @@ namespace Invert.Core.GraphDesigner.Unity
             window.title = "uFrame";
             //uFrameEditor.ProjectChanged += window.UFrameEditorOnProjectChanged;
             //window.DesignerViewModel = uFrameEditor.Application.Designer;
-
+            window.wantsMouseMove = true;
             //var repo = new ElementsDataRepository();
             //var diagram = new ElementsDiagram(repo);
             //diagram.Data.ViewModels.Add(repo.GetViewModel(typeof(FPSWeaponViewModel)));
@@ -352,13 +352,19 @@ namespace Invert.Core.GraphDesigner.Unity
             }
             else
             {
+            
                 var mp = (e.mousePosition) * (1f / DiagramDrawer.Scale);
 
                 MouseEvent.MousePosition = mp;
                 MouseEvent.MousePositionDelta = MouseEvent.MousePosition - MouseEvent.LastMousePosition;
-                MouseEvent.MousePositionDeltaSnapped = MouseEvent.MousePosition.Snap(DiagramDrawer.SnapSize * ElementDesignerStyles.Scale) - MouseEvent.LastMousePosition.Snap(DiagramDrawer.SnapSize * ElementDesignerStyles.Scale);
+                MouseEvent.MousePositionDeltaSnapped = MouseEvent.MousePosition.Snap(DiagramViewModel.SnapSize * ElementDesignerStyles.Scale) - MouseEvent.LastMousePosition.Snap(DiagramViewModel.SnapSize * ElementDesignerStyles.Scale);
                 handler.OnMouseMove(MouseEvent);
                 MouseEvent.LastMousePosition = mp;
+                if (e.type == EventType.MouseMove)
+                {
+                    e.Use();
+                    Repaint();
+                }
             }
            
             LastEvent = Event.current;
@@ -622,7 +628,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 if (Event.current.control && Event.current.type == EventType.mouseDown)
                 {
                 }
-                _scrollPosition = GUI.BeginScrollView(DiagramRect, _scrollPosition, DiagramDrawer.DiagramSize);
+                _scrollPosition = GUI.BeginScrollView(DiagramRect, _scrollPosition, DiagramViewModel.DiagramBounds);
 
                 HandlePanning(DiagramRect);
                 if (DiagramViewModel != null && InvertGraphEditor.Settings.UseGrid)
@@ -746,10 +752,23 @@ namespace Invert.Core.GraphDesigner.Unity
             IsFocused = false;
         }
 
+        private int fpsCount = 0;
         public void Update()
         {
-            if (_drawEveryFrame)
+
+            if (fpsCount > 30 || (MouseEvent != null && MouseEvent.IsMouseDown))
+            {
+                fpsCount = 0;
                 Repaint();
+
+            }
+            fpsCount++;
+            //if (MouseEvent != null && MouseEvent.IsMouseDown)
+            //{
+            //    Repaint();
+            //}
+            //if (_drawEveryFrame)
+            //    Repaint();
         }
 
         private void DoToolbar()

@@ -12,5 +12,10 @@
         {
             
         }
+
+        public virtual void CommandExecuted(ICommandHandler handler, IEditorCommand command)
+        {
+            
+        }
     }
 }

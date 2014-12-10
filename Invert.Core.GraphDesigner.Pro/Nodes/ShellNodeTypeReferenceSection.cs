@@ -23,6 +23,9 @@ public class ShellNodeTypeReferenceSection : ShellNodeTypeSection,IReferenceNode
 
     [JsonProperty, InspectorProperty]
     public bool IsEditable { get; set; }
+    
+    [JsonProperty, InspectorProperty]
+    public bool HasPredefinedOptions { get; set; }
 
     private bool _allowMultipleInputs = true;
     private bool _allowMultipleOutputs = true;

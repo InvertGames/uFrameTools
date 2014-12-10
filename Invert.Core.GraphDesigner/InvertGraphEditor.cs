@@ -34,6 +34,13 @@ namespace Invert.Core.GraphDesigner
         void RefreshContent();
     }
 
+    public enum InvertGraphEvent
+    {
+        Saved,
+        CurrentGraphChanged,
+        CommandExecuted,
+    }
+
     public static class InvertGraphEditor
     {
         public const string CURRENT_VERSION = "1.501";
@@ -272,6 +279,11 @@ namespace Invert.Core.GraphDesigner
                         {
                             ExecuteCommand(handler, p);
                         });
+
+                    foreach (var plugin in InvertApplication.Plugins.OfType<DiagramPlugin>())
+                    {
+                        plugin.CommandExecuted(handler, command);
+                    }
                     handler.CommandExecuted(command);
                 }
             }
@@ -553,17 +565,4 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-
-    //public class CustomItemDrawer<TData> : ItemDrawer
-    //{
-    //    public CustomItemDrawer()
-    //    {
-    //        ViewModelObject = new ItemViewModel();
-    //    }
-    //    public Func<CustomItemDrawer<TData>,>
-    //    public override void Draw(float scale)
-    //    {
-    //        base.Draw(scale);
-    //    }
-    //}
 }

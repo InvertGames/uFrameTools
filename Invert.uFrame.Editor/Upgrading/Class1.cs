@@ -12,6 +12,8 @@ namespace Invert.uFrame.Editor.Upgrading
 {
     public class uFrame15Upgrade : IUpgradeProcessor
     {
+        public int Version { get; set; }
+
         public void Upgrade(INodeRepository repository, IGraphData graphData)
         {
             var nodes = graphData.NodeItems.ToArray();

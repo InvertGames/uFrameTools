@@ -598,6 +598,10 @@ namespace Invert.Core.GraphDesigner
                 }
                 return SourceItemObject.Name;
             }
+            set
+            {
+                
+            }
         }
 
         public string SourceIdentifier
@@ -606,7 +610,7 @@ namespace Invert.Core.GraphDesigner
             set { _sourceIdentifier = value; }
         }
 
-        public IDiagramNodeItem SourceItemObject
+        public virtual IDiagramNodeItem SourceItemObject
         {
             get
             {

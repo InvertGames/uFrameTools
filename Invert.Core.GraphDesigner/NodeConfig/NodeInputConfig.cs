@@ -175,7 +175,7 @@ namespace Invert.Core.GraphDesigner
         public Type ReferenceType { get; set; }
         public bool AllowDuplicates { get; set; }
         public bool Automatic { get; set; }
-
+        public bool HasPredefinedOptions { get; set; }
         public bool Editable
         {
             get { return _editable; }

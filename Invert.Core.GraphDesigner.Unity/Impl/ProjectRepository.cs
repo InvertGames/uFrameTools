@@ -206,8 +206,19 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
 
     public string Name
     {
-        get { return name; }
-        set { name = value; }
+        get
+        {
+            if (!InvertApplication.IsMainThread)
+            {
+                return _name;
+            }
+            return (_name = name);
+        }
+        set
+        {
+            name = value;
+            _name = value;
+        }
     }
 
 
@@ -221,6 +232,8 @@ public class ProjectRepository : ScriptableObject, IProjectRepository, ISerializ
 
     [NonSerialized]
     private List<TextAsset> _textGraphs;
+
+    private string _name;
 
     public IEnumerable<IDiagramNode> NodeItems
     {

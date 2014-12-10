@@ -7,8 +7,8 @@ using UnityEngine;
 
 public abstract class DiagramNodeItem : IDiagramNodeItem
 {
-    public string Title { get { return Name; } }
-    public string SearchTag { get { return Name; } }
+    public virtual string Title { get { return Name; } }
+    public virtual string SearchTag { get { return Name; } }
     public bool this[string flag]
     {
         get
