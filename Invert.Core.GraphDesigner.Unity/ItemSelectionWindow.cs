@@ -30,7 +30,7 @@ public class ItemSelectionWindow : SearchableScrollWindow
     {
         if (string.IsNullOrEmpty(_SearchText))
         {
-            ItemsArray = Items.Where(p => p.SearchTag.Contains(_SearchText)).ToArray();
+            ItemsArray = Items.Where(p => p.SearchTag != null && p.SearchTag.Contains(_SearchText)).ToArray();
         }
         else
         {
@@ -42,6 +42,7 @@ public class ItemSelectionWindow : SearchableScrollWindow
     {
         foreach (var item in ItemsArray)
         {
+            if (item == null) continue;
             if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.Title, IsWindow = true, FullWidth = true,BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall}))
             {
                 SelectedAction(item);

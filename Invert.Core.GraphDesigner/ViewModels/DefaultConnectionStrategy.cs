@@ -44,10 +44,11 @@ namespace Invert.Core.GraphDesigner
             //foreach (var item in info.DiagramData.Connections.Cont)
         }
 
-        public virtual bool IsConnected(TOutputData output, TInputData input)
+        public virtual bool IsConnected(INodeRepository currentRepository, TOutputData output, TInputData input)
         {
+            
             return
-               InvertGraphEditor.CurrentProject.Connections.Any(
+               currentRepository.Connections.Any(
                    p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
         }
         protected override void ApplyConnection(IGraphData graph, IGraphItem output, IGraphItem input)

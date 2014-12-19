@@ -336,7 +336,7 @@ namespace Invert.Core.GraphDesigner
             var obj = connectionViewModel.ConnectorA.ConnectorFor.DataObject as IDiagramNodeItem;
             if (obj != null)
             {
-                InvertGraphEditor.CurrentProject.RemoveItem(obj);
+                connectionViewModel.DiagramViewModel.CurrentRepository.RemoveItem(obj);
             }
         }
     }

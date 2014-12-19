@@ -1,0 +1,115 @@
+﻿<Window x:Class="DiagramDesigner.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:platform="clr-namespace:DiagramDesigner.Platform"
+        xmlns:controls="clr-namespace:Invert.GraphDesigner.WPF.Controls;assembly=Invert.GraphDesigner.WPF.Controls"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Diagram Designer"
+        Height="850" Width="1000" Background="#FF4D4D4D">
+
+    <d:Window.DataContext>
+        <platform:MainWindowUIViewModel />
+    </d:Window.DataContext>
+    <Window.Resources>
+        <ContextMenu x:Key="DesignerCanvasContextMenu" ItemsSource="{Binding CurrentDiagram.DiagramContextCommands}">
+            <ContextMenu.ItemTemplate>
+                <DataTemplate  >
+                    <MenuItem Header="{Binding Name}" 
+                        Command="{Binding}" Height="32" >
+
+                    </MenuItem>
+                </DataTemplate>
+            </ContextMenu.ItemTemplate>
+            <!-- <MenuItem Header="Paste" Command="{x:Static ApplicationCommands.Paste}">
+                <MenuItem.Icon>
+                    <Image Source="Resources/Images/Paste.png" Width="16"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Select All" Command="{x:Static graphDesigner:InvertGraphEditor.}"/>
+           -->
+        </ContextMenu>
+
+    </Window.Resources>
+
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" MinHeight="29"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0" >
+            <MenuItem x:Name="File" Header="File" Click="MenuItem_Click">
+                <MenuItem Header="Create" HorizontalAlignment="Left" Width="140">
+                    <MenuItem x:Name="CreateProject" Header="Project" HorizontalAlignment="Left" Width="140" Click="CreateProject_OnClick"></MenuItem>
+                    <MenuItem x:Name="CreateGraph" Header="Graph" HorizontalAlignment="Left" Width="140" Click="CreateGraph_OnClick"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="Open" HorizontalAlignment="Left" Width="140">
+                    <MenuItem Header="Project" HorizontalAlignment="Left" Width="140"></MenuItem>
+                    <MenuItem Header="Graph" HorizontalAlignment="Left" Width="140"></MenuItem>
+                </MenuItem>
+                <MenuItem x:Name="SaveAll" Header="Save All" HorizontalAlignment="Left" Width="140" Click="SaveAll_OnClick">
+                </MenuItem>
+                <MenuItem Header="Exit" HorizontalAlignment="Left" Width="140">
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <ToolBarTray Grid.Row="1">
+            <ToolBar ItemsSource="{Binding Path=ToolbarCommands}" >
+                <ToolBar.ItemTemplate>
+                    <DataTemplate  >
+                        <Button ToolTip="{Binding Name}" 
+                        Command="{Binding}" Height="32" >
+                            <Button.Content>
+                                <Label Height="Auto" Content="{Binding Name}" ></Label>
+
+                            </Button.Content>
+                        </Button>
+                    </DataTemplate>
+                </ToolBar.ItemTemplate>
+            </ToolBar>
+        </ToolBarTray>
+
+        <Grid Grid.Row="2" Margin="0,0,0,0"        
+              
+              >
+            <!--TextOptions.TextRenderingMode="Grayscale"
+                    RenderOptions.ClearTypeHint="Enabled"
+                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    RenderOptions.EdgeMode="Aliased"-->
+            <Grid.ColumnDefinitions>
+
+                <ColumnDefinition/>
+                <ColumnDefinition Width="265"/>
+            </Grid.ColumnDefinitions>
+            <!-- Toolbox -->
+
+            <ScrollViewer Grid.Column="0"  HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto" Background="#FF292929" BorderBrush="Black" BorderThickness="1">
+                <controls:DiagramControl  x:Name="MyDesigner" 
+                                      DataContext="{Binding CurrentDiagram}" Background="#FF303030"/>
+            </ScrollViewer>
+
+            <!-- GridSplitter -->
+            <GridSplitter Focusable="False" Width="2" Background="LightGray"
+                    VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
+            <StackPanel Grid.Column="1" Margin="0,0,0,0">
+                <Expander Header="{Binding CurrentProject.Name}" IsExpanded="True" HeaderTemplate="{DynamicResource NiceHeader}" Foreground="White">
+                    <ListBox x:Name="ProjectGraphsList" Height="249" ItemsSource="{Binding ProjectGraphs}" SelectionChanged="Selector_OnSelectionChanged"  >
+
+                        <ListBox.ItemTemplate>
+                            <ItemContainerTemplate >
+                                <Label Content="{Binding Name}" Margin="0,0,0,0" Height="32"></Label>
+                            </ItemContainerTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Expander>
+                <Expander Header="Inspector"  IsExpanded="True" Background="#FFD1BFBF" Foreground="White"/>
+            </StackPanel>
+            <!-- Designer -->
+
+        </Grid>
+    </Grid>
+</Window>

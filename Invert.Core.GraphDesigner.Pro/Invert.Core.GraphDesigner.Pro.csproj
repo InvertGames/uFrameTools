@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UNITY_DLL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -47,56 +47,54 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Data\IInputCapable.cs" />
+    <Compile Include="Data\IInputOutpuItem.cs" />
+    <Compile Include="Data\IOutputCapable.cs" />
+    <Compile Include="Data\IReferenceNode.cs" />
+    <Compile Include="Data\IShellConnectable.cs" />
+    <Compile Include="Data\IShellNode.cs" />
+    <Compile Include="Data\ShellAcceptableReferenceType.cs" />
+    <Compile Include="Data\ShellConnectableReferenceType.cs" />
+    <Compile Include="Data\ShellConnectionDefitionNode.cs" />
+    <Compile Include="Data\ShellInheritableNode.cs" />
+    <Compile Include="Data\ShellNode.cs" />
+    <Compile Include="Data\ShellNodeTypeNodeViewModel.cs" />
+    <Compile Include="Data\ShellSectionNode.cs" />
+    <Compile Include="Data\ShellSectionReferenceSlot.cs" />
+    <Compile Include="Data\TemplateEventReference.cs" />
+    <Compile Include="Data\TemplateFieldReference.cs" />
+    <Compile Include="Data\TemplateMethodReference.cs" />
+    <Compile Include="Data\TemplatePropertyReference.cs" />
+    <Compile Include="Data\TemplateReference.cs" />
+    <Compile Include="Generators\ShellChildItemTemplate.cs" />
+    <Compile Include="Generators\ShellChildTemplate.cs" />
+    <Compile Include="Generators\ShellContextCommandTemplate.cs" />
+    <Compile Include="Generators\ShellGraphTemplate.cs" />
     <Compile Include="Generators\ShellNodeTypeTemplate.cs" />
-    <Compile Include="Nodes\IShellReferenceType.cs" />
-    <Compile Include="Drawers\NodeDesignerDrawer.cs" />
+    <Compile Include="Data\IShellReferenceType.cs" />
+    <Compile Include="Generators\ShellReferenceSectionTemplate.cs" />
+    <Compile Include="Generators\ShellSlotItemTemplate.cs" />
     <Compile Include="PluginDesigner.cs" />
     <Compile Include="PluginGraph.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sections\AddGeneratorNodeCommand.cs" />
-    <Compile Include="Sections\Class1.cs" />
-    <Compile Include="Sections\ShellMemberGeneratorInputSlot.cs" />
-    <Compile Include="Sections\ShellMemberGeneratorNode.cs" />
-    <Compile Include="Sections\ShellMemberGeneratorSectionReference.cs" />
-    <Compile Include="Sections\ShellMemberNodeDrawer.cs" />
-    <Compile Include="Sections\ShellMemberNodeViewModel.cs" />
-    <Compile Include="Sections\ShellMembersGeneratorSectionReference.cs" />
-    <Compile Include="Sections\ShellPropertyGeneratorNode.cs" />
-    <Compile Include="Slots\IShellNodeItem.cs" />
-    <Compile Include="Slots\ReferenceItemType.cs" />
+    <Compile Include="Data\IShellNodeItem.cs" />
+    <Compile Include="Data\ReferenceItemType.cs" />
     <Compile Include="Commands\SelectColorCommand.cs" />
-    <Compile Include="Nodes\ShellChildItemTypeNode.cs" />
-    <Compile Include="Generators\ShellChildItemTypeNodeClassGenerator.cs" />
-    <Compile Include="Generators\ShellChildItemTypeNodeDrawerGenerator.cs" />
-    <Compile Include="Generators\ShellChildItemTypeNodeViewModelGenerator.cs" />
-    <Compile Include="Generators\ShellCodeGeneratorNodeGenerator.cs" />
-    <Compile Include="Nodes\ShellGeneratorTypeNode.cs" />
-    <Compile Include="Generators\ShellGraphClassGenerator.cs" />
-    <Compile Include="Nodes\ShellGraphTypeNode.cs" />
-    <Compile Include="Generators\ShellGraphTypeNodeClassGenerator.cs" />
-    <Compile Include="Nodes\ShellNodeChildTypeNode.cs" />
-    <Compile Include="Slots\ShellNodeGeneratorsSlot.cs" />
-    <Compile Include="Slots\ShellNodeInputsSlot.cs" />
-    <Compile Include="Slots\ShellNodeOutputsSlot.cs" />
-    <Compile Include="Slots\ShellNodeSectionsSlot.cs" />
-    <Compile Include="Slots\ShellNodeSubNodesSlot.cs" />
-    <Compile Include="Generators\ShellNodeTypeClassGenerator.cs" />
-    <Compile Include="Nodes\ShellNodeTypeNode.cs" />
-    <Compile Include="Generators\ShellNodeTypeNodeDrawerGenerator.cs" />
-    <Compile Include="Generators\ShellNodeTypeNodeViewModelGenerator.cs" />
-    <Compile Include="Nodes\ShellNodeTypeReferenceSection.cs" />
-    <Compile Include="Generators\ShellNodeTypeReferenceSectionDrawerGenerator.cs" />
-    <Compile Include="Generators\ShellNodeTypeReferenceSectionViewModelGenerator.cs" />
-    <Compile Include="Nodes\ShellNodeTypeSection.cs" />
-    <Compile Include="Generators\ShellNodeTypeSectionClassGenerator.cs" />
-    <Compile Include="ViewModels\ShellNodeTypeViewModel.cs" />
+    <Compile Include="Data\ShellChildItemTypeNode.cs" />
+    <Compile Include="Data\ShellGeneratorTypeNode.cs" />
+    <Compile Include="Data\ShellGraphTypeNode.cs" />
+    <Compile Include="Data\ShellNodeChildTypeNode.cs" />
+    <Compile Include="Data\ShellNodeGeneratorsSlot.cs" />
+    <Compile Include="Data\ShellNodeInputsSlot.cs" />
+    <Compile Include="Data\ShellNodeOutputsSlot.cs" />
+    <Compile Include="Data\ShellNodeSectionsSlot.cs" />
+    <Compile Include="Data\ShellNodeSubNodesSlot.cs" />
+    <Compile Include="Data\ShellNodeTypeNode.cs" />
+    <Compile Include="Data\ShellNodeTypeReferenceSection.cs" />
+    <Compile Include="Data\ShellNodeTypeSection.cs" />
     <Compile Include="Generators\ShellPluginClassGenerator.cs" />
-    <Compile Include="Nodes\ShellPluginNode.cs" />
-    <Compile Include="Nodes\ShellSlotTypeNode.cs" />
-    <Compile Include="Generators\ShellSlotTypeNodeClassGenerator.cs" />
-    <Compile Include="Generators\ShellSlotTypeNodeDrawerGenerator.cs" />
-    <Compile Include="Generators\ShellSlotTypeNodeViewModelGenerator.cs" />
+    <Compile Include="Data\ShellPluginNode.cs" />
+    <Compile Include="Data\ShellSlotTypeNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Invert.Attributes\Invert.Attributes.csproj">
@@ -115,14 +113,16 @@
       <Project>{CFCC5F2C-7A2F-4FD1-90D8-52420B7EB337}</Project>
       <Name>Invert.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Invert.JSON\Invert.JSON.csproj">
+      <Project>{51e51ae2-77c1-498f-9b88-c2eed1e3aeed}</Project>
+      <Name>Invert.JSON</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Invert.MVVM\Invert.MVVM.csproj">
       <Project>{cb024a98-ee90-4497-8af3-2c574d665a8a}</Project>
       <Name>Invert.MVVM</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Templates\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y

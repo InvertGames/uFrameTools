@@ -37,10 +37,10 @@ using UnityEngine;
                     {
                         var lastRect = new Rect(0f, 0f, Screen.width, Screen.height);
 
-                        fileGenerator.Refresh(rect);
+                        fileGenerator.Refresh(InvertGraphEditor.PlatformDrawer, rect);
                         rect.y += fileGenerator.Bounds.height;
                         GUILayoutUtility.GetRect(fileGenerator.Bounds.width, fileGenerator.Bounds.height);
-                        fileGenerator.Draw(1f);
+                        fileGenerator.Draw(InvertGraphEditor.PlatformDrawer, 1f);
                         //EditorGUILayout.TextArea(fileGenerator.ToString());
                     }
                     rect.y += 25f;
@@ -80,7 +80,7 @@ using UnityEngine;
             var item = SelectedNode == null ? null:SelectedNode.GraphItemObject;
 
             fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,
-                InvertGraphEditor.CurrentProject, true).ToArray();
+                InvertGraphEditor.DesignerWindow.DiagramViewModel.CurrentRepository, true).ToArray();
          
             foreach (var fileGenerator in fileGenerators)
             {

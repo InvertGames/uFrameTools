@@ -181,11 +181,11 @@ public class ElementExplorerWindow : SearchableScrollWindow
 
     public override void OnGUIScrollView()
     {
-        if (InvertGraphEditor.CurrentProject == null) return;
-        foreach (var diagram in InvertGraphEditor.CurrentProject.Graphs)
-        {
-            DoFilter(diagram.RootFilter);
-        }
+        //if (InvertGraphEditor.CurrentProject == null) return;
+        //foreach (var diagram in InvertGraphEditor.CurrentProject.Graphs)
+        //{
+        //    DoFilter(diagram.RootFilter);
+        //}
     }
 
     public void DoItems(IEnumerable<IDiagramNode> items)
@@ -214,7 +214,7 @@ public class ElementExplorerWindow : SearchableScrollWindow
         if (filter.IsExplorerCollapsed)
         {
             EditorGUI.indentLevel ++;
-            DoItems(filter.GetContainingNodes(InvertGraphEditor.CurrentProject));
+           // DoItems(filter.GetContainingNodes(InvertGraphEditor.CurrentProject));
             EditorGUI.indentLevel--;
         }
     }

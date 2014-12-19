@@ -5,6 +5,7 @@ using System.Reflection;
 using Invert.Common;
 using Invert.Common.UI;
 using Invert.Common.Utilities;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -91,13 +92,13 @@ public class uFrameComponentSearchWindow : EditorWindow
                         {
                             SelectedMemberInfos.Remove(memberInfo);
                             Remove(this, memberInfo);
-                            uFrameEditor.CurrentDiagram.Refresh();
+                            uFrameEditor.CurrentDiagram.Refresh((IPlatformDrawer) InvertGraphEditor.PlatformDrawer);
                         }
                         else
                         {
                             SelectedMemberInfos.Add(memberInfo);
                             Complete(this, memberInfo);
-                            uFrameEditor.CurrentDiagram.Refresh();
+                            uFrameEditor.CurrentDiagram.Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
                         }
                     }
             }

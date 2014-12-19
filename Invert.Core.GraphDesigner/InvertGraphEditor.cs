@@ -7,48 +7,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-
+#if !UNITY_DLL
+using KeyCode = System.Windows.Forms.Keys;
+#endif
 namespace Invert.Core.GraphDesigner
 {
-    public enum NodeColor
-    {
-        Gray,
-        DarkGray,
-        Blue,
-        LightGray,
-        Black,
-        DarkDarkGray,
-        Orange,
-        Red,
-        Yellow,
-        Green,
-        Purple,
-        Pink,
-        YellowGreen
-    }
-
-    public interface IGraphWindow : ICommandHandler
-    {
-        DiagramViewModel DiagramViewModel { get; }
-        float Scale { get; set; }
-        void RefreshContent();
-    }
-
-    public enum InvertGraphEvent
-    {
-        Saved,
-        CurrentGraphChanged,
-        CommandExecuted,
-    }
-
     public static class InvertGraphEditor
     {
         public const string CURRENT_VERSION = "1.501";
         public const double CURRENT_VERSION_NUMBER = 1.501;
         public const bool REQUIRE_UPGRADE = true;
-        private static Dictionary<Type, List<Type>> _allowedFilterItems;
 
-        private static Dictionary<Type, List<Type>> _allowedFilterNodes;
 
         private static IAssetManager _assetManager;
 
@@ -65,25 +34,24 @@ namespace Invert.Core.GraphDesigner
         private static uFrameContainer _TypesContainer;
 
         private static IWindowManager _windowManager;
+        private static MouseEvent _currentMouseEvent;
+        private static IGraphWindow _designerWindow;
+        private static IStyleProvider _styleProvider;
 
         public static IPlatformOperations Platform { get; set; }
         public static IPlatformPreferences Prefs { get; set; }
 
-        public static Dictionary<Type, List<Type>> AllowedFilterItems
+        public static IStyleProvider StyleProvider
         {
-            get { return _allowedFilterItems ?? (_allowedFilterItems = new Dictionary<Type, List<Type>>()); }
-            set { _allowedFilterItems = value; }
+            get { return _styleProvider ?? (_styleProvider = Container.Resolve<IStyleProvider>()); }
+            set { _styleProvider = value; }
         }
 
-        public static Dictionary<Type, List<Type>> AllowedFilterNodes
-        {
-            get { return _allowedFilterNodes ?? (_allowedFilterNodes = new Dictionary<Type, List<Type>>()); }
-            set { _allowedFilterNodes = value; }
-        }
+
 
         public static IAssetManager AssetManager
         {
-            get { return _assetManager = Container.Resolve<IAssetManager>(); }
+            get { return _assetManager ?? (_assetManager = Container.Resolve<IAssetManager>()); }
             set { _assetManager = value; }
         }
 
@@ -115,30 +83,38 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public static MouseEvent CurrentMouseEvent
-        {
-            // TODO
-            get;
-            set;
-        }
+        //public static MouseEvent CurrentMouseEvent
+        //{
+        //    // TODO
+        //    get { return _currentMouseEvent; }
+        //    set { _currentMouseEvent = value; }
+        //}
 
-        public static IProjectRepository CurrentProject
+        //public static IProjectRepository CurrentProject
+        //{
+        //    get { return _currentProject; }
+        //    set
+        //    {
+        //        _currentProject = value;
+        //        if (value != null)
+        //        {
+        //            foreach (var diagram in _currentProject.Graphs)
+        //            {
+        //                diagram.SetProject(value);
+        //            }
+        //        }
+        //    }
+        //}
+        
+        public static IGraphWindow DesignerWindow
         {
-            get { return _currentProject; }
+            get { return _designerWindow; }
             set
             {
-                _currentProject = value;
-                if (value != null)
-                {
-                    foreach (var diagram in _currentProject.Graphs)
-                    {
-                        diagram.SetProject(value);
-                    }
-                }
+                _designerWindow = value;
+                //Container.Inject(_designerWindow);
             }
         }
-
-        public static IGraphWindow DesignerWindow { get; set; }
 
         public static IKeyBinding[] KeyBindings { get; set; }
 
@@ -224,6 +200,7 @@ namespace Invert.Core.GraphDesigner
 
         public static void DesignerPluginLoaded()
         {
+            
             Settings = Container.Resolve<IGraphEditorSettings>();
             AssetManager = Container.Resolve<IAssetManager>();
             OrganizeFilters();
@@ -264,7 +241,7 @@ namespace Invert.Core.GraphDesigner
         {
             var objs = handler.ContextObjects.ToArray();
 
-            CurrentProject.RecordUndo(CurrentProject.CurrentGraph, command.Title);
+            //CurrentProject.RecordUndo(CurrentProject.CurrentGraph, command.Title);
             foreach (var o in objs)
             {
                 if (o == null) continue;
@@ -273,7 +250,12 @@ namespace Invert.Core.GraphDesigner
                 {
                     if (command.CanPerform(o) != null) continue;
                     //handler.CommandExecuting(command);
+#if (UNITY_DLL)
                     command.Execute(o);
+                    
+#else
+                    command.Perform(o);
+#endif
                     if (command.Hooks != null)
                         command.Hooks.ForEach(p =>
                         {
@@ -287,14 +269,20 @@ namespace Invert.Core.GraphDesigner
                     handler.CommandExecuted(command);
                 }
             }
-            CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
+            //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
         }
 
-        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, IProjectRepository project, bool includeDisabled = false)
+        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, INodeRepository project, bool includeDisabled = false)
         {
             // Grab all the code generators
             var diagramItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
-
+            var proj = project as IProjectRepository;
+            var diagrams = new[] { project as IGraphData };
+            if (proj != null)
+            {
+                diagrams = proj.Graphs.ToArray();
+            }
+                    
             foreach (var diagramItemGenerator in diagramItemGenerators)
             {
                 DesignerGeneratorFactory generator = diagramItemGenerator;
@@ -302,7 +290,7 @@ namespace Invert.Core.GraphDesigner
 
                 if (typeof(IGraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
                 {
-                    var diagrams = project.Graphs;
+       
                     foreach (var diagram in diagrams)
                     {
                         if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
@@ -312,7 +300,8 @@ namespace Invert.Core.GraphDesigner
                             var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, diagram);
                             foreach (var codeGenerator in codeGenerators)
                             {
-                                if (!codeGenerator.IsEnabled(project)) continue;
+                                // TODO Had to remove this?
+                                //if (!codeGenerator.IsEnabled(project)) continue;
 
                                 codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                                 codeGenerator.Settings = settings;
@@ -325,14 +314,15 @@ namespace Invert.Core.GraphDesigner
                 }
                 else if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
                 {
-                    foreach (var diagram in project.Graphs)
+                    foreach (var diagram in diagrams)
                     {
 
                         if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
                         var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, diagram);
                         foreach (var codeGenerator in codeGenerators)
                         {
-                            if (!codeGenerator.IsEnabled(project)) continue;
+                            // TODO had to remove this?
+                            //if (!codeGenerator.IsEnabled(project)) continue;
                             codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                             codeGenerator.Settings = settings;
                             codeGenerator.ObjectData = project;
@@ -354,10 +344,18 @@ namespace Invert.Core.GraphDesigner
             return GetAllCodeGenerators(null,node.Project).Where(p=>p.ObjectData == node);
         }
 
-        private static IEnumerable<CodeGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, IProjectRepository project,
+        private static IEnumerable<CodeGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, INodeRepository project,
             DesignerGeneratorFactory generator, DesignerGeneratorFactory diagramItemGenerator, bool includeDisabled = false)
         {
-            foreach (var diagram in project.Graphs)
+            var proj = project as IProjectRepository;
+            var diagrams = new[] { project as IGraphData };
+            if (proj != null)
+            {
+                diagrams = proj.Graphs.ToArray();
+            }
+
+
+            foreach (var diagram in diagrams)
             {
 
                 if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
@@ -368,7 +366,8 @@ namespace Invert.Core.GraphDesigner
                     var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, item);
                     foreach (var codeGenerator in codeGenerators)
                     {
-                        if (!codeGenerator.IsEnabled(project)) continue;
+                        // TODO had to remove this?
+                        //if (!codeGenerator.IsEnabled(project)) continue;
                         codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                         codeGenerator.Settings = settings;
                         codeGenerator.ObjectData = item;
@@ -379,21 +378,25 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings)
-        {
-            return GetAllFileGenerators(settings, CurrentProject);
-        }
+        //public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings)
+        //{
+        //    return GetAllFileGenerators(settings, CurrentProject);
+        //}
 
-        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings, IProjectRepository project, bool includeDisabled = false)
+        public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings, INodeRepository project, bool includeDisabled = false, string systemPath = null)
         {
             var codeGenerators = GetAllCodeGenerators(settings, project, includeDisabled).ToArray();
             var groups = codeGenerators.GroupBy(p => p.FullPathName).Distinct();
             foreach (var @group in groups)
             {
-                var generator = new CodeFileGenerator(project.ProjectNamespace)
+                var generator = new CodeFileGenerator(project.Namespace)
                 {
                     AssetPath = @group.Key.Replace("\\", "/"),
+#if UNITY_DLL
                     SystemPath = Path.Combine(Application.dataPath, @group.Key.Substring(7)).Replace("\\", "/"),
+#else
+                    SystemPath = Path.Combine(systemPath,@group.Key),
+#endif
                     Generators = @group.ToArray()
                 };
                 yield return generator;
@@ -430,7 +433,7 @@ namespace Invert.Core.GraphDesigner
 
         public static bool IsFilter(Type type)
         {
-            return AllowedFilterNodes.ContainsKey(type);
+            return FilterExtensions.AllowedFilterNodes.ContainsKey(type);
         }
 
         public static void OrganizeFilters()
@@ -442,20 +445,20 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var filterMapping in filterTypes)
             {
-                if (!AllowedFilterNodes.ContainsKey(filterMapping.From))
+                if (!FilterExtensions.AllowedFilterNodes.ContainsKey(filterMapping.From))
                 {
-                    AllowedFilterNodes.Add(filterMapping.From, new List<Type>());
+                    FilterExtensions.AllowedFilterNodes.Add(filterMapping.From, new List<Type>());
                 }
-                AllowedFilterNodes[filterMapping.From].Add(filterMapping.Concrete);
+                FilterExtensions.AllowedFilterNodes[filterMapping.From].Add(filterMapping.Concrete);
             }
 
             foreach (var filterMapping in filterTypeItems)
             {
-                if (!AllowedFilterItems.ContainsKey(filterMapping.From))
+                if (!FilterExtensions.AllowedFilterItems.ContainsKey(filterMapping.From))
                 {
-                    AllowedFilterItems.Add(filterMapping.From, new List<Type>());
+                    FilterExtensions.AllowedFilterItems.Add(filterMapping.From, new List<Type>());
                 }
-                AllowedFilterItems[filterMapping.From].Add(filterMapping.Concrete);
+                FilterExtensions.AllowedFilterItems[filterMapping.From].Add(filterMapping.Concrete);
             }
         }
 
@@ -484,7 +487,16 @@ namespace Invert.Core.GraphDesigner
         {
             container.RegisterRelation<TFilterData, IDiagramNodeItem, TAllowedItem>();
         }
-
+        public static IUFrameContainer RegisterDataViewModel<TModel, TViewModel>(this IUFrameContainer container)
+        {
+            container.RegisterRelation<TModel, ViewModel, TViewModel>();
+            return container;
+        }
+        public static IUFrameContainer RegisterDataChildViewModel<TModel, TViewModel>(this IUFrameContainer container)
+        {
+            container.RegisterRelation<TModel, ItemViewModel, TViewModel>();
+            return container;
+        }
         //public static IUFrameContainer ConnectionStrategy<TSource, TTarget>(this IUFrameContainer container, Color connectionColor,
         //    Func<TSource, TTarget, bool> isConnected, Action<TSource, TTarget> apply, Action<TSource, TTarget> remove) where TSource : class, IConnectable where TTarget : class, IConnectable
         //{
@@ -493,27 +505,27 @@ namespace Invert.Core.GraphDesigner
         //}
         public static void RegisterFilterNode<TFilterData, TAllowedItem>(this IUFrameContainer container)
         {
-            if (!AllowedFilterNodes.ContainsKey(typeof(TFilterData)))
+            if (!FilterExtensions.AllowedFilterNodes.ContainsKey(typeof(TFilterData)))
             {
-                AllowedFilterNodes.Add(typeof(TFilterData), new List<Type>());
+                FilterExtensions.AllowedFilterNodes.Add(typeof(TFilterData), new List<Type>());
             }
-            AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
+            FilterExtensions.AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
         }
         public static void RegisterFilterNode(this IUFrameContainer container,Type filter, Type tnode)
         {
-            if (!AllowedFilterNodes.ContainsKey(filter))
+            if (!FilterExtensions.AllowedFilterNodes.ContainsKey(filter))
             {
-                AllowedFilterNodes.Add(filter, new List<Type>());
+                FilterExtensions.AllowedFilterNodes.Add(filter, new List<Type>());
             }
-            AllowedFilterNodes[filter].Add(tnode);
+            FilterExtensions.AllowedFilterNodes[filter].Add(tnode);
         }
         public static void RegisterFilterNode<TFilterData, TAllowedItem>()
         {
-            if (!AllowedFilterNodes.ContainsKey(typeof(TFilterData)))
+            if (!FilterExtensions.AllowedFilterNodes.ContainsKey(typeof(TFilterData)))
             {
-                AllowedFilterNodes.Add(typeof(TFilterData), new List<Type>());
+                FilterExtensions.AllowedFilterNodes.Add(typeof(TFilterData), new List<Type>());
             }
-            AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
+            FilterExtensions.AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
         }
 
        
@@ -527,42 +539,27 @@ namespace Invert.Core.GraphDesigner
         {
             Container.RegisterInstance<IKeyBinding>(new SimpleKeyBinding(command, name, code, control, alt, shift), name);
         }
+        public static IDrawer CreateDrawer(this IUFrameContainer container, ViewModel viewModel)
+        {
+            return CreateDrawer<IDrawer>(container, viewModel);
+        }
+        public static IDrawer CreateDrawer<TDrawerBase>(this IUFrameContainer container, ViewModel viewModel) where TDrawerBase : IDrawer
+        {
+            if (viewModel == null)
+            {
+                InvertApplication.LogError("Data is null.");
+                return null;
+            }
+            var drawer = container.ResolveRelation<TDrawerBase>(viewModel.GetType(), viewModel);
+            if (drawer == null)
+            {
+                InvertApplication.Log(String.Format("Couldn't Create drawer for {0}.", viewModel.GetType()));
+            }
+            return drawer;
+        }
 
         private static void InitializeTypesContainer(uFrameContainer container)
         {
         }
     }
-
-    public class DefaultGraphSettings : IGraphEditorSettings
-    {
-        public Color BackgroundColor { get; set; }
-
-        public Color GridLinesColor { get; set; }
-
-        public Color GridLinesColorSecondary { get; set; }
-
-        public bool ShowGraphDebug { get; set; }
-
-        public bool ShowHelp
-        {
-            get { return false; }
-            set
-            {
-            }
-        }
-
-        public bool UseGrid
-        {
-            get { return true; }
-            set { }
-        }
-
-        public DefaultGraphSettings()
-        {
-            BackgroundColor = new Color(0.13f, 0.13f, 0.13f);
-            GridLinesColor = new Color(0.1f, 0.1f, 0.1f);
-            GridLinesColorSecondary = new Color(0.08f, 0.08f, 0.08f);
-        }
-    }
-
 }

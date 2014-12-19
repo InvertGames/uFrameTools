@@ -1,4 +1,5 @@
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.Refactoring;
 using System;
@@ -34,7 +35,7 @@ public class SceneManagerData : DiagramNode
         {
             foreach (var subsystem in Subsystems)
             {
-                foreach (var element in subsystem.GetContainingNodes(Diagram).OfType<ElementData>())
+                foreach (var element in subsystem.GetContainingNodes(Graph).OfType<ElementData>())
                 {
                     yield return element;
                 }
@@ -47,7 +48,7 @@ public class SceneManagerData : DiagramNode
         get
         {
             yield return SubSystem;
-            foreach (var subsystem in SubSystem.GetAllImportedSubSystems(Diagram))
+            foreach (var subsystem in SubSystem.GetAllImportedSubSystems(Graph))
             {
                 yield return subsystem;
             }

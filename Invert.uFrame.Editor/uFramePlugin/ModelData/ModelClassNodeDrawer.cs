@@ -8,8 +8,8 @@ public class ModelClassNodeDrawer : ClassNodeDrawer
     {
     }
 
-    protected override GUIStyle HeaderStyle
+    protected override object HeaderStyle
     {
-        get { return ElementDesignerStyles.NodeHeader11; }
+        get { return CachedStyles.NodeHeader11; }
     }
 }

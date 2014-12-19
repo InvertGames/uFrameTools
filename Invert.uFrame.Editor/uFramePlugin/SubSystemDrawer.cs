@@ -12,9 +12,9 @@ public class SubSystemDrawer : DiagramNodeDrawer<SubSystemViewModel>
     private SectionHeaderDrawer _instancesHeader;
 
 
-    protected override GUIStyle HeaderStyle
+    protected override object HeaderStyle
     {
-        get { return ElementDesignerStyles.NodeHeader1; }
+        get { return CachedStyles.NodeHeader1; }
     }
   
 
@@ -27,9 +27,9 @@ public class SubSystemDrawer : DiagramNodeDrawer<SubSystemViewModel>
         ViewModel = viewModel;
     }
 
-    public override GUIStyle ItemStyle
+    public override object ItemStyle
     {
-        get { return ElementDesignerStyles.Item4; }
+        get { return CachedStyles.Item4; }
     }
 
 }

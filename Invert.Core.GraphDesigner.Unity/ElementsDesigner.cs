@@ -65,9 +65,9 @@ namespace Invert.Core.GraphDesigner.Unity
             get
             {
                 yield return this;
-                if (DiagramDrawer != null)
+                if (DiagramViewModel != null)
                 {
-                    foreach (var co in DiagramDrawer.ContextObjects)
+                    foreach (var co in DiagramViewModel.ContextObjects)
                     {
                         yield return co;
                     }
@@ -75,29 +75,30 @@ namespace Invert.Core.GraphDesigner.Unity
             }
         }
 
+        
         public IProjectRepository CurrentProject
         {
             get
             {
-                if (InvertGraphEditor.CurrentProject == null)
+                if (_event == null)
                 {
                     if (!String.IsNullOrEmpty(LastLoadedProject))
                     {
-                        InvertGraphEditor.CurrentProject = InvertGraphEditor.Projects.FirstOrDefault(p => p.Name == LastLoadedProject);
+                        _currentProject = InvertGraphEditor.Projects.FirstOrDefault(p => p.Name == LastLoadedProject);
                     }
-                    if (InvertGraphEditor.CurrentProject == null)
+                    if (_currentProject == null)
                     {
-                        InvertGraphEditor.CurrentProject = InvertGraphEditor.Projects.FirstOrDefault();
+                        _currentProject = InvertGraphEditor.Projects.FirstOrDefault();
                     }
                     _designerViewModel = null;
                 }
-                return InvertGraphEditor.CurrentProject;
+                return _currentProject;
             }
             set
             {
-                var changed = InvertGraphEditor.CurrentProject != value;
+                var changed = _currentProject != value;
 
-                InvertGraphEditor.CurrentProject = value;
+                _currentProject = value;
 
                 _designerViewModel = null;
 
@@ -143,7 +144,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             if (DiagramDrawer != null)
             {
-                DiagramDrawer.Refresh();
+                DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
             }
         }
 
@@ -190,10 +191,11 @@ namespace Invert.Core.GraphDesigner.Unity
             set { _modifierKeyStates = value; }
         }
 
+        private MouseEvent _event;
         public MouseEvent MouseEvent
         {
-            get { return InvertGraphEditor.CurrentMouseEvent ?? (InvertGraphEditor.CurrentMouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer)); }
-            set { InvertGraphEditor.CurrentMouseEvent = value; }
+            get { return _event ?? (_event = new MouseEvent(ModifierKeyStates, DiagramDrawer)); }
+            set { _event  = value; }
         }
 
         public Vector2 PanStartPosition { get; set; }
@@ -260,7 +262,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             if (DiagramDrawer != null)
             {
-                DiagramDrawer.Refresh();
+                DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
             }
             if (CurrentProject.CurrentGraph != null)
             {
@@ -467,7 +469,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 MouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer);
                 DiagramDrawer.Dirty = true;
                 //DiagramDrawer.Data.ApplyFilter();
-                DiagramDrawer.Refresh();
+                DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
             }
             catch (Exception ex)
             {
@@ -666,7 +668,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     }
                 }
                 //BeginGUI();
-                DiagramDrawer.Draw(ElementDesignerStyles.Scale);
+                DiagramDrawer.Draw(InvertGraphEditor.PlatformDrawer, ElementDesignerStyles.Scale);
                 HandleInput();
 
                 if (InvertGraphEditor.Settings.ShowGraphDebug)
@@ -835,6 +837,10 @@ namespace Invert.Core.GraphDesigner.Unity
         private void OnProjectChanged()
         {
             DiagramDrawer = null;
+            foreach (var graphData in CurrentProject.Graphs)
+            {
+                graphData.SetProject(CurrentProject);
+            }
         }
 
         private void SelectDiagram()

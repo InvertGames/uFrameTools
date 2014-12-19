@@ -36,6 +36,23 @@ namespace Invert.Core
         private static ICorePlugin[] _plugins;
         private static IDebugLogger _logger;
 
+        public static List<Assembly> CachedAssemblies { get; set; }
+        static InvertApplication()
+        {
+            CachedAssemblies = new List<Assembly>();
+            CachedAssemblies.Add(typeof(int).Assembly);
+            CachedAssemblies.Add(typeof(List<>).Assembly);
+            //CachedAssemblies.Add(typeof(ICollection<>).Assembly);
+           
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.FullName.StartsWith("Invert"))
+                {
+                    CachedAssemblies.Add(assembly);
+                }
+            }
+        }
+
         public static uFrameContainer Container
         {
             get
@@ -55,8 +72,9 @@ namespace Invert.Core
                 yield return type;
             if (includeAbstract)
             {
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                foreach (var assembly in CachedAssemblies)
                 {
+                    //if (!assembly.FullName.StartsWith("Invert")) continue;
                     foreach (var t in assembly
                         .GetTypes()
                         .Where(x => type.IsAssignableFrom(x)))
@@ -67,8 +85,9 @@ namespace Invert.Core
             }
             else
             {
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                foreach (var assembly in CachedAssemblies)
                 {
+                    if (!assembly.FullName.StartsWith("Invert")) continue;
                     foreach (var t in assembly
                         .GetTypes()
                         .Where(x => type.IsAssignableFrom(x) && !x.IsAbstract))
@@ -83,8 +102,9 @@ namespace Invert.Core
         {
             //if (string.IsNullOrEmpty(name)) return null;
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in CachedAssemblies)
             {
+               // if (!assembly.FullName.StartsWith("Invert") && !assembly.FullName.StartsWith("Syste")) continue;
                 var t = assembly.GetType(name);
                 if (t != null)
                 {
@@ -98,12 +118,20 @@ namespace Invert.Core
         {
             //if (string.IsNullOrEmpty(name)) return null;
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in CachedAssemblies)
             {
-                foreach (var item in assembly.GetTypes())
+               // if (!assembly.FullName.StartsWith("Invert") && !assembly.FullName.StartsWith("Syste")) continue;
+                try
                 {
-                    if (item.Name == name)
-                        return item;
+                    foreach (var item in assembly.GetTypes())
+                    {
+                        if (item.Name == name)
+                            return item;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    continue;
                 }
 
             }
@@ -239,6 +267,11 @@ namespace Invert.Core
         public static void LogException(Exception exception)
         {
             Logger.LogException(exception);
+        }
+
+        public static void LogError(string format)
+        {
+            Logger.Log(format);
         }
     }
 }

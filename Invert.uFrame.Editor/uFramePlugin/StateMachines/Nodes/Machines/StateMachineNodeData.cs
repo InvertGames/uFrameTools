@@ -3,8 +3,8 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 using Invert.uFrame.Editor;
-using JSONData = Invert.uFrame.Editor.JSONData;
 
 public class StateMachineNodeData : DiagramNode,IDesignerType
 {
@@ -52,7 +52,7 @@ public class StateMachineNodeData : DiagramNode,IDesignerType
 
     public IEnumerable<StateMachineStateData> States
     {
-        get { return this.GetContainingNodes(Diagram).OfType<StateMachineStateData>(); }
+        get { return this.GetContainingNodes(Graph).OfType<StateMachineStateData>(); }
     }
 
     public override CodeTypeReference GetFieldType(ITypedItem itemData)
@@ -83,13 +83,13 @@ public class StateMachineNodeData : DiagramNode,IDesignerType
     }
 
     public string StartStateIdentifier { get; set; }
-    public override void Serialize(Invert.uFrame.Editor.JSONClass cls)
+    public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
-        cls.Add("StartStateIdentifier",new Invert.uFrame.Editor.JSONData(StartStateIdentifier ?? string.Empty));
+        cls.Add("StartStateIdentifier",new JSONData(StartStateIdentifier ?? string.Empty));
     }
 
-    public override void Deserialize(Invert.uFrame.Editor.JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
         if (cls["StartStateIdentifier"] != null)

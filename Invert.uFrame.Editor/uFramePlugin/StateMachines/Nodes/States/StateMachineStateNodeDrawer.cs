@@ -27,9 +27,9 @@ public class StateMachineStateNodeDrawer : DiagramNodeDrawer<StateMachineStateNo
     
     }
 
-    public override void Draw(float scale)
+    public override void Draw(IPlatformDrawer platform, float scale)
     {
-        base.Draw(scale);
+        base.Draw(platform, scale);
         if (NodeViewModel.IsCurrentState)
         {
           

@@ -18,15 +18,15 @@ public class SceneManagerDrawer : DiagramNodeDrawer<SceneManagerViewModel>
         ViewModel = viewModel;
     }
 
-    protected override GUIStyle HeaderStyle
+    protected override object HeaderStyle
     {
-        get { return ElementDesignerStyles.NodeHeader6; }
+        get { return CachedStyles.NodeHeader6; }
     }
 
 
-    public override GUIStyle ItemStyle
+    public override object ItemStyle
     {
-        get { return ElementDesignerStyles.Item4; }
+        get { return CachedStyles.Item4; }
     }
 
 }

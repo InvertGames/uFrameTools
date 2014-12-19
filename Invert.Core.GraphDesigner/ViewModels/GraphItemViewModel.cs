@@ -18,6 +18,7 @@ namespace Invert.Core.GraphDesigner
         public abstract Vector2 Position { get; set; }
         public abstract string Name { get; set; }
 
+        public DiagramViewModel DiagramViewModel { get; set; }
         public Rect Bounds
         {
             get { return _bounds; }
@@ -44,7 +45,9 @@ namespace Invert.Core.GraphDesigner
                 {
                     item.IsSelected = false;
                 }
-                SetProperty(ref _isSelected, value, IsSelectedProperty);
+                _isSelected = value;
+                //SetProperty(ref _isSelected, value, IsSelectedProperty);
+                OnPropertyChanged("IsSelected");
             }
         }
 
@@ -60,7 +63,15 @@ namespace Invert.Core.GraphDesigner
             return GetHashCode().ToString();
         }
 
-        public bool IsMouseOver { get; set; }
+        public bool IsMouseOver
+        {
+            get { return _isMouseOver; }
+            set
+            {
+                _isMouseOver = value;
+                OnPropertyChanged("IsMouseOver");
+            }
+        }
 
         public List<ConnectorViewModel> Connectors
         {
@@ -76,7 +87,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual Type InputConnectorType { get; set; }
         public virtual Type OutputConnectorType { get; set; }
-
+        
         private ConnectorViewModel _inputConnector;
         public virtual ConnectorViewModel InputConnector
         {
@@ -88,6 +99,7 @@ namespace Invert.Core.GraphDesigner
                     DataObject = DataObject,
                     Direction = ConnectorDirection.Input,
                     ConnectorFor = this,
+                    DiagramViewModel = DiagramViewModel,
                     ConnectorForType = InputConnectorType ?? DataObject.GetType(),
                     Side = ConnectorSide.Left,
                     SidePercentage = 0.5f,
@@ -101,6 +113,7 @@ namespace Invert.Core.GraphDesigner
         private Rect _connectorBounds;
         private Func<IDiagramNodeItem, IDiagramNodeItem, bool> _inputValidator;
         private Func<IDiagramNodeItem, IDiagramNodeItem, bool> _outputValidator;
+        private bool _isMouseOver;
 
         public virtual ConnectorViewModel OutputConnector
         {
@@ -112,6 +125,7 @@ namespace Invert.Core.GraphDesigner
                     DataObject = DataObject,
                     Direction = ConnectorDirection.Output,
                     ConnectorFor = this,
+                    DiagramViewModel = DiagramViewModel,
                     ConnectorForType = OutputConnectorType ?? DataObject.GetType(),
                     Side = ConnectorSide.Right,
                     SidePercentage = 0.5f,

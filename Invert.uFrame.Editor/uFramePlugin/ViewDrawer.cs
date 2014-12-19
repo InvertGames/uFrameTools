@@ -16,17 +16,17 @@ public class ViewDrawer : DiagramNodeDrawer<ViewNodeViewModel>
 {
     private ElementDataBase _forElement;
 
-    public override GUIStyle ItemStyle
+    public override object ItemStyle
     {
-        get { return ElementDesignerStyles.Item4; }
+        get { return CachedStyles.Item4; }
     }
     public ViewDrawer()
     {
     }
 
-    protected override GUIStyle HeaderStyle
+    protected override object HeaderStyle
     {
-        get { return ElementDesignerStyles.NodeHeader2; }
+        get { return CachedStyles.NodeHeader2; }
     }
 
     public ViewDrawer(ViewNodeViewModel viewModel)

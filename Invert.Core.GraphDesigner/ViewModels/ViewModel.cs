@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -10,6 +11,9 @@ namespace Invert.Core.GraphDesigner
 
     public class ViewModel : INotifyPropertyChanged
     {
+        [Inject]
+        public IUFrameContainer Container { get; set; }
+
         private object _dataObject;
 
         public object DataObject
@@ -27,8 +31,6 @@ namespace Invert.Core.GraphDesigner
             
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         protected bool SetProperty<T>(ref T backingField, T value, string name)
         {
             var changed = !EqualityComparer<T>.Default.Equals(backingField, value);
@@ -41,10 +43,23 @@ namespace Invert.Core.GraphDesigner
 
             return changed;
         }
-        protected virtual void OnPropertyChanged(string propertyName)
+#if UNITY_DLL
+            public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName = null)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
+#else 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+#endif
+      
     }
 }

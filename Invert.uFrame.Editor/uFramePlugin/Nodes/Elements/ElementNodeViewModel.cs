@@ -23,9 +23,9 @@ namespace Invert.uFrame.Editor.ViewModels
         
         protected override void DataObjectChanged()
         {
-            IsLocal = InvertGraphEditor.CurrentProject.CurrentGraph.NodeItems.Contains(GraphItemObject);
+            IsLocal = DiagramViewModel.CurrentRepository.NodeItems.Contains(GraphItemObject);
             ContentItems.Clear();
-            if (GraphItem == InvertGraphEditor.CurrentProject.CurrentFilter)
+            if (GraphItem == DiagramViewModel.CurrentRepository.CurrentFilter)
             {
                 foreach (var item in GraphItem.AllItems)
                 {
@@ -112,7 +112,7 @@ namespace Invert.uFrame.Editor.ViewModels
             var property = new ViewModelCommandData()
             {
                 Node = GraphItem,
-                Name = InvertGraphEditor.CurrentProject.GetUniqueName("Command"),
+                Name = DiagramViewModel.CurrentRepository.GetUniqueName("Command"),
             };
 
             this.DiagramViewModel.CurrentRepository.AddItem(property);

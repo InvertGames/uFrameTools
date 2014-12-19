@@ -230,7 +230,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
 
     public IEnumerable<ComputedPropertyData> ComputedProperties
     {
-        get { return this.GetContainingNodes(Diagram).OfType<ComputedPropertyData>().Where(p=>p.DependantPropertyIdentifiers.Count > 0); }
+        get { return this.GetContainingNodes(Graph).OfType<ComputedPropertyData>().Where(p=>p.DependantPropertyIdentifiers.Count > 0); }
     }
 
     public static string TypeAlias(string typeName)

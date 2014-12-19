@@ -57,9 +57,9 @@ public class StateActionNodeDrawer : DiagramNodeDrawer<StateActionNodeViewModel>
 
     }
 
-    protected override GUIStyle HeaderStyle
+    protected override object HeaderStyle
     {
-        get { return ElementDesignerStyles.NodeHeader8; }
+        get { return CachedStyles.NodeHeader8; }
     }
 
 }

@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UNITY_DLL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -47,27 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompilingWindow.cs" />
-    <Compile Include="ConnectionHandler.cs" />
     <Compile Include="DiagramSettingsCommand.cs" />
-    <Compile Include="Drawers\ClassNodeDrawer.cs" />
-    <Compile Include="Drawers\ConnectionDrawer.cs" />
-    <Compile Include="Drawers\ConnectorDrawer.cs" />
-    <Compile Include="Drawers\DiagramDrawer.cs" />
-    <Compile Include="Drawers\DiagramEnumDrawer.cs" />
-    <Compile Include="Drawers\DiagramNodeDrawer.cs" />
-    <Compile Include="Drawers\Drawer.cs" />
-    <Compile Include="Drawers\ElementItemDrawer.cs" />
-    <Compile Include="Drawers\EnumItemDrawer.cs" />
-    <Compile Include="Drawers\GenericChildItemHeaderDrawer.cs" />
-    <Compile Include="Drawers\HeaderDrawer.cs" />
-    <Compile Include="Drawers\IDrawer.cs" />
-    <Compile Include="Drawers\INodeDrawer.cs" />
-    <Compile Include="Drawers\ItemDrawer.cs" />
-    <Compile Include="Drawers\PropertyFieldDrawer.cs" />
-    <Compile Include="Drawers\SectionHeaderDrawer.cs" />
-    <Compile Include="Drawers\SelectionRectHandler.cs" />
-    <Compile Include="Drawers\SlotDrawer.cs" />
-    <Compile Include="Drawers\TypedItemDrawer.cs" />
     <Compile Include="ElementDesignerStyles.cs" />
     <Compile Include="ElementDiagramSettingsWindow.cs" />
     <Compile Include="ElementItemTypesWindow.cs" />
@@ -76,10 +56,12 @@
     <Compile Include="Impl\ProjectRepository.cs" />
     <Compile Include="Impl\UnityPlatform.cs" />
     <Compile Include="ItemSelectionWindow.cs" />
+    <Compile Include="MarketPlace.cs" />
     <Compile Include="ProjectRepositoryInspector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SearchableScrollWindow.cs" />
     <Compile Include="SelectedCodePreview.cs" />
+    <Compile Include="SyntaxDrawer.cs" />
     <Compile Include="uFrameMenu.cs" />
     <Compile Include="UFrameSettings.cs" />
     <Compile Include="uFrameSettingsWindow.cs" />
@@ -96,6 +78,10 @@
     <ProjectReference Include="..\Invert.Core\Invert.Core.csproj">
       <Project>{CFCC5F2C-7A2F-4FD1-90D8-52420B7EB337}</Project>
       <Name>Invert.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.JSON\Invert.JSON.csproj">
+      <Project>{51e51ae2-77c1-498f-9b88-c2eed1e3aeed}</Project>
+      <Name>Invert.JSON</Name>
     </ProjectReference>
     <ProjectReference Include="..\Invert.MVVM\Invert.MVVM.csproj">
       <Project>{CB024A98-EE90-4497-8AF3-2C574D665A8A}</Project>

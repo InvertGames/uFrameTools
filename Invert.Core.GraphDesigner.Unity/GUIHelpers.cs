@@ -222,7 +222,7 @@ namespace Invert.Common.UI
                 GUI.Label(subLabelRect, ubTriggerContent.SubLabel, UFStyle.SubLabelStyle);
             }
             if (ubTriggerContent.ShowArrow)
-                GUI.DrawTexture(new Rect(rect.x + rect.width - 18f, rect.y + ((rect.height / 2) - 8), 16, 16), ElementDesignerStyles.ArrowRightTexture);
+                GUI.DrawTexture(new Rect(rect.x + rect.width - 18f, rect.y + ((rect.height / 2) - 8), 16, 16), ElementDesignerStyles.ArrowRightTexture2);
             if (ubTriggerContent.Enabled)
             {
                 return result;

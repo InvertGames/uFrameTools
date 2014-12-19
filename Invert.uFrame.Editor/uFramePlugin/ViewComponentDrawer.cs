@@ -15,9 +15,9 @@ public class ViewComponentDrawer : DiagramNodeDrawer<ViewComponentNodeViewModel>
         ViewModel = viewModel;
     }
 
-    protected override GUIStyle HeaderStyle
+    protected override object HeaderStyle
     {
-        get { return ElementDesignerStyles.NodeHeader7; }
+        get { return CachedStyles.NodeHeader7; }
     }
 
   
@@ -32,9 +32,9 @@ public class ViewComponentDrawer : DiagramNodeDrawer<ViewComponentNodeViewModel>
         //};
     }
 
-    public override GUIStyle ItemStyle
+    public override object ItemStyle
     {
-        get { return ElementDesignerStyles.Item4; }
+        get { return CachedStyles.Item4; }
     }
 
 }

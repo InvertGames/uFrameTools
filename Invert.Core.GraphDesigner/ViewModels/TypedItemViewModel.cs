@@ -13,6 +13,11 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                var rt = Data.RelatedType;
+                if (string.IsNullOrEmpty(rt))
+                {
+                    return "[None]";
+                }
                 return Data.RelatedType;//ElementDataBase.TypeAlias(Data.RelatedType);
             }
             set

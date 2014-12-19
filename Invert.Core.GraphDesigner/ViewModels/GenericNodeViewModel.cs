@@ -122,7 +122,7 @@ namespace Invert.Core.GraphDesigner
 
         private void AddSection(NodeConfigSectionBase section)
         {
-            if (InvertGraphEditor.CurrentProject.CurrentFilter.IsAllowed(null, section.SourceType)) return;
+            if (DiagramViewModel.CurrentRepository.CurrentFilter.IsAllowed(null, section.SourceType)) return;
             var section1 = section as NodeConfigSectionBase;
             if (!IsVisible(section.Visibility)) return;
 
@@ -215,19 +215,19 @@ namespace Invert.Core.GraphDesigner
                         
                         if (vm == null)
                         {
-                            Debug.LogError(
+                            InvertApplication.LogError(
                                 string.Format(
                                     "Couldn't find view-model for {0} in section {1} with child type {2}",
                                     item.GetType(), section1.Name, section1.SourceType.Name));
                             continue;
                         }
-                        
-                        
+
+                        vm.DiagramViewModel = DiagramViewModel;
                         ContentItems.Add(vm);
                     }
                     else
                     {
-                        Debug.LogError(string.Format("Types do not match {0} and {1}", section.SourceType,
+                        InvertApplication.LogError(string.Format("Types do not match {0} and {1}", section.SourceType,
                             item.GetType()));
                     }
                 }
@@ -243,10 +243,11 @@ namespace Invert.Core.GraphDesigner
 
                         if (vm == null)
                         {
-                            Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
+                            InvertApplication.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
                             continue;
                         }
                         vm.IsEditable = section1.IsEditable;
+                        vm.DiagramViewModel = DiagramViewModel;
                         if (section1.HasPredefinedOptions)
                         {
                             vm.IsEditable = false;
@@ -330,9 +331,9 @@ namespace Invert.Core.GraphDesigner
             if (section == SectionVisibility.Always) return true;
             if (section == SectionVisibility.WhenNodeIsFilter)
             {
-                return InvertGraphEditor.CurrentProject.CurrentFilter == GraphItem;
+                return DiagramViewModel.CurrentRepository.CurrentFilter == GraphItem;
             }
-            return InvertGraphEditor.CurrentProject.CurrentFilter != GraphItem;
+            return DiagramViewModel.CurrentRepository.CurrentFilter != GraphItem;
         }
 
 

@@ -1,0 +1,405 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E8F83FB5-F3B6-4580-A33E-ECDF84E535B0}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Invert.GraphDesigner.WPF.Controls</RootNamespace>
+    <AssemblyName>Invert.GraphDesigner.WPF.Controls</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\InvertStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DiagramControl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\ActionEnabled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\ArrowDown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\ArrowLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\ArrowRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\ArrowUp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box10.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box12-03.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box12-04.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box12.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Box9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\BoxHighlighted.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\BoxHighlighter1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\BoxHighlighter2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\BoxHighlighter3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\BoxHighlighter4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\BoxHighlighter5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\BoxHighlighter6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\BoxSelected.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Breakpoint.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\CollapseDown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\CollapseRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\CollapseRightArrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\CommandBar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\CommandExpanded.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Controller.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\CurrentActionBackground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DebugBackground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DiagramArrowDown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DiagramArrowLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DiagramArrowLeftEmpty.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DiagramArrowRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DiagramArrowRightEmpty.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DiagramArrowUp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DiagramCircle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DiagramCircleLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\DiagramCircleRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\EventActive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\EventButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\EventForward.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\EventInactive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\EyeBall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\EyeBall2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\FoldoutClose.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\ForwardBackground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\GameManager.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header10.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header12.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header13.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Header9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\icon_precise.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\InstanceTriggerBackground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Item1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Item2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Item3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Item4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Item5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Item6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\LeftArrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\NavigateNext.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\NavigateNext2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\NavigatePrevious.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\NavigatePrevious2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\NodeCollapse.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\NodeExpand.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Plus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\SceneManager.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\SceneViewBar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Selected.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\SelectedNodeItem.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Tab.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\TabInActive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Tag1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\Toolbar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\uFrameBannerLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\uFrameLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\uFrameLogo2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\uframeLogoLarge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\View.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\ViewMultiInstance.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\ViewSingleInstance.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Invert.Core\Invert.Core.csproj">
+      <Project>{cfcc5f2c-7a2f-4fd1-90d8-52420b7eb337}</Project>
+      <Name>Invert.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.GraphDesigner.Data\Invert.GraphDesigner.WPF.csproj">
+      <Project>{59157885-42ee-4324-8649-2737c0c0226f}</Project>
+      <Name>Invert.GraphDesigner.WPF</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

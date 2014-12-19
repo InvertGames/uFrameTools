@@ -103,6 +103,7 @@ namespace Invert.Common
         private static GUIStyle _eventButtonStyleSmall;
         private static GUIStyle _tabStyle;
         private static GUIStyle _tabInActiveStyle;
+        private static Texture2D _arrowRightTexture2;
 
         public static GUIStyle AddButtonStyle
         {
@@ -208,6 +209,13 @@ namespace Invert.Common
             }
         }
 
+        public static Texture2D ArrowRightTexture2
+        {
+            get
+            {
+                return _arrowRightTexture2 ?? (_arrowRightTexture2 = GetSkinTexture("ArrowRight"));
+            }
+        }
         public static Texture2D ArrowUpTexture
         {
             get
@@ -754,11 +762,11 @@ namespace Invert.Common
                 if (_eventButtonStyleSmall == null)
                     _eventButtonStyleSmall = new GUIStyle
                     {
-                        normal = { background = GetSkinTexture("CommandBar"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.grey },
+                        normal = { background = GetSkinTexture("EventButton"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.grey },
                         active = { background = CommandBarClosedStyle.normal.background },
                         stretchHeight = true,
 
-                        fixedHeight = 35,
+                        fixedHeight = 25,
                         border = new RectOffset(3, 3, 3, 3),
 
                         padding = new RectOffset(25, 0, 5, 5)
@@ -1683,7 +1691,7 @@ namespace Invert.Common
                         fontSize = Mathf.RoundToInt(12 * Scale),
 
                         fontStyle = FontStyle.Bold,
-                        alignment = TextAnchor.MiddleLeft
+                        alignment = TextAnchor.MiddleCenter
                     };
                 }
                 return _viewModelHeaderStyle;

@@ -1,0 +1,803 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{59157885-42EE-4324-8649-2737C0C0226F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Invert.GraphDesigner.WPF</RootNamespace>
+    <AssemblyName>Invert.GraphDesigner.WPF</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DLL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Commands\SelectColorCommand.cs">
+      <Link>PluginDesigner\Commands\SelectColorCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\IInputCapable.cs">
+      <Link>PluginDesigner\Data\IInputCapable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\IInputOutpuItem.cs">
+      <Link>PluginDesigner\Data\IInputOutpuItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\IOutputCapable.cs">
+      <Link>PluginDesigner\Data\IOutputCapable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\IReferenceNode.cs">
+      <Link>PluginDesigner\Data\IReferenceNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\IShellConnectable.cs">
+      <Link>PluginDesigner\Data\IShellConnectable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\IShellNode.cs">
+      <Link>PluginDesigner\Data\IShellNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\IShellNodeItem.cs">
+      <Link>PluginDesigner\Data\IShellNodeItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\IShellReferenceType.cs">
+      <Link>PluginDesigner\Data\IShellReferenceType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ReferenceItemType.cs">
+      <Link>PluginDesigner\Data\ReferenceItemType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellAcceptableReferenceType.cs">
+      <Link>PluginDesigner\Data\ShellAcceptableReferenceType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellChildItemTypeNode.cs">
+      <Link>PluginDesigner\Data\ShellChildItemTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellConnectableReferenceType.cs">
+      <Link>PluginDesigner\Data\ShellConnectableReferenceType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellConnectionDefitionNode.cs">
+      <Link>PluginDesigner\Data\ShellConnectionDefitionNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellGeneratorTypeNode.cs">
+      <Link>PluginDesigner\Data\ShellGeneratorTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellGraphTypeNode.cs">
+      <Link>PluginDesigner\Data\ShellGraphTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellInheritableNode.cs">
+      <Link>PluginDesigner\Data\ShellInheritableNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNode.cs">
+      <Link>PluginDesigner\Data\ShellNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeChildTypeNode.cs">
+      <Link>PluginDesigner\Data\ShellNodeChildTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeGeneratorsSlot.cs">
+      <Link>PluginDesigner\Data\ShellNodeGeneratorsSlot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeInputsSlot.cs">
+      <Link>PluginDesigner\Data\ShellNodeInputsSlot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeOutputsSlot.cs">
+      <Link>PluginDesigner\Data\ShellNodeOutputsSlot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeSectionsSlot.cs">
+      <Link>PluginDesigner\Data\ShellNodeSectionsSlot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeSubNodesSlot.cs">
+      <Link>PluginDesigner\Data\ShellNodeSubNodesSlot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeTypeNode.cs">
+      <Link>PluginDesigner\Data\ShellNodeTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeTypeNodeViewModel.cs">
+      <Link>PluginDesigner\Data\ShellNodeTypeNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeTypeReferenceSection.cs">
+      <Link>PluginDesigner\Data\ShellNodeTypeReferenceSection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellNodeTypeSection.cs">
+      <Link>PluginDesigner\Data\ShellNodeTypeSection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellPluginNode.cs">
+      <Link>PluginDesigner\Data\ShellPluginNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellSectionNode.cs">
+      <Link>PluginDesigner\Data\ShellSectionNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellSectionReferenceSlot.cs">
+      <Link>PluginDesigner\Data\ShellSectionReferenceSlot.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\ShellSlotTypeNode.cs">
+      <Link>PluginDesigner\Data\ShellSlotTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\TemplateEventReference.cs">
+      <Link>PluginDesigner\Data\TemplateEventReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\TemplateFieldReference.cs">
+      <Link>PluginDesigner\Data\TemplateFieldReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\TemplateMethodReference.cs">
+      <Link>PluginDesigner\Data\TemplateMethodReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\TemplatePropertyReference.cs">
+      <Link>PluginDesigner\Data\TemplatePropertyReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Data\TemplateReference.cs">
+      <Link>PluginDesigner\Data\TemplateReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Generators\ShellChildItemTemplate.cs">
+      <Link>PluginDesigner\Generators\ShellChildItemTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Generators\ShellChildTemplate.cs">
+      <Link>PluginDesigner\Generators\ShellChildTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Generators\ShellContextCommandTemplate.cs">
+      <Link>PluginDesigner\Generators\ShellContextCommandTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Generators\ShellGraphTemplate.cs">
+      <Link>PluginDesigner\Generators\ShellGraphTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Generators\ShellNodeTypeTemplate.cs">
+      <Link>PluginDesigner\Generators\ShellNodeTypeTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Generators\ShellPluginClassGenerator.cs">
+      <Link>PluginDesigner\Generators\ShellPluginClassGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Generators\ShellReferenceSectionTemplate.cs">
+      <Link>PluginDesigner\Generators\ShellReferenceSectionTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Generators\ShellSlotItemTemplate.cs">
+      <Link>PluginDesigner\Generators\ShellSlotItemTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\PluginDesigner.cs">
+      <Link>PluginDesigner\PluginDesigner.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\PluginGraph.cs">
+      <Link>PluginDesigner\PluginGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Attributes\ShowInSettings.cs">
+      <Link>Code\ShowInSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\api\IClassTemplate.cs">
+      <Link>Code\api\IClassTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\api\IMemberGenerator.cs">
+      <Link>Code\api\IMemberGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\api\IMemberItemGenerator.cs">
+      <Link>Code\api\IMemberItemGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\api\ITypeGeneratorPostProcessor.cs">
+      <Link>Code\api\ITypeGeneratorPostProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\CodeDomHelper.cs">
+      <Link>Code\impl\CodeDomHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\CodeFileGenerator.cs">
+      <Link>Code\impl\CodeFileGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\CodeGenerator.cs">
+      <Link>Code\impl\CodeGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\DesignerGeneratorFactory.cs">
+      <Link>Code\impl\DesignerGeneratorFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\GeneratorSettings.cs">
+      <Link>Code\impl\GeneratorSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\GenericNodeGenerator.cs">
+      <Link>Code\impl\GenericNodeGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\LambdaMemberGenerator.cs">
+      <Link>Code\impl\LambdaMemberGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\MemberGenerator.cs">
+      <Link>Code\impl\MemberGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\TypeClassGenerator.cs">
+      <Link>Code\impl\TypeClassGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\TypeGeneratorPostProcessor.cs">
+      <Link>Code\impl\TypeGeneratorPostProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IChildCommand.cs">
+      <Link>Commands\api\IChildCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\ICommandHandler.cs">
+      <Link>Commands\api\ICommandHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IContextMenuItem.cs">
+      <Link>Commands\api\IContextMenuItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IContextMenuItemCommand.cs">
+      <Link>Commands\api\IContextMenuItemCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IDiagramContextCommand.cs">
+      <Link>Commands\api\IDiagramContextCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IDiagramNodeCommand.cs">
+      <Link>Commands\api\IDiagramNodeCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IDiagramNodeItemCommand.cs">
+      <Link>Commands\api\IDiagramNodeItemCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IDynamicOptionsCommand.cs">
+      <Link>Commands\api\IDynamicOptionsCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IEditorCommand.cs">
+      <Link>Commands\api\IEditorCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IKeyBindable.cs">
+      <Link>Commands\api\IKeyBindable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IParentCommand.cs">
+      <Link>Commands\api\IParentCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\IToolbarCommand.cs">
+      <Link>Commands\api\IToolbarCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\MultiOptionType.cs">
+      <Link>Commands\api\MultiOptionType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\ToolbarCommand.cs">
+      <Link>Commands\api\ToolbarCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\api\ToolbarPosition.cs">
+      <Link>Commands\api\ToolbarPosition.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\CommandHook.cs">
+      <Link>Commands\impl\CommandHook.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\CommandHookLifetime.cs">
+      <Link>Commands\impl\CommandHookLifetime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\CommandHookMode.cs">
+      <Link>Commands\impl\CommandHookMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\ContextEditorCommand.cs">
+      <Link>Commands\impl\ContextEditorCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\ContextMenuCommand.cs">
+      <Link>Commands\impl\ContextMenuCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\AddNodeToGraph.cs">
+      <Link>Commands\impl\Default\AddNodeToGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\DeleteCommand.cs">
+      <Link>Commands\impl\Default\DeleteCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\DeleteItemCommand.cs">
+      <Link>Commands\impl\Default\DeleteItemCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\ExportCommand.cs">
+      <Link>Commands\impl\Default\ExportCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\HideCommand.cs">
+      <Link>Commands\impl\Default\HideCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\ImportCommand.cs">
+      <Link>Commands\impl\Default\ImportCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\MoveDownCommand.cs">
+      <Link>Commands\impl\Default\MoveDownCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\MoveUpCommand.cs">
+      <Link>Commands\impl\Default\MoveUpCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\NodeFlagCommand.cs">
+      <Link>Commands\impl\Default\NodeFlagCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\OpenCommand.cs">
+      <Link>Commands\impl\Default\OpenCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\RemoveLinkCommand.cs">
+      <Link>Commands\impl\Default\RemoveLinkCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\RemoveNodeItemCommand.cs">
+      <Link>Commands\impl\Default\RemoveNodeItemCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\RenameCommand.cs">
+      <Link>Commands\impl\Default\RenameCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\ScaleCommand.cs">
+      <Link>Commands\impl\Default\ScaleCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\ShowExternalItemCommand.cs">
+      <Link>Commands\impl\Default\ShowExternalItemCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\ShowItemCommand.cs">
+      <Link>Commands\impl\Default\ShowItemCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\EditorCommand.cs">
+      <Link>Commands\impl\EditorCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\EditorCommandGeneric.cs">
+      <Link>Commands\impl\EditorCommandGeneric.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\ElementsDiagramToolbarCommand.cs">
+      <Link>Commands\impl\ElementsDiagramToolbarCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\HookCommand.cs">
+      <Link>Commands\impl\HookCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\SelectItemTypeCommand.cs">
+      <Link>Commands\impl\SelectItemTypeCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\SimpleEditorCommand.cs">
+      <Link>Commands\impl\SimpleEditorCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Toolbar\AddNewCommand.cs">
+      <Link>Commands\impl\Toolbar\AddNewCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Toolbar\PopToFilterCommand.cs">
+      <Link>Commands\impl\Toolbar\PopToFilterCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Toolbar\SaveCommand.cs">
+      <Link>Commands\impl\Toolbar\SaveCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\UFContextMenuItem.cs">
+      <Link>Commands\impl\UFContextMenuItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ConnectionHandler.cs">
+      <Link>ConnectionHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IClassTypeNode.cs">
+      <Link>api\IClassTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\ICodePathStrategy.cs">
+      <Link>api\ICodePathStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IConnectable.cs">
+      <Link>api\IConnectable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IDesignerType.cs">
+      <Link>api\IDesignerType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IDiagramFilter.cs">
+      <Link>api\IDiagramFilter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IDiagramNode.cs">
+      <Link>api\IDiagramNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IDiagramNodeItem.cs">
+      <Link>api\IDiagramNodeItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IElementFileData.cs">
+      <Link>api\IElementFileData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IGraphData.cs">
+      <Link>api\IGraphData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IGraphEditorSettings.cs">
+      <Link>api\IGraphEditorSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IGraphItem.cs">
+      <Link>api\IGraphItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IInhertable.cs">
+      <Link>api\IInhertable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IJsonSerializable.cs">
+      <Link>api\IJsonSerializable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\INodeRepository.cs">
+      <Link>api\INodeRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IProjectRepository.cs">
+      <Link>api\IProjectRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IRefactoring.cs">
+      <Link>api\IRefactoring.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\ISelectable.cs">
+      <Link>api\ISelectable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\ISerializeablePropertyData.cs">
+      <Link>api\ISerializeablePropertyData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\ISubSystemType.cs">
+      <Link>api\ISubSystemType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\ITypeDiagramItem.cs">
+      <Link>api\ITypeDiagramItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IUpgradeProcessor.cs">
+      <Link>api\IUpgradeProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\IViewPropertyType.cs">
+      <Link>api\IViewPropertyType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\api\NodeColor.cs">
+      <Link>api\NodeColor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\ConfigExtensions.cs">
+      <Link>config\ConfigExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\ConfigProperty.cs">
+      <Link>config\ConfigProperty.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\GraphItemConfiguration.cs">
+      <Link>config\GraphItemConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeChildGeneratorConfig.cs">
+      <Link>Code\impl\NodeChildGeneratorConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeChildGeneratorConfigBase.cs">
+      <Link>Code\impl\NodeChildGeneratorConfigBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeConfig.cs">
+      <Link>config\NodeConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeConfigBase.cs">
+      <Link>config\NodeConfigBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeConfigSection.cs">
+      <Link>config\NodeConfigSection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeConfigSectionBase.cs">
+      <Link>config\NodeConfigSectionBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeGeneratorConfig.cs">
+      <Link>config\NodeGeneratorConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeGeneratorConfigBase.cs">
+      <Link>config\NodeGeneratorConfigBase.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeInputConfig.cs">
+      <Link>config\NodeInputConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeOutputConfig.cs">
+      <Link>config\NodeOutputConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\NodeValidator.cs">
+      <Link>config\NodeValidator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\TagConfig.cs">
+      <Link>config\TagConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\config\ValidatorType.cs">
+      <Link>config\ValidatorType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\BaseClassReference.cs">
+      <Link>impl\BaseClassReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\ConnectionData.cs">
+      <Link>impl\ConnectionData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\DataExtensions.cs">
+      <Link>impl\DataExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\DefaultCodePathStrategy.cs">
+      <Link>impl\DefaultCodePathStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\DiagramFilter.cs">
+      <Link>impl\DiagramFilter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\DiagramNode.cs">
+      <Link>impl\DiagramNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\DiagramNodeItem.cs">
+      <Link>impl\DiagramNodeItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\ElementDiagramSettings.cs">
+      <Link>impl\ElementDiagramSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\FilterCollapsedDictionary.cs">
+      <Link>impl\FilterCollapsedDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\FilterDictionary.cs">
+      <Link>impl\FilterDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\FilterLocations.cs">
+      <Link>impl\FilterLocations.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\FilterPositionData.cs">
+      <Link>impl\FilterPositionData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\FilterState.cs">
+      <Link>impl\FilterState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\GenericGraphData.cs">
+      <Link>impl\GenericGraphData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\GenericInheritableNode.cs">
+      <Link>impl\GenericInheritableNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\GenericNode.cs">
+      <Link>impl\GenericNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\GenericNodeChildItem.cs">
+      <Link>impl\GenericNodeChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\GenericTypedChildItem.cs">
+      <Link>impl\GenericTypedChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\GraphDataExtensions.cs">
+      <Link>impl\GraphDataExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\INamespaceProvider.cs">
+      <Link>impl\INamespaceProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\InvertGraph.cs">
+      <Link>impl\InvertGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\MissingNodeData.cs">
+      <Link>impl\MissingNodeData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\ProjectUtil.cs">
+      <Link>impl\ProjectUtil.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\UFListExtensions.cs">
+      <Link>impl\UFListExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\DiagramPlugin.cs">
+      <Link>DiagramPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\DrawerExtensions.cs">
+      <Link>DrawerExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\api\IDrawer.cs">
+      <Link>Drawing\api\IDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\api\INodeDrawer.cs">
+      <Link>Drawing\api\INodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\ConnectionDrawer.cs">
+      <Link>Drawing\impl\ConnectionDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\ConnectorDrawer.cs">
+      <Link>Drawing\impl\ConnectorDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\DiagramDrawer.cs">
+      <Link>Drawing\impl\DiagramDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\DiagramNodeDrawer.cs">
+      <Link>Drawing\impl\DiagramNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\Drawer.cs">
+      <Link>Drawing\impl\Drawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\GenericChildItemHeaderDrawer.cs">
+      <Link>Drawing\impl\GenericChildItemHeaderDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\HeaderDrawer.cs">
+      <Link>Drawing\impl\HeaderDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\ItemDrawer.cs">
+      <Link>Drawing\impl\ItemDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\PropertyFieldDrawer.cs">
+      <Link>Drawing\impl\PropertyFieldDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\SectionHeaderDrawer.cs">
+      <Link>Drawing\impl\SectionHeaderDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\SelectionRectHandler.cs">
+      <Link>Drawing\impl\SelectionRectHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\SlotDrawer.cs">
+      <Link>Drawing\impl\SlotDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Drawers\impl\TypedItemDrawer.cs">
+      <Link>Drawing\impl\TypedItemDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\FilterExtensions.cs">
+      <Link>Data\FilterExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\GraphDesignerPlugin.cs">
+      <Link>GraphDesignerPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Input\api\IInputHandler.cs">
+      <Link>Input\IInputHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Input\api\IKeyBinding.cs">
+      <Link>Input\IKeyBinding.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Input\impl\DiagramInputHander.cs">
+      <Link>Input\DiagramInputHander.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Input\impl\KeyBinding.cs">
+      <Link>Input\KeyBinding.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Input\impl\ModifierKeyState.cs">
+      <Link>Input\ModifierKeyState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Input\impl\MouseEvent.cs">
+      <Link>Input\MouseEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Input\impl\SimpleKeyBinding.cs">
+      <Link>Input\SimpleKeyBinding.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\InvertGraphEditor.cs">
+      <Link>InvertGraphEditor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\InvertGraphEvent.cs">
+      <Link>InvertGraphEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\api\ICommandUI.cs">
+      <Link>Platform\api\ICommandUI.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\api\IGraphWindow.cs">
+      <Link>Platform\api\IGraphWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\api\IPlatformDrawer.cs">
+      <Link>Platform\api\IPlatformDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\api\IPlatformOperations.cs">
+      <Link>Platform\api\IPlatformOperations.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\api\IPlatformPreferences.cs">
+      <Link>Platform\api\IPlatformPreferences.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\impl\ContextMenuUI.cs">
+      <Link>Platform\impl\ContextMenuUI.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\impl\ToolbarUI.cs">
+      <Link>Platform\impl\ToolbarUI.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\RectExtensions.cs">
+      <Link>RectExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Refactoring\ChangeParameterTypeRefactor.cs">
+      <Link>refactoring\ChangeParameterTypeRefactor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Refactoring\RefactorContext.cs">
+      <Link>refactoring\RefactorContext.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Refactoring\Refactorer.cs">
+      <Link>refactoring\Refactorer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Refactoring\RenameRefactorer.cs">
+      <Link>refactoring\RenameRefactorer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ScaffoldNode.cs">
+      <Link>ScaffoldNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ScaffoldNodeChildItem.cs">
+      <Link>ScaffoldNodeChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ScaffoldNodeTypedChildItem.cs">
+      <Link>ScaffoldNodeTypedChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\ConnectionViewModel.cs">
+      <Link>ViewModels\ConnectionViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\ConnectorDirection.cs">
+      <Link>ViewModels\ConnectorDirection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\ConnectorInfo.cs">
+      <Link>ViewModels\ConnectorInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\ConnectorSide.cs">
+      <Link>ViewModels\ConnectorSide.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\ConnectorViewModel.cs">
+      <Link>ViewModels\ConnectorViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\DefaultConnectionStrategy.cs">
+      <Link>ViewModels\DefaultConnectionStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\DiagramNodeViewModel.cs">
+      <Link>ViewModels\DiagramNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\DiagramViewModel.cs">
+      <Link>ViewModels\DiagramViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\GenericItemHeaderViewModel.cs">
+      <Link>ViewModels\GenericItemHeaderViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\GenericItemViewModel.cs">
+      <Link>ViewModels\GenericItemViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\GenericNodeViewModel.cs">
+      <Link>ViewModels\GenericNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\GraphItemViewModel.cs">
+      <Link>ViewModels\GraphItemViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\IConnectionStrategy.cs">
+      <Link>ViewModels\IConnectionStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\InheritanceConnectionStrategy.cs">
+      <Link>ViewModels\InheritanceConnectionStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\InputOutputStrategy.cs">
+      <Link>ViewModels\InputOutputStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\InputOutputViewModel.cs">
+      <Link>ViewModels\InputOutputViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\ItemViewModel.cs">
+      <Link>ViewModels\ItemViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\OneToManyConnectionStrategy.cs">
+      <Link>ViewModels\OneToManyConnectionStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\PropertyFieldViewModel.cs">
+      <Link>ViewModels\PropertyFieldViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\TypedItemViewModel.cs">
+      <Link>ViewModels\TypedItemViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\TypedItemViewModelGeneric.cs">
+      <Link>ViewModels\TypedItemViewModelGeneric.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\ViewModel.cs">
+      <Link>ViewModels\ViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\ViewModelExtensions.cs">
+      <Link>ViewModels\ViewModelExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.JSON\IJsonSerializable.cs">
+      <Link>Data\IJsonSerializable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.JSON\SimpleJSON.cs">
+      <Link>Data\SimpleJSON.cs</Link>
+    </Compile>
+    <Compile Include="Class1.cs" />
+    <Compile Include="Compatability.cs" />
+    <Compile Include="Platform\impl\DesignerStyles.cs" />
+    <Compile Include="Platform\impl\GraphStyle.cs" />
+    <Compile Include="Platform\impl\InvertControl.cs" />
+    <Compile Include="Platform\impl\PlatformPlugin.cs" />
+    <Compile Include="Platform\impl\ShadowChrome.cs" />
+    <Compile Include="Platform\impl\WindowsPlatformDrawer.cs" />
+    <Compile Include="Platform\impl\WindowsAssetManager.cs" />
+    <Compile Include="Platform\impl\WindowsPlatformOperations.cs" />
+    <Compile Include="Platform\impl\WindowsWindowManager.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WindowViewModels\SelectItemTypeViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Invert.Attributes\Invert.Attributes.csproj">
+      <Project>{572e3d0c-06d5-4894-a128-a2032684a0b6}</Project>
+      <Name>Invert.Attributes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Invert.Core\Invert.Core.csproj">
+      <Project>{cfcc5f2c-7a2f-4fd1-90d8-52420b7eb337}</Project>
+      <Name>Invert.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="PluginDesigner\Generators\NewFolder1\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

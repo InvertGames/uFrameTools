@@ -9,7 +9,7 @@ namespace Invert.Core.GraphDesigner
         private ConnectorViewModel[] _inputs;
         private ConnectorViewModel[] _outputs;
 
-        public ConnectorInfo(ConnectorViewModel[] allConnectors, DiagramViewModel viewModel, IProjectRepository currentRepository)
+        public ConnectorInfo(ConnectorViewModel[] allConnectors, DiagramViewModel viewModel, INodeRepository currentRepository)
         {
             AllConnectors = allConnectors;
             DiagramData = viewModel.DiagramData;
@@ -24,7 +24,7 @@ namespace Invert.Core.GraphDesigner
         }
         public DiagramViewModel DiagramViewModel { get; set; }
         public IGraphData DiagramData { get; set; }
-        public IProjectRepository CurrentRepository { get; set; }
+        public INodeRepository CurrentRepository { get; set; }
 
         public ConnectorViewModel[] Inputs 
         {
@@ -67,7 +67,7 @@ namespace Invert.Core.GraphDesigner
                     //{
                     //    if (input.ConnectorForType.IsAssignableFrom(output.ConnectorForType))
                     //    {
-                            if (strategy.IsConnected((TSource) output.DataObject, (TTarget) input.DataObject))
+                            if (strategy.IsConnected(CurrentRepository, (TSource) output.DataObject, (TTarget) input.DataObject))
                             {
                                 yield return new ConnectionViewModel(DiagramViewModel) 
                                 {

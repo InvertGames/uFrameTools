@@ -18,7 +18,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DLL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DLL UNITY_DLL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -197,6 +197,7 @@
     <Compile Include="Windows\ElementExplorerWindow.cs" />
     <Compile Include="IAssemblyNameProvider.cs" />
     <Compile Include="uFrameVersionProcessor.cs" />
+    <None Include="documentation.dxp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Invert.Core.GraphDesigner.Unity\Invert.Core.GraphDesigner.Unity.csproj">
@@ -210,6 +211,10 @@
     <ProjectReference Include="..\Invert.Core\Invert.Core.csproj">
       <Project>{CFCC5F2C-7A2F-4FD1-90D8-52420B7EB337}</Project>
       <Name>Invert.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.JSON\Invert.JSON.csproj">
+      <Project>{51e51ae2-77c1-498f-9b88-c2eed1e3aeed}</Project>
+      <Name>Invert.JSON</Name>
     </ProjectReference>
     <ProjectReference Include="..\Invert.MVVM\Invert.MVVM.csproj">
       <Project>{cb024a98-ee90-4497-8af3-2c574d665a8a}</Project>

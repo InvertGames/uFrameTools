@@ -271,9 +271,18 @@ namespace Invert.Core.GraphDesigner.Unity
 
     public class UnityDrawer : IPlatformDrawer
     {
-        public void DrawPolyLine(Vector3[] lines)
+        private UnityStyleProvider _styles;
+
+        public UnityStyleProvider Styles
         {
-            Handles.DrawPolyLine(lines);
+            get { return _styles ?? (_styles = new UnityStyleProvider()); }
+            set { _styles = value; }
+        }
+
+        // TODO I HATE the vector3 conversion
+        public void DrawPolyLine(Vector2[] lines)
+        {
+            Handles.DrawPolyLine(lines.Select(x=>new Vector3(x.x,x.y,0f)).ToArray());
         }
 
         public void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent,
@@ -282,9 +291,364 @@ namespace Invert.Core.GraphDesigner.Unity
             Handles.DrawBezier(startPosition,endPosition,startTangent,endTangent,color,null,width);
         }
 
+        public Vector2 CalculateSize(string text, object tag1)
+        {
+            return ((GUIStyle)tag1).CalcSize(new GUIContent(text));
+        }
+
+        public void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
+        {
+            // TODO Implement alignment
+           GUI.Label(rect,label,(GUIStyle)style);
+        }
+
+        public void DrawStretchBox(Rect scale, object nodeBackground, float offset)
+        {
+            ElementDesignerStyles.DrawExpandableBox(scale,(GUIStyle)nodeBackground,
+                string.Empty, offset);
+        }
+
+        public void DrawStretchBox(Rect scale, object nodeBackground, Rect offset)
+        {
+            ElementDesignerStyles.DrawExpandableBox(scale, (GUIStyle)nodeBackground,
+               string.Empty, new RectOffset(Mathf.RoundToInt(offset.x),Mathf.RoundToInt(offset.y),Mathf.RoundToInt(offset.width),Mathf.RoundToInt(offset.height)));
+
+        }
+
+        public void DoButton(Rect scale, string label, object style, Action action)
+        {
+             if (GUI.Button(scale, label,(GUIStyle)style))
+             {
+                 action();
+             }
+        }
+
+        public void DrawWarning(Rect rect, string key)
+        {
+            EditorGUI.HelpBox(rect, key, MessageType.Warning);
+        }
+
+        public void DrawImage(Rect bounds, string texture, bool b)
+        {
+            GUI.DrawTexture(bounds, Styles.Image(texture), ScaleMode.StretchToFill, true);
+        }
+
+
+        public void DrawPropertyField(PropertyFieldDrawer d, float scale)
+        {
+            //base.Draw(scale);
+            GUILayout.BeginArea(d.Bounds.Scale(scale), ElementDesignerStyles.SelectedItemStyle);
+            EditorGUIUtility.labelWidth = d.Bounds.width * 0.55f;
+
+            DrawInspector(d);
+            GUILayout.EndArea();
+        }
+
+        public void EndRender()
+        {
+          
+        }
+
+  
+
+        public void BeginRender(object sender, MouseEvent mouseEvent)
+        {
+         
+        }
+
+        public void DrawColumns(Rect rect, params Action<Rect>[] columns)
+        {
+            
+        }
+
+        public void DrawingComplete()
+        {
+            if (DiagramDrawer.IsEditingField)
+            {
+                //GUI.FocusControl("EditingField");
+
+                EditorGUI.FocusTextInControl("EditingField");
+                EditorGUI.FocusTextInControl("EditingField");
+            }
+            else
+            {
+
+            }
+        }
+
+        public void DrawTextbox(string id, Rect rect, string value, object itemTextEditingStyle, Action<string,bool> valueChangedAction)
+        {
+            EditorGUI.BeginChangeCheck();
+            GUI.SetNextControlName("EditingField");
+            DiagramDrawer.IsEditingField = true;
+            var newName = EditorGUILayout.TextField(value, (GUIStyle)itemTextEditingStyle);
+            if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
+            {
+                valueChangedAction(value,false);
+            }
+        }
+
+        public void DrawingStarted()
+        {
+            
+        }
+
+        public virtual void DrawInspector(PropertyFieldDrawer d,bool refreshGraph = false, float scale = 1f)
+        {
+            EditorGUI.BeginChangeCheck();
+            if (d.CustomDrawer != null)
+            {
+                d.CachedValue = d.CustomDrawer.Draw(scale, d.ViewModel);
+            }
+            else
+                if (d.ViewModel.Type == typeof(string))
+                {
+                    if (d.ViewModel.InspectorType == InspectorType.TextArea)
+                    {
+                        EditorGUILayout.LabelField(d.ViewModel.Name);
+                        d.CachedValue = EditorGUILayout.TextArea((string)d.CachedValue, GUILayout.Height(50));
+                    }
+                    else if (d.ViewModel.InspectorType == InspectorType.TypeSelection)
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label(d.ViewModel.Name);
+
+                        if (GUILayout.Button((string)d.CachedValue))
+                        {
+                            InvertGraphEditor.WindowManager.InitTypeListWindow(InvertApplication.GetDerivedTypes<System.Object>(true, true).Select(p => new GraphTypeInfo()
+                            {
+                                Name = p.Name,
+                                Group = p.Namespace,
+                                Label = p.Name,
+
+                            }).ToArray()
+                            , (type) =>
+                            {
+                                InvertGraphEditor.ExecuteCommand(x => d.ViewModel.Setter(type.Name));
+                            });
+                        }
+                        GUILayout.EndHorizontal();
+                    }
+                    else
+                    {
+                        d.CachedValue = EditorGUILayout.TextField(d.ViewModel.Name, (string)d.CachedValue);
+                    }
+
+                }
+                else if (d.ViewModel.Type == typeof(int))
+                {
+                    d.CachedValue = EditorGUILayout.IntField(d.ViewModel.Name, (int)d.CachedValue);
+                }
+                else if (d.ViewModel.Type == typeof(float))
+                {
+                    d.CachedValue = EditorGUILayout.FloatField(d.ViewModel.Name, (float)d.CachedValue);
+                }
+                else if (d.ViewModel.Type == typeof(Vector2))
+                {
+                    d.CachedValue = EditorGUILayout.Vector2Field(d.ViewModel.Name, (Vector3)d.CachedValue);
+                }
+
+                else if (d.ViewModel.Type == typeof(Vector3))
+                {
+                    d.CachedValue = EditorGUILayout.Vector3Field(d.ViewModel.Name, (Vector3)d.CachedValue);
+
+                }
+                else if (d.ViewModel.Type == typeof(Color))
+                {
+                    d.CachedValue = EditorGUILayout.ColorField(d.ViewModel.Name, (Color)d.CachedValue);
+
+                }
+                else if (d.ViewModel.Type == typeof(Vector4))
+                {
+                    d.CachedValue = EditorGUILayout.Vector4Field(d.ViewModel.Name, (Vector4)d.CachedValue);
+                }
+                else if (d.ViewModel.Type == typeof(bool))
+                {
+                    d.CachedValue = EditorGUILayout.Toggle(d.ViewModel.Name, (bool)d.CachedValue);
+                }
+                else if (typeof(Enum).IsAssignableFrom(d.ViewModel.Type))
+                {
+                    d.CachedValue = EditorGUILayout.EnumPopup(d.ViewModel.Name, (Enum)d.CachedValue);
+                }
+                else if (d.ViewModel.Type == typeof(Type))
+                {
+                    //InvertGraphEditor.WindowManager.InitTypeListWindow();
+                }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+
+                d.ViewModel.Setter(d.CachedValue);
+                if (refreshGraph)
+                {
+
+                    InvertGraphEditor.DesignerWindow.RefreshContent();
+                }
+            }
+        }
+        public void DrawError(Rect rect, string key)
+        {
+            EditorGUI.HelpBox(rect, key, MessageType.Error);
+        }
+        public void DrawInfo(Rect rect, string key)
+        {
+            EditorGUI.HelpBox(rect, key, MessageType.Info);
+        }
+
         public void DrawConnector(float scale, ConnectorViewModel viewModel)
         {
             
+        }
+    }
+
+    public class UnityStyleProvider : IStyleProvider
+    {
+        private static Dictionary<string, Texture2D> _textures;
+
+        public GUIStyle Style(InvertStyles style)
+        {
+            return (GUIStyle)GetStyle(style);
+        }
+
+        protected static Dictionary<string, Texture2D> Textures
+        {
+            get { return _textures ?? (_textures = new Dictionary<string, Texture2D>()); }
+            set { _textures = value; }
+        }
+
+        static UnityStyleProvider()
+        {
+            Textures.Add("DiagramArrowRight", ElementDesignerStyles.ArrowRightEmptyTexture);
+            Textures.Add("DiagramArrowLeft", ElementDesignerStyles.ArrowLeftTexture);
+            Textures.Add("DiagramArrowUp", ElementDesignerStyles.ArrowUpTexture);
+            Textures.Add("DiagramArrowDown", ElementDesignerStyles.ArrowDownTexture);
+            Textures.Add("DiagramArrowRightEmpty", ElementDesignerStyles.ArrowRightEmptyTexture);
+            Textures.Add("DiagramArrowLeftEmpty", ElementDesignerStyles.ArrowLeftEmptyTexture);
+      
+     
+        }
+
+        public Texture2D Image(string name)
+        {
+            return (Texture2D) GetImage(name);
+        }
+        public object GetImage(string name)
+        {
+            return Textures[name];
+        }
+
+        public object GetStyle(InvertStyles name)
+        {
+            switch (name)
+            {
+                case InvertStyles.DefaultLabel:
+                    return EditorStyles.label;
+                case InvertStyles.DefaultLabelLarge:
+                    return EditorStyles.largeLabel;
+               case InvertStyles.Tag1:
+                    return ElementDesignerStyles.Tag1;
+                case InvertStyles.NodeBackground:
+                    return ElementDesignerStyles.NodeBackground;
+                case InvertStyles.NodeExpand:
+                    return ElementDesignerStyles.NodeExpand;
+                case InvertStyles.NodeCollapse:
+                    return ElementDesignerStyles.NodeCollapse;
+                case InvertStyles.BoxHighlighter1:
+                    return ElementDesignerStyles.BoxHighlighter1;
+                case InvertStyles.BoxHighlighter2:
+                    return ElementDesignerStyles.BoxHighlighter2;
+                case InvertStyles.BoxHighlighter3:
+                    return ElementDesignerStyles.BoxHighlighter3;
+                case InvertStyles.BoxHighlighter4:
+                    return ElementDesignerStyles.BoxHighlighter4;
+                case InvertStyles.BoxHighlighter5:
+                    return ElementDesignerStyles.BoxHighlighter5;
+                case InvertStyles.BoxHighlighter6:
+                    return ElementDesignerStyles.BoxHighlighter6;
+                case InvertStyles.NodeHeader1:
+                    return ElementDesignerStyles.NodeHeader1;
+                case InvertStyles.NodeHeader2:
+                    return ElementDesignerStyles.NodeHeader2;
+                case InvertStyles.NodeHeader3:
+                    return ElementDesignerStyles.NodeHeader3;
+                case InvertStyles.NodeHeader4:
+                    return ElementDesignerStyles.NodeHeader4;
+                case InvertStyles.NodeHeader5:
+                    return ElementDesignerStyles.NodeHeader5;
+                case InvertStyles.NodeHeader6:
+                    return ElementDesignerStyles.NodeHeader6;
+                case InvertStyles.NodeHeader7:
+                    return ElementDesignerStyles.NodeHeader7;
+                case InvertStyles.NodeHeader8:
+                    return ElementDesignerStyles.NodeHeader8;
+                case InvertStyles.NodeHeader9:
+                    return ElementDesignerStyles.NodeHeader9;
+                case InvertStyles.NodeHeader10:
+                    return ElementDesignerStyles.NodeHeader10;
+                case InvertStyles.NodeHeader11:
+                    return ElementDesignerStyles.NodeHeader11;
+                case InvertStyles.NodeHeader12:
+                    return ElementDesignerStyles.NodeHeader12;
+                case InvertStyles.NodeHeader13:
+                    return ElementDesignerStyles.NodeHeader13;
+                case InvertStyles.Item1:
+                    return ElementDesignerStyles.Item1;                
+                case InvertStyles.Item2:
+                    return ElementDesignerStyles.Item2;                
+                case InvertStyles.Item3:
+                    return ElementDesignerStyles.Item3;                
+                case InvertStyles.Item4:
+                    return ElementDesignerStyles.Item4;
+                case InvertStyles.Item5:
+                    return ElementDesignerStyles.Item5;
+                case InvertStyles.Item6:
+                    return ElementDesignerStyles.Item6;
+                case InvertStyles.SelectedItemStyle:
+                    return ElementDesignerStyles.SelectedItemStyle;      
+                case InvertStyles.HeaderStyle:
+                    return ElementDesignerStyles.HeaderStyle;   case InvertStyles.ViewModelHeaderStyle:
+                    return ElementDesignerStyles.ViewModelHeaderStyle;
+                case InvertStyles.AddButtonStyle:
+                    return ElementDesignerStyles.AddButtonStyle;
+                case InvertStyles.ItemTextEditingStyle:
+                    return ElementDesignerStyles.ItemTextEditingStyle;
+            }
+            return ElementDesignerStyles.ClearItemStyle;
+        }
+
+        public object GetNodeHeaderStyle(NodeColor color)
+        {
+            switch (color)
+            {
+                case NodeColor.DarkGray:
+                    return ElementDesignerStyles.NodeHeader1;
+                case NodeColor.Blue:
+                    return ElementDesignerStyles.NodeHeader2;
+                case NodeColor.Gray:
+                    return ElementDesignerStyles.NodeHeader3;
+                case NodeColor.LightGray:
+                    return ElementDesignerStyles.NodeHeader4;
+                case NodeColor.Black:
+                    return ElementDesignerStyles.NodeHeader5;
+                case NodeColor.DarkDarkGray:
+                    return ElementDesignerStyles.NodeHeader6;
+                case NodeColor.Orange:
+                    return ElementDesignerStyles.NodeHeader7;
+                case NodeColor.Red:
+                    return ElementDesignerStyles.NodeHeader8;
+                case NodeColor.YellowGreen:
+                    return ElementDesignerStyles.NodeHeader9;
+                case NodeColor.Green:
+                    return ElementDesignerStyles.NodeHeader10;
+                case NodeColor.Purple:
+                    return ElementDesignerStyles.NodeHeader11;
+                case NodeColor.Pink:
+                    return ElementDesignerStyles.NodeHeader12;
+                case NodeColor.Yellow:
+                    return ElementDesignerStyles.NodeHeader13;
+
+            }
+            return ElementDesignerStyles.NodeHeader1;
         }
     }
 

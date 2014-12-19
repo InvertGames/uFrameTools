@@ -43,12 +43,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\IJsonSerializable.cs">
-      <Link>IJsonSerializable.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Shared\SimpleJSON.cs">
-      <Link>SimpleJSON.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\INotifyCollectionChanged.cs">
       <Link>INotifyCollectionChanged.cs</Link>
     </Compile>

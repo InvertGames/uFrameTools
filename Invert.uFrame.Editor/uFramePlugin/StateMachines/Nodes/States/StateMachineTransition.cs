@@ -1,5 +1,6 @@
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 public class StateMachineTransition : DiagramNodeItem
 {
@@ -41,17 +42,17 @@ public class StateMachineTransition : DiagramNodeItem
     public string TriggerId { get; set; }
     public string PropertyIdentifier { get; set; }
 
-    public override void Serialize(Invert.uFrame.Editor.JSONClass cls)
+    public override void Serialize(JSONClass cls)
     {
         base.Serialize(cls);
         if (TransitionToIdentifier != null)
-            cls.Add("TransitionTo", new Invert.uFrame.Editor.JSONData(TransitionToIdentifier));
+            cls.Add("TransitionTo", new JSONData(TransitionToIdentifier));
 
         if (PropertyIdentifier != null)
-            cls.Add("PropertyIdentifier", new Invert.uFrame.Editor.JSONData(PropertyIdentifier));
+            cls.Add("PropertyIdentifier", new JSONData(PropertyIdentifier));
     }
 
-    public override void Deserialize(Invert.uFrame.Editor.JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls, INodeRepository repository)
     {
         base.Deserialize(cls, repository);
         if (cls["TransitionTo"] != null)

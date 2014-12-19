@@ -5,9 +5,5 @@ using System.Text;
 
 namespace Invert.Core
 {
-#if !UNITY
-    public class Vector3 {
-        public int X
-    }
-#endif
+
 }

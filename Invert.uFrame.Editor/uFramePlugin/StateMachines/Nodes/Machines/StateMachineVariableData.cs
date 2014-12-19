@@ -1,4 +1,3 @@
-using JSONData = Invert.uFrame.Editor.JSONData;
 
 //public class StateMachineVariableData : DiagramNodeItem, ITypeDiagramItem
 //{

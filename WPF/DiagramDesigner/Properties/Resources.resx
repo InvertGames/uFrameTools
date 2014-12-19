@@ -1,0 +1,415 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="ActionEnabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\actionenabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ArrowDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\arrowdown.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ArrowLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\arrowleft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ArrowRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\arrowright.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ArrowUp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\arrowup.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Background" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\background.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box10.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box11.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box12" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box12.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box12_03" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box12-03.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box12_04" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box12-04.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box7.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Box9" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\box9.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BoxHighlighted" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\boxhighlighted.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BoxHighlighter1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\boxhighlighter1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BoxHighlighter2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\boxhighlighter2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BoxHighlighter3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\boxhighlighter3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BoxHighlighter4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\boxhighlighter4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BoxHighlighter5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\boxhighlighter5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BoxHighlighter6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\boxhighlighter6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BoxSelected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\boxselected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Breakpoint" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\breakpoint.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CollapseDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\collapsedown.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CollapseRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\collapseright.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CollapseRightArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\collapserightarrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CommandBar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\commandbar.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CommandExpanded" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\commandexpanded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Controller" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\controller.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CurrentActionBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\currentactionbackground.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DebugBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\debugbackground.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiagramArrowDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\diagramarrowdown.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiagramArrowLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\diagramarrowleft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiagramArrowLeftEmpty" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\diagramarrowleftempty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiagramArrowRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\diagramarrowright.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiagramArrowRightEmpty" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\diagramarrowrightempty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiagramArrowUp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\diagramarrowup.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiagramCircle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\diagramcircle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiagramCircleLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\diagramcircleleft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiagramCircleRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\diagramcircleright.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EventActive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\eventactive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EventButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\eventbutton.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EventForward" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\eventforward.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EventInactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\eventinactive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EyeBall" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\eyeball.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EyeBall2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\eyeball2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FoldoutClose" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\foldoutclose.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ForwardBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\forwardbackground.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GameManager" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\gamemanager.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header10.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header11.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header12" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header12.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header13" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header13.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header7.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Header9" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\header9.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_precise" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\icon_precise.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="InstanceTriggerBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\instancetriggerbackground.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Item1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\item1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Item2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\item2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Item3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\item3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Item4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\item4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Item5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\item5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Item6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\item6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LeftArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\leftarrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NavigateNext" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\navigatenext.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NavigateNext2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\navigatenext2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NavigatePrevious" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\navigateprevious.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NavigatePrevious2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\navigateprevious2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NodeCollapse" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\nodecollapse.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NodeExpand" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\nodeexpand.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Remove" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\remove.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SceneManager" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\scenemanager.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SceneViewBar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\sceneviewbar.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Selected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\selected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SelectedNodeItem" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\selectednodeitem.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Tab" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\tab.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TabInActive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\tabinactive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Tag1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\tag1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Toolbar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\toolbar.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="uFrameBannerLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\uframebannerlogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="uFrameLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\uframelogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="uFrameLogo2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\uframelogo2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="uframeLogoLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\..\assets\uframecomplete\bin\editor\resources\images\uframelogolarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+</root>

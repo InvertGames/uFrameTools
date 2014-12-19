@@ -12,6 +12,7 @@ using System.Linq;
 using Invert.Common;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ElementDesigner;
@@ -267,22 +268,22 @@ public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeView
     {
     }
 
-    protected override GUIStyle HeaderStyle
+    protected override object HeaderStyle
     {
-        get { return ElementDesignerStyles.NodeHeader10; }
+        get { return CachedStyles.NodeHeader10; }
     }
 
-    public override void Refresh(Vector2 position)
+    public override void Refresh(IPlatformDrawer platform, Vector2 position)
     {
-        base.Refresh(position);
+        base.Refresh(platform, position);
         _cachedRelatedType = NodeViewModel.RelatedTypeName;
 
         _typeWidth = ElementDesignerStyles.Tag1.CalcSize(new GUIContent(_cachedRelatedType)).x;
     }
 
-    public override void Draw(float scale)
+    public override void Draw(IPlatformDrawer platform, float scale)
     {
-        base.Draw(scale);
+        base.Draw(platform, scale);
 
         if (GUI.Button(new Rect(Bounds.x + 5, Bounds.y - 18f, _typeWidth, 15f).Scale(Scale),
             _cachedRelatedType,

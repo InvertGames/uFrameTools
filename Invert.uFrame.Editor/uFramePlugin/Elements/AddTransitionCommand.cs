@@ -17,7 +17,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                 return;
             }
             
-            var allCommands = nodeViewModel.ImportedInstances.Select(p=>ElementDesignerDataExtensions.RelatedNode(p)).OfType<ElementData>()
+            var allCommands = nodeViewModel.ImportedInstances.Select(p=>GraphDataExtensions.RelatedNode(p)).OfType<ElementData>()
                 .SelectMany(p => p.Commands).ToArray();
 
             ItemSelectionWindow.Init("Select Command", allCommands, (item) =>

@@ -10,9 +10,9 @@ public class StateMachineNodeDrawer : DiagramNodeDrawer<StateMachineNodeViewMode
     {
     }
 
-    protected override GUIStyle HeaderStyle
+    protected override object HeaderStyle
     {
-        get { return ElementDesignerStyles.NodeHeader11; }
+        get { return CachedStyles.NodeHeader11; }
     }
 
     public StateMachineNodeDrawer(StateMachineNodeViewModel viewModel)

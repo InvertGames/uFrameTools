@@ -1,10 +1,11 @@
 ﻿using System;
-using Invert.uFrame.CodeGen.ClassNodeGenerators;
+using System.Reflection;
 using UnityEngine;
-
+#if !UNITY_DLL
+using KeyCode = System.Windows.Forms.Keys;
+#endif
 namespace Invert.Core.GraphDesigner
 {
-    public class BaseClassReference : InheritanceSlot<GenericInheritableNode> { }
     public class GraphDesignerPlugin : DiagramPlugin
     {
         public override decimal LoadPriority
@@ -18,8 +19,24 @@ namespace Invert.Core.GraphDesigner
 
         public override void Initialize(uFrameContainer container)
         {
+#if UNITY_DLL
+            InvertApplication.CachedAssemblies.Clear();
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                InvertApplication.CachedAssemblies.Add(assembly);
+            }
+#endif
             var typeContainer = InvertGraphEditor.TypesContainer;
-            
+            // Drawers
+            container.Register<DiagramViewModel,DiagramViewModel>();
+            container.RegisterDrawer<PropertyFieldViewModel, PropertyFieldDrawer>();
+            container.Register<SectionHeaderDrawer, SectionHeaderDrawer>();
+            container.RegisterItemDrawer<GenericItemHeaderViewModel, GenericChildItemHeaderDrawer>();
+
+            container.RegisterDrawer<SectionHeaderViewModel, SectionHeaderDrawer>();
+            container.RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
+            container.RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
+            container.RegisterDrawer<InputOutputViewModel, SlotDrawer>();
             //typeContainer.AddItem<GenericSlot,InputOutputViewModel,SlotDrawer>();
             //typeContainer.AddItem<BaseClassReference, InputOutputViewModel, SlotDrawer>();
 
@@ -41,9 +58,21 @@ namespace Invert.Core.GraphDesigner
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(Vector3), Group = "", Label = "Vector3", IsPrimitive = true }, "Vector3");
 
             
-           
-            container.Register<DesignerGeneratorFactory, SimpleClassNodeCodeFactory>("ClassNodeData");
+#if UNITY_DLL
+            container.Register<DesignerGeneratorFactory, Invert.uFrame.CodeGen.ClassNodeGenerators.SimpleClassNodeCodeFactory>("ClassNodeData");
             
+            // Enums
+            container.RegisterGraphItem<EnumData, EnumNodeViewModel>();
+            container.RegisterChildGraphItem<EnumItem, EnumItemViewModel>();
+            //container.RegisterInstance(new AddEnumItemCommand());
+
+            // Class Nodes
+            container.RegisterGraphItem<ClassPropertyData, ClassPropertyItemViewModel>();
+            container.RegisterGraphItem<ClassCollectionData, ClassCollectionItemViewModel>();
+            container.RegisterGraphItem<ClassNodeData, ClassNodeViewModel>();
+            container.RegisterInstance<IConnectionStrategy>(new ClassNodeInheritanceConnectionStrategy(), "ClassNodeInheritanceConnectionStrategy");
+
+#endif
             // Register the container itself
             container.RegisterInstance<IUFrameContainer>(container);
             container.RegisterInstance<uFrameContainer>(container);
@@ -58,7 +87,7 @@ namespace Invert.Core.GraphDesigner
             
 
             // For no selection diagram context menu
-            container.RegisterInstance<IDiagramContextCommand>(new AddItemCommand2(), "AddItemCommand");
+            container.RegisterInstance<IDiagramContextCommand>(new AddNodeToGraph(), "AddItemCommand");
             container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
 
             container.RegisterInstance<IDiagramNodeCommand>(new PushToCommand(), "Push To Command");
@@ -81,17 +110,6 @@ namespace Invert.Core.GraphDesigner
 
 
 
-            // Enums
-            container.RegisterGraphItem<EnumData, EnumNodeViewModel>();
-            container.RegisterChildGraphItem<EnumItem, EnumItemViewModel>();
-            container.RegisterInstance(new AddEnumItemCommand());
-
-            // Class Nodes
-            container.RegisterGraphItem<ClassPropertyData, ClassPropertyItemViewModel>();
-            container.RegisterGraphItem<ClassCollectionData, ClassCollectionItemViewModel>();
-            container.RegisterGraphItem<ClassNodeData, ClassNodeViewModel>();
-            container.RegisterInstance<IConnectionStrategy>(new ClassNodeInheritanceConnectionStrategy(), "ClassNodeInheritanceConnectionStrategy");
-
             InvertGraphEditor.RegisterKeyBinding(new RenameCommand(), "Rename", KeyCode.F2);
             InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
             {
@@ -100,8 +118,10 @@ namespace Invert.Core.GraphDesigner
 
             InvertGraphEditor.RegisterKeyBinding(new DeleteItemCommand(), "Delete Item", KeyCode.X, true);
             InvertGraphEditor.RegisterKeyBinding(new DeleteCommand(), "Delete", KeyCode.Delete);
+#if UNITY_DLL
             InvertGraphEditor.RegisterKeyBinding(new MoveUpCommand(), "Move Up", KeyCode.UpArrow);
             InvertGraphEditor.RegisterKeyBinding(new MoveDownCommand(), "Move Down", KeyCode.DownArrow);
+#endif
 
 
             InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>

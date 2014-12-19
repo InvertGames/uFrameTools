@@ -123,7 +123,9 @@ namespace Invert.Core.GraphDesigner
             var items = NodeViewModel.DiagramViewModel.SelectedNodeItems.ToArray();
             foreach (var item in items)
                 item.IsSelected = false;
+#if UNITY_DLL
             GUIUtility.keyboardControl = 0;
+#endif
             NodeViewModel.Select();
             IsSelected = true;
             IsEditing = true;

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -6,9 +7,9 @@ namespace Invert.Core.GraphDesigner
     {
         public static Vector2 Snap(this Vector2 pos, float snapSize)
         {
-            var x = Mathf.Round(pos.x/snapSize)*snapSize;
-            var y = Mathf.Round(pos.y/snapSize)*snapSize;
-            return new Vector2(x, y);
+            var x = Math.Round(pos.x/snapSize)*snapSize;
+            var y = Math.Round(pos.y/snapSize)*snapSize;
+            return new Vector2((float)x, (float)y);
         }
 
         public static Rect Scale(this Rect r, float scale)
@@ -20,7 +21,7 @@ namespace Invert.Core.GraphDesigner
         {
             return new Rect(r.x/scale, r.y/scale, r.width/scale, r.height/scale);
         }
-
+#if UNITY_DLL
         public static RectOffset Scale(this RectOffset r, float scale)
         {
             return new RectOffset(Mathf.RoundToInt(r.left*scale), Mathf.RoundToInt(r.right*scale),
@@ -37,5 +38,6 @@ namespace Invert.Core.GraphDesigner
             s.margin = s.margin.Scale(scale);
             return s;
         }
+#endif
     }
 }

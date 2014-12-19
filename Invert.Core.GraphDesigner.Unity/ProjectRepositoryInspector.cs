@@ -104,11 +104,11 @@ public class ProjectRepositoryInspector : Editor
       
         if (InvertGraphEditor.CurrentDiagramViewModel != null)
         DoDiagramInspector();
-
+        if (InvertGraphEditor.CurrentDiagramViewModel != null)
         if (GUIHelpers.DoToolbarEx("Project Issues"))
         {
 
-            foreach (var item in InvertGraphEditor.CurrentProject.NodeItems.Where(p => !p.IsValid))
+            foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.NodeItems.Where(p => !p.IsValid))
             {
 
                 GUIHelpers.DoTriggerButton(new UFStyle()
@@ -127,39 +127,39 @@ public class ProjectRepositoryInspector : Editor
 #if DEBUG
         if (GUIHelpers.DoToolbarEx("Project Nodes"))
         {
-
-            foreach (var item in InvertGraphEditor.CurrentProject.AllGraphItems)
-            {
-                if (item == null) continue;
-                GUIHelpers.DoTriggerButton(new UFStyle()
+            if (InvertGraphEditor.CurrentDiagramViewModel != null)
+                foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.AllGraphItems)
                 {
-                    Label = item.Label + " " +item.Identifier,
-                    Enabled = true,
-                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
-                    TextAnchor = TextAnchor.MiddleRight,
-                    //IconStyle = UBStyles.RemoveButtonStyle,
-                    ShowArrow = true
-                });
+                    if (item == null) continue;
+                    GUIHelpers.DoTriggerButton(new UFStyle()
+                    {
+                        Label = item.Label + " " +item.Identifier,
+                        Enabled = true,
+                        BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                        TextAnchor = TextAnchor.MiddleRight,
+                        //IconStyle = UBStyles.RemoveButtonStyle,
+                        ShowArrow = true
+                    });
 
-            }
+                }
         }
         if (GUIHelpers.DoToolbarEx("Project Connections"))
         {
-
-            foreach (var item in InvertGraphEditor.CurrentProject.Connections)
-            {
-                if (item.Output == null || item.Input == null) continue;
-                GUIHelpers.DoTriggerButton(new UFStyle()
+            if (InvertGraphEditor.CurrentDiagramViewModel != null)
+                foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.Connections)
                 {
-                    Label = string.Format("{0} -> {1}", item.Output.Label, item.Input.Label),
-                    Enabled = true,
-                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
-                    TextAnchor = TextAnchor.MiddleRight,
-                    //IconStyle = UBStyles.RemoveButtonStyle,
-                    ShowArrow = true
-                });
+                    if (item.Output == null || item.Input == null) continue;
+                    GUIHelpers.DoTriggerButton(new UFStyle()
+                    {
+                        Label = string.Format("{0} -> {1}", item.Output.Label, item.Input.Label),
+                        Enabled = true,
+                        BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                        TextAnchor = TextAnchor.MiddleRight,
+                        //IconStyle = UBStyles.RemoveButtonStyle,
+                        ShowArrow = true
+                    });
 
-            }
+                }
         }
  
 #endif
@@ -206,7 +206,8 @@ public class ProjectRepositoryInspector : Editor
             foreach (var item in SelectedItemDrawers)
             {
                 item.CachedValue = item.ViewModel.Getter();
-                item.DrawInspector(true);
+                var unityDrawer = InvertGraphEditor.PlatformDrawer as UnityDrawer;
+                unityDrawer.DrawInspector(item);
             }
         }
         return;
@@ -252,10 +253,10 @@ public class ProjectRepositoryInspector : Editor
                 if (GUIHelpers.DoToolbarEx(fileGenerator.ViewModelObject.Name))
                 {
                     var lastRect = GUILayoutUtility.GetLastRect();
-                    
-                    fileGenerator.Refresh(new Vector2(lastRect.x,lastRect.y + lastRect.height));
+
+                    fileGenerator.Refresh(InvertGraphEditor.PlatformDrawer, new Vector2(lastRect.x, lastRect.y + lastRect.height));
                     GUILayoutUtility.GetRect(fileGenerator.Bounds.width, fileGenerator.Bounds.height);
-                    fileGenerator.Draw(1f);
+                    fileGenerator.Draw(InvertGraphEditor.PlatformDrawer, 1f);
                     //EditorGUILayout.TextArea(fileGenerator.ToString());
                 }
             }
@@ -295,37 +296,37 @@ public class ProjectRepositoryInspector : Editor
             SelectedItemDrawers.Add(drawer);
         }
         return;
-        var item = SelectedItem;
+        //var item = SelectedItem;
 
-        if (!(item is IDiagramNode))
-        {
-            var nodeItem = item as IDiagramNodeItem;
-            if (nodeItem != null)
-            {
-                item = nodeItem.Node;
-            }
-            else
-            {
-                return;
-            }
+        //if (!(item is IDiagramNode))
+        //{
+        //    var nodeItem = item as IDiagramNodeItem;
+        //    if (nodeItem != null)
+        //    {
+        //        item = nodeItem.Node;
+        //    }
+        //    else
+        //    {
+        //        return;
+        //    }
             
-        }
-        if (item == null) return;
+        //}
+        //if (item == null) return;
 
-        fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,
-            InvertGraphEditor.CurrentProject,true).ToArray();
-        GeneratorDrawers.Clear();
-        foreach (var fileGenerator in fileGenerators)
-        {
-            var list = fileGenerator.Generators.ToList();
-            list.RemoveAll(p => p.ObjectData != item);
-            fileGenerator.Generators = list.ToArray();
-            if (fileGenerator.Generators.Length < 1) continue;
+        //fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,
+        //    InvertGraphEditor.CurrentProject,true).ToArray();
+        //GeneratorDrawers.Clear();
+        //foreach (var fileGenerator in fileGenerators)
+        //{
+        //    var list = fileGenerator.Generators.ToList();
+        //    list.RemoveAll(p => p.ObjectData != item);
+        //    fileGenerator.Generators = list.ToArray();
+        //    if (fileGenerator.Generators.Length < 1) continue;
 
-            var syntaxViewModel = new SyntaxViewModel(fileGenerator.ToString(), fileGenerator.Generators[0].Filename, 0);
-            var syntaxDrawer = new SyntaxDrawer(syntaxViewModel);
-            GeneratorDrawers.Add(syntaxDrawer);
-        }
+        //    var syntaxViewModel = new SyntaxViewModel(fileGenerator.ToString(), fileGenerator.Generators[0].Filename, 0);
+        //    var syntaxDrawer = new SyntaxDrawer(syntaxViewModel);
+        //    GeneratorDrawers.Add(syntaxDrawer);
+        //}
      
     }
 

@@ -23,7 +23,25 @@ namespace Invert.Core.GraphDesigner.UnitySpecific
 
         public IEnumerable<object> GetAssets(Type type)
         {
-            return GetUnityAssets(type).Cast<object>();
+            if (type == typeof (IProjectRepository))
+            {
+                foreach (var item in GetUnityAssets(typeof(ProjectRepository)).Cast<IProjectRepository>())
+                {
+                    //foreach (var graph in item.Graphs)
+                    //{
+                    //    graph.SetProject(item);
+                    //}
+                    yield return item;
+                }
+                yield break;
+            }
+            else
+            {
+                foreach (var item in GetUnityAssets(type))
+                {
+                    yield return item;
+                }
+            }
         }
 
         public static Object[] GetUnityAssets(Type assetType)

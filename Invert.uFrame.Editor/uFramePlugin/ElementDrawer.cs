@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using Invert.Common;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame;
-using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ElementDesigner;
-using Invert.uFrame.Editor.ElementDesigner.Commands;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
@@ -20,21 +12,10 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     {
     }
 
-    public override GUIStyle BackgroundStyle
-    {
-        get
-        {
-            if (NodeViewModel.IsTemplate)
-            {
-                return ElementDesignerStyles.DiagramBox4;
-            }
-            return ElementDesignerStyles.DiagramBox3;
-        }
-    }
 
-    public override GUIStyle ItemStyle
+    public override object ItemStyle
     {
-        get { return ElementDesignerStyles.Item4; }
+        get { return CachedStyles.Item4; }
     }
 
 
@@ -123,15 +104,15 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
     //    get { return _inheritanceConnector ?? (_inheritanceConnector = new DefaultConnectionPointDrawer()); }
     //    set { _inheritanceConnector = value; }
     //}
-    public override void Draw(float scale)
+    public override void Draw(IPlatformDrawer platform, float scale)
     {
-        base.Draw(scale);
+        base.Draw(platform, scale);
         if (NodeViewModel.IsTemplate)
             GUI.Label(new Rect(Bounds.x + 10, Bounds.y - 18f, 120f, 15f ).Scale(Scale), "Abstract",
                  ElementDesignerStyles.Tag2);
     }
-    
-    protected override GUIStyle GetHighlighter()
+
+    protected override object GetHighlighter()
     {
 
         return base.GetHighlighter();
@@ -146,9 +127,9 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         }
     }
 
-    public override void Refresh(Vector2 position)
+    public override void Refresh(IPlatformDrawer platform, Vector2 position)
     {
-        base.Refresh(position);
+        base.Refresh(platform, position);
 
         //_isMultiInstance = NodeViewModel.IsMultiInstance;
         _maxNameWidth = MaxNameWidth(EditorStyles.label);
@@ -209,9 +190,9 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
         return maxLengthItem.x + 8;
 
     }
-    protected override GUIStyle HeaderStyle
+    protected override object HeaderStyle
     {
-        get { return ElementDesignerStyles.NodeHeader3; }
+        get { return CachedStyles.NodeHeader3; }
     }
 
     //protected override void DrawSelectedItem(IDiagramNodeItem nodeItem, ElementsDiagram diagram)

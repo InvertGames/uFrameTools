@@ -1,0 +1,348 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B437DF5F-20E0-4082-A92E-5C1D9C31A8E9}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DiagramDesigner</RootNamespace>
+    <AssemblyName>DiagramDesigner</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="Controls\ConnectorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\Expander.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\GroupBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\ScrollBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\Shared.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\ToolBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Toolbox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\ConnectorControl.xaml.cs">
+      <DependentUpon>ConnectorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Resources\UserControl1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Platform\DiagramDesignerPlugin.cs" />
+    <Compile Include="Resources\UserControl1.xaml.cs">
+      <DependentUpon>UserControl1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\MainWindowUIViewModel.cs" />
+    <Compile Include="Platform\WindowsPrefs.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\AlignObjectsBottom.png" />
+    <Resource Include="Resources\Images\AlignObjectsCenteredHorizontal.png" />
+    <Resource Include="Resources\Images\AlignObjectsCenteredVertical.png" />
+    <Resource Include="Resources\Images\AlignObjectsLeft.png" />
+    <Resource Include="Resources\Images\AlignObjectsRight.png" />
+    <Resource Include="Resources\Images\AlignObjectsTop.png" />
+    <Resource Include="Resources\Images\BringForward.png" />
+    <Resource Include="Resources\Images\BringToFront.png" />
+    <Resource Include="Resources\Images\Copy.png" />
+    <Resource Include="Resources\Images\Cut.png" />
+    <Resource Include="Resources\Images\Delete.png" />
+    <Resource Include="Resources\Images\DistributeObjectsHorizontal.png" />
+    <Resource Include="Resources\Images\DistributeObjectsVertical.png" />
+    <Resource Include="Resources\Images\GenericDocument.png" />
+    <Resource Include="Resources\Images\Group.png" />
+    <Resource Include="Resources\Images\OpenFolder.png" />
+    <Resource Include="Resources\Images\PasteBig.png" />
+    <Resource Include="Resources\Images\Paste.png" />
+    <Resource Include="Resources\Images\Print.png" />
+    <Resource Include="Resources\Images\Save.png" />
+    <Resource Include="Resources\Images\SendBackward.png" />
+    <Resource Include="Resources\Images\SendToBack.png" />
+    <Resource Include="Resources\Images\Ungroup.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Invert.Core\Invert.Core.csproj">
+      <Project>{cfcc5f2c-7a2f-4fd1-90d8-52420b7eb337}</Project>
+      <Name>Invert.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.GraphDesigner.Data\Invert.GraphDesigner.WPF.csproj">
+      <Project>{59157885-42ee-4324-8649-2737c0c0226f}</Project>
+      <Name>Invert.GraphDesigner.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.GraphDesigner.WPF.Controls\Invert.GraphDesigner.WPF.Controls.csproj">
+      <Project>{E8F83FB5-F3B6-4580-A33E-ECDF84E535B0}</Project>
+      <Name>Invert.GraphDesigner.WPF.Controls</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="PluginDesigner\" />
+    <Folder Include="Resources\Stencils\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DesignerImages\ActionEnabled.png" />
+    <Resource Include="Resources\DesignerImages\ArrowDown.png" />
+    <Resource Include="Resources\DesignerImages\ArrowLeft.png" />
+    <Resource Include="Resources\DesignerImages\ArrowRight.png" />
+    <Resource Include="Resources\DesignerImages\ArrowUp.png" />
+    <Resource Include="Resources\DesignerImages\Background.png" />
+    <Resource Include="Resources\DesignerImages\Box1.png" />
+    <Resource Include="Resources\DesignerImages\Box10.png" />
+    <Resource Include="Resources\DesignerImages\Box11.png" />
+    <Resource Include="Resources\DesignerImages\Box12-03.png" />
+    <Resource Include="Resources\DesignerImages\Box12-04.png" />
+    <Resource Include="Resources\DesignerImages\Box12.png" />
+    <Resource Include="Resources\DesignerImages\Box2.png" />
+    <Resource Include="Resources\DesignerImages\Box3.png" />
+    <Resource Include="Resources\DesignerImages\Box4.png" />
+    <Resource Include="Resources\DesignerImages\Box5.png" />
+    <Resource Include="Resources\DesignerImages\Box6.png" />
+    <Resource Include="Resources\DesignerImages\Box7.png" />
+    <Resource Include="Resources\DesignerImages\Box8.png" />
+    <Resource Include="Resources\DesignerImages\Box9.png" />
+    <Resource Include="Resources\DesignerImages\BoxHighlighted.png" />
+    <Resource Include="Resources\DesignerImages\BoxHighlighter1.png" />
+    <Resource Include="Resources\DesignerImages\BoxHighlighter2.png" />
+    <Resource Include="Resources\DesignerImages\BoxHighlighter3.png" />
+    <Resource Include="Resources\DesignerImages\BoxHighlighter4.png" />
+    <Resource Include="Resources\DesignerImages\BoxHighlighter5.png" />
+    <Resource Include="Resources\DesignerImages\BoxHighlighter6.png" />
+    <Resource Include="Resources\DesignerImages\BoxSelected.png" />
+    <Resource Include="Resources\DesignerImages\Breakpoint.png" />
+    <Resource Include="Resources\DesignerImages\CollapseDown.png" />
+    <Resource Include="Resources\DesignerImages\CollapseRight.png" />
+    <Resource Include="Resources\DesignerImages\CollapseRightArrow.png" />
+    <Resource Include="Resources\DesignerImages\CommandBar.png" />
+    <Resource Include="Resources\DesignerImages\CommandExpanded.png" />
+    <Resource Include="Resources\DesignerImages\Controller.png" />
+    <Resource Include="Resources\DesignerImages\CurrentActionBackground.png" />
+    <Resource Include="Resources\DesignerImages\DebugBackground.png" />
+    <Resource Include="Resources\DesignerImages\DiagramArrowDown.png" />
+    <Resource Include="Resources\DesignerImages\DiagramArrowLeft.png" />
+    <Resource Include="Resources\DesignerImages\DiagramArrowLeftEmpty.png" />
+    <Resource Include="Resources\DesignerImages\DiagramArrowRight.png" />
+    <Resource Include="Resources\DesignerImages\DiagramArrowRightEmpty.png" />
+    <Resource Include="Resources\DesignerImages\DiagramArrowUp.png" />
+    <Resource Include="Resources\DesignerImages\DiagramCircle.png" />
+    <Resource Include="Resources\DesignerImages\DiagramCircleLeft.png" />
+    <Resource Include="Resources\DesignerImages\DiagramCircleRight.png" />
+    <Resource Include="Resources\DesignerImages\EventActive.png" />
+    <Resource Include="Resources\DesignerImages\EventButton.png" />
+    <Resource Include="Resources\DesignerImages\EventForward.png" />
+    <Resource Include="Resources\DesignerImages\EventInactive.png" />
+    <Resource Include="Resources\DesignerImages\EyeBall.png" />
+    <Resource Include="Resources\DesignerImages\EyeBall2.png" />
+    <Resource Include="Resources\DesignerImages\FoldoutClose.png" />
+    <Resource Include="Resources\DesignerImages\ForwardBackground.png" />
+    <Resource Include="Resources\DesignerImages\GameManager.png" />
+    <Resource Include="Resources\DesignerImages\Header1.png" />
+    <Resource Include="Resources\DesignerImages\Header10.png" />
+    <Resource Include="Resources\DesignerImages\Header11.png" />
+    <Resource Include="Resources\DesignerImages\Header12.png" />
+    <Resource Include="Resources\DesignerImages\Header13.png" />
+    <Resource Include="Resources\DesignerImages\Header2.png" />
+    <Resource Include="Resources\DesignerImages\Header3.png" />
+    <Resource Include="Resources\DesignerImages\Header4.png" />
+    <Resource Include="Resources\DesignerImages\Header5.png" />
+    <Resource Include="Resources\DesignerImages\Header6.png" />
+    <Resource Include="Resources\DesignerImages\Header7.png" />
+    <Resource Include="Resources\DesignerImages\Header8.png" />
+    <Resource Include="Resources\DesignerImages\Header9.png" />
+    <Resource Include="Resources\DesignerImages\Icon.png" />
+    <Resource Include="Resources\DesignerImages\icon_precise.png" />
+    <Resource Include="Resources\DesignerImages\InstanceTriggerBackground.png" />
+    <Resource Include="Resources\DesignerImages\Item1.png" />
+    <Resource Include="Resources\DesignerImages\Item2.png" />
+    <Resource Include="Resources\DesignerImages\Item3.png" />
+    <Resource Include="Resources\DesignerImages\Item4.png" />
+    <Resource Include="Resources\DesignerImages\Item5.png" />
+    <Resource Include="Resources\DesignerImages\Item6.png" />
+    <Resource Include="Resources\DesignerImages\LeftArrow.png" />
+    <Resource Include="Resources\DesignerImages\NavigateNext.png" />
+    <Resource Include="Resources\DesignerImages\NavigateNext2.png" />
+    <Resource Include="Resources\DesignerImages\NavigatePrevious.png" />
+    <Resource Include="Resources\DesignerImages\NavigatePrevious2.png" />
+    <Resource Include="Resources\DesignerImages\NodeCollapse.png" />
+    <Resource Include="Resources\DesignerImages\NodeExpand.png" />
+    <Resource Include="Resources\DesignerImages\Plus.png" />
+    <Resource Include="Resources\DesignerImages\Remove.png" />
+    <Resource Include="Resources\DesignerImages\SceneManager.png" />
+    <Resource Include="Resources\DesignerImages\SceneViewBar.png" />
+    <Resource Include="Resources\DesignerImages\Selected.png" />
+    <Resource Include="Resources\DesignerImages\SelectedNodeItem.png" />
+    <Resource Include="Resources\DesignerImages\Tab.png" />
+    <Resource Include="Resources\DesignerImages\TabInActive.png" />
+    <Resource Include="Resources\DesignerImages\Tag1.png" />
+    <Resource Include="Resources\DesignerImages\Toolbar.png" />
+    <Resource Include="Resources\DesignerImages\uFrameBannerLogo.png" />
+    <Resource Include="Resources\DesignerImages\uFrameLogo.png" />
+    <Resource Include="Resources\DesignerImages\uFrameLogo2.png" />
+    <Resource Include="Resources\DesignerImages\uframeLogoLarge.png" />
+    <Resource Include="Resources\DesignerImages\View.png" />
+    <Resource Include="Resources\DesignerImages\ViewMultiInstance.png" />
+    <Resource Include="Resources\DesignerImages\ViewSingleInstance.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -17,7 +17,7 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
                     "OK");
 
             }
-            var elements = nodeViewModel.GraphItem.GetContainingNodes(InvertGraphEditor.CurrentProject).OfType<ElementData>().ToArray();
+            var elements = nodeViewModel.GraphItem.GetContainingNodes(nodeViewModel.GraphItem.Project).OfType<ElementData>().ToArray();
             ItemSelectionWindow.Init("Select Command", elements, (item) =>
             {
                 InvertGraphEditor.ExecuteCommand((n) =>

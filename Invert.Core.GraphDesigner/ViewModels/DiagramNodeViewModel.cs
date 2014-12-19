@@ -33,12 +33,13 @@ namespace Invert.Core.GraphDesigner
             foreach (var item in GraphItem.DisplayedItems)
             {
                 var vm = GetDataViewModel(item);
-
+             
                 if (vm == null)
                 {
-                    Debug.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
+                    InvertApplication.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
                     continue;
                 }
+                vm.DiagramViewModel = DiagramViewModel;
                 ContentItems.Add(vm);
             }
             AddPropertyFields();
@@ -74,6 +75,7 @@ namespace Invert.Core.GraphDesigner
         protected GraphItemViewModel GetDataViewModel(IGraphItem item)
         {
             var vm = InvertGraphEditor.Container.ResolveRelation<ItemViewModel>(item.GetType(), item, this) as GraphItemViewModel;
+            vm.DiagramViewModel = DiagramViewModel;
             return vm;
         }
 
@@ -92,7 +94,7 @@ namespace Invert.Core.GraphDesigner
             get { return DataObject as IDiagramNode; }
             set { DataObject = value; }
         }
-        public DiagramViewModel DiagramViewModel { get; set; }
+
         public DiagramNodeViewModel(IDiagramNode graphItemObject, DiagramViewModel diagramViewModel)
             : this()
         {
@@ -101,9 +103,17 @@ namespace Invert.Core.GraphDesigner
         
             OutputConnectorType = graphItemObject.GetType();
             InputConnectorType = graphItemObject.GetType();
+            ToggleNode = new SimpleEditorCommand<DiagramNodeViewModel>(_ =>
+            {
+                this.IsCollapsed = !IsCollapsed;
+            });
 
         }
 
+        public string TagsString
+        {
+            get { return string.Join(" | ", Tags.ToArray()); }
+        }
         public virtual Type ExportGraphType
         {
             get { return null; }
@@ -152,6 +162,7 @@ namespace Invert.Core.GraphDesigner
                 if (value == false)
                     IsEditing = false;
                 GraphItemObject.IsSelected = value;
+                OnPropertyChanged("IsSelected");
             }
         }
 
@@ -200,7 +211,11 @@ namespace Invert.Core.GraphDesigner
                 return true;
 
             }
-            set { GraphItemObject.IsCollapsed = value; }
+            set
+            {
+                GraphItemObject.IsCollapsed = value;
+                OnPropertyChanged("IsCollapsed");
+            }
         }
 
         public virtual bool ShowSubtitle { get { return false; } }
@@ -222,7 +237,8 @@ namespace Invert.Core.GraphDesigner
         {
             base.DataObjectChanged();
             ContentItems.Clear();
-            IsLocal = InvertGraphEditor.CurrentProject.CurrentGraph.NodeItems.Contains(GraphItemObject);
+            
+            IsLocal = DiagramViewModel.CurrentRepository.NodeItems.Contains(GraphItemObject);
             CreateContent();
             if (GraphItemObject.IsEditing)
             {
@@ -368,6 +384,8 @@ namespace Invert.Core.GraphDesigner
                 yield break;
             }
         }
+
+        public IEditorCommand ToggleNode { get; set; }
 
 
         public void BeginEditing()
