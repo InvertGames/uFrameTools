@@ -29,7 +29,7 @@ namespace Invert.uFrame.VS
     /// Factory for creating our editors.
     /// </summary>
     [Guid(GuidStrings.GuidEditorFactory)]
-    public class EditorFactory : IVsEditorFactory, IDisposable
+    public class EditorFactory : IVsEditorFactory, IDisposable, IVsSolutionEvents
     {
         #region Fields
         // private instance of the EditorFactory's OleServiceProvider
@@ -90,8 +90,13 @@ namespace Invert.uFrame.VS
         /// <returns>S_OK if the method succeeds.</returns>
         public int SetSite(IServiceProvider psp)
         {
+
             vsServiceProvider = new ServiceProvider(psp);
             ProjectUtilities.SetServiceProvider(vsServiceProvider);
+                var solution = GetService(typeof (SVsSolution)) as IVsSolution;
+            uint cookie;
+            solution.AdviseSolutionEvents(this, out cookie);
+
             VSServiceProvider = vsServiceProvider;
             return VSConstants.S_OK;
         }
@@ -249,5 +254,61 @@ namespace Invert.uFrame.VS
         #endregion 
 
         #endregion
+
+
+        public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
+        {
+            InvertGraphEditor.Projects = null;
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
+        {
+            InvertGraphEditor.Projects = null;
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
+        {
+            InvertGraphEditor.Projects = null;
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
+        {
+
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterCloseSolution(object pUnkReserved)
+        {
+            InvertGraphEditor.Projects = null;
+            return VSConstants.S_OK;
+        }
     }
 }

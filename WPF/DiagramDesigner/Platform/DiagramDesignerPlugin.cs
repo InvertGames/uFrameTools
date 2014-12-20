@@ -7,7 +7,7 @@ namespace DiagramDesigner.Platform
     {
         public override decimal LoadPriority
         {
-            get { return -3; }
+            get { return -500; }
         }
 
         public override bool Required

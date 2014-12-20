@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Invert.Core.GraphDesigner
@@ -6,7 +7,7 @@ namespace Invert.Core.GraphDesigner
     public class GenericInheritableNode : GenericNode, IInhertable
     {
         private BaseClassReference _baseReference;
-
+        [Browsable(false)]
         public GenericInheritableNode BaseNode
         {
             get
@@ -19,7 +20,7 @@ namespace Invert.Core.GraphDesigner
                 Graph.AddConnection(value,BaseReference);
             }
         }
-
+        [Browsable(false)]
         public IEnumerable<GenericInheritableNode> BaseNodes
         {
             get
@@ -32,6 +33,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
+        [Browsable(false)]
         public IEnumerable<GenericInheritableNode> BaseNodesWithThis
         {
             get
@@ -45,6 +47,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
+        [Browsable(false)]
         public IEnumerable<GenericInheritableNode> DerivedNodes
         {
             get
@@ -60,7 +63,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-
+        [Browsable(false)]
         [InputSlot("Base Class",OrderIndex = -1)]
         public BaseClassReference BaseReference
         {

@@ -11,7 +11,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="uFrame.InvertGameStudios.B8BA92FE-2BE2-4EC3-A913-1A2EC3277756" Version="2.0" Language="en-US" Publisher="Invert Game Studios LLC" />
+    <Identity Id="uFrame.InvertGameStudios.B8BA92FE-2BE2-4EC3-A913-1A2EC3277756" Version="2.1" Language="en-US" Publisher="Invert Game Studios LLC" />
     <DisplayName>uFrame</DisplayName>
     <Description xml:space="preserve">uFrame is a powerful Graphing tool that allows you to visually design applications based on the standard practices of various architecture frameworks such as MVC, MVVM, MVCVM.</Description>
     <MoreInfo>http://invertgamestudios.com</MoreInfo>
@@ -19,7 +19,10 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     <PreviewImage>Example.EditorWithToolbox.jpg</PreviewImage>
   </Metadata>
   <Installation InstalledByMsi="false">
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="12.0" />
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Premium" />
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.VSWinExpress" />
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Ultimate" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />

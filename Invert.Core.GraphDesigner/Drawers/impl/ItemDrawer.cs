@@ -113,11 +113,19 @@ namespace Invert.Core.GraphDesigner
 
         }
 
+        public void DrawBackground(IPlatformDrawer platform, float scale)
+        {
+            if (IsSelected)
+            {
+                platform.DrawStretchBox(Bounds.Scale(scale), CachedStyles.Item1, 12f);
+            }
+        }
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
-
+         
+            
             DrawName(Bounds.Scale(scale), platform, scale);
 
             // TODO Platform specific
@@ -163,6 +171,7 @@ namespace Invert.Core.GraphDesigner
 
         protected void DrawName(Rect rect, IPlatformDrawer platform, float scale)
         {
+           
             if (ItemViewModel.IsEditing && ItemViewModel.IsEditable)
             {
                 platform.DrawTextbox(ItemViewModel.NodeItem.Identifier, rect, ItemViewModel.Name,
@@ -178,7 +187,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                platform.DrawLabel(rect, _cachedName, CachedStyles.Item1, DrawingAlignment.MiddleCenter);
+                platform.DrawLabel(rect, _cachedName, CachedStyles.ItemTextEditingStyle, DrawingAlignment.MiddleCenter);
             }
         }
 

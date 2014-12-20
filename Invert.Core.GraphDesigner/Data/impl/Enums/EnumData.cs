@@ -47,10 +47,10 @@ public class EnumData : DiagramNode,IDesignerType, IViewPropertyType
         Project.RemoveNode(this);
     }
 
-    public Type CompiledType
-    {
-        get { return Type.GetType(AssemblyQualifiedName); }
-    }
+    //public Type CompiledType
+    //{
+    //    get { return Type.GetType(AssemblyQualifiedName); }
+    //}
 
     public override string InfoLabel
     {

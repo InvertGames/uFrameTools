@@ -147,9 +147,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     <Compile Include="Generation\BaseCodeGenerator.cs" />
     <Compile Include="Generation\BaseCodeGeneratorWithSite.cs" />
     <Compile Include="Generation\UFrameFileGenerator.cs" />
-    <Compile Include="GraphWindow.xaml.cs">
-      <DependentUpon>GraphWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="GuidList.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -175,6 +172,9 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     <Compile Include="VisualStudioPlatform\WindowsPrefs.cs" />
     <Compile Include="Windows\SelectItemTypeWindow.xaml.cs">
       <DependentUpon>SelectItemTypeWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GraphWindow.xaml.cs">
+      <DependentUpon>GraphWindow.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -218,11 +218,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ToolboxItemData.pkgdef">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="GraphWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -244,8 +239,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     <ProjectReference Include="..\..\WPF\Invert.GraphDesigner.WPF.Controls\Invert.GraphDesigner.WPF.Controls.csproj">
       <Project>{e8f83fb5-f3b6-4580-a33e-ecdf84e535b0}</Project>
       <Name>Invert.GraphDesigner.WPF.Controls</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>VSIXContainerProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

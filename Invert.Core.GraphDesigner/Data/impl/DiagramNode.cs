@@ -12,6 +12,7 @@ namespace Invert.Core.GraphDesigner
     /// <summary>
     /// The base data class for all diagram nodes.
     /// </summary>
+    [Browsable(false)]
     public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter, ITypedItem
     {
       
@@ -127,7 +128,7 @@ namespace Invert.Core.GraphDesigner
                 return InvertApplication.FindType(FullName);
             }
         }
-
+        [Browsable(false)]
         public DataBag DataBag
         {
             get { return _dataBag ?? (_dataBag = new DataBag()); }
@@ -258,7 +259,7 @@ namespace Invert.Core.GraphDesigner
             get { return _locations; }
             set { _locations = value; }
         }
-
+        [Browsable(true)]
         public virtual string Name
         {
             get
@@ -557,6 +558,8 @@ namespace Invert.Core.GraphDesigner
         {
             get { return this.Name; }
         }
+        [Browsable(false)]
+        public string AssemblyQualifiedName { get; set; }
 
         public CodeTypeReference GetFieldType()
         {

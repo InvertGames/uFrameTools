@@ -10,6 +10,7 @@ namespace Invert.Core.GraphDesigner
     public interface IMultiSlot { }
     public class MultiOutputSlot<TFor> : GenericSlot, IMultiSlot
     {
+        [Browsable(false)]
         public IEnumerable<TFor> Items
         {
             get { return Outputs.Select(p => p.Input).OfType<TFor>(); }
@@ -23,6 +24,7 @@ namespace Invert.Core.GraphDesigner
     }
     public class SingleOutputSlot<TFor> : GenericSlot
     {
+        [Browsable(false)]
         public TFor Item
         {
             get { return Outputs.Select(p => p.Input).OfType<TFor>().FirstOrDefault(); }
@@ -35,6 +37,7 @@ namespace Invert.Core.GraphDesigner
     }
     public class MultiInputSlot<TFor> : GenericSlot, IMultiSlot
     {
+        [Browsable(false)]
         public IEnumerable<TFor> Items
         {
             get { return Inputs.Select(p=>p.Output).OfType<TFor>(); }
@@ -47,6 +50,7 @@ namespace Invert.Core.GraphDesigner
     }
     public class SingleInputSlot<TFor> : GenericSlot
     {
+        [Browsable(false)]
         public TFor Item
         {
             get { return Inputs.Select(p => p.Output).OfType<TFor>().FirstOrDefault(); }
@@ -60,6 +64,7 @@ namespace Invert.Core.GraphDesigner
     }
     public class InheritanceSlot<TFor> : GenericSlot
     {
+        [Browsable(false)]
         public TFor Item
         {
             get { return Inputs.Select(p => p.Output).OfType<TFor>().FirstOrDefault(); }
@@ -138,7 +143,7 @@ namespace Invert.Core.GraphDesigner
         TextArea,
         TypeSelection
     }
-
+    [Browsable(false)]
     public class GenericNode : DiagramNode, IConnectable
     {
         private List<IDiagramNodeItem> _childItems = new List<IDiagramNodeItem>();
@@ -214,7 +219,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-
+        [Browsable(false)]
         public IEnumerable<ConnectionData> Inputs
         {
             get
@@ -229,6 +234,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
+        [Browsable(false)]
         public IEnumerable<ConnectionData> Outputs
         {
             get
@@ -267,7 +273,7 @@ namespace Invert.Core.GraphDesigner
                 return ChildItems;
             }
         }
-
+        [Browsable(false)]
         public override string Label
         {
             get { return Name; }
@@ -481,7 +487,7 @@ namespace Invert.Core.GraphDesigner
             newMirror.Node = this;
             ChildItems.Add(newMirror);
         }
-
+        [Browsable(false)]
         public override IEnumerable<IGraphItem> GraphItems
         {
             get
@@ -496,6 +502,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
+        [Browsable(false)]
         public virtual IEnumerable<GenericSlot> AllInputSlots
         {
             get
@@ -508,6 +515,7 @@ namespace Invert.Core.GraphDesigner
 
             }
         }
+        [Browsable(false)]
         public virtual IEnumerable<GenericSlot> AllOutputSlots
         {
             get
@@ -520,6 +528,7 @@ namespace Invert.Core.GraphDesigner
 
             }
         }
+        [Browsable(false)]
         public virtual IEnumerable<GenericSlot> AllSlots
         {
             get
@@ -531,6 +540,7 @@ namespace Invert.Core.GraphDesigner
                 
             }
         }
+        [Browsable(false)]
         public virtual IEnumerable<NodeInputConfig> SlotConfigurations
         {
             get
@@ -570,6 +580,7 @@ namespace Invert.Core.GraphDesigner
 
     public class GenericReferenceItem<TSourceType> : GenericReferenceItem
     {
+        [Browsable(false)]
         public TSourceType SourceItem
         {
             get { return (TSourceType)SourceItemObject; }
@@ -579,7 +590,7 @@ namespace Invert.Core.GraphDesigner
     public class GenericReferenceItem : GenericSlot
     {
         private string _sourceIdentifier;
-
+        [Browsable(false)]
         public override string Label
         {
             get { return SourceItemObject.Name + ": " + base.Label; }
@@ -607,7 +618,7 @@ namespace Invert.Core.GraphDesigner
             get { return _sourceIdentifier; }
             set { _sourceIdentifier = value; }
         }
-
+        [Browsable(false)]
         public virtual IDiagramNodeItem SourceItemObject
         {
             get

@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace Invert.Core.GraphDesigner
 {
     public interface IDiagramNodeItem : ISelectable, IJsonObject,IItem
@@ -7,6 +9,7 @@ namespace Invert.Core.GraphDesigner
         string FullLabel { get; }
         bool IsSelectable { get;}
         DiagramNode Node { get; set; }
+        [Browsable(false)]
         DataBag DataBag { get; set; }
         
         /// <summary>

@@ -19,7 +19,7 @@ namespace Invert.Core.GraphDesigner
         
         private IDrawer _nodeDrawerAtMouse;
         private SelectionRectHandler _selectionRectHandler;
-        private IDrawer[] _cachedChildren;
+        private IDrawer[] _cachedChildren = new IDrawer[] {};
 
 
         public static float Scale

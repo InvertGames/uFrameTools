@@ -217,20 +217,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Invert.Core\Invert.Core.csproj">
-      <Project>{cfcc5f2c-7a2f-4fd1-90d8-52420b7eb337}</Project>
-      <Name>Invert.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Invert.GraphDesigner.Data\Invert.GraphDesigner.WPF.csproj">
-      <Project>{59157885-42ee-4324-8649-2737c0c0226f}</Project>
-      <Name>Invert.GraphDesigner.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Invert.GraphDesigner.WPF.Controls\Invert.GraphDesigner.WPF.Controls.csproj">
-      <Project>{E8F83FB5-F3B6-4580-A33E-ECDF84E535B0}</Project>
-      <Name>Invert.GraphDesigner.WPF.Controls</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="PluginDesigner\" />
     <Folder Include="Resources\Stencils\" />
   </ItemGroup>
@@ -336,6 +322,24 @@
     <Resource Include="Resources\DesignerImages\View.png" />
     <Resource Include="Resources\DesignerImages\ViewMultiInstance.png" />
     <Resource Include="Resources\DesignerImages\ViewSingleInstance.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Invert.Attributes\Invert.Attributes.csproj">
+      <Project>{572e3d0c-06d5-4894-a128-a2032684a0b6}</Project>
+      <Name>Invert.Attributes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Invert.Core\Invert.Core.csproj">
+      <Project>{cfcc5f2c-7a2f-4fd1-90d8-52420b7eb337}</Project>
+      <Name>Invert.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.GraphDesigner.Data\Invert.GraphDesigner.WPF.csproj">
+      <Project>{59157885-42ee-4324-8649-2737c0c0226f}</Project>
+      <Name>Invert.GraphDesigner.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.GraphDesigner.WPF.Controls\Invert.GraphDesigner.WPF.Controls.csproj">
+      <Project>{e8f83fb5-f3b6-4580-a33e-ecdf84e535b0}</Project>
+      <Name>Invert.GraphDesigner.WPF.Controls</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

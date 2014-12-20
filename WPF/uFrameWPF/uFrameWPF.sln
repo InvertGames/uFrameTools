@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiagramDesigner", "..\Diagr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.GraphDesigner.WPF.Controls", "..\Invert.GraphDesigner.WPF.Controls\Invert.GraphDesigner.WPF.Controls.csproj", "{E8F83FB5-F3B6-4580-A33E-ECDF84E535B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.Attributes", "..\..\Invert.Attributes\Invert.Attributes.csproj", "{572E3D0C-06D5-4894-A128-A2032684A0B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{E8F83FB5-F3B6-4580-A33E-ECDF84E535B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8F83FB5-F3B6-4580-A33E-ECDF84E535B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8F83FB5-F3B6-4580-A33E-ECDF84E535B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{572E3D0C-06D5-4894-A128-A2032684A0B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{572E3D0C-06D5-4894-A128-A2032684A0B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{572E3D0C-06D5-4894-A128-A2032684A0B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{572E3D0C-06D5-4894-A128-A2032684A0B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

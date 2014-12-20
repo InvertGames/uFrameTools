@@ -117,16 +117,31 @@ namespace Invert.Core.GraphDesigner
         {
             NodeItem.Rename(NodeItem.Node, newName);
         }
-        
+
+        public override bool IsSelected
+        {
+            get { return base.IsSelected; }
+            set
+            {
+                if (!value)
+                {
+                        IsEditing = false;
+                    
+                }
+                base.IsSelected = value;
+            }
+        }
+
         public override void Select()
         {
+            NodeViewModel.Select();
             var items = NodeViewModel.DiagramViewModel.SelectedNodeItems.ToArray();
             foreach (var item in items)
                 item.IsSelected = false;
 #if UNITY_DLL
             GUIUtility.keyboardControl = 0;
 #endif
-            NodeViewModel.Select();
+         
             IsSelected = true;
             IsEditing = true;
         }

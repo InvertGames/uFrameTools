@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 
@@ -34,7 +35,7 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     {
         return true;
     }
-
+    [Browsable(false)]
     public IShellNode ReferenceType
     {
         get { return GetConnectionReference<ReferenceItemType>().InputFrom<IShellNode>(); }
@@ -55,10 +56,10 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
 
     //[OutputSlot("Generators")]
     //public MultiOutputSlot<ShellGeneratorTypeNode> GeneratorsSlot { get; set; }
-
+    [Browsable(false)]
     [OutputSlot("Sub Nodes")]
     public MultiOutputSlot<ShellNodeTypeNode> SubNodesSlot { get; set; }
-
+    [Browsable(false)]
     public IEnumerable<ShellNodeTypeNode> SubNodes
     {
         get { return SubNodesSlot.Items; }
@@ -72,18 +73,18 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     //    }
     //}
 
-
+    [Browsable(false)]
     [ReferenceSection("Sections", SectionVisibility.WhenNodeIsFilter, false)]
     public IEnumerable<ShellNodeSectionsSlot> Sections
     {
         get { return ChildItems.OfType<ShellNodeSectionsSlot>(); }
     }
-
+    [Browsable(false)]
     public IEnumerable<ShellNodeTypeSection> PossibleSections
     {
         get { return Project.NodeItems.OfType<ShellNodeTypeSection>(); }
     }
-
+    [Browsable(false)]
     public IEnumerable<IReferenceNode> IncludedInSections
     {
         get
@@ -91,12 +92,12 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
             return Project.NodeItems.OfType<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
         }
     }
-
+    [Browsable(false)]
     public IEnumerable<ShellNodeTypeReferenceSection> ReferenceSections
     {
         get { return Sections.Select(p => p.SourceItem).OfType<ShellNodeTypeReferenceSection>(); }
     }
-
+    [Browsable(false)]
     [ReferenceSection("Inputs", SectionVisibility.WhenNodeIsFilter, true)]
     public IEnumerable<ShellNodeInputsSlot> InputSlots
     {
@@ -105,7 +106,7 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
             return ChildItems.OfType<ShellNodeInputsSlot>();
         }
     }
-
+    [Browsable(false)]
     [ReferenceSection("Outputs", SectionVisibility.WhenNodeIsFilter, true)]
     public IEnumerable<ShellNodeOutputsSlot> OutputSlots
     {
@@ -114,16 +115,19 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
             return ChildItems.OfType<ShellNodeOutputsSlot>();
         }
     }
+    [Browsable(false)]
     public IEnumerable<ShellSlotTypeNode> PossibleInputSlots
     {
         get { return Project.NodeItems.OfType<ShellSlotTypeNode>().Where(p => !p.IsOutput); }
     }
+    [Browsable(false)]
     public IEnumerable<ShellSlotTypeNode> PossibleOutputSlots
     {
         get { return Project.NodeItems.OfType<ShellSlotTypeNode>().Where(p => p.IsOutput); }
     }
         
     //[Section("Custom Selectors", SectionVisibility.WhenNodeIsFilter)]
+    [Browsable(false)]
     public IEnumerable<ShellPropertySelectorItem> CustomSelectors
     {
         get
@@ -136,13 +140,14 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     {
         get { return Name + "Node"; }
     }
-
+    [Browsable(false)]
     [ReferenceSection("Connectable To", SectionVisibility.WhenNodeIsFilter, false)]
     public IEnumerable<ShellConnectableReferenceType> ConnectableTo
     {
         get { return ChildItems.OfType<ShellConnectableReferenceType>(); }
     }
 
+    [Browsable(false)]
     public IEnumerable<IShellNode> PossibleConnectableTo
     {
         get { return Project.NodeItems.OfType<IShellNode>(); }

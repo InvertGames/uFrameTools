@@ -316,6 +316,7 @@ namespace Invert.Core.GraphDesigner
             foreach (var item in SelectedGraphItems)
             {
                 item.IsSelected = false;
+                
             }
             foreach (var item in GraphItems.OfType<DiagramNodeViewModel>())
             {

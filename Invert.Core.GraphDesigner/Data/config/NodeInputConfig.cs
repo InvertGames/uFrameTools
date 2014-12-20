@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace Invert.Core.GraphDesigner
@@ -158,7 +159,7 @@ namespace Invert.Core.GraphDesigner
         {
         }
     }
-
+    [Browsable(false)]
     public class ReferenceSection : Section
     {
         private bool _editable = true;

@@ -23,7 +23,9 @@ namespace Invert.uFrame.VS
             Project = project;
             ProjectHierarchy = project as IVsHierarchy;
             uint eventsSubscriptionCookie;
+ 
             Debug.Assert(ProjectHierarchy != null, "ProjectHierarchy != null");
+      
             ProjectHierarchy.AdviseHierarchyEvents(this, out eventsSubscriptionCookie);
             _projectEventsDisposer = delegate { ProjectHierarchy.UnadviseHierarchyEvents(eventsSubscriptionCookie); };
             Refresh();

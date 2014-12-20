@@ -298,8 +298,10 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
         {
-            // TODO Implement alignment
-           GUI.Label(rect,label,(GUIStyle)style);
+            var s = (GUIStyle) style;
+            s.alignment = ((TextAnchor) Enum.Parse(typeof (TextAnchor), alignment.ToString(), true));
+            
+           GUI.Label(rect,label,s);
         }
 
         public void DrawStretchBox(Rect scale, object nodeBackground, float offset)
@@ -381,10 +383,14 @@ namespace Invert.Core.GraphDesigner.Unity
             EditorGUI.BeginChangeCheck();
             GUI.SetNextControlName("EditingField");
             DiagramDrawer.IsEditingField = true;
-            var newName = EditorGUILayout.TextField(value, (GUIStyle)itemTextEditingStyle);
+            var newName = EditorGUI.TextField(rect, value, (GUIStyle)itemTextEditingStyle);
             if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
             {
                 valueChangedAction(value,false);
+            }
+            if (Event.current.keyCode == KeyCode.Return)
+            {
+                valueChangedAction(value, true);
             }
         }
 

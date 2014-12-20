@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using Microsoft.Samples.VisualStudio.IDE.EditorWithToolbox;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -22,6 +23,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using VSLangProj;
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 using IDataObject = Microsoft.VisualStudio.OLE.Interop.IDataObject;
+using IWin32Window = System.Windows.Forms.IWin32Window;
 
 namespace Invert.uFrame.VS
 {
@@ -157,7 +159,8 @@ namespace Invert.uFrame.VS
         //{
         //    get
         //    {
-        //        return this.editorControl;
+        //        //new WindowInteropHelper()
+        //        return editorControl;
         //    }
         //}
         #endregion Properties
