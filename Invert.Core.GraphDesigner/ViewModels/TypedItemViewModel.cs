@@ -1,7 +1,32 @@
+using System.Collections.Generic;
+
 namespace Invert.Core.GraphDesigner
 {
     public abstract class TypedItemViewModel : ItemViewModel<ITypedItem>
     {
+        public static Dictionary<string, string> TypeNameAliases = new Dictionary<string, string>()
+    {
+        {"Int32","int"},
+        {"Boolean","bool"},
+        {"Char","char"},
+        {"Decimal","decimal"},
+        {"Double","double"},
+        {"Single","float"},
+        {"String","string"},
+    };
+        public static string TypeAlias(string typeName)
+        {
+            if (typeName == null)
+            {
+                return " ";
+            }
+            if (TypeNameAliases.ContainsKey(typeName))
+            {
+                return TypeNameAliases[typeName];
+            }
+            return typeName;
+        }
+
         protected TypedItemViewModel(ITypedItem viewModelItem, DiagramNodeViewModel nodeViewModel)
             : base(nodeViewModel)
         {
@@ -13,12 +38,8 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                var rt = Data.RelatedType;
-                if (string.IsNullOrEmpty(rt))
-                {
-                    return "[None]";
-                }
-                return Data.RelatedType;//ElementDataBase.TypeAlias(Data.RelatedType);
+
+                return TypeAlias(Data.RelatedTypeName);//ElementDataBase.TypeAlias(Data.RelatedType);
             }
             set
             {
@@ -28,7 +49,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual string TypeLabel
         {
-            get { return Data.RelatedTypeName; }
+            get { return RelatedType; }
         }
     }
 }

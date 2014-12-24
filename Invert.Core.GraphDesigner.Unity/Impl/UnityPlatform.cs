@@ -291,6 +291,7 @@ namespace Invert.Core.GraphDesigner.Unity
             Handles.DrawBezier(startPosition,endPosition,startTangent,endTangent,color,null,width);
         }
 
+    
         public Vector2 CalculateSize(string text, object tag1)
         {
             return ((GUIStyle)tag1).CalcSize(new GUIContent(text));
@@ -319,7 +320,9 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DoButton(Rect scale, string label, object style, Action action)
         {
-             if (GUI.Button(scale, label,(GUIStyle)style))
+            var s =(GUIStyle) style;
+            s.alignment = TextAnchor.MiddleCenter;
+             if (GUI.Button(scale, label,s))
              {
                  action();
              }
@@ -360,7 +363,38 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawColumns(Rect rect, params Action<Rect>[] columns)
         {
-            
+            var columnsLength = columns.Length;
+            var columnFactor = rect.width / columnsLength;
+
+            for (int index = 0; index < columns.Length; index++)
+            {
+                var item = columns[index];
+                var newRect = new Rect(rect.x + (index * columnFactor), rect.y, columnFactor, rect.height);
+                item(newRect);
+            }
+        }
+        public void DrawColumns(Rect rect, int[] columnWidths, params Action<Rect>[] columns)
+        {
+            var x = 0;
+            for (int index = 0; index < columns.Length; index++)
+            {
+                var item = columns[index];
+                if (index == columns.Length - 1)
+                {
+                    // Use the remaining width of this item
+                    var width = rect.width - x;
+                    var newRect = new Rect(rect.x + x, rect.y, width, rect.height);
+                    item(newRect);
+                }
+                else
+                {
+                    var newRect = new Rect(rect.x + x, rect.y, columnWidths[index], rect.height);
+                    item(newRect);
+                    
+                }
+               
+                x += columnWidths[index];
+            }
         }
 
         public void DrawingComplete()
@@ -384,9 +418,10 @@ namespace Invert.Core.GraphDesigner.Unity
             GUI.SetNextControlName("EditingField");
             DiagramDrawer.IsEditingField = true;
             var newName = EditorGUI.TextField(rect, value, (GUIStyle)itemTextEditingStyle);
+           
             if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
             {
-                valueChangedAction(value,false);
+                valueChangedAction(newName, false);
             }
             if (Event.current.keyCode == KeyCode.Return)
             {

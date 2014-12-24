@@ -178,7 +178,9 @@ namespace Invert.Core.GraphDesigner
 
                 return Name;
             }
+            set { throw new NotImplementedException(); }
         }
+
         [Browsable(false)]
         public Rect HeaderPosition { get; set; }
         [Browsable(false)]
@@ -259,7 +261,7 @@ namespace Invert.Core.GraphDesigner
             get { return _locations; }
             set { _locations = value; }
         }
-        [Browsable(true)]
+        [Browsable(true),InspectorProperty]
         public virtual string Name
         {
             get
@@ -282,11 +284,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-#if UNITY_DLL
                 return Graph.Namespace;
-#else
-                return "TODONAMESPACE";
-#endif
             }
         }
         [Browsable(false)]
@@ -409,17 +407,22 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-
+        
+        public bool EnsureUniqueNames { get; set; }
         public virtual bool EndEditing()
         {
             IsEditing = false;
             if (Project != null)
             {
-                if (Project.NodeItems.Count(p => p.Name == Name) > 1)
+                if (EnsureUniqueNames)
                 {
-                    Name = OldName;
-                    return false;
+                    if (Graph.NodeItems.Count(p => p.Name == Name) > 1)
+                    {
+                        Name = OldName;
+                        return false;
+                    }    
                 }
+                
             }
             if (OldName != Name)
             {
@@ -584,6 +587,17 @@ namespace Invert.Core.GraphDesigner
             
             return a != b && a.GetType() != b.GetType();
         }
+    }
+
+    public enum NodeScope
+    {
+        None,
+        Node,
+        Graph,
+        Project,
+        NodeAndType,
+        GraphAndType,
+        ProjectAndType
     }
 }
 

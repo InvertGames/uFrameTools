@@ -51,6 +51,7 @@ public class PluginDesigner : DiagramPlugin
             .HasSubNode<ShellNodeTypeNode>()
             .HasSubNode<ShellGraphTypeNode>()
             .HasSubNode<ShellSlotTypeNode>()
+            .HasSubNode<TypeReferenceNode>()
             ;
 
         var graphConfig = container.AddNode<ShellGraphTypeNode>("Graph Type")
@@ -68,6 +69,7 @@ public class PluginDesigner : DiagramPlugin
             .HasSubNode<ShellGeneratorTypeNode>()
             .HasSubNode<ShellNodeTypeReferenceSection>()
             .HasSubNode<ShellNodeTypeNode>()
+            .HasSubNode<TypeReferenceNode>()
             .Inheritable()
             .ColorConfig(_ =>
             {

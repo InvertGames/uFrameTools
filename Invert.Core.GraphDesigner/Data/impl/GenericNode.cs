@@ -641,6 +641,52 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+
+    public class TypeReferenceNode : GenericNode, IClassTypeNode, ITypedItem
+    {
+        private string _fullName;
+
+        [JsonProperty]
+        public override string FullName
+        {
+            get { return _fullName; }
+            set { _fullName = value; }
+        }
+
+        public string ClassName
+        {
+            get { return Name; }
+            set { Name = value; }
+        }
+        
+        
+    }
+
+    public class TypeReferenceNodeViewModel : DiagramNodeViewModel<TypeReferenceNode>
+    {
+        public TypeReferenceNodeViewModel(TypeReferenceNode graphItemObject, DiagramViewModel diagramViewModel) : base(graphItemObject, diagramViewModel)
+        {
+        }
+
+        public override bool IsEditable
+        {
+            get { return false; }
+        }
+
+        protected override void DataObjectChanged()
+        {
+            base.DataObjectChanged();
+
+        }
+    }
+
+    public class TypeReferenceNodeDrawer : DiagramNodeDrawer<TypeReferenceNodeViewModel>
+    {
+        public TypeReferenceNodeDrawer(TypeReferenceNodeViewModel viewModel) : base(viewModel)
+        {
+        }
+    }
+
     //public class GenericInheritanceReference : GenericNodeChildItem
     //{
     //    public string InputName { get; set; }

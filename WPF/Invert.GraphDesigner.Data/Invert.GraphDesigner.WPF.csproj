@@ -659,6 +659,9 @@
     <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\api\IPlatformPreferences.cs">
       <Link>Platform\api\IPlatformPreferences.cs</Link>
     </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\api\IWindowManager.cs">
+      <Link>Platform\api\IWindowManager.cs</Link>
+    </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\impl\ContextMenuUI.cs">
       <Link>Platform\impl\ContextMenuUI.cs</Link>
     </Compile>
@@ -766,6 +769,7 @@
     </Compile>
     <Compile Include="Class1.cs" />
     <Compile Include="Compatability.cs" />
+    <Compile Include="JsonProjectRepository.cs" />
     <Compile Include="Platform\impl\DesignerStyles.cs" />
     <Compile Include="Platform\impl\GraphStyle.cs" />
     <Compile Include="Platform\impl\InvertControl.cs" />
@@ -778,6 +782,8 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WindowViewModels\SelectItemTypeViewModel.cs" />
+    <Compile Include="WPFContextMenu.cs" />
+    <Compile Include="WPFPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Invert.Attributes\Invert.Attributes.csproj">

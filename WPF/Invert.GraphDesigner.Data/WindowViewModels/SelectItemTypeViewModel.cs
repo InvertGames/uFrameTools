@@ -9,9 +9,45 @@ using Invert.Core.GraphDesigner;
 
 namespace Invert.GraphDesigner.WPF
 {
-    public class SelectItemTypeViewModel
+    public class SelectItemTypeViewModel : ViewModel
     {
+        private string _searchTerms;
+        private IEnumerable<IItem> _filteredItems;
         public IEnumerable<IItem> Items { get; set; }
+
+        public IEnumerable<IItem> FilteredItems
+        {
+            get
+            {
+                if (_filteredItems == null)
+                    return Items.Take(10);
+                return _filteredItems;
+            }
+            set
+            {
+                _filteredItems = value;
+                OnPropertyChanged("FilteredItems");
+            }
+        }
+
+        public string SearchTerms
+        {
+            get { return _searchTerms; }
+            set
+            {
+                _searchTerms = value;
+                if (string.IsNullOrEmpty(value))
+                {
+                    FilteredItems = null;
+                }
+                else
+                {
+                    FilteredItems = Items.Where(p => p.SearchTag.Contains(value) || p.SearchTag == value).Take(10);
+                }
+                
+                this.OnPropertyChanged("SearchTerms");
+            }
+        }
 
         public SelectItemTypeViewModel()
         {

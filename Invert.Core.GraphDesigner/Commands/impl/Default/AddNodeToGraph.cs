@@ -12,6 +12,11 @@ namespace Invert.Core.GraphDesigner
 {
     public class AddNodeToGraph : EditorCommand<DiagramViewModel>, IDiagramContextCommand,IDynamicOptionsCommand
     {
+        public override string Name
+        {
+            get { return "Add"; }
+        }
+
         public override void Perform(DiagramViewModel node)
         {
             if (SelectedOption != null)
@@ -162,6 +167,7 @@ namespace Invert.Core.GraphDesigner
 
         public override string CanPerform(DiagramNodeViewModel node)
         {
+            if (node == null) return "Invalid input";
             if (!node.IsLocal) return "Node must be local to push it.";
             return base.CanPerform(node);
         }
@@ -202,7 +208,7 @@ namespace Invert.Core.GraphDesigner
 
         public override string CanPerform(DiagramNodeViewModel node)
         {
-
+            if (node == null) return "Invalid input";
             if (node.GraphItemObject == node.DiagramViewModel.DiagramData.RootFilter)
                 return "This node is the main part of a diagram and can't be removed.";
             if(node.IsLocal) 
@@ -210,6 +216,47 @@ namespace Invert.Core.GraphDesigner
             return null;
         }
 
+    }
+
+    public class AddReferenceNode : EditorCommand<DiagramViewModel>
+    {
+      
+        public override string Name
+        {
+            get
+            {
+                return "Add Type Reference";
+            }
+        }
+        public override void Perform(DiagramViewModel diagram)
+        {
+    
+            InvertGraphEditor.WindowManager.InitItemWindow(InvertApplication.CachedAssemblies.SelectMany(p=>p.GetTypes()).Select(p=>new GraphTypeInfo()
+            {
+                Name = p.FullName,
+                Label = p.Name
+            }), _ =>
+            {
+                var node = new TypeReferenceNode();
+                diagram.AddNode(node, new Vector2(15f, 15f));
+                node.Name = _.Label;
+                node.FullName = _.Name;
+            });
+            //InvertGraphEditor.WindowManager.InitTypeListWindow(InvertApplication.CachedAssemblies.SelectMany(p=>p=>new GraphTypeInfo()p.DefinedTypes));
+            //InvertGraphEditor.WindowManager.TypeInputWindow((g) =>
+            //{
+            //    var node = new TypeReferenceNode();
+            //    diagram.AddNode(node, new Vector2(15f, 15f));
+            //    node.Name = g.Name;
+                
+
+            //});
+        }
+
+        public override string CanPerform(DiagramViewModel node)
+        {
+            return null;
+        }
     }
 
 }

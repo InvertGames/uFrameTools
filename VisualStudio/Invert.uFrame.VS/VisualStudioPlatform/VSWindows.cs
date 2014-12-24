@@ -10,6 +10,11 @@ namespace Invert.uFrame.VS
 {
     public class VSWindows : IWindowManager
     {
+        public void InitTypeListWindow(SelectItemTypeViewModel viewModel)
+        {
+      
+        }
+
         public void InitTypeListWindow(GraphTypeInfo[] typesInfoList, Action<GraphTypeInfo> action)
         {
             Dispatcher.BeginInvoke(new Action(() =>
@@ -37,6 +42,21 @@ namespace Invert.uFrame.VS
                     d.Close();
                 });
                 d.ShowModal();
+            }));
+        }
+
+        public void TypeInputWindow(Action<GraphTypeInfo> action)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+
+                //var d = new SelectItemTypeWindow();
+                //d.DataContext = new SelectItemTypeViewModel(items.Cast<IItem>(), null, (item) =>
+                //{
+                //    action((TItem)item);
+                //    d.Close();
+                //});
+                //d.ShowModal();
             }));
         }
 

@@ -38,6 +38,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UnityEditor">
+      <HintPath>..\..\Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\Library\UnityAssemblies\UnityEngine.dll</HintPath>
     </Reference>
@@ -77,6 +80,7 @@
     <Compile Include="DefaultGraphSettings.cs" />
     <Compile Include="Platform\api\IGraphWindow.cs" />
     <Compile Include="InvertGraphEvent.cs" />
+    <Compile Include="Platform\api\IWindowManager.cs" />
     <Compile Include="ScaffoldNode.cs" />
     <Compile Include="ScaffoldNodeChildItem.cs" />
     <Compile Include="ScaffoldNodeTypedChildItem.cs" />

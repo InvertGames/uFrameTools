@@ -194,7 +194,6 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-
                 BubbleEvent(d => d.OnMouseDown(mouseEvent), mouseEvent);
             }
         }
@@ -282,7 +281,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public MouseEvent LastMouseEvent { get; set; }
+        public static MouseEvent LastMouseEvent { get; set; }
 
         public IDrawer[] DrawersAtMouse { get; set; }
 
@@ -337,22 +336,25 @@ namespace Invert.Core.GraphDesigner
                 }
                 else if (item is ConnectorDrawer)
                 {
-                    //var connector = item.ViewModelObject as ConnectorViewModel;
 
-                    //var connections =
-                    //    DiagramViewModel.GraphItems.OfType<ConnectionViewModel>()
-                    //        .Where(p => p.ConnectorA == connector || p.ConnectorB == connector).ToArray();
-                    //var a = new GenericMenu();
-                    //foreach (var connection in connections)
-                    //{
-                    //    ConnectionViewModel connection1 = connection;
-                    //    a.AddItem(new GUIContent("Disconnect: " + connection.Name), true, () =>
-                    //    {
-                    //        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); });
+                    var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(DiagramViewModel, typeof(IDiagramNodeItemCommand));
 
-                    //    });
-                    //}
+                    var connector = item.ViewModelObject as ConnectorViewModel;
+
+                    var connections =
+                        DiagramViewModel.GraphItems.OfType<ConnectionViewModel>()
+                            .Where(p => p.ConnectorA == connector || p.ConnectorB == connector).ToArray();
+                    
+                    foreach (var connection in connections)
+                    {
+                        ConnectionViewModel connection1 = connection;
+                        menu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel model)
+                        {
+                            InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); });
+                        }, "Disconnect: " + connection.Name));
+                    }
                     //a.ShowAsContext();
+                    menu.Go();
                 }
 
             }

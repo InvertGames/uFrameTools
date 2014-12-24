@@ -35,6 +35,8 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
     {
         Ctx.AddIterator("NodeConfigProperty", _ => _.Graph.NodeItems.OfType<ShellNodeTypeNode>());
         Ctx.AddIterator("GetSelectionCommand", _ => _.Graph.NodeItems.OfType<ShellChildItemTypeNode>().Where(x => x["Typed"]));
+        Ctx.TryAddNamespace("Invert.Core");
+        Ctx.TryAddNamespace("Invert.Core.GraphDesigner");
     }
 
     [TemplateMethod("Get{0}SelectionCommand",MemberGeneratorLocation.Both, true)]

@@ -116,6 +116,7 @@ namespace Invert.Core.GraphDesigner
             foreach (var item in repo.NodeItems)
             {
                 if (item == null) continue;
+                
                 if (filter.IsAllowed(item, item.GetType()))
                 {
                     if (filter.ImportedOnly && filter != item)

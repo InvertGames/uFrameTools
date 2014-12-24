@@ -19,20 +19,20 @@ namespace Invert.Core.GraphDesigner
 
         public override void Initialize(uFrameContainer container)
         {
-#if UNITY_DLL
-            InvertApplication.CachedAssemblies.Clear();
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                InvertApplication.CachedAssemblies.Add(assembly);
-            }
-#endif
+//#if UNITY_DLL
+        
+//            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+//            {
+//                InvertApplication.CachedAssemblies.Add(assembly);
+//            }
+//#endif
             var typeContainer = InvertGraphEditor.TypesContainer;
             // Drawers
             container.Register<DiagramViewModel,DiagramViewModel>();
             container.RegisterDrawer<PropertyFieldViewModel, PropertyFieldDrawer>();
             container.Register<SectionHeaderDrawer, SectionHeaderDrawer>();
             container.RegisterItemDrawer<GenericItemHeaderViewModel, GenericChildItemHeaderDrawer>();
-
+             
             container.RegisterDrawer<SectionHeaderViewModel, SectionHeaderDrawer>();
             container.RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
             container.RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
@@ -44,7 +44,7 @@ namespace Invert.Core.GraphDesigner
             container.RegisterConnectable<GenericTypedChildItem, IClassTypeNode>();
             //container.RegisterInstance<IConnectionStrategy>(new ReferenceConnectionStrategy(), "ReferenceConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new RegisteredConnectionStrategy(),"RegisteredConnectablesStrategy");
-           
+            
             
 
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(int), Group = "", Label = "int", IsPrimitive = true }, "int");
@@ -76,65 +76,60 @@ namespace Invert.Core.GraphDesigner
             // Register the container itself
             container.RegisterInstance<IUFrameContainer>(container);
             container.RegisterInstance<uFrameContainer>(container);
-            
-        
+
+            container.AddNode<TypeReferenceNode, TypeReferenceNodeViewModel, TypeReferenceNodeDrawer>("Type Reference");
 
             // Toolbar commands
             container.RegisterInstance<IToolbarCommand>(new PopToFilterCommand(), "PopToFilterCommand");
             container.RegisterInstance<IToolbarCommand>(new SaveCommand(), "SaveCommand");
-
             container.RegisterInstance<IToolbarCommand>(new AddNewCommand(), "AddNewCommand");
             
 
             // For no selection diagram context menu
-            container.RegisterInstance<IDiagramContextCommand>(new AddNodeToGraph(), "AddItemCommand");
-            container.RegisterInstance<IDiagramContextCommand>(new ShowItemCommand(), "ShowItem");
+            container.RegisterGraphCommand<AddNodeToGraph>();
+            container.RegisterGraphCommand<AddReferenceNode>();
+            container.RegisterGraphCommand<ShowItemCommand>();
+            container.RegisterGraphCommand<PushToCommand>();
+            container.RegisterGraphCommand<PullFromCommand>();
 
-            container.RegisterInstance<IDiagramNodeCommand>(new PushToCommand(), "Push To Command");
-            container.RegisterInstance<IDiagramNodeCommand>(new PullFromCommand(), "Pull From Command");
-            //container.RegisterInstance<IDiagramNodeCommand>(new ExportCommand(), "Export");
+            container.RegisterNodeCommand<OpenCommand>();
+            container.RegisterNodeCommand<DeleteCommand>();
+            container.RegisterNodeCommand<RenameCommand>();
+            container.RegisterNodeCommand<HideCommand>();
+            container.RegisterNodeCommand<RemoveLinkCommand>();
 
-            // All Nodes
-            container.RegisterInstance<IDiagramNodeCommand>(new OpenCommand(), "OpenCode");
-            container.RegisterInstance<IDiagramNodeCommand>(new DeleteCommand(), "Delete");
-            container.RegisterInstance<IDiagramNodeCommand>(new RenameCommand(), "Reanme");
-            container.RegisterInstance<IDiagramNodeCommand>(new HideCommand(), "Hide");
-            container.RegisterInstance<IDiagramNodeCommand>(new RemoveLinkCommand(), "RemoveLink");
+            container.RegisterNodeItemCommand<DeleteItemCommand>();
+            container.RegisterNodeItemCommand<MoveUpCommand>();
+            container.RegisterNodeItemCommand<MoveDownCommand>();
+            container.RegisterNodeItemCommand<DeleteItemCommand>();
 
-            // All Node Items
-            container.RegisterInstance<IDiagramNodeItemCommand>(new DeleteItemCommand(), "Delete");
-            container.RegisterInstance<IDiagramNodeItemCommand>(new MoveUpCommand(), "MoveItemUp");
-            container.RegisterInstance<IDiagramNodeItemCommand>(new MoveDownCommand(), "MoveItemDown");
             container.RegisterInstance<IEditorCommand>(new RemoveNodeItemCommand(), "RemoveNodeItem");
 
-
-
-
-            InvertGraphEditor.RegisterKeyBinding(new RenameCommand(), "Rename", KeyCode.F2);
-            InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            container.RegisterKeyBinding(new RenameCommand(), "Rename", KeyCode.F2);
+            container.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
             {
                 p.DeselectAll();
             }), "End All Editing", KeyCode.Return);
 
-            InvertGraphEditor.RegisterKeyBinding(new DeleteItemCommand(), "Delete Item", KeyCode.X, true);
-            InvertGraphEditor.RegisterKeyBinding(new DeleteCommand(), "Delete", KeyCode.Delete);
+            container.RegisterKeyBinding(new DeleteItemCommand(), "Delete Item", KeyCode.X, true);
+            container.RegisterKeyBinding(new DeleteCommand(), "Delete", KeyCode.Delete);
 #if UNITY_DLL
-            InvertGraphEditor.RegisterKeyBinding(new MoveUpCommand(), "Move Up", KeyCode.UpArrow);
-            InvertGraphEditor.RegisterKeyBinding(new MoveDownCommand(), "Move Down", KeyCode.DownArrow);
+            container.RegisterKeyBinding(new MoveUpCommand(), "Move Up", KeyCode.UpArrow);
+            container.RegisterKeyBinding(new MoveDownCommand(), "Move Down", KeyCode.DownArrow);
 #endif
 
 
-            InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            container.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
             {
                 InvertGraphEditor.Settings.ShowHelp = !InvertGraphEditor.Settings.ShowHelp;
             }), "Show/Hide This Help", KeyCode.F1);
 #if DEBUG
-            InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            container.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
             {
                 InvertGraphEditor.Settings.ShowGraphDebug = !InvertGraphEditor.Settings.ShowGraphDebug;
             }), "Show/Hide Debug", KeyCode.F3);
 #endif
-            InvertGraphEditor.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            container.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
             {
                 var saveCommand = InvertApplication.Container.Resolve<IToolbarCommand>("Save");
                 InvertGraphEditor.ExecuteCommand(saveCommand);

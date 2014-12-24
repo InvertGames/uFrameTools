@@ -180,7 +180,16 @@ namespace Invert.Core.GraphDesigner
 
             return Enumerable.Where(Commands, p => typeof(T).IsAssignableFrom(p.For));
         }
-
+        public static TCommandUI CreateCommandUI<TCommandUI>(ICommandHandler handler, params IEditorCommand[] actions) where TCommandUI : class,ICommandUI
+        {
+            var ui = Container.Resolve<TCommandUI>() as ICommandUI;
+            ui.Handler = handler;
+            foreach (var action in actions)
+            {
+                ui.AddCommand(action);
+            }
+            return (TCommandUI)ui;
+        }
         public static TCommandUI CreateCommandUI<TCommandUI>(ICommandHandler handler, params Type[] contextTypes) where TCommandUI : class,ICommandUI
         {
             var ui = Container.Resolve<TCommandUI>() as ICommandUI;
@@ -497,6 +506,36 @@ namespace Invert.Core.GraphDesigner
             container.RegisterRelation<TModel, ItemViewModel, TViewModel>();
             return container;
         }
+
+        public static IUFrameContainer RegisterConnectionStrategy<TConnectionStrategy>(this IUFrameContainer container)
+            where TConnectionStrategy : IConnectionStrategy, new()
+        {
+            container.RegisterInstance<IConnectionStrategy>(new TConnectionStrategy(),typeof(TConnectionStrategy).Name);
+            return container;
+        }
+
+        public static IUFrameContainer RegisterNodeCommand<TCommand>(this IUFrameContainer container)
+            where TCommand : IDiagramNodeCommand, new()
+        {
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNodeToGraph(), "AddItemCommand");
+            container.RegisterInstance<IDiagramNodeCommand>(new TCommand(), typeof(TCommand).Name);
+            return container;
+        }
+        public static IUFrameContainer RegisterNodeItemCommand<TCommand>(this IUFrameContainer container)
+        where TCommand : IDiagramNodeItemCommand, new()
+        {
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNodeToGraph(), "AddItemCommand");
+            container.RegisterInstance<IDiagramNodeItemCommand>(new TCommand(), typeof(TCommand).Name);
+            return container;
+        }
+        public static IUFrameContainer RegisterGraphCommand<TCommand>(this IUFrameContainer container)
+             where TCommand : IDiagramContextCommand, new()
+        {
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNodeToGraph(), "AddItemCommand");
+            container.RegisterInstance<IDiagramContextCommand>(new TCommand(), typeof(TCommand).Name);
+            return container;
+        }
+
         //public static IUFrameContainer ConnectionStrategy<TSource, TTarget>(this IUFrameContainer container, Color connectionColor,
         //    Func<TSource, TTarget, bool> isConnected, Action<TSource, TTarget> apply, Action<TSource, TTarget> remove) where TSource : class, IConnectable where TTarget : class, IConnectable
         //{
@@ -535,6 +574,11 @@ namespace Invert.Core.GraphDesigner
             return container;
         }
 
+        public static IUFrameContainer RegisterKeyBinding(this IUFrameContainer container, IEditorCommand command, string name, KeyCode code, bool control = false, bool alt = false, bool shift = false)
+        {
+            container.RegisterInstance<IKeyBinding>(new SimpleKeyBinding(command, name, code, control, alt, shift), name);
+            return container;
+        }
         public static void RegisterKeyBinding(IEditorCommand command, string name, KeyCode code, bool control = false, bool alt = false, bool shift = false)
         {
             Container.RegisterInstance<IKeyBinding>(new SimpleKeyBinding(command, name, code, control, alt, shift), name);

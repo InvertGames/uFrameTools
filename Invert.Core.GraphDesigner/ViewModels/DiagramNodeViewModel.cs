@@ -95,6 +95,10 @@ namespace Invert.Core.GraphDesigner
             set { DataObject = value; }
         }
 
+        public virtual bool IsEditable
+        {
+            get { return true; }
+        }
         public DiagramNodeViewModel(IDiagramNode graphItemObject, DiagramViewModel diagramViewModel)
             : this()
         {
@@ -336,6 +340,7 @@ namespace Invert.Core.GraphDesigner
 
         public void EndEditing()
         {
+            if (!IsEditable) return;
             if (string.IsNullOrEmpty(GraphItemObject.Name))
             {
                 GraphItemObject.Name = "RenameMe";
@@ -390,6 +395,7 @@ namespace Invert.Core.GraphDesigner
 
         public void BeginEditing()
         {
+            if (!IsEditable) return;
             editText = Name;
             GraphItemObject.BeginEditing();
         }
@@ -401,6 +407,8 @@ namespace Invert.Core.GraphDesigner
 
         public void Hide()
         {
+            
+
             DiagramViewModel.CurrentRepository.HideNode(GraphItemObject.Identifier);
             //DiagramViewModel.Data.CurrentFilter.Locations.Remove(GraphItemObject.Identifier);
         }

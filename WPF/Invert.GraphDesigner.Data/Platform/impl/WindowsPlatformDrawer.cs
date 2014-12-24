@@ -112,6 +112,7 @@ namespace DiagramDesigner.Platform
             if (Event != null && Event.IsMouseDown && scale.Contains(Event.MouseDownPosition) && scale.Contains(Event.MousePosition))
             {
                 action();
+                
             }
         }
 
@@ -126,6 +127,30 @@ namespace DiagramDesigner.Platform
             geometry.Figures.Add(figure);
             Context.DrawGeometry(null, new Pen(Brushes.White, 1f), geometry);
             //Context.DrawLine(new Pen(Brushes.White,2), new Point(startPosition.x, startPosition.y), new Point(endPosition.x, endPosition.y));
+        }
+
+        public void DrawColumns(Rect rect, int[] columnWidths, params Action<Rect>[] columns)
+        {
+            var x = 0;
+            for (int index = 0; index < columns.Length; index++)
+            {
+                var item = columns[index];
+                if (index == columns.Length - 1)
+                {
+                    // Use the remaining width of this item
+                    var width = rect.width - x;
+                    var newRect = new Rect(rect.x + x, rect.y, width, rect.height);
+                    item(newRect);
+                }
+                else
+                {
+                    var newRect = new Rect(rect.x + x, rect.y, columnWidths[index], rect.height);
+                    item(newRect);
+
+                }
+
+                x += columnWidths[index];
+            }
         }
 
         public void DrawColumns(Rect rect, params Action<Rect>[] columns)

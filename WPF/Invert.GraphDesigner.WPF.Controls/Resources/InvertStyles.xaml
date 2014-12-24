@@ -21,7 +21,8 @@
     <BitmapImage x:Key="DiagramArrowLeft" UriSource="DesignerImages/DiagramArrowLeft.png"></BitmapImage>
     <BitmapImage x:Key="DiagramArrowRightEmpty" UriSource="DesignerImages/DiagramArrowRightEmpty.png"></BitmapImage>
     <BitmapImage x:Key="DiagramArrowLeftEmpty" UriSource="DesignerImages/DiagramArrowLeftEmpty.png"></BitmapImage>
-    
+
+    <SolidColorBrush x:Key="ItemTextEditingStyleForeground" Color="#ffefefef"></SolidColorBrush>
     <SolidColorBrush x:Key="Tag1Foreground" Color="#ffffffff"></SolidColorBrush>
     <SolidColorBrush x:Key="HeaderStyleForeground" Color="#ff888888"></SolidColorBrush>
     <SolidColorBrush x:Key="NodeBackgroundBackground" Color="#cc161817"></SolidColorBrush>

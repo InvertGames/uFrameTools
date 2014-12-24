@@ -23,6 +23,7 @@ public class InvertGraph : IGraphData, IItem
     private IDiagramFilter _rootFilter;
     private bool _errors;
     private List<ConnectionData> _connections;
+    private string _ns;
 #if !UNITY_DLL
     public FileInfo GraphFileInfo { get; set; }
 
@@ -193,7 +194,18 @@ public class InvertGraph : IGraphData, IItem
         set { _nodes = value; }
     }
 
-    public string Namespace { get; set; }
+    public string Namespace
+    {
+        get
+        {
+            if (_ns == null && Project != null)
+            {
+                return Project.Namespace;
+            }
+            return _ns;
+        }
+        set { _ns = value; }
+    }
 
     public bool Errors
     {
@@ -362,7 +374,7 @@ public class InvertGraph : IGraphData, IItem
         }
         
         // Store the root filter
-        root.AddObject("SceneFlow", data.RootFilter as IJsonObject);
+        root.AddObject("RootNode", data.RootFilter as IJsonObject);
         // Nodes
         root.AddObjectArray("Nodes", data.NodeItems.Where(p=>p.Identifier != data.RootFilter.Identifier));
 
@@ -409,6 +421,15 @@ public class InvertGraph : IGraphData, IItem
         if (jsonNode["SceneFlow"] is JSONClass)
         {
             RootFilter = jsonNode["SceneFlow"].DeserializeObject(this) as IDiagramFilter;
+            var node = RootFilter as IDiagramNode;
+            if (node != null)
+            {
+                node.Graph = this;
+            }
+        }
+        if (jsonNode["RootNode"] is JSONClass)
+        {
+            RootFilter = jsonNode["RootNode"].DeserializeObject(this) as IDiagramFilter;
             var node = RootFilter as IDiagramNode;
             if (node != null)
             {

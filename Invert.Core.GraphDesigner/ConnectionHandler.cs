@@ -52,7 +52,7 @@ namespace Invert.Core.GraphDesigner
             var endTan = _endPos + (_startRight ? -Vector2.right * 3 : Vector2.right * 3) * 30;
 
             var shadowCol = new Color(0, 0, 0, 0.1f);
-            
+
             for (int i = 0; i < 3; i++) // Draw a shadow
                 platform.DrawBezier(_startPos * scale,
                     _endPos * scale, startTan * scale,
@@ -74,12 +74,12 @@ namespace Invert.Core.GraphDesigner
         public override void OnMouseMove(MouseEvent e)
         {
             base.OnMouseMove(e);
-             _startPos = StartConnector.Bounds.center;
+            _startPos = StartConnector.Bounds.center;
 
-             _endPos = e.MousePosition;
+            _endPos = e.MousePosition;
 
-             endViewModel = ViewModelAtMouse as ConnectorViewModel;
-             color = Color.green;
+            endViewModel = ViewModelAtMouse as ConnectorViewModel;
+            color = Color.green;
 
 
 
@@ -123,21 +123,21 @@ namespace Invert.Core.GraphDesigner
                 }
                 else
                 {
-                    
+
                     CurrentConnection = null;
                 }
-                    
-                
-                
+
+
+
 
             }
             else
             {
-//#if UNITY_DLL
-//                if (InvertGraphEditor.Settings.ShowGraphDebug)
-//                    GUI.Label(new Rect(e.MousePosition.x, e.MousePosition.y, 200, 50),
-//                        endViewModel.ConnectorForType.Name, ElementDesignerStyles.HeaderStyle);
-//#endif
+                //#if UNITY_DLL
+                //                if (InvertGraphEditor.Settings.ShowGraphDebug)
+                //                    GUI.Label(new Rect(e.MousePosition.x, e.MousePosition.y, 200, 50),
+                //                        endViewModel.ConnectorForType.Name, ElementDesignerStyles.HeaderStyle);
+                //#endif
                 foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
                 {
                     //try and connect them
@@ -160,10 +160,10 @@ namespace Invert.Core.GraphDesigner
             }
 
 
-        
+
 
         }
-        
+
         public override void OnMouseUp(MouseEvent e)
         {
             base.OnMouseUp(e);
@@ -179,65 +179,65 @@ namespace Invert.Core.GraphDesigner
             else
             {
                 var allowedFilterNodes = FilterExtensions.AllowedFilterNodes[this.DiagramViewModel.CurrentRepository.CurrentFilter.GetType()];
-                // TODO VERY IMPORTANT
-#if UNITY_DLL
+
+                var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(DiagramViewModel, typeof(IDiagramNodeItemCommand));
+
                 //var genericMenu = new UnityEditor.GenericMenu();
                 //genericMenu.AddItem(new GUIContent("Cancel"),false,()=>{} );
                 //genericMenu.AddSeparator(string.Empty);
-                //foreach (var item in allowedFilterNodes)
-                //{
-                //    if (item.IsInterface) continue;
-                //    if (item.IsAbstract) continue;
-                
-                //    var node = Activator.CreateInstance(item) as IDiagramNode;
-                    
-                //    var vm = InvertGraphEditor.Container.GetNodeViewModel(node, this.DiagramViewModel) as DiagramNodeViewModel;
-                //    if (vm == null) continue;
-                //    vm.IsCollapsed = false;
-                //    var connectors = new List<ConnectorViewModel>();
-                //    vm.GetConnectors(connectors);
-                    
-                //    var config = InvertGraphEditor.Container.Resolve<NodeConfigBase>(item.Name);
-                //    var name = config == null ? item.Name : config.Name;
-                //    foreach (var connector in connectors)
-                //    {
-                //        foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
-                //        {
-                //            var connection = strategy.Connect(this.DiagramViewModel, StartConnector, connector);
-                //            if (connection == null) continue;
-                //            var node1 = node;
-                //            var message = string.Format("Create {0}", name);
-                //            if (!string.IsNullOrEmpty(connector.Name))
-                //            {
-                //                message += string.Format(" and connect to {0}", connector.Name);
-                //            }
-                //            genericMenu.AddItem(new GUIContent(message), false,
-                //             new UnityEditor.GenericMenu.MenuFunction2((data) =>
-                //             {
-                //                 var value = (KeyValuePair<IDiagramNode, ConnectionViewModel>)data;
+                foreach (var item in allowedFilterNodes)
+                {
+                    if (item.IsInterface) continue;
+                    if (item.IsAbstract) continue;
 
-                //                 UnityEditor.EditorWindow.FocusWindowIfItsOpen(typeof(ElementsDesigner));
-                               
-                //                 InvertGraphEditor.ExecuteCommand(_ =>
-                //                 {
-                                     
-                //                     this.DiagramViewModel.AddNode(value.Key);
-                //                     connection.Apply(value.Value as ConnectionViewModel);
-                //                     value.Key.IsSelected = true;
-                //                     value.Key.IsEditing = true;
-                //                     value.Key.Name = "";
+                    var node = Activator.CreateInstance(item) as IDiagramNode;
 
-                //                 });
-                               
-                //             }),new KeyValuePair<IDiagramNode,ConnectionViewModel>(node1,connection));
-                //        }
-                     
-                //    }
-                 
-                //}
+                    var vm = InvertGraphEditor.Container.GetNodeViewModel(node, this.DiagramViewModel) as DiagramNodeViewModel;
+                    node.Graph = this.DiagramViewModel.DiagramData;
 
-                //genericMenu.ShowAsContext();
-#endif
+                    if (vm == null) continue;
+                    vm.IsCollapsed = false;
+                    var connectors = new List<ConnectorViewModel>();
+                    vm.GetConnectors(connectors);
+
+                    var config = InvertGraphEditor.Container.Resolve<NodeConfigBase>(item.Name);
+                    var name = config == null ? item.Name : config.Name;
+                    foreach (var connector in connectors)
+                    {
+                        foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
+                        {
+                            var connection = strategy.Connect(this.DiagramViewModel, StartConnector, connector);
+                            if (connection == null) continue;
+                            var node1 = node;
+                            var message = string.Format("Create {0}", name);
+                            if (!string.IsNullOrEmpty(connector.Name))
+                            {
+                                message += string.Format(" and connect to {0}", connector.Name);
+                            }
+                            var value = new KeyValuePair<IDiagramNode, ConnectionViewModel>(node1, connection);
+                            menu.AddCommand(
+                             new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel n)
+                             {
+                                 
+
+                                 //UnityEditor.EditorWindow.FocusWindowIfItsOpen(typeof (ElementsDesigner));
+
+                                 InvertGraphEditor.ExecuteCommand(_ =>
+                                 {
+                                     this.DiagramViewModel.AddNode(value.Key,DiagramDrawer.LastMouseEvent.MouseUpPosition);
+                                     connection.Apply(value.Value as ConnectionViewModel);
+                                     value.Key.IsSelected = true;
+                                     value.Key.IsEditing = true;
+                                     value.Key.Name = "";
+                                 });
+                             },message));
+                        }
+
+                    }
+
+                }
+                menu.Go();
+
             }
 
 

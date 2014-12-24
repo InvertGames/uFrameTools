@@ -5,6 +5,8 @@ namespace Invert.Core.GraphDesigner
 {
     public class TypedItemDrawer : ItemDrawer
     {
+        private Vector2 _nameSize;
+
         public TypedItemViewModel TypedItemViewModel
         {
             get { return ViewModelObject as TypedItemViewModel; }
@@ -18,12 +20,14 @@ namespace Invert.Core.GraphDesigner
         public override void Refresh(IPlatformDrawer platform, Vector2 position)
         {
             base.Refresh(platform, position);
-            var nameSize = platform.CalculateSize(TypedItemViewModel.Name,TextStyle);
-            var typeSize = platform.CalculateSize(TypedItemViewModel.TypeLabel, TextStyle);
+            _nameSize = platform.CalculateSize(TypedItemViewModel.Name,TextStyle);
+            _typeSize = platform.CalculateSize(TypedItemViewModel.RelatedType, TextStyle);
 
-            Bounds = new Rect(position.x, position.y, 5 + nameSize.x + 5 + typeSize.x + 10, 18);
+            Bounds = new Rect(position.x, position.y, 5 + _nameSize.x + 5 + _typeSize.x + 10, 18);
         }
-        
+
+        private Vector2 _typeSize;
+
         public override void DrawOption()
         {
             base.DrawOption();
@@ -50,11 +54,13 @@ namespace Invert.Core.GraphDesigner
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
-
+            var b = new Rect(Bounds);
+            b.x += 10;
+            b.width -= 10;
             //base.Draw(platform, scale);
-            platform.DrawColumns(Bounds.Scale(scale),
+            platform.DrawColumns(b.Scale(scale),new int[] { Mathf.RoundToInt(_typeSize.x), Mathf.RoundToInt(_nameSize.x) },
                 _ => platform.DoButton(_, TypedItemViewModel.RelatedType, CachedStyles.ClearItemStyle, OptionClicked),
-                _=>DrawName(_, platform,scale)
+                _=>DrawName(_, platform,scale,DrawingAlignment.MiddleRight)
                 );
         }
     }

@@ -78,6 +78,30 @@ public class uFrameSettingsWindow : EditorWindow
             }
           
         }
+        if (GUIHelpers.DoToolbarEx("Registered Nodes"))
+        {
+            foreach (var plugin in InvertGraphEditor.Container.ResolveAll<NodeConfigBase>())
+            {
+                GUIHelpers.DoTriggerButton(new UFStyle(plugin.Name + " : " + plugin.NodeType.Name, ElementDesignerStyles.EventButtonStyleSmall)
+                {
+                    IsWindow = true,
+                    FullWidth = true
+                });
+            }
+
+        }
+        if (GUIHelpers.DoToolbarEx("Loaded Assemblies"))
+        {
+            foreach (var plugin in InvertApplication.CachedAssemblies)
+            {
+                GUIHelpers.DoTriggerButton(new UFStyle(plugin.FullName, ElementDesignerStyles.EventButtonStyleSmall)
+                {
+                    IsWindow = true,
+                    FullWidth = true
+                });
+            }
+
+        }
        
     }
 

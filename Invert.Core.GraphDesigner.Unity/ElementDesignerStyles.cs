@@ -431,7 +431,7 @@ namespace Invert.Common
                         normal = { textColor = new Color(0.6f, 0.6f, 0.8f) },
                         stretchHeight = true,
                         stretchWidth = true,
-                        padding = new RectOffset(5, 0, 0, 0),
+                        padding = new RectOffset(0, 0, 0, 0),
                         fontSize = Mathf.RoundToInt(8f * Scale),
                         fixedHeight = 18f * Scale,
                         fontStyle = FontStyle.Bold,

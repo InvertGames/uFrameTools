@@ -15,5 +15,10 @@ namespace DiagramDesigner.Platform
         {
             
         }
+
+        public void TypeInputWindow(Action<GraphTypeInfo> action)
+        {
+            
+        }
     }
 }

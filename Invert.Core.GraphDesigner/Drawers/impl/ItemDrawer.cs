@@ -169,7 +169,7 @@ namespace Invert.Core.GraphDesigner
 #endif
         }
 
-        protected void DrawName(Rect rect, IPlatformDrawer platform, float scale)
+        protected void DrawName(Rect rect, IPlatformDrawer platform, float scale,DrawingAlignment alignment = DrawingAlignment.MiddleCenter)
         {
            
             if (ItemViewModel.IsEditing && ItemViewModel.IsEditable)
@@ -187,7 +187,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                platform.DrawLabel(rect, _cachedName, CachedStyles.ItemTextEditingStyle, DrawingAlignment.MiddleCenter);
+                platform.DrawLabel(rect, _cachedName, CachedStyles.ItemTextEditingStyle, alignment);
             }
         }
 

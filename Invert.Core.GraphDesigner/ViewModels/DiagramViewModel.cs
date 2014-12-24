@@ -361,6 +361,11 @@ namespace Invert.Core.GraphDesigner
 
         }
 
+        public void AddNode(IDiagramNode newNodeData)
+        {
+            AddNode(newNodeData, DiagramDrawer.LastMouseEvent.MouseDownPosition);
+        }
+
         public void AddNode(IDiagramNode newNodeData, Vector2 position)
         {
             newNodeData.Graph = DiagramData;

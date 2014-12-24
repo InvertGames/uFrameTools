@@ -33,6 +33,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
 
     public void OnAfterDeserialize()
     {
+        
         if (_settingsKeys == null) return;
         SettingsBag.Clear();
         for (var i = 0; i < _settingsKeys.Length; i++)

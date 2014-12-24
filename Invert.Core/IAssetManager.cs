@@ -10,12 +10,4 @@ namespace Invert.Core
 
         IEnumerable<object> GetAssets(Type type);
     }
-
-    public interface IWindowManager
-    {
-        void InitTypeListWindow(GraphTypeInfo[] typesInfoList, Action<GraphTypeInfo> action);
-
-        void InitItemWindow<TItem>(IEnumerable<TItem> items, Action<TItem> action)
-            where TItem : IItem;
-    }
 }

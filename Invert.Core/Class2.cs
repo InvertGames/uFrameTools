@@ -87,7 +87,7 @@ namespace Invert.Core
             {
                 foreach (var assembly in CachedAssemblies)
                 {
-                    if (!assembly.FullName.StartsWith("Invert")) continue;
+                    //if (!assembly.FullName.StartsWith("Invert")) continue;
                     foreach (var t in assembly
                         .GetTypes()
                         .Where(x => type.IsAssignableFrom(x) && !x.IsAbstract))

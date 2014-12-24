@@ -5,6 +5,7 @@ using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Json;
 using Invert.uFrame.Editor;
+using UnityEditor;
 using UnityEngine;
 
 public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationCallbackReceiver, IItem
@@ -20,7 +21,7 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
         {
             return _graph ?? (_graph = new TData()
             {
-                //Name = this.name,
+                Name = this.name,
 
             });
         }
@@ -72,8 +73,8 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
     {
         get
         {
-            
-            return InvertGraphEditor.Platform.GetAssetPath(this);
+            return AssetDatabase.GetAssetPath(this);
+            //return InvertGraphEditor.Platform.GetAssetPath(this);
         }
         set { Graph.Path = value; }
     }
@@ -250,7 +251,10 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
         //Debug.Log("Deserialize");
         try
         {
+     
             Graph.Deserialize(_jsonData);
+            Graph.Path = Application.dataPath + Path.Substring(7);
+            UnityEngine.Debug.Log(Graph.Path);
             Graph.CodePathStrategy = this.CodePathStrategy;
             //Graph.Deserialize(_jsonData);
 

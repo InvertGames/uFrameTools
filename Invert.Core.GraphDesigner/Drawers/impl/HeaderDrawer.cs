@@ -91,7 +91,7 @@ namespace Invert.Core.GraphDesigner
                 Bounds.height);
 
 
-            if (NodeViewModel.IsEditing)
+            if (NodeViewModel.IsEditing && NodeViewModel.IsEditable)
             {
                 // TODO Platform specific
 #if UNITY_DLL
@@ -125,7 +125,7 @@ namespace Invert.Core.GraphDesigner
                 //titleStyle.normal.textColor = BackgroundStyle.normal.textColor;
                 //titleStyle.alignment = TextAnchor.MiddleCenter;
                 //titleStyle.fontSize = Mathf.RoundToInt(12*scale);
-                platform.DrawLabel(Bounds.Scale(scale), NodeViewModel.Label ?? string.Empty, TextStyle, DrawingAlignment.MiddleCenter);
+                platform.DrawLabel(textBounds.Scale(scale), NodeViewModel.Label ?? string.Empty, TextStyle, DrawingAlignment.MiddleCenter);
                 //GUI.Label(textBounds.Scale(scale), NodeViewModel.Label ?? string.Empty, titleStyle);
                 //if (NodeViewModel.IsCollapsed)
                 //{
