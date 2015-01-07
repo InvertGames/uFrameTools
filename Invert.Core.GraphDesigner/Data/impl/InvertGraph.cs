@@ -24,6 +24,7 @@ public class InvertGraph : IGraphData, IItem
     private bool _errors;
     private List<ConnectionData> _connections;
     private string _ns;
+    private List<IGraphItemEvents> _listeners;
 #if !UNITY_DLL
     public FileInfo GraphFileInfo { get; set; }
 
@@ -119,11 +120,11 @@ public class InvertGraph : IGraphData, IItem
         {
             if (GraphFileInfo == null)
             {
-                GraphFileInfo = new FileInfo(value);
+                GraphFileInfo = new FileInfo(value + ".ufgraph");
             }
             else
             {
-                GraphFileInfo = new FileInfo(System.IO.Path.Combine(GraphFileInfo.Directory.FullName, value));
+                GraphFileInfo = new FileInfo(System.IO.Path.Combine(GraphFileInfo.Directory.FullName, value + ".ufgraph"));
             }
             
             
@@ -483,5 +484,26 @@ public class InvertGraph : IGraphData, IItem
                 }
             }
         }
+        if (Project != null)
+        {
+            SetProject(Project);
+        }
+    }
+
+    public List<IGraphItemEvents> Listeners
+    {
+        get { return _listeners ?? (_listeners = new List<IGraphItemEvents>()); }
+        set { _listeners = value; }
+    }
+
+    public Action Subscribe(IGraphItemEvents handler)
+    {
+        Listeners.Add(handler);
+        return () => Unsubscribe(handler);
+    }
+
+    public void Unsubscribe(IGraphItemEvents handler)
+    {
+        Listeners.Add(handler);
     }
 }

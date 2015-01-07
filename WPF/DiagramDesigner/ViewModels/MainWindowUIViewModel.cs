@@ -15,7 +15,7 @@ namespace DiagramDesigner.Platform
     {
         public MainWindowUIViewModel()
         {
-            CreateProject();
+       
         }
 
         private IEnumerable<IToolbarCommand> _toolbarCommands;
@@ -60,7 +60,14 @@ namespace DiagramDesigner.Platform
 
         public IProjectRepository CurrentProject
         {
-            get { return _currentProject; }
+            get
+            {
+                if (_currentProject == null)
+                {
+                    CreateProject();
+                }
+                return _currentProject;
+            }
             set { _currentProject = value; }
         }
 

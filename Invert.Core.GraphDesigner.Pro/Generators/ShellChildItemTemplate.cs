@@ -22,3 +22,4 @@ public class ShellChildItemTemplate : GenericNodeChildItem,
 
     public TemplateContext<ShellNodeChildTypeNode> Ctx { get; set; }
 }
+

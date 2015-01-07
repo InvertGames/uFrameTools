@@ -6,7 +6,7 @@ using Invert.uFrame.Editor;
 
 public class StateMachineCodeFactory : DesignerGeneratorFactory<StateMachineNodeData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
+    public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
         StateMachineNodeData item)
     {
         yield return new StateMachineClassGenerator()
@@ -58,7 +58,7 @@ public class CustomStateMachineClassGenerator : StateMachineClassGenerator
 }
 public class CustomStateMachineCodeFactory : StateMachineCodeFactory
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
+    public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
         StateMachineNodeData item)
     {
         yield return new CustomStateMachineClassGenerator()

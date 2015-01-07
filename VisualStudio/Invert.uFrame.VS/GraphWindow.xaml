@@ -7,9 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <ScrollViewer>
-            
-            <c:DiagramControl x:Name="Diagram" Focusable="True" Background="#FFE4E4E4" SnapsToDevicePixels="True"/>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto" Background="#FF4D4D4D" BorderBrush="Black" BorderThickness="1">
+
+            <c:DiagramControl x:Name="Diagram" Focusable="True" Background="#FF4D4D4D"/>
         </ScrollViewer>
       
 

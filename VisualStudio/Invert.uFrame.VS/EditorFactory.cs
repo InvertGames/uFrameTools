@@ -258,8 +258,14 @@ namespace Invert.uFrame.VS
 
         public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
-            InvertGraphEditor.Projects = null;
+            InvalidateProjects();
             return VSConstants.S_OK;
+        }
+
+        private static void InvalidateProjects()
+        {
+            var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
+            projectService.RefreshProjects();
         }
 
         public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
@@ -274,7 +280,7 @@ namespace Invert.uFrame.VS
 
         public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
         {
-            InvertGraphEditor.Projects = null;
+            InvalidateProjects();
             return VSConstants.S_OK;
         }
 
@@ -290,7 +296,7 @@ namespace Invert.uFrame.VS
 
         public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
         {
-            InvertGraphEditor.Projects = null;
+            InvalidateProjects();
             return VSConstants.S_OK;
         }
 
@@ -307,7 +313,7 @@ namespace Invert.uFrame.VS
 
         public int OnAfterCloseSolution(object pUnkReserved)
         {
-            InvertGraphEditor.Projects = null;
+            InvalidateProjects();
             return VSConstants.S_OK;
         }
     }

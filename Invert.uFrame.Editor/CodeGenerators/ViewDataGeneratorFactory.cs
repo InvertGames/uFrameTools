@@ -5,7 +5,7 @@ using Invert.uFrame.Editor;
 
 public class ViewDataGeneratorFactory : DesignerGeneratorFactory<ViewData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, ViewData item)
+    public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, ViewData item)
     {
         if (item.ViewForElement == null) yield break;
         yield return new ViewViewBaseGenerator()

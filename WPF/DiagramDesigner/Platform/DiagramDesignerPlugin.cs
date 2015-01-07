@@ -1,5 +1,7 @@
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.GraphDesigner.Documentation;
+using Invert.GraphDesigner.WPF;
 
 namespace DiagramDesigner.Platform
 {
@@ -23,9 +25,10 @@ namespace DiagramDesigner.Platform
 
             }
         }
-        public DiagramDesignerPlugin()
+        static DiagramDesignerPlugin()
         {
             InvertGraphEditor.Prefs = new WindowsPrefs();
+            
         }
 
         public override void Initialize(uFrameContainer container)

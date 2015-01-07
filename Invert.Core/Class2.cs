@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +27,7 @@ namespace Invert.Core
     }
     public static class InvertApplication
     {
+        public static bool IsTestMode { get; set; }
         public static IDebugLogger Logger
         {
             get { return _logger ?? (_logger = new DefaultLogger()); }
@@ -39,13 +41,19 @@ namespace Invert.Core
         public static List<Assembly> CachedAssemblies { get; set; }
         static InvertApplication()
         {
-            CachedAssemblies = new List<Assembly>();
-            CachedAssemblies.Add(typeof(int).Assembly);
-            CachedAssemblies.Add(typeof(List<>).Assembly);
-            //CachedAssemblies.Add(typeof(ICollection<>).Assembly);
-           
+            CachedAssemblies = new List<Assembly>
+            {
+                typeof (int).Assembly, typeof (List<>).Assembly
+            };
+            //CachedAssemblies.Add(typeof(ICollection<>).Assembly); 
+            //foreach (var assembly in Assembly.GetEntryAssembly().GetReferencedAssemblies())
+            //{
+            //    Debug.WriteLine(assembly.FullName);
+            //    AppDomain.CurrentDomain.Load(assembly);
+            //}
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
+               // Debug.WriteLine(assembly.FullName);
                 if (assembly.FullName.StartsWith("Invert"))
                 {
                     CachedAssemblies.Add(assembly);
@@ -53,6 +61,19 @@ namespace Invert.Core
             }
         }
 
+        public static void LoadPluginsFolder(string pluginsFolder)
+        {
+            if (!Directory.Exists(pluginsFolder))
+            {
+                Directory.CreateDirectory(pluginsFolder);
+            }
+            foreach (var plugin in Directory.GetFiles(pluginsFolder, "*.dll"))
+            {
+                var assembly = Assembly.LoadFrom(plugin);
+                assembly = AppDomain.CurrentDomain.Load(assembly.GetName());
+                InvertApplication.CachedAssemblies.Add(assembly);
+            }
+        }
         public static uFrameContainer Container
         {
             get
@@ -163,7 +184,10 @@ namespace Invert.Core
             foreach (var diagramPlugin in pluginTypes)
             {
                 if (pluginTypes.Any(p => p.BaseType == diagramPlugin)) continue;
-                container.RegisterInstance(Activator.CreateInstance((Type)diagramPlugin) as ICorePlugin, diagramPlugin.Name, false);
+                var pluginInstance = Activator.CreateInstance((Type) diagramPlugin) as ICorePlugin;
+                if (pluginInstance == null) continue;
+                container.RegisterInstance(pluginInstance, diagramPlugin.Name, false);
+                container.RegisterInstance(pluginInstance.GetType(), pluginInstance);
             }
 
             container.InjectAll();
@@ -176,8 +200,13 @@ namespace Invert.Core
 
             foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority).Where(p => !p.Ignore))
             {
+
                 if (diagramPlugin.Enabled)
-                    diagramPlugin.Loaded();
+                {
+                    container.Inject(diagramPlugin);
+                    diagramPlugin.Loaded(Container);
+                }
+                   
             }
 
         }
@@ -250,6 +279,9 @@ namespace Invert.Core
             return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(property => property.GetCustomAttributes(typeof(TAttribute), true).Length > 0);
         }
+
+        
+
         public static Type GetGenericParameter(this Type type)
         {
             var t = type;

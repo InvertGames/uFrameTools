@@ -36,12 +36,12 @@ namespace Invert.Core.GraphDesigner
         public override void Refresh(IPlatformDrawer platform, Vector2 position)
         {
             base.Refresh(platform, position);
-            TextSize = platform.CalculateSize(NodeViewModel.Label,TextStyle); //.CalcSize(new GUIContent(NodeViewModel.Label)));
-            var width = TextSize.x + (Padding*2);
+            TextSize = platform.CalculateSize(NodeViewModel.Label, TextStyle); //.CalcSize(new GUIContent(NodeViewModel.Label)));
+            var width = TextSize.x + (Padding * 2);
 
             if (NodeViewModel.IsCollapsed)
             {
-                this.Bounds = new Rect(position.x, position.y, width + 12, TextSize.y + (Padding*2));
+                this.Bounds = new Rect(position.x, position.y, width + 12, TextSize.y + (Padding * 2));
 
             }
             else
@@ -59,25 +59,36 @@ namespace Invert.Core.GraphDesigner
         {
             base.Draw(platform, scale);
 
-          
+
             if (NodeViewModel.IsCollapsed)
             {
+
+#if UNITY_DLL
                 AdjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
+#else
+                AdjustedBounds = new Rect(Bounds.x , Bounds.y, Bounds.width, Bounds.height);
+#endif
             }
             else
             {
-                AdjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, 27*scale);
+
+#if UNITY_DLL
+                AdjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, 27 * scale);
+
+#else
+                AdjustedBounds = new Rect(Bounds.x, Bounds.y , Bounds.width, 27);
+#endif
             }
             var boxRect = AdjustedBounds.Scale(scale);
             if (NodeViewModel.IsCollapsed)
             {
-                platform.DrawStretchBox(boxRect,BackgroundStyle,20*scale);
-             
+                platform.DrawStretchBox(boxRect, BackgroundStyle, 20 * scale);
+
             }
             else
             {
-                platform.DrawStretchBox(boxRect, 
-                    BackgroundStyle, 
+                platform.DrawStretchBox(boxRect,
+                    BackgroundStyle,
                     new Rect(Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(27 * scale), 0)
                     );
 
@@ -85,11 +96,14 @@ namespace Invert.Core.GraphDesigner
                 //    new RectOffset(Mathf.RoundToInt(20*scale), Mathf.RoundToInt(20*scale), Mathf.RoundToInt(27*scale), 0));
             }
 
-       
-            // The bounds for the main text
-            var textBounds = new Rect(Bounds.x, Bounds.y + ((Bounds.height/2f) - (TextSize.y/2f)), Bounds.width,
-                Bounds.height);
 
+            // The bounds for the main text
+#if UNITY_DLL
+            var textBounds = new Rect(Bounds.x, Bounds.y + ((Bounds.height / 2f) - (TextSize.y / 2f)), Bounds.width,
+                Bounds.height);
+#else 
+            var textBounds = Bounds;
+#endif
 
             if (NodeViewModel.IsEditing && NodeViewModel.IsEditable)
             {
@@ -117,7 +131,7 @@ namespace Invert.Core.GraphDesigner
                         NodeViewModel.EndEditing();
                     }
                 });
-      
+
             }
             else
             {

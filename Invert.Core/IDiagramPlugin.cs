@@ -9,7 +9,7 @@
         bool Required { get; }
         bool Ignore { get; }
         void Initialize(uFrameContainer container);
-        void Loaded();
+        void Loaded(uFrameContainer container);
         
     }
 
@@ -49,6 +49,13 @@
 
         public virtual decimal LoadPriority { get { return 1; } }
         public abstract void Initialize(uFrameContainer container);
-        public abstract void Loaded();
+        public abstract void Loaded(uFrameContainer container);
     }
+
+
+    public interface IFeature
+    {
+        
+    }
+    
 }

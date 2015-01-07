@@ -48,7 +48,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Class1.cs" />
     <Compile Include="CodeGenerators\BindingGenerator.cs" />
     <Compile Include="CodeGenerators\CollectionBindingGenerator.cs" />
     <Compile Include="CodeGenerators\CollectionItemAddedBindingGenerator.cs" />
@@ -81,10 +80,40 @@
     <Compile Include="ForceUpgradeDiagram.cs" />
     <Compile Include="IBindingGenerator.cs" />
     <Compile Include="JsonElementDesignerData.cs" />
-    <Compile Include="MemberGenerator\Class1.cs" />
     <Compile Include="SubSystemPathStrategy.cs" />
     <Compile Include="uFrameCorePlugin.cs" />
     <Compile Include="OldConnectionStrategies\ComputedPropertyInputsConnectionStrategy.cs" />
+    <Compile Include="uFrameGraphs\Editor\Graphs\ElementsGraph.cs" />
+    <Compile Include="uFrameGraphs\Editor\Graphs\StateMachineGraph.cs" />
+    <Compile Include="uFrameGraphs\Editor\Nodes\ElementComputedPropertyNode.cs" />
+    <Compile Include="uFrameGraphs\Editor\Nodes\ElementNode.cs" />
+    <Compile Include="uFrameGraphs\Editor\Nodes\ElementsGraphRootNode.cs" />
+    <Compile Include="uFrameGraphs\Editor\Nodes\ElementViewComponentNode.cs" />
+    <Compile Include="uFrameGraphs\Editor\Nodes\ElementViewNode.cs" />
+    <Compile Include="uFrameGraphs\Editor\Nodes\SceneManagerNode.cs" />
+    <Compile Include="uFrameGraphs\Editor\Nodes\StateMachineNode.cs" />
+    <Compile Include="uFrameGraphs\Editor\Nodes\StateNode.cs" />
+    <Compile Include="uFrameGraphs\Editor\Nodes\SubsystemNode.cs" />
+    <Compile Include="uFrameGraphs\Editor\Plugins\GameFramework.cs" />
+    <Compile Include="uFrameGraphs\Editor\Plugins\uFrameGraph.cs" />
+    <Compile Include="uFrameGraphs\Editor\Sections\CollectionChildItem.cs" />
+    <Compile Include="uFrameGraphs\Editor\Sections\CommandChildItem.cs" />
+    <Compile Include="uFrameGraphs\Editor\Sections\ComputedSubPropertiesReference.cs" />
+    <Compile Include="uFrameGraphs\Editor\Sections\PropertyChildItem.cs" />
+    <Compile Include="uFrameGraphs\Editor\Sections\RegisteredInstanceReference.cs" />
+    <Compile Include="uFrameGraphs\Editor\Sections\SceneManagerTransitionReference.cs" />
+    <Compile Include="uFrameGraphs\Editor\Sections\StateMachineTransitionChildItem.cs" />
+    <Compile Include="uFrameGraphs\Editor\Sections\StateTransitionReference.cs" />
+    <Compile Include="uFrameGraphs\Editor\Sections\ViewBindingsReference.cs" />
+    <Compile Include="uFrameGraphs\Editor\Slots\ExportSubSystemSlot.cs" />
+    <Compile Include="uFrameGraphs\Editor\Slots\ImportSubSystemSlot.cs" />
+    <Compile Include="uFrameGraphs\Editor\Slots\ScenePropertiesSlot.cs" />
+    <Compile Include="uFrameGraphs\Editor\Slots\SubsystemSlot.cs" />
+    <Compile Include="uFrameGraphs\Editor\uFramePlugin.cs" />
+    <Compile Include="uFrameGraphs\GameFramework.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GameFramework.ufgraph</DependentUpon>
+    </Compile>
     <Compile Include="uFramePlugin\ModelData\ModelClassNodeDrawer.cs" />
     <Compile Include="uFramePlugin\ModelData\ModelClassNodeViewModel.cs" />
     <Compile Include="uFramePlugin\RenameCollectionRefactorer.cs" />
@@ -130,7 +159,7 @@
     <Compile Include="OldConnectionStrategies\ViewInheritanceConnectionStrategy.cs" />
     <Compile Include="uFramePlugin\Nodes\Elements\ElementNodeViewModel.cs" />
     <Compile Include="uFrameContainerExtensions.cs" />
-    <Compile Include="Upgrading\Class1.cs" />
+    <Compile Include="Upgrading\UFrame15Upgrade.cs" />
     <Compile Include="Windows\AddBindingWindow.cs" />
     <Compile Include="uFramePlugin\ComputedProperties\ComputedProperties.cs" />
     <Compile Include="uFramePlugin\Elements\AddBindingCommand.cs" />
@@ -198,6 +227,11 @@
     <Compile Include="IAssemblyNameProvider.cs" />
     <Compile Include="uFrameVersionProcessor.cs" />
     <None Include="documentation.dxp" />
+    <None Include="uFrameGraphs\GameFramework.ufgraph">
+      <Generator>UFrameFileGenerator</Generator>
+      <LastGenOutput>GameFramework.cs</LastGenOutput>
+      <CustomToolNamespace>Invert.uFrame.Editor</CustomToolNamespace>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Invert.Core.GraphDesigner.Unity\Invert.Core.GraphDesigner.Unity.csproj">
@@ -222,7 +256,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Editor\" />
     <Folder Include="uFramePlugin\Nodes\Connections\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

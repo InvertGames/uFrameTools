@@ -17,7 +17,7 @@ public class ModelClassNodeCodeFactory : ClassNodeCodeFactory<ModelClassGenerato
         get { return Path.Combine("Data","Classes"); }
     }
 
-    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
+    public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
         ModelClassNodeData item)
     {
         //var list =  base.CreateGenerators(settings, pathStrategy, diagramData, item).ToArray();
@@ -82,7 +82,7 @@ public class ModelClassGenerator : ClassNodeGenerator<ModelClassNodeData>
 }
 public class RepositoryEditorFactory : DesignerGeneratorFactory<IGraphData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, IGraphData item)
+    public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, IGraphData item)
     {
         yield return new ModelAssetEditorGenerator()
         {

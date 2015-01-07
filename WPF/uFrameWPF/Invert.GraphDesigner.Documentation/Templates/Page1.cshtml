@@ -1,0 +1,27 @@
+﻿@using System.IO
+@using System.Linq
+@using System.Reflection
+@using DiagramDesigner
+@using Invert.Core.GraphDesigner
+@inherits Xipton.Razor.TemplateBase<IGraphData>
+
+@helper RenderImage(GenericNode node)
+{
+    var imageUrl = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),"Images", node.Name + ".png");
+    node.IsCollapsed = false;
+    node.ToImage().ToFile(imageUrl);
+    
+    <img src="@imageUrl"/>
+}
+
+@foreach (var nodeItem in Model.Project.NodeItems.OfType<GenericNode>())
+{
+    <h1>@(nodeItem.Name)</h1>
+    @RenderImage(nodeItem)
+    <p>@(nodeItem.Comments)</p>
+    foreach (var inputSlot in nodeItem.Config.InputSlots)
+    {
+        <h3>@(inputSlot.Key.Name)</h3>
+    }
+
+}

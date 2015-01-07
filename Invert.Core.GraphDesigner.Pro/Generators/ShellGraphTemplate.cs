@@ -18,7 +18,7 @@ public class ShellGraphTemplate : GenericGraphData<GenericNode>, IClassTemplate<
 #if UNITY_DLL
             Ctx.SetBaseTypeArgument("GenericGraphData<{0}>",Ctx.Data.RootNode.ClassName);
 #else
-            Ctx.SetType("GenericGraphData<{0}>", Ctx.Data.RootNode.ClassName);
+            Ctx.SetBaseTypeArgument("{0}", Ctx.Data.RootNode.ClassName);
 #endif
         }
     }

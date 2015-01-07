@@ -161,6 +161,8 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
     }
 
     private string _name;
+    private List<IGraphItemEvents> _listeners;
+
     public virtual string Name
     {
         get
@@ -319,5 +321,21 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
     public void DeserializeFromJson(JSONNode graphData)
     {
         Graph.DeserializeFromJson(graphData);
+    }
+
+    public List<IGraphItemEvents> Listeners
+    {
+        get { return Graph.Listeners; }
+        set { Graph.Listeners = value; }
+    }
+
+    public Action Subscribe(IGraphItemEvents handler)
+    {
+        return Graph.Subscribe(handler);
+    }
+
+    public void Unsubscribe(IGraphItemEvents handler)
+    {
+        Graph.Unsubscribe(handler);
     }
 }

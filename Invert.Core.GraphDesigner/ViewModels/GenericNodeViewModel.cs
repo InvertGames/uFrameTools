@@ -122,7 +122,7 @@ namespace Invert.Core.GraphDesigner
 
         private void AddSection(NodeConfigSectionBase section)
         {
-            if (DiagramViewModel.CurrentRepository.CurrentFilter.IsAllowed(null, section.SourceType)) return;
+            if (DiagramViewModel != null && DiagramViewModel.CurrentRepository.CurrentFilter.IsAllowed(null, section.SourceType)) return;
             var section1 = section as NodeConfigSectionBase;
             if (!IsVisible(section.Visibility)) return;
 
@@ -281,6 +281,7 @@ namespace Invert.Core.GraphDesigner
             ContentItems.Add(header);
             ApplyOutputConfiguration(inputConfig, header.DataObject as IGraphItem, header.OutputConnector, inputConfig.AllowMultiple, true);
             header.OutputConnector.Configuration = inputConfig;
+            
         }
 
         private static void ApplyOutputConfiguration(GraphItemConfiguration inputConfig, IGraphItem dataItem, ConnectorViewModel connector, bool allowMultiple, bool alwaysVisible = false)
@@ -328,9 +329,11 @@ namespace Invert.Core.GraphDesigner
 
         protected bool IsVisible(SectionVisibility section)
         {
+            if (DiagramViewModel == null) return true;
             if (section == SectionVisibility.Always) return true;
             if (section == SectionVisibility.WhenNodeIsFilter)
             {
+                
                 return DiagramViewModel.CurrentRepository.CurrentFilter == GraphItem;
             }
             return DiagramViewModel.CurrentRepository.CurrentFilter != GraphItem;
@@ -342,4 +345,33 @@ namespace Invert.Core.GraphDesigner
 
         }
     }
+
+
+
+    //public class BulletPointViewModel : GraphItemViewModel
+    //{
+    //    public GraphItemViewModel AttachedTo { get; set; }
+
+    //    public bool RightJustified { get; set; }
+
+    //    public BulletPointViewModel(GraphItemViewModel nodeViewModel)
+    //    {
+    //        AttachedTo = nodeViewModel;
+    //    }
+
+    //    public override Vector2 Position
+    //    {
+    //        get
+    //        {
+    //            return new Vector2();
+    //        }
+    //    }
+
+    //    public override string Name
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //        set { throw new NotImplementedException(); }
+    //    }
+    //}
+
 }

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using DiagramDesigner.Platform;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.GraphDesigner.WPF;
 using Invert.GraphDesigner.WPF.Controls;
 
 namespace DiagramDesigner
@@ -18,6 +21,7 @@ namespace DiagramDesigner
     {
         public App()
         {
+            
             InvertGraphEditor.Prefs = new WindowsPrefs();
             //InvertApplication.CachedAssemblies.Add(this.GetType().Assembly);
             InvertApplication.CachedAssemblies.Add(typeof(ShellPluginNode).Assembly);
@@ -25,9 +29,10 @@ namespace DiagramDesigner
             InvertApplication.CachedAssemblies.Clear();
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-               
                 InvertApplication.CachedAssemblies.Add(assembly);
             }
+            var pluginsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+            InvertApplication.LoadPluginsFolder(pluginsFolder);
         }
     }
 }

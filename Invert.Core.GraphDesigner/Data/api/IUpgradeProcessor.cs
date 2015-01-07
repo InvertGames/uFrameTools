@@ -2,7 +2,7 @@
 {
     public interface IUpgradeProcessor
     {
-        int Version { get; }
+        double Version { get; }
 
         void Upgrade(INodeRepository repository, IGraphData graphData);
     }

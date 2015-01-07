@@ -1,4 +1,6 @@
-﻿namespace Invert.Core.GraphDesigner
+﻿using System;
+
+namespace Invert.Core.GraphDesigner
 {
     public static class ConfigExtensions
     {
@@ -6,7 +8,7 @@
    
         public static NodeConfig<TNode> GetNodeConfig<TNode>(this IUFrameContainer container) where TNode : GenericNode, IConnectable
         {
-            var config = container.Resolve<NodeConfigBase>(typeof(TNode).Name) as NodeConfig<TNode>;
+            var config = GetNodeConfig(container, typeof(TNode)) as NodeConfig<TNode>;
             if (config == null)
             {
                 var nodeConfig = new NodeConfig<TNode>(container)
@@ -19,6 +21,11 @@
                 return nodeConfig;
             }
             return config;
+        }
+
+        public static NodeConfigBase GetNodeConfig(this IUFrameContainer container, Type nodeType)
+        {
+            return container.Resolve<NodeConfigBase>(nodeType.Name);
         }
 
         //public static IUFrameContainer ScaffoldNodeChild<TNode, TChildItem>(this IUFrameContainer container, string header = null)

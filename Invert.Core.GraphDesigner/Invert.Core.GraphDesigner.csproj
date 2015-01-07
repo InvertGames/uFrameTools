@@ -78,9 +78,11 @@
     <Compile Include="Drawers\impl\TypedItemDrawer.cs" />
     <Compile Include="FilterExtensions.cs" />
     <Compile Include="DefaultGraphSettings.cs" />
+    <Compile Include="GraphService.cs" />
     <Compile Include="Platform\api\IGraphWindow.cs" />
     <Compile Include="InvertGraphEvent.cs" />
     <Compile Include="Platform\api\IWindowManager.cs" />
+    <Compile Include="ProjectService.cs" />
     <Compile Include="ScaffoldNode.cs" />
     <Compile Include="ScaffoldNodeChildItem.cs" />
     <Compile Include="ScaffoldNodeTypedChildItem.cs" />

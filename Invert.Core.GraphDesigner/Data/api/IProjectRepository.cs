@@ -7,7 +7,25 @@ using Object = System.Object;
 
 namespace Invert.Core.GraphDesigner
 {
-    public interface IProjectRepository : INodeRepository
+    public interface ISubscribable<T>
+    {
+        List<T> Listeners { get; set; }
+
+        Action Subscribe(T handler);
+        void Unsubscribe(T handler);
+    }
+
+    public static class SubscribableExtensions
+    {
+        public static void Signal<T>(this ISubscribable<T> t, Action<T> action)
+        {
+            foreach (var listener in t.Listeners)
+            {
+                action(listener);
+            }
+        }
+    }
+    public interface IProjectRepository : INodeRepository, ISubscribable<IGraphEvents>
     {
         IGraphData CurrentGraph { get; set; }
 
@@ -29,6 +47,8 @@ namespace Invert.Core.GraphDesigner
         void Refresh();
 
         bool SetSetting(string key, bool value);
+
+        
     }
 
     public abstract class DefaultProjectRepository
@@ -45,6 +65,7 @@ namespace Invert.Core.GraphDesigner
         private List<OpenGraph> _openTabs = new List<OpenGraph>();
         private Dictionary<string, bool> _settingsBag;
         private List<IGraphData> _includedGraphs;
+        private List<IGraphEvents> _listeners;
 
         public bool this[string settingsKey, bool def = true]
         {
@@ -185,10 +206,12 @@ namespace Invert.Core.GraphDesigner
             {
                 nodeItem.NodeItemAdded(item);
             }
+            
         }
 
         public virtual void AddNode(IDiagramNode data)
         {
+            
             data.Graph = CurrentGraph;
             foreach (var item in NodeItems)
             {
@@ -207,21 +230,43 @@ namespace Invert.Core.GraphDesigner
         {
             OpenTabs.Remove(tab);
         }
-
-        public abstract IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null);
+        /// <summary>
+        /// Creates a new diagram based on the type passed in and adds it to this project.
+        /// 
+        /// <example>
+        /// CreateNewDiagram(typeof(MyDiagramData), new MyDiagramNode());
+        /// </example>
+        /// </summary>
+        /// <param name="diagramType">The type of diagram to create.</param>
+        /// <param name="defaultFilter">The root node or the root filter to use.</param>
+        /// <returns>The created graph.</returns>
+        public virtual IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null)
+        {
+            var graph = Activator.CreateInstance(diagramType) as InvertGraph;
+            // Create a unique name
+            graph.Name = string.Format("{0}{1}", diagramType.Name, Graphs.Count());
+            // Set up the root node if specified
+            if (defaultFilter != null)
+            {
+                graph.RootFilter = defaultFilter;
+                defaultFilter.Name = graph.Name;
+            }
+            else
+            {
+                graph.RootFilter = graph.CreateDefaultFilter();
+            }
+            // Send the signal to any listeners that a new a graph has been created
+            this.Signal(p => p.GraphCreated(this, graph));
+            // Add this graph to the project and do any loading necessary
+            AddGraph(graph);
+            // Go ahead and save this project
+            Save();
+            // Return the newly created graph
+            return graph;
+        }
 
         public Vector2 GetItemLocation(IDiagramNode node)
         {
-            //if (!CurrentDiagram.PositionData.HasPosition(CurrentFilter, node))
-            //{
-            //    foreach (var diagram in Diagrams)
-            //    {
-            //        if (diagram.PositionData.HasPosition(CurrentFilter, node))
-            //        {
-            //            return diagram.PositionData[CurrentFilter,node];
-            //        }
-            //    }
-            //}
             return CurrentGraph.PositionData[CurrentFilter, node];
         }
 
@@ -237,14 +282,6 @@ namespace Invert.Core.GraphDesigner
 
         public virtual IGraphData LoadDiagram(string path)
         {
-            //foreach (var asset in Graphs.OfType<InvertGraph>())
-            //{
-            //    if (asset.Path == path)
-            //    {
-            //        CurrentGraph = asset;
-            //        return asset;
-            //    }
-            //}
             var data = InvertGraphEditor.AssetManager.LoadAssetAtPath(path, RepositoryFor) as IGraphData;
             if (data == null)
             {
@@ -309,6 +346,36 @@ namespace Invert.Core.GraphDesigner
         {
             return this[key] = value;
         }
+
+        public List<IGraphEvents> Listeners
+        {
+            get { return _listeners ?? (_listeners = new List<IGraphEvents>()); }
+            set { _listeners = value; }
+        }
+
+        public Action Subscribe(IGraphEvents handler)
+        {
+            Listeners.Add(handler);
+            return () => { Unsubscribe(handler); };
+        }
+
+        public void Unsubscribe(IGraphEvents handler)
+        {
+            Listeners.Remove(handler);
+        }
+
+        protected virtual void AddGraph(IGraphData graphData)
+        {
+          
+            if (graphData.CodePathStrategy == null)
+            {
+                graphData.CodePathStrategy = new DefaultCodePathStrategy()
+                {
+                    Data = graphData,
+
+                };
+            }
+        }
     }
 
     [Serializable]
@@ -339,6 +406,48 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _path; }
             set { _path = value; }
+        }
+    }
+
+    public class TemporaryProjectRepository : DefaultProjectRepository
+    {
+        public TemporaryProjectRepository(IEnumerable<IGraphData> graphs)
+        {
+            Graphs = graphs;
+            
+        }
+
+        public TemporaryProjectRepository(IGraphData currentGraph, IEnumerable<IGraphData> graphs)
+        {
+            CurrentGraph = currentGraph;
+            Graphs = graphs;
+        }
+
+        public TemporaryProjectRepository(IGraphData currentGraph)
+        {
+            CurrentGraph = currentGraph;
+            Graphs = new[] {currentGraph};
+        }
+
+        public override IGraphData CurrentGraph { get; set; }
+
+        public override IEnumerable<IGraphData> Graphs { get; set; }
+
+        public override string LastLoadedDiagram { get; set; }
+
+        public override void RecordUndo(INodeRepository data, string title)
+        {
+            
+        }
+
+        public override void Refresh()
+        {
+           
+        }
+
+        public override void SaveDiagram(INodeRepository data)
+        {
+          
         }
     }
 }

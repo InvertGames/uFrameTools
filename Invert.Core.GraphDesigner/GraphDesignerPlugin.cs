@@ -37,6 +37,7 @@ namespace Invert.Core.GraphDesigner
             container.RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
             container.RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();
             container.RegisterDrawer<InputOutputViewModel, SlotDrawer>();
+            container.RegisterDrawer<DiagramViewModel, DiagramDrawer>();
             //typeContainer.AddItem<GenericSlot,InputOutputViewModel,SlotDrawer>();
             //typeContainer.AddItem<BaseClassReference, InputOutputViewModel, SlotDrawer>();
 
@@ -138,7 +139,7 @@ namespace Invert.Core.GraphDesigner
           
         }
 
-        public override void Loaded()
+        public override void Loaded(uFrameContainer container)
         {
             InvertGraphEditor.DesignerPluginLoaded();
         }

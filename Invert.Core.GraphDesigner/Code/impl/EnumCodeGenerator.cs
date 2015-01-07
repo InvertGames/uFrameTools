@@ -1,3 +1,4 @@
+using System;
 using System.CodeDom;
 
 namespace Invert.Core.GraphDesigner
@@ -5,6 +6,12 @@ namespace Invert.Core.GraphDesigner
     public class EnumCodeGenerator : CodeGenerator
     {
         public EnumData EnumData { get; set; }
+
+        public override Type GeneratorFor
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
 
         public override void Initialize(CodeFileGenerator fileGenerator)
         {

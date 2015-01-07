@@ -18,7 +18,7 @@ namespace Invert.uFrame.CodeGen.ClassNodeGenerators
         public virtual string EditableFileDirectory { get { return "Types"; } }
 
 
-        public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
+        public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
             TClassData item)
         {
             yield return new TClassGenerator()
@@ -52,6 +52,13 @@ namespace Invert.uFrame.CodeGen.ClassNodeGenerators
                 return true;
             }
         }
+
+        public override Type GeneratorFor
+        {
+            get { return typeof (TData); }
+            set {  }
+        }
+
         public override void Initialize(CodeFileGenerator fileGenerator)
         {
             base.Initialize(fileGenerator);

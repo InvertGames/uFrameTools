@@ -24,7 +24,7 @@ namespace Invert.Core.GraphDesigner
 
             var pathStrategy = node.DiagramData.CodePathStrategy;
 
-            var generators = selected.CodeGenerators.Where(p => !p.IsDesignerFile).ToArray();
+            var generators = selected.CodeGenerators.Where(p => !p.AlwaysRegenerate).ToArray();
 
             var customFiles = generators.Select(p=>p.Filename).ToArray();
             var customFileFullPaths = generators.Select(p=>System.IO.Path.Combine(pathStrategy.AssetPath, p.Filename)).Where(File.Exists).ToArray();

@@ -8,7 +8,20 @@ using Microsoft.CSharp;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class CodeFileGenerator
+    public abstract class FileGeneratorBase
+    {
+        public string SystemPath { get; set; }
+        public string AssetPath { get; set; }
+        public abstract string CreateOutput();
+        public override string ToString()
+        {
+            return CreateOutput();
+        }
+        public abstract bool CanGenerate(FileInfo fileInfo);
+        
+    }
+
+    public class CodeFileGenerator : FileGeneratorBase
     {
         public CodeNamespace Namespace { get; set; }
         public CodeCompileUnit Unit { get; set; }
@@ -20,36 +33,20 @@ namespace Invert.Core.GraphDesigner
             NamespaceName = ns;
         }
 
-        public void Generate()
-        {
-            AddImports();
-        }
-        public CodeGenerator[] Generators
+        public OutputGenerator[] Generators
         {
             get;
             set;
         }
 
-        //public string Filename { get; set; }
-        public string SystemPath { get; set; }
-        public string AssetPath { get; set; }
-
-        public virtual void AddImports()
+        public override string CreateOutput()
         {
-            Namespace.Imports.Add(new CodeNamespaceImport("System"));
-            Namespace.Imports.Add(new CodeNamespaceImport("System.Collections"));
-            Namespace.Imports.Add(new CodeNamespaceImport("System.Collections.Generic"));
-            Namespace.Imports.Add(new CodeNamespaceImport("System.Linq"));
-        }
-
-        public override string ToString()
-        {
-            RemoveComments = Generators.Any(p => !p.IsDesignerFile);
+            RemoveComments = Generators.Any(p => !p.AlwaysRegenerate);
 
             Namespace = new CodeNamespace(NamespaceName);
             Unit = new CodeCompileUnit();
             Unit.Namespaces.Add(Namespace);
-            AddImports();
+      
             foreach (var codeGenerator in Generators)
             {
                // UnityEngine.Debug.Log(codeGenerator.GetType().Name + " is generating");
@@ -69,14 +66,11 @@ namespace Invert.Core.GraphDesigner
             return sb.ToString();
         }
 
-        public bool CanGenerate(FileInfo fileInfo)
+        public override bool CanGenerate(FileInfo fileInfo)
         {
-            if (Generators.Any(p => p.IsDesignerFile)) return true;
-            var doesTypeExist = Generators.Any(p => p.RelatedType != null);
-
+            var doesTypeExist = Generators.Any(p => !p.IsValid(fileInfo));
             if (doesTypeExist || fileInfo.Exists)
             {
-                
                 return false;
             }
 

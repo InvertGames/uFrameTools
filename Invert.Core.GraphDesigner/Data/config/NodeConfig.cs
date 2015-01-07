@@ -513,8 +513,7 @@ namespace Invert.Core.GraphDesigner
 
         public class CodeGeneratorFactory : DesignerGeneratorFactory<TNode>
         {
-            public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
-                TNode item)
+            public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, TNode item)
             {
                 if (!item.IsValid) yield break;
 
@@ -528,7 +527,12 @@ namespace Invert.Core.GraphDesigner
                     Data = item,
                     Repository = diagramData
                 };
-
+                foreach (var outputGenerator in config.OutputGenerators)
+                {
+                    var generator = outputGenerator();
+                    generator.ObjectData = item;
+                    yield return generator;
+                }
                 foreach (var generatorMethod in config.CodeGenerators)
                 {
                     var result = generatorMethod(generatorArgs);

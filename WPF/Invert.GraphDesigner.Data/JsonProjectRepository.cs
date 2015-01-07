@@ -26,7 +26,7 @@ namespace Invert.GraphDesigner.WPF
             if (projectFileInfo.Exists)
             {
                 Deserialize(JSON.Parse(File.ReadAllText(projectFileInfo.FullName)).AsObject,this);
-                foreach (var graph in Directory.GetFiles(projectFileInfo.Directory.FullName,"*.graph"))
+                foreach (var graph in Directory.GetFiles(projectFileInfo.Directory.FullName,"*.ufgraph"))
                 {
                     var graphJson = JSON.Parse(File.ReadAllText(graph));
                     var type = InvertApplication.FindType(graphJson["Type"].Value);
@@ -34,16 +34,25 @@ namespace Invert.GraphDesigner.WPF
                     if (instance == null) continue;
                     instance.Path = graph;
                     instance.DeserializeFromJson(graphJson);
-                    instance.SetProject(this);
-                    IncludedGraphs.Add(instance);
+                    AddGraph(instance);
                     CurrentGraph = instance;
-                    
+                }
+                foreach (var item in IncludedGraphs)
+                {
+                    item.SetProject(this);
                 }
             }
         }
 
         public FileInfo ProjectFileInfo { get; set; }
 
+        protected sealed override void AddGraph(IGraphData graphData)
+        {
+            base.AddGraph(graphData);
+            IncludedGraphs.Add(graphData);
+            this.Signal(p=>p.GraphLoaded(this, graphData));
+
+        }
         [JsonProperty]
         public override string LastLoadedDiagram { get; set; }
 
@@ -67,7 +76,7 @@ namespace Invert.GraphDesigner.WPF
             File.WriteAllText(ProjectFileInfo.FullName,jsonClass.ToString());
             foreach (var graph in Graphs)
             {
-                File.WriteAllText(graph.Path.Replace(".graph","") + ".graph", InvertGraph.Serialize(graph).ToString());
+                File.WriteAllText(graph.Path, InvertGraph.Serialize(graph).ToString());
             }
         }
 
@@ -86,23 +95,6 @@ namespace Invert.GraphDesigner.WPF
            
         }
 
-        public override IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null)
-        {
-            var graph = diagramType == null ? Activator.CreateInstance(diagramType) as InvertGraph : new InvertGraph();
-            graph.Name = string.Format("{0}{1}", diagramType.Name, IncludedGraphs.Count);
-            if (defaultFilter != null)
-            {
-                graph.RootFilter = defaultFilter;
-                defaultFilter.Name = graph.Name;
-            }
-          
-         
-            graph.SetProject(this);
-            IncludedGraphs.Add(graph);
-            Save();
-            return graph;
-        }
-
         public override IGraphData CurrentGraph
         {
             get { return _currentGraph1; }
@@ -113,6 +105,9 @@ namespace Invert.GraphDesigner.WPF
             }
         }
 
+        /// <summary>
+        /// The list of graphs that belong to this project
+        /// </summary>
         public override IEnumerable<IGraphData> Graphs
         {
             get { return IncludedGraphs; }

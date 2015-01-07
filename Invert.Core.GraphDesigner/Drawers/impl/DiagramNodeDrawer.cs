@@ -55,7 +55,22 @@ namespace Invert.Core.GraphDesigner
             base.Draw(platform, scale);
             bool hasErrors = false;
 
-
+            if (ViewModel.ShowHelp)
+            {
+                for (int index = 1; index <= NodeViewModel.ContentItems.Count; index++)
+                {
+                    var item = NodeViewModel.ContentItems[index - 1];
+                    if (!string.IsNullOrEmpty(item.Comments))
+                    {
+                        var bounds = new Rect(item.Bounds);
+                        bounds.width = item.Bounds.height;
+                        bounds.height = item.Bounds.height;
+                        bounds.y += (item.Bounds.height/2) - 12;
+                        bounds.x = this.Bounds.x - (bounds.width + 4);
+                        platform.DrawLabel(bounds,index.ToString(),CachedStyles.NodeHeader13,DrawingAlignment.MiddleCenter);
+                    }
+                }
+            }
         }
 
     }
@@ -203,8 +218,11 @@ namespace Invert.Core.GraphDesigner
 
             platform.DrawLabel(labelRect, _cachedTag, CachedStyles.Tag1, DrawingAlignment.MiddleCenter);
           
-
+#if UNITY_DLL
             var adjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
+#else
+                 var adjustedBounds = Bounds; //new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
+#endif
             var boxRect = adjustedBounds.Scale(Scale);
             platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 20);
             
@@ -278,6 +296,7 @@ namespace Invert.Core.GraphDesigner
                     hasErrors = true;
                 }
             }
+          
         }
 
         public object GetNodeColorStyle()
@@ -502,4 +521,10 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+    //public class BulletPointDrawer : Drawer<BulletPointViewModel>
+    //{
+        
+    //}
+
+    
 }

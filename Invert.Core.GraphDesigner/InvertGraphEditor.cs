@@ -118,11 +118,11 @@ namespace Invert.Core.GraphDesigner
 
         public static IKeyBinding[] KeyBindings { get; set; }
 
-        public static IProjectRepository[] Projects
-        {
-            get { return _projects ?? (_projects = AssetManager.GetAssets(typeof(IProjectRepository)).Cast<IProjectRepository>().ToArray()); }
-            set { _projects = value; }
-        }
+        //public static IProjectRepository[] Projects
+        //{
+        //    get { return _projects ?? (_projects = AssetManager.GetAssets(typeof(IProjectRepository)).Cast<IProjectRepository>().ToArray()); }
+        //    set { _projects = value; }
+        //}
 
         //public static IProjectRepository[] GetAllProjects()
         //{
@@ -281,7 +281,7 @@ namespace Invert.Core.GraphDesigner
             //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
         }
 
-        public static IEnumerable<CodeGenerator> GetAllCodeGenerators(GeneratorSettings settings, INodeRepository project, bool includeDisabled = false)
+        public static IEnumerable<OutputGenerator> GetAllCodeGenerators(GeneratorSettings settings, INodeRepository project, bool includeDisabled = false)
         {
             // Grab all the code generators
             var diagramItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
@@ -299,7 +299,6 @@ namespace Invert.Core.GraphDesigner
 
                 if (typeof(IGraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
                 {
-       
                     foreach (var diagram in diagrams)
                     {
                         if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
@@ -314,7 +313,7 @@ namespace Invert.Core.GraphDesigner
 
                                 codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                                 codeGenerator.Settings = settings;
-                                codeGenerator.ObjectData = project;
+                                codeGenerator.ObjectData = diagram;
                                 codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                                 yield return codeGenerator;
                             }
@@ -348,12 +347,12 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public static IEnumerable<CodeGenerator> GetCodeGeneratorsForNode(this IDiagramNode node)
+        public static IEnumerable<OutputGenerator> GetCodeGeneratorsForNode(this IDiagramNode node)
         {
             return GetAllCodeGenerators(null,node.Project).Where(p=>p.ObjectData == node);
         }
 
-        private static IEnumerable<CodeGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, INodeRepository project,
+        private static IEnumerable<OutputGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, INodeRepository project,
             DesignerGeneratorFactory generator, DesignerGeneratorFactory diagramItemGenerator, bool includeDisabled = false)
         {
             var proj = project as IProjectRepository;
@@ -602,8 +601,18 @@ namespace Invert.Core.GraphDesigner
             return drawer;
         }
 
+        public static void ListenToProjectEvents(this IUFrameContainer container, IProjectEvents events)
+        {
+            container.RegisterInstance<IProjectEvents>(events,events.GetType().Name);
+        }
+
+        public static GraphItemViewModel CreateViewModel(this IUFrameContainer container, object data)
+        {
+            return container.ResolveRelation<ViewModel>(data.GetType(), data, null) as GraphItemViewModel;
+        }
         private static void InitializeTypesContainer(uFrameContainer container)
         {
+
         }
     }
 }

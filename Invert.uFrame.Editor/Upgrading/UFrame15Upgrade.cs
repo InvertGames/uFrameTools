@@ -10,9 +10,9 @@ using UnityEditor;
 
 namespace Invert.uFrame.Editor.Upgrading
 {
-    public class uFrame15Upgrade : IUpgradeProcessor
+    public class UFrame15Upgrade : IUpgradeProcessor
     {
-        public int Version { get; set; }
+        public double Version { get; set; }
 
         public void Upgrade(INodeRepository repository, IGraphData graphData)
         {
@@ -114,6 +114,19 @@ namespace Invert.uFrame.Editor.Upgrading
                 file.MoveTo(Path.Combine(newDirectory.Name, file.Name));
             }
             AssetDatabase.Refresh();
+        }
+    }
+
+    public class UFrame16Upgrade : IUpgradeProcessor
+    {
+        public double Version
+        {
+            get { return 1.6; }
+        }
+
+        public void Upgrade(INodeRepository repository, IGraphData graphData)
+        {
+            // TODO
         }
     }
 }

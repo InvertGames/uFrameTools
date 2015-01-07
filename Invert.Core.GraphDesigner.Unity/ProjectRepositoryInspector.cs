@@ -345,7 +345,8 @@ public class ProjectRepositoryInspector : Editor
     public IGraphItem SelectedItem { get; set; }
     private void ImportDiagram()
     {
-        var projectAssets = InvertGraphEditor.Projects.SelectMany(p => p.Graphs);
+        var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
+        var projectAssets = projectService.Projects.SelectMany(p => p.Graphs);
         var assets = InvertGraphEditor.AssetManager.GetAssets(typeof(ScriptableObject)).OfType<IGraphData>().Where(p => !projectAssets.Contains(p)).ToArray();
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.GraphDesigner.WPF;
 using Microsoft.Samples.VisualStudio.GeneratorSample;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -36,7 +38,7 @@ namespace Invert.uFrame.VS
                 GeneratorError(0,"Couldn't parse graph file.",0,0);
                 return null;
             }
-            var project = InvertGraphEditor.Projects.FirstOrDefault(p => p.Graphs.Any(x => x.Identifier == graph.Identifier)) as VisualStudioProjectRepository;
+            var project = new TemporaryProjectRepository(graph);
             graph.SetProject(project);
            // project.Project.AddItem(0,VSADDITEMOPERATION.VSADDITEMOP_LINKTOFILE, )
 
@@ -51,7 +53,7 @@ namespace Invert.uFrame.VS
             // Debug.Log(fileGenerators.Length);
             var index = 0;
             List<string> directories = new List<string>();
-            List<CodeGenerator> designerGenerators = new List<CodeGenerator>();
+            List<OutputGenerator> designerGenerators = new List<OutputGenerator>();
             foreach (var codeFileGenerator in fileGenerators)
             {
                 index++;
@@ -70,14 +72,14 @@ namespace Invert.uFrame.VS
                     //Debug.Log("Can't generate " + fileInfo.FullName);
                     continue;
                 }
-                if (codeFileGenerator.Generators.Any(p => p.IsDesignerFile))
+                if (codeFileGenerator.Generators.Any(p => p.AlwaysRegenerate))
                 {
                     designerGenerators.AddRange(codeFileGenerator.Generators);
                    
                     continue;
                 }
                 // Get the path to the directory
-                var directory = System.IO.Path.GetDirectoryName(fileInfo.FullName);
+                var directory = Path.GetDirectoryName(fileInfo.FullName);
                 if (!directories.Contains(directory))
                 {
                     directories.Add(directory);
@@ -90,14 +92,15 @@ namespace Invert.uFrame.VS
                 }
                 try
                 {
-             
                     File.WriteAllText(fileInfo.FullName, codeFileGenerator.ToString());
                     this.GetVSProject().Project.ProjectItems.AddFromFile(fileInfo.FullName);
                 }
                 catch (Exception ex)
                 {
-                    InvertApplication.LogException(ex);
-                    InvertApplication.Log("Coudln't create file " + fileInfo.FullName);
+                    Debug.WriteLine(ex.Message);
+                    Debug.WriteLine(ex.StackTrace);
+
+                    //InvertApplication.Log("Coudln't create file " + fileInfo.FullName);
                 }
 
             }

@@ -41,7 +41,7 @@ namespace Invert.uFrame.VS
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#100", "#102", "10.0", IconResourceID = 400)]
     // We register our AddNewItem Templates the Miscellaneous Files Project:
-    [ProvideEditorExtension(typeof(EditorFactory), ".ufgraph", 50,
+    [ProvideEditorExtension(typeof(EditorFactory), ".ufgraph", 100,
               ProjectGuid = "{A2FE74E1-B743-11d0-AE1A-00A0C90FFFC3}",
               TemplateDir = "Templates",
               NameResourceID = 106)]

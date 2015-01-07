@@ -14,7 +14,7 @@ namespace Invert.Core.GraphDesigner
         {
         }
 
-        public DiagramNodeViewModel(TData graphItemObject, DiagramViewModel diagramViewModel)
+        protected DiagramNodeViewModel(TData graphItemObject, DiagramViewModel diagramViewModel)
             : base(graphItemObject, diagramViewModel)
         {
 
@@ -25,6 +25,11 @@ namespace Invert.Core.GraphDesigner
             base.DataObjectChanged();
           
        
+        }
+
+        public bool ShowHelp
+        {
+            get { return true; }
         }
 
         protected override void CreateContent()
@@ -138,12 +143,24 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                if (IsScreenshot)
+                {
+                    return new Vector2(45,45);
+                }
                 return DiagramViewModel.CurrentRepository.GetItemLocation(GraphItemObject);
                 //return GraphItemObject.Location;
             }
             set
             {
-                DiagramViewModel.CurrentRepository.SetItemLocation(GraphItemObject, value);
+                if (IsScreenshot)
+                {
+                    //GraphItemObject.DefaultLocation = value;
+                }
+                else
+                {
+                    DiagramViewModel.CurrentRepository.SetItemLocation(GraphItemObject, value);
+                }
+               
             }
         }
 
@@ -242,7 +259,7 @@ namespace Invert.Core.GraphDesigner
             base.DataObjectChanged();
             ContentItems.Clear();
             
-            IsLocal = DiagramViewModel.CurrentRepository.NodeItems.Contains(GraphItemObject);
+            IsLocal = DiagramViewModel == null ||DiagramViewModel.CurrentRepository.NodeItems.Contains(GraphItemObject);
             CreateContent();
             if (GraphItemObject.IsEditing)
             {
@@ -356,7 +373,7 @@ namespace Invert.Core.GraphDesigner
             get { return InvertGraphEditor.IsFilter(GraphItemObject.GetType()) && IsLocal; }
         }
 
-        public IEnumerable<CodeGenerator> CodeGenerators
+        public IEnumerable<OutputGenerator> CodeGenerators
         {
             get
             {
@@ -418,7 +435,7 @@ namespace Invert.Core.GraphDesigner
         {
             InvertGraphEditor.ExecuteCommand((diagram) =>
             {
-                var fileGenerator = this.CodeGenerators.FirstOrDefault(p => !p.IsDesignerFile);
+                var fileGenerator = this.CodeGenerators.OfType<CodeGenerator>().FirstOrDefault(p => !p.IsDesignerFile);
                 if (fileGenerator != null)
                 {
                     var filePath = fileGenerator.FullPathName;
@@ -433,7 +450,7 @@ namespace Invert.Core.GraphDesigner
         {
             InvertGraphEditor.ExecuteCommand((diagram) =>
             {
-                var fileGenerator = this.CodeGenerators.LastOrDefault(p => !p.IsDesignerFile);
+                var fileGenerator = this.CodeGenerators.OfType<CodeGenerator>().LastOrDefault(p => !p.IsDesignerFile);
                 if (fileGenerator != null)
                 {
                     var filePath = fileGenerator.FullPathName;

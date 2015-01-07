@@ -1133,11 +1133,15 @@ namespace Invert.Common
                 _nodeBackground = new GUIStyle
                 {
                     normal = { background = GetSkinTexture("Box12"), textColor = new Color(0.82f, 0.82f, 0.82f) },
-
+                    
                     stretchHeight = true,
                     stretchWidth = true,
-                    // border = new RectOffset(44, 50, 20, 34),
-                    padding = new RectOffset(7, 7, 7, 7)
+                    
+                    //border = new RectOffset(20,20,20,20)
+                     border = new RectOffset(44, 50, 20, 34),
+                    //padding = new RectOffset(9,1,19,9)
+                   
+                    //padding = new RectOffset(7, 7, 7, 7)
                 };
 
                 return _nodeBackground;
@@ -1703,7 +1707,7 @@ namespace Invert.Common
             return new GUIStyle
              {
                  normal = { background = GetSkinTexture(texture), textColor = color },
-
+                 padding = new RectOffset(-9,1,19,9),
                  stretchHeight = true,
                  stretchWidth = true,
                  // fixedHeight = 36,

@@ -123,9 +123,15 @@ namespace Invert.uFrame.VS
 
         private void LoadFile()
         {
-            Project = InvertGraphEditor.Projects.First(x => x.Graphs.Any(p => p.Path == Filename));
+            var service = InvertGraphEditor.Container.Resolve<ProjectService>();
+            Project = service.Projects.First(x => x.Graphs.Any(p => p.Path == Filename));
+
             Graph = Project.Graphs.FirstOrDefault(p => p.Path == Filename);
-            DataContext = new DiagramViewModel(Graph, Graph);
+            if (Graph != null)
+            {
+                Graph.DeserializeFromJson(JSON.Parse(File.ReadAllText(Filename)));
+                DataContext = new DiagramViewModel(Graph, Graph);
+            }
             Diagram.DataContext = DataContext;
         }
 

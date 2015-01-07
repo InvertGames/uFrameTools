@@ -125,7 +125,7 @@ namespace DiagramDesigner.Platform
             figure.Segments.Add(new BezierSegment(new Point(startTangent.x, startTangent.y), new Point(endTangent.x, endTangent.y), new Point(endPosition.x, endPosition.y), true));
 
             geometry.Figures.Add(figure);
-            Context.DrawGeometry(null, new Pen(Brushes.White, 1f), geometry);
+            Context.DrawGeometry(null, new Pen(Brushes.Black, 2f), geometry);
             //Context.DrawLine(new Pen(Brushes.White,2), new Point(startPosition.x, startPosition.y), new Point(endPosition.x, endPosition.y));
         }
 
@@ -235,7 +235,7 @@ namespace DiagramDesigner.Platform
 
         public void DrawWarning(Rect rect, string key)
         {
-            DrawLabel(rect,key,CachedStyles.NodeBackground,DrawingAlignment.MiddleLeft);
+            DrawLabel(rect,key,CachedStyles.NodeHeader13,DrawingAlignment.MiddleCenter);
         }
 
         public void EndRender()

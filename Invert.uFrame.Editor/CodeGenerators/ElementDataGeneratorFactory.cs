@@ -6,7 +6,7 @@ using Invert.uFrame.Editor;
 
 public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
+    public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy codePathStrategy, INodeRepository diagramData, ElementData item)
     {
 
         yield return CreateDesignerControllerGenerator(codePathStrategy, diagramData, item);

@@ -15,6 +15,14 @@ namespace Invert.Core.GraphDesigner
 
     public abstract class GraphItemViewModel : ViewModel
     {
+        public string Comments
+        {
+            get { return "TODO"; }
+            set
+            {
+                
+            }
+        }
         public abstract Vector2 Position { get; set; }
         public abstract string Name { get; set; }
 
@@ -114,6 +122,7 @@ namespace Invert.Core.GraphDesigner
         private Func<IDiagramNodeItem, IDiagramNodeItem, bool> _inputValidator;
         private Func<IDiagramNodeItem, IDiagramNodeItem, bool> _outputValidator;
         private bool _isMouseOver;
+        private bool _showHelp;
 
         public virtual ConnectorViewModel OutputConnector
         {
@@ -164,6 +173,18 @@ namespace Invert.Core.GraphDesigner
             get { return _outputValidator; }
             set { _outputValidator = value; }
         }
+
+        public bool ShowHelp
+        {
+            get
+            {
+                // TODO return _ShowHelp instead
+                return IsScreenshot ||  _showHelp;
+            }
+            set { _showHelp = value; }
+        }
+
+        public bool IsScreenshot { get; set; }
 
         public virtual void GetConnectors(List<ConnectorViewModel> list)
         {

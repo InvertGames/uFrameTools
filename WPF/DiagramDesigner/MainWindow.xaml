@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="Diagram Designer"
-        Height="850" Width="1000" Background="#FF4D4D4D">
+        Height="850" Width="1000">
 
     <d:Window.DataContext>
         <platform:MainWindowUIViewModel />
@@ -31,20 +31,19 @@
             <MenuItem Header="Select All" Command="{x:Static graphDesigner:InvertGraphEditor.}"/>
            -->
         </ContextMenu>
-
     </Window.Resources>
 
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto" MinHeight="29"/>
+          
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" >
             <MenuItem x:Name="File" Header="File" Click="MenuItem_Click">
-                <MenuItem Header="Create" HorizontalAlignment="Left" Width="140">
-                    <MenuItem x:Name="CreateProject" Header="Project" HorizontalAlignment="Left" Width="140" Click="CreateProject_OnClick"></MenuItem>
-                    <MenuItem x:Name="CreateGraph" Header="Graph" HorizontalAlignment="Left" Width="140" Click="CreateGraph_OnClick"></MenuItem>
+                <MenuItem x:Name="CreateMenuItem" Header="Create" HorizontalAlignment="Left" Width="140">
+                    <MenuItem x:Name="CreateProject" Header="New Project" Click="CreateProject_OnClick"/>
+                    <Separator></Separator>
                 </MenuItem>
                 <MenuItem Header="Open" HorizontalAlignment="Left" Width="140">
                     <MenuItem Header="Project" HorizontalAlignment="Left" Width="140"></MenuItem>
@@ -56,7 +55,7 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
-        <ToolBarTray Grid.Row="1">
+        <!--<ToolBarTray Grid.Row="1">
             <ToolBar ItemsSource="{Binding Path=ToolbarCommands}" >
                 <ToolBar.ItemTemplate>
                     <DataTemplate  >
@@ -70,9 +69,9 @@
                     </DataTemplate>
                 </ToolBar.ItemTemplate>
             </ToolBar>
-        </ToolBarTray>
+        </ToolBarTray>-->
 
-        <Grid Grid.Row="2" Margin="0,0,0,0"        
+        <Grid Grid.Row="1" Margin="0,0,0,0"        
               
               >
             <!--TextOptions.TextRenderingMode="Grayscale"
@@ -85,12 +84,36 @@
                 <ColumnDefinition Width="265"/>
             </Grid.ColumnDefinitions>
             <!-- Toolbox -->
+            <TabControl >
+                <TabItem Header="Graph" HorizontalAlignment="Left" Height="20" Margin="0" VerticalAlignment="Top" Width="55">
+                    <Grid Background="#FFE5E5E5">
+                        <ScrollViewer Grid.Column="0"  HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto" Background="#FF4D4D4D" BorderBrush="Black" BorderThickness="1">
+                            <controls:DiagramControl  x:Name="MyDesigner" 
+                                      DataContext="{Binding CurrentDiagram}" Background="#FF4D4D4D">
+                                <Button Content="Button" Canvas.Left="10" Canvas.Top="10" Width="75" Click="Button_Click_1"/>
+                            </controls:DiagramControl>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Documentation" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="118" >
+                    <Grid Background="#FFE5E5E5">
+                        <WebBrowser x:Name="DocsBrowser"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="TabItem" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="55">
+                    <Grid Background="#FFE5E5E5">
+                        <RichTextBox x:Name="DebugText">
+                            <FlowDocument>
+                                <Paragraph>
+                                    <Run Text="RichTextBox"/>
+                                </Paragraph>
+                            </FlowDocument>
+                        </RichTextBox>
+                    </Grid>
+                </TabItem>
+            </TabControl>
 
-            <ScrollViewer Grid.Column="0"  HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollBarVisibility="Auto" Background="#FF292929" BorderBrush="Black" BorderThickness="1">
-                <controls:DiagramControl  x:Name="MyDesigner" 
-                                      DataContext="{Binding CurrentDiagram}" Background="#FF303030"/>
-            </ScrollViewer>
 
             <!-- GridSplitter -->
             <GridSplitter Focusable="False" Width="2" Background="LightGray"

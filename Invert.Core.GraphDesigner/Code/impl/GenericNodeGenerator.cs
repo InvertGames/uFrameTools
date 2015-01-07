@@ -59,7 +59,16 @@ namespace Invert.Core.GraphDesigner
             get { return NameAsClass + "Base"; }
         }
 
-        public override void Initialize(CodeFileGenerator fileGenerator)
+        public override Type GeneratorFor
+        {
+            get { return typeof(TData); }
+            set
+            {
+                
+            }
+        }
+
+        public override void Initialize(CodeFileGenerator codeFileGenerator)
         {
             var nodeConfig = InvertGraphEditor.Container.GetNodeConfig<TData>();
             if (!nodeConfig.TypeGeneratorConfigs.ContainsKey(this.GetType())) return;
@@ -67,7 +76,7 @@ namespace Invert.Core.GraphDesigner
             GeneratorConfig = nodeConfig.TypeGeneratorConfigs[this.GetType()] as NodeGeneratorConfig<TData>;
             if (GeneratorConfig == null) return;
             if (GeneratorConfig.Condition != null && !GeneratorConfig.Condition(Data)) return;
-            base.Initialize(fileGenerator);
+            base.Initialize(codeFileGenerator);
          
 
             Decleration = new CodeTypeDeclaration(IsDesignerFile ? NameAsDesignerClass : NameAsClass)

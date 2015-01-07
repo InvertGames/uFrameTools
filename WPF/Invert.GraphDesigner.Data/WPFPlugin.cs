@@ -20,7 +20,7 @@ namespace Invert.GraphDesigner.WPF
             container.Register <ContextMenuUI,WPFContextMenu>();
         }
 
-        public override void Loaded()
+        public override void Loaded(uFrameContainer container)
         {
             
         }

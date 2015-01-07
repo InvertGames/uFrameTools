@@ -1,9 +1,9 @@
 using System;
 using System.Configuration;
-using DiagramDesigner.Properties;
 using Invert.Core.GraphDesigner;
+using Invert.GraphDesigner.WPF.Properties;
 
-namespace DiagramDesigner.Platform
+namespace Invert.GraphDesigner.WPF
 {
     public class WindowsPrefs : IPlatformPreferences
     {

@@ -131,8 +131,9 @@ namespace DiagramDesigner.Platform
         {
             var isRoundedCorner = radius.BottomLeft > 0 || radius.BottomRight > 0 ||
                                   radius.TopLeft > 0 || radius.TopRight > 0;
-            var finalRect = new System.Windows.Rect(rect.X + offset.x, rect.Y + offset.y, rect.Width + offset.width,
-                rect.Height + offset.height);
+            
+           // var finalRect = new System.Windows.Rect(rect.X + offset.x, rect.Y + offset.y, rect.Width + offset.width,rect.Height + offset.height);
+            var finalRect = new System.Windows.Rect(rect.X , rect.Y , rect.Width ,rect.Height);
             if (shadowSpread > 0f)
             {
                 DrawShadow(context, shadowSpread, finalRect);

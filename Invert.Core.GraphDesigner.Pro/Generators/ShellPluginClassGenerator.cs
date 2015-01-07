@@ -3,9 +3,9 @@ using Invert.uFrame.Editor;
 
 public class ShellPluginClassGenerator : GenericNodeGenerator<ShellPluginNode>
 {
-    public override void Initialize(CodeFileGenerator fileGenerator)
+    public override void Initialize(CodeFileGenerator codeFileGenerator)
     {
-        base.Initialize(fileGenerator);
+        base.Initialize(codeFileGenerator);
         TryAddNamespace("System.IO");
 
     }

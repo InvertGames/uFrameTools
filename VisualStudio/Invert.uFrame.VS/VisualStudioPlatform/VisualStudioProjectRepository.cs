@@ -51,8 +51,6 @@ namespace Invert.uFrame.VS
             get { return ProjectHierarchy.GetProjectName(); }
         }
 
-        
-
         protected List<IGraphData> LoadedGraphs
         {
             get { return _loadedGraphs ?? (_loadedGraphs = new List<IGraphData>()); }
@@ -95,11 +93,11 @@ namespace Invert.uFrame.VS
                 {
                     LoadedGraphs.Add(graph);
                     CurrentGraph = graph;
-                    graph.SetProject(this);
                 }
-                
-                //_currentGraph1 = instance;
-                //_lastLoadedDiagram = System.IO.Path.GetFileNameWithoutExtension(filename);
+            }
+            foreach (var loadedGraph in LoadedGraphs)
+            {
+                loadedGraph.SetProject(this);
             }
         }
 
@@ -122,7 +120,7 @@ namespace Invert.uFrame.VS
             return null;
         }
 
-        public static bool LoadGraphFromString(string item, string jsonText, out InvertGraph instance)
+        public static bool LoadGraphFromString(string path, string jsonText, out InvertGraph instance)
         {
             instance = null;
             var graphJson = JSON.Parse(jsonText);
@@ -131,11 +129,11 @@ namespace Invert.uFrame.VS
 
             instance = Activator.CreateInstance(type) as InvertGraph;
             instance.DeserializeFromJson(graphJson);
-            instance.Path = item;
+            instance.Path = path;
             instance.CodePathStrategy = new DefaultCodePathStrategy()
             {
                 Data = instance,
-                AssetPath = System.IO.Path.GetDirectoryName(item),
+                AssetPath = System.IO.Path.GetDirectoryName(path),
 
             };
             return true;

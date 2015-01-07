@@ -27,14 +27,18 @@ namespace DiagramDesigner.Platform
             get { return true; }
             set
             {
-                
+
             }
         }
 
         static PlatformPlugin()
         {
+            if (!InvertApplication.IsTestMode)
+            {
+                InvertGraphEditor.PlatformDrawer = new WindowsPlatformDrawer();
+            }
             InvertGraphEditor.Platform = new WindowsPlatformOperations();
-            InvertGraphEditor.PlatformDrawer = new WindowsPlatformDrawer();
+
             //InvertGraphEditor.Prefs = new WindowsPrefs();
 
 
@@ -43,25 +47,6 @@ namespace DiagramDesigner.Platform
         public override void Initialize(uFrameContainer container)
         {
             container.RegisterInstance<IStyleProvider>(new DesignerStyles());
-            //container.AddItem<ClassNodeProperty>();
-            //container.AddNode<ClassDiagramNode>()
-            //    .HasSubNode<ClassNode>()
-            //    .Color(NodeColor.Green)
-            //    ;
-            //container.AddNode<ClassNode>()
-            //    .HasSubNode<ClassNode>()
-            //                    .Color(NodeColor.Purple)
-            //                    ;
-
-           // container.RegisterControl<ConnectorViewModel, ConnectorControl>();
-            
-            //InvertGraphEditor.Prefs = new UnityPlatformPreferences();
-            //InvertApplication.Logger = new UnityPlatform();
-            //InvertGraphEditor.Platform = new UnityPlatform();
-            //InvertGraphEditor.PlatformDrawer = new UnityDrawer();
-            //container.RegisterInstance<IAssetManager>(new UnityAssetManager());
-
-            //container.RegisterInstance<IGraphEditorSettings>(new UFrameSettings());
             //// Where the generated code files are placed
             container.Register<ICodePathStrategy, DefaultCodePathStrategy>("Default");
 
@@ -69,9 +54,9 @@ namespace DiagramDesigner.Platform
 
         }
 
-        public override void Loaded()
+        public override void Loaded(uFrameContainer container)
         {
-            
+
         }
     }
 
@@ -106,16 +91,16 @@ namespace DiagramDesigner.Platform
     //    }
     //}
 
-  public static class PlatformExtensions
-{
-      public static Point ToPoint(this Vector2 vector)
-      {
-          return new Point(vector.x, vector.y);
-      }
+    public static class PlatformExtensions
+    {
+        public static Point ToPoint(this Vector2 vector)
+        {
+            return new Point(vector.x, vector.y);
+        }
 
-      public static Vector2 ToVector2(this Point point)
-      {
-          return new Vector2(Convert.ToSingle(point.X), Convert.ToSingle(point.Y));
-      }
-}
+        public static Vector2 ToVector2(this Point point)
+        {
+            return new Vector2(Convert.ToSingle(point.X), Convert.ToSingle(point.Y));
+        }
+    }
 }

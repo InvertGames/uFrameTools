@@ -65,4 +65,14 @@ namespace Invert.GraphDesigner.WPF
 
         public ICommand OkCommand { get; set; }
     }
+
+    public class MarketPlaceViewModel : ViewModel
+    {
+        
+    }
+
+    public class LoginViewModel : ViewModel
+    {
+        
+    }
 }

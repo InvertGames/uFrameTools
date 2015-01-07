@@ -778,9 +778,15 @@
     <Compile Include="Platform\impl\WindowsPlatformDrawer.cs" />
     <Compile Include="Platform\impl\WindowsAssetManager.cs" />
     <Compile Include="Platform\impl\WindowsPlatformOperations.cs" />
+    <Compile Include="Platform\impl\WindowsPrefs.cs" />
     <Compile Include="Platform\impl\WindowsWindowManager.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <DependentUpon>Settings.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
     <Compile Include="WindowViewModels\SelectItemTypeViewModel.cs" />
     <Compile Include="WPFContextMenu.cs" />
     <Compile Include="WPFPlugin.cs" />
@@ -797,6 +803,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="PluginDesigner\Generators\NewFolder1\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

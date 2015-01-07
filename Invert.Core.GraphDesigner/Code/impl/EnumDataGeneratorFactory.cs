@@ -4,7 +4,7 @@ namespace Invert.Core.GraphDesigner
 {
     public class EnumDataGeneratorFactory : DesignerGeneratorFactory<EnumData>
     {
-        public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, EnumData item)
+        public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, EnumData item)
         {
             yield return new EnumCodeGenerator()
             {

@@ -160,9 +160,9 @@ namespace Invert.uFrame.Editor
             //    "StateMachineViewModelPostProcessor");
         }
 
-        public override void Loaded()
+        public override void Loaded(uFrameContainer container)
         {
-            base.Loaded();
+            base.Loaded(container);
             
             uFrameEditor.Loaded();
         }

@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class StateMachineStateCodeFactory : DesignerGeneratorFactory<StateMachineStateData>
 {
-    public override IEnumerable<CodeGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
+    public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
         StateMachineStateData item)
     {
         yield return new StateMachineStateClassGenerator()

@@ -58,7 +58,7 @@ namespace Invert.Core.GraphDesigner.Unity
            
         }
 
-        public override void Loaded()
+        public override void Loaded(uFrameContainer container)
         {
            
         }

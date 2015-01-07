@@ -1,14 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using DiagramDesigner.Platform;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.GraphDesigner.Documentation;
+using UnityEngine;
 
 namespace DiagramDesigner
 {
-    public partial class Window1 : Window, IGraphWindow
+    public partial class Window1 : Window, IGraphWindow, IDebugLogger
     {
 
         public MainWindowUIViewModel ViewModel
@@ -18,20 +28,49 @@ namespace DiagramDesigner
 
         public Window1()
         {
-            
+            InvertApplication.Logger = this;
+            InvertApplication.CachedAssemblies.Add(typeof(ICollection<>).Assembly);
+            InvertApplication.CachedAssemblies.Add(typeof(DocumentationPlugin).Assembly);
+            //foreach (var assembly in Assembly.GetEntryAssembly().GetReferencedAssemblies())
+            //{
+            //    Debug.WriteLine("------ LOADED: " + assembly.FullName);
+            //    AppDomain.CurrentDomain.Load(assembly);
+            //}
             InitializeComponent();
             InvertGraphEditor.DesignerWindow = this;
+            String[] arguments = Environment.GetCommandLineArgs();
+            for (int index = 0; index < arguments.Length; index++)
+            {
+                var argument = arguments[index];
+                InvertApplication.Log(argument);
+            }
             DataContext = new MainWindowUIViewModel();
             ViewModel.PropertyChanged += delegate(object sender, PropertyChangedEventArgs args)
             {
                 DataContext = null;
-                DataContext = sender;     
+                DataContext = sender;
                 this.MyDesigner.DataContext = null;
                 this.MyDesigner.DataContext = ViewModel.CurrentDiagram;
-                
+
             };
-            
-       
+            foreach (var graphType in InvertGraphEditor.Container.Mappings.Where(p => p.From == typeof(IGraphData)))
+            {
+                TypeMapping type = graphType;
+                var menuItem = new MenuItem()
+                {
+                    Header = graphType.Name,
+                    Command = new SimpleEditorCommand<MainWindowUIViewModel>((d) =>
+                    {
+                        var diagram = d.CurrentProject.CreateNewDiagram(type.To, null);
+                        d.CurrentProject.CurrentGraph = diagram;
+                        d.LoadDiagram(diagram);
+                        CommandExecuted(null);
+                    })
+
+                };
+                CreateMenuItem.Items.Add(menuItem);
+            }
+
         }
 
   
@@ -123,6 +162,37 @@ namespace DiagramDesigner
         private void Button_Click(object sender, RoutedEventArgs e)
         {
    
+        }
+
+        private void Button_Click_1(object s, RoutedEventArgs e)
+        {
+
+            var docs = DiagramViewModel.CurrentRepository;
+            var sb = new StringBuilder();
+            foreach (var generator in InvertGraphEditor.GetAllCodeGenerators(null, docs, false))
+            {
+                if (generator is RazorOutputGenerator)
+                {
+                    sb.Append(generator.ToString());
+                }
+
+            }
+            DocsBrowser.NavigateToString(sb.ToString());
+            //DiagramViewModel.ViewModelToImage(DiagramViewModel.DiagramBounds.size).ToFile(DiagramViewModel.Title + ".png");
+
+        }
+
+        public void Log(string message)
+        {
+            DebugText.AppendText(message);
+            DebugText.AppendText(Environment.NewLine);
+        }
+
+        public void LogException(Exception ex)
+        {
+            DebugText.AppendText(ex.Message);
+            DebugText.AppendText(ex.StackTrace);
+            DebugText.AppendText(Environment.NewLine);
         }
     }
 }

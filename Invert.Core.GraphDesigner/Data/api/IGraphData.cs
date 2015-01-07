@@ -4,7 +4,7 @@ using Invert.Core.GraphDesigner;
 using Invert.Json;
 
 
-public interface IGraphData : IElementFileData,IItem
+public interface IGraphData : IElementFileData,IItem, ISubscribable<IGraphItemEvents>
 {
     string Identifier { get; set; }
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -52,7 +54,8 @@ namespace Invert.uFrame.VS
 
         public void RefreshAssets()
         {
-            foreach (var project in InvertGraphEditor.Projects)
+            var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
+            foreach (var project in projectService.Projects)
             {
                 project.Refresh();
             }
@@ -64,6 +67,28 @@ namespace Invert.uFrame.VS
 
             uint cookie = 0;
             statusBar.Progress(ref cookie, Mathf.RoundToInt(progress), message, 100, 100);
+        }
+    }
+
+    public class VSDebug : IDebugLogger
+    {
+        static VSDebug()
+        {
+            InvertApplication.Logger = new VSDebug();
+        }
+        public void Log(string message)
+        {
+            Debug.WriteLine(message);
+        }
+
+        public void LogException(Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            Debug.WriteLine(ex.StackTrace);
+            if (ex.InnerException != null)
+            {
+                LogException(ex.InnerException);
+            }
         }
     }
 }

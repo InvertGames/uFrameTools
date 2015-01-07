@@ -427,7 +427,7 @@ namespace Invert.Core.GraphDesigner
             base.Serialize(cls);
             if (Config == null)
             {
-                throw new Exception("Config for node {0} couldn't be found.");
+                throw new Exception(string.Format("Config for node {0} couldn't be found.", this.GetType().Name));
             }
             var inputSlotInfos = Config.InputSlots;
             foreach (var item in inputSlotInfos)

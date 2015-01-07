@@ -159,7 +159,7 @@ namespace Invert.Core.GraphDesigner
             get { return DataObject as IGraphData; }
         }
 
-        public IEnumerable<CodeGenerator> CodeGenerators
+        public IEnumerable<OutputGenerator> CodeGenerators
         {
             get
             {

@@ -113,9 +113,18 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public override void Initialize(CodeFileGenerator fileGenerator)
+        public override Type GeneratorFor
         {
-            base.Initialize(fileGenerator);
+            get { return typeof (TData); }
+            set
+            {
+                
+            }
+        }
+
+        public override void Initialize(CodeFileGenerator codeFileGenerator)
+        {
+            base.Initialize(codeFileGenerator);
             if (!string.IsNullOrEmpty(TemplateType.Namespace))
                 TryAddNamespace(TemplateType.Namespace);
             Decleration = TemplateType.ToClassDecleration();
@@ -845,9 +854,19 @@ namespace Invert.Core.GraphDesigner
         public void SetType(object type, params object[] args)
         {
             if (CurrentProperty != null)
-              CurrentProperty.Type = type.ToCodeReference(args);
+            {
+                CurrentProperty.Type = type.ToCodeReference(args);  
+            }
+
             else if (CurrentMethod != null)
+            {
                 CurrentMethod.ReturnType = type.ToCodeReference(args);
+            }
+            else
+            {
+                
+            }
+                
             
         }
 

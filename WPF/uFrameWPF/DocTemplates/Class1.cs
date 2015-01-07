@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Invert.Core.GraphDesigner;
+using System.Threading.Tasks;
 
-namespace Invert.uFrame.Editor
+namespace DocTemplates
 {
- 
+    public class Class1
+    {
+    }
 }

@@ -209,6 +209,7 @@ namespace Invert.Core.GraphDesigner
         private Type _nodeType;
         private Dictionary<PropertyInfo, Slot> _slots;
         private List<GraphItemConfiguration> _graphItemConfigurations;
+        private List<Func<OutputGenerator>> _outputGenerators;
 
         public IEnumerable<NodeConfigSectionBase> Sections
         {
@@ -258,8 +259,16 @@ namespace Invert.Core.GraphDesigner
 
         public abstract bool IsValid(GenericNode node);
 
-        
+        public List<Func<OutputGenerator>> OutputGenerators
+        {
+            get { return _outputGenerators ?? (_outputGenerators = new List<Func<OutputGenerator>>()); }
+            set { _outputGenerators = value; }
+        }
 
+        public void AddOutputGenerator(Func<OutputGenerator> action)
+        {
+            OutputGenerators.Add(action);
+        }
     }
 
 

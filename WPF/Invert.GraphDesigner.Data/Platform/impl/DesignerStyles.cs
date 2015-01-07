@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Rect = UnityEngine.Rect;
 
@@ -25,6 +26,7 @@ namespace DiagramDesigner.Platform
 
         static DesignerStyles()
         {
+            if (InvertApplication.IsTestMode) return;
             _stylesDictionary = new ResourceDictionary();
             _stylesDictionary.Source =
                 new Uri("/Invert.GraphDesigner.WPF.Controls;component/Resources/InvertStyles.xaml",

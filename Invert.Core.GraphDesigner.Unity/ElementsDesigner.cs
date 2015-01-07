@@ -82,13 +82,14 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 if (_event == null)
                 {
+                    var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
                     if (!String.IsNullOrEmpty(LastLoadedProject))
                     {
-                        _currentProject = InvertGraphEditor.Projects.FirstOrDefault(p => p.Name == LastLoadedProject);
+                        _currentProject = projectService.Projects.FirstOrDefault(p => p.Name == LastLoadedProject);
                     }
                     if (_currentProject == null)
                     {
-                        _currentProject = InvertGraphEditor.Projects.FirstOrDefault();
+                        _currentProject = projectService.Projects.FirstOrDefault();
                     }
                     _designerViewModel = null;
                 }
@@ -876,7 +877,8 @@ namespace Invert.Core.GraphDesigner.Unity
 
         private void SelectProject()
         {
-            var projects = InvertGraphEditor.Projects;
+            var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
+            var projects = projectService.Projects;
 
             var menu = new GenericMenu();
             foreach (var project in projects)
@@ -890,7 +892,11 @@ namespace Invert.Core.GraphDesigner.Unity
             }
 
             menu.AddSeparator("");
-            menu.AddItem(new GUIContent("Force Refresh"), false, () => { InvertGraphEditor.Projects = null; });
+            menu.AddItem(new GUIContent("Force Refresh"), false, () =>
+            {
+              
+                projectService.RefreshProjects();
+            });
             menu.ShowAsContext();
         }
 

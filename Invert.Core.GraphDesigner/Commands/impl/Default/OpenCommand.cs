@@ -11,7 +11,7 @@ namespace Invert.Core.GraphDesigner
         }
         public override void Perform(DiagramNodeViewModel node)
         {
-            var generator = SelectedOption.Value as CodeGenerator;
+            var generator = SelectedOption.Value as OutputGenerator;
             if (generator == null) return;
            // var pathStrategy = node.GraphItemObject.Graph.CodePathStrategy;
             var filePath = generator.FullPathName;
@@ -31,7 +31,7 @@ namespace Invert.Core.GraphDesigner
             if (diagramItem == null) yield break;
             var generators = diagramItem.CodeGenerators.ToArray();
 
-            foreach (var codeGenerator in generators.Where(p=>!p.IsDesignerFile))
+            foreach (var codeGenerator in generators.Where(p=>!p.AlwaysRegenerate))
             {
                 yield return new UFContextMenuItem()
                 {
@@ -39,7 +39,7 @@ namespace Invert.Core.GraphDesigner
                     Value = codeGenerator
                 };
             }
-            foreach (var codeGenerator in generators.Where(p => p.IsDesignerFile))
+            foreach (var codeGenerator in generators.Where(p => p.AlwaysRegenerate))
             {
                 yield return new UFContextMenuItem()
                 {

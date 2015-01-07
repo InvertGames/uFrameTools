@@ -2,12 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Pen x:Key="GridLine" Thickness="1">
         <Pen.Brush>
-            <SolidColorBrush Color="#FFBCCDDE"></SolidColorBrush>
+            <SolidColorBrush Color="#FF424242"></SolidColorBrush>
         </Pen.Brush>
     </Pen>
     <Pen x:Key="GridLineSecondary" Thickness="1">
         <Pen.Brush>
-            <SolidColorBrush Color="#FF8BA3BB"></SolidColorBrush>
+            <SolidColorBrush Color="#FF292929"></SolidColorBrush>
         </Pen.Brush>
     </Pen>
     <SolidColorBrush x:Key="Tag1Background" Color="#cc161817"></SolidColorBrush>
