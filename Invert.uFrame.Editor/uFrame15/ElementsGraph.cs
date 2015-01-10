@@ -1,9 +1,9 @@
 
     using Invert.Core.GraphDesigner;
     using UnityEngine;
-    public class ElementsGraph : GraphData
+    public class ElementsGraph : UnityGraphData
     {
-        protected override IDiagramFilter CreateDefaultFilter()
+        public override IDiagramFilter CreateDefaultFilter()
         {
             return new SceneFlowFilter();
         }

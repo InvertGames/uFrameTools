@@ -45,7 +45,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual int Padding
         {
-            get { return 1; }
+            get { return 4; }
         }
 
         public object BackgroundStyle
@@ -99,12 +99,13 @@ namespace Invert.Core.GraphDesigner
         {
             base.Refresh(platform, position);
             // Calculate the size of the label and add the padding * 2 for left and right
-            var textSize = platform.CalculateSize(ItemViewModel.Name, TextStyle);// TextStyle.CalcSize(new GUIContent(ItemViewModel.Name));
+            _cachedName = ItemViewModel.Name;
+            var textSize = platform.CalculateSize(_cachedName, CachedStyles.ItemTextEditingStyle);// TextStyle.CalcSize(new GUIContent(ItemViewModel.Name));
             var width = textSize.x + (Padding * 2);
             var height = textSize.y + (Padding * 2);
 
             this.Bounds = new Rect(position.x, position.y, width, height);
-            _cachedName = ItemViewModel.Name;
+           
 
         }
 
@@ -117,7 +118,7 @@ namespace Invert.Core.GraphDesigner
         {
             if (IsSelected)
             {
-                platform.DrawStretchBox(Bounds.Scale(scale), CachedStyles.Item1, 12f);
+                platform.DrawStretchBox(Bounds.Scale(scale), CachedStyles.Item5, 0f);
             }
         }
 
@@ -125,8 +126,8 @@ namespace Invert.Core.GraphDesigner
         {
             base.Draw(platform, scale);
          
-            
-            DrawName(Bounds.Scale(scale), platform, scale);
+            DrawBackground(platform,scale);
+            DrawName(Bounds, platform, scale);
 
             // TODO Platform specific
 #if UNITY_DLL
@@ -174,7 +175,7 @@ namespace Invert.Core.GraphDesigner
            
             if (ItemViewModel.IsEditing && ItemViewModel.IsEditable)
             {
-                platform.DrawTextbox(ItemViewModel.NodeItem.Identifier, rect, ItemViewModel.Name,
+                platform.DrawTextbox(ItemViewModel.NodeItem.Identifier, rect.Scale(scale), ItemViewModel.Name,
                     CachedStyles.ItemTextEditingStyle,
                     (s, finished) =>
                     {
@@ -187,7 +188,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                platform.DrawLabel(rect, _cachedName, CachedStyles.ItemTextEditingStyle, alignment);
+                platform.DrawLabel(rect.Scale(scale), _cachedName, CachedStyles.ItemTextEditingStyle, alignment);
             }
         }
 

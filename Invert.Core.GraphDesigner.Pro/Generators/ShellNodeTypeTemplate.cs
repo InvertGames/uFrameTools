@@ -147,3 +147,64 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
 
 
 }
+
+[TemplateClass("ViewModels", MemberGeneratorLocation.Both, ClassNameFormat = "{0}NodeViewModel", IsEditorExtension = true)]
+public class ShellNodeTypeViewModelTemplate : GenericNodeViewModel<GenericNode>, IClassTemplate<ShellNodeTypeNode>
+{
+
+    public void TemplateSetup()
+    {
+        if (Ctx.IsDesignerFile)
+            Ctx.SetBaseTypeArgument(Ctx.Data.ClassName);
+    }
+
+    public TemplateContext<ShellNodeTypeNode> Ctx { get; set; }
+
+    // For templating
+    public ShellNodeTypeViewModelTemplate() : base()
+    {
+    }
+
+    public ShellNodeTypeViewModelTemplate(GenericNode graphItemObject, DiagramViewModel diagramViewModel) : base(graphItemObject, diagramViewModel)
+    {
+    }
+
+    [TemplateConstructor(MemberGeneratorLocation.Both,"graphItemObject","diagramViewModel")]
+    public void ViewModelConstructor(GenericNode graphItemObject, DiagramViewModel diagramViewModel)
+    {
+        Ctx.CurrentConstructor.Parameters[0].Type = Ctx.Data.ClassName.ToCodeReference();
+
+    }
+
+}
+[TemplateClass("Drawers", MemberGeneratorLocation.Both, ClassNameFormat = "{0}NodeDrawer", IsEditorExtension = true)]
+public class ShellNodeTypeDrawerTemplate : GenericNodeDrawer<GenericNode,GenericNodeViewModel<GenericNode>>, IClassTemplate<ShellNodeTypeNode>
+{
+
+    public void TemplateSetup()
+    {
+        Ctx.TryAddNamespace("Invert.Core.GraphDesigner");
+        //Ctx.SetBaseTypeArgument(Ctx.Data.ClassName);
+        Ctx.SetBaseType("GenericNodeDrawer<{0},{1}>",Ctx.Data.ClassName, Ctx.Data.Name + "NodeViewModel");
+    }
+
+    public TemplateContext<ShellNodeTypeNode> Ctx { get; set; }
+
+    // For templating
+    public ShellNodeTypeDrawerTemplate()
+        : base()
+    {
+    }
+
+    public ShellNodeTypeDrawerTemplate(GenericNodeViewModel<GenericNode> viewModel) : base(viewModel)
+    {
+    }
+
+    [TemplateConstructor(MemberGeneratorLocation.Both, "viewModel")]
+    public void DrawerConstructor(GenericNodeViewModel<GenericNode> viewModel)
+    {
+        Ctx.CurrentConstructor.Parameters[0].Type = (Ctx.Data.Name + "NodeViewModel").ToCodeReference();
+
+    }
+
+}

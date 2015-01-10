@@ -32,7 +32,7 @@ namespace Invert.Core.GraphDesigner
         public override void Refresh(IPlatformDrawer platform, Vector2 position)
         {
             base.Refresh(platform, position);
-            var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x;
+            var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 12;
             //ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name)).x + 20);
 
             Bounds = new Rect(position.x + 12, position.y, width + 20, 25);

@@ -41,11 +41,7 @@ public class PluginDesigner : DiagramPlugin
             .AddItem<ShellAcceptableReferenceType>()
             .AddItem<ShellConnectableReferenceType>()
             .AddTypeItem<ShellPropertySelectorItem>()
-#if UNITY_DLL
-            .AddGraph<PluginGraph, ShellPluginNode>("Shell Plugin")
-#else
             .AddGraph<PluginGraphData,ShellPluginNode>("Shell Plugin")
-#endif
             .Color(NodeColor.Green)
             .HasSubNode<IShellNode>()
             .HasSubNode<ShellNodeTypeNode>()
@@ -132,6 +128,8 @@ public class PluginDesigner : DiagramPlugin
         pluginConfig.AddCodeTemplate<ShellPluginTemplate>();
         graphConfig.AddCodeTemplate<ShellGraphTemplate>();
         shellNodeConfig.AddCodeTemplate<ShellNodeTypeTemplate>();
+        shellNodeConfig.AddCodeTemplate<ShellNodeTypeViewModelTemplate>();
+        shellNodeConfig.AddCodeTemplate<ShellNodeTypeDrawerTemplate>();
         shellSlotConfig.AddCodeTemplate<ShellSlotItemTemplate>();
         shellChildItemConfig.AddCodeTemplate<ShellChildTemplate>();
         shellReferenceConfig.AddCodeTemplate<ShellReferenceSectionTemplate>();

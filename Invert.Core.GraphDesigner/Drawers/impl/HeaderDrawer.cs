@@ -48,6 +48,10 @@ namespace Invert.Core.GraphDesigner
             {
                 this.Bounds = new Rect(position.x, position.y, width + 12, 32);
             }
+            var cb = new Rect(this.Bounds);
+            cb.x += 20;
+            cb.width -= 40;
+            ViewModelObject.ConnectorBounds = cb;
         }
 
         public Vector2 TextSize { get; set; }

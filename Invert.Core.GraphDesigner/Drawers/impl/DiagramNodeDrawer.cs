@@ -38,6 +38,11 @@ namespace Invert.Core.GraphDesigner
         {
         }
 
+        protected GenericNodeDrawer()
+        {
+            
+        }
+
         public override void Refresh(IPlatformDrawer platform)
         {
             base.Refresh(platform);
@@ -81,7 +86,7 @@ namespace Invert.Core.GraphDesigner
         private string _cachedLabel;
         private string[] _cachedTags;
         private string _cachedTag;
-        private KeyValuePair<string, ValidatorType>[] _cachedIssues;
+        private ErrorInfo[] _cachedIssues;
         private object _headerStyle;
 
 
@@ -226,11 +231,11 @@ namespace Invert.Core.GraphDesigner
             var boxRect = adjustedBounds.Scale(Scale);
             platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 20);
             
-            if (ViewModel.IsSelected || ViewModel.IsMouseOver)
-            {
-                platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 20);
+            //if (ViewModel.IsSelected || ViewModel.IsMouseOver)
+            //{
+            //    platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 20);
       
-            }
+            //}
             if (ViewModel.AllowCollapsing)
             {
 
@@ -283,16 +288,19 @@ namespace Invert.Core.GraphDesigner
                 platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter6, 20);
             }
 
-            if (ViewModel.IsMouseOver || ViewModel.IsSelected)
+            if (ViewModel.IsMouseOver || ViewModel.IsSelected) 
             {
                 for (int index = 0; index < _cachedIssues.Length; index++)
                 {
                     var keyValuePair = _cachedIssues[index];
-                    var w = platform.CalculateSize(keyValuePair.Key, CachedStyles.DefaultLabel).x;//EditorStyles.label.CalcSize(new GUIContent(keyValuePair.Key)).x);
+                    var w = platform.CalculateSize(keyValuePair.Message, CachedStyles.DefaultLabel).x;//EditorStyles.label.CalcSize(new GUIContent(keyValuePair.Key)).x);
                     var x = (Bounds.x + (Bounds.width/2f)) - (w/2f);
                     var rect = new Rect(x, (Bounds.y + Bounds.height + 18) + (40f*(index)), w + 20f, 40);
-                    platform.DrawWarning(rect, keyValuePair.Key);
-                    
+                    platform.DrawWarning(rect, keyValuePair.Message);
+                    if (keyValuePair.AutoFix != null)
+                    {
+                        platform.DoButton(new Rect(rect.x + rect.width + 5,rect.y,75,25).Scale(Scale),"Auto Fix",null,keyValuePair.AutoFix);
+                    }
                     hasErrors = true;
                 }
             }
@@ -460,7 +468,7 @@ namespace Invert.Core.GraphDesigner
 
             var startY = ViewModel.Position.y;
             // Now lets stretch all the content drawers to the maximum width
-            var minWidth = Math.Max(145f, platform.CalculateSize(_cachedTag, CachedStyles.Tag1).x);
+            var minWidth = Math.Max(120f, platform.CalculateSize(_cachedTag, CachedStyles.Tag1).x);
             var height = LayoutChildren(platform, startY, ref minWidth);
 
             _cachedLabel = ViewModel.Label;
@@ -473,8 +481,20 @@ namespace Invert.Core.GraphDesigner
             {
                 Bounds = new Rect(ViewModel.Position.x, ViewModel.Position.y, minWidth, height);
             }
-
-            ViewModel.ConnectorBounds = Children[0].Bounds;
+            //if (ViewModel.IsCollapsed)
+            //{
+            //    var cb = new Rect(Children[0].Bounds);
+            //    cb.x += 15;
+            //    cb.y += 2;
+            //    cb.width -= 15;
+            //    ViewModelObject.ConnectorBounds = cb;
+            //}
+            //else
+            //{
+                ViewModel.ConnectorBounds = Children[0].Bounds;
+           // }
+            
+           
 
             //_cachedTags = ViewModel.Tags.Reverse().ToArray();
             //ViewModel.HeaderPosition = new Rect(ViewModel.Position.x, ViewModel.Position.y, maxWidth, ViewModel.HeaderSize);

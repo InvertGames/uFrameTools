@@ -178,16 +178,16 @@ namespace Invert.Core.GraphDesigner
             }
 
             Bounds = new Rect(pos.x, pos.y, TextureWidth, TextureHeight);
-            if (!ViewModel.IsMouseOver)
-            {
-                var mouseOverBounds = new Rect(Bounds);
-                //mouseOverBounds.x -= mouseOverBounds.width*0.2f;
-                mouseOverBounds.y += mouseOverBounds.height * 0.125f;
-                mouseOverBounds.x += mouseOverBounds.width * 0.125f;
-                //mouseOverBounds.width *= 0.75f;
-                //mouseOverBounds.height *= 0.75f;
-                Bounds = mouseOverBounds;
-            }
+            //if (!ViewModel.IsMouseOver)
+            //{
+            //    var mouseOverBounds = new Rect(Bounds);
+            //    //mouseOverBounds.x -= mouseOverBounds.width*0.2f;
+            //    mouseOverBounds.y += mouseOverBounds.height * 0.125f;
+            //    mouseOverBounds.x += mouseOverBounds.width * 0.125f;
+            //    //mouseOverBounds.width *= 0.75f;
+            //    //mouseOverBounds.height *= 0.75f;
+            //    Bounds = mouseOverBounds;
+            //}
         }
 
         public override void Draw(IPlatformDrawer platform, float scale)
@@ -236,18 +236,19 @@ namespace Invert.Core.GraphDesigner
                 pos.x -= (TextureWidth / 2f);
                 pos.y -= TextureHeight;
             }
-
+          
             Bounds = new Rect(pos.x, pos.y, TextureWidth, TextureHeight);
-            if (!ViewModel.IsMouseOver)
-            {
-                var mouseOverBounds = new Rect(Bounds);
-                //mouseOverBounds.x -= mouseOverBounds.width*0.2f;
-                mouseOverBounds.y += mouseOverBounds.height * 0.125f;
-                mouseOverBounds.x += mouseOverBounds.width * 0.125f;
-                //mouseOverBounds.width *= 0.75f;
-                //mouseOverBounds.height *= 0.75f;
-                Bounds = mouseOverBounds;
-            }
+            var bounds = Bounds.Scale(scale);
+            //if (ViewModel.IsMouseOver)
+            //{
+            //    var mouseOverBounds = new Rect(bounds);
+            //    ////mouseOverBounds.x -= mouseOverBounds.width*0.2f;
+            //    //mouseOverBounds.y += mouseOverBounds.height * 0.125f;
+            //    //mouseOverBounds.x += mouseOverBounds.width * 0.125f;
+            //    mouseOverBounds.width = 20;
+            //    mouseOverBounds.height = 20;
+            //    bounds = mouseOverBounds;
+            //}
         
             //if (ViewModelObject.IsMouseOver)
             //{
@@ -259,13 +260,18 @@ namespace Invert.Core.GraphDesigner
             {
                 if (!ViewModel.ConnectorFor.IsMouseOver && !ViewModel.ConnectorFor.IsSelected && !ViewModel.IsMouseOver && !ViewModel.HasConnections) return;
             }
-            var bounds = Bounds.Scale(scale);
-            if (ViewModel.HasConnections)
+
+            //if (ViewModel.HasConnections)
+            //{
+            //    platform.DrawImage(bounds, Texture, true);
+                
+
+
+            //}
+            if (ViewModel.IsMouseOver)
             {
                 platform.DrawImage(bounds, Texture, true);
                 platform.DrawImage(bounds, Texture, true);
-     
-
             }
             platform.DrawImage(bounds, Texture, true);
           

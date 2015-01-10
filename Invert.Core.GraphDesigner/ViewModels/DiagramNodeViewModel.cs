@@ -399,7 +399,7 @@ namespace Invert.Core.GraphDesigner
             get { yield break; }
         }
 
-        public virtual IEnumerable<KeyValuePair<string, ValidatorType>> Issues
+        public virtual IEnumerable<ErrorInfo> Issues
         {
             get
             {

@@ -179,8 +179,7 @@ namespace Invert.Core.GraphDesigner
             else
             {
                 var allowedFilterNodes = FilterExtensions.AllowedFilterNodes[this.DiagramViewModel.CurrentRepository.CurrentFilter.GetType()];
-
-                var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(DiagramViewModel, typeof(IDiagramNodeItemCommand));
+                var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramNodeItemCommand));
 
                 //var genericMenu = new UnityEditor.GenericMenu();
                 //genericMenu.AddItem(new GUIContent("Cancel"),false,()=>{} );

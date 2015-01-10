@@ -8,21 +8,20 @@ using Invert.uFrame.Editor;
 using UnityEditor;
 using UnityEngine;
 
-public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationCallbackReceiver, IItem
-    where TData : InvertGraph, new()
+public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbackReceiver, IItem
+    
 {
     [SerializeField, HideInInspector]
     public string _jsonData;
 
 
-    private TData Graph
+    public IGraphData Graph
     {
         get
         {
-            return _graph ?? (_graph = new TData()
+            return _graph ?? (_graph = new InvertGraph()
             {
-                Name = this.name,
-
+                Name = this.name
             });
         }
         set { _graph = value; }
@@ -36,7 +35,7 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
     [NonSerialized]
     private ICodePathStrategy _codePathStrategy;
     [NonSerialized]
-    private TData _graph;
+    private IGraphData _graph;
 
     public ICodePathStrategy CodePathStrategy
     {
@@ -156,7 +155,7 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
 
     public ElementDiagramSettings Settings
     {
-        set { Graph.Settings = value; }
+        //set { Graph.Settings = value; }
         get { return Graph.Settings; }
     }
 
@@ -209,9 +208,29 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
         get { return Graph.RootFilter; }
     }
 
-    protected virtual IDiagramFilter CreateDefaultFilter()
+    public virtual IDiagramFilter CreateDefaultFilter()
     {
         return Graph.CreateDefaultFilter();
+    }
+
+    public JSONNode Serialize()
+    {
+        return Graph.Serialize();
+    }
+
+    public void Deserialize(string jsonData)
+    {
+        Graph.Deserialize(jsonData);
+    }
+
+    public void CleanUpDuplicates()
+    {
+        Graph.CleanUpDuplicates();
+    }
+
+    public List<ErrorInfo> Validate()
+    {
+        return Graph.Validate();
     }
 
     public void Initialize()
@@ -314,7 +333,6 @@ public class UnityGraphData<TData> : UnityGraphData, IGraphData, ISerializationC
 
     public void SetProject(IProjectRepository project)
     {
-        
         Graph.SetProject(project);
     }
 

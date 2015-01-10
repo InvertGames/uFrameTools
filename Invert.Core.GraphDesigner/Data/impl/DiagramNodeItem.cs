@@ -256,6 +256,11 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         
     }
 
+    public virtual void Validate(List<ErrorInfo> info)
+    {
+        
+    }
+
     public virtual bool ValidateInput(IDiagramNodeItem arg1, IDiagramNodeItem arg2)
     {
         //if (arg1.GetType() == arg2.GetType()) return false;

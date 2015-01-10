@@ -89,7 +89,30 @@ namespace Invert.Core.GraphDesigner
         [Browsable(false)]
         public virtual bool IsValid
         {
-            get { return true; }
+            get { return Validate().Count < 1; }
+        }
+
+        /// <summary>
+        /// Gets a list of errors about this node or its children
+        /// </summary>
+        /// <returns></returns>
+        public List<ErrorInfo> Validate()
+        {
+            var list = new List<ErrorInfo>();
+            Validate(list);
+            return list;
+        }
+
+        /// <summary>
+        /// Validates this node decorating a list of errors
+        /// </summary>
+        /// <param name="errors"></param>
+        public virtual void Validate(List<ErrorInfo> errors)
+        {
+            foreach (var child in this.PersistedItems)
+            {
+                child.Validate(errors);
+            }
         }
 
         public IGraphItem Copy()
@@ -186,7 +209,11 @@ namespace Invert.Core.GraphDesigner
         [Browsable(false)]
         public string Highlighter { get { return null; } }
 
-        public virtual string Identifier { get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; } }
+        public virtual string Identifier
+        {
+            get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; }
+            set { _identifier = value; }
+        }
         [Browsable(false)]
         public virtual bool ImportedOnly
         {
@@ -276,6 +303,11 @@ namespace Invert.Core.GraphDesigner
             {
                 if (value == null) return;
                 _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
+                if (this.Graph.RootFilter == this)
+                {
+                    this.Graph.Name = _name;
+                }
+           
                 Dirty = true;
             }
         }
@@ -454,6 +486,7 @@ namespace Invert.Core.GraphDesigner
         {
             DataBag[diagramNodeItem.Identifier] = null;
             Flags[diagramNodeItem.Identifier] = false;
+
         }
 
         public virtual void NodeAdded(IDiagramNode data)
@@ -543,9 +576,10 @@ namespace Invert.Core.GraphDesigner
             cls.AddObject("DataBag", DataBag);
         }
 
+
         public void RemoveItem(IDiagramNodeItem item)
         {
-
+            
         }
         [Browsable(false)]
         public string RelatedType

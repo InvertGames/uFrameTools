@@ -108,19 +108,32 @@ public class ProjectRepositoryInspector : Editor
         if (GUIHelpers.DoToolbarEx("Project Issues"))
         {
 
-            foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.NodeItems.Where(p => !p.IsValid))
+            foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.Issues)
             {
-
-                GUIHelpers.DoTriggerButton(new UFStyle()
+                GUILayout.BeginHorizontal();
+                EditorGUILayout.HelpBox(item.Message,(MessageType)((int)item.Siverity + 1) );
+                if (item.AutoFix != null)
                 {
-                    Label = item.Name,
-                    Enabled = true,
-                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
-                    TextAnchor = TextAnchor.MiddleRight,
-                    IconStyle = ElementDesignerStyles.BreakpointButtonStyle,
-                    //IconStyle = UBStyles.RemoveButtonStyle,
-                    ShowArrow = true
-                });
+                    if (GUILayout.Button("Fix it"))
+                    {
+                        InvertGraphEditor.ExecuteCommand(_ =>
+                        {
+                            item.AutoFix();
+                        });
+                    }
+                }
+                
+                GUILayout.EndHorizontal();
+                //GUIHelpers.DoTriggerButton(new UFStyle()
+                //{
+                //    Label = item.Name,
+                //    Enabled = true,
+                //    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                //    TextAnchor = TextAnchor.MiddleRight,
+                //    IconStyle = ElementDesignerStyles.BreakpointButtonStyle,
+                //    //IconStyle = UBStyles.RemoveButtonStyle,
+                //    ShowArrow = true
+                //});
             }
         }
 

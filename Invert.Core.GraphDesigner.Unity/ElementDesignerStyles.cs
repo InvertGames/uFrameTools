@@ -431,9 +431,9 @@ namespace Invert.Common
                         normal = { textColor = new Color(0.6f, 0.6f, 0.8f) },
                         stretchHeight = true,
                         stretchWidth = true,
-                        padding = new RectOffset(0, 0, 0, 0),
+                        
                         fontSize = Mathf.RoundToInt(8f * Scale),
-                        fixedHeight = 18f * Scale,
+                        
                         fontStyle = FontStyle.Bold,
                         alignment = TextAnchor.MiddleLeft
                     };
@@ -887,7 +887,7 @@ namespace Invert.Common
                     _headerStyle = new GUIStyle()
                     {
                         normal = { textColor = new Color(0.35f, 0.35f, 0.35f) },
-                        padding = new RectOffset(4, 4, 4, 4),
+                        //padding = new RectOffset(4, 4, 4, 4),
                         fontSize = Mathf.RoundToInt(11f * Scale),
                         alignment = TextAnchor.MiddleLeft
                     };
@@ -980,7 +980,7 @@ namespace Invert.Common
                     _item5 = new GUIStyle
                     {
                         normal = { background = GetSkinTexture("Item5"), textColor = new Color(0.8f, 0.8f, 0.8f) },
-                        stretchHeight = true,
+                        stretchHeight = false,
                         fontSize = Mathf.RoundToInt(9 * Scale),
                         alignment = TextAnchor.MiddleCenter,
                         fixedHeight = 18f * Scale,
@@ -1035,14 +1035,17 @@ namespace Invert.Common
             {
                 if (_itemTextEditingStyle == null)
                 {
-                    _itemTextEditingStyle = new GUIStyle(EditorStyles.miniTextField);
+                    _itemTextEditingStyle = new GUIStyle();
                     _itemTextEditingStyle.normal.background = null;
+                    _itemTextEditingStyle.normal.textColor = new Color(0.65f,0.65f,0.65f);
                     _itemTextEditingStyle.active.background = null;
                     _itemTextEditingStyle.hover.background = null;
                     _itemTextEditingStyle.focused.background = null;
                     _itemTextEditingStyle.alignment = TextAnchor.MiddleCenter;
-                    _itemTextEditingStyle.fontStyle = FontStyle.Bold;
-                    _itemTextEditingStyle.padding = new RectOffset(0, 0, 0, 0);
+                    _itemTextEditingStyle.fontSize = Mathf.RoundToInt(10 * Scale);
+                    
+                    //_itemTextEditingStyle.fontStyle = FontStyle.Bold;
+                    //_itemTextEditingStyle.padding = new RectOffset(0, 0, 6, 0);
                     //_viewModelHeaderEditingStyle.fontSize = Mathf.RoundToInt(12*Scale);
                 }
                 return _itemTextEditingStyle;
@@ -1695,7 +1698,7 @@ namespace Invert.Common
                         fontSize = Mathf.RoundToInt(12 * Scale),
 
                         fontStyle = FontStyle.Bold,
-                        alignment = TextAnchor.MiddleCenter
+                        alignment = TextAnchor.MiddleLeft
                     };
                 }
                 return _viewModelHeaderStyle;

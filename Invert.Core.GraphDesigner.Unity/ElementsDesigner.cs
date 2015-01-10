@@ -207,7 +207,7 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 if (_toolbar != null) return _toolbar;
 
-                return _toolbar = InvertGraphEditor.CreateCommandUI<ToolbarUI>(this, typeof(IToolbarCommand));
+                return _toolbar = InvertGraphEditor.CreateCommandUI<ToolbarUI>(typeof(IToolbarCommand));
             }
             set { _toolbar = value; }
         }
@@ -261,6 +261,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void CommandExecuted(IEditorCommand command)
         {
+            Debug.Log("Command was exectued with ElementsDesigner Handler");
             if (DiagramDrawer != null)
             {
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
@@ -288,7 +289,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     if (GUILayout.Button(new GUIContent(ufContextMenuItem.Name), EditorStyles.toolbarButton))
                     {
                         cmd.SelectedOption = ufContextMenuItem;
-                        this.ExecuteCommand(command);
+                        InvertGraphEditor.ExecuteCommand(command);
                     }
                 }
             }
@@ -296,13 +297,13 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 if (command is IParentCommand)
                 {
-                    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(this, command.GetType());
+                    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(command.GetType());
                     contextUI.Flatten = true;
                     contextUI.Go();
                 }
                 else
                 {
-                    this.ExecuteCommand(command);
+                    InvertGraphEditor.ExecuteCommand(command);
                 }
             }
             GUI.enabled = true;
@@ -838,10 +839,7 @@ namespace Invert.Core.GraphDesigner.Unity
         private void OnProjectChanged()
         {
             DiagramDrawer = null;
-            foreach (var graphData in CurrentProject.Graphs)
-            {
-                graphData.SetProject(CurrentProject);
-            }
+    
         }
 
         private void SelectDiagram()

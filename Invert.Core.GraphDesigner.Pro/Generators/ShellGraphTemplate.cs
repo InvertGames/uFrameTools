@@ -4,11 +4,7 @@ using Invert.Core;
 using Invert.Core.GraphDesigner;
 
 [TemplateClass("Graphs", MemberGeneratorLocation.Both, ClassNameFormat = "{0}Graph", IsEditorExtension = true)]
-#if UNITY_DLL
-public class ShellGraphTemplate : UnityGraphData<GenericGraphData<GenericNode>>,IClassTemplate<ShellGraphTypeNode>
-#else
 public class ShellGraphTemplate : GenericGraphData<GenericNode>, IClassTemplate<ShellGraphTypeNode>
-#endif
 {
     public void TemplateSetup()
     {
@@ -159,16 +155,10 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         }
         else
         {
-            if (nodeType["Custom"])
-            {
+       
                 method.Statements.Add(
-               new CodeSnippetExpression(string.Format("{1} = container.Add{2}<{0}Node,{0}NodeViewModel,{0}Drawer>(\"{0}\")", nodeType.Name, varName, type)));
-            }
-            else
-            {
-                method.Statements.Add(
-                  new CodeSnippetExpression(string.Format("{1} = container.Add{2}<{0}Node>(\"{0}\")", nodeType.Name, varName, type)));
-            }
+               new CodeSnippetExpression(string.Format("{1} = container.Add{2}<{0}Node,{0}NodeViewModel,{0}NodeDrawer>(\"{0}\")", nodeType.Name, varName, type)));
+        
         }
 
 

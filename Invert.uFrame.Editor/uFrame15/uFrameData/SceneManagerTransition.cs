@@ -149,6 +149,11 @@ public class SceneManagerTransition : IDiagramNodeItem
         
     }
 
+    public void Validate(List<ErrorInfo> info)
+    {
+        
+    }
+
     public bool ValidateInput(IDiagramNodeItem arg1, IDiagramNodeItem arg2)
     {
         return false;

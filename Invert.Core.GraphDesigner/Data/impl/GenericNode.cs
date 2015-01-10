@@ -162,7 +162,7 @@ namespace Invert.Core.GraphDesigner
                 return InvertApplication.Container.Resolve<NodeConfigBase>(this.GetType().Name);
             }
         }
-
+        
         public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
         {
             //return false;
@@ -415,6 +415,13 @@ namespace Invert.Core.GraphDesigner
         {
             get { return Config.IsValid(this); }
         }
+
+        public override void Validate(List<ErrorInfo> errors)
+        {
+            base.Validate(errors);
+            
+        }
+
         public override void NodeRemoved(IDiagramNode nodeData)
         {
             base.NodeRemoved(nodeData);

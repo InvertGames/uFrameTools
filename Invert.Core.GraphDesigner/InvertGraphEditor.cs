@@ -74,6 +74,8 @@ namespace Invert.Core.GraphDesigner
             get { return InvertApplication.Container; }
         }
 
+     
+
         public static DiagramViewModel CurrentDiagramViewModel
         {
             get
@@ -180,20 +182,20 @@ namespace Invert.Core.GraphDesigner
 
             return Enumerable.Where(Commands, p => typeof(T).IsAssignableFrom(p.For));
         }
-        public static TCommandUI CreateCommandUI<TCommandUI>(ICommandHandler handler, params IEditorCommand[] actions) where TCommandUI : class,ICommandUI
+        public static TCommandUI CreateCommandUI<TCommandUI>(params IEditorCommand[] actions) where TCommandUI : class,ICommandUI
         {
             var ui = Container.Resolve<TCommandUI>() as ICommandUI;
-            ui.Handler = handler;
+            ui.Handler = DesignerWindow;
             foreach (var action in actions)
             {
                 ui.AddCommand(action);
             }
             return (TCommandUI)ui;
         }
-        public static TCommandUI CreateCommandUI<TCommandUI>(ICommandHandler handler, params Type[] contextTypes) where TCommandUI : class,ICommandUI
+        public static TCommandUI CreateCommandUI<TCommandUI>( params Type[] contextTypes) where TCommandUI : class,ICommandUI
         {
             var ui = Container.Resolve<TCommandUI>() as ICommandUI;
-            ui.Handler = handler;
+            ui.Handler = DesignerWindow;
             foreach (var contextType in contextTypes)
             {
                 var commands = Container.ResolveAll(contextType).Cast<IEditorCommand>().ToArray();
@@ -246,10 +248,10 @@ namespace Invert.Core.GraphDesigner
             ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action));
         }
 
-        public static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command)
+        private static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command)
         {
             var objs = handler.ContextObjects.ToArray();
-
+            
             //CurrentProject.RecordUndo(CurrentProject.CurrentGraph, command.Title);
             foreach (var o in objs)
             {
@@ -260,6 +262,7 @@ namespace Invert.Core.GraphDesigner
                     if (command.CanPerform(o) != null) continue;
                     //handler.CommandExecuting(command);
 #if (UNITY_DLL)
+
                     command.Execute(o);
                     
 #else

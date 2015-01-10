@@ -144,7 +144,7 @@ namespace Invert.uFrame.VS
 
         }
 
-        public override string LastLoadedDiagram { get; set; }
+        protected override string LastLoadedDiagram { get; set; }
 
 
         public int OnItemAdded(uint itemidParent, uint itemidSiblingPrev, uint itemidAdded)

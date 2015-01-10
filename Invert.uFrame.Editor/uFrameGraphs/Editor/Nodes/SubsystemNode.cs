@@ -54,32 +54,4 @@ namespace Invert.uFrame.Editor {
 
     }
 
-    public class SubsystemNodeViewModel : GenericNodeViewModel<SubsystemNode>
-    {
-        public SubsystemNodeViewModel(SubsystemNode graphItemObject, DiagramViewModel diagramViewModel) : base(graphItemObject, diagramViewModel)
-        {
-
-        }
-
-        protected override void CreateContent()
-        {
-            base.CreateContent();
-
-            foreach (var item in GraphItem.GetContainingNodes(DiagramViewModel.CurrentRepository).OfType<GenericNode>())
-            {
-                if (!IsVisible(SectionVisibility.WhenNodeIsNotFilter)) continue;
-                CreateContentByConfiguration(item.SlotConfigurations.Where(p=>p.IsInput).Cast<GraphItemConfiguration>(), item);
-            }
-
-        }
-    }
-#if UNITY_DLL
-    public class SubsystemNodeDrawer : GenericNodeDrawer<SubsystemNode,SubsystemNodeViewModel>
-    {
-        public SubsystemNodeDrawer(SubsystemNodeViewModel viewModel)
-            : base(viewModel)
-        {
-        }
-    }
-#endif
 }

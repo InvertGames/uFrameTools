@@ -11,17 +11,11 @@ namespace Invert.uFrame.Editor {
         public override void Initialize(uFrameContainer container)
         {
             base.Initialize(container);
-            Debug.Log("Loading unity graphs");
-            AddValidators();
 
-
+            ElementViewComponent.Name = "View Component";
         }
 
-        private void AddValidators()
-        {
-            this.SceneManager.Validator(node => node.Subsystem == null, "Scene managers require a subsystem.");
-            this.SceneManager.Validator(node => node.Trnasitions.Any(p=>!p.Outputs.Any()), "All transitions must have an end-point.");
-        }
+
 
         public static Invert.Core.RegisteredInstance[] BindingTypes { get; set; }
         public override void Loaded(uFrameContainer container)

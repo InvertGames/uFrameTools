@@ -71,7 +71,11 @@ namespace Invert.uFrame.VS
 
         private void ShowSelection()
         {
-            var selected = DiagramViewModel.SelectedGraphItem;
+            GraphItemViewModel selected = DiagramViewModel.SelectedNodeItem;
+            if (selected == null)
+            {
+                selected = DiagramViewModel.SelectedNode;
+            }
             if (selected != null)
             {
                 Shell = Pane.GetSiteService(typeof (SVsUIShell)) as IVsUIShell;
@@ -82,16 +86,16 @@ namespace Invert.uFrame.VS
                     Shell.FindToolWindow((uint) __VSFINDTOOLWIN.FTW_fForceCreate,
                         ref guidPropertyBrowser, out frame);
                 }
-                if (frame != null)
-                {
-                    frame.Show();
-                }
+                //if (frame != null)
+                //{
+                //    frame.Show();
+                //}
                 if (mySelContainer == null)
                 {
                     mySelContainer = new SelectionContainer();
                 }
 
-                mySelContainer.SelectedObjects = new List<object>() {selected.DataObject};
+                mySelContainer.SelectedObjects = new List<object> {selected.DataObject};
 
                 Track = Pane.GetSiteService(typeof (STrackSelection)) as ITrackSelection;
                 if (Track != null)

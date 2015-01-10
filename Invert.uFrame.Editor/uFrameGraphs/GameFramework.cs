@@ -147,23 +147,24 @@ namespace Invert.uFrame.Editor {
             container.AddItem<ComputedSubPropertiesReference>();
             container.AddItem<StateMachineTransitionChildItem>();
             container.AddItem<StateTransitionReference>();
-            Element = container.AddNode<ElementNode>("Element");
+            container.AddItem<StartStateSlot>();
+            Element = container.AddNode<ElementNode,ElementNodeViewModel,ElementNodeDrawer>("Element");
             Element.Inheritable();
             Element.HasSubNode<ElementViewNode>();
             Element.HasSubNode<ElementViewComponentNode>();
             Element.HasSubNode<ElementComputedPropertyNode>();
             Element.HasSubNode<StateMachineNode>();
-            ElementComputedProperty = container.AddNode<ElementComputedPropertyNode>("ElementComputedProperty");
+            ElementComputedProperty = container.AddNode<ElementComputedPropertyNode,ElementComputedPropertyNodeViewModel,ElementComputedPropertyNodeDrawer>("ElementComputedProperty");
             ElementComputedProperty.Color(NodeColor.Green);
-            SceneManager = container.AddNode<SceneManagerNode>("SceneManager");
+            SceneManager = container.AddNode<SceneManagerNode,SceneManagerNodeViewModel,SceneManagerNodeDrawer>("SceneManager");
             SceneManager.Color(NodeColor.Black);
-            Subsystem = container.AddNode<SubsystemNode>("Subsystem");
+            Subsystem = container.AddNode<SubsystemNode,SubsystemNodeViewModel,SubsystemNodeDrawer>("Subsystem");
             Subsystem.Color(NodeColor.DarkGray);
             Subsystem.HasSubNode<ElementNode>();
-            ElementView = container.AddNode<ElementViewNode>("ElementView");
+            ElementView = container.AddNode<ElementViewNode,ElementViewNodeViewModel,ElementViewNodeDrawer>("ElementView");
             ElementView.Inheritable();
             ElementView.Color(NodeColor.Blue);
-            ElementViewComponent = container.AddNode<ElementViewComponentNode>("ElementViewComponent");
+            ElementViewComponent = container.AddNode<ElementViewComponentNode,ElementViewComponentNodeViewModel,ElementViewComponentNodeDrawer>("ElementViewComponent");
             ElementViewComponent.Inheritable();
             ElementViewComponent.Color(NodeColor.Orange);
             ElementsGraphRoot = container.AddGraph<ElementsGraph, ElementsGraphRootNode>("ElementsGraph");
@@ -172,16 +173,20 @@ namespace Invert.uFrame.Editor {
             StateMachine = container.AddGraph<StateMachineGraph, StateMachineNode>("StateMachineGraph");
             StateMachine.Color(NodeColor.Purple);
             StateMachine.HasSubNode<StateNode>();
-            State = container.AddNode<StateNode>("State");
+            State = container.AddNode<StateNode,StateNodeViewModel,StateNodeDrawer>("State");
             State.Color(NodeColor.DarkGray);
             container.Connectable<ElementNode,ElementViewNode>();
             container.Connectable<ElementComputedPropertyNode,ElementComputedPropertyNode>();
+            container.Connectable<ElementComputedPropertyNode,StateMachineTransitionChildItem>();
             container.Connectable<ElementViewNode,ElementViewComponentNode>();
             container.Connectable<PropertyChildItem,ElementNode>();
             container.Connectable<PropertyChildItem,ElementComputedPropertyNode>();
+            container.Connectable<PropertyChildItem,PropertyChildItem>();
             container.Connectable<CollectionChildItem,ElementNode>();
             container.Connectable<CommandChildItem,ElementNode>();
+            container.Connectable<CommandChildItem,StateMachineTransitionChildItem>();
             container.Connectable<SceneManagerTransitionReference,SceneManagerNode>();
+            container.Connectable<StateTransitionReference,StateNode>();
             container.Connectable<IRegisteredInstance,RegisteredInstanceReference>();
             container.Connectable<ISceneManagerTransition,SceneManagerTransitionReference>();
             container.Connectable<IViewBindings,ViewBindingsReference>();
@@ -246,14 +251,14 @@ namespace Invert.uFrame.Editor {
         
         private SubsystemSlot _SubsystemInputSlot;
         
-        public virtual System.Collections.Generic.IEnumerable<ISceneManagerTransition> PossibleTrnasitions {
+        public virtual System.Collections.Generic.IEnumerable<ISceneManagerTransition> PossibleTransitions {
             get {
                 return this.Project.AllGraphItems.OfType<ISceneManagerTransition>();
             }
         }
         
-        [Invert.Core.GraphDesigner.ReferenceSection("Trnasitions", SectionVisibility.Always, false, false, typeof(ISceneManagerTransition), false, OrderIndex=0, HasPredefinedOptions=false)]
-        public virtual System.Collections.Generic.IEnumerable<SceneManagerTransitionReference> Trnasitions {
+        [Invert.Core.GraphDesigner.ReferenceSection("Transitions", SectionVisibility.Always, false, false, typeof(ISceneManagerTransition), false, OrderIndex=0, HasPredefinedOptions=false)]
+        public virtual System.Collections.Generic.IEnumerable<SceneManagerTransitionReference> Transitions {
             get {
                 return ChildItems.OfType<SceneManagerTransitionReference>();
             }
@@ -357,9 +362,167 @@ namespace Invert.uFrame.Editor {
     }
     
     public class StateMachineNodeBase : Invert.Core.GraphDesigner.GenericNode {
+        
+        private StartStateSlot _StartOutputSlot;
+        
+        [Invert.Core.GraphDesigner.Section("Transitions", SectionVisibility.Always, OrderIndex=0)]
+        public virtual System.Collections.Generic.IEnumerable<StateMachineTransitionChildItem> Transitions {
+            get {
+                return ChildItems.OfType<StateMachineTransitionChildItem>();
+            }
+        }
+        
+        [Invert.Core.GraphDesigner.OutputSlot("Start", false, SectionVisibility.Always, OrderIndex=0)]
+        public virtual StartStateSlot StartOutputSlot {
+            get {
+                return _StartOutputSlot;
+            }
+            set {
+                _StartOutputSlot = value;
+            }
+        }
     }
     
-    public class StateNodeBase : Invert.Core.GraphDesigner.GenericNode {
+    public class StateNodeBase : Invert.Core.GraphDesigner.GenericNode, IStartStateSlot {
+        
+        public virtual System.Collections.Generic.IEnumerable<IStateTransition> PossibleTransitions {
+            get {
+                return this.Project.AllGraphItems.OfType<IStateTransition>();
+            }
+        }
+        
+        [Invert.Core.GraphDesigner.ReferenceSection("Transitions", SectionVisibility.Always, false, false, typeof(IStateTransition), false, OrderIndex=0, HasPredefinedOptions=false)]
+        public virtual System.Collections.Generic.IEnumerable<StateTransitionReference> Transitions {
+            get {
+                return ChildItems.OfType<StateTransitionReference>();
+            }
+        }
+    }
+    
+    public class ElementNodeViewModelBase : Invert.Core.GraphDesigner.GenericNodeViewModel<ElementNode> {
+        
+        public ElementNodeViewModelBase(ElementNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
+                base(graphItemObject, diagramViewModel) {
+        }
+    }
+    
+    public class ElementComputedPropertyNodeViewModelBase : Invert.Core.GraphDesigner.GenericNodeViewModel<ElementComputedPropertyNode> {
+        
+        public ElementComputedPropertyNodeViewModelBase(ElementComputedPropertyNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
+                base(graphItemObject, diagramViewModel) {
+        }
+    }
+    
+    public class SceneManagerNodeViewModelBase : Invert.Core.GraphDesigner.GenericNodeViewModel<SceneManagerNode> {
+        
+        public SceneManagerNodeViewModelBase(SceneManagerNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
+                base(graphItemObject, diagramViewModel) {
+        }
+    }
+    
+    public class SubsystemNodeViewModelBase : Invert.Core.GraphDesigner.GenericNodeViewModel<SubsystemNode> {
+        
+        public SubsystemNodeViewModelBase(SubsystemNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
+                base(graphItemObject, diagramViewModel) {
+        }
+    }
+    
+    public class ElementViewNodeViewModelBase : Invert.Core.GraphDesigner.GenericNodeViewModel<ElementViewNode> {
+        
+        public ElementViewNodeViewModelBase(ElementViewNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
+                base(graphItemObject, diagramViewModel) {
+        }
+    }
+    
+    public class ElementViewComponentNodeViewModelBase : Invert.Core.GraphDesigner.GenericNodeViewModel<ElementViewComponentNode> {
+        
+        public ElementViewComponentNodeViewModelBase(ElementViewComponentNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
+                base(graphItemObject, diagramViewModel) {
+        }
+    }
+    
+    public class ElementsGraphRootNodeViewModelBase : Invert.Core.GraphDesigner.GenericNodeViewModel<ElementsGraphRootNode> {
+        
+        public ElementsGraphRootNodeViewModelBase(ElementsGraphRootNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
+                base(graphItemObject, diagramViewModel) {
+        }
+    }
+    
+    public class StateMachineNodeViewModelBase : Invert.Core.GraphDesigner.GenericNodeViewModel<StateMachineNode> {
+        
+        public StateMachineNodeViewModelBase(StateMachineNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
+                base(graphItemObject, diagramViewModel) {
+        }
+    }
+    
+    public class StateNodeViewModelBase : Invert.Core.GraphDesigner.GenericNodeViewModel<StateNode> {
+        
+        public StateNodeViewModelBase(StateNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
+                base(graphItemObject, diagramViewModel) {
+        }
+    }
+    
+    public class ElementNodeDrawerBase : GenericNodeDrawer<ElementNode,ElementNodeViewModel> {
+        
+        public ElementNodeDrawerBase(ElementNodeViewModel viewModel) : 
+                base(viewModel) {
+        }
+    }
+    
+    public class ElementComputedPropertyNodeDrawerBase : GenericNodeDrawer<ElementComputedPropertyNode,ElementComputedPropertyNodeViewModel> {
+        
+        public ElementComputedPropertyNodeDrawerBase(ElementComputedPropertyNodeViewModel viewModel) : 
+                base(viewModel) {
+        }
+    }
+    
+    public class SceneManagerNodeDrawerBase : GenericNodeDrawer<SceneManagerNode,SceneManagerNodeViewModel> {
+        
+        public SceneManagerNodeDrawerBase(SceneManagerNodeViewModel viewModel) : 
+                base(viewModel) {
+        }
+    }
+    
+    public class SubsystemNodeDrawerBase : GenericNodeDrawer<SubsystemNode,SubsystemNodeViewModel> {
+        
+        public SubsystemNodeDrawerBase(SubsystemNodeViewModel viewModel) : 
+                base(viewModel) {
+        }
+    }
+    
+    public class ElementViewNodeDrawerBase : GenericNodeDrawer<ElementViewNode,ElementViewNodeViewModel> {
+        
+        public ElementViewNodeDrawerBase(ElementViewNodeViewModel viewModel) : 
+                base(viewModel) {
+        }
+    }
+    
+    public class ElementViewComponentNodeDrawerBase : GenericNodeDrawer<ElementViewComponentNode,ElementViewComponentNodeViewModel> {
+        
+        public ElementViewComponentNodeDrawerBase(ElementViewComponentNodeViewModel viewModel) : 
+                base(viewModel) {
+        }
+    }
+    
+    public class ElementsGraphRootNodeDrawerBase : GenericNodeDrawer<ElementsGraphRootNode,ElementsGraphRootNodeViewModel> {
+        
+        public ElementsGraphRootNodeDrawerBase(ElementsGraphRootNodeViewModel viewModel) : 
+                base(viewModel) {
+        }
+    }
+    
+    public class StateMachineNodeDrawerBase : GenericNodeDrawer<StateMachineNode,StateMachineNodeViewModel> {
+        
+        public StateMachineNodeDrawerBase(StateMachineNodeViewModel viewModel) : 
+                base(viewModel) {
+        }
+    }
+    
+    public class StateNodeDrawerBase : GenericNodeDrawer<StateNode,StateNodeViewModel> {
+        
+        public StateNodeDrawerBase(StateNodeViewModel viewModel) : 
+                base(viewModel) {
+        }
     }
     
     public class SubsystemSlotBase : SingleInputSlot<ISubsystemSlot> {
@@ -384,6 +547,12 @@ namespace Invert.uFrame.Editor {
     }
     
     public partial interface IScenePropertiesSlot : Invert.Core.GraphDesigner.IDiagramNodeItem, Invert.Core.GraphDesigner.IConnectable {
+    }
+    
+    public class StartStateSlotBase : SingleOutputSlot<IStartStateSlot> {
+    }
+    
+    public partial interface IStartStateSlot : Invert.Core.GraphDesigner.IDiagramNodeItem, Invert.Core.GraphDesigner.IConnectable {
     }
     
     public class RegisteredInstanceReferenceBase : Invert.Core.GraphDesigner.GenericReferenceItem<IRegisteredInstance> {
@@ -425,6 +594,6 @@ namespace Invert.uFrame.Editor {
     public class CommandChildItemBase : GenericTypedChildItem, ISceneManagerTransition, IViewBindings {
     }
     
-    public class StateMachineTransitionChildItemBase : Invert.Core.GraphDesigner.GenericNodeChildItem {
+    public class StateMachineTransitionChildItemBase : Invert.Core.GraphDesigner.GenericNodeChildItem, IStateTransition {
     }
 }

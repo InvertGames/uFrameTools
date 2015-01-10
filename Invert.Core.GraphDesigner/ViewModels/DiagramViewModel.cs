@@ -40,11 +40,14 @@ namespace Invert.Core.GraphDesigner
         public IGraphData Graph { get; set; }
     }
 
-    public class DiagramViewModel : Invert.Core.GraphDesigner.ViewModel, ICommandHandler
+    public class DiagramViewModel : Invert.Core.GraphDesigner.ViewModel
     {
         private ModelCollection<GraphItemViewModel> _graphItems = new ModelCollection<GraphItemViewModel>();
         private IEnumerable<IDiagramContextCommand> _diagramContextCommands;
-
+        public IEnumerable<ErrorInfo> Issues
+        {
+            get { return DiagramData.Validate(); }
+        }
         public float SnapSize
         {
             get { return Settings.SnapSize * Scale; }
@@ -390,12 +393,22 @@ namespace Invert.Core.GraphDesigner
             {
                 yield return this;
                 yield return DataObject;
-                foreach (var item in GraphItems)
+                foreach (var nodeItem in SelectedNodeItems)
                 {
-                    if (!item.IsMouseOver && !item.IsSelected) continue;
-                    yield return item;
-                    yield return item.DataObject;
+                    yield return nodeItem;
+                    yield return nodeItem.DataObject;
                 }
+                foreach (var node in SelectedGraphItems.OfType<DiagramNodeViewModel>())
+                {
+                    yield return node;
+                    yield return node.DataObject;
+                }
+                //foreach (var item in GraphItems)
+                //{
+                //    if (!item.IsMouseOver && !item.IsSelected) continue;
+                //    yield return item;
+                //    yield return item.DataObject;
+                //}
             }
         }
 

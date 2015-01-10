@@ -54,7 +54,7 @@ namespace Invert.GraphDesigner.WPF
 
         }
         [JsonProperty]
-        public override string LastLoadedDiagram { get; set; }
+        protected override string LastLoadedDiagram { get; set; }
 
         [JsonProperty]
         public override string Name

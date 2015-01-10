@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Invert.Core.GraphDesigner
@@ -25,7 +27,59 @@ namespace Invert.Core.GraphDesigner
         void NodeItemRemoved(IDiagramNodeItem nodeItem);
         void NodeAdded(IDiagramNode data);
         void NodeItemAdded(IDiagramNodeItem data);
+        void Validate(List<ErrorInfo> info);
         bool ValidateInput(IDiagramNodeItem arg1, IDiagramNodeItem arg2);
         bool ValidateOutput(IDiagramNodeItem arg1, IDiagramNodeItem arg2);
+    }
+
+    public class ErrorInfo
+    {
+        public string Identifier { get; set; }
+        public string Message { get; set; }
+        public Action AutoFix { get; set; }
+        public ValidatorType Siverity { get; set; }
+    }
+
+    public static class ErrorInfoExtensions
+    {
+        public static ErrorInfo AddError(this List<ErrorInfo> list, string message, string identifier = null,
+            Action autoFix = null)
+        {
+            var error = new ErrorInfo()
+            {
+                Message = message,
+                Identifier = identifier,
+                AutoFix = autoFix,
+                Siverity = ValidatorType.Error
+            };
+            list.Add(error);
+            return error;
+        }
+        public static ErrorInfo AddWarning(this List<ErrorInfo> list, string message, string identifier = null,
+         Action autoFix = null)
+        {
+            var error = new ErrorInfo()
+            {
+                Message = message,
+                Identifier = identifier,
+                AutoFix = autoFix,
+                Siverity = ValidatorType.Warning
+            };
+            list.Add(error);
+            return error;
+        }
+        public static ErrorInfo AddInfo(this List<ErrorInfo> list, string message, string identifier = null,
+         Action autoFix = null)
+        {
+            var error = new ErrorInfo()
+            {
+                Message = message,
+                Identifier = identifier,
+                AutoFix = autoFix,
+                Siverity = ValidatorType.Info
+            };
+            list.Add(error);
+            return error;
+        }
     }
 }

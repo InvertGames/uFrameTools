@@ -156,8 +156,13 @@ public class InvertGraph : IGraphData, IItem
     {
         get
         {
-
-            return _rootFilter ?? (_rootFilter = CreateDefaultFilter());
+            if (_rootFilter != null)
+            {
+                return _rootFilter;
+            }
+            
+            RootFilter = CreateDefaultFilter();
+            return _rootFilter;
         }
         set
         {
@@ -392,6 +397,29 @@ public class InvertGraph : IGraphData, IItem
                 var identifier = nodes.First();
                 Nodes.Remove(identifier);
             }
+        }
+    }
+
+    /// <summary>
+    /// Gets a list of errors about this node or its children
+    /// </summary>
+    /// <returns></returns>
+    public List<ErrorInfo> Validate()
+    {
+        var list = new List<ErrorInfo>();
+        Validate(list);
+        return list;
+    }
+
+    /// <summary>
+    /// Validates this node decorating a list of errors
+    /// </summary>
+    /// <param name="errors"></param>
+    public virtual void Validate(List<ErrorInfo> errors)
+    {
+        foreach (var child in this.NodeItems)
+        {
+            child.Validate(errors);
         }
     }
 

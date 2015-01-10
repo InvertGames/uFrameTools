@@ -150,7 +150,7 @@ namespace Invert.Core.GraphDesigner.Unity
                                     option.Checked, () =>
                                     {
                                         dynamicCommand.SelectedOption = option1;
-                                        Handler.ExecuteCommand(command);
+                                        InvertGraphEditor.ExecuteCommand(command);
                                     });
                             }
                         }
@@ -174,7 +174,7 @@ namespace Invert.Core.GraphDesigner.Unity
                             groupCount++;
                             genericMenu.AddItem(new GUIContent(Flatten ? editorCommand.Title : editorCommand.Path), editorCommand.IsChecked(argument), () =>
                             {
-                                Handler.ExecuteCommand(command);
+                                InvertGraphEditor.ExecuteCommand(command);
                             });
                         }
                     }
@@ -220,7 +220,7 @@ namespace Invert.Core.GraphDesigner.Unity
             if (scale != ElementDesignerStyles.Scale)
             {
                 ElementDesignerStyles.Scale = scale;
-                Handler.ExecuteCommand(new ScaleCommand() { Scale = scale });
+                InvertGraphEditor.ExecuteCommand(new ScaleCommand() { Scale = scale });
 
             }
             foreach (var editorCommand in BottomLeftCommands.OrderBy(p => p.Order))
@@ -246,7 +246,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     if (GUILayout.Button(new GUIContent(ufContextMenuItem.Name), EditorStyles.toolbarButton))
                     {
                         cmd.SelectedOption = ufContextMenuItem;
-                        Handler.ExecuteCommand(command);
+                        InvertGraphEditor.ExecuteCommand(command);
                     }
                 }
             }
@@ -255,13 +255,13 @@ namespace Invert.Core.GraphDesigner.Unity
 
                 if (command is IParentCommand)
                 {
-                    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(Handler, command.GetType());
+                    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(command.GetType());
                     contextUI.Flatten = true;
                     contextUI.Go();
                 }
                 else
                 {
-                    Handler.ExecuteCommand(command);
+                    InvertGraphEditor.ExecuteCommand(command);
                 }
             }
             GUI.enabled = true;
@@ -300,7 +300,7 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
         {
             var s = (GUIStyle) style;
-            s.alignment = ((TextAnchor) Enum.Parse(typeof (TextAnchor), alignment.ToString(), true));
+            s.alignment =  ((TextAnchor) Enum.Parse(typeof (TextAnchor), alignment.ToString(), true));
             
            GUI.Label(rect,label,s);
         }
@@ -320,11 +320,14 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DoButton(Rect scale, string label, object style, Action action)
         {
-            var s =(GUIStyle) style;
-            s.alignment = TextAnchor.MiddleCenter;
+            var s = style == null ? EditorStyles.miniButton : (GUIStyle)style;
              if (GUI.Button(scale, label,s))
              {
-                 action();
+                 InvertGraphEditor.ExecuteCommand((a) =>
+                 {
+                     action();
+                 });
+                 
              }
         }
 
@@ -335,7 +338,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawImage(Rect bounds, string texture, bool b)
         {
-            GUI.DrawTexture(bounds, Styles.Image(texture), ScaleMode.StretchToFill, true);
+            GUI.DrawTexture(bounds, Styles.Image(texture), ScaleMode.ScaleToFit, true);
         }
 
 
@@ -559,7 +562,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         static UnityStyleProvider()
         {
-            Textures.Add("DiagramArrowRight", ElementDesignerStyles.ArrowRightEmptyTexture);
+            Textures.Add("DiagramArrowRight", ElementDesignerStyles.ArrowRightTexture);
             Textures.Add("DiagramArrowLeft", ElementDesignerStyles.ArrowLeftTexture);
             Textures.Add("DiagramArrowUp", ElementDesignerStyles.ArrowUpTexture);
             Textures.Add("DiagramArrowDown", ElementDesignerStyles.ArrowDownTexture);

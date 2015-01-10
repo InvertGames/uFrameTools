@@ -24,7 +24,6 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             {
                 node.GraphItem.BaseViewIdentifier = view.Identifier;    
             }
-            
         }
 
         public override string CanPerform(ViewNodeViewModel node)

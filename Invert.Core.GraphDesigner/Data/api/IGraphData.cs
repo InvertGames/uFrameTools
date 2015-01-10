@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Json;
@@ -30,4 +31,9 @@ public interface IGraphData : IElementFileData,IItem, ISubscribable<IGraphItemEv
     void ClearInput(IGraphItem input);
     void SetProject(IProjectRepository value);
     void DeserializeFromJson(JSONNode graphData);
+    IDiagramFilter CreateDefaultFilter();
+    JSONNode Serialize();
+    void Deserialize(string jsonData);
+    void CleanUpDuplicates();
+    List<ErrorInfo> Validate();
 }

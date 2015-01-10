@@ -17,7 +17,7 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform, position);
 
 
-            var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 20;
+            var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 45;
             //ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name)).x + 20);
 
             Bounds = new Rect(position.x, position.y, width, 25);
@@ -42,7 +42,7 @@ namespace Invert.Core.GraphDesigner
             //style.fontStyle = FontStyle.Bold;
 
 //            GUI.Box(Bounds.Scale(scale), ViewModel.Name, style);
-            platform.DrawLabel(Bounds.Scale(scale),ViewModel.Name,CachedStyles.HeaderStyle);
+            platform.DrawLabel(Bounds.Scale(scale),ViewModel.Name,CachedStyles.ItemTextEditingStyle, DrawingAlignment.MiddleLeft);
             if (ViewModel.AddCommand != null)
             {
                 platform.DoButton(_AddButtonRect.Scale(scale), string.Empty, CachedStyles.AddButtonStyle, () =>

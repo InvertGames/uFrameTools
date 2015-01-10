@@ -1,7 +1,7 @@
 using System.IO;
 using System.Linq;
 
-public class GraphData : UnityGraphData<InvertGraph>
+public class GraphData : UnityGraphData
 {
 
 }

@@ -23,7 +23,7 @@ namespace Invert.Core.GraphDesigner
             _nameSize = platform.CalculateSize(TypedItemViewModel.Name,TextStyle);
             _typeSize = platform.CalculateSize(TypedItemViewModel.RelatedType, TextStyle);
 
-            Bounds = new Rect(position.x, position.y, 5 + _nameSize.x + 5 + _typeSize.x + 10, 18);
+            Bounds = new Rect(position.x, position.y, _nameSize.x + 5 + _typeSize.x + 30, 18);
         }
 
         private Vector2 _typeSize;
@@ -54,13 +54,14 @@ namespace Invert.Core.GraphDesigner
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
+            DrawBackground(platform,scale);
             var b = new Rect(Bounds);
             b.x += 10;
-            b.width -= 10;
+            b.width -= 20;
             //base.Draw(platform, scale);
-            platform.DrawColumns(b.Scale(scale),new int[] { Mathf.RoundToInt(_typeSize.x), Mathf.RoundToInt(_nameSize.x) },
+            platform.DrawColumns(b.Scale(scale),new int[] { Mathf.RoundToInt(_typeSize.x + 5), Mathf.RoundToInt(_nameSize.x) },
                 _ => platform.DoButton(_, TypedItemViewModel.RelatedType, CachedStyles.ClearItemStyle, OptionClicked),
-                _=>DrawName(_, platform,scale,DrawingAlignment.MiddleRight)
+                _=>DrawName(_, platform,scale,DrawingAlignment.MiddleCenter)
                 );
         }
     }

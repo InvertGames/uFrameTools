@@ -10,6 +10,9 @@ namespace Invert.Core.GraphDesigner
     {
         private NodeConfig<TData> _nodeConfig;
 
+        public GenericNodeViewModel()
+        {
+        }
 
         public GenericNodeViewModel(TData graphItemObject, DiagramViewModel diagramViewModel)
             : base(graphItemObject, diagramViewModel)
@@ -39,15 +42,9 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public override IEnumerable<KeyValuePair<string, ValidatorType>> Issues
+        public override IEnumerable<ErrorInfo> Issues
         {
-            get
-            {
-                foreach (var item in NodeConfig.Validate(GraphItem))
-                {
-                    yield return new KeyValuePair<string, ValidatorType>(item.Message, item.Type);
-                }
-            }
+            get { return GraphItem.Validate(); }
         }
 
         public override NodeColor Color

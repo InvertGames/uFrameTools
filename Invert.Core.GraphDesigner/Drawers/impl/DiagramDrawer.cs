@@ -319,7 +319,7 @@ namespace Invert.Core.GraphDesigner
                 return;
 
             }
-            var item = DrawersAtMouse.Reverse().FirstOrDefault();
+            var item = DrawersAtMouse.FirstOrDefault();
 
             if (item != null)
             {
@@ -337,7 +337,7 @@ namespace Invert.Core.GraphDesigner
                 else if (item is ConnectorDrawer)
                 {
 
-                    var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(DiagramViewModel, typeof(IDiagramNodeItemCommand));
+                    var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramNodeItemCommand));
 
                     var connector = item.ViewModelObject as ConnectorViewModel;
 
@@ -386,19 +386,19 @@ namespace Invert.Core.GraphDesigner
 
         public void ShowAddNewContextMenu(bool addAtMousePosition = false)
         {
-            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(DiagramViewModel, typeof(IDiagramContextCommand));
+            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramContextCommand));
             menu.Go();
         }
 
         public void ShowContextMenu()
         {
-            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(DiagramViewModel, typeof(IDiagramNodeCommand), DiagramViewModel.SelectedNode.CommandsType);
+            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramNodeCommand), DiagramViewModel.SelectedNode.CommandsType);
             menu.Go();
         }
 
         public void ShowItemContextMenu(object item)
         {
-            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(DiagramViewModel, typeof(IDiagramNodeItemCommand));
+            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramNodeItemCommand));
             menu.Go();
         }
 

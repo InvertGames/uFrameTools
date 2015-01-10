@@ -28,5 +28,19 @@ namespace Invert.uFrame.Editor {
                 return node as SubsystemNode;
             }
         }
+
+        public override void Validate(List<ErrorInfo> errors)
+        {
+            base.Validate(errors);
+            if (Subsystem == null)
+            {
+                errors.AddError("A subsystem is required for this scene manager.");
+            }
+            if (Transitions.Any(p => !p.Outputs.Any()))
+            {
+                errors.AddError("All transitions must have an end-point.");
+            }
+           
+        }
     }
 }

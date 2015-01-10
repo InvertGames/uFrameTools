@@ -22,7 +22,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
     [SerializeField, HideInInspector]
     private bool[] _settingsValues;
 
-   
+
 
     public void OnBeforeSerialize()
     {
@@ -33,7 +33,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
 
     public void OnAfterDeserialize()
     {
-        
+
         if (_settingsKeys == null) return;
         SettingsBag.Clear();
         for (var i = 0; i < _settingsKeys.Length; i++)
@@ -46,6 +46,11 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
             var value = _settingsValues[i];
             SettingsBag.Add(key, value);
 
+        }
+
+        foreach (var diagram in Diagrams.OfType<IGraphData>())
+        {
+            diagram.SetProject(this);
         }
 
         OpenTabs.RemoveAll(p => string.IsNullOrEmpty(p.GraphIdentifier));
@@ -64,46 +69,64 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
     [SerializeField, HideInInspector]
     protected List<ScriptableObject> _diagrams;
 
+    [NonSerialized]
+    private List<IGraphData> _loadedTextGraphs;
 
-    public void RecacheAssets()
-    {
-
-    }
-
-    //public Dictionary<string, string> GetProjectDiagrams()
-    //{
-    //    var items = new Dictionary<string, string>();
-    //    foreach (var elementDesignerData in Diagrams.Where(p => p.GetType() == RepositoryFor))
-    //    {
-    //        var asset = AssetDatabase.GetAssetPath(elementDesignerData as UnityEngine.Object);
-
-    //        items.Add(elementDesignerData.Name, asset);
-    //    }
-    //    return items;
-    //}
-
-    [NonSerialized] private List<IGraphData> _loadedTextGraphs;
+    /// <summary>
+    /// Creates a new UnityGraphData object with its Graph property set to the diagramType
+    /// </summary>
+    /// <param name="diagramType">The type of diagram to create.</param>
+    /// <param name="defaultFilter">The filter or root node to use for this diagram.  Leave null if you want to use the default (if you don't know just pass null)</param>
+    /// <returns>The newly created UnityGraphData scriptable object wrapper with the internal graph as the diagramType specified.</returns>
     public override IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null)
     {
+        // Go ahead and select this project asset
         Selection.activeObject = this;
-        var t = diagramType;
-        var diagram = InvertGraphEditor.AssetManager.CreateAsset(t) as IGraphData;
+        // Attempt to create the asset with the asset manager
+        var diagram = InvertGraphEditor.AssetManager.CreateAsset(typeof(UnityGraphData)) as UnityGraphData;
+        if (diagram == null)
+        {
+            throw new Exception("Unity Graph Data couldn't be found.");
+        }
+        // Create the type of graph
+        diagram.Graph = Activator.CreateInstance(diagramType) as IGraphData;
+        if (diagram.Graph == null)
+        {
+            throw new Exception(string.Format("Graph of type {0} couldn't be created.", diagramType.Name));
+        }
+        // Create the default filter for this graph if specified
         if (defaultFilter != null && diagram != null)
         {
+            // Set it as the root filter
             diagram.RootFilter = defaultFilter;
+
             var nodeItem = defaultFilter as IDiagramNode;
             if (nodeItem != null)
             {
                 nodeItem.Graph = diagram;
             }
         }
+        // Set the current version of the data to the current version of the grapheditor version
         diagram.Version = InvertGraphEditor.CURRENT_VERSION_NUMBER.ToString();
-        Diagrams.Add(diagram as ScriptableObject);
-        EditorUtility.SetDirty(diagram as ScriptableObject);
+        // Add the graph to this list of graphs
+        AddGraph(diagram);
+        // Set the project for the diagram
+        diagram.SetProject(this);
+        // Mark the graph as dirty for unity to serialize them
+        EditorUtility.SetDirty(diagram);
         EditorUtility.SetDirty(this);
+        // Save everything
         AssetDatabase.SaveAssets();
+        // Refresh the project
         Refresh();
+        // Return the created UnityGraphData
         return diagram;
+    }
+
+    protected override void AddGraph(IGraphData graphData)
+    {
+        base.AddGraph(graphData);
+        Diagrams.Add(graphData as ScriptableObject);
     }
 
     public override string Name
@@ -137,7 +160,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
     [SerializeField]
     private List<OpenGraph> _currentTabs;
 
-    public override List<OpenGraph> OpenTabs
+    protected override List<OpenGraph> OpenTabs
     {
         get { return _currentTabs ?? (_currentTabs = new List<OpenGraph>()); }
         set { _currentTabs = value; }
@@ -148,7 +171,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
 
     private string _name;
 
-    public override string LastLoadedDiagram
+    protected override string LastLoadedDiagram
     {
         get { return EditorPrefs.GetString("UF_LastLoadedDiagram" + this.name, string.Empty); }
         set { EditorPrefs.SetString("UF_LastLoadedDiagram" + this.name, value); }
@@ -220,7 +243,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
             //    foreach (var item in TextGraphs)
             //    {
             //        var graphData = JSON.Parse(item.text);
-                    
+
             //        var name = graphData["Name"].Value;
             //        var type = InvertApplication.FindType(graphData["Type"].Value);
             //        if (type == null)
@@ -231,7 +254,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
             //        graph.Name = item.name; 
             //        if (graph == null)
             //        { 
-                     
+
             //            Debug.LogError(string.Format("Couldn't load graph {0}", name));
             //            continue;
             //            ;
@@ -252,7 +275,6 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         set { Diagrams = value.Cast<ScriptableObject>().ToList(); }
     }
 
-
     public override void SaveDiagram(INodeRepository data)
     {
         if (data != null)
@@ -270,8 +292,6 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
 
     public override void Refresh()
     {
-        //var assets = uFrameEditor.GetAssets(typeof(GraphData));
-        //Diagrams = assets.OfType<GraphData>().ToList();
         _loadedTextGraphs = null;
         CurrentGraph = null;
         _nodeItems = null;
@@ -279,6 +299,8 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         foreach (var diagram in Diagrams)
         {
             (diagram as IGraphData).Prepare();
+
+
         }
 
     }

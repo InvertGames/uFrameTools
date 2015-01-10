@@ -10,18 +10,12 @@ namespace Invert.uFrame.Editor
     {
         public override void Initialize(uFrameContainer container)
         {
-           
             InvertGraphEditor.RegisterKeyBinding(new AddNodeToGraph() {SelectedOption = new UFContextMenuItem() {Value=typeof(SceneManagerData) } },"Add Scene Manager", KeyCode.M,true,true);
-
             InvertGraphEditor.RegisterKeyBinding(new AddNodeToGraph() { SelectedOption = new UFContextMenuItem() { Value = typeof(SubSystemData) } }, "Add Sub System", KeyCode.U, true, true);
             InvertGraphEditor.RegisterKeyBinding(new AddNodeToGraph() { SelectedOption = new UFContextMenuItem() { Value = typeof(ElementData) } }, "Add Element", KeyCode.E, true);
             InvertGraphEditor.RegisterKeyBinding(new AddNodeToGraph() { SelectedOption = new UFContextMenuItem() { Value = typeof(EnumData) } }, "Add Enum", KeyCode.N, true, true);
             InvertGraphEditor.RegisterKeyBinding(new AddNodeToGraph() { SelectedOption = new UFContextMenuItem() { Value = typeof(ViewData) } }, "Add View", KeyCode.V, true, true);
             InvertGraphEditor.RegisterKeyBinding(new AddNodeToGraph() { SelectedOption = new UFContextMenuItem() { Value = typeof(ViewComponentData) } }, "Add View Component", KeyCode.W, true, true);
-
-
-
-
         }
     }
 }

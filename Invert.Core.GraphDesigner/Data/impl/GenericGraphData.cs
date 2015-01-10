@@ -11,7 +11,7 @@ public class GenericGraphData<T> : InvertGraph where T : IDiagramFilter, new()
     {
         return new T()
         {
-            Name = Name
+            Name = Name,
         };
     }
 }
