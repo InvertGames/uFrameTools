@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Invert.Core.GraphDesigner;
 
 namespace Invert.uFrame.Editor {
@@ -10,6 +12,21 @@ namespace Invert.uFrame.Editor {
             get { return string.IsNullOrEmpty(_type) ? typeof(bool).Name : _type; }
             set { _type = value; }
         }
+
+        public override IEnumerable<IComputedSubProperties> PossibleProperties
+        {
+            get
+            {
+                return InputProperties.Select(p => p.RelatedTypeNode).OfType<ElementNode>().SelectMany(p => p.AllProperties).Cast<IComputedSubProperties>();
+            }
+        }
+
+        public IEnumerable<PropertyChildItem> InputProperties
+        {
+            get { return this.InputsFrom<PropertyChildItem>(); }
+        }
+
+
 
         public override string RelatedTypeName
         {

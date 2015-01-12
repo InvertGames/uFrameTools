@@ -43,7 +43,7 @@ namespace Invert.Core.GraphDesigner
 
             container.RegisterInstance<IConnectionStrategy>(new InputOutputStrategy(),"InputOutputStrategy");
             container.RegisterConnectable<GenericTypedChildItem, IClassTypeNode>();
-            //container.RegisterInstance<IConnectionStrategy>(new ReferenceConnectionStrategy(), "ReferenceConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new ReferenceConnectionStrategy(), "ReferenceConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new RegisteredConnectionStrategy(),"RegisteredConnectablesStrategy");
             
             

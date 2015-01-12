@@ -7,5 +7,13 @@ namespace Invert.uFrame.Editor {
     
     
     public class StateMachineNode : StateMachineNodeBase {
+        public override void Validate(List<ErrorInfo> errors)
+        {
+            base.Validate(errors);
+            if (StartOutputSlot.OutputTo<StateNode>() == null)
+            {
+                errors.AddError("State Machine requires a start state.",this.Identifier);
+            }
+        }
     }
 }

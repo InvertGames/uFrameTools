@@ -740,8 +740,20 @@ namespace Invert.Core.GraphDesigner
                 dom.Name = string.Format(templateMethod.Value.NameFormat, data.Name);
             }
 
-
-            info.Invoke(instance, args.ToArray());
+            
+       
+               var result = info.Invoke(instance, args.ToArray());
+            var a = result as IEnumerable;
+            if (a != null)
+            {
+                var dummyIteraters = a.Cast<object>().ToArray();
+                foreach (var item in dummyIteraters)
+                {
+                    
+                }
+            }
+            
+         
 
             var isOverried = false;
             if (!IsDesignerFile && dom.Attributes != MemberAttributes.Final && templateMethod.Value.Location == MemberGeneratorLocation.Both)

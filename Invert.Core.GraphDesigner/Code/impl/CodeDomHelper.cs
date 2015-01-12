@@ -521,22 +521,11 @@ namespace Invert.Core.GraphDesigner
         {
             var method = new CodeMemberField()
             {
-                //Type = returnType is CodeTypeReference ? (CodeTypeReference)returnType : new CodeTypeReference((string)returnType),
+                Type = returnType.ToCodeReference(),
                 Attributes = MemberAttributes.Private | MemberAttributes.Final,
                 Name = string.Format(fieldName,nameArgs)
             };
-            if (returnType is Type)
-            {
-                method.Type = new CodeTypeReference((Type)returnType);
-            }
-            else if (returnType is CodeTypeReference)
-            {
-                method.Type = (CodeTypeReference)returnType;
-            }
-            else if (returnType is string)
-            {
-                method.Type = new CodeTypeReference((string)returnType);
-            }
+
             if (!method.UserData.Contains("Decleration"))
             {
                 method.UserData.Add("Decleration", s);

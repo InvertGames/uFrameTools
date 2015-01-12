@@ -48,7 +48,7 @@ namespace Invert.uFrame.Editor {
         {
             get
             {
-                return SourceItem.Name + " " + BindingType.DisplayName;
+                return string.Format(BindingType.DisplayFormat, SourceItem.Name);
             }
         }
     }

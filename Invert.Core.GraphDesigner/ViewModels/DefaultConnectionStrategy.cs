@@ -137,11 +137,11 @@ namespace Invert.Core.GraphDesigner
             var input = connectionViewModel.ConnectorB.DataObject as IGraphItem;
             var diagramData = connectionViewModel.DiagramViewModel.DiagramData;
 
-            if (!connectionViewModel.ConnectorA.AllowMultiple)
-            {
+            //if (!connectionViewModel.ConnectorA.AllowMultiple)
+            //{
 
-                diagramData.ClearOutput(output);
-            }
+            //    diagramData.ClearOutput(output);
+            //}
             if (!connectionViewModel.ConnectorB.AllowMultiple)
             {
                 diagramData.ClearInput(input);

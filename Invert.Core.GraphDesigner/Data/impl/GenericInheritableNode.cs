@@ -33,7 +33,13 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-        [Browsable(false)]
+
+        public IEnumerable<IDiagramNodeItem> ChildItemsWithInherited
+        {
+            get { return BaseNodesWithThis.SelectMany(p => p.ChildItems); }
+        }
+            
+            [Browsable(false)]
         public IEnumerable<GenericInheritableNode> BaseNodesWithThis
         {
             get

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -34,6 +35,27 @@ namespace Invert.Core.GraphDesigner
 
     public class ErrorInfo
     {
+        protected bool Equals(ErrorInfo other)
+        {
+            return string.Equals(Identifier, other.Identifier) && string.Equals(Message, other.Message);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ErrorInfo) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Identifier != null ? Identifier.GetHashCode() : 0)*397) ^ (Message != null ? Message.GetHashCode() : 0);
+            }
+        }
+
         public string Identifier { get; set; }
         public string Message { get; set; }
         public Action AutoFix { get; set; }
@@ -52,6 +74,7 @@ namespace Invert.Core.GraphDesigner
                 AutoFix = autoFix,
                 Siverity = ValidatorType.Error
             };
+            if (!list.Any(p=>p.Equals(error)))
             list.Add(error);
             return error;
         }

@@ -13,7 +13,7 @@ using System.Windows.Threading;
 using DiagramDesigner.Platform;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.GraphDesigner.Documentation;
+//using Invert.GraphDesigner.Documentation;
 using UnityEngine;
 
 namespace DiagramDesigner
@@ -30,7 +30,7 @@ namespace DiagramDesigner
         {
             InvertApplication.Logger = this;
             InvertApplication.CachedAssemblies.Add(typeof(ICollection<>).Assembly);
-            InvertApplication.CachedAssemblies.Add(typeof(DocumentationPlugin).Assembly);
+            //InvertApplication.CachedAssemblies.Add(typeof(DocumentationPlugin).Assembly);
             //foreach (var assembly in Assembly.GetEntryAssembly().GetReferencedAssemblies())
             //{
             //    Debug.WriteLine("------ LOADED: " + assembly.FullName);
@@ -171,10 +171,10 @@ namespace DiagramDesigner
             var sb = new StringBuilder();
             foreach (var generator in InvertGraphEditor.GetAllCodeGenerators(null, docs, false))
             {
-                if (generator is RazorOutputGenerator)
-                {
-                    sb.Append(generator.ToString());
-                }
+                //if (generator is RazorOutputGenerator)
+                //{
+                //    sb.Append(generator.ToString());
+                //}
 
             }
             DocsBrowser.NavigateToString(sb.ToString());

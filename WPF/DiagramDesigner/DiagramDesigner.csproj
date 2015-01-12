@@ -338,10 +338,6 @@
       <Project>{e8f83fb5-f3b6-4580-a33e-ecdf84e535b0}</Project>
       <Name>Invert.GraphDesigner.WPF.Controls</Name>
     </ProjectReference>
-    <ProjectReference Include="..\uFrameWPF\Invert.GraphDesigner.Documentation\Invert.GraphDesigner.Documentation.csproj">
-      <Project>{bf4392bf-a832-4d3e-b6be-0026f6c9a653}</Project>
-      <Name>Invert.GraphDesigner.Documentation</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

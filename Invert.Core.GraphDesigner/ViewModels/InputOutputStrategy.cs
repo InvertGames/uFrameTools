@@ -303,6 +303,7 @@ namespace Invert.Core.GraphDesigner
 
     public class ReferenceConnectionStrategy : DefaultConnectionStrategy
     {
+        
         public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
             return null;
@@ -312,11 +313,11 @@ namespace Invert.Core.GraphDesigner
         public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
         {
             base.GetConnections(connections, info);
-            foreach (var item in info.Outputs.Where(p => p.ConnectorFor.DataObject is GenericReferenceItem))
+            foreach (var item in info.Inputs.Where(p => p.ConnectorFor.DataObject is GenericReferenceItem))
             {
                 var referenceItem = item.ConnectorFor.DataObject as GenericReferenceItem;
                 var sourceObject = referenceItem.SourceItemObject;
-                foreach (var input in info.Inputs.Where(p=>p.ConnectorFor.DataObject == sourceObject))
+                foreach (var input in info.Outputs.Where(p=>p.ConnectorFor.DataObject == sourceObject))
                 {
                     connections.Add(new ConnectionViewModel(info.DiagramViewModel)
                     {
@@ -324,7 +325,8 @@ namespace Invert.Core.GraphDesigner
                         Name = item.Name + "->" + input.Name,
                         ConnectorA = item,
                         ConnectorB = input,
-                        Color = new Color(0.3f,0.4f,0.75f)
+                        Color = new Color(0.3f,0.4f,0.75f),
+                        InActiveColor = new Color(0.3f, 0.4f, 0.75f,0.1f),
                     });
                 }
             }

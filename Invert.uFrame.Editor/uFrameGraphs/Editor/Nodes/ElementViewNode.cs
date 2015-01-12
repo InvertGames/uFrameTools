@@ -25,7 +25,7 @@ namespace Invert.uFrame.Editor
                             SourceIdentifier = item.Identifier,
                             BindingName = mapping.Name,
                             BindingType = bindableType,
-                            Name = item.Name + " " + bindableType.DisplayName
+                            Name = string.Format(bindableType.DisplayFormat, item.Name)
                         };
 
                     }

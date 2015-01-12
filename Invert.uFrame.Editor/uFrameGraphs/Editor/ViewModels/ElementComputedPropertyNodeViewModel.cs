@@ -1,3 +1,5 @@
+using Invert.Core.GraphDesigner;
+
 namespace Invert.uFrame.Editor {
     using System;
     using System.Collections;
@@ -9,6 +11,23 @@ namespace Invert.uFrame.Editor {
         
         public ElementComputedPropertyNodeViewModel(ElementComputedPropertyNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
                 base(graphItemObject, diagramViewModel) {
+        }
+
+        protected override void CreateContent()
+        {
+            base.CreateContent();
+            foreach (var item in this.GraphItem.InputsFrom<PropertyChildItem>())
+            {
+                var relatedNode = item.RelatedTypeNode as ElementNode;
+                if (relatedNode != null)
+                {
+                    var headerVM = new SectionHeaderViewModel()
+                    {
+                        Name = relatedNode.Name
+                    };
+
+                }
+            }
         }
     }
 }

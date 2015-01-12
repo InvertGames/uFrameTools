@@ -1,6 +1,6 @@
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.GraphDesigner.Documentation;
+
 using Invert.GraphDesigner.WPF;
 
 namespace DiagramDesigner.Platform

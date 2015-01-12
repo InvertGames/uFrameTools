@@ -40,9 +40,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RazorMachine.2.6.1\lib\net40\System.Web.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="Xipton.Razor">
-      <HintPath>..\packages\RazorMachine.2.6.1\lib\net40\Xipton.Razor.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -59,7 +56,6 @@
   <ItemGroup>
     <Compile Include="EventListenerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Invert.Core\Invert.Core.csproj">
@@ -69,10 +65,6 @@
     <ProjectReference Include="..\..\Invert.GraphDesigner.Data\Invert.GraphDesigner.WPF.csproj">
       <Project>{59157885-42EE-4324-8649-2737C0C0226F}</Project>
       <Name>Invert.GraphDesigner.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Invert.GraphDesigner.Documentation\Invert.GraphDesigner.Documentation.csproj">
-      <Project>{BF4392BF-A832-4D3E-B6BE-0026F6C9A653}</Project>
-      <Name>Invert.GraphDesigner.Documentation</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

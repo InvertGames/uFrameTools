@@ -43,7 +43,7 @@
       <HintPath>..\Invert.Common\bin\Debug\UnityEditor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\uFrameTools\Invert.Common\bin\Debug\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\uFrameGit\Library\UnityAssemblies\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -126,9 +126,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
-copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
-copy $(TargetPath) D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y
-copy $(TargetDir)$(TargetName).pdb D:\Invert\uFrameShellGit\Assets\Shell\Editor\uFrameShell\ /Y</PostBuildEvent>
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

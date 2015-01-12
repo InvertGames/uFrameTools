@@ -393,16 +393,36 @@ namespace Invert.Core.GraphDesigner
             {
                 yield return this;
                 yield return DataObject;
-                foreach (var nodeItem in SelectedNodeItems)
+
+                foreach (var nodeItem in GraphItems.Where(p => p.IsMouseOver || p.IsSelected).OfType<ConnectorViewModel>())
                 {
                     yield return nodeItem;
                     yield return nodeItem.DataObject;
+
                 }
-                foreach (var node in SelectedGraphItems.OfType<DiagramNodeViewModel>())
+                foreach (var nodeItem in GraphItems.SelectMany(p => p.ContentItems).Where(p => p.IsMouseOver || p.IsSelected))
                 {
-                    yield return node;
-                    yield return node.DataObject;
+                    if (nodeItem is DiagramNodeViewModel) continue;
+                    yield return nodeItem;
+                    yield return nodeItem.DataObject;
+                    
                 }
+                foreach (var nodeItem in GraphItems.Where(p => p.IsMouseOver || p.IsSelected).OfType<DiagramNodeViewModel>())
+                {
+                    yield return nodeItem;
+                    yield return nodeItem.DataObject;
+
+                }
+                //foreach (var nodeItem in SelectedNodeItems)
+                //{
+                //    yield return nodeItem;
+                //    yield return nodeItem.DataObject;
+                //}
+                //foreach (var node in SelectedGraphItems.OfType<DiagramNodeViewModel>())
+                //{
+                //    yield return node;
+                //    yield return node.DataObject;
+                //}
                 //foreach (var item in GraphItems)
                 //{
                 //    if (!item.IsMouseOver && !item.IsSelected) continue;

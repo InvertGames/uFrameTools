@@ -11,7 +11,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="uFrame.InvertGameStudios.B8BA92FE-2BE2-4EC3-A913-1A2EC3277756" Version="1.06" Language="en-US" Publisher="Invert Game Studios LLC" />
+    <Identity Id="uFrame.InvertGameStudios.B8BA92FE-2BE2-4EC3-A913-1A2EC327775A" Version="1.07" Language="en-US" Publisher="Invert Game Studios LLC" />
     <DisplayName>uFrame</DisplayName>
     <Description xml:space="preserve">uFrame is a powerful Graphing tool that allows you to visually design applications based on the standard practices of various architecture frameworks such as MVC, MVVM, MVCVM.</Description>
     <MoreInfo>http://invertgamestudios.com</MoreInfo>

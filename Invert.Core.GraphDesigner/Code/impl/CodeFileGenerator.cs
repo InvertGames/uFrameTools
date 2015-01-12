@@ -68,6 +68,8 @@ namespace Invert.Core.GraphDesigner
 
         public override bool CanGenerate(FileInfo fileInfo)
         {
+            if (Generators.Any(p => p.AlwaysRegenerate)) return true;
+
             var doesTypeExist = Generators.Any(p => !p.IsValid(fileInfo));
             if (doesTypeExist || fileInfo.Exists)
             {

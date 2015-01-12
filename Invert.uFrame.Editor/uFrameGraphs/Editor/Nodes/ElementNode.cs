@@ -7,7 +7,7 @@ namespace Invert.uFrame.Editor {
         public override void Validate(List<ErrorInfo> errors)
         {
             base.Validate(errors);
-            var ps = ChildItems;
+            var ps = ChildItemsWithInherited.ToArray();
             foreach (var p1 in ps)
             {
                 foreach (var p2 in ps)
@@ -30,7 +30,9 @@ namespace Invert.uFrame.Editor {
             }
         }
 
-        public IEnumerable<ITypedItem> AllProperties
+        public IEnumerable<ITypedItem> 
+            
+            AllProperties
         {
             get
             {
@@ -40,7 +42,24 @@ namespace Invert.uFrame.Editor {
                     yield return item;
             }
         }
-
+        public IEnumerable<ITypedItem> AllPropertiesWithInherited
+        {
+            get
+            {
+                var baseElement = BaseNode as ElementNode;
+                if (baseElement != null)
+                {
+                    foreach (var property in baseElement.AllProperties)
+                    {
+                        yield return property;
+                    }
+                    foreach (var property in baseElement.AllPropertiesWithInherited)
+                    {
+                        yield return property;
+                    }
+                }
+            }
+        }
         [Invert.Core.GraphDesigner.ProxySection("Inherited Properties", SectionVisibility.WhenNodeIsFilter, OrderIndex =1)]
         public virtual System.Collections.Generic.IEnumerable<PropertyChildItem> InheritedProperties
         {
