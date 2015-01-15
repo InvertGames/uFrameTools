@@ -15,6 +15,11 @@ namespace Invert.uFrame.Editor {
             base.Initialize(container);
 
             ElementViewComponent.Name = "View Component";
+            ElementView.Name = "View";
+            ElementComputedProperty.Name = "Computed Property";
+            StateMachine.Name = "State Machine";
+            State.Name = "State";
+            SceneManager.Name = "Scene Manager";
         }
 
 
@@ -114,10 +119,11 @@ namespace Invert.uFrame.Editor {
             //Description
         }
 
-        public CodeExpression CreateBindingSignature(CodeTypeDeclaration context,  Func<Type, CodeTypeReference> convertGenericParameter, ElementViewNode elementView, ITypedItem sourceItem)
+        public CodeExpression CreateBindingSignature(CodeTypeDeclaration context,  Func<Type, CodeTypeReference> convertGenericParameter, ElementViewNode elementView, ITypedItem sourceItem, string subscribablePropertyNameFormat = "{0}Property")
         {
             var elementName = elementView.Element.Name;
-            var propertyName = sourceItem.Name;
+            var propertyName = string.Format(subscribablePropertyNameFormat, sourceItem.Name);
+            var name =  sourceItem.Name;
 
             var methodInvoke = new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), MethodInfo.Name);
             var isExtensionMethod = MethodInfo.IsDefined(typeof(ExtensionAttribute), true);
@@ -130,7 +136,7 @@ namespace Invert.uFrame.Editor {
                 var genericArguments = parameter.ParameterType.GetGenericArguments();
                 if (typeof (Delegate).IsAssignableFrom(parameter.ParameterType))
                 {
-                    var method = CreateDelegateMethod(convertGenericParameter, parameter, genericArguments, propertyName);
+                    var method = CreateDelegateMethod(convertGenericParameter, parameter, genericArguments, propertyName, name);
                
                     methodInvoke.Parameters.Add(new CodeSnippetExpression(String.Format((string) "this.{0}", (object) method.Name)));
                     context.Members.Add(method);
@@ -145,9 +151,9 @@ namespace Invert.uFrame.Editor {
                 }
                 else
                 {
-                    var field = context._private_(parameter.ParameterType, "_{0}{1}", propertyName, parameter.Name);
+                    var field = context._private_(parameter.ParameterType, "_{0}{1}", name, parameter.Name);
                     field.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(UFGroupType),
-                        new CodeAttributeArgument(new CodePrimitiveExpression(propertyName))));
+                        new CodeAttributeArgument(new CodePrimitiveExpression(name))));
                     field.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof (SerializeField))));
                     methodInvoke.Parameters.Add(new CodeSnippetExpression(field.Name));
                 }
@@ -155,12 +161,11 @@ namespace Invert.uFrame.Editor {
             return methodInvoke;
         }
 
-        public CodeMemberMethod CreateDelegateMethod(Func<Type, CodeTypeReference> convertGenericParameter, ParameterInfo parameter,
-            Type[] genericArguments,string propertyName)
+        public CodeMemberMethod CreateDelegateMethod(Func<Type, CodeTypeReference> convertGenericParameter, ParameterInfo parameter, Type[] genericArguments, string propertyName, string name)
         {
             var method = new CodeMemberMethod()
             {
-                Name = String.Format("{0}{1}{2}",propertyName, parameter.Name.Substring(0,1).ToUpper(),parameter.Name.Substring(1)),
+                Name = String.Format("{0}{1}{2}",name, parameter.Name.Substring(0,1).ToUpper(),parameter.Name.Substring(1)),
                 Attributes = MemberAttributes.Public
             };
             var isFunc = parameter.ParameterType.Name.Contains("Func");

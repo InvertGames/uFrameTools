@@ -26,7 +26,10 @@ using UnityEngine;
 
         public void OnGUI()
         {
-     
+            if (Issues)
+            {
+                EditorGUILayout.HelpBox("Fix Errors First",MessageType.Info);
+            }
             if (GeneratorDrawers != null)
             {
                 _scrollPosition= GUILayout.BeginScrollView(_scrollPosition);
@@ -54,8 +57,10 @@ using UnityEngine;
         {
             var vm = InvertGraphEditor.CurrentDiagramViewModel;
             if (vm == null) return;
+            
             if (SelectedNode != InvertGraphEditor.CurrentDiagramViewModel.SelectedNode || SelectedNode == null)
             {
+                
                 SelectedItemChanged();
                 Repaint();
             }
@@ -69,14 +74,18 @@ using UnityEngine;
 
         private void SelectedItemChanged()
         {
+
             GeneratorDrawers.Clear();
             fileGenerators = null;
 
             SelectedNode = InvertGraphEditor.CurrentDiagramViewModel.SelectedNode;
+
             if (SelectedNode == null)
             {
                 return;
             }
+            Issues = SelectedNode.Issues.Any(p => p.Siverity == ValidatorType.Error);
+            if (Issues) return;
             var item = SelectedNode == null ? null:SelectedNode.GraphItemObject;
 
             fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,
@@ -97,6 +106,8 @@ using UnityEngine;
             }
 
         }
+
+        public bool Issues { get; set; }
 
         public DiagramNodeViewModel SelectedNode { get; set; }
     }

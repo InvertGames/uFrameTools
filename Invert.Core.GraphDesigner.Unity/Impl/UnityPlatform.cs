@@ -236,10 +236,11 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DoCommand(IEditorCommand command)
         {
 
-            var obj = Handler.ContextObjects.FirstOrDefault(p => command.For.IsAssignableFrom(p.GetType()));
-            GUI.enabled = command.CanPerform(obj) == null;
+   
             if (command is IDynamicOptionsCommand)
             {
+                var obj = Handler.ContextObjects.FirstOrDefault(p => command.For.IsAssignableFrom(p.GetType()));
+                GUI.enabled = command.CanPerform(obj) == null;
                 var cmd = command as IDynamicOptionsCommand;
                 foreach (var ufContextMenuItem in cmd.GetOptions(obj))
                 {
@@ -280,14 +281,16 @@ namespace Invert.Core.GraphDesigner.Unity
         }
 
         // TODO I HATE the vector3 conversion
-        public void DrawPolyLine(Vector2[] lines)
+        public void DrawPolyLine(Vector2[] lines, Color color)
         {
+            Handles.color = color;
             Handles.DrawPolyLine(lines.Select(x=>new Vector3(x.x,x.y,0f)).ToArray());
         }
 
         public void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent,
             Color color, float width)
         {
+            Handles.color = color;
             Handles.DrawBezier(startPosition,endPosition,startTangent,endTangent,color,null,width);
         }
 
@@ -650,7 +653,8 @@ namespace Invert.Core.GraphDesigner.Unity
                 case InvertStyles.SelectedItemStyle:
                     return ElementDesignerStyles.SelectedItemStyle;      
                 case InvertStyles.HeaderStyle:
-                    return ElementDesignerStyles.HeaderStyle;   case InvertStyles.ViewModelHeaderStyle:
+                    return ElementDesignerStyles.HeaderStyle;   
+                case InvertStyles.ViewModelHeaderStyle:
                     return ElementDesignerStyles.ViewModelHeaderStyle;
                 case InvertStyles.AddButtonStyle:
                     return ElementDesignerStyles.AddButtonStyle;

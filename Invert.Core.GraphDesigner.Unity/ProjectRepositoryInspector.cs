@@ -77,6 +77,8 @@ public class ProjectRepositoryInspector : Editor
                             property.GetArrayElementAtIndex(i).objectReferenceValue = item;
                         }
                         so.ApplyModifiedProperties();
+                        var project = InvertApplication.Container.Resolve<ProjectService>();
+                        project.RefreshProjects();
                     }
                 })
                 ;
@@ -110,70 +112,61 @@ public class ProjectRepositoryInspector : Editor
 
             foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.Issues)
             {
-                GUILayout.BeginHorizontal();
-                EditorGUILayout.HelpBox(item.Message,(MessageType)((int)item.Siverity + 1) );
-                if (item.AutoFix != null)
+      
+                if (GUIHelpers.DoTriggerButton(new UFStyle()
                 {
-                    if (GUILayout.Button("Fix it"))
-                    {
-                        InvertGraphEditor.ExecuteCommand(_ =>
-                        {
-                            item.AutoFix();
-                        });
-                    }
+                    Label = item.Message,
+                    Enabled = true,
+                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                    TextAnchor = TextAnchor.MiddleRight,
+                    IconStyle = ElementDesignerStyles.BreakpointButtonStyle,
+                    //IconStyle = UBStyles.RemoveButtonStyle,
+                    ShowArrow = true
+                }))
+                {
+
+                    InvertGraphEditor.NavigateTo(item.Identifier); 
                 }
-                
-                GUILayout.EndHorizontal();
-                //GUIHelpers.DoTriggerButton(new UFStyle()
-                //{
-                //    Label = item.Name,
-                //    Enabled = true,
-                //    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
-                //    TextAnchor = TextAnchor.MiddleRight,
-                //    IconStyle = ElementDesignerStyles.BreakpointButtonStyle,
-                //    //IconStyle = UBStyles.RemoveButtonStyle,
-                //    ShowArrow = true
-                //});
             }
         }
 
 #if DEBUG
-        if (GUIHelpers.DoToolbarEx("Project Nodes"))
-        {
-            if (InvertGraphEditor.CurrentDiagramViewModel != null)
-                foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.AllGraphItems)
-                {
-                    if (item == null) continue;
-                    GUIHelpers.DoTriggerButton(new UFStyle()
-                    {
-                        Label = item.Label + " " +item.Identifier,
-                        Enabled = true,
-                        BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
-                        TextAnchor = TextAnchor.MiddleRight,
-                        //IconStyle = UBStyles.RemoveButtonStyle,
-                        ShowArrow = true
-                    });
+        //if (GUIHelpers.DoToolbarEx("Project Nodes"))
+        //{
+        //    if (InvertGraphEditor.CurrentDiagramViewModel != null)
+        //        foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.AllGraphItems)
+        //        {
+        //            if (item == null) continue;
+        //            GUIHelpers.DoTriggerButton(new UFStyle()
+        //            {
+        //                Label = item.Label + " " +item.Identifier,
+        //                Enabled = true,
+        //                BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+        //                TextAnchor = TextAnchor.MiddleRight,
+        //                //IconStyle = UBStyles.RemoveButtonStyle,
+        //                ShowArrow = true
+        //            });
 
-                }
-        }
-        if (GUIHelpers.DoToolbarEx("Project Connections"))
-        {
-            if (InvertGraphEditor.CurrentDiagramViewModel != null)
-                foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.Connections)
-                {
-                    if (item.Output == null || item.Input == null) continue;
-                    GUIHelpers.DoTriggerButton(new UFStyle()
-                    {
-                        Label = string.Format("{0} -> {1}", item.Output.Label, item.Input.Label),
-                        Enabled = true,
-                        BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
-                        TextAnchor = TextAnchor.MiddleRight,
-                        //IconStyle = UBStyles.RemoveButtonStyle,
-                        ShowArrow = true
-                    });
+        //        }
+        //}
+        //if (GUIHelpers.DoToolbarEx("Project Connections"))
+        //{
+        //    if (InvertGraphEditor.CurrentDiagramViewModel != null)
+        //        foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.Connections)
+        //        {
+        //            if (item.Output == null || item.Input == null) continue;
+        //            GUIHelpers.DoTriggerButton(new UFStyle()
+        //            {
+        //                Label = string.Format("{0} -> {1}", item.Output.Label, item.Input.Label),
+        //                Enabled = true,
+        //                BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+        //                TextAnchor = TextAnchor.MiddleRight,
+        //                //IconStyle = UBStyles.RemoveButtonStyle,
+        //                ShowArrow = true
+        //            });
 
-                }
-        }
+        //        }
+        //}
  
 #endif
         //if (GUIHelpers.DoToolbarEx("Code Generators"))

@@ -617,5 +617,14 @@ namespace Invert.Core.GraphDesigner
         {
 
         }
+
+        public static void NavigateTo(string identifier)
+        {
+            if (CurrentDiagramViewModel == null) return;
+            ExecuteCommand(_ =>
+            {
+                _.NavigateTo(identifier);
+            });
+        }
     }
 }

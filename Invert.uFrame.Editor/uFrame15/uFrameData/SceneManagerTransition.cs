@@ -174,5 +174,30 @@ public class SceneManagerTransition : IDiagramNodeItem
     {
         ToIdentifier = input.Identifier;
     }
+
+    public IEnumerable<ConnectionData> Inputs
+    {
+        get { yield break; }
+    }
+
+    public IEnumerable<ConnectionData> Outputs
+    {
+        get { yield break; }
+    }
+
+    public bool AllowMultipleInputs
+    {
+        get { return false; }
+    }
+
+    public bool AllowMultipleOutputs
+    {
+        get { return false; }
+    }
+
+    public void OnConnectionApplied(IConnectable output, IConnectable input)
+    {
+        
+    }
 }
 

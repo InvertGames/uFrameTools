@@ -11,9 +11,6 @@ namespace Invert.Core.GraphDesigner
     public class DiagramDrawer : Drawer,  IInputHandler
     {
         public delegate void SelectionChangedEventArgs(IDiagramNode oldData, IDiagramNode newData);
-
-   
-
         public event SelectionChangedEventArgs SelectionChanged;
 
         
@@ -319,7 +316,7 @@ namespace Invert.Core.GraphDesigner
                 return;
 
             }
-            var item = DrawersAtMouse.FirstOrDefault();
+            var item = DrawersAtMouse.OrderByDescending(p=>p.ZOrder).FirstOrDefault();
 
             if (item != null)
             {

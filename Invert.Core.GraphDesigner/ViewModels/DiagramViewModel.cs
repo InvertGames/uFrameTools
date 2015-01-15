@@ -83,6 +83,25 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public void NavigateTo(IDiagramNode node)
+        {
+            //for (var i = 0; i < DiagramData.FilterState.FilterStack.Count; i++)
+            //{
+            //    DiagramData.PopFilter(null);
+                
+            //}
+            DiagramData.FilterState.FilterStack.Clear();
+            DiagramData.FilterState._persistedFilterStack.Clear();
+            var path = node.FilterPath();
+            foreach (var item in path.Skip(1))
+            {
+                
+       
+                DiagramData.PushFilter(item);
+            }
+            node.IsSelected = true;
+        }
+
         public float Scale
         {
             get { return InvertGraphEditor.DesignerWindow.Scale; }
@@ -393,7 +412,7 @@ namespace Invert.Core.GraphDesigner
             {
                 yield return this;
                 yield return DataObject;
-
+                InvertApplication.Log("Invoked");
                 foreach (var nodeItem in GraphItems.Where(p => p.IsMouseOver || p.IsSelected).OfType<ConnectorViewModel>())
                 {
                     yield return nodeItem;
@@ -405,7 +424,7 @@ namespace Invert.Core.GraphDesigner
                     if (nodeItem is DiagramNodeViewModel) continue;
                     yield return nodeItem;
                     yield return nodeItem.DataObject;
-                    
+
                 }
                 foreach (var nodeItem in GraphItems.Where(p => p.IsMouseOver || p.IsSelected).OfType<DiagramNodeViewModel>())
                 {
@@ -440,6 +459,14 @@ namespace Invert.Core.GraphDesigner
         public void CommandExecuting(IEditorCommand command)
         {
 
+        }
+
+        public void NavigateTo(string identifier)
+        {
+            var graphItem = CurrentRepository.AllGraphItems.OfType<IDiagramNodeItem>().FirstOrDefault(p => p.Identifier == identifier);
+            if (graphItem == null) return;
+            var node = graphItem.Node;
+            NavigateTo(node);
         }
     }
 }

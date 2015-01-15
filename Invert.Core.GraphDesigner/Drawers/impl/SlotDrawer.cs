@@ -33,7 +33,7 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform, position);
             var size = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle);
 
-            Bounds = new Rect(position.x + 25, position.y, size.x + 25, 28);
+            Bounds = new Rect(position.x + 15, position.y, size.x + 38, 25);
         
             //if (ViewModel.OutputConnector != null)
             //{
@@ -46,9 +46,10 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
-            ViewModel.ConnectorBounds = new Rect(Bounds.x, Bounds.y, Bounds.width - 50, 28);
+            ViewModel.ConnectorBounds = new Rect(Bounds.x, Bounds.y, Bounds.width - 28, 28);
             var adjusted = new Rect(Bounds);
-            adjusted.width -= 50;
+            adjusted.width -= 40;
+            
             platform.DrawLabel(adjusted.Scale(scale), ViewModel.Name,CachedStyles.HeaderStyle, ViewModel.OutputConnector != null ? DrawingAlignment.MiddleRight : DrawingAlignment.MiddleLeft);
 
             //GUI.Label(adjusted.Scale(scale), ViewModel.Name, guiStyle);

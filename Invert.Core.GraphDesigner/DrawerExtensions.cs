@@ -33,9 +33,6 @@ namespace Invert.Core.GraphDesigner
             container.AddItem<TNodeData>();
             container.RegisterGraphItem<TNodeData, TNodeViewModel, TNodeDrawer>();
             var config = container.GetNodeConfig<TNodeData>();
-            if (config.Tags.Count > 0)
-                return config;
-            config.Tags.Add(name ?? typeof(TNodeData).Name);
             config.Name = name;
             return config;
         }

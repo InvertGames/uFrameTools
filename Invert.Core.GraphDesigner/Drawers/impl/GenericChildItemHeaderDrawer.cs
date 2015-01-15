@@ -34,20 +34,25 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform, position);
             var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 12;
             //ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name)).x + 20);
-
-            Bounds = new Rect(position.x + 12, position.y, width + 20, 25);
+            HeaderBounds = new Rect(position.x - 2, position.y, width + 6, 25);
+            Bounds = new Rect(position.x + 5, position.y, width + 20, 25);
         }
+
+        public Rect HeaderBounds { get; set; }
 
         public Rect _AddButtonRect;
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
-      
+            var b = new Rect(HeaderBounds);
+            b.width = Bounds.width + 4;
+            platform.DrawStretchBox(b.Scale(scale), CachedStyles.Item6, 0f);
+            //platform.DrawStretchBox(Bounds,CachedStyles.Item1, 0);
             _AddButtonRect = new Rect
             {
                 y = Bounds.y + ((Bounds.height/2) - 8),
-                x = (Bounds.x + Bounds.width) - 34,
+                x = (Bounds.x + Bounds.width) - 25,
                 width = 16,
                 height = 16
             };

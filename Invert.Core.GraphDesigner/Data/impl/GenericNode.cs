@@ -10,6 +10,15 @@ namespace Invert.Core.GraphDesigner
     public interface IMultiSlot { }
     public class MultiOutputSlot<TFor> : GenericSlot, IMultiSlot
     {
+        public override bool AllowMultipleInputs
+        {
+            get { return false; }
+        }
+
+        public override bool AllowMultipleOutputs
+        {
+            get { return true; }
+        }
         [Browsable(false)]
         public IEnumerable<TFor> Items
         {
@@ -24,6 +33,15 @@ namespace Invert.Core.GraphDesigner
     }
     public class SingleOutputSlot<TFor> : GenericSlot
     {
+        public override bool AllowMultipleInputs
+        {
+            get { return false; }
+        }
+
+        public override bool AllowMultipleOutputs
+        {
+            get { return false; }
+        }
         [Browsable(false)]
         public TFor Item
         {
@@ -37,6 +55,16 @@ namespace Invert.Core.GraphDesigner
     }
     public class MultiInputSlot<TFor> : GenericSlot, IMultiSlot
     {
+        public override bool AllowMultipleInputs
+        {
+            get { return true; }
+        }
+
+        public override bool AllowMultipleOutputs
+        {
+            get { return false; }
+        }
+
         [Browsable(false)]
         public IEnumerable<TFor> Items
         {
@@ -50,6 +78,15 @@ namespace Invert.Core.GraphDesigner
     }
     public class SingleInputSlot<TFor> : GenericSlot
     {
+        public override bool AllowMultipleInputs
+        {
+            get { return false; }
+        }
+
+        public override bool AllowMultipleOutputs
+        {
+            get { return false; }
+        }
         [Browsable(false)]
         public TFor Item
         {
@@ -84,6 +121,7 @@ namespace Invert.Core.GraphDesigner
 
     public class GenericSlot : GenericNodeChildItem
     {
+        
         public virtual bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
         {
             
@@ -146,6 +184,8 @@ namespace Invert.Core.GraphDesigner
     [Browsable(false)]
     public class GenericNode : DiagramNode, IConnectable
     {
+        
+
         private List<IDiagramNodeItem> _childItems = new List<IDiagramNodeItem>();
         private List<string> _connectedGraphItemIds = new List<string>();
         [Browsable(false)]
@@ -219,36 +259,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-        [Browsable(false)]
-        public IEnumerable<ConnectionData> Inputs
-        {
-            get
-            {
 
-                foreach (var connectionData in Node.Project.Connections)
-                {
-                    if (connectionData.InputIdentifier == this.Identifier)
-                    {
-                        yield return connectionData;
-                    }
-                }
-            }
-        }
-        [Browsable(false)]
-        public IEnumerable<ConnectionData> Outputs
-        {
-            get
-            {
-                foreach (var connectionData in Node.Project.Connections)
-                {
-                    if (connectionData.OutputIdentifier == this.Identifier)
-                    {
-
-                        yield return connectionData;
-                    }
-                }
-            }
-        }
         [Browsable(false)]
         public override IEnumerable<Refactorer> Refactorings
         {
@@ -419,6 +430,10 @@ namespace Invert.Core.GraphDesigner
         public override void Validate(List<ErrorInfo> errors)
         {
             base.Validate(errors);
+            foreach (var slot in AllInputSlots)
+            {
+                slot.Validate(errors);
+            }
             
         }
 

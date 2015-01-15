@@ -109,7 +109,7 @@ namespace Invert.Core.GraphDesigner
         {
             DiagramViewModel = diagramViewModel;
             GraphItemObject = graphItemObject;
-        
+            
             OutputConnectorType = graphItemObject.GetType();
             InputConnectorType = graphItemObject.GetType();
             ToggleNode = new SimpleEditorCommand<DiagramNodeViewModel>(_ =>
@@ -127,9 +127,41 @@ namespace Invert.Core.GraphDesigner
         {
             get { return null; }
         }
+        
         public override ConnectorViewModel InputConnector
         {
-            get { return base.InputConnector; }
+            get
+            {
+                if (!HasInputs)
+                {
+                    return null;
+                }
+                return base.InputConnector;
+            }
+        }
+
+        public override ConnectorViewModel OutputConnector
+        {
+            get
+            {
+                if (!HasOutputs) 
+                    return null;
+                return base.OutputConnector;
+            }
+        }
+
+        public virtual bool HasInputs
+        {
+            get { return true; }
+        }
+        public virtual bool HasOutputs
+        {
+            get { return true; }
+        }
+        protected override ConnectorViewModel CreateInputConnector()
+        {
+            
+            return base.CreateInputConnector();
         }
 
         protected DiagramNodeViewModel()

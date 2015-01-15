@@ -9,6 +9,15 @@ namespace Invert.Core.GraphDesigner
     public class GenericNodeViewModel<TData> : DiagramNodeViewModel<TData> where TData : GenericNode
     {
         private NodeConfig<TData> _nodeConfig;
+        protected override ConnectorViewModel CreateInputConnector()
+        {
+            var connector = base.CreateInputConnector();
+            if (this.DataObject is GenericInheritableNode)
+            {
+                connector.AlwaysVisible = true;
+            }
+            return connector;
+        }
 
         public GenericNodeViewModel()
         {
@@ -29,6 +38,8 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                yield return NodeConfig.Name;
+
                 foreach (var item in GraphItem.Flags)
                 {
                     if (item.Key.StartsWith("_")) continue;
@@ -193,7 +204,7 @@ namespace Invert.Core.GraphDesigner
                 });
             }
 
-            if (section1.GenericSelector != null && section1.ReferenceType == null && section1.IsProxy)
+            if (section1.GenericSelector != null && section1.ReferenceType == null)
             {
                 
                 foreach (var item in section1.GenericSelector(GraphItem).OfType<IDiagramNodeItem>())
@@ -276,15 +287,14 @@ namespace Invert.Core.GraphDesigner
             };
 
             ContentItems.Add(header);
-            ApplyOutputConfiguration(inputConfig, header.DataObject as IGraphItem, header.OutputConnector, inputConfig.AllowMultiple, true);
+            ApplyOutputConfiguration(inputConfig, header.DataObject as IGraphItem, header.OutputConnector,  true);
             header.OutputConnector.Configuration = inputConfig;
             
         }
 
-        private static void ApplyOutputConfiguration(GraphItemConfiguration inputConfig, IGraphItem dataItem, ConnectorViewModel connector, bool allowMultiple, bool alwaysVisible = false)
+        private static void ApplyOutputConfiguration(GraphItemConfiguration inputConfig, IGraphItem dataItem, ConnectorViewModel connector, bool alwaysVisible = false)
         {
             connector.AlwaysVisible = alwaysVisible;
-            connector.AllowMultiple = allowMultiple;
             var slot = dataItem as IDiagramNodeItem;
             if (slot != null)
             {
@@ -306,16 +316,16 @@ namespace Invert.Core.GraphDesigner
             };
             ContentItems.Add(header);
 
-            ApplyInputConfiguration(inputConfig, header.DataObject as IGraphItem,header.InputConnector, inputConfig.AllowMultiple, true);
+            ApplyInputConfiguration(inputConfig, header.DataObject as IGraphItem,header.InputConnector, true);
 
             header.InputConnector.Configuration = inputConfig;
         }
 
-        private static void ApplyInputConfiguration(GraphItemConfiguration inputConfig, IGraphItem dataItem, ConnectorViewModel connector,bool allowMultiple, bool alwaysVisible = false)
+        private static void ApplyInputConfiguration(GraphItemConfiguration inputConfig, IGraphItem dataItem, ConnectorViewModel connector,bool alwaysVisible = false)
         {
 
             connector.AlwaysVisible = alwaysVisible;
-            connector.AllowMultiple = allowMultiple;
+            
             var slot = dataItem as IDiagramNodeItem;
             if (slot != null)
             {

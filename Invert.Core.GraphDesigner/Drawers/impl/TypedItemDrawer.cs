@@ -61,7 +61,7 @@ namespace Invert.Core.GraphDesigner
             //base.Draw(platform, scale);
             platform.DrawColumns(b.Scale(scale),new int[] { Mathf.RoundToInt(_typeSize.x + 5), Mathf.RoundToInt(_nameSize.x) },
                 _ => platform.DoButton(_, TypedItemViewModel.RelatedType, CachedStyles.ClearItemStyle, OptionClicked),
-                _=>DrawName(_, platform,scale,DrawingAlignment.MiddleCenter)
+                _=>DrawName(_, platform,scale,DrawingAlignment.MiddleRight)
                 );
         }
     }

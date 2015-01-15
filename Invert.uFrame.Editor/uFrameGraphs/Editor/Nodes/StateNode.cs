@@ -7,5 +7,10 @@ namespace Invert.uFrame.Editor {
     
     
     public class StateNode : StateNodeBase {
+        public override void Validate(List<ErrorInfo> errors)
+        {
+            base.Validate(errors);
+            
+        }
     }
 }

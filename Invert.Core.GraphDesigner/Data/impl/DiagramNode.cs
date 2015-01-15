@@ -15,7 +15,52 @@ namespace Invert.Core.GraphDesigner
     [Browsable(false)]
     public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter, ITypedItem
     {
-      
+        [Browsable(false)]
+        public IEnumerable<ConnectionData> Inputs
+        {
+            get
+            {
+
+                foreach (var connectionData in Node.Project.Connections)
+                {
+                    if (connectionData.InputIdentifier == this.Identifier)
+                    {
+                        yield return connectionData;
+                    }
+                }
+            }
+        }
+        [Browsable(false)]
+        public IEnumerable<ConnectionData> Outputs
+        {
+            get
+            {
+                foreach (var connectionData in Node.Project.Connections)
+                {
+                    if (connectionData.OutputIdentifier == this.Identifier)
+                    {
+
+                        yield return connectionData;
+                    }
+                }
+            }
+        }
+
+        public virtual bool AllowMultipleInputs
+        {
+            get { return true; }
+        }
+
+        public virtual bool AllowMultipleOutputs
+        {
+            get { return true; }
+        }
+
+        public virtual void OnConnectionApplied(IConnectable output, IConnectable input)
+        {
+            
+        }
+
         private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
 
         private IGraphData _data;
@@ -113,6 +158,7 @@ namespace Invert.Core.GraphDesigner
             {
                 child.Validate(errors);
             }
+            
         }
 
         public IGraphItem Copy()

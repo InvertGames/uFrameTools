@@ -888,7 +888,8 @@ namespace Invert.Common
                     {
                         normal = { textColor = new Color(0.35f, 0.35f, 0.35f) },
                         //padding = new RectOffset(4, 4, 4, 4),
-                        fontSize = Mathf.RoundToInt(11f * Scale),
+                        fontSize = Mathf.RoundToInt(10f * Scale),
+                        fontStyle = FontStyle.Bold,
                         alignment = TextAnchor.MiddleLeft
                     };
                 }
@@ -999,7 +1000,7 @@ namespace Invert.Common
                     {
                         normal = { background = GetSkinTexture("Item6"), textColor = Color.white },
                         stretchHeight = true,
-                        fixedHeight = 18f * Scale,
+                        fixedHeight = 25f * Scale,
                         fontSize = Mathf.RoundToInt(9 * Scale),
                         alignment = TextAnchor.MiddleCenter
                     };

@@ -79,7 +79,7 @@ namespace Invert.Core.GraphDesigner
             private set { _projects = value; }
         }
 
-        [Inject]
+        [Inject] 
         public IAssetManager AssetManager { get; set; }
 
         public override void Initialize(uFrameContainer container)

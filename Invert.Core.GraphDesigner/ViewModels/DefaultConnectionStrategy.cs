@@ -51,7 +51,7 @@ namespace Invert.Core.GraphDesigner
                currentRepository.Connections.Any(
                    p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
         }
-        protected override void ApplyConnection(IGraphData graph, IGraphItem output, IGraphItem input)
+        protected override void ApplyConnection(IGraphData graph, IConnectable output, IConnectable input)
         {
             base.ApplyConnection(graph, output, input);
             ApplyConnection(graph, (TOutputData)output, (TInputData)input);
@@ -133,38 +133,54 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void Apply(ConnectionViewModel connectionViewModel)
         {
-            var output = connectionViewModel.ConnectorA.DataObject as IGraphItem;
-            var input = connectionViewModel.ConnectorB.DataObject as IGraphItem;
+            var output = connectionViewModel.ConnectorA.DataObject as IConnectable;
+            var input = connectionViewModel.ConnectorB.DataObject as IConnectable;
             var diagramData = connectionViewModel.DiagramViewModel.DiagramData;
 
+            if (!output.AllowMultipleOutputs)
+            {
+                var remove = output.Outputs.Where(p => p.Input.GetType().IsAssignableFrom(input.GetType())).ToArray();
+                foreach (var item in remove)
+                {
+                    item.Remove();
+                }
+            }
+            if (!input.AllowMultipleInputs)
+            {
+                var remove = output.Inputs.Where(p => p.Output.GetType().IsAssignableFrom(input.GetType())).ToArray();
+                foreach (var item in remove)
+                {
+                    item.Remove();
+                }
+            }
             //if (!connectionViewModel.ConnectorA.AllowMultiple)
             //{
 
             //    diagramData.ClearOutput(output);
             //}
-            if (!connectionViewModel.ConnectorB.AllowMultiple)
-            {
-                diagramData.ClearInput(input);
-            }
+            //if (!connectionViewModel.ConnectorB.AllowMultiple)
+            //{
+            //    diagramData.ClearInput(input);
+            //}
 
             ApplyConnection(diagramData, output, input);
             
             //base.Apply(connectionViewModel);
         }
 
-        protected virtual void ApplyConnection(IGraphData graph, IGraphItem output, IGraphItem input)
+        protected virtual void ApplyConnection(IGraphData graph, IConnectable output, IConnectable input)
         {
             graph.AddConnection(output, input);
         }
 
-        protected virtual void RemoveConnection(IGraphData graph, IGraphItem output, IGraphItem input)
+        protected virtual void RemoveConnection(IGraphData graph, IConnectable output, IConnectable input)
         {
             graph.RemoveConnection(output, input);
         }
         public virtual void Remove(ConnectionViewModel connectionViewModel)
         {
-            var output = connectionViewModel.ConnectorA.DataObject as IGraphItem;
-            var input = connectionViewModel.ConnectorB.DataObject as IGraphItem;
+            var output = connectionViewModel.ConnectorA.DataObject as IConnectable;
+            var input = connectionViewModel.ConnectorB.DataObject as IConnectable;
 
             RemoveConnection(connectionViewModel.DiagramViewModel.DiagramData,output,input);
 

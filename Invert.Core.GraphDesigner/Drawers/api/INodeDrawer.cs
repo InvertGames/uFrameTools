@@ -56,7 +56,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void Draw(IPlatformDrawer platform, float scale)
         {
-        
+
         }
 
         public virtual void Refresh(IPlatformDrawer platform)
@@ -144,6 +144,11 @@ namespace Invert.Core.GraphDesigner
         public virtual void OnMouseDown(MouseEvent mouseEvent)
         {
         
+        }
+
+        public virtual void OnLayout()
+        {
+            
         }
     }
 

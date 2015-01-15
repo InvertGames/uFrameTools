@@ -80,7 +80,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             get
             {
-                if (_event == null)
+                if (_currentProject == null)
                 {
                     var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
                     if (!String.IsNullOrEmpty(LastLoadedProject))
@@ -760,7 +760,7 @@ namespace Invert.Core.GraphDesigner.Unity
         public void Update()
         {
 
-            if (fpsCount > 30 || (MouseEvent != null && MouseEvent.IsMouseDown))
+            if (fpsCount > 15 || (MouseEvent != null && MouseEvent.IsMouseDown))
             {
                 fpsCount = 0;
                 Repaint();

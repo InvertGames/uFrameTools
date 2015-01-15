@@ -1,7 +1,18 @@
+using System.Collections.Generic;
+using System.Linq;
 using Invert.Core.GraphDesigner;
 
 public class ShellGraphTypeNode : ShellNode
 {
+    public override void Validate(List<ErrorInfo> errors)
+    {
+        base.Validate(errors);
+        if (!RootNodeSlot.Outputs.Any())
+        {
+            errors.AddError("Root node must be specified.");
+        }
+    }
+
     [OutputSlot("Root Node")]
     public SingleOutputSlot<ShellNodeTypeNode> RootNodeSlot { get; set; }
 

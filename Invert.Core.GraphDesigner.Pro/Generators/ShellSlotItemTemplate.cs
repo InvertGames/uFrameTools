@@ -4,6 +4,25 @@ using Invert.Core.GraphDesigner;
 [TemplateClass("Slots", MemberGeneratorLocation.Both, ClassNameFormat = "{0}", IsEditorExtension = true)]
 public class ShellSlotItemTemplate : GenericSlot, IClassTemplate<ShellSlotTypeNode>
 {
+    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    public override bool AllowMultipleInputs
+    {
+        get
+        {
+            Ctx._("return {0}", Ctx.Data.AllowMultipleInputs ? "true" : "false");
+            return base.AllowMultipleInputs;
+        }
+    }
+    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    public override bool AllowMultipleOutputs
+    {
+        get
+        {
+            Ctx._("return {0}", Ctx.Data.AllowMultipleOutputs ? "true" : "false");
+            return base.AllowMultipleOutputs;
+        }
+    }
+
     public void TemplateSetup()
     {
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");

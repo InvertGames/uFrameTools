@@ -133,10 +133,12 @@ namespace Invert.Core.GraphDesigner
 
                 //};
             }
-            if (sectionConfig.IsProxy)
+            if (sectionConfig.IsProxy || referenceSection == null)
             {
 
                 var property1 = property;
+                
+                if (sectionConfig.IsProxy)
                 sectionConfig.AllowAdding = false;
 
                 sectionConfig.GenericSelector = (node) =>
@@ -184,7 +186,6 @@ namespace Invert.Core.GraphDesigner
             var config = new NodeInputConfig()
             {
                 Name = new ConfigProperty<IDiagramNodeItem, string>(slot.Name),
-                AllowMultiple = typeof(IMultiSlot).IsAssignableFrom(property.PropertyType) || slot.AllowMultiple,
                 IsInput = slot is InputSlot,
                 IsOutput = slot is OutputSlot,
                 Visibility = slot.Visibility,
@@ -269,6 +270,8 @@ namespace Invert.Core.GraphDesigner
         {
             OutputGenerators.Add(action);
         }
+
+        public abstract NodeColor GetColor(IGraphItem obj);
     }
 
 

@@ -37,7 +37,7 @@ namespace Invert.Core.GraphDesigner
 
         void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft);
 
-        void DrawPolyLine(Vector2[] lines);
+        void DrawPolyLine(Vector2[] lines, Color color);
 
         void DrawPropertyField(PropertyFieldDrawer propertyFieldDrawer, float scale);
 

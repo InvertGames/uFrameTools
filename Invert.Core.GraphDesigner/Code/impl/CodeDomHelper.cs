@@ -236,7 +236,10 @@ namespace Invert.Core.GraphDesigner
             {
                
             }
-     
+            if (m.IsOverride())
+            {
+                codeProperty.Attributes |= MemberAttributes.Override;
+            }
             return codeProperty;
         }
 
@@ -377,6 +380,7 @@ namespace Invert.Core.GraphDesigner
 
         public static CodeMemberMethod invoke_base(this CodeMemberMethod m, bool insertAtBeginning = false)
         {
+            
             var baseInvoke =
                 new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeBaseReferenceExpression(),
                     m.Name));

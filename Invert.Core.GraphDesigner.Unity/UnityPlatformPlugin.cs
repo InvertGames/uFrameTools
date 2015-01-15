@@ -5,6 +5,7 @@ using System.Text;
 using Invert.Core.GraphDesigner.UnitySpecific;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
@@ -22,6 +23,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         static UnityPlatformPlugin()
         {
+            InvertApplication.CachedAssemblies.Add(typeof(Vector3).Assembly);
             InvertGraphEditor.Prefs = new UnityPlatformPreferences();
             InvertApplication.Logger = new UnityPlatform();
             InvertGraphEditor.Platform = new UnityPlatform();

@@ -30,7 +30,7 @@ namespace Invert.Core.GraphDesigner
             set
             {
                 _color = value;
-                InActiveColor = new Color(value.r,value.g,value.b,0.2f);
+                InActiveColor = new Color(value.r,value.g,value.b,0.8f);
             }
         }
 

@@ -25,10 +25,10 @@ public interface IGraphData : IElementFileData,IItem, ISubscribable<IGraphItemEv
     IProjectRepository Project { get; }
 
     //IEnumerable<ConnectionData> Connections { get; }
-    void AddConnection(IGraphItem output, IGraphItem input);
-    void RemoveConnection(IGraphItem output, IGraphItem input);
-    void ClearOutput(IGraphItem output);
-    void ClearInput(IGraphItem input);
+    void AddConnection(IConnectable output, IConnectable input);
+    void RemoveConnection(IConnectable output, IConnectable input);
+    void ClearOutput(IConnectable output);
+    void ClearInput(IConnectable input); 
     void SetProject(IProjectRepository value);
     void DeserializeFromJson(JSONNode graphData);
     IDiagramFilter CreateDefaultFilter();

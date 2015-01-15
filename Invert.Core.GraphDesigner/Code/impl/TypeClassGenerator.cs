@@ -131,7 +131,7 @@ namespace Invert.Core.GraphDesigner
                 
             var inheritable = Data as GenericInheritableNode;
 
-            if (IsDesignerFile)
+            if (IsDesignerFile && Attribute.Location != MemberGeneratorLocation.DesignerFile)
             {
                 Decleration.Name = ClassNameBase(Data);
                 if (inheritable != null && inheritable.BaseNode != null)
@@ -145,8 +145,12 @@ namespace Invert.Core.GraphDesigner
             else
             {
                 Decleration.Name = ClassName(Data);
-                Decleration.BaseTypes.Clear();
-                Decleration.BaseTypes.Add(ClassNameBase(Data));
+                if (Attribute.Location != MemberGeneratorLocation.DesignerFile)
+                {
+                    Decleration.BaseTypes.Clear();
+                    Decleration.BaseTypes.Add(ClassNameBase(Data));    
+                }
+                
             }
             
             Namespace.Types.Add(Decleration);
@@ -563,10 +567,20 @@ namespace Invert.Core.GraphDesigner
                     }
                 }
             }
+            CurrentStatements = domObject.GetStatements;
+            templateProperty.Key.GetValue(instance, null);
+            if (templateProperty.Key.CanWrite)
+            {
+                CurrentStatements = domObject.SetStatements;
+                templateProperty.Key.SetValue(instance,
+                    GetDefault(templateProperty.Key.PropertyType),
+                    null);
+            }
+
             if (templateProperty.Value.AutoFill == AutoFillType.NameAndTypeWithBackingField ||
                 templateProperty.Value.AutoFill == AutoFillType.NameOnlyWithBackingField)
             {
-                templateProperty.Key.GetValue(instance, null);
+                //templateProperty.Key.GetValue(instance, null);
                 var field = CurrentDecleration._private_(domObject.Type, "_{0}", domObject.Name);
                 domObject.GetStatements._("return {0}", field.Name);
                 domObject.SetStatements._("{0} = value", field.Name);
@@ -574,15 +588,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-               CurrentStatements = domObject.GetStatements;
-                templateProperty.Key.GetValue(instance, null);
-                if (templateProperty.Key.CanWrite)
-                {
-                    CurrentStatements = domObject.SetStatements;
-                    templateProperty.Key.SetValue(instance,
-                        GetDefault(templateProperty.Key.PropertyType),
-                        null);
-                }
+            
                 if (!IsDesignerFile && domObject.Attributes != MemberAttributes.Final && templateProperty.Value.Location == MemberGeneratorLocation.Both)
                 {
                     domObject.Attributes |= MemberAttributes.Override;
@@ -761,11 +767,15 @@ namespace Invert.Core.GraphDesigner
                 dom.Attributes |= MemberAttributes.Override;
                 isOverried = true;
             }
-            if ((info.IsVirtual && !IsDesignerFile) || info.IsOverride())
+            if ((info.IsVirtual && !IsDesignerFile) || (info.IsOverride() && !info.GetBaseDefinition().IsAbstract && IsDesignerFile))
             {
                 if (templateMethod.Value.CallBase)
                 {
-                    dom.invoke_base(true);
+                    //if (!info.IsOverride() || !info.GetBaseDefinition().IsAbstract && IsDesignerFile)
+                    //{ 
+                        dom.invoke_base(true);
+                    //}
+                     
                 }
             }
 
@@ -817,6 +827,7 @@ namespace Invert.Core.GraphDesigner
         public CodeNamespace Namespace { get; set; }
         public void TryAddNamespace(string ns)
         {
+            if (string.IsNullOrEmpty(ns) || string.IsNullOrEmpty(ns.Trim())) return;
             foreach (CodeNamespaceImport n in Namespace.Imports)
             {
                 if (n.Namespace == ns)
@@ -860,8 +871,18 @@ namespace Invert.Core.GraphDesigner
         }
         public void SetTypeArgument(object type, params object[] args)
         {
-   
-            CurrentProperty.SetTypeArgument(type, args);
+            
+            
+            if (CurrentProperty != null)
+            {
+                CurrentProperty.SetTypeArgument(type,args);
+            }
+
+            else if (CurrentMethod != null)
+            {
+                CurrentMethod.ReturnType.TypeArguments.Clear();
+                CurrentMethod.ReturnType.TypeArguments.Add(type.ToCodeReference(args));
+            }
         }
         public void SetType(object type, params object[] args)
         {

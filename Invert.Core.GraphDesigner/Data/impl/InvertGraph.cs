@@ -307,27 +307,32 @@ public class InvertGraph : IGraphData, IItem
         Nodes.Remove(enumData);
     }
 
-    public void AddConnection(IGraphItem output, IGraphItem input)
+    public void AddConnection(IConnectable output, IConnectable input)
     {
-        ConnectedItems.Add(new ConnectionData(output.Identifier,input.Identifier)
+        var connection = new ConnectionData(output.Identifier, input.Identifier)
         {
             Graph = this,
             Output = output,
             Input = input
-        });
+        };
+     
+
+        output.OnConnectionApplied(output, input);
+        input.OnConnectionApplied(output, input);
+        ConnectedItems.Add(connection);
     }
 
-    public void RemoveConnection(IGraphItem output, IGraphItem input)
+    public void RemoveConnection(IConnectable output, IConnectable input)
     {
         ConnectedItems.RemoveAll(p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
     }
 
-    public void ClearOutput(IGraphItem output)
+    public void ClearOutput(IConnectable output)
     {
         ConnectedItems.RemoveAll(p => p.OutputIdentifier == output.Identifier);
     }
 
-    public void ClearInput(IGraphItem input)
+    public void ClearInput(IConnectable input)
     {
         ConnectedItems.RemoveAll(p => p.InputIdentifier == input.Identifier);
     }
@@ -343,8 +348,8 @@ public class InvertGraph : IGraphData, IItem
         foreach (var item in ConnectedItems)
         {
             item.Graph = this;
-            item.Input = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.InputIdentifier);
-            item.Output = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.OutputIdentifier);
+            item.Input = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.InputIdentifier) as IConnectable;
+            item.Output = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.OutputIdentifier) as IConnectable;
         }
         ConnectedItems.RemoveAll(p => p.Output == null || p.Input == null);
 

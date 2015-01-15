@@ -483,16 +483,16 @@ namespace Invert.Core.GraphDesigner
             }
             //if (ViewModel.IsCollapsed)
             //{
-            //    var cb = new Rect(Children[0].Bounds);
-            //    cb.x += 15;
-            //    cb.y += 2;
-            //    cb.width -= 15;
-            //    ViewModelObject.ConnectorBounds = cb;
-            //}
-            //else
-            //{
-                ViewModel.ConnectorBounds = Children[0].Bounds;
-           // }
+            var cb = new Rect(Children[0].Bounds);
+            cb.x += 15;
+            cb.y += 1;
+            cb.width -=13;
+           // ViewModelObject.ConnectorBounds = cb;
+           // //}
+           // //else
+           // //{
+                ViewModel.ConnectorBounds = cb;
+           //// }
             
            
 
@@ -518,11 +518,11 @@ namespace Invert.Core.GraphDesigner
                 height += item.Bounds.height;
             }
 
-
             foreach (var cachedDrawer in Children)
             {
                 cachedDrawer.Bounds = new Rect(cachedDrawer.Bounds) {width = minWidth};
                 cachedDrawer.Dirty = false;
+                cachedDrawer.OnLayout();
             }
             return height;
         }

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Invert.Core.GraphDesigner
 {
-    public interface IDiagramNodeItem : ISelectable, IJsonObject,IItem
+    public interface IDiagramNodeItem : ISelectable, IJsonObject, IItem, IConnectable
     {
         string Name { get; set; }
         string Highlighter { get; }

@@ -21,5 +21,24 @@ public class ShellChildItemTemplate : GenericNodeChildItem,
     }
 
     public TemplateContext<ShellNodeChildTypeNode> Ctx { get; set; }
+
+    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    public override bool AllowMultipleInputs
+    {
+        get
+        {
+            Ctx._("return {0}", Ctx.Data.AllowMultipleInputs ? "true" : "false");
+            return base.AllowMultipleInputs;
+        }
+    }
+    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    public override bool AllowMultipleOutputs
+    {
+        get
+        {
+            Ctx._("return {0}", Ctx.Data.AllowMultipleOutputs ? "true" : "false");
+            return base.AllowMultipleOutputs;
+        }
+    }
 }
 

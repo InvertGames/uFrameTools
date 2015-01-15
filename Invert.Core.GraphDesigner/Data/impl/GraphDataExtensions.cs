@@ -29,6 +29,38 @@ namespace Invert.Core.GraphDesigner
         //    return t.GetDiagramItems().OfType<ElementDataBase>();
         //}
 
+        public static IDiagramFilter Container(this IDiagramNode node)
+        {
+            var container = node.Project.NodeItems.OfType<IDiagramFilter>()
+                .FirstOrDefault(p => p.GetContainingNodes(node.Project).Contains(node));
+            return container;
+        }
+
+
+
+        public static IEnumerable<IDiagramFilter> FilterPath(this IDiagramNode node)
+        {
+            return FilterPathInternal(node).Reverse();
+        }
+
+        private static IEnumerable<IDiagramFilter> FilterPathInternal(IDiagramNode node)
+        {
+            var container = node.Container();
+            while (container != null)
+            {
+                yield return container;
+                var filterNode = container as IDiagramNode;
+                if (filterNode != null)
+                {
+                    container = filterNode.Container();
+                }
+                else
+                {
+                    break;
+                }
+
+            }
+        }
         public static IEnumerable<IDiagramFilter> GetFilterPath(this IGraphData t)
         {
             return t.FilterState.FilterStack.Reverse();
@@ -250,6 +282,11 @@ namespace Invert.Core.GraphDesigner
 
         public static IDiagramNode RelatedNode(this ITypedItem item)
         {
+            var gt = item as GenericTypedChildItem;
+            if (gt != null)
+            {
+                return gt.RelatedTypeNode;
+            }
             return item.Node.Project.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
         }
 

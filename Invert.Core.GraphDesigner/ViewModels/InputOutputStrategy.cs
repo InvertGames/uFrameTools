@@ -325,7 +325,7 @@ namespace Invert.Core.GraphDesigner
                         Name = item.Name + "->" + input.Name,
                         ConnectorA = item,
                         ConnectorB = input,
-                        Color = new Color(0.3f,0.4f,0.75f),
+                        Color = info.GetColor(input.ConnectorFor.DataObject as IGraphItem),
                         InActiveColor = new Color(0.3f, 0.4f, 0.75f,0.1f),
                     });
                 }

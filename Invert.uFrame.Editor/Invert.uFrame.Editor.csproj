@@ -114,6 +114,7 @@
     <Compile Include="uFrameGraphs\Editor\Sections\StateMachineTransitionChildItem.cs" />
     <Compile Include="uFrameGraphs\Editor\Sections\StateTransitionReference.cs" />
     <Compile Include="uFrameGraphs\Editor\Sections\ViewBindingsReference.cs" />
+    <Compile Include="uFrameGraphs\Editor\Slots\ElementInputSlot.cs" />
     <Compile Include="uFrameGraphs\Editor\Slots\ExportSubSystemSlot.cs" />
     <Compile Include="uFrameGraphs\Editor\Slots\ImportSubSystemSlot.cs" />
     <Compile Include="uFrameGraphs\Editor\Slots\ScenePropertiesSlot.cs" />

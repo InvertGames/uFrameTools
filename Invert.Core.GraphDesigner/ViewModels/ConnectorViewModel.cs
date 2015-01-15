@@ -28,7 +28,6 @@ namespace Invert.Core.GraphDesigner
 
         public GraphItemViewModel ConnectorFor { get; set; }
 
-        public bool AllowMultiple { get; set; }
         public Func<IDiagramNodeItem, IDiagramNodeItem, bool> Validator { get; set; }
 
         public NodeInputConfig Configuration { get; set; }

@@ -299,22 +299,22 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         get { return Graph.Project; }
     }
 
-    public void AddConnection(IGraphItem output, IGraphItem input)
+    public void AddConnection(IConnectable output, IConnectable input)
     {
         Graph.AddConnection(output, input);
     }
 
-    public void RemoveConnection(IGraphItem output, IGraphItem input)
+    public void RemoveConnection(IConnectable output, IConnectable input)
     {
         Graph.RemoveConnection(output, input);
     }
 
-    public void ClearOutput(IGraphItem output)
+    public void ClearOutput(IConnectable output)
     {
         Graph.ClearOutput(output);
     }
 
-    public void ClearInput(IGraphItem input)
+    public void ClearInput(IConnectable input)
     {
         Graph.ClearInput(input);
     }

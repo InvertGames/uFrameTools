@@ -1,12 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class GenericNodeChildItem : DiagramNodeItem, IConnectable
+    public class GenericNodeChildItem : DiagramNodeItem
     {
+        public override void OnConnectionApplied(IConnectable output, IConnectable input)
+        {
+            base.OnConnectionApplied(output, input);
+    
+        }
+
         public override string FullLabel
         {
             get { return Name; }
@@ -76,43 +83,6 @@ namespace Invert.Core.GraphDesigner
         //}
 
 
-        public IEnumerable<ConnectionData> Inputs
-        {
-            get
-            {
-                if (Node == null)
-                {
-                    throw new Exception("NODE IS NULL");
-                }
-                foreach (var connectionData in Node.Project.Connections)
-                {
-                    if (connectionData.InputIdentifier == this.Identifier)
-                    {
-                        yield return connectionData;
-                    }
-                }
-            }
-        }
-        public IEnumerable<ConnectionData> Outputs
-        {
-            get
-            {
-                //if (Node == null) yield break;
-                //if (Node.Project == null) yield break;
-                if (Node == null)
-                {
-                    throw new Exception("NODE IS NULL");
-                }
-                foreach (var connectionData in Node.Project.Connections)
-                {
-                    if (connectionData.OutputIdentifier == this.Identifier)
-                    {
-
-                        yield return connectionData;
-                    }
-                }
-            }
-        }
 
     }
 }

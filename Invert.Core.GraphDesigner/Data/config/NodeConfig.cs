@@ -181,7 +181,14 @@ namespace Invert.Core.GraphDesigner
 
 
 
-
+        public override NodeColor GetColor(IGraphItem obj)
+        {
+            if (NodeColor == null)
+            {
+                return GraphDesigner.NodeColor.Gray;
+            }
+            return NodeColor.Literal;
+        }
 
 
         public ConfigProperty<TNode, NodeColor> NodeColor
@@ -298,7 +305,6 @@ namespace Invert.Core.GraphDesigner
                 IsOutput = false,
                 ReferenceType = typeof(TReferenceType),
                 SourceType = typeof(TSourceType),
-                AllowMultiple = allowMultiple,
                 Validator = validator
             };
             GraphItemConfigurations.Add(config);
@@ -316,7 +322,6 @@ namespace Invert.Core.GraphDesigner
                 IsOutput = false,
                 ReferenceType = typeof(TReferenceType),
                 SourceType = typeof(TSourceType),
-                AllowMultiple = allowMultiple,
                 Validator = validator
             };
             GraphItemConfigurations.Add(config);
@@ -351,7 +356,6 @@ namespace Invert.Core.GraphDesigner
                 IsOutput = true,
                 ReferenceType = typeof(TReferenceType),
                 SourceType = typeof(TSourceType),
-                AllowMultiple = allowMultiple,
                 Validator = validator
             };
             GraphItemConfigurations.Add(config);
@@ -370,7 +374,6 @@ namespace Invert.Core.GraphDesigner
                 IsOutput = true,
                 ReferenceType = typeof(TReferenceType),
                 SourceType = typeof(TSourceType),
-                AllowMultiple = allowMultiple,
                 Validator = validator
             };
             GraphItemConfigurations.Add(config);

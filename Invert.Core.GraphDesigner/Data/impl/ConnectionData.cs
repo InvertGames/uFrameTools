@@ -31,8 +31,13 @@ public class ConnectionData : IJsonObject
     }
 
     public IGraphData Graph { get; set; }
-    public IGraphItem Output { get; set; }
-    public IGraphItem Input { get; set; }
+    public IConnectable Output { get; set; }
+    public IConnectable Input { get; set; }
+
+    public void Remove()
+    {
+        Graph.RemoveConnection(Output,Input);
+    }
 
     public void Serialize(JSONClass cls)
     {

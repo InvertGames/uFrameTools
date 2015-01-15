@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 
@@ -23,8 +24,20 @@ namespace Invert.uFrame.Editor {
         {
             get
             {
+                var element = ((ElementViewNode) Node).Element;
+                if (element == null) return null;
                 return
-                    ((ElementViewNode) Node).Element.PersistedItems.FirstOrDefault(p => p.Identifier == SourceIdentifier);
+                    element.PersistedItems.FirstOrDefault(p => p.Identifier == SourceIdentifier);
+            }
+        }
+
+        public override void Validate(List<ErrorInfo> info)
+        {
+            base.Validate(info);
+            if (SourceItemObject == null)
+            {
+                info.AddError("Binding property could not be found.", this.Identifier,
+                    () => this.Node.Project.RemoveItem(this));
             }
         }
 
@@ -48,6 +61,10 @@ namespace Invert.uFrame.Editor {
         {
             get
             {
+                if (SourceItem == null)
+                {
+                    return "Error: Bindable Not Found";
+                }
                 return string.Format(BindingType.DisplayFormat, SourceItem.Name);
             }
         }

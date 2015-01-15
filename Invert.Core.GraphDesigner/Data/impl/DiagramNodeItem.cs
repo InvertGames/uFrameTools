@@ -273,4 +273,58 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         //if (arg1.GetType() == arg2.GetType()) return false;
         return true;
     }
+
+
+    public IEnumerable<ConnectionData> Inputs
+    {
+        get
+        {
+            if (Node == null)
+            {
+                throw new Exception("NODE IS NULL");
+            }
+            foreach (var connectionData in Node.Project.Connections)
+            {
+                if (connectionData.InputIdentifier == this.Identifier)
+                {
+                    yield return connectionData;
+                }
+            }
+        }
+    }
+    public IEnumerable<ConnectionData> Outputs
+    {
+        get
+        {
+            //if (Node == null) yield break;
+            //if (Node.Project == null) yield break;
+            if (Node == null)
+            {
+                throw new Exception("NODE IS NULL");
+            }
+            foreach (var connectionData in Node.Project.Connections)
+            {
+                if (connectionData.OutputIdentifier == this.Identifier)
+                {
+
+                    yield return connectionData;
+                }
+            }
+        }
+    }
+
+    public virtual bool AllowMultipleInputs
+    {
+        get { return true; }
+    }
+
+    public virtual bool AllowMultipleOutputs
+    {
+        get { return true; }
+    }
+
+    public virtual void OnConnectionApplied(IConnectable output, IConnectable input)
+    {
+        
+    }
 }

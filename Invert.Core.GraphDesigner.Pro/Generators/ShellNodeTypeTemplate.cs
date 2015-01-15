@@ -28,7 +28,24 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         }
 
     }
-
+    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    public override bool AllowMultipleInputs
+    {
+        get
+        {
+            Ctx._("return {0}", Ctx.Data.AllowMultipleInputs ? "true" : "false");
+            return base.AllowMultipleInputs;
+        }
+    }
+    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    public override bool AllowMultipleOutputs
+    {
+        get
+        {
+            Ctx._("return {0}", Ctx.Data.AllowMultipleOutputs ? "true" : "false");
+            return base.AllowMultipleOutputs;
+        }
+    }
     [TemplateProperty("Possible{0}",AutoFillType.NameOnly)]
     public virtual IEnumerable<GenericReferenceItem> PossibleReferenceItems
     {

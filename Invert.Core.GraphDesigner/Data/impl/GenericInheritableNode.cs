@@ -6,18 +6,19 @@ namespace Invert.Core.GraphDesigner
 {
     public class GenericInheritableNode : GenericNode, IInhertable
     {
+        public sealed override bool AllowMultipleOutputs
+        {
+            get { return true; }
+        }
+
+
         private BaseClassReference _baseReference;
         [Browsable(false)]
         public GenericInheritableNode BaseNode
         {
             get
             {
-                return BaseReference.InputFrom<GenericInheritableNode>();
-            }
-            set
-            {
-                Graph.ClearInput(BaseReference);
-                Graph.AddConnection(value,BaseReference);
+                return this.InputFrom<GenericInheritableNode>();
             }
         }
         [Browsable(false)]
@@ -38,8 +39,8 @@ namespace Invert.Core.GraphDesigner
         {
             get { return BaseNodesWithThis.SelectMany(p => p.ChildItems); }
         }
-            
-            [Browsable(false)]
+
+        [Browsable(false)]
         public IEnumerable<GenericInheritableNode> BaseNodesWithThis
         {
             get
@@ -69,34 +70,34 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-        [Browsable(false)]
-        [InputSlot("Base Class",OrderIndex = -1)]
-        public BaseClassReference BaseReference
-        {
-            get { return _baseReference ?? (_baseReference = new BaseClassReference() { Node = this }); }
-            set { _baseReference = value; }
-        }
+        //[Browsable(false)]
+        ////[InputSlot("Base Class", OrderIndex = -1)]
+        //public BaseClassReference BaseReference
+        //{
+        //    get { return _baseReference ?? (_baseReference = new BaseClassReference() { Node = this }); }
+        //    set { _baseReference = value; }
+        //}
 
         public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
         {
-            if (b is BaseClassReference)
+            if (b is GenericInheritableNode)
             {
-                if (a.GetType() != b.Node.GetType()) return false;
+                if (a.GetType() != b.GetType()) return false;
             }
-            
+
             return base.ValidateInput(a, b);
         }
 
         public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
         {
-            if (b is BaseClassReference)
+            if (b is GenericInheritableNode)
             {
-                if (BaseNodes.Any(p => p == b.Node)) return false;
+                if (BaseNodes.Any(p => p == b)) return false;
 
-                if (a.Node == b.Node) return false; // Can't inherit from the same item
-                if (a.GetType() != b.Node.GetType()) return false; // Can't inherit from another type    
+                if (a == b) return false; // Can't inherit from the same item
+                if (a.GetType() != b.GetType()) return false; // Can't inherit from another type    
             }
-            
+
             return base.ValidateOutput(a, b);
         }
     }

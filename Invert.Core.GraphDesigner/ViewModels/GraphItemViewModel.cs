@@ -102,20 +102,25 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 if (DataObject == null) return null;
-                return _inputConnector ?? (_inputConnector = new ConnectorViewModel()
-                {
-                    DataObject = DataObject,
-                    Direction = ConnectorDirection.Input,
-                    ConnectorFor = this,
-                    DiagramViewModel = DiagramViewModel,
-                    ConnectorForType = InputConnectorType ?? DataObject.GetType(),
-                    Side = ConnectorSide.Left,
-                    SidePercentage = 0.5f,
-                    AllowMultiple = true,
-                    Validator = InputValidator
-                });
+                return _inputConnector ?? (_inputConnector = CreateInputConnector());
             }
         }
+
+        protected virtual ConnectorViewModel CreateInputConnector()
+        {
+            return new ConnectorViewModel()
+            {
+                DataObject = DataObject,
+                Direction = ConnectorDirection.Input,
+                ConnectorFor = this,
+                DiagramViewModel = DiagramViewModel,
+                ConnectorForType = InputConnectorType ?? DataObject.GetType(),
+                Side = ConnectorSide.Left,
+                SidePercentage = 0.5f,
+                Validator = InputValidator
+            };
+        }
+
         private ConnectorViewModel _outputConnector;
         private Rect _bounds;
         private Rect _connectorBounds;
@@ -129,19 +134,23 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 if (DataObject == null) return null;
-                return _outputConnector ?? (_outputConnector = new ConnectorViewModel()
-                {
-                    DataObject = DataObject,
-                    Direction = ConnectorDirection.Output,
-                    ConnectorFor = this,
-                    DiagramViewModel = DiagramViewModel,
-                    ConnectorForType = OutputConnectorType ?? DataObject.GetType(),
-                    Side = ConnectorSide.Right,
-                    SidePercentage = 0.5f,
-                    AllowMultiple = true,
-                    Validator = OutputValidator
-                });
+                return _outputConnector ?? (_outputConnector = CreateOutputConnector());
             }
+        }
+
+        protected virtual ConnectorViewModel CreateOutputConnector()
+        {
+            return new ConnectorViewModel()
+            {
+                DataObject = DataObject,
+                Direction = ConnectorDirection.Output,
+                ConnectorFor = this,
+                DiagramViewModel = DiagramViewModel,
+                ConnectorForType = OutputConnectorType ?? DataObject.GetType(),
+                Side = ConnectorSide.Right,
+                SidePercentage = 0.5f,
+                Validator = OutputValidator
+            };
         }
 
         /// <summary>

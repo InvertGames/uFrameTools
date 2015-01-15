@@ -109,6 +109,15 @@ namespace Invert.Core.GraphDesigner
 
         }
 
+        public override void OnLayout()
+        {
+            base.OnLayout();
+            var cb = new Rect(Bounds);
+            cb.x += 16;
+            cb.width -= 14;
+            ViewModelObject.ConnectorBounds = cb;
+        }
+
         public virtual void DrawOption()
         {
 
@@ -125,7 +134,7 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
-         
+            
             DrawBackground(platform,scale);
             DrawName(Bounds, platform, scale);
 

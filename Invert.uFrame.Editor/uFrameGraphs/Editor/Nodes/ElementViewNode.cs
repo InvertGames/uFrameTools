@@ -33,11 +33,30 @@ namespace Invert.uFrame.Editor
             }
         }
 
+        public override void Validate(List<ErrorInfo> errors)
+        {
+            base.Validate(errors);
+            if (Element == null)
+            {
+                errors.AddError("This view must have an element.", this.Identifier, () =>
+                {
+                    var node = Project.NodeItems.OfType<IDiagramFilter>()
+                        .FirstOrDefault(p => p.GetContainingNodes(this.Project).Contains(this)) as ElementNode;
+                    if (node != null)
+                    {
+                        Graph.AddConnection(node, ElementInputSlot);
+                    }
+                    
+                });
+            }
+        }
+
         public ElementNode Element
         {
             get
             {
-                var elementNode = this.InputFrom<ElementNode>();
+
+                var elementNode = ElementInputSlot.Item as ElementNode;
                 if (elementNode == null)
                 {
                     var baseView = BaseNode as ElementViewNode;
@@ -55,5 +74,14 @@ namespace Invert.uFrame.Editor
                 return null;
             }
         }
+
+        public IEnumerable<PropertyChildItem> SceneProperties
+        {
+            get
+            {
+                return ScenePropertiesInputSlot.InputsFrom<PropertyChildItem>();
+            }
+        }
+
     }
 }

@@ -6,7 +6,7 @@ namespace Invert.Core.GraphDesigner
 {
     public class NodeInputConfig : GraphItemConfiguration
     {
-        public bool AllowMultiple { get; set; }
+        //public bool AllowMultiple { get; set; }
         public ConfigProperty<IDiagramNodeItem, string> Name
         {
             get { return _name; }

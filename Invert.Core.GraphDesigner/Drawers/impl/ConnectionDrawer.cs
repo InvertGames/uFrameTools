@@ -65,8 +65,8 @@ namespace Invert.Core.GraphDesigner
             points.Add(_endPos);
             var scaled = points.Select(p => new Vector2(p.x * scale,p.y * scale)).ToArray();
 
-            platform.DrawPolyLine(scaled);
-            platform.DrawPolyLine(scaled.Select(p => p + new Vector2(1f, 1f)).ToArray());
+            platform.DrawPolyLine(scaled, ViewModel.CurrentColor);
+            platform.DrawPolyLine(scaled.Select(p => p + new Vector2(1f, 1f)).ToArray(), ViewModel.CurrentColor);
         
         
         }
