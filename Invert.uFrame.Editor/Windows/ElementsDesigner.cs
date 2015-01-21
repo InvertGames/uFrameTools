@@ -211,7 +211,7 @@ namespace Invert.uFrame.Editor
             window.title = "uFrame";
             //uFrameEditor.ProjectChanged += window.UFrameEditorOnProjectChanged;
             //window.DesignerViewModel = uFrameEditor.Application.Designer;
-
+            
             //var repo = new ElementsDataRepository();
             //var diagram = new ElementsDiagram(repo);
             //diagram.Data.ViewModels.Add(repo.GetViewModel(typeof(FPSWeaponViewModel)));

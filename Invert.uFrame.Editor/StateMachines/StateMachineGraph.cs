@@ -26,24 +26,15 @@ public class GraphData<T> : GraphData where T : IDiagramFilter, new()
 
 public class ExternalSubsystemGraph : GraphData<SubSystemData>
 {
-    public override string Name
-    {
-        get { return RootFilter.Name; }
-    }
+    
 }
 
 public class ExternalElementGraph : GraphData<ElementData>
 {
-    public override string Name
-    {
-        get { return RootFilter.Name; }
-    }
+
 }
 
 public class ExternalStateMachineGraph : GraphData<StateMachineNodeData>
 {
-    public override string Name
-    {
-        get { return RootFilter.Name; }
-    }
+
 }

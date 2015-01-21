@@ -96,6 +96,7 @@ public class GraphData : ScriptableObject, IGraphData, ISerializationCallbackRec
     public virtual string Name
     {
         get { return Regex.Replace(name, "[^a-zA-Z0-9_.]+", ""); }
+        set { name = value; }
     }
      
     public string Namespace { get; set; }

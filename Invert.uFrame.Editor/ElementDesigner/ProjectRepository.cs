@@ -81,13 +81,13 @@ public class ProjectRepositoryInspector : Editor
             EditorGUILayout.PropertyField(property);
 
 
-            property = settingsProperty.FindPropertyRelative("_generateComments");
-            var newValue = GUIHelpers.DoToggle("Generate Comments", property.boolValue);
-            if (newValue != property.boolValue)
-            {
-                property.boolValue = newValue;
+            //property = settingsProperty.FindPropertyRelative("_generateComments");
+            //var newValue = GUIHelpers.DoToggle("Generate Comments", property.boolValue);
+            //if (newValue != property.boolValue)
+            //{
+            //    property.boolValue = newValue;
 
-            }
+           // }
         }
         if (GUIHelpers.DoToolbarEx("Code Generators"))
         {

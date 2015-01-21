@@ -14,6 +14,10 @@ public class StateMachineClassGenerator : CodeGenerator
     public override void Initialize(CodeFileGenerator fileGenerator)
     {
         base.Initialize(fileGenerator);
+        if (!Data.HasStartingState)
+        {
+            UnityEngine.Debug.Log("You don't have a starting state for ");
+        }
         Namespace.Imports.Add(new CodeNamespaceImport("Invert.StateMachine"));
         BaseTypeDecleration = new CodeTypeDeclaration(Data.Name);
 
@@ -44,7 +48,7 @@ public class StateMachineClassGenerator : CodeGenerator
             BaseTypeDecleration.Name += "Base";
 
 
-            var startState = Data.StartState;
+            var startState = Data.StartState ?? Data.States.FirstOrDefault();
             if (startState != null)
             {
                 StartStateProperty = new CodeMemberProperty()

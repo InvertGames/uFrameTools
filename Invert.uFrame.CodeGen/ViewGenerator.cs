@@ -24,7 +24,7 @@ public class ViewGenerator : ViewClassGenerator
 
         //AddViewBase();
 
-        Decleration =  new CodeTypeDeclaration(View.NameAsView) { IsPartial = true };
+        Decleration = new CodeTypeDeclaration(View.NameAsView) { IsPartial = true };
         if (View.ViewForElement != null)
         {
             if (View.ViewForElement.IsTemplate)
@@ -104,7 +104,7 @@ public class ViewGenerator : ViewClassGenerator
         }
         else
         {
-            foreach (var bindingGenerator in view.NewBindings.Select(p=>p.Generator))
+            foreach (var bindingGenerator in view.NewBindings.Select(p => p.Generator))
             {
                 bindingGenerator.CreateMembers(decl.Members);
             }
@@ -164,7 +164,7 @@ public class ViewViewBaseGenerator : ViewClassGenerator
         //Decleration.Members.Add(bindMethod);
         AddComponentReferences(Decleration);
         AddBindingMembers();
-        
+
         //foreach (var viewBindingExtender in BindingExtenders)
         //{
         //    viewBindingExtender.ExtendViewBase(Decleration, View);
@@ -179,23 +179,27 @@ public class ViewViewBaseGenerator : ViewClassGenerator
         // Make sure we only generate a view model property for whats needed
         if (View.BaseView != null)
         {
-            AddViewModelProperty(forElement);
-          
-            AddInitializeViewModelMethod(forElement);
-            AddExecuteMethods(forElement, Decleration);
-            AddViewModelTypeProperty(forElement);
+            if (View.BaseView.ViewForElement != View.ViewForElement)
+            {
+                AddViewModelProperty(forElement);
+                AddInitializeViewModelMethod(forElement);  
+                AddExecuteMethods(forElement, Decleration);    
+                AddViewModelTypeProperty(forElement);
+            }
+
             if (forElement.IsRegistered)
             {
                 AddDefaultIdentifierProperty(forElement);
             }
         }
+
         //CreateUpdateMethod(View, Decleration);
         Namespace.Types.Add(Decleration);
     }
     protected void AddComponentReferences(CodeTypeDeclaration decl)
     {
-        
-        
+
+
         foreach (var viewComponentData in this.View.ViewComponents)
         {
             //decl.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof (RequireComponent)),
@@ -232,6 +236,7 @@ public class ViewViewBaseGenerator : ViewClassGenerator
 
         foreach (var bindingGenerator in bindingGenerators)
         {
+
             bindingGenerator.IsOverride = !IsDesignerFile;
             bindingGenerator.CreateMembers(Decleration.Members);
         }

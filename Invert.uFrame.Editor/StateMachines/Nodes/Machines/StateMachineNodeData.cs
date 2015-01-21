@@ -78,9 +78,16 @@ public class StateMachineNodeData : DiagramNode,IDesignerType
 
     public StateMachineStateData StartState
     {
-        get { return States.FirstOrDefault(p => p.Identifier == StartStateIdentifier); }
+        get { return States.FirstOrDefault(p => p.Identifier == StartStateIdentifier) ?? States.FirstOrDefault(); }
     }
 
+    public bool HasStartingState
+    {
+        get
+        {
+            return States.Any(p => p.Identifier == StartStateIdentifier);
+        }
+    }
     public string StartStateIdentifier { get; set; }
     public override void Serialize(Invert.uFrame.Editor.JSONClass cls)
     {

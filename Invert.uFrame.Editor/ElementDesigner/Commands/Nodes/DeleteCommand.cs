@@ -45,7 +45,11 @@ namespace Invert.uFrame.Editor.ElementDesigner.Commands
             }
             if (EditorUtility.DisplayDialog("Confirm", "Are you sure you want to delete this?", "Yes", "No"))
             {
-                node.CurrentRepository.RemoveNode(selected.GraphItemObject);
+                uFrameEditor.ExecuteCommand((d) =>
+                {
+                    node.CurrentRepository.RemoveNode(selected.GraphItemObject);
+                });
+                
                 if (customFileFullPaths.Length > 0)
                 {
                     if (EditorUtility.DisplayDialog("Confirm",

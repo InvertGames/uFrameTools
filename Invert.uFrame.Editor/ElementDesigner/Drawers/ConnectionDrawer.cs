@@ -80,9 +80,11 @@ public class ConnectionDrawer : Drawer<ConnectionViewModel>
         var multiplier = Mathf.Min(30f, (_endPos.x - _startPos.x)*0.3f);
 
 
-        var m2 = 3;
+        var m2 = 5;
         if (multiplier < 0)
         {
+            multiplier = -15f;
+            m2 = 20;
             _startRight = !_startRight;
             _endRight = !_endRight;
         }

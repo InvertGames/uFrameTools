@@ -262,7 +262,7 @@ public class ViewModelGenerator : ElementCodeGenerator
     {
         var element = ElementData;
         var stateMachines =
-            ElementData.Properties.Select(p => p.RelatedNode()).OfType<StateMachineNodeData>().ToArray();
+            ElementData.AllProperties.Select(p => p.RelatedNode()).OfType<StateMachineNodeData>().ToArray();
         var properties = ElementData.ViewModelItems.ToArray();
 
         foreach (var stateMachine in stateMachines)
@@ -761,10 +761,10 @@ public class ViewModelGenerator : ElementCodeGenerator
                     new CodeParameterDeclarationExpression(
                         "System.Collections.Specialized.NotifyCollectionChangedEventArgs", "args"));
 
-                collectionChangedMethod.Statements.Add(
-                    new CodeExpressionStatement(
-                        new CodeSnippetExpression(
-                            string.Format("foreach (var item in args.OldItems.OfType<{0}>()) item.Parent{1} = null;", relatedElement.NameAsViewModel, data.Name))));
+                //collectionChangedMethod.Statements.Add(
+                //    new CodeExpressionStatement(
+                //        new CodeSnippetExpression(
+                //            string.Format("foreach (var item in args.OldItems.OfType<{0}>()) item.Parent{1} = null;", relatedElement.NameAsViewModel, data.Name))));
                 collectionChangedMethod.Statements.Add(
                     new CodeExpressionStatement(
                         new CodeSnippetExpression(
@@ -856,12 +856,17 @@ public class ViewModelGenerator : ElementCodeGenerator
                         new CodeConditionStatement(
                             new CodeSnippetExpression(string.Format("{0}.Value != null", dependent.FieldName)));
 
-
+                    var hasChildDependant = false;
                     foreach (var item in relatedElement.AllProperties)
                     {
                         if (!computedProperty[item.Identifier]) continue;
                         condition.TrueStatements.Add(new CodeSnippetExpression(string.Format("yield return {0}.Value.{1}", dependent.FieldName,item.FieldName)));
-
+                        hasChildDependant = true;
+                    }
+                    if (!hasChildDependant)
+                    {
+                        condition.TrueStatements.Add(
+                            new CodeSnippetExpression(string.Format("yield return {0}", dependent.FieldName)));
                     }
                     dependentsMethods.Statements.Add(condition);
                 }

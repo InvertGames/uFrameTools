@@ -79,8 +79,8 @@ namespace Invert.uFrame.Code.Bindings
             }
             else
             {
-                createHandlerMethod.Statements.Add(
-                   new CodeMethodReturnStatement(new CodeSnippetExpression(string.Format("base.{0}({1})", createHandlerMethod.Name, VarName))));
+                //createHandlerMethod.Statements.Add(
+                //   new CodeMethodReturnStatement(new CodeSnippetExpression(string.Format("base.{0}({1})", createHandlerMethod.Name, VarName))));
                 
             }
             collection.Add(createHandlerMethod);

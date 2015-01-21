@@ -86,6 +86,30 @@ public static class SubsystemExtensions
 [Serializable]
 public class SubSystemData : DiagramNode
 {
+    public override string Name
+    {
+        get
+        {
+            if (this.Diagram != null && this.Diagram.RootFilter == this)
+            {
+                return this.Diagram.Name;
+            }
+            return base.Name;
+        }
+        set { base.Name = value; }
+    }
+
+    public override void MoveItemDown(IDiagramNodeItem nodeItem)
+    {
+        base.MoveItemDown(nodeItem); Instances.Move(Instances.IndexOf(nodeItem as RegisteredInstanceData), false);
+    }
+
+    public override void MoveItemUp(IDiagramNodeItem nodeItem)
+    {
+        base.MoveItemUp(nodeItem);
+        Instances.Move(Instances.IndexOf(nodeItem as RegisteredInstanceData),true);
+    }
+
     public IEnumerable<RegisteredInstanceData> AllInstances
     {
         get { return this.GetAllImportedSubSystems().Concat(new[] {this}).SelectMany(p => p.Instances).Reverse(); }

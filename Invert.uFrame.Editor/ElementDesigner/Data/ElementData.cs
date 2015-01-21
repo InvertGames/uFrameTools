@@ -151,7 +151,7 @@ public class ElementData : ElementDataBase, IDesignerType
 
             var baseElement = BaseElement;
             if (baseElement != null)
-                foreach (var baseItem in baseElement.Items)
+                foreach (var baseItem in baseElement.AllItems)
                 {
                     yield return baseItem;
                 }

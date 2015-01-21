@@ -161,6 +161,7 @@ public static class ElementDesignerDataExtensions
 
     public static void PopFilter(this IGraphData designerData,List<string> filterStack)
     {
+        if (designerData.RootFilter == designerData.CurrentFilter) return;
         designerData.FilterLeave();
         //filterStack.Remove(designerData.FilterStack.Peek().Name);
 

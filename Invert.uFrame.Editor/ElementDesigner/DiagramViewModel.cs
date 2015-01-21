@@ -244,7 +244,7 @@ public class DiagramViewModel : ViewModel
     {
         get
         {
-            return string.IsNullOrEmpty(DiagramData.Version) || (Convert.ToDouble(DiagramData.Version) < uFrameVersionProcessor.CURRENT_VERSION_NUMBER && uFrameVersionProcessor.REQUIRE_UPGRADE);
+            return string.IsNullOrEmpty(DiagramData.Version);
         }
     }
 
