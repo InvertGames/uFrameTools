@@ -23,6 +23,27 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+    public abstract class Feature : CorePlugin
+    {
+        public override bool EnabledByDefault
+        {
+            get { return true; }
+        }
+        
+        public override bool Required
+        {
+            get { return true; }
+        }
+
+        public override bool Enabled
+        {
+            get { return true; }
+            set
+            {
+                
+            }
+        }
+    }
     public interface ICommandEvents
     {
         void CommandExecuting(ICommandHandler handler, IEditorCommand command);
@@ -136,5 +157,45 @@ namespace Invert.Core.GraphDesigner
         {
             LoadProjects();
         }
+    }
+
+    public class SelectionService : Feature, ISubscribable<ISelectionEvents>
+    {
+        private object[] _selectedObjects;
+
+        public object[] SelectedObjects
+        {
+            get { return _selectedObjects; }
+            set
+            {
+                _selectedObjects = value; 
+                this.Signal(p=>p.SelectionChanged(value));
+            }
+        }
+
+        public override void Initialize(uFrameContainer container)
+        {
+            
+        }
+
+        public override void Loaded(uFrameContainer container)
+        {
+            
+        }
+
+        public List<ISelectionEvents> Listeners { get; set; }
+        public Action Subscribe(ISelectionEvents handler)
+        {
+            Listeners.Add(handler);
+            return () => Unsubscribe(handler);
+        }
+
+        public void Unsubscribe(ISelectionEvents handler)
+        {
+            Listeners.Remove(handler);
+        }
+    }
+    public interface ISelectionEvents {
+        void SelectionChanged(object[] value);
     }
 }

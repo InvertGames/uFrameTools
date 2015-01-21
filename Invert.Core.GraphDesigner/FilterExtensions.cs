@@ -6,6 +6,7 @@ namespace Invert.Core.GraphDesigner
 {
     public static class FilterExtensions
     {
+     
         public static IEnumerable<IDiagramNode> GetContainingNodes(this IDiagramFilter filter, INodeRepository repository)
         {
             return repository.NodeItems.Where(node => node != filter && repository.PositionData.HasPosition(filter, node));

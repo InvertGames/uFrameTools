@@ -339,7 +339,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (this.Graph.RootFilter == this)
+                if (this.Graph != null && this.Graph.RootFilter == this)
                 {
                     return this.Graph.Name;
                 }
@@ -349,7 +349,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (value == null) return;
                 _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
-                if (this.Graph.RootFilter == this)
+                if (this.Graph != null && this.Graph.RootFilter == this)
                 {
                     this.Graph.Name = _name;
                 }

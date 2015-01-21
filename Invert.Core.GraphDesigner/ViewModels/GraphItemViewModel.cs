@@ -45,7 +45,11 @@ namespace Invert.Core.GraphDesigner
 
         public virtual bool IsSelected
         {
-            get { return _isSelected; }
+            get
+            {
+                
+                return _isSelected;
+            }
             set
             {
                 if (value == false)

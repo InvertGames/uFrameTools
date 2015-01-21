@@ -5,7 +5,7 @@ using Invert.Core.GraphDesigner;
 namespace Invert.uFrame.Editor {
     public class SubsystemNode : SubsystemNodeBase {
         
-        public override IEnumerable<RegisteredInstanceReference> AvailableInstances {
+        public virtual IEnumerable<RegisteredInstanceReference> AvailableInstances {
             get {
                 foreach (var item in RegisteredInstance)
                 {

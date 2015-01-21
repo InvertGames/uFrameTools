@@ -530,9 +530,10 @@ namespace Invert.Core.GraphDesigner
         {
             Iterators.Add(memberName, iterator);
         }
-        public void AddCondition(string memberName, Func<TData, bool> iterator)
+        public void AddCondition(string memberName, Func<TData, bool> condition)
         {
-            Conditions.Add(memberName, iterator);
+
+            AddIterator("AllowMultipleOutputs", _ => condition(_) ? Enumerable.Repeat(_, 1) : Enumerable.Empty<TData>());
         }
 
         public T ItemAs<T>()

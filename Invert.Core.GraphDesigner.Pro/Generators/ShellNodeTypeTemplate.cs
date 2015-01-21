@@ -21,7 +21,8 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         Ctx.AddIterator("SectionItems", _ => _.Sections.Where(p=>p.SourceItem is ShellSectionNode));
         Ctx.AddIterator("InputSlot", _ => _.InputSlots);
         Ctx.AddIterator("OutputSlot", _ => _.OutputSlots);
-        Ctx.AddIterator("CustomSelectorItems", _ => _.CustomSelectors);
+        Ctx.AddCondition("AllowMultipleOutputs", _=> !_.Inheritable);
+        //Ctx.AddIterator("CustomSelectorItems", _ => _.CustomSelectors);
         foreach (var item in Ctx.Data.IncludedInSections)
         {
             Ctx.CurrentDecleration.BaseTypes.Add(item.ReferenceClassName);
@@ -113,16 +114,16 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         get { return null; }
     }
 
-    [TemplateProperty("{0}", AutoFillType.NameOnly, Location = MemberGeneratorLocation.Both)]
-    public virtual IEnumerable<GenericReferenceItem> CustomSelectorItems
-    {
-        get
-        {
-            Ctx.SetTypeArgument(Ctx.ItemAs<ShellPropertySelectorItem>().ReferenceClassName);
-            Ctx._("yield break");
-            return null;
-        }
-    }
+    //[TemplateProperty("{0}", AutoFillType.NameOnly, Location = MemberGeneratorLocation.Both)]
+    //public virtual IEnumerable<GenericReferenceItem> CustomSelectorItems
+    //{
+    //    get
+    //    {
+    //        Ctx.SetTypeArgument(Ctx.ItemAs<ShellPropertySelectorItem>().ReferenceClassName);
+    //        Ctx._("yield break");
+    //        return null;
+    //    }
+    //}
 
     [TemplateProperty("{0}InputSlot", AutoFillType.NameOnlyWithBackingField)]
     public virtual GenericReferenceItem InputSlot

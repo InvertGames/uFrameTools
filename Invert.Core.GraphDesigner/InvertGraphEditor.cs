@@ -248,6 +248,10 @@ namespace Invert.Core.GraphDesigner
             ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action));
         }
 
+        public static SelectionService Selection
+        {
+            get { return Container.Resolve<SelectionService>(); }
+        }
         private static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command)
         {
             var objs = handler.ContextObjects.ToArray();

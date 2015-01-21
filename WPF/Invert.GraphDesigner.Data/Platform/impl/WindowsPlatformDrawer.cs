@@ -125,7 +125,7 @@ namespace DiagramDesigner.Platform
             figure.Segments.Add(new BezierSegment(new Point(startTangent.x, startTangent.y), new Point(endTangent.x, endTangent.y), new Point(endPosition.x, endPosition.y), true));
 
             geometry.Figures.Add(figure);
-            Context.DrawGeometry(null, new Pen(Brushes.Black, 2f), geometry);
+            Context.DrawGeometry(null, new Pen(new SolidColorBrush(System.Windows.Media.Color.FromScRgb(color.a, color.r,color.g,color.b)), 2f), geometry);
             //Context.DrawLine(new Pen(Brushes.White,2), new Point(startPosition.x, startPosition.y), new Point(endPosition.x, endPosition.y));
         }
 
@@ -176,7 +176,7 @@ namespace DiagramDesigner.Platform
             ((GraphStyle)style).DrawStyleWithText(Context, new System.Windows.Rect(rect.x, rect.y, rect.width, rect.height), label, alignment);
         }
 
-        public void DrawPolyLine(Vector2[] lines)
+        public void DrawPolyLine(Vector2[] lines, Color color)
         {
         }
 

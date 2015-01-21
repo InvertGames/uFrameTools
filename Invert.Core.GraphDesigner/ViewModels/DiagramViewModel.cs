@@ -63,24 +63,24 @@ namespace Invert.Core.GraphDesigner
             set { _diagramContextCommands = value; }
         }
 
-        public IEnumerable<GraphItemViewModel> SelectedGraphItems
+        public IEnumerable<GraphItemViewModel> AllViewModels
         {
             get
             {
                 foreach (var item in GraphItems)
                 {
-                    if (item.IsSelected)
+
+                    foreach (var child in item.ContentItems)
                     {
-                        foreach (var child in item.ContentItems)
-                        {
-                            if (child.IsSelected) yield return child;
-                        }
-
-                        yield return item;
+                        yield return child;
                     }
-
+                    yield return item;
                 }
             }
+        } 
+        public IEnumerable<GraphItemViewModel> SelectedGraphItems
+        {
+            get { return AllViewModels.Where(p => p.IsSelected); }
         }
 
         public void NavigateTo(IDiagramNode node)
@@ -88,15 +88,15 @@ namespace Invert.Core.GraphDesigner
             //for (var i = 0; i < DiagramData.FilterState.FilterStack.Count; i++)
             //{
             //    DiagramData.PopFilter(null);
-                
+
             //}
             DiagramData.FilterState.FilterStack.Clear();
             DiagramData.FilterState._persistedFilterStack.Clear();
             var path = node.FilterPath();
             foreach (var item in path.Skip(1))
             {
-                
-       
+
+
                 DiagramData.PushFilter(item);
             }
             node.IsSelected = true;
@@ -197,7 +197,7 @@ namespace Invert.Core.GraphDesigner
 
         }
 
- 
+
         public INodeRepository CurrentRepository { get; set; }
 
         public DiagramViewModel(IGraphData diagram, INodeRepository currentRepository)
@@ -335,11 +335,15 @@ namespace Invert.Core.GraphDesigner
 
         public void DeselectAll()
         {
+            foreach (var item in AllViewModels.OfType<ItemViewModel>())
+            {
+                item.IsEditing = false;
+            }
             foreach (var item in SelectedGraphItems)
             {
                 item.IsSelected = false;
-                
             }
+
             foreach (var item in GraphItems.OfType<DiagramNodeViewModel>())
             {
                 item.EndEditing();

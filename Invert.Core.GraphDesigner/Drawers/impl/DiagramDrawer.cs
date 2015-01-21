@@ -7,16 +7,16 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    
-    public class DiagramDrawer : Drawer,  IInputHandler
+
+    public class DiagramDrawer : Drawer, IInputHandler
     {
         public delegate void SelectionChangedEventArgs(IDiagramNode oldData, IDiagramNode newData);
         public event SelectionChangedEventArgs SelectionChanged;
 
-        
+
         private IDrawer _nodeDrawerAtMouse;
         private SelectionRectHandler _selectionRectHandler;
-        private IDrawer[] _cachedChildren = new IDrawer[] {};
+        private IDrawer[] _cachedChildren = new IDrawer[] { };
 
 
         public static float Scale
@@ -79,7 +79,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
-          
+
             bool shouldEditField = IsEditingField;
             IsEditingField = false;
             // Make sure they've upgraded to the latest json format
@@ -93,20 +93,20 @@ namespace Invert.Core.GraphDesigner
             {
                 var handler = LastMouseEvent.CurrentHandler;
                 if (handler != this)
-                handler.Draw(platform, scale);
+                    handler.Draw(platform, scale);
             }
             // Draw all of our drawers
             foreach (var drawer in _cachedChildren)
             {
                 if (drawer.Dirty)
                 {
-                    drawer.Refresh((IPlatformDrawer) platform);
+                    drawer.Refresh((IPlatformDrawer)platform);
                     drawer.Dirty = false;
                 }
                 drawer.Draw(platform, Scale);
-            
+
             }
-          
+
 
             DrawErrors();
             DrawHelp();
@@ -163,7 +163,7 @@ namespace Invert.Core.GraphDesigner
             BubbleEvent(d => d.OnMouseDoubleClick(mouseEvent), mouseEvent);
             DiagramViewModel.Navigate();
             Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
-            Refresh((IPlatformDrawer) InvertGraphEditor.PlatformDrawer);
+            Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
         }
 
         public override void OnMouseEnter(MouseEvent e)
@@ -229,19 +229,19 @@ namespace Invert.Core.GraphDesigner
                         {
                             item.ViewModel.Position += e.MousePositionDelta;
                         }
-                    
-                    
+
+
 
                         if (item.ViewModel.Position.x < 0)
                         {
-                            item.ViewModel.Position = new Vector2(0f,item.ViewModel.Position.y);
+                            item.ViewModel.Position = new Vector2(0f, item.ViewModel.Position.y);
                         }
                         if (item.ViewModel.Position.y < 0)
                         {
-                            item.ViewModel.Position = new Vector2( item.ViewModel.Position.x,0f);
+                            item.ViewModel.Position = new Vector2(item.ViewModel.Position.x, 0f);
                         }
-           
-                        item.Refresh((IPlatformDrawer) InvertGraphEditor.PlatformDrawer);
+
+                        item.Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
                     }
                 }
             }
@@ -316,52 +316,48 @@ namespace Invert.Core.GraphDesigner
                 return;
 
             }
-            var item = DrawersAtMouse.OrderByDescending(p=>p.ZOrder).FirstOrDefault();
-
+            //var item = DrawersAtMouse.OrderByDescending(p=>p.ZOrder).FirstOrDefault();
+            IDrawer item = DrawersAtMouse.OfType<ConnectorDrawer>().FirstOrDefault();
             if (item != null)
             {
-                // TODO Move to platform
+                var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramNodeItemCommand));
 
-                if (item is DiagramNodeDrawer || item is HeaderDrawer)
+                var connector = item.ViewModelObject as ConnectorViewModel;
+
+                var connections =
+                    DiagramViewModel.GraphItems.OfType<ConnectionViewModel>()
+                        .Where(p => p.ConnectorA == connector || p.ConnectorB == connector).ToArray();
+
+                foreach (var connection in connections)
                 {
-                    item.ViewModelObject.Select();
-                    ShowContextMenu();
-                }
-                else if (item is ItemDrawer)
-                {
-                    ShowItemContextMenu(item);
-                }
-                else if (item is ConnectorDrawer)
-                {
-
-                    var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramNodeItemCommand));
-
-                    var connector = item.ViewModelObject as ConnectorViewModel;
-
-                    var connections =
-                        DiagramViewModel.GraphItems.OfType<ConnectionViewModel>()
-                            .Where(p => p.ConnectorA == connector || p.ConnectorB == connector).ToArray();
-                    
-                    foreach (var connection in connections)
+                    ConnectionViewModel connection1 = connection;
+                    menu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel model)
                     {
-                        ConnectionViewModel connection1 = connection;
-                        menu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel model)
-                        {
-                            InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); });
-                        }, "Disconnect: " + connection.Name));
-                    }
-                    //a.ShowAsContext();
-                    menu.Go();
+                        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); });
+                    }, "Disconnect: " + connection.Name));
                 }
-
+                //a.ShowAsContext();
+                menu.Go();
+                return;
             }
-            else
+            item = DrawersAtMouse.OfType<ItemDrawer>().FirstOrDefault();
+            if (item != null)
             {
-
-                ShowAddNewContextMenu(true);
+                ShowItemContextMenu(item);
+                return;
             }
-    
-
+            item = DrawersAtMouse.OfType<DiagramNodeDrawer>().FirstOrDefault();
+            if (item == null)
+                item = DrawersAtMouse.OfType<HeaderDrawer>().FirstOrDefault();
+            if (item != null)
+            {
+                item.ViewModelObject.Select();
+                ShowContextMenu();
+                return;
+            }
+            
+        
+            ShowAddNewContextMenu(true);
         }
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position)
@@ -402,7 +398,7 @@ namespace Invert.Core.GraphDesigner
         protected override void DataContextChanged()
         {
             base.DataContextChanged();
-            DiagramViewModel.GraphItems.CollectionChanged+= GraphItemsOnCollectionChangedWith;
+            DiagramViewModel.GraphItems.CollectionChanged += GraphItemsOnCollectionChangedWith;
         }
 
 
@@ -483,7 +479,7 @@ namespace Invert.Core.GraphDesigner
                     var drawer = InvertGraphEditor.Container.CreateDrawer<IDrawer>(item);
                     if (drawer == null) InvertApplication.Log("Drawer is null");
                     Children.Add(drawer);
-                    drawer.Refresh((IPlatformDrawer) InvertGraphEditor.PlatformDrawer);
+                    drawer.Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
                 }
         }
 #if UNITY_DLL

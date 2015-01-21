@@ -5,7 +5,7 @@ using Invert.Core.GraphDesigner;
 namespace Invert.uFrame.Editor {
     public class SceneManagerNode : SceneManagerNodeBase {
         
-        public override IEnumerable<RegisteredInstanceReference> ImportedItems {
+        public virtual IEnumerable<RegisteredInstanceReference> ImportedItems {
             get { return Subsystem.AvailableInstances; }
         }
 

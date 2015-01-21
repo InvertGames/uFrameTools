@@ -120,7 +120,10 @@ namespace Invert.Core.GraphDesigner
 
         public override bool IsSelected
         {
-            get { return base.IsSelected; }
+            get
+            {
+                return base.IsSelected;
+            }
             set
             {
                 if (!value)

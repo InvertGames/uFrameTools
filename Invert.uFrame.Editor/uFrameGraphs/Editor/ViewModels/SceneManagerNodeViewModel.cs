@@ -10,5 +10,10 @@ namespace Invert.uFrame.Editor {
         public SceneManagerNodeViewModel(SceneManagerNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
                 base(graphItemObject, diagramViewModel) {
         }
+
+        public Type CurrentType
+        {
+            get { return GraphItem.CurrentType; }
+        }
     }
 }

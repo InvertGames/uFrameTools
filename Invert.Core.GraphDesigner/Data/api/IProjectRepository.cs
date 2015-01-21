@@ -183,10 +183,7 @@ namespace Invert.Core.GraphDesigner
         /// </summary>
         public virtual IEnumerable<IDiagramNode> NodeItems
         {
-            get
-            {
-                return _nodeItems ?? (_nodeItems = Enumerable.ToArray<IDiagramNode>(AllNodeItems));
-            }
+            get { return AllNodeItems; }
         }
 
         /// <summary>
