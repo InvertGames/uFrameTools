@@ -34,7 +34,9 @@ namespace Invert.Core.GraphDesigner
 
         protected override void CreateContent()
         {
+           
             base.CreateContent();
+           
             foreach (var item in GraphItem.DisplayedItems)
             {
                 var vm = GetDataViewModel(item);
@@ -268,6 +270,7 @@ namespace Invert.Core.GraphDesigner
             {
                 GraphItemObject.IsCollapsed = value;
                 OnPropertyChanged("IsCollapsed");
+                IsDirty = true;
             }
         }
 
@@ -297,6 +300,7 @@ namespace Invert.Core.GraphDesigner
             {
                 BeginEditing();
             }
+            IsDirty = true;
 
         }
 

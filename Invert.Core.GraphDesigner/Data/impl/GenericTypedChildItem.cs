@@ -43,6 +43,7 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
             {
                 return outputClass.ClassName;
             }
+
             var relatedNode = this.RelatedNode();
 
             if (relatedNode != null)
@@ -54,7 +55,23 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
 
     public virtual IClassTypeNode RelatedTypeNode
     {
-        get { return this.OutputTo<IClassTypeNode>(); }
+        get
+        {
+            if (Node == null)
+            {
+                throw new Exception("NODE IS NULL");
+            }
+            else if (Node.Project == null)
+            {
+                throw new Exception("PROJECT IS NULL");
+            }
+            var result =  this.OutputTo<IClassTypeNode>();
+            if (result == null)
+            {
+                return this.Node.Project.NodeItems.FirstOrDefault(p => p.Identifier == RelatedType) as IClassTypeNode;
+            }
+            return result;
+        }
     }
     public bool AllowEmptyRelatedType
     {

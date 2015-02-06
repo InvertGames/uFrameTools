@@ -40,5 +40,6 @@ namespace Invert.Core.GraphDesigner
 
         public bool HasPredefinedOptions { get; set; }
         public Action<IDiagramNodeItem> OnAdd { get; set; }
+        public Type AddCommandType { get; set; }
     }
 }

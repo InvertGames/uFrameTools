@@ -72,7 +72,7 @@ namespace Invert.Core.GraphDesigner
         
         }
 
-        public virtual void Refresh(IPlatformDrawer platform, Vector2 position)
+        public virtual void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
         
         }

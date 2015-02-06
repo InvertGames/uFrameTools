@@ -13,13 +13,15 @@ namespace Invert.uFrame.Editor {
         public override void Initialize(uFrameContainer container)
         {
             base.Initialize(container);
-
+            
             ElementViewComponent.Name = "View Component";
             ElementView.Name = "View";
             ElementComputedProperty.Name = "Computed Property";
             StateMachine.Name = "State Machine";
             State.Name = "State";
             SceneManager.Name = "Scene Manager";
+            container.Connectable<ElementComponentNode, CommandChildItem>();
+            container.Connectable<CommandChildItem, CommandChildItem>();
         }
 
 

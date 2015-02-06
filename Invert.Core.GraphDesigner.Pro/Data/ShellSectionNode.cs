@@ -19,14 +19,14 @@ public class ShellSectionNode : ShellNodeTypeSection, IShellConnectable
     private bool _allowMultipleOutputs = true;
 
     [JsonProperty, InspectorProperty]
-    public bool AllowMultipleInputs
+    public bool MultipleInputs
     {
         get { return _allowMultipleInputs; }
         set { _allowMultipleInputs = value; }
     }
 
     [JsonProperty, InspectorProperty]
-    public bool AllowMultipleOutputs
+    public bool MultipleOutputs
     {
         get { return _allowMultipleOutputs; }
         set { _allowMultipleOutputs = value; }

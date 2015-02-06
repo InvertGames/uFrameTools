@@ -518,6 +518,7 @@ namespace Invert.Core.GraphDesigner
         {
             public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, TNode item)
             {
+                if (item.Precompiled) yield break;
                 if (!item.IsValid) yield break;
 
                 var config = Container.GetNodeConfig<TNode>();

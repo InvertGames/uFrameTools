@@ -36,7 +36,7 @@ namespace Invert.Core.GraphDesigner
             {
                 yield return new UFContextMenuItem()
                 {
-                    Name = "Show Item/" + importable.Name,
+                    Name = string.Format("Show Item/{0}/{1}", importable.Graph.Name, importable.Name),
                     Value = importable
                 };
             }

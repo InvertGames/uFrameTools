@@ -6,9 +6,44 @@ namespace Invert.Core.GraphDesigner
 {
     public static class FilterExtensions
     {
-     
+        public static IEnumerable<IDiagramNode> GetContainingNodesInProject(this IDiagramFilter filter, IProjectRepository repository)
+        {
+
+            foreach (var item in repository.Graphs)
+            {
+                var positionData = item.PositionData;
+
+                FilterLocations locations;
+                if (positionData.Positions.TryGetValue(filter.Identifier, out locations))
+                {
+                    foreach (var node in repository.NodeItems)
+                    {
+                        if (locations.Keys.Contains(node.Identifier))
+                        {
+                            yield return node;
+                        }
+                    }
+                }
+
+            }
+            //foreach (var node in repository.NodeItems)
+            //{
+            //    if (node == filter) continue;
+            //    var nodeAsFilter = node as IDiagramFilter;
+
+            //    foreach (var item in repository.Graphs)
+            //    {
+            //        if (item.PositionData.HasPosition(filter, node))
+            //        {
+            //            yield return node;
+            //        }
+            //    }
+            //}
+            //return repository.NodeItems.Where(node => node != filter && repository.PositionData.HasPosition(filter, node));
+        }
         public static IEnumerable<IDiagramNode> GetContainingNodes(this IDiagramFilter filter, INodeRepository repository)
         {
+
             return repository.NodeItems.Where(node => node != filter && repository.PositionData.HasPosition(filter, node));
         }
 
@@ -38,9 +73,9 @@ namespace Invert.Core.GraphDesigner
         }
         public static bool IsAllowed(this IDiagramFilter filter, object item, Type t)
         {
-            
+
             if (filter == item) return true;
-            
+
             if (!AllowedFilterNodes.ContainsKey(filter.GetType())) return false;
 
             foreach (var x in AllowedFilterNodes[filter.GetType()])

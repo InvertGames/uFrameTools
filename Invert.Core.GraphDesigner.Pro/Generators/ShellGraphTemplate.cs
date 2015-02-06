@@ -12,7 +12,7 @@ public class ShellGraphTemplate : GenericGraphData<GenericNode>, IClassTemplate<
         if (Ctx.IsDesignerFile)
         {
 #if UNITY_DLL
-            Ctx.SetBaseTypeArgument("GenericGraphData<{0}>",Ctx.Data.RootNode.ClassName);
+            Ctx.SetBaseType("GenericGraphData<{0}>",Ctx.Data.RootNode.ClassName);
 #else
             Ctx.SetBaseTypeArgument("{0}", Ctx.Data.RootNode.ClassName);
 #endif

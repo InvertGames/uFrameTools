@@ -9,13 +9,13 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     private bool _allowMultipleOutputs;
 
     [JsonProperty, InspectorProperty]
-    public bool AllowMultipleInputs { get; set; }
+    public bool MultipleInputs { get; set; }
 
     [JsonProperty, InspectorProperty]
-    public bool AllowMultipleOutputs
+    public bool MultipleOutputs
     {
         get
-        {
+        { 
             if (this["Inheritable"])
             {
                 return true;

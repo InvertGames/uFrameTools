@@ -125,12 +125,15 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
     //    }
     //}
 
-    [TemplateProperty("{0}InputSlot", AutoFillType.NameOnlyWithBackingField)]
+    [TemplateProperty("{0}InputSlot", AutoFillType.NameOnly)]
     public virtual GenericReferenceItem InputSlot
     {
         get
         {
+            
             var item = Ctx.ItemAs<ShellNodeInputsSlot>();
+            var field = Ctx.CurrentDecleration._private_(item.SourceItem.ClassName, "_" + item.Name);
+
             Ctx.SetType(item.SourceItem.ClassName);
             Ctx.AddAttribute(typeof (InputSlot))
                 .AddArgument(new CodePrimitiveExpression(item.Name))
@@ -138,9 +141,11 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
                 .AddArgument("SectionVisibility.{0}", item.SourceItem.Visibility.ToString())
                 .Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Order)))
                 ;
-
+            Ctx._if("{0} == null", field.Name)
+                .TrueStatements._("{0} = new {1}() {{ Node = this }}",field.Name);
             return null;
         }
+        
     }
 
     [TemplateProperty("{0}OutputSlot", AutoFillType.NameOnlyWithBackingField)]
@@ -166,14 +171,25 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
 
 }
 
-[TemplateClass("ViewModels", MemberGeneratorLocation.Both, ClassNameFormat = "{0}NodeViewModel", IsEditorExtension = true)]
+[TemplateClass("ViewModels", MemberGeneratorLocation.Both, ClassNameFormat = "{0}NodeViewModel", IsEditorExtension = true, AutoInherit = false)]
 public class ShellNodeTypeViewModelTemplate : GenericNodeViewModel<GenericNode>, IClassTemplate<ShellNodeTypeNode>
 {
 
     public void TemplateSetup()
     {
         if (Ctx.IsDesignerFile)
-            Ctx.SetBaseTypeArgument(Ctx.Data.ClassName);
+        {
+            if (Ctx.Data.BaseNode != null)
+            {
+                Ctx.SetBaseType(Ctx.Data.BaseNode.Name + "NodeViewModel");
+            }
+            else
+            {
+                Ctx.SetBaseTypeArgument(Ctx.Data.ClassName);    
+            }
+            
+        }
+            
     }
 
     public TemplateContext<ShellNodeTypeNode> Ctx { get; set; }

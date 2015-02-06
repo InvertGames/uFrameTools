@@ -75,6 +75,16 @@ namespace Invert.Core.GraphDesigner
             return GetHashCode().ToString();
         }
 
+        public bool IsDirty
+        {
+            get { return _isDirty; }
+            set
+            {
+                _isDirty = value;
+                OnPropertyChanged("IsDirty");
+            }
+        }
+
         public bool IsMouseOver
         {
             get { return _isMouseOver; }
@@ -132,6 +142,7 @@ namespace Invert.Core.GraphDesigner
         private Func<IDiagramNodeItem, IDiagramNodeItem, bool> _outputValidator;
         private bool _isMouseOver;
         private bool _showHelp;
+        private bool _isDirty;
 
         public virtual ConnectorViewModel OutputConnector
         {

@@ -17,7 +17,7 @@ namespace Invert.Core.GraphDesigner
         void Draw(IPlatformDrawer platform, float scale);
         void Refresh(IPlatformDrawer platform);
         void OnLayout();
-        void Refresh(IPlatformDrawer platform, Vector2 position);
+        void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true);
         int ZOrder { get; }
         List<IDrawer> Children { get; set; }
    

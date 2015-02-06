@@ -33,13 +33,22 @@ namespace Invert.Core.GraphDesigner
             DataObject = viewModelItem;
         }
 
- 
-        public string RelatedType
+        public override bool IsEditable
+        {
+            get { return !Data.Precompiled; }
+            set { base.IsEditable = value; }
+        }
+
+        public virtual string RelatedType
         {
             get
             {
-
-                return TypeAlias(Data.RelatedTypeName);//ElementDataBase.TypeAlias(Data.RelatedType);
+                var typeName = TypeAlias(Data.RelatedTypeName);
+                if (string.IsNullOrEmpty(typeName))
+                {
+                    return "[void]";
+                }
+                return typeName;//ElementDataBase.TypeAlias(Data.RelatedType);
             }
             set
             {

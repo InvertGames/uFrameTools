@@ -87,7 +87,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     {
                         _currentProject = projectService.Projects.FirstOrDefault(p => p.Name == LastLoadedProject);
                     }
-                    if (_currentProject == null)
+                    if (_currentProject == null) 
                     {
                         _currentProject = projectService.Projects.FirstOrDefault();
                     }
@@ -110,6 +110,7 @@ namespace Invert.Core.GraphDesigner.Unity
                         OnProjectChanged();
                     }
                     LastLoadedProject = value.Name;
+                    _currentProject.CurrentGraph.SetProject(_currentProject);
                 }
             }
         }
@@ -143,6 +144,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void RefreshContent()
         {
+            
             if (DiagramDrawer != null)
             {
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
@@ -261,10 +263,27 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void CommandExecuted(IEditorCommand command)
         {
-            Debug.Log("Command was exectued with ElementsDesigner Handler");
             if (DiagramDrawer != null)
             {
+                //DiagramViewModel.Invalidate();
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
+                //var contextObjects = ContextObjects.ToArray();
+                //foreach (var contextObject in contextObjects.OfType<DiagramNodeViewModel>())
+                //{
+                //    contextObject.DataObject = contextObject.DataObject;
+                //    contextObject.DataObject = contextObject.DataObject;
+                //}
+                //DiagramViewModel.RefreshConnectors();
+                //////DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
+                //foreach (var item in DiagramDrawer.Children)
+                //{
+                //    //item.RefreshContent();
+                //    item.Refresh(InvertGraphEditor.PlatformDrawer, item.Bounds.position, true);
+                //    //if (contextObjects.Contains(item.ViewModelObject) || item is ConnectorDrawer)
+                //    //{
+                //    //    item.REf
+                //    //}
+                //}
             }
             if (CurrentProject.CurrentGraph != null)
             {
@@ -463,6 +482,7 @@ namespace Invert.Core.GraphDesigner.Unity
             if (diagram == null) return;
             try
             {
+                CurrentProject.CurrentGraph.SetProject(CurrentProject);
                 if (Undo.undoRedoPerformed != null) Undo.undoRedoPerformed -= UndoRedoPerformed;
                 Undo.undoRedoPerformed += UndoRedoPerformed;
                 //SerializedGraph = new SerializedObject(diagram as UnityEngine.Object);
@@ -493,7 +513,9 @@ namespace Invert.Core.GraphDesigner.Unity
         public void SwitchDiagram(IGraphData data)
         {
             Designer.OpenTab(data);
+
             LoadDiagram(CurrentProject.CurrentGraph);
+            
             //CurrentProject.CurrentGraph = data as IGraphData;
             
         }

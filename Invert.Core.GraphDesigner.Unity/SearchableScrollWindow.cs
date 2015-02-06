@@ -22,12 +22,17 @@ public abstract class SearchableScrollWindow : EditorWindow
         OnGUIScrollView();
 
         EditorGUILayout.EndScrollView();
+        if (AllowSearch)
+        {
+            EditorGUI.FocusTextInControl("SearchText");
+        }
     }
 
     private void DoSearch()
     {
         EditorGUI.BeginChangeCheck();
-        _SearchText = GUILayout.TextField(_SearchText ?? "");
+        GUI.SetNextControlName("SearchText");
+        _SearchText = EditorGUILayout.TextField(_SearchText ?? "");
         if (EditorGUI.EndChangeCheck())
         {
             ApplySearch();

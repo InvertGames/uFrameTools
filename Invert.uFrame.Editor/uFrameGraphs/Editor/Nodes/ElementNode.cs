@@ -67,7 +67,9 @@ namespace Invert.uFrame.Editor {
         {
             get
             {
-                return ChildItems.OfType<PropertyChildItem>();
+                return IncludedComponents
+                    .SelectMany(p => p.Properties);
+                
             }
         }
 
@@ -75,21 +77,26 @@ namespace Invert.uFrame.Editor {
         {
             get
             {
-                return ChildItems.OfType<CollectionChildItem>();
+                return IncludedComponents
+                    .SelectMany(p => p.Collections);
             }
         }
 
- 
+        public IEnumerable<ElementComponentNode> IncludedComponents
+        {
+            get { return Components.Select(p => p.SourceItem).Where(p => p != null).OfType<ElementComponentNode>(); }
+        }
         public virtual System.Collections.Generic.IEnumerable<CommandChildItem> Commands
         {
             get
             {
-                return ChildItems.OfType<CommandChildItem>();
+                return IncludedComponents
+                     .SelectMany(p => p.Commands);
             }
         }
 
 
-       [Invert.Core.GraphDesigner.Section("Properties", SectionVisibility.Always, OrderIndex = 0)]
+       [Invert.Core.GraphDesigner.ProxySection("Properties", SectionVisibility.Always, OrderIndex = 1)]
         public virtual System.Collections.Generic.IEnumerable<PropertyChildItem> InheritedProperties
         {
             get
@@ -113,7 +120,7 @@ namespace Invert.uFrame.Editor {
             }
         }
 
-        [Invert.Core.GraphDesigner.Section("Collections", SectionVisibility.Always, OrderIndex = 1)]
+        [Invert.Core.GraphDesigner.ProxySection("Collections", SectionVisibility.Always, OrderIndex = 2)]
         public virtual System.Collections.Generic.IEnumerable<CollectionChildItem> InheritedCollections
         {
             get
@@ -132,7 +139,7 @@ namespace Invert.uFrame.Editor {
                 }
             }
         }
-            [Invert.Core.GraphDesigner.Section("Commands", SectionVisibility.Always, OrderIndex = 2)]
+            [Invert.Core.GraphDesigner.ProxySection("Commands", SectionVisibility.Always, OrderIndex = 3)]
         public virtual System.Collections.Generic.IEnumerable<CommandChildItem> InheritedCommands
         {
             get

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
-    public class UnityPlatformPlugin : CorePlugin
+    public class UnityPlatformPlugin : DiagramPlugin
     {
         public override decimal LoadPriority
         {
@@ -63,6 +63,12 @@ namespace Invert.Core.GraphDesigner.Unity
         public override void Loaded(uFrameContainer container)
         {
            
+        }
+
+        public override void CommandExecuted(ICommandHandler handler, IEditorCommand command)
+        {
+            base.CommandExecuted(handler, command);
+            
         }
     }
 }

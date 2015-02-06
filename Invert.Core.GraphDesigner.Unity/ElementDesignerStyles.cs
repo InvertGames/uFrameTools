@@ -104,6 +104,7 @@ namespace Invert.Common
         private static GUIStyle _tabStyle;
         private static GUIStyle _tabInActiveStyle;
         private static Texture2D _arrowRightTexture2;
+        private static Texture2D _diagramCircleConnector;
 
         public static GUIStyle AddButtonStyle
         {
@@ -184,7 +185,13 @@ namespace Invert.Common
                 return _arrowLeftEmptyTexture ?? (_arrowLeftEmptyTexture = GetSkinTexture("DiagramArrowLeftEmpty"));
             }
         }
-
+        public static Texture2D DiagramCircleConnector
+        {
+            get
+            {
+                return _diagramCircleConnector ?? (_diagramCircleConnector = GetSkinTexture("DiagramCircleConnector"));
+            }
+        }
         public static Texture2D ArrowLeftTexture
         {
             get
@@ -1460,12 +1467,12 @@ namespace Invert.Common
                     _tag1 = new GUIStyle
                     {
                         normal = { background = GetSkinTexture("Tag1"), textColor = new Color(0.75f, 0.75f, 0.75f) },
-                        padding = new RectOffset(5, 7, 5, 3),
+                        padding = new RectOffset(8, 8, 5, 3),
                         border = new RectOffset(10, 10, 10, 0),
                         fixedHeight = 19f * Scale,
                         stretchWidth = true,
                         alignment = TextAnchor.MiddleCenter,
-                        fontSize = Mathf.RoundToInt(10 * Scale),
+                        fontSize = Mathf.RoundToInt(9 * Scale),
                         fontStyle = FontStyle.Normal
                     };
                 return _tag1;
@@ -1696,7 +1703,7 @@ namespace Invert.Common
                         normal = { textColor = Color.white },
                         //padding = new RectOffset(0, 12, 10, 4),
                         fixedHeight = 25 * Scale,
-                        fontSize = Mathf.RoundToInt(12 * Scale),
+                        fontSize = Mathf.RoundToInt(11 * Scale),
 
                         fontStyle = FontStyle.Bold,
                         alignment = TextAnchor.MiddleLeft

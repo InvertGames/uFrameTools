@@ -10,6 +10,12 @@ using UnityEngine;
 public class EnumItem : IDiagramNodeItem
 {
     public string Title { get { return Name; } }
+
+    public string Group
+    {
+        get { return "Enum Items"; }
+    }
+
     public string SearchTag { get { return Name; } }
 
     public void Serialize(JSONClass cls)
@@ -32,6 +38,12 @@ public class EnumItem : IDiagramNodeItem
     }
 
     private string _name;
+
+    public bool Precompiled
+    {
+        get;
+        set;
+    }
 
     public string Name
     {

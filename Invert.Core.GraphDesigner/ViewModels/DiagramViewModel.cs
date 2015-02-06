@@ -46,7 +46,31 @@ namespace Invert.Core.GraphDesigner
         private IEnumerable<IDiagramContextCommand> _diagramContextCommands;
         public IEnumerable<ErrorInfo> Issues
         {
-            get { return DiagramData.Validate(); }
+            get
+            {
+                var project = CurrentRepository as IProjectRepository;
+                if (project != null)
+                {
+                    foreach (var graph in project.Graphs)
+                    {
+                        if (graph != null)
+                        {
+                            foreach (var item in graph.Validate())
+                            {
+                                yield return item;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var item in DiagramData.Validate())
+                    {
+                        yield return item;
+                    }
+                }
+                
+            }
         }
         public float SnapSize
         {
@@ -210,7 +234,13 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-
+        public void Invalidate()
+        {
+            foreach (var item in GraphItems)
+            {
+                item.IsDirty = true;
+            }
+        }
 
         public void Load()
         {
@@ -242,25 +272,82 @@ namespace Invert.Core.GraphDesigner
                 connectors.AddRange(vm.Connectors);
 
             }
+            RefreshConnectors(connectors);
+        }
+
+        public void RefreshConnectors()
+        {
+            
+            var items  = GraphItems.OfType<ConnectorViewModel>().ToArray();
+            var connections  = GraphItems.OfType<ConnectionViewModel>().ToArray();
+
+            foreach (var item in items)
+            {
+                GraphItems.Remove(item);
+            }
+            foreach (var item in connections)
+            {
+                GraphItems.Remove(item);
+            }
+            var connectors = new List<ConnectorViewModel>();
+            foreach (var item in GraphItems)
+            {
+                item.GetConnectors(connectors);
+            }
+            RefreshConnectors(connectors);
+        }
+        private void RefreshConnectors(List<ConnectorViewModel> connectors)
+        {
+            
+
             foreach (var item in connectors)
             {
                 item.DiagramViewModel = this;
                 GraphItems.Add(item);
             }
-
-            var connections = new List<ConnectionViewModel>();
-            var connectorInfo = new ConnectorInfo(connectors.ToArray(), this, CurrentRepository);
-            foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
+          //  var startTime = DateTime.Now;
+            
+            
+            foreach (var connection in DiagramData.Connections)
             {
-                strategy.GetConnections(connections, connectorInfo);
-            }
+                var startConnector = connectors.FirstOrDefault(p => p.DataObject == connection.Output && p.Direction == ConnectorDirection.Output);
+                var endConnector = connectors.FirstOrDefault(p => p.DataObject == connection.Input && p.Direction == ConnectorDirection.Input);
+                if (startConnector == null || endConnector == null) continue;
 
-            foreach (var item in connections)
-            {
-                GraphItems.Add(item);
-                item.ConnectorA.HasConnections = true;
-                item.ConnectorB.HasConnections = true;
+                startConnector.HasConnections = true;
+                endConnector.HasConnections = true;
+                GraphItems.Add(new ConnectionViewModel(this)
+                {
+                    ConnectorA = endConnector,
+                    ConnectorB = startConnector,
+                    Color = Color.white,
+                    Remove = (a) =>
+                    {
+                        DiagramData.RemoveConnection(connection.Output,connection.Input);
+                    }
+                });
             }
+            //var endTime = DateTime.Now;
+            //var diff = new TimeSpan(endTime.Ticks - startTime.Ticks);
+            //Debug.Log(string.Format("{0} took {1} seconds {2} milliseconds", "New Strategy", diff.Seconds, diff.Milliseconds));
+
+            //var connections = new List<ConnectionViewModel>();
+            //var connectorInfo = new ConnectorInfo(connectors.ToArray(), this, CurrentRepository);
+            //foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
+            //{
+            //    var startTime = DateTime.Now;
+            //    strategy.GetConnections(connections, connectorInfo);
+            //    var endTime = DateTime.Now;
+            //    var diff = new TimeSpan(endTime.Ticks - startTime.Ticks);
+            //    Debug.Log(string.Format("{0} took {1} seconds {2} milliseconds", strategy.GetType().Name, diff.Seconds, diff.Milliseconds));
+            //}
+
+            //foreach (var item in connections)
+            //{
+            //    GraphItems.Add(item);
+            //    item.ConnectorA.HasConnections = true;
+            //    item.ConnectorB.HasConnections = true;
+            //}
         }
 
         public IDiagramNode[] CurrentNodes { get; set; }
@@ -416,7 +503,7 @@ namespace Invert.Core.GraphDesigner
             {
                 yield return this;
                 yield return DataObject;
-                InvertApplication.Log("Invoked");
+                
                 foreach (var nodeItem in GraphItems.Where(p => p.IsMouseOver || p.IsSelected).OfType<ConnectorViewModel>())
                 {
                     yield return nodeItem;

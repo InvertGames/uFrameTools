@@ -33,7 +33,7 @@ namespace Invert.Core.GraphDesigner
             get { return ViewModelObject as DiagramNodeViewModel; }
         }
 
-        public override void Refresh(IPlatformDrawer platform, Vector2 position)
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position);
             TextSize = platform.CalculateSize(NodeViewModel.Label, TextStyle); //.CalcSize(new GUIContent(NodeViewModel.Label)));

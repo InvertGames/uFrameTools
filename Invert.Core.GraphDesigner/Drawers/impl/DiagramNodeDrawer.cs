@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ namespace Invert.Core.GraphDesigner
     }
 
     public abstract class GenericNodeDrawer<TData, TViewModel> : DiagramNodeDrawer<TViewModel>
-        where TViewModel : GenericNodeViewModel<TData> where TData : GenericNode
+        where TViewModel : DiagramNodeViewModel where TData : GenericNode
     {
 
 
@@ -48,7 +49,7 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform);
         }
 
-        public override void Refresh(IPlatformDrawer platform, Vector2 position)
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position);
 
@@ -108,15 +109,31 @@ namespace Invert.Core.GraphDesigner
         {
             base.DataContextChanged();
 
-            ViewModel.ContentItems.CollectionChanged += ContentItemsOnCollectionChangedWith;
+           // ViewModel.ContentItems.CollectionChanged += ContentItemsOnCollectionChangedWith;
+            ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         }
+
+        private void ViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (propertyChangedEventArgs.PropertyName == "IsDirty")
+            {
+                if (ViewModel.IsDirty)
+                {
+                    this.RefreshContent();
+                
+                    ViewModel.IsDirty = false;
+                }
+           
+            }
+        }
+
         private void ContentItemsOnCollectionChangedWith(object sender, NotifyCollectionChangedEventArgs changeargs)
         {
-            this.RefreshContent();
+            //this.RefreshContent();
         }
         private void ContentItemsOnCollectionChangedWith(NotifyCollectionChangedEventArgs changeargs)
         {
-            this.RefreshContent();
+            //this.RefreshContent();
         }
 
         void IDrawer.OnMouseDown(MouseEvent mouseEvent)
@@ -219,7 +236,7 @@ namespace Invert.Core.GraphDesigner
 
             var width = platform.CalculateSize(_cachedTag, CachedStyles.Tag1).x;
             var labelRect =
-                new Rect((Bounds.x + (Bounds.width/2)) - (width/2), Bounds.y - (18f), width, 15f).Scale(Scale);
+                new Rect((Bounds.x + (Bounds.width/2)) - (width/2), Bounds.y - (16f), width, 15f).Scale(Scale);
 
             platform.DrawLabel(labelRect, _cachedTag, CachedStyles.Tag1, DrawingAlignment.MiddleCenter);
           
@@ -229,7 +246,7 @@ namespace Invert.Core.GraphDesigner
                  var adjustedBounds = Bounds; //new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
 #endif
             var boxRect = adjustedBounds.Scale(Scale);
-            platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 20);
+            platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 18);
             
             //if (ViewModel.IsSelected || ViewModel.IsMouseOver)
             //{
@@ -251,7 +268,7 @@ namespace Invert.Core.GraphDesigner
                     {
                         ViewModel.IsCollapsed = !ViewModel.IsCollapsed;
                         Dirty = true;
-                    });
+                    },false);
                 });
                
 
@@ -453,14 +470,18 @@ namespace Invert.Core.GraphDesigner
 
         public virtual float HeaderPadding
         {
-            get { return 10; }
+            get { return 5; }
         }
 
-        public override void Refresh(IPlatformDrawer platform, Vector2 position)
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             _headerStyle = null;
-            _cachedIssues = ViewModel.Issues.ToArray();
-            _cachedTag = string.Join(" | ", ViewModel.Tags.ToArray());
+            if (hardRefresh)
+            {
+                _cachedIssues = ViewModel.Issues.ToArray();
+                _cachedTag = string.Join(" | ", ViewModel.Tags.ToArray());
+            }
+            
             if (Children == null || Children.Count < 1)
             {
                 RefreshContent();

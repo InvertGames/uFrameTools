@@ -29,7 +29,7 @@ namespace Invert.Core.GraphDesigner
             if (handler != null) handler();
         }
 
-        public override void Refresh(IPlatformDrawer platform, Vector2 position)
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position);
             var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 12;

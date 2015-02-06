@@ -179,7 +179,8 @@ namespace Invert.Core.GraphDesigner
     {
         Auto,
         TextArea,
-        TypeSelection
+        TypeSelection,
+        GraphItems
     }
     [Browsable(false)]
     public class GenericNode : DiagramNode, IConnectable
@@ -356,13 +357,6 @@ namespace Invert.Core.GraphDesigner
                 this.DeserializeProperty(property, cls);
             }
         }
-
-       
-
-        //public TItem GetConnection<TConnectionType, TItem>() where TConnectionType : GenericConnectionReference, new()
-        //{
-        //    return (TItem)GetConnectionReference<TConnectionType>().ConnectedGraphItems.FirstOrDefault();
-        //}
 
         public TType GetConnectionReference<TType>()
             where TType : GenericSlot, new()
@@ -645,6 +639,14 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                if (Node == null)
+                {
+                    InvertApplication.Log("NODE IS NULL GENERIC REFERENCE ITEM");
+                }
+                else if (Node.Graph == null)
+                {
+                    InvertApplication.Log("Node Graph IS NULL");
+                }
                 return Node.Project.AllGraphItems.FirstOrDefault(p => p.Identifier == SourceIdentifier) as IDiagramNodeItem;
             }
         }

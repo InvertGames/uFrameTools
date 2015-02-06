@@ -25,6 +25,7 @@ public class InvertGraph : IGraphData, IItem
     private List<ConnectionData> _connections;
     private string _ns;
     private List<IGraphItemEvents> _listeners;
+
 #if !UNITY_DLL
     public FileInfo GraphFileInfo { get; set; }
 
@@ -143,6 +144,9 @@ public class InvertGraph : IGraphData, IItem
                 yield return RootFilter as IDiagramNode;
             foreach (var item in Nodes)
                 yield return item;
+            List<IDiagramNode> precompiledList;
+            
+    
         }
     }
 
@@ -181,6 +185,11 @@ public class InvertGraph : IGraphData, IItem
         {
             return Name;
         }
+    }
+
+    public string Group
+    {
+        get { return "Graphs"; }
     }
 
     public string SearchTag
@@ -240,7 +249,7 @@ public class InvertGraph : IGraphData, IItem
 
     public void Save()
     {
-        File.WriteAllText(Path, Serialize().ToString());
+        //File.WriteAllText(Path, Serialize().ToString());
     }
 
     public void RecordUndo(INodeRepository data, string title)
@@ -338,6 +347,9 @@ public class InvertGraph : IGraphData, IItem
     }
 
     public IProjectRepository Project { get; private set; }
+
+    public bool Precompiled { get; set; }
+
     public void SetProject(IProjectRepository project)
     {
         Project = project;
@@ -371,25 +383,29 @@ public class InvertGraph : IGraphData, IItem
             {"Type", new JSONData(data.GetType().FullName)}
             // Version of the diagram
         };
+        // Store the root filter
+        root.AddObject("RootNode", data.RootFilter as IJsonObject);
         
-        if (data.FilterState != null)
-            // Add the filter state
-            root.AddObject("FilterState", data.FilterState);
-        if (data.Settings != null)
-            // Add the settings
-            root.AddObject("Settings", data.Settings);
+        // Nodes
+        root.AddObjectArray("Nodes", data.NodeItems.Where(p => p.Identifier != data.RootFilter.Identifier && !p.Precompiled));
+        root.AddObjectArray("ConnectedItems", data.Connections);
 
         if (data.PositionData != null)
         {
             root.AddObject("PositionData", data.PositionData);
         }
-        
-        // Store the root filter
-        root.AddObject("RootNode", data.RootFilter as IJsonObject);
-        // Nodes
-        root.AddObjectArray("Nodes", data.NodeItems.Where(p=>p.Identifier != data.RootFilter.Identifier));
 
-        root.AddObjectArray("ConnectedItems", data.Connections);
+        if (data.FilterState != null)
+            // Add the filter state
+            root.AddObject("FilterState", data.FilterState);
+
+        if (data.Settings != null)
+            // Add the settings
+            root.AddObject("Settings", data.Settings);
+
+        
+     
+    
         return root;
     }
 
@@ -415,6 +431,7 @@ public class InvertGraph : IGraphData, IItem
         Validate(list);
         return list;
     }
+
 
     /// <summary>
     /// Validates this node decorating a list of errors
@@ -492,14 +509,17 @@ public class InvertGraph : IGraphData, IItem
         {
             Nodes.Clear();
             //uFrameEditor.Log(this.name + jsonNode["Nodes"].ToString());
-            Nodes.AddRange(JsonExtensions.DeserializeObjectArray<IDiagramNode>(jsonNode["Nodes"].AsArray,
-                (INodeRepository) this));
+            Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>((INodeRepository) this, (node =>
+            {
+                var missingNode = new MissingNodeData();
+                missingNode.Deserialize(node.AsObject,this);
+                return missingNode;
+            })));
         }
         if (jsonNode["ConnectedItems"] is JSONArray)
         {
             ConnectedItems.Clear();
-            ConnectedItems.AddRange(JsonExtensions.DeserializeObjectArray<ConnectionData>(
-                jsonNode["ConnectedItems"].AsArray, (INodeRepository) this));
+            ConnectedItems.AddRange(jsonNode["ConnectedItems"].AsArray.DeserializeObjectArray<ConnectionData>((INodeRepository) this));
         }
         foreach (var item in NodeItems)
         {

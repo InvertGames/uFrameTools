@@ -68,6 +68,9 @@ namespace Invert.Core.GraphDesigner
             InvertGraphEditor.Platform.Progress(101f, "Done");
             InvertGraphEditor.Platform.RefreshAssets();
             diagram.Save();
+#if UNITY_DLL
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
           
         }
 
@@ -80,8 +83,6 @@ namespace Invert.Core.GraphDesigner
             
             var files = InvertGraphEditor.GetAllFileGenerators(null,diagram.CurrentRepository).Where(p=>!p.AssetPath.EndsWith(".designer.cs")).Select(p => p.SystemPath).ToArray();
 
-
-            
             if (refactorer.Refactors.Count > 0)
             {
                 //uFrameEditor.Log(string.Format("{0} : {1}", refactorer.GetType().Name , refactorer.CurrentFilename));

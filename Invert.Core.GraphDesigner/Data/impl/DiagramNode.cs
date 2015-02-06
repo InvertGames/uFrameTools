@@ -20,8 +20,9 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-
-                foreach (var connectionData in Node.Project.Connections)
+                if (Project == null)
+                    yield break;
+                foreach (var connectionData in Project.Connections)
                 {
                     if (connectionData.InputIdentifier == this.Identifier)
                     {
@@ -35,7 +36,10 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                foreach (var connectionData in Node.Project.Connections)
+               
+                if (Project == null)
+                    yield break;
+                foreach (var connectionData in Project.Connections)
                 {
                     if (connectionData.OutputIdentifier == this.Identifier)
                     {
@@ -224,6 +228,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                if (Project == null) return null;
                 if (Project.CurrentFilter == this)
                     return this;
                 return Project.CurrentFilter;
@@ -282,6 +287,7 @@ namespace Invert.Core.GraphDesigner
             set
             {
                 _isCollapsed = value;
+                if (Filter != null)
                 Filter.CollapsedValues[this] = value;
                 Dirty = true;
             }
@@ -334,6 +340,13 @@ namespace Invert.Core.GraphDesigner
             get { return _locations; }
             set { _locations = value; }
         }
+
+        public bool Precompiled
+        {
+            get;
+            set;
+        }
+
         [Browsable(true),InspectorProperty]
         public virtual string Name
         {
@@ -400,6 +413,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+
                 return Graph.Project;
             }
         }
@@ -414,6 +428,12 @@ namespace Invert.Core.GraphDesigner
         }
         [Browsable(false)]
         public RenameRefactorer RenameRefactorer { get; set; }
+
+        public string Group
+        {
+            get { return Graph.Name; }
+        }
+
         [Browsable(false)]
         public string SearchTag { get { return Name; } }
         [Browsable(false)]
@@ -613,7 +633,7 @@ namespace Invert.Core.GraphDesigner
             cls.Add("IsCollapsed", new JSONData(_isCollapsed));
             cls.Add("Identifier", new JSONData(_identifier));
 
-            cls.AddObjectArray("Items", PersistedItems);
+            cls.AddObjectArray("Items", PersistedItems.Where(p=>!p.Precompiled));
 
             //cls.Add("Locations", Locations.Serialize());
             cls.Add("CollapsedValues", CollapsedValues.Serialize());

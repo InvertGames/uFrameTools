@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
@@ -64,4 +65,43 @@ public class EnumData : DiagramNode,IDesignerType, IViewPropertyType
         get { return EnumItems.Cast<IDiagramNodeItem>(); }
     }
 
+}
+
+public class EnumNode : GenericNode , IClassTypeNode
+{
+    public string ClassName
+    {
+        get { return Name; }
+    }
+
+    [Section("Enum Items",SectionVisibility.Always)]
+    public IEnumerable<EnumChildItem> Items {
+        get
+        {
+            return ChildItems.OfType<EnumChildItem>();
+        }
+    }
+
+}
+
+
+public class EnumChildItem : GenericNodeChildItem
+{
+    
+}
+
+[TemplateClass("Enums",MemberGeneratorLocation.DesignerFile)]
+public class EnumNodeGenerator : IClassTemplate<EnumNode>
+{
+    public void TemplateSetup()
+    {
+        Ctx.CurrentDecleration.IsEnum = true;
+        Ctx.CurrentDecleration.BaseTypes.Clear();
+        foreach (var item in Ctx.Data.Items)
+        {
+            this.Ctx.CurrentDecleration.Members.Add(new CodeMemberField(this.Ctx.CurrentDecleration.Name, item.Name));
+        }
+    }
+
+    public TemplateContext<EnumNode> Ctx { get; set; }
 }

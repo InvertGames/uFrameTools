@@ -134,7 +134,8 @@ namespace Invert.Core.GraphDesigner
         {
             var tempName = name;
             var index = 1;
-            while (designerData.NodeItems.Any(p => p.Name.ToUpper() == tempName.ToUpper()))
+
+            while (designerData.NodeItems.Any(p => p != null && p.Name != null && p.Name.ToUpper() == tempName.ToUpper()))
             {
                 tempName = name + index;
                 index++;

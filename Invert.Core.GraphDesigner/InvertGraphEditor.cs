@@ -243,19 +243,20 @@ namespace Invert.Core.GraphDesigner
             ExecuteCommand(DesignerWindow, action);
         }
 
-        public static void ExecuteCommand(Action<DiagramViewModel> action)
+        public static void ExecuteCommand(Action<DiagramViewModel> action,bool recordUndo = false)
         {
-            ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action));
+            ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action), recordUndo);
         }
 
         public static SelectionService Selection
         {
             get { return Container.Resolve<SelectionService>(); }
         }
-        private static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command)
+        private static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command, bool recordUndo = true)
         {
             var objs = handler.ContextObjects.ToArray();
-            
+            if (recordUndo)
+            DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.DiagramData,command.Name);
             //CurrentProject.RecordUndo(CurrentProject.CurrentGraph, command.Title);
             foreach (var o in objs)
             {
@@ -285,6 +286,8 @@ namespace Invert.Core.GraphDesigner
                     handler.CommandExecuted(command);
                 }
             }
+            if (recordUndo)
+            DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.DiagramData);
             //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
         }
 
@@ -308,6 +311,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     foreach (var diagram in diagrams)
                     {
+                        if (diagram.Precompiled) continue;
                         if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
 
                         if (generator.DiagramItemType.IsAssignableFrom(diagram.GetType()))
@@ -331,7 +335,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     foreach (var diagram in diagrams)
                     {
-
+                        if (diagram.Precompiled) continue;
                         if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
                         var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, diagram);
                         foreach (var codeGenerator in codeGenerators)
@@ -372,12 +376,13 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var diagram in diagrams)
             {
-
+                if (diagram.Precompiled) continue;
                 if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
                 var items = diagram.NodeItems.Where(p => p.GetType() == generator.DiagramItemType);
 
                 foreach (var item in items)
                 {
+                    if (item.Precompiled) continue;
                     var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, item);
                     foreach (var codeGenerator in codeGenerators)
                     {

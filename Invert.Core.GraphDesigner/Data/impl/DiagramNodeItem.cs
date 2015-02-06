@@ -8,6 +8,12 @@ using UnityEngine;
 public abstract class DiagramNodeItem : IDiagramNodeItem
 {
     public virtual string Title { get { return Name; } }
+
+    public virtual string Group
+    {
+        get { return Node.Name; }
+    }
+
     public virtual string SearchTag { get { return Name; } }
     public bool this[string flag]
     {
@@ -78,6 +84,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     {
         cls.Add("Name", new JSONData(_name));
         cls.Add("Identifier", new JSONData(_identifier));
+        cls.Add("Precompiled", new JSONData(Precompiled));
         cls.AddObject("Flags", Flags);
         cls.AddObject("DataBag", DataBag);
     }
@@ -86,6 +93,10 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     {
         _name = cls["Name"].Value;
         _identifier = cls["Identifier"].Value;
+        if (cls["Precompiled"] != null)
+        {
+            Precompiled = cls["Precompiled"].AsBool;
+        }
         if (cls["Flags"] is JSONClass)
         {
             var flags = cls["Flags"].AsObject;
@@ -115,14 +126,14 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     public abstract string FullLabel { get; }
 
     public virtual string Highlighter { get { return null; } }
-
+    [InspectorProperty]
     public string Identifier
     {
         get
         {
             return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier;
         }
-        protected internal set { _identifier = value; }
+        set { _identifier = value; }
     }
 
     public virtual bool IsSelectable { get { return true; } }
@@ -149,6 +160,8 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     {
         get { return Name; }
     }
+
+    public bool Precompiled { get; set; }
 
     public virtual string Name
     {
@@ -292,6 +305,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
             }
         }
     }
+
     public IEnumerable<ConnectionData> Outputs
     {
         get
@@ -302,6 +316,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
             {
                 throw new Exception("NODE IS NULL");
             }
+            if (Node.Project == null) yield break;
             foreach (var connectionData in Node.Project.Connections)
             {
                 if (connectionData.OutputIdentifier == this.Identifier)

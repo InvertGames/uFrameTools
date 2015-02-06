@@ -272,10 +272,17 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         //Debug.Log("Deserialize");
         try
         {
-     
-            Graph.Deserialize(_jsonData);
+            var json = JSON.Parse(_jsonData);
+            var type = json["Type"].Value;
+            var actualType = InvertApplication.FindType(type);
+            if (actualType != null)
+            {
+                Graph = Activator.CreateInstance(actualType) as IGraphData;
+   
+            }
+            Graph.DeserializeFromJson(json);
             Graph.Path = Application.dataPath + Path.Substring(7);
-            UnityEngine.Debug.Log(Graph.Path);
+            
             Graph.CodePathStrategy = this.CodePathStrategy;
             //Graph.Deserialize(_jsonData);
 
@@ -297,6 +304,12 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
     public IProjectRepository Project
     {
         get { return Graph.Project; }
+    }
+
+    public bool Precompiled
+    {
+        get { return Graph.Precompiled; }
+        set { Graph.Precompiled = value; }
     }
 
     public void AddConnection(IConnectable output, IConnectable input)
@@ -322,6 +335,11 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
     public string Title
     {
         get { return this.name; }
+    }
+
+    public string Group
+    {
+        get { return "Graphs"; }
     }
 
     public string SearchTag

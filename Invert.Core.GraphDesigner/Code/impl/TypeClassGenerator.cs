@@ -8,7 +8,9 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class TypeClassGenerator<TData,TTemplateType> : CodeGenerator where TData : DiagramNode where TTemplateType : class, IClassTemplate<TData>, new()
+    public class TypeClassGenerator<TData, TTemplateType> : CodeGenerator
+        where TData : DiagramNode
+        where TTemplateType : class, IClassTemplate<TData>, new()
     {
         private CodeTypeDeclaration _decleration;
         private TemplateContext<TData> _templateContext;
@@ -17,7 +19,7 @@ namespace Invert.Core.GraphDesigner
 
         public Type TemplateType
         {
-            get { return typeof (TTemplateType); }
+            get { return typeof(TTemplateType); }
         }
 
         public TTemplateType TemplateClass
@@ -28,7 +30,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     _templateClass = new TTemplateType();
                     _templateClass.Ctx = TemplateContext;
-                    
+
                 }
                 return _templateClass;
             }
@@ -42,7 +44,6 @@ namespace Invert.Core.GraphDesigner
                 if (_templateContext == null)
                 {
                     _templateContext = CreateTemplateContext();
-                    
                 }
                 return _templateContext;
             }
@@ -52,7 +53,7 @@ namespace Invert.Core.GraphDesigner
         protected virtual TemplateContext<TData> CreateTemplateContext()
         {
             var context = new TemplateContext<TData>(TemplateType);
-            
+
             context.DataObject = Data;
             context.Namespace = Namespace;
             context.CurrentDecleration = Decleration;
@@ -115,10 +116,10 @@ namespace Invert.Core.GraphDesigner
 
         public override Type GeneratorFor
         {
-            get { return typeof (TData); }
+            get { return typeof(TData); }
             set
             {
-                
+
             }
         }
 
@@ -128,19 +129,22 @@ namespace Invert.Core.GraphDesigner
             if (!string.IsNullOrEmpty(TemplateType.Namespace))
                 TryAddNamespace(TemplateType.Namespace);
             Decleration = TemplateType.ToClassDecleration();
-                
-            var inheritable = Data as GenericInheritableNode;
 
+            var inheritable = Data as GenericInheritableNode;
+            if (!Attribute.AutoInherit)
+            {
+                inheritable = null;
+            }
             if (IsDesignerFile && Attribute.Location != MemberGeneratorLocation.DesignerFile)
             {
                 Decleration.Name = ClassNameBase(Data);
                 if (inheritable != null && inheritable.BaseNode != null)
                 {
-                 
+
                     Decleration.BaseTypes.Clear();
                     Decleration.BaseTypes.Add(ClassName(inheritable.BaseNode));
                 }
-         
+
             }
             else
             {
@@ -148,20 +152,20 @@ namespace Invert.Core.GraphDesigner
                 if (Attribute.Location != MemberGeneratorLocation.DesignerFile)
                 {
                     Decleration.BaseTypes.Clear();
-                    Decleration.BaseTypes.Add(ClassNameBase(Data));    
+                    Decleration.BaseTypes.Add(ClassNameBase(Data));
                 }
-                
+
             }
-            
+
             Namespace.Types.Add(Decleration);
-            
+
             ProcessTemplate();
             return; // Skip the stuff below for now
-            
+
             if (IsDesignerFile)
             {
-               // base.Initialize(fileGenerator);
-                
+                // base.Initialize(fileGenerator);
+
                 if (IsDesignerFile)
                 {
                     InitializeDesignerFile();
@@ -176,12 +180,12 @@ namespace Invert.Core.GraphDesigner
 
         protected virtual void InitializeEditableFile()
         {
-                
+
         }
 
         protected virtual void InitializeDesignerFile()
         {
-            
+
         }
 
         protected void OverrideMethod<TItem>(string name, IEnumerable<TItem> selector, Func<CodeMemberMethod, TItem, CodeMemberMethod> postProcess)
@@ -199,11 +203,11 @@ namespace Invert.Core.GraphDesigner
                     }
                     return postProcess(m, item1);
                 });
-                
+
             }
         }
 
-        protected void OverrideMethod(string name, Func<CodeMemberMethod,CodeMemberMethod> postProcess)
+        protected void OverrideMethod(string name, Func<CodeMemberMethod, CodeMemberMethod> postProcess)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
             if (postProcess == null) throw new ArgumentNullException("postProcess");
@@ -214,7 +218,7 @@ namespace Invert.Core.GraphDesigner
             {
                 Decleration.Members.Add(result);
             }
-            
+
         }
 
         protected void OverrideProperty(string name, Func<CodeMemberProperty, CodeMemberProperty> postProcess)
@@ -227,11 +231,11 @@ namespace Invert.Core.GraphDesigner
 
             if (result != null)
             {
-        
+
                 if (oroperty.HasGet && oroperty.GetStatements.Count < 1)
                 {
                     var field = Decleration._private_(oroperty.Type.ToString(), "_" + oroperty.Name);
-                    oroperty._get("return {0}",field.Name);
+                    oroperty._get("return {0}", field.Name);
 
                     if (oroperty.HasSet && oroperty.SetStatements.Count < 1)
                     {
@@ -242,7 +246,7 @@ namespace Invert.Core.GraphDesigner
             }
 
         }
-        
+
         protected void OverrideProperty<TItem>(string name, IEnumerable<TItem> selector, Func<CodeMemberProperty, TItem, CodeMemberProperty> postProcess)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
@@ -257,7 +261,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 if (typed != null)
                 {
-                 
+
                     if (property.Type.TypeArguments.Count > 0)
                         property.Type.TypeArguments[0] = new CodeTypeReference(typed.RelatedTypeName);
                     else
@@ -270,7 +274,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     property.Name = graphItem.Name;
                 }
-                var result = postProcess(property,item);
+                var result = postProcess(property, item);
                 if (result != null)
                 {
                     if (property.HasGet && property.GetStatements.Count < 1)
@@ -285,8 +289,8 @@ namespace Invert.Core.GraphDesigner
                     }
                     Decleration.Members.Add(result);
                 }
-            } 
-            
+            }
+
         }
 
         public void CallPropertyGet(string name)
@@ -294,10 +298,10 @@ namespace Invert.Core.GraphDesigner
             TemplateType.GetProperty(name).GetValue(TemplateClass, null);
             if (TemplateContext.CurrentIterator != null)
             {
-                
+
             }
         }
-        
+
         public static object GetDefault(Type type)
         {
             if (type.IsValueType)
@@ -306,7 +310,7 @@ namespace Invert.Core.GraphDesigner
             }
             return null;
         }
-        
+
         public void ProcessTemplate()
         {
             // Initialize the template
@@ -315,7 +319,7 @@ namespace Invert.Core.GraphDesigner
 
             var templateProperties =
                 TemplateType.GetPropertiesWithAttribute<TemplateProperty>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-          
+
             foreach (var templateProperty in templateProperties)
             {
 
@@ -374,7 +378,7 @@ namespace Invert.Core.GraphDesigner
         //        var field = Decleration._private_(domObject.Type, "_{0}", domObject.Name);
         //        domObject.GetStatements._("return {0}", field.Name);
         //        domObject.SetStatements._("{0} = value", field.Name);
-              
+
         //    }
         //    else
         //    {
@@ -433,7 +437,7 @@ namespace Invert.Core.GraphDesigner
         //    {
         //        dom.Name = string.Format(templateMethod.Value.NameFormat, data.Name);
         //    }
-        
+
 
         //    info.Invoke(TemplateClass, args.ToArray());
 
@@ -450,13 +454,13 @@ namespace Invert.Core.GraphDesigner
         //            dom.invoke_base(true);
         //        }
         //    }
-                
+
 
         //    Decleration.Members.Add(dom);
         //}
     }
 
- 
+
     public class TemplateContext<TData> : TemplateContext
     {
         private Dictionary<string, Func<TData, IEnumerable>> _iterators;
@@ -483,13 +487,13 @@ namespace Invert.Core.GraphDesigner
                 {
                     CurrentConstructor.CustomAttributes.Add(attribute);
                 }
-                
+
             }
             else
             {
-                CurrentMember.CustomAttributes.Add(attribute);    
+                CurrentMember.CustomAttributes.Add(attribute);
             }
-            
+
             return attribute;
 
         }
@@ -538,7 +542,7 @@ namespace Invert.Core.GraphDesigner
 
         public T ItemAs<T>()
         {
-            return (T) Item;
+            return (T)Item;
         }
 
         public CodeMemberProperty DoTemplateProperty(object instance, KeyValuePair<PropertyInfo, TemplateProperty> templateProperty)
@@ -568,14 +572,17 @@ namespace Invert.Core.GraphDesigner
                     }
                 }
             }
-            CurrentStatements = domObject.GetStatements;
+            PushStatements(domObject.GetStatements);
             templateProperty.Key.GetValue(instance, null);
+            PopStatements();
             if (templateProperty.Key.CanWrite)
             {
-                CurrentStatements = domObject.SetStatements;
+                PushStatements(domObject.SetStatements);
+                //CurrentStatements = domObject.SetStatements;
                 templateProperty.Key.SetValue(instance,
                     GetDefault(templateProperty.Key.PropertyType),
                     null);
+                PopStatements();
             }
 
             if (templateProperty.Value.AutoFill == AutoFillType.NameAndTypeWithBackingField ||
@@ -589,7 +596,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-            
+
                 if (!IsDesignerFile && domObject.Attributes != MemberAttributes.Final && templateProperty.Value.Location == MemberGeneratorLocation.Both)
                 {
                     domObject.Attributes |= MemberAttributes.Override;
@@ -598,7 +605,6 @@ namespace Invert.Core.GraphDesigner
             return domObject;
         }
 
-        
 
         public void DoTemplateConstructor(object instance, KeyValuePair<MethodInfo, TemplateConstructor> templateMethod, IDiagramNodeItem data)
         {
@@ -606,7 +612,8 @@ namespace Invert.Core.GraphDesigner
             var dom = templateMethod.Key.ToCodeConstructor();
             CurrentAttribute = templateMethod.Value;
             CurrentConstructor = dom;
-            CurrentStatements = dom.Statements;
+            PushStatements(dom.Statements);
+//            CurrentStatements = dom.Statements;
             var args = new List<object>();
             var parameters = info.GetParameters();
             foreach (var arg in parameters)
@@ -620,6 +627,7 @@ namespace Invert.Core.GraphDesigner
 
 
             info.Invoke(instance, args.ToArray());
+            PopStatements();
             CurrentDecleration.Members.Add(dom);
         }
         public void RenderTemplateProperty(object instance, string propertyName)
@@ -735,7 +743,8 @@ namespace Invert.Core.GraphDesigner
             var dom = TemplateType.MethodFromTypeMethod(templateMethod.Key.Name, out info, false);
             CurrentMember = dom;
             CurrentAttribute = templateMethod.Value;
-            CurrentStatements = dom.Statements;
+            PushStatements(dom.Statements);
+            
             var args = new List<object>();
             var parameters = info.GetParameters();
             foreach (var arg in parameters)
@@ -747,20 +756,20 @@ namespace Invert.Core.GraphDesigner
                 dom.Name = string.Format(templateMethod.Value.NameFormat, data.Name);
             }
 
-            
-       
-               var result = info.Invoke(instance, args.ToArray());
+            CurrentDecleration.Members.Add(dom);
+
+            var result = info.Invoke(instance, args.ToArray());
             var a = result as IEnumerable;
             if (a != null)
             {
                 var dummyIteraters = a.Cast<object>().ToArray();
                 foreach (var item in dummyIteraters)
                 {
-                    
+
                 }
             }
-            
-         
+
+            PopStatements();
 
             var isOverried = false;
             if (!IsDesignerFile && dom.Attributes != MemberAttributes.Final && templateMethod.Value.Location == MemberGeneratorLocation.Both)
@@ -774,18 +783,20 @@ namespace Invert.Core.GraphDesigner
                 {
                     //if (!info.IsOverride() || !info.GetBaseDefinition().IsAbstract && IsDesignerFile)
                     //{ 
-                        dom.invoke_base(true);
+                    dom.invoke_base(true);
                     //}
-                     
+
                 }
             }
 
 
-            CurrentDecleration.Members.Add(dom);
+
         }
     }
     public class TemplateContext
     {
+        private Stack<CodeStatementCollection> _contextStatements;
+        private CodeStatementCollection _currentStatements;
         public bool IsDesignerFile { get; set; }
         public IDiagramNodeItem DataObject { get; set; }
         public IDiagramNodeItem Item { get; set; }
@@ -836,7 +847,16 @@ namespace Invert.Core.GraphDesigner
             }
             Namespace.Imports.Add(new CodeNamespaceImport(ns));
         }
-        public CodeStatementCollection CurrentStatements { get; set; }
+
+        public CodeStatementCollection CurrentStatements
+        {
+            get { return ContextStatements.Peek(); }
+            //set
+            //{
+            //    _currentStatements = value;
+                
+            //}
+        }
 
         public void _(string formatString, params object[] args)
         {
@@ -872,11 +892,11 @@ namespace Invert.Core.GraphDesigner
         }
         public void SetTypeArgument(object type, params object[] args)
         {
-            
-            
+
+
             if (CurrentProperty != null)
             {
-                CurrentProperty.SetTypeArgument(type,args);
+                CurrentProperty.SetTypeArgument(type, args);
             }
 
             else if (CurrentMethod != null)
@@ -889,7 +909,7 @@ namespace Invert.Core.GraphDesigner
         {
             if (CurrentProperty != null)
             {
-                CurrentProperty.Type = type.ToCodeReference(args);  
+                CurrentProperty.Type = type.ToCodeReference(args);
             }
 
             else if (CurrentMethod != null)
@@ -898,17 +918,34 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                
+
             }
-                
-            
+
+
         }
 
         public void LazyGet(string fieldName, string createExpression, params object[] args)
         {
             _if("{0}==null", fieldName)
                 .TrueStatements._("{0} = {1}", fieldName, string.Format(createExpression, args).ToString());
-            _("return {0}",fieldName);
+            _("return {0}", fieldName);
         }
+
+        protected Stack<CodeStatementCollection> ContextStatements
+        {
+            get { return _contextStatements ?? (_contextStatements = new Stack<CodeStatementCollection>()); }
+            set { _contextStatements = value; }
+        }
+
+        public void PushStatements(CodeStatementCollection codeStatementCollection)
+        {
+            ContextStatements.Push(codeStatementCollection);
+        }
+
+        public void PopStatements()
+        {
+            ContextStatements.Pop();
+        }
+
     }
 }

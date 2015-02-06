@@ -154,7 +154,7 @@ namespace Invert.Common.UI
         }
         public static bool DoToolbarEx(string label, Action add = null, Action leftButton = null, Action paste = null)
         {
-            var tBar = DoToolbar(label, EditorPrefs.GetBool(label, false), add, leftButton, paste);
+            var tBar = DoToolbar(label, EditorPrefs.GetBool(label, true), add, leftButton, paste);
             if (tBar)
             {
                 EditorPrefs.SetBool(label,!EditorPrefs.GetBool(label));

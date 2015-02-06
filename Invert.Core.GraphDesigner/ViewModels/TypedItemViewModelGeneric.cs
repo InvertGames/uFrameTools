@@ -15,7 +15,17 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-  
+        public override string RelatedType
+        {
+            get
+            {
+                if (Data.RelatedType == "ENTITY")
+                    return "ENTITY";
+                return base.RelatedType;
+            }
+            set { base.RelatedType = value; }
+        }
+
         public override bool IsEditable
         {
             get { return base.IsEditable; }

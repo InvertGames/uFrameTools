@@ -141,6 +141,8 @@ namespace Invert.Core.GraphDesigner
             Name = name;
             Visibility = visibility;
         }
+
+        public Type AddCommandType { get; set; }
     }
 
     public class ConfigProxy : GraphItemAttribute

@@ -7,6 +7,7 @@ namespace Invert.Core.GraphDesigner
 {
     public interface IDiagramNodeItem : ISelectable, IJsonObject, IItem, IConnectable
     {
+        bool Precompiled { get; set; }
         string Name { get; set; }
         string Highlighter { get; }
         string FullLabel { get; }

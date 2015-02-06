@@ -60,8 +60,8 @@ namespace Invert.uFrame.Code.Bindings
             //{
 
 
-            SetterMethod = CreateMethodSignature(null, new CodeParameterDeclarationExpression(
-                Item.GetPropertyType(), "value"));
+            //SetterMethod = CreateMethodSignature(null, new CodeParameterDeclarationExpression(
+            //    Item.GetPropertyType(), "value"));
 
             if (GenerateDefaultImplementation)
             {

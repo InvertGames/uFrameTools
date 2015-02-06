@@ -19,30 +19,67 @@ namespace Invert.Core.GraphDesigner
         {
             get { return CachedStyles.DefaultLabel; }
         }
+        private string _left;
+        private string _right;
+        private Vector2 _leftSize;
+        private Vector2 _rightSize;
+        //public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
+        //{
+        //    base.Refresh(platform, position, hardRefresh);
+        //    if (hardRefresh)
+        //    {
+              
+        //    }
 
-        public override void Refresh(IPlatformDrawer platform, Vector2 position)
+
+        //    Bounds = new Rect(position.x + 10, position.y, _leftSize.x + 5 + _rightSize.x + 40, 18);
+        //}
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
-            base.Refresh(platform, position);
-            if (ViewModel.CustomDrawerType != null)
+            base.Refresh(platform, position,hardRefresh);
+            if (hardRefresh)
+            {
+                CachedValue = ViewModel.Getter();
+            }
+
+            if (ViewModel.CustomDrawerType != null && hardRefresh)
             {
                 CustomDrawer = (IInspectorPropertyDrawer) Activator.CreateInstance(ViewModel.CustomDrawerType);
-                CustomDrawer.Refresh(position,ViewModel);
-                return;
             }
-            CachedValue = ViewModel.Getter();
-            var bounds = new Rect(Bounds);
-            bounds.width *= 2;
-            if (ViewModel.Type == typeof(Vector2) || ViewModel.Type == typeof(Vector3))// || ViewModel.Type == typeof(Quaternion))
+
+            
+            if (CustomDrawer != null)
             {
-                bounds.height *= 2f;
+                CustomDrawer.Refresh(platform, position, this);
+
             }
-            Bounds = bounds;
+            else
+            {
+                var bounds = new Rect(Bounds);
+                bounds.width *= 2;
+                if (ViewModel.Type == typeof(Vector2) || ViewModel.Type == typeof(Vector3))// || ViewModel.Type == typeof(Quaternion))
+                {
+                    bounds.height *= 2f;
+                }
+                bounds.x += 3;
+                Bounds = bounds;
+
+            }
+
+            
+   
         }
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
-            platform.DrawPropertyField(this,scale);
-        
+            if (CustomDrawer != null)
+            {
+                CustomDrawer.Draw(platform, scale, this);
+            }
+            else
+            {
+                platform.DrawPropertyField(this, scale);
+            }
         }
 
         
@@ -237,7 +274,7 @@ namespace Invert.Core.GraphDesigner
 
     public interface IInspectorPropertyDrawer
     {
-        void Refresh(Vector2 position, PropertyFieldViewModel viewModel);
-        object Draw(float scale, PropertyFieldViewModel viewModel);
+        void Refresh(IPlatformDrawer platform, Vector2 position, PropertyFieldDrawer viewModel);
+        void Draw(IPlatformDrawer platform, float scale, PropertyFieldDrawer viewModel);
     }
 }

@@ -512,8 +512,8 @@ public class ViewModelGenerator : ElementCodeGenerator
         var field = new CodeMemberField { Name = itemData.FieldName };
 
         field.Attributes = MemberAttributes.Public;
-        var t = itemData.GetFieldType();
-        field.Type = t;
+        //var t = itemData.GetFieldType();
+        //field.Type = t;
         //if (itemData is ComputedPropertyData)
         //{
         //    field.Type = new CodeTypeReference(string.Format("readonly Computed<{0}>", fieldType.Name));
@@ -523,11 +523,11 @@ public class ViewModelGenerator : ElementCodeGenerator
         //    field.Type = new CodeTypeReference(string.Format("readonly P<{0}>", relatedType));
         //}
         //var t = itemData.GetFieldType(relatedType);
-        var initExpr = new CodeObjectCreateExpression(t);
-        initExpr.Parameters.Add(new CodeThisReferenceExpression());
-        initExpr.Parameters.Add(new CodePrimitiveExpression(itemData.Name));
+        //var initExpr = new CodeObjectCreateExpression(t);
+        //initExpr.Parameters.Add(new CodeThisReferenceExpression());
+        //initExpr.Parameters.Add(new CodePrimitiveExpression(itemData.Name));
 
-        constructor.Statements.Add(new CodeAssignStatement(new CodeSnippetExpression(field.Name), initExpr));
+        //constructor.Statements.Add(new CodeAssignStatement(new CodeSnippetExpression(field.Name), initExpr));
 
         return field;
     }
@@ -538,8 +538,8 @@ public class ViewModelGenerator : ElementCodeGenerator
 
         var typeViewModel = itemData.RelatedNode();
 
-        var t = itemData.GetPropertyType();
-        property.Type = t;
+        //var t = itemData.GetPropertyType();
+        //property.Type = t;
         //if (typeViewModel == null)
         //{
         //    property.Type = new CodeTypeReference(itemData.RelatedTypeName);

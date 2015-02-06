@@ -30,7 +30,7 @@ namespace Invert.Core.GraphDesigner
         void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent,
             Color color, float width);
 
-        void DrawColumns(Rect rect,int[] columnWidths, params Action<Rect>[] columns);
+        void DrawColumns(Rect rect,float[] columnWidths, params Action<Rect>[] columns);
         void DrawColumns(Rect rect, params Action<Rect>[] columns);
 
         void DrawImage(Rect bounds, string texture, bool b);

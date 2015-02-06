@@ -14,6 +14,8 @@ namespace Invert.Core.GraphDesigner
             : base(viewModelObject)
         {
         }
+
+        
     }
 
     public class ItemDrawer : Drawer
@@ -31,7 +33,8 @@ namespace Invert.Core.GraphDesigner
 
         private object _textStyle;
         private object _backgroundStyle;
-        private string _cachedName;
+        private Vector2 _textSize;
+        public string CachedName { get; private set; }
 
 
         public ItemViewModel ItemViewModel
@@ -95,14 +98,18 @@ namespace Invert.Core.GraphDesigner
             InvertApplication.Log("Selected Item");
         }
 
-        public override void Refresh(IPlatformDrawer platform, Vector2 position)
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position);
             // Calculate the size of the label and add the padding * 2 for left and right
-            _cachedName = ItemViewModel.Name;
-            var textSize = platform.CalculateSize(_cachedName, CachedStyles.ItemTextEditingStyle);// TextStyle.CalcSize(new GUIContent(ItemViewModel.Name));
-            var width = textSize.x + (Padding * 2);
-            var height = textSize.y + (Padding * 2);
+            CachedName = ItemViewModel.Name;
+            if (hardRefresh)
+            {
+                _textSize = platform.CalculateSize(CachedName, CachedStyles.ItemTextEditingStyle);// TextStyle.CalcSize(new GUIContent(ItemViewModel.Name));
+            }
+
+            var width = _textSize.x + (Padding * 2);
+            var height = _textSize.y + (Padding * 2);
 
             this.Bounds = new Rect(position.x, position.y, width, height);
            
@@ -197,7 +204,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                platform.DrawLabel(rect.Scale(scale), _cachedName, CachedStyles.ItemTextEditingStyle, alignment);
+                platform.DrawLabel(rect.Scale(scale), CachedName, CachedStyles.ItemTextEditingStyle, alignment);
             }
         }
 

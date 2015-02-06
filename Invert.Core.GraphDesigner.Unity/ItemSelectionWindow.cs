@@ -28,26 +28,80 @@ public class ItemSelectionWindow : SearchableScrollWindow
 
     protected override void ApplySearch()
     {
-        if (string.IsNullOrEmpty(_SearchText))
+        if (Items == null) return;
+        if (!string.IsNullOrEmpty(_SearchText))
         {
-            ItemsArray = Items.Where(p => p.SearchTag != null && p.SearchTag.Contains(_SearchText)).ToArray();
+            var text = _SearchText.ToLower();
+            //ItemsArray = Items.Where(p => p.SearchTag != null && p.SearchTag.Contains(_SearchText)).ToArray();
+            ItemGroups = Items.Where(
+                delegate(IItem p)
+                {
+
+                    var st = p.SearchTag;
+                    if (st == null) return false;
+                    st = st.ToLower();
+                    return (st.Contains(text) || st == text);
+                }).OrderBy(p => p.Title).GroupBy(p => p.Group).ToArray();
         }
         else
         {
-            ItemsArray = Items.ToArray();
+            //ItemsArray = Items.ToArray();
+            ItemGroups = Items.OrderBy(p=> p.Title).GroupBy(p => p.Group).ToArray();
         }
     }
 
+    public IGrouping<string, IItem>[] ItemGroups { get; set; }
+
     public override void OnGUIScrollView()
     {
-        foreach (var item in ItemsArray)
+        if (ItemGroups == null)
         {
-            if (item == null) continue;
-            if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.Title, IsWindow = true, FullWidth = true,BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall}))
+            return;
+        }
+        foreach (var group in ItemGroups)
+        {
+            if (group.Any())
             {
-                SelectedAction(item);
-                IsClosing = true;
+                if (string.IsNullOrEmpty(_SearchText))
+                {
+                    if (GUIHelpers.DoToolbarEx(group.Key))
+                    {   
+                        foreach (var item in group)
+                        {
+                            if (item == null) continue;
+                            if (
+                                GUIHelpers.DoTriggerButton(new UFStyle()
+                                {
+                                    Label = item.Title,
+                                    IsWindow = true,
+                                    FullWidth = true,
+                                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall
+                                }))
+                            {
+                                SelectedAction(item);
+                                IsClosing = true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                
+                        foreach (var item in group)
+                        {
+                            if (item == null) continue;
+                            if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.Group + " : " + item.Title, IsWindow = true, FullWidth = true, BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall }))
+                            {
+                                SelectedAction(item);
+                                IsClosing = true;
+                            }
+                        }
+                    
+                }
+            
+
             }
+
         }
     }
 

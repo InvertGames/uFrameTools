@@ -111,7 +111,7 @@ namespace Invert.Core.GraphDesigner
                 IsProxy = section is ProxySection,
                 Visibility = section.Visibility,
                 SourceType = property.PropertyType.GetGenericParameter(),
-                
+                AddCommandType = section.AddCommandType
             };
 
             var referenceSection = section as ReferenceSection;
@@ -123,6 +123,7 @@ namespace Invert.Core.GraphDesigner
                                               sectionConfig.SourceType.GetGenericParameter() ?? property.PropertyType.GetGenericParameter();
                 sectionConfig.IsEditable = referenceSection.Editable;
                 sectionConfig.HasPredefinedOptions = referenceSection.HasPredefinedOptions;
+                
                 if (sectionConfig.ReferenceType == null)
                 {
                     throw new Exception(string.Format("Reference Section on property {0} doesn't have a valid ReferenceType.", property.Name));

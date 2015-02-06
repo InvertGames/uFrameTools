@@ -123,6 +123,10 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         return diagram;
     }
 
+
+
+
+
     protected override void AddGraph(IGraphData graphData)
     {
         base.AddGraph(graphData);
@@ -219,6 +223,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
             _currentGraph = value;
             if (value == null) return;
             var openGraph = Enumerable.FirstOrDefault<OpenGraph>(OpenGraphs, p => p.GraphName == value.Name);
+
             if (openGraph == null)
             {
                 OpenTabs.Add(new OpenGraph()
@@ -230,6 +235,17 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
             }
 
             LastLoadedDiagram = value.Name;
+            //Debug.Log("SET PROJECT to " + this.name);
+            //    value.SetProject(this);
+            InvalidateCache();
+            //foreach (var item in Graphs)
+            //{
+            //    item.SetProject(this);
+            //}
+            //foreach (var graph in PrecompiledGraphs)
+            //{
+            //    graph.SetProject(this);
+            //}
         }
     }
 
@@ -271,6 +287,19 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
             //}
             foreach (var item in Diagrams)
                 yield return item as IGraphData; //Diagrams.Cast<IGraphData>();
+
+
+            foreach (var n in PrecompiledGraphs)
+            {
+                //if (n.Project != (IProjectRepository)this)
+                //{
+                //    n.SetProject(this);
+                //}
+                //UnityEngine.Debug.Log("Loaded Project " + n.Identifier);
+                yield return n;
+            }
+
+
         }
         set { Diagrams = value.Cast<ScriptableObject>().ToList(); }
     }
@@ -288,6 +317,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
     {
         if (data != null)
             Undo.RecordObject(data as UnityEngine.Object, title);
+
     }
 
     public override void Refresh()

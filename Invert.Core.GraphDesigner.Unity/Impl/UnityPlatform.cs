@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
-    public class UnityPlatform :IPlatformOperations, IDebugLogger
+    public class UnityPlatform : IPlatformOperations, IDebugLogger
     {
         public void OpenScriptFile(string filePath)
         {
@@ -43,10 +43,10 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             if (progress > 100f)
             {
-               EditorUtility.ClearProgressBar();
+                EditorUtility.ClearProgressBar();
                 return;
             }
-            EditorUtility.DisplayProgressBar("Generating",message,progress / 1f);
+            EditorUtility.DisplayProgressBar("Generating", message, progress / 1f);
         }
 
         public void Log(string message)
@@ -79,7 +79,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public float GetInt(string name, int def)
         {
-            
+
             return EditorPrefs.GetInt(name, def);
         }
         public void SetBool(string name, bool value)
@@ -115,7 +115,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             EditorPrefs.DeleteAll();
         }
-    
+
     }
 
     public class UnityContextMenu : ContextMenuUI
@@ -236,7 +236,7 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DoCommand(IEditorCommand command)
         {
 
-   
+
             if (command is IDynamicOptionsCommand)
             {
                 var obj = Handler.ContextObjects.FirstOrDefault(p => command.For.IsAssignableFrom(p.GetType()));
@@ -284,17 +284,17 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DrawPolyLine(Vector2[] lines, Color color)
         {
             Handles.color = color;
-            Handles.DrawPolyLine(lines.Select(x=>new Vector3(x.x,x.y,0f)).ToArray());
+            Handles.DrawPolyLine(lines.Select(x => new Vector3(x.x, x.y, 0f)).ToArray());
         }
 
         public void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent,
             Color color, float width)
         {
             Handles.color = color;
-            Handles.DrawBezier(startPosition,endPosition,startTangent,endTangent,color,null,width);
+            Handles.DrawBezier(startPosition, endPosition, startTangent, endTangent, color, null, width);
         }
 
-    
+
         public Vector2 CalculateSize(string text, object tag1)
         {
             return ((GUIStyle)tag1).CalcSize(new GUIContent(text));
@@ -302,36 +302,34 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
         {
-            var s = (GUIStyle) style;
-            s.alignment =  ((TextAnchor) Enum.Parse(typeof (TextAnchor), alignment.ToString(), true));
-            
-           GUI.Label(rect,label,s);
+            var s = (GUIStyle)style;
+            s.alignment = ((TextAnchor)Enum.Parse(typeof(TextAnchor), alignment.ToString(), true));
+
+            GUI.Label(rect, label, s);
         }
 
         public void DrawStretchBox(Rect scale, object nodeBackground, float offset)
         {
-            ElementDesignerStyles.DrawExpandableBox(scale,(GUIStyle)nodeBackground,
+            ElementDesignerStyles.DrawExpandableBox(scale, (GUIStyle)nodeBackground,
                 string.Empty, offset);
         }
 
         public void DrawStretchBox(Rect scale, object nodeBackground, Rect offset)
         {
             ElementDesignerStyles.DrawExpandableBox(scale, (GUIStyle)nodeBackground,
-               string.Empty, new RectOffset(Mathf.RoundToInt(offset.x),Mathf.RoundToInt(offset.y),Mathf.RoundToInt(offset.width),Mathf.RoundToInt(offset.height)));
+               string.Empty, new RectOffset(Mathf.RoundToInt(offset.x), Mathf.RoundToInt(offset.y), Mathf.RoundToInt(offset.width), Mathf.RoundToInt(offset.height)));
 
         }
 
         public void DoButton(Rect scale, string label, object style, Action action)
         {
             var s = style == null ? EditorStyles.miniButton : (GUIStyle)style;
-             if (GUI.Button(scale, label,s))
-             {
-                 InvertGraphEditor.ExecuteCommand((a) =>
-                 {
-                     action();
-                 });
-                 
-             }
+            if (GUI.Button(scale, label, s))
+            {
+           
+                    action();
+           
+            }
         }
 
         public void DrawWarning(Rect rect, string key)
@@ -357,14 +355,14 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void EndRender()
         {
-          
+
         }
 
-  
+
 
         public void BeginRender(object sender, MouseEvent mouseEvent)
         {
-         
+
         }
 
         public void DrawColumns(Rect rect, params Action<Rect>[] columns)
@@ -379,9 +377,9 @@ namespace Invert.Core.GraphDesigner.Unity
                 item(newRect);
             }
         }
-        public void DrawColumns(Rect rect, int[] columnWidths, params Action<Rect>[] columns)
+        public void DrawColumns(Rect rect, float[] columnWidths, params Action<Rect>[] columns)
         {
-            var x = 0;
+            var x = 0f;
             for (int index = 0; index < columns.Length; index++)
             {
                 var item = columns[index];
@@ -396,9 +394,9 @@ namespace Invert.Core.GraphDesigner.Unity
                 {
                     var newRect = new Rect(rect.x + x, rect.y, columnWidths[index], rect.height);
                     item(newRect);
-                    
+
                 }
-               
+
                 x += columnWidths[index];
             }
         }
@@ -418,13 +416,13 @@ namespace Invert.Core.GraphDesigner.Unity
             }
         }
 
-        public void DrawTextbox(string id, Rect rect, string value, object itemTextEditingStyle, Action<string,bool> valueChangedAction)
+        public void DrawTextbox(string id, Rect rect, string value, object itemTextEditingStyle, Action<string, bool> valueChangedAction)
         {
             EditorGUI.BeginChangeCheck();
             GUI.SetNextControlName("EditingField");
             DiagramDrawer.IsEditingField = true;
             var newName = EditorGUI.TextField(rect, value, (GUIStyle)itemTextEditingStyle);
-           
+
             if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
             {
                 valueChangedAction(newName, false);
@@ -437,101 +435,120 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawingStarted()
         {
-            
+
         }
 
-        public virtual void DrawInspector(PropertyFieldDrawer d,bool refreshGraph = false, float scale = 1f)
+        public virtual void DrawInspector(PropertyFieldDrawer d, bool refreshGraph = false, float scale = 1f)
         {
-            EditorGUI.BeginChangeCheck();
-            if (d.CustomDrawer != null)
-            {
-                d.CachedValue = d.CustomDrawer.Draw(scale, d.ViewModel);
-            }
-            else
-                if (d.ViewModel.Type == typeof(string))
-                {
-                    if (d.ViewModel.InspectorType == InspectorType.TextArea)
-                    {
-                        EditorGUILayout.LabelField(d.ViewModel.Name);
-                        d.CachedValue = EditorGUILayout.TextArea((string)d.CachedValue, GUILayout.Height(50));
-                    }
-                    else if (d.ViewModel.InspectorType == InspectorType.TypeSelection)
-                    {
-                        GUILayout.BeginHorizontal();
-                        GUILayout.Label(d.ViewModel.Name);
 
-                        if (GUILayout.Button((string)d.CachedValue))
+            if (d.ViewModel.InspectorType == InspectorType.GraphItems)
+            {
+                var item = d.CachedValue as IGraphItem;
+                var text = "--Select--";
+                if (item != null)
+                {
+                    text = item.Label;
+                }
+                //GUILayout.BeginHorizontal();
+                GUILayout.Label(d.CachedName, ElementDesignerStyles.ClearItemStyle);
+                if (GUILayout.Button(text, ElementDesignerStyles.ItemTextEditingStyle))
+                {
+                    var type = d.ViewModel.Type;
+                    var nodeItem = d.ViewModel.NodeViewModel.DataObject as IDiagramNodeItem;
+                    var items = nodeItem.Node.Project.AllGraphItems.Where(p => type.IsAssignableFrom(p.GetType()));
+                    InvertGraphEditor.WindowManager.InitItemWindow(items, (i) =>
+                    {
+
+                        d.ViewModel.Setter(i);
+                    });
+
+                }
+                //GUILayout.EndHorizontal();
+                return;
+            }
+       
+
+            if (d.ViewModel.Type == typeof(string))
+            {
+                if (d.ViewModel.InspectorType == InspectorType.TextArea)
+                {
+                    EditorGUILayout.LabelField(d.ViewModel.Name);
+                    d.CachedValue = EditorGUILayout.TextArea((string)d.CachedValue, GUILayout.Height(50));
+                }
+                else if (d.ViewModel.InspectorType == InspectorType.TypeSelection)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(d.ViewModel.Name);
+
+                    if (GUILayout.Button((string)d.CachedValue))
+                    {
+                        InvertGraphEditor.WindowManager.InitTypeListWindow(InvertApplication.GetDerivedTypes<System.Object>(true, true).Select(p => new GraphTypeInfo()
                         {
-                            InvertGraphEditor.WindowManager.InitTypeListWindow(InvertApplication.GetDerivedTypes<System.Object>(true, true).Select(p => new GraphTypeInfo()
-                            {
-                                Name = p.Name,
-                                Group = p.Namespace,
-                                Label = p.Name,
+                            Name = p.Name,
+                            Group = p.Namespace,
+                            Label = p.Name,
 
-                            }).ToArray()
-                            , (type) =>
-                            {
-                                InvertGraphEditor.ExecuteCommand(x => d.ViewModel.Setter(type.Name));
-                            });
-                        }
-                        GUILayout.EndHorizontal();
+                        }).ToArray()
+                        , (type) =>
+                        {
+                            InvertGraphEditor.ExecuteCommand(x => d.ViewModel.Setter(type.Name), true);
+                        });
                     }
-                    else
+                    GUILayout.EndHorizontal();
+                }
+
+                else
+                {
+                    EditorGUI.BeginChangeCheck();
+                    d.CachedValue = EditorGUILayout.TextField(d.ViewModel.Name, (string)d.CachedValue);
+                    if (EditorGUI.EndChangeCheck())
                     {
-                        d.CachedValue = EditorGUILayout.TextField(d.ViewModel.Name, (string)d.CachedValue);
+                        d.ViewModel.Setter(d.CachedValue);
                     }
-
-                }
-                else if (d.ViewModel.Type == typeof(int))
-                {
-                    d.CachedValue = EditorGUILayout.IntField(d.ViewModel.Name, (int)d.CachedValue);
-                }
-                else if (d.ViewModel.Type == typeof(float))
-                {
-                    d.CachedValue = EditorGUILayout.FloatField(d.ViewModel.Name, (float)d.CachedValue);
-                }
-                else if (d.ViewModel.Type == typeof(Vector2))
-                {
-                    d.CachedValue = EditorGUILayout.Vector2Field(d.ViewModel.Name, (Vector3)d.CachedValue);
                 }
 
-                else if (d.ViewModel.Type == typeof(Vector3))
-                {
-                    d.CachedValue = EditorGUILayout.Vector3Field(d.ViewModel.Name, (Vector3)d.CachedValue);
-
-                }
-                else if (d.ViewModel.Type == typeof(Color))
-                {
-                    d.CachedValue = EditorGUILayout.ColorField(d.ViewModel.Name, (Color)d.CachedValue);
-
-                }
-                else if (d.ViewModel.Type == typeof(Vector4))
-                {
-                    d.CachedValue = EditorGUILayout.Vector4Field(d.ViewModel.Name, (Vector4)d.CachedValue);
-                }
-                else if (d.ViewModel.Type == typeof(bool))
-                {
-                    d.CachedValue = EditorGUILayout.Toggle(d.ViewModel.Name, (bool)d.CachedValue);
-                }
-                else if (typeof(Enum).IsAssignableFrom(d.ViewModel.Type))
-                {
-                    d.CachedValue = EditorGUILayout.EnumPopup(d.ViewModel.Name, (Enum)d.CachedValue);
-                }
-                else if (d.ViewModel.Type == typeof(Type))
-                {
-                    //InvertGraphEditor.WindowManager.InitTypeListWindow();
-                }
-
-            if (EditorGUI.EndChangeCheck())
-            {
-
-                d.ViewModel.Setter(d.CachedValue);
-                if (refreshGraph)
-                {
-
-                    InvertGraphEditor.DesignerWindow.RefreshContent();
-                }
             }
+            else if (d.ViewModel.Type == typeof(int))
+            {
+                d.CachedValue = EditorGUILayout.IntField(d.ViewModel.Name, (int)d.CachedValue);
+            }
+            else if (d.ViewModel.Type == typeof(float))
+            {
+                d.CachedValue = EditorGUILayout.FloatField(d.ViewModel.Name, (float)d.CachedValue);
+            }
+            else if (d.ViewModel.Type == typeof(Vector2))
+            {
+                d.CachedValue = EditorGUILayout.Vector2Field(d.ViewModel.Name, (Vector3)d.CachedValue);
+            }
+
+            else if (d.ViewModel.Type == typeof(Vector3))
+            {
+                d.CachedValue = EditorGUILayout.Vector3Field(d.ViewModel.Name, (Vector3)d.CachedValue);
+
+            }
+            else if (d.ViewModel.Type == typeof(Color))
+            {
+                d.CachedValue = EditorGUILayout.ColorField(d.ViewModel.Name, (Color)d.CachedValue);
+
+            }
+            else if (d.ViewModel.Type == typeof(Vector4))
+            {
+                d.CachedValue = EditorGUILayout.Vector4Field(d.ViewModel.Name, (Vector4)d.CachedValue);
+            }
+            else if (d.ViewModel.Type == typeof(bool))
+            {
+                d.CachedValue = EditorGUILayout.Toggle(d.ViewModel.Name, (bool)d.CachedValue);
+            }
+            else if (typeof(Enum).IsAssignableFrom(d.ViewModel.Type))
+            {
+                d.CachedValue = EditorGUILayout.EnumPopup(d.ViewModel.Name, (Enum)d.CachedValue);
+            }
+            else if (d.ViewModel.Type == typeof(Type))
+            {
+                //InvertGraphEditor.WindowManager.InitTypeListWindow();
+            }
+
+
         }
         public void DrawError(Rect rect, string key)
         {
@@ -544,7 +561,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawConnector(float scale, ConnectorViewModel viewModel)
         {
-            
+
         }
     }
 
@@ -571,13 +588,14 @@ namespace Invert.Core.GraphDesigner.Unity
             Textures.Add("DiagramArrowDown", ElementDesignerStyles.ArrowDownTexture);
             Textures.Add("DiagramArrowRightEmpty", ElementDesignerStyles.ArrowRightEmptyTexture);
             Textures.Add("DiagramArrowLeftEmpty", ElementDesignerStyles.ArrowLeftEmptyTexture);
-      
-     
+            Textures.Add("DiagramCircleConnector", ElementDesignerStyles.DiagramCircleConnector);
+
+
         }
 
         public Texture2D Image(string name)
         {
-            return (Texture2D) GetImage(name);
+            return (Texture2D)GetImage(name);
         }
         public object GetImage(string name)
         {
@@ -592,7 +610,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     return EditorStyles.label;
                 case InvertStyles.DefaultLabelLarge:
                     return EditorStyles.largeLabel;
-               case InvertStyles.Tag1:
+                case InvertStyles.Tag1:
                     return ElementDesignerStyles.Tag1;
                 case InvertStyles.NodeBackground:
                     return ElementDesignerStyles.NodeBackground;
@@ -639,11 +657,11 @@ namespace Invert.Core.GraphDesigner.Unity
                 case InvertStyles.NodeHeader13:
                     return ElementDesignerStyles.NodeHeader13;
                 case InvertStyles.Item1:
-                    return ElementDesignerStyles.Item1;                
+                    return ElementDesignerStyles.Item1;
                 case InvertStyles.Item2:
-                    return ElementDesignerStyles.Item2;                
+                    return ElementDesignerStyles.Item2;
                 case InvertStyles.Item3:
-                    return ElementDesignerStyles.Item3;                
+                    return ElementDesignerStyles.Item3;
                 case InvertStyles.Item4:
                     return ElementDesignerStyles.Item4;
                 case InvertStyles.Item5:
@@ -651,9 +669,9 @@ namespace Invert.Core.GraphDesigner.Unity
                 case InvertStyles.Item6:
                     return ElementDesignerStyles.Item6;
                 case InvertStyles.SelectedItemStyle:
-                    return ElementDesignerStyles.SelectedItemStyle;      
+                    return ElementDesignerStyles.SelectedItemStyle;
                 case InvertStyles.HeaderStyle:
-                    return ElementDesignerStyles.HeaderStyle;   
+                    return ElementDesignerStyles.HeaderStyle;
                 case InvertStyles.ViewModelHeaderStyle:
                     return ElementDesignerStyles.ViewModelHeaderStyle;
                 case InvertStyles.AddButtonStyle:

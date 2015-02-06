@@ -49,6 +49,7 @@ namespace Invert.Core.GraphDesigner
                     }
                     else
                     {
+                       // return "DiagramCircleConnector";
                         switch (ViewModel.Side)
                         {
                             case ConnectorSide.Left:
@@ -101,7 +102,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public override void Refresh(IPlatformDrawer platform, Vector2 position)
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position);
 
@@ -150,6 +151,7 @@ namespace Invert.Core.GraphDesigner
 
             if (ViewModel.Side == ConnectorSide.Left)
             {
+                
                 pos.x = nodePosition.x;
                 pos.y = nodePosition.y + (nodePosition.height * ViewModel.SidePercentage);
                 pos.y -= (TextureHeight / 2f);
@@ -207,7 +209,7 @@ namespace Invert.Core.GraphDesigner
             var nodePosition = connectorBounds;
             var texture = Texture;
             var pos = new Vector2(0f, 0f);
-
+            
             if (ViewModel.Side == ConnectorSide.Left)
             {
                 pos.x = nodePosition.x;
@@ -236,9 +238,8 @@ namespace Invert.Core.GraphDesigner
                 pos.x -= (TextureWidth / 2f);
                 pos.y -= TextureHeight;
             }
-          
-            Bounds = new Rect(pos.x, pos.y, TextureWidth, TextureHeight);
-            var bounds = Bounds.Scale(scale);
+         
+           
             //if (ViewModel.IsMouseOver)
             //{
             //    var mouseOverBounds = new Rect(bounds);
@@ -260,19 +261,34 @@ namespace Invert.Core.GraphDesigner
             {
                 if (!ViewModel.ConnectorFor.IsMouseOver && !ViewModel.ConnectorFor.IsSelected && !ViewModel.IsMouseOver && !ViewModel.HasConnections) return;
             }
-
+          
             //if (ViewModel.HasConnections)
             //{
             //    platform.DrawImage(bounds, Texture, true);
+
+
+         
+            //}
+            if (ViewModel.Direction == ConnectorDirection.Output && ViewModel.Side == ConnectorSide.Right)
+            {
+                Bounds = new Rect(pos.x, pos.y,TextureWidth, TextureHeight);
+
+                //return;
+            }
+            else
+            {
+                Bounds = new Rect(pos.x, pos.y, TextureWidth, TextureHeight);
+
+            }
                 
 
-
-            //}
+            var bounds = Bounds.Scale(scale);
             if (ViewModel.IsMouseOver)
             {
                 platform.DrawImage(bounds, Texture, true);
                 platform.DrawImage(bounds, Texture, true);
             }
+            
             platform.DrawImage(bounds, Texture, true);
           
             //if (InvertGraphEditor.Settings.ShowGraphDebug && ViewModel.IsMouseOver)

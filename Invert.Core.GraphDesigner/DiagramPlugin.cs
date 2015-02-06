@@ -105,7 +105,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Initialize(uFrameContainer container)
         {
-
+            AssetManager = container.Resolve<IAssetManager>();
         }
 
         public override void Loaded(uFrameContainer container)

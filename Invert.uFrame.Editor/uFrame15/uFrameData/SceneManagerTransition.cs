@@ -11,6 +11,12 @@ using UnityEngine;
 public class SceneManagerTransition : IDiagramNodeItem
 {
     public string Title { get { return Name; } }
+
+    public string Group
+    {
+        get { return "Transitions"; }
+    }
+
     public string SearchTag { get { return Name; } }
     public virtual void Serialize(JSONClass cls)
     {
@@ -68,6 +74,12 @@ public class SceneManagerTransition : IDiagramNodeItem
     public void RemoveLink(IDiagramNode target)
     {
         ToIdentifier = null;
+    }
+
+    public bool Precompiled
+    {
+        get;
+        set;
     }
 
     public string Name

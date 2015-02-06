@@ -28,7 +28,7 @@ namespace Invert.Core.GraphDesigner
             set { ViewModelObject.Bounds = value; }
         }
 
-        public override void Refresh(IPlatformDrawer platform, Vector2 position)
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position);
             var size = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle);

@@ -6,7 +6,7 @@ public interface IShellConnectable : IDiagramNode, IShellNode
     [ReferenceSection("Connectable To", SectionVisibility.Always, false)]
     IEnumerable<ShellConnectableReferenceType> ConnectableTo { get; }
 
-    bool AllowMultipleInputs { get; set; }
+    bool MultipleInputs { get; set; }
 
-    bool AllowMultipleOutputs { get; set; }
+    bool MultipleOutputs { get; set; }
 }

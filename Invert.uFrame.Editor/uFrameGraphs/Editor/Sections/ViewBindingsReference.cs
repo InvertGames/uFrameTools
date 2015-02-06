@@ -23,12 +23,7 @@ namespace Invert.uFrame.Editor {
         public override IDiagramNodeItem SourceItemObject
         {
             get
-            {
-                var element = ((ElementViewNode) Node).Element;
-                if (element == null) return null;
-                return
-                    element.PersistedItems.FirstOrDefault(p => p.Identifier == SourceIdentifier);
-            }
+            { return Node.Project.AllGraphItems.OfType<IDiagramNodeItem>().FirstOrDefault(p => p.Identifier == SourceIdentifier); }
         }
 
         public override void Validate(List<ErrorInfo> info)

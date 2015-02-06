@@ -45,7 +45,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Text;
 using UnityEngine;
 
 namespace Invert.Json {
@@ -148,8 +148,9 @@ namespace Invert.Json {
         public override string ToString()
         {
             string result = "[ ";
-            foreach (JSONNode N in m_List)
+            for (int index = 0; index < m_List.Count; index++)
             {
+                JSONNode N = m_List[index];
                 if (result.Length > 2)
                     result += ", ";
                 result += N.ToString();
@@ -165,10 +166,10 @@ namespace Invert.Json {
             {
                 if (result.Length > 3)
                     result += ", ";
-                result += "\n" + aPrefix + "   ";
-                result += N.ToString(aPrefix + "   ");
+                result += string.Format("\n{0}   ", aPrefix);
+                result += N.ToString(string.Format("{0}   ", aPrefix));
             }
-            result += "\n" + aPrefix + "]";
+            result += string.Format("\n{0}]", aPrefix);
             return result;
         }
     }
@@ -295,7 +296,7 @@ namespace Invert.Json {
             {
                 if (result.Length > 2)
                     result += ", ";
-                result += "\"" + Escape(N.Key) + "\":" + N.Value.ToString();
+                result += string.Format("\"{0}\":{1}", Escape(N.Key), N.Value.ToString());
             }
             result += "}";
             return result;
@@ -308,10 +309,10 @@ namespace Invert.Json {
             {
                 if (result.Length > 3)
                     result += ", ";
-                result += "\n" + aPrefix + "   ";
-                result += "\"" + Escape(N.Key) + "\" : " + N.Value.ToString(aPrefix + "   ");
+                result += string.Format("\n{0}   ", aPrefix);
+                result += string.Format("\"{0}\" : {1}", Escape(N.Key), N.Value.ToString(aPrefix + "   "));
             }
-            result += "\n" + aPrefix + "}";
+            result += string.Format("\n{0}}}", aPrefix);
             return result;
         }
     }
@@ -405,12 +406,12 @@ namespace Invert.Json {
 
         public override string ToString()
         {
-            return "\"" + Escape(m_Data) + "\"";
+            return string.Format("\"{0}\"", Escape(m_Data));
         }
 
         public override string ToString(string aPrefix)
         {
-            return "\"" + Escape(m_Data) + "\"";
+            return string.Format("\"{0}\"", Escape(m_Data));
         }
     }
 
@@ -1129,24 +1130,26 @@ namespace Invert.Json {
 
         internal static string Escape(string aText)
         {
-            string result = "";
+            
+            
             if (aText == null)
-                return result;
+                return string.Empty;
+            var sb = new StringBuilder();
             foreach (char c in aText)
             {
                 switch (c)
                 {
-                    case '\\': result += "\\\\"; break;
-                    case '\"': result += "\\\""; break;
-                    case '\n': result += "\\n"; break;
-                    case '\r': result += "\\r"; break;
-                    case '\t': result += "\\t"; break;
-                    case '\b': result += "\\b"; break;
-                    case '\f': result += "\\f"; break;
-                    default: result += c; break;
+                    case '\\': sb.Append("\\\\"); break;
+                    case '\"': sb.Append("\\\""); break;
+                    case '\n': sb.Append("\\n"); break;
+                    case '\r': sb.Append("\\r"); break;
+                    case '\t': sb.Append("\\t"); break;
+                    case '\b': sb.Append("\\b"); break;
+                    case '\f': sb.Append("\\f"); break;
+                    default: sb.Append(c); break;
                 }
             }
-            return result;
+            return sb.ToString();
         }
 
 #if USE_SharpZipLib

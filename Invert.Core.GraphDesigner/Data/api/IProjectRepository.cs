@@ -59,15 +59,35 @@ namespace Invert.Core.GraphDesigner
 #else
         : IProjectRepository
 #endif
-
     {
         protected IGraphData _currentGraph;
         protected IDiagramNode[] _nodeItems;
-
+  
+        private static readonly List<IGraphData> _precompiledGraphs = new List<IGraphData>();
         private List<OpenGraph> _openTabs = new List<OpenGraph>();
         private Dictionary<string, bool> _settingsBag;
         private List<IGraphData> _includedGraphs;
         private List<IGraphEvents> _listeners;
+        protected IGraphItem[] _allGraphItems;
+
+        public IEnumerable<IGraphData> PrecompiledGraphs
+        {
+            get
+            {
+                return _precompiledGraphs;
+            }
+        }
+
+        /// <summary>
+        /// Adds a precompiled graph to projects
+        /// </summary>
+        /// <param name="diagramType"></param>
+        /// <param name="node"></param>
+        public static void AddPrecompiledGraph(IGraphData node)
+        {
+
+            _precompiledGraphs.Add(node);
+        }
 
         public bool this[string settingsKey, bool def = true]
         {
@@ -97,16 +117,12 @@ namespace Invert.Core.GraphDesigner
         /// </summary>
         public IEnumerable<IGraphItem> AllGraphItems
         {
+            //get {
+            //    return from diagram in Graphs where diagram != null && !Object.Equals(diagram, null) from item in diagram.AllGraphItems select item;
+            //}
             get
             {
-                foreach (var diagram in Graphs)
-                {
-                    if (diagram == null || Object.Equals(diagram, null)) continue;
-                    foreach (var item in diagram.AllGraphItems)
-                    {
-                        yield return item;
-                    }
-                }
+                return _allGraphItems ?? (_allGraphItems = (from diagram in Graphs where diagram != null && !Object.Equals(diagram, null) from item in diagram.AllGraphItems select item).ToArray());
             }
         }
 
@@ -124,10 +140,10 @@ namespace Invert.Core.GraphDesigner
                     {
                         yield return node;
                     }
+                   
                 }
             }
         }
-
 
         /// <summary>
         /// All of the connections that belong to this project.  Simply combines the connections from each graph.
@@ -178,12 +194,14 @@ namespace Invert.Core.GraphDesigner
         /// </summary>
         public virtual string Name { get; set; }
 
+        //private IDiagramNode[] _NodeItems;
         /// <summary>
         /// The entire list of nodes in all graphs that belong to this project.
         /// </summary>
         public virtual IEnumerable<IDiagramNode> NodeItems
         {
-            get { return AllNodeItems; }
+            get { return _nodeItems ?? (_nodeItems = AllNodeItems.ToArray()); }
+            //get { return AllNodeItems; }
         }
 
         /// <summary>
@@ -253,13 +271,13 @@ namespace Invert.Core.GraphDesigner
         {
             //item.Node = node;
             var node = item.Node;
-            node.PersistedItems = node.PersistedItems.Concat(new[] { item });
+            node.PersistedItems = node.PersistedItems.Where(p=>!p.Precompiled).Concat(new[] { item });
 
             foreach (var nodeItem in NodeItems)
             {
                 nodeItem.NodeItemAdded(item);
             }
-            
+            InvalidateCache();
         }
 
         /// <summary>
@@ -281,9 +299,20 @@ namespace Invert.Core.GraphDesigner
                 }
             }
 
-            _nodeItems = null;
+            InvalidateCache();
             CurrentGraph.AddNode(data);
         }
+
+        protected void InvalidateCache()
+        {
+            _nodeItems = null;
+            _allGraphItems = null;
+            foreach (var item in Graphs)
+            {
+               item.SetProject(this);
+            }
+        }
+
         /// <summary>
         /// Simply removes a graph from the open graphs list, simiply: Close the tab.
         /// </summary>
@@ -322,6 +351,7 @@ namespace Invert.Core.GraphDesigner
             this.Signal(p => p.GraphCreated(this, graph));
             // Add this graph to the project and do any loading necessary
             AddGraph(graph);
+            InvalidateCache();
             // Set the project on the graph
             graph.SetProject(this);
             // Go ahead and save this project
@@ -378,6 +408,8 @@ namespace Invert.Core.GraphDesigner
         /// <param name="data"></param>
         public virtual void MarkDirty(INodeRepository data)
         {
+            InvalidateCache();
+            
         }
 
         /// <summary>
@@ -410,6 +442,7 @@ namespace Invert.Core.GraphDesigner
                     item.NodeItemRemoved(nodeItem);
                 }
             }
+            InvalidateCache();
         }
 
         /// <summary>
@@ -429,6 +462,7 @@ namespace Invert.Core.GraphDesigner
             {
                 item.NodeRemoved(enumData);
             }
+            InvalidateCache();
         }
 
         /// <summary>
@@ -440,6 +474,7 @@ namespace Invert.Core.GraphDesigner
             {
                 graph.Save();
             }
+
         }
 
         public abstract void SaveDiagram(INodeRepository data);
@@ -511,6 +546,7 @@ namespace Invert.Core.GraphDesigner
 
                 };
             }
+            InvalidateCache();
         }
     }
 

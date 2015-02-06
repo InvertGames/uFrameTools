@@ -22,6 +22,11 @@ namespace Invert.Core.GraphDesigner
             var propertyName = property.Name;
             if (cls[propertyName] == null) return;
             var propertyType = property.PropertyType;
+            if (typeof(IJsonObject).IsAssignableFrom(propertyType))
+            {
+                var value = cls[propertyName].DeserializeObject(null,null,false);
+                property.SetValue(obj, value, null);
+            }
             if (typeof(Enum).IsAssignableFrom(property.PropertyType))
             {
                 var value = cls[propertyName].Value;
@@ -73,7 +78,11 @@ namespace Invert.Core.GraphDesigner
             {
                 var propertyName = property.Name;
                 var propertyType = property.PropertyType;
-                if (typeof(Enum).IsAssignableFrom(propertyType))
+                if (typeof (IJsonObject).IsAssignableFrom(propertyType))
+                {
+                    cls.Add(propertyName, SerializeObject(((IJsonObject)value)));
+                }
+                else if (typeof(Enum).IsAssignableFrom(propertyType))
                 {
                     cls.Add(propertyName, new JSONData(value.ToString()));
                 }
@@ -183,26 +192,30 @@ namespace Invert.Core.GraphDesigner
         }
         public static IEnumerable<T> DeserializeObjectArray<T>(this JSONNode array, INodeRepository repository)
         {
-            return array.AsArray.DeserializeObjectArray<T>(repository);
+            return array.AsArray.DeserializeObjectArray<T>(repository,null);
         }
-        public static IEnumerable<T> DeserializeObjectArray<T>(this JSONArray array, INodeRepository repository)
+        public static IEnumerable<T> DeserializeObjectArray<T>(this JSONArray array, INodeRepository repository, Func<JSONNode,T> missingTypeHandler )
         {
             foreach (JSONNode item in array)
             {
-                var obj = DeserializeObject(item,repository);
+                var obj = DeserializeObject(item, repository, null, missingTypeHandler == null);
                 if (obj != null)
-                yield return (T)obj;
+                    yield return (T) obj;
+                else if (missingTypeHandler != null)
+                {
+                   yield return missingTypeHandler(item);
+                }
             }
-        } 
+        }
 
-        public static IJsonObject DeserializeObject(this JSONNode node, INodeRepository repository,Type genericTypeArg = null)
+        public static IJsonObject DeserializeObject(this JSONNode node, INodeRepository repository, Type genericTypeArg = null, bool failOnMissingType = true)
         {
             if (node == null) return null;
             var clrTypeString = node["_CLRType"].Value;
             if (string.IsNullOrEmpty(clrTypeString))
             {
                 InvertApplication.Log("CLR Type is null can't load the type");
-                return null;
+                
             }
             var clrType = InvertApplication.FindType(clrTypeString);
 
@@ -210,7 +223,17 @@ namespace Invert.Core.GraphDesigner
                 clrType = InvertApplication.FindTypeByName(clrTypeString);
 
             if (clrType == null)
-            throw new Exception("Could not find type " + clrTypeString);
+            {
+                if (!failOnMissingType)
+                {
+                    return null;
+                }
+                else
+                {
+                    throw new Exception("Could not find type " + clrTypeString);    
+                }
+            }
+                
             if (clrType.IsGenericTypeDefinition && genericTypeArg != null) 
             {
                 clrType = clrType.MakeGenericType(genericTypeArg);

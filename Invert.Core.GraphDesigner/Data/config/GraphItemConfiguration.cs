@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class GraphItemConfiguration
+    public class GraphItemConfiguration 
     {
         public int OrderIndex { get; set; }
         public Type ReferenceType { get; set; }

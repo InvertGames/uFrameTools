@@ -21,6 +21,12 @@ namespace Invert.Core.GraphDesigner
         {
         }
 
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
+        {
+            base.Refresh(platform, position);
+            
+        }
+
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);

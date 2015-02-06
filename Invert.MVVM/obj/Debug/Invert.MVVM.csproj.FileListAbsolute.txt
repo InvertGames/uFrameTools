@@ -5,12 +5,11 @@ D:\Invert\uFrameSVN2\Invert.MVVM\bin\Debug\UnityEngine.xml
 D:\Invert\uFrameSVN2\Invert.MVVM\obj\Debug\Invert.MVVM.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameSVN2\Invert.MVVM\obj\Debug\Invert.MVVM.dll
 D:\Invert\uFrameSVN2\Invert.MVVM\obj\Debug\Invert.MVVM.pdb
-D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\bin\Debug\Invert.MVVM.dll
-D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\bin\Debug\Invert.MVVM.pdb
-D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.dll
-D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.pdb
-D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit17\uFrameTools\Invert.MVVM\bin\Debug\Invert.MVVM.dll
 D:\Invert\uFrameGit17\uFrameTools\Invert.MVVM\bin\Debug\Invert.MVVM.pdb
 D:\Invert\uFrameGit17\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.dll
 D:\Invert\uFrameGit17\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\bin\Debug\Invert.MVVM.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\bin\Debug\Invert.MVVM.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.pdb

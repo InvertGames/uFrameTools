@@ -273,7 +273,7 @@ public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeView
         get { return CachedStyles.NodeHeader10; }
     }
 
-    public override void Refresh(IPlatformDrawer platform, Vector2 position)
+    public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
     {
         base.Refresh(platform, position);
         _cachedRelatedType = NodeViewModel.RelatedTypeName;

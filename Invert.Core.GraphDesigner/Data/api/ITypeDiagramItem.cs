@@ -6,8 +6,8 @@ namespace Invert.Core.GraphDesigner
     {
         string RelatedType { get; set; }
         string RelatedTypeName { get; }
-        CodeTypeReference GetFieldType();
-        CodeTypeReference GetPropertyType();
+        //CodeTypeReference GetFieldType();
+        //CodeTypeReference GetPropertyType();
     }
 
     public interface IBindableTypedItem : IRefactorable, ITypedItem

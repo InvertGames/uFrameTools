@@ -49,7 +49,8 @@ namespace Invert.Core.GraphDesigner
             var filterType = viewModel.CurrentRepository.CurrentFilter.GetType();
             if (!FilterExtensions.AllowedFilterNodes.ContainsKey(filterType))
             {
-                InvertApplication.Log("The filter type was not find. Make sure the filter is registered, or it has sub nodes for it.");
+                InvertApplication.Log(string.Format("The filter type {0} was not find. Make sure the filter is registered, or it has sub nodes for it.", filterType.Name));
+                yield break;
             }
             foreach (var nodeType in FilterExtensions.AllowedFilterNodes[filterType])
             {

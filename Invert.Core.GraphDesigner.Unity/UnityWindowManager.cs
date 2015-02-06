@@ -17,7 +17,7 @@ public class UnityWindowManager : IWindowManager
             InvertGraphEditor.ExecuteCommand(_ =>
             {
                 action(selected);
-            });
+            }, true);
           
           
         });
@@ -30,7 +30,7 @@ public class UnityWindowManager : IWindowManager
             InvertGraphEditor.ExecuteCommand(_ =>
             {
                 action((TItem)item);
-            });
+            },true);
             
             
         });

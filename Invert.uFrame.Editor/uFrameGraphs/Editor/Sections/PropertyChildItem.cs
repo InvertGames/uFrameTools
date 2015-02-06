@@ -2,6 +2,7 @@ using System.Linq;
 using Invert.Core.GraphDesigner;
 
 namespace Invert.uFrame.Editor {
+    
     public partial class PropertyChildItem : PropertyChildItemBase {
         public override string DefaultTypeName
         {

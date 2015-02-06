@@ -241,7 +241,7 @@ namespace Invert.Core.GraphDesigner
                             item.ViewModel.Position = new Vector2(item.ViewModel.Position.x, 0f);
                         }
 
-                        item.Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
+                        item.Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer,item.Bounds.position,false);
                     }
                 }
             }
@@ -333,7 +333,7 @@ namespace Invert.Core.GraphDesigner
                     ConnectionViewModel connection1 = connection;
                     menu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel model)
                     {
-                        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); });
+                        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); },true);
                     }, "Disconnect: " + connection.Name));
                 }
                 //a.ShowAsContext();
@@ -360,7 +360,7 @@ namespace Invert.Core.GraphDesigner
             ShowAddNewContextMenu(true);
         }
 
-        public override void Refresh(IPlatformDrawer platform, Vector2 position)
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position);
             // Eventually it will all be viewmodels
