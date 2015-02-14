@@ -170,7 +170,7 @@ namespace Invert.Core.GraphDesigner
             var jsonNode = new JSONClass();
             Serialize(jsonNode);
             var copy = Activator.CreateInstance(this.GetType()) as DiagramNode;
-            copy.Deserialize(jsonNode,Project);
+            copy.Deserialize(jsonNode);
             copy._identifier = null;
             return copy;
         }
@@ -472,30 +472,30 @@ namespace Invert.Core.GraphDesigner
             return null;
         }
 
-        public virtual void Deserialize(JSONClass cls, INodeRepository repository)
+        public virtual void Deserialize(JSONClass cls)
         {
             _name = cls["Name"].Value;
             _isCollapsed = cls["IsCollapsed"].AsBool;
             _identifier = cls["Identifier"].Value;
             IsNewNode = false;
-            PersistedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>(repository);
+            PersistedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>();
 
             if (cls["Locations"] != null)
             {
                 Locations.Deserialize(cls["Locations"].AsObject);
-                CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject, repository);
+                CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject);
             }
             if (cls["Flags"] is JSONClass)
             {
                 var flags = cls["Flags"].AsObject;
                 Flags = new FlagsDictionary();
-                Flags.Deserialize(flags, repository);
+                Flags.Deserialize(flags);
             }
             if (cls["DataBag"] is JSONClass)
             {
                 var flags = cls["DataBag"].AsObject;
                 DataBag = new DataBag();
-                DataBag.Deserialize(flags, repository);
+                DataBag.Deserialize(flags);
             }
             if (PersistedItems != null)
             {

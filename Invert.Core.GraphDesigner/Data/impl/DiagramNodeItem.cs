@@ -57,7 +57,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         var jsonNode = new JSONClass();
         Serialize(jsonNode);
         var copy = Activator.CreateInstance(this.GetType()) as DiagramNodeItem;
-        copy.Deserialize(jsonNode, Node.Project);
+        copy.Deserialize(jsonNode);
         copy._identifier = null;
         return copy;
     }
@@ -89,7 +89,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         cls.AddObject("DataBag", DataBag);
     }
 
-    public virtual void Deserialize(JSONClass cls, INodeRepository repository)
+    public virtual void Deserialize(JSONClass cls)
     {
         _name = cls["Name"].Value;
         _identifier = cls["Identifier"].Value;
@@ -101,13 +101,13 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         {
             var flags = cls["Flags"].AsObject;
             Flags = new FlagsDictionary();
-            Flags.Deserialize(flags, repository);
+            Flags.Deserialize(flags);
         }
         if (cls["DataBag"] is JSONClass)
         {
             var flags = cls["DataBag"].AsObject;
             DataBag = new DataBag();
-            DataBag.Deserialize(flags, repository);
+            DataBag.Deserialize(flags);
         }
     }
 

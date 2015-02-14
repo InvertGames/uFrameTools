@@ -136,9 +136,9 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
         cls.Add("ItemType", new JSONData(_type ?? string.Empty));
     }
 
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
 
         if (cls["ItemType"] != null)
             _type = cls["ItemType"].Value.Split(',')[0].Split('.').Last();

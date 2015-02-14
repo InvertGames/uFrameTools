@@ -70,14 +70,14 @@ namespace Invert.Core.GraphDesigner
             cls.Add("CollapsedValues", _collapsedValues.Serialize());
         }
 
-        public void Deserialize(JSONClass cls, INodeRepository repository)
+        public void Deserialize(JSONClass cls)
         {
             if (cls["Identifier"] != null)
             {
                 Identifier = cls["Identifier"].Value;
             }
             Locations.Deserialize(cls["Locations"].AsObject);
-            CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject, repository);
+            CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject);
 
         }
     }

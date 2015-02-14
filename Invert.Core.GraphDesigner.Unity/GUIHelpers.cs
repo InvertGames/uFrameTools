@@ -109,7 +109,7 @@ namespace Invert.Common.UI
                 fontStyle = FontStyle.Bold,
                 fontSize = 11
             };
-            var labelRect = new Rect(rect.x + 2, rect.y + (rect.height / 2) - 8, rect.width - 50, 16);
+            var labelRect = new Rect(rect.x + 2, rect.y + (rect.height / 2) - 8, rect.width - (add != null ? 50 : 0), 16);
             var result = open;
             if (leftButton == null)
             {

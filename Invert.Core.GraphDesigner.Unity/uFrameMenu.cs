@@ -56,7 +56,7 @@ public class uFrameMenu : AssetPostprocessor
             path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
         }
 
-        string assetPathAndName = assetName == null ? AssetDatabase.GenerateUniqueAssetPath(path + "/New" + type.ToString() + ".asset") : AssetDatabase.GenerateUniqueAssetPath(path + "/" + assetName + ".asset");
+        string assetPathAndName = assetName == null ? AssetDatabase.GenerateUniqueAssetPath(path + "/" + type.ToString() + ".asset") : AssetDatabase.GenerateUniqueAssetPath(path + "/" + assetName + ".asset");
 
         AssetDatabase.CreateAsset(asset, assetPathAndName);
         AssetDatabase.SaveAssets();

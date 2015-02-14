@@ -23,9 +23,9 @@ public class ViewModelCommandData : DiagramNodeItem, IBindableTypedItem
 
     }
 
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
         _parameterType = cls["ItemType"].Value.Split(',')[0].Split('.').Last();
         _isYield = cls["IsYield"].AsBool;
     }

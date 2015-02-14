@@ -25,7 +25,7 @@ public class EnumItem : IDiagramNodeItem
         cls.AddObject("DataBag", DataBag);
     }
 
-    public void Deserialize(JSONClass cls, INodeRepository repository)
+    public void Deserialize(JSONClass cls)
     {
         _name = cls["Name"].Value;
         _identifier = cls["Identifier"].Value;
@@ -33,7 +33,7 @@ public class EnumItem : IDiagramNodeItem
         {
             var flags = cls["DataBag"].AsObject;
             DataBag = new DataBag();
-            DataBag.Deserialize(flags, repository);
+            DataBag.Deserialize(flags);
         }
     }
 
@@ -69,7 +69,7 @@ public class EnumItem : IDiagramNodeItem
         var jsonNode = new JSONClass();
         Serialize(jsonNode);
         var copy = Activator.CreateInstance(this.GetType()) as EnumItem;
-        copy.Deserialize(jsonNode, Node.Project);
+        copy.Deserialize(jsonNode);
         copy._identifier = null;
         return copy;
     }

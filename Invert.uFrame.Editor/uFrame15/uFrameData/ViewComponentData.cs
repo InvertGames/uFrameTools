@@ -89,9 +89,9 @@ public class ViewComponentData : DiagramNode
         return new RenameViewComponentRefactorer(this);
     }
 
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
         _viewIdentifier = cls["ViewIdentifier"].Value;
         _baseIdentifier = cls["BaseIdentifier"].Value;
     }

@@ -26,7 +26,7 @@ public class SceneManagerTransition : IDiagramNodeItem
         cls.AddObject("DataBag", DataBag);
     }
 
-    public void Deserialize(JSONClass cls, INodeRepository repository)
+    public void Deserialize(JSONClass cls)
     {
         _name = cls["Name"].Value;
         _toIdentifier = cls["ToIdentifier"].Value;
@@ -35,7 +35,7 @@ public class SceneManagerTransition : IDiagramNodeItem
         {
             var flags = cls["DataBag"].AsObject;
             DataBag = new DataBag();
-            DataBag.Deserialize(flags, repository);
+            DataBag.Deserialize(flags);
         }
 
     }

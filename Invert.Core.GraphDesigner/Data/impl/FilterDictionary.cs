@@ -78,7 +78,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public void Deserialize(JSONClass cls, INodeRepository repository)
+        public void Deserialize(JSONClass cls)
         {
             foreach (KeyValuePair<string, JSONNode> cl in cls)
             {

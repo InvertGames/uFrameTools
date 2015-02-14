@@ -42,9 +42,9 @@ namespace Invert.Core.GraphDesigner
             }
 
         }
-        public override void Deserialize(JSONClass cls, INodeRepository repository)
+        public override void Deserialize(JSONClass cls)
         {
-            base.Deserialize(cls, repository);
+            base.Deserialize(cls);
             var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var property in properties)
             {

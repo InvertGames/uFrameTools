@@ -304,6 +304,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
     public IProjectRepository Project
     {
         get { return Graph.Project; }
+        set { Graph.Project = value; }
     }
 
     public bool Precompiled

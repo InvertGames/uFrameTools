@@ -298,15 +298,15 @@ namespace Invert.Core.GraphDesigner
             AddReferenceItem(ChildItems.Where(p => p.GetType() == mirrorSection.ReferenceType).Cast<GenericReferenceItem>().ToArray(), item, mirrorSection);
         }
 
-        public override void Deserialize(JSONClass cls, INodeRepository repository)
+        public override void Deserialize(JSONClass cls)
         {
-            base.Deserialize(cls, repository);
+            base.Deserialize(cls);
             var inputSlotInfos = GetInputSlotInfos(this.GetType());
             foreach (var item in inputSlotInfos)
             {
                 var propertyName = item.Key.Name;
                 if (cls[propertyName] == null) continue;
-                var slotObject = cls[propertyName].DeserializeObject(repository, item.Key.PropertyType.GetGenericArguments().FirstOrDefault()) as GenericSlot;
+                var slotObject = cls[propertyName].DeserializeObject( item.Key.PropertyType.GetGenericArguments().FirstOrDefault()) as GenericSlot;
                 if (slotObject == null) continue;
 
                 slotObject.Node = this;
@@ -331,7 +331,7 @@ namespace Invert.Core.GraphDesigner
             {
                 var propertyName = item.Key.Name;
                 if (cls[propertyName] == null) continue;
-                var slotObject = cls[propertyName].DeserializeObject(repository, item.Key.PropertyType.GetGenericArguments().FirstOrDefault()) as GenericSlot;
+                var slotObject = cls[propertyName].DeserializeObject( item.Key.PropertyType.GetGenericArguments().FirstOrDefault()) as GenericSlot;
                 if (slotObject == null) continue;
                 slotObject.Node = this;
                 slotObject.Name = item.Value.Name;
@@ -651,9 +651,9 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public override void Deserialize(JSONClass cls, INodeRepository repository)
+        public override void Deserialize(JSONClass cls)
         {
-            base.Deserialize(cls, repository);
+            base.Deserialize(cls);
             SourceIdentifier = cls["SourceIdentifier"].Value;
         }
 

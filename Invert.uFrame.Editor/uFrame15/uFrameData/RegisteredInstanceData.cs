@@ -98,9 +98,9 @@ public class RegisteredInstanceData : DiagramNodeItem,IBindableTypedItem
 
     }
 
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
         if (cls["RegisterType"] != null)
         {
             RelatedType = cls["RegisterType"].Value;

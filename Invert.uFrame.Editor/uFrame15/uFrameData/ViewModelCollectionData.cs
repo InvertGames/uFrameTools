@@ -25,9 +25,9 @@ public class ViewModelCollectionData : DiagramNodeItem, IBindableTypedItem
         //nodeItemClass.Add("IsRealTime", new JSONData(_isRealTimeProperty));
     }
 
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
 
         _itemType = cls["ItemType"].Value.Split(',')[0].Split('.').Last();
 

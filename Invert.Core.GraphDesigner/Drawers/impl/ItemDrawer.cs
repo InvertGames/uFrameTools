@@ -130,7 +130,7 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        public void DrawBackground(IPlatformDrawer platform, float scale)
+        public virtual void DrawBackground(IPlatformDrawer platform, float scale)
         {
             if (IsSelected)
             {

@@ -22,7 +22,7 @@ public interface IGraphData : IElementFileData,IItem, ISubscribable<IGraphItemEv
     bool Errors { get; set; }
     Exception Error { get; set; }
     string Path { get; set; }
-    IProjectRepository Project { get; }
+    IProjectRepository Project { get; set; }
     bool Precompiled { get; set; }
 
     //IEnumerable<ConnectionData> Connections { get; }

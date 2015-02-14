@@ -78,7 +78,7 @@ public class FilterPositionData : IJsonObject
         }
     }
 
-    public void Deserialize(JSONClass cls, INodeRepository repository)
+    public void Deserialize(JSONClass cls)
     {
 
         Positions.Clear();

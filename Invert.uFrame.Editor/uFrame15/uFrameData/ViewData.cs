@@ -321,9 +321,9 @@ public class ViewData : DiagramNode, ISubSystemType
         return new RenameViewRefactorer(this);
     }
 
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
 
         // Upgrading project from old assembly names
         if (cls["ForAssemblyQualifiedName"] != null)

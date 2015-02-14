@@ -16,9 +16,9 @@ public class SceneManagerData : DiagramNode
         cls.Add("SubSystemIdentifier", _subSystemIdentifier);
         
     }
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
         _subSystemIdentifier = cls["SubSystemIdentifier"].Value;
     }
 

@@ -36,9 +36,9 @@ public class SubSystemData : DiagramNode
         cls.AddPrimitiveArray("Imports", _imports, i => new JSONData(i));
     }
 
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
 
         _imports = cls["Imports"].AsArray.DeserializePrimitiveArray(n => n.Value).ToList();
     }

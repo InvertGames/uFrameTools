@@ -346,7 +346,7 @@ public class InvertGraph : IGraphData, IItem
         ConnectedItems.RemoveAll(p => p.InputIdentifier == input.Identifier);
     }
 
-    public IProjectRepository Project { get; private set; }
+    public IProjectRepository Project { get;  set; }
 
     public bool Precompiled { get; set; }
 
@@ -362,6 +362,17 @@ public class InvertGraph : IGraphData, IItem
             item.Graph = this;
             item.Input = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.InputIdentifier) as IConnectable;
             item.Output = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.OutputIdentifier) as IConnectable;
+        }
+        foreach (var item in ConnectedItems)
+        {
+            if (item.Output == null)
+            {
+                Debug.Log(string.Format("Output Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
+            }
+            if (item.Input == null)
+            {
+                Debug.Log(string.Format("Input Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
+            }
         }
         ConnectedItems.RemoveAll(p => p.Output == null || p.Input == null);
 
@@ -471,7 +482,7 @@ public class InvertGraph : IGraphData, IItem
 
         if (jsonNode["SceneFlow"] is JSONClass)
         {
-            RootFilter = jsonNode["SceneFlow"].DeserializeObject(this) as IDiagramFilter;
+            RootFilter = jsonNode["SceneFlow"].DeserializeObject() as IDiagramFilter;
             var node = RootFilter as IDiagramNode;
             if (node != null)
             {
@@ -480,7 +491,7 @@ public class InvertGraph : IGraphData, IItem
         }
         if (jsonNode["RootNode"] is JSONClass)
         {
-            RootFilter = jsonNode["RootNode"].DeserializeObject(this) as IDiagramFilter;
+            RootFilter = jsonNode["RootNode"].DeserializeObject() as IDiagramFilter;
             var node = RootFilter as IDiagramNode;
             if (node != null)
             {
@@ -489,7 +500,7 @@ public class InvertGraph : IGraphData, IItem
         }
 
         if (jsonNode["PositionData"] != null)
-            PositionData = jsonNode["PositionData"].DeserializeObject(this) as FilterPositionData;
+            PositionData = jsonNode["PositionData"].DeserializeObject() as FilterPositionData;
 
 
         this.Version = jsonNode["Version"].Value;
@@ -497,29 +508,29 @@ public class InvertGraph : IGraphData, IItem
         if (jsonNode["FilterState"] is JSONClass)
         {
             FilterState = new FilterState();
-            FilterState.Deserialize(jsonNode["FilterState"].AsObject, this);
+            FilterState.Deserialize(jsonNode["FilterState"].AsObject);
         }
 
         if (jsonNode["Settings"] is JSONClass)
         {
             Settings = new ElementDiagramSettings();
-            Settings.Deserialize(jsonNode["Settings"].AsObject, this);
+            Settings.Deserialize(jsonNode["Settings"].AsObject);
         }
         if (jsonNode["Nodes"] is JSONArray)
         {
             Nodes.Clear();
             //uFrameEditor.Log(this.name + jsonNode["Nodes"].ToString());
-            Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>((INodeRepository) this, (node =>
+            Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>( (node =>
             {
                 var missingNode = new MissingNodeData();
-                missingNode.Deserialize(node.AsObject,this);
+                missingNode.Deserialize(node.AsObject);
                 return missingNode;
             })));
         }
         if (jsonNode["ConnectedItems"] is JSONArray)
         {
             ConnectedItems.Clear();
-            ConnectedItems.AddRange(jsonNode["ConnectedItems"].AsArray.DeserializeObjectArray<ConnectionData>((INodeRepository) this));
+            ConnectedItems.AddRange(jsonNode["ConnectedItems"].AsArray.DeserializeObjectArray<ConnectionData>());
         }
         foreach (var item in NodeItems)
         {

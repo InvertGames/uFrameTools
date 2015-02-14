@@ -105,9 +105,9 @@ namespace Invert.Core.GraphDesigner
                 cls.Add("BaseIdentifier", new JSONData(BaseIdentifier));
         }
 
-        public override void Deserialize(JSONClass cls, INodeRepository repository)
+        public override void Deserialize(JSONClass cls)
         {
-            base.Deserialize(cls, repository);
+            base.Deserialize(cls);
             if (cls["BaseIdentifier"] != null)
                 BaseIdentifier = cls["BaseIdentifier"].Value;
         }

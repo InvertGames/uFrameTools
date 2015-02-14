@@ -472,8 +472,13 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 if (d.ViewModel.InspectorType == InspectorType.TextArea)
                 {
+                    EditorGUI.BeginChangeCheck();
                     EditorGUILayout.LabelField(d.ViewModel.Name);
                     d.CachedValue = EditorGUILayout.TextArea((string)d.CachedValue, GUILayout.Height(50));
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        d.ViewModel.Setter(d.CachedValue);
+                    }
                 }
                 else if (d.ViewModel.InspectorType == InspectorType.TypeSelection)
                 {
@@ -510,38 +515,78 @@ namespace Invert.Core.GraphDesigner.Unity
             }
             else if (d.ViewModel.Type == typeof(int))
             {
+                EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.IntField(d.ViewModel.Name, (int)d.CachedValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    d.ViewModel.Setter(d.CachedValue);
+                }
             }
             else if (d.ViewModel.Type == typeof(float))
             {
+                EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.FloatField(d.ViewModel.Name, (float)d.CachedValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    d.ViewModel.Setter(d.CachedValue);
+                }
             }
             else if (d.ViewModel.Type == typeof(Vector2))
             {
+                EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.Vector2Field(d.ViewModel.Name, (Vector3)d.CachedValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    d.ViewModel.Setter(d.CachedValue);
+                }
             }
 
             else if (d.ViewModel.Type == typeof(Vector3))
             {
+                EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.Vector3Field(d.ViewModel.Name, (Vector3)d.CachedValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    d.ViewModel.Setter(d.CachedValue);
+                }
 
             }
             else if (d.ViewModel.Type == typeof(Color))
             {
+                EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.ColorField(d.ViewModel.Name, (Color)d.CachedValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    d.ViewModel.Setter(d.CachedValue);
+                }
 
             }
             else if (d.ViewModel.Type == typeof(Vector4))
             {
+                EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.Vector4Field(d.ViewModel.Name, (Vector4)d.CachedValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    d.ViewModel.Setter(d.CachedValue);
+                }
             }
             else if (d.ViewModel.Type == typeof(bool))
             {
+                EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.Toggle(d.ViewModel.Name, (bool)d.CachedValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    d.ViewModel.Setter(d.CachedValue);
+                }
             }
             else if (typeof(Enum).IsAssignableFrom(d.ViewModel.Type))
             {
+                EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.EnumPopup(d.ViewModel.Name, (Enum)d.CachedValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    d.ViewModel.Setter(d.CachedValue);
+                }
             }
             else if (d.ViewModel.Type == typeof(Type))
             {

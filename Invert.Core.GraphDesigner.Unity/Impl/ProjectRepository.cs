@@ -47,11 +47,9 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
             SettingsBag.Add(key, value);
 
         }
-
-        foreach (var diagram in Diagrams.OfType<IGraphData>())
-        {
-            diagram.SetProject(this);
-        }
+        //InvalidateCache();
+        _allGraphItems = null;
+        _nodeItems = null;
 
         OpenTabs.RemoveAll(p => string.IsNullOrEmpty(p.GraphIdentifier));
     }

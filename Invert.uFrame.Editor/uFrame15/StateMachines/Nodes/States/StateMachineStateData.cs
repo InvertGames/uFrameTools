@@ -127,9 +127,9 @@ public class StateTransitionData : DiagramNodeItem
     {
         get { return Machine.Transitions.FirstOrDefault(p => p.Identifier == TransitionIdentifier); }
     }
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
 
         if (cls["TransitionToIdentifier"] != null)
             TransitionToIdentifier = cls["TransitionToIdentifier"].Value;

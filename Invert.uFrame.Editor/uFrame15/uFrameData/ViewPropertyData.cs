@@ -32,9 +32,9 @@ public class ViewPropertyData : DiagramNodeItem,ISerializeablePropertyData,IBind
 
     }
 
-    public override void Deserialize(JSONClass cls, INodeRepository repository)
+    public override void Deserialize(JSONClass cls)
     {
-        base.Deserialize(cls, repository);
+        base.Deserialize(cls);
 
         _type = cls["ItemType"].Value.Split(',')[0].Split('.').Last();
     }

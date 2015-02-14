@@ -45,7 +45,7 @@ public class ConnectionData : IJsonObject
         cls.Add("InputIdentifier", InputIdentifier ?? string.Empty);
     }
 
-    public void Deserialize(JSONClass cls, INodeRepository repository)
+    public void Deserialize(JSONClass cls)
     {
         if (cls["InputIdentifier"] != null)
         {

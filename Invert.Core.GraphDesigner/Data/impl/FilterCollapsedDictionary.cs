@@ -30,7 +30,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public void Deserialize(JSONClass cls, INodeRepository repository)
+        public void Deserialize(JSONClass cls)
         {
             this.Clear();
             foreach (KeyValuePair<string,JSONNode> jsonNode in cls)
@@ -83,7 +83,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public void Deserialize(JSONClass cls, INodeRepository repository)
+        public void Deserialize(JSONClass cls)
         {
             _dict.Clear();
             foreach (KeyValuePair<string, JSONNode> jsonNode in cls)

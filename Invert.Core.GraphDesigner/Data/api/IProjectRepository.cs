@@ -122,7 +122,12 @@ namespace Invert.Core.GraphDesigner
             //}
             get
             {
-                return _allGraphItems ?? (_allGraphItems = (from diagram in Graphs where diagram != null && !Object.Equals(diagram, null) from item in diagram.AllGraphItems select item).ToArray());
+                if (_allGraphItems != null) 
+                    return _allGraphItems;
+                else
+                    return _allGraphItems = (Graphs.Where(
+                        diagram => diagram != null && !Object.Equals(diagram, null))
+                        .SelectMany(diagram => diagram.AllGraphItems)).ToArray();
             }
         }
 
@@ -309,6 +314,12 @@ namespace Invert.Core.GraphDesigner
             _allGraphItems = null;
             foreach (var item in Graphs)
             {
+                item.Project = this;
+            }
+            foreach (var item in Graphs)
+            {
+                _nodeItems = null;
+                _allGraphItems = null;
                item.SetProject(this);
             }
         }
