@@ -60,6 +60,7 @@ namespace Invert.Core.GraphDesigner
             set
             {
                 NodeItem.IsEditing = value;
+                IsDirty = true;
             }
         }
 

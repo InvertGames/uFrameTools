@@ -14,13 +14,15 @@ namespace Invert.Core.GraphDesigner
 
         private BaseClassReference _baseReference;
         [Browsable(false)]
-        public GenericInheritableNode BaseNode
+        public virtual GenericInheritableNode BaseNode
         {
             get
             {
                 return this.InputFrom<GenericInheritableNode>();
             }
+            set { throw new System.NotImplementedException(); }
         }
+
         [Browsable(false)]
         public IEnumerable<GenericInheritableNode> BaseNodes
         {

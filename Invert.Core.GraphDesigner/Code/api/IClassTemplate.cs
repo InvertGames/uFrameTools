@@ -2,6 +2,8 @@ namespace Invert.Core.GraphDesigner
 {
     public interface IClassTemplate
     {
+        string OutputPath { get; }
+        bool CanGenerate { get; }
         void TemplateSetup();
     }
 

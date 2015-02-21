@@ -286,7 +286,7 @@ namespace Invert.Core.GraphDesigner
             var gt = item as GenericTypedChildItem;
             if (gt != null)
             {
-                return gt.RelatedTypeNode;
+                return gt.RelatedTypeNode as IDiagramNode;
             }
             return item.Node.Project.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
         }

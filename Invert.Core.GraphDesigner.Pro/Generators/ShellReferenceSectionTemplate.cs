@@ -1,10 +1,21 @@
 using System.CodeDom;
+using System.IO;
 using Invert.Core.GraphDesigner;
 
-[TemplateClass("Sections", MemberGeneratorLocation.Both, ClassNameFormat = "{0}Reference", IsEditorExtension = true)]
+[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}Reference")]
 public class ShellReferenceSectionTemplate : GenericReferenceItem<IDiagramNodeItem>,
     IClassTemplate<ShellNodeTypeReferenceSection>
 {
+    public string OutputPath
+    {
+        get { return Path2.Combine("Editor","Sections"); }
+    }
+
+    public bool CanGenerate
+    {
+        get { return true; }
+    }
+
     public void TemplateSetup()
     {
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");

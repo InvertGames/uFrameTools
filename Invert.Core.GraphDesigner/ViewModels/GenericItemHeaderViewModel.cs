@@ -5,13 +5,26 @@ namespace Invert.Core.GraphDesigner
 {
     public class GenericItemHeaderViewModel : GraphItemViewModel
     {
+
+        public bool AllowConnections { get; set; }
         public override ConnectorViewModel InputConnector
         {
-            get { return null; }
+            get
+            {
+                if (!AllowConnections) return null;
+                return base.InputConnector;
+            }
+            set {  }
         }
+
         public override ConnectorViewModel OutputConnector
         {
-            get { return null; }
+            get
+            {
+                if (!AllowConnections) return null;
+                return base.OutputConnector;
+            }
+            set { }
         }
 
         public override Vector2 Position { get; set; }

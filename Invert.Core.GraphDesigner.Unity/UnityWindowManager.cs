@@ -22,7 +22,7 @@ public class UnityWindowManager : IWindowManager
           
         });
     }
-    public void InitItemWindow<TItem>(IEnumerable<TItem> items, Action<TItem> action)
+    public void InitItemWindow<TItem>(IEnumerable<TItem> items, Action<TItem> action, bool allowNone = false)
         where TItem : IItem
     {
         ItemSelectionWindow.Init("Select Item",items.Cast<IItem>(), (item) =>
@@ -30,9 +30,9 @@ public class UnityWindowManager : IWindowManager
             InvertGraphEditor.ExecuteCommand(_ =>
             {
                 action((TItem)item);
-            },true);
-            
-            
-        });
+            });
+
+
+        }, allowNone);
     }
 }

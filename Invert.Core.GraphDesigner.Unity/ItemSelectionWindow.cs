@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class ItemSelectionWindow : SearchableScrollWindow
 {
-    public static void Init(string title, IEnumerable<IItem> items, Action<IItem> selected)
+    public static void Init(string title, IEnumerable<IItem> items, Action<IItem> selected, bool allowNone = false)
     {
         // Get existing open window or if none, make a new one:
         var window = (ItemSelectionWindow)GetWindow(typeof(ItemSelectionWindow));
@@ -18,8 +18,11 @@ public class ItemSelectionWindow : SearchableScrollWindow
         window.SelectedAction = selected;
         window.ApplySearch();
         window.minSize = new Vector2(200, 200);
+        window.AllowNode = allowNone;
         window.Show();
     }
+
+    public bool AllowNode { get; set; }
 
     public IEnumerable<IItem> Items { get; set; }
     public IItem[] ItemsArray { get; set; }
@@ -54,10 +57,26 @@ public class ItemSelectionWindow : SearchableScrollWindow
 
     public override void OnGUIScrollView()
     {
+        if (AllowNode)
+        {
+            if (
+                           GUIHelpers.DoTriggerButton(new UFStyle()
+                           {
+                               Label = "[NONE]",
+                               IsWindow = true,
+                               FullWidth = true,
+                               BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall
+                           }))
+            {
+                SelectedAction(null);
+                IsClosing = true;
+            }
+        }
         if (ItemGroups == null)
         {
             return;
         }
+
         foreach (var group in ItemGroups)
         {
             if (group.Any())

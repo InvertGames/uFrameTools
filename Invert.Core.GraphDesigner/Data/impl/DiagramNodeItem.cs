@@ -166,9 +166,21 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     public virtual string Name
     {
         get { return _name; }
-        set { _name = Regex.Replace(value, @"[^a-zA-Z0-9_\.]+", ""); }
+        set
+        {
+            if (AutoFixName)
+            _name = Regex.Replace(value, @"[^a-zA-Z0-9_\.]+", "");
+            else
+            {
+                _name = value;
+            }
+        }
     }
 
+    public virtual bool AutoFixName
+    {
+        get { return true; }
+    }
     public string OldName
     {
         get { return _oldName; }

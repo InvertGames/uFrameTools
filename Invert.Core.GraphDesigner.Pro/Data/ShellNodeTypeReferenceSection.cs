@@ -33,7 +33,7 @@ public class ShellNodeTypeReferenceSection : ShellNodeTypeSection,IReferenceNode
         get { return _allowMultipleOutputs; }
         set { _allowMultipleOutputs = value; }
     }
-
+    
 
     [ReferenceSection("Acceptable Types", SectionVisibility.Always, false)]
     public IEnumerable<ShellAcceptableReferenceType> AcceptableTypes

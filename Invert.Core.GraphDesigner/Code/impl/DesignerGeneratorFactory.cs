@@ -53,4 +53,6 @@ namespace Invert.Core.GraphDesigner
 
         public bool AlwaysRegenerate { get; set; }
     }
+
+
 }

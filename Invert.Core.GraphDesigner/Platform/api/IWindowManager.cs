@@ -10,7 +10,7 @@ namespace Invert.Core
         //void InitTypeListWindow(SelectItemTypeViewModel viewModel);
         void InitTypeListWindow(GraphTypeInfo[] typesInfoList, Action<GraphTypeInfo> action);
 
-        void InitItemWindow<TItem>(IEnumerable<TItem> items, Action<TItem> action)
+        void InitItemWindow<TItem>(IEnumerable<TItem> items, Action<TItem> action, bool allowNone = false)
             where TItem : IItem;
 
      

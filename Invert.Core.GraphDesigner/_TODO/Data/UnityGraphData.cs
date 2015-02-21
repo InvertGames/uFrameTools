@@ -166,6 +166,9 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
     {
         get
         {
+#if UNITY_DLL
+            return this.name;
+#endif
             if (!InvertApplication.IsMainThread)
             {
                 return _name;
@@ -174,7 +177,10 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         }
         set
         {
+#if UNITY_DLL
             this.name = value;
+            EditorUtility.SetDirty(this);
+#endif
             _name = value;
         }
     }
@@ -278,7 +284,8 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
             if (actualType != null)
             {
                 Graph = Activator.CreateInstance(actualType) as IGraphData;
-   
+                if (Graph != null)
+                Graph.Name = this.name;
             }
             Graph.DeserializeFromJson(json);
             Graph.Path = Application.dataPath + Path.Substring(7);

@@ -5,7 +5,6 @@ public class TemplateClass : Attribute
     private string _classNameFormat = "{0}";
     private MemberGeneratorLocation _location = MemberGeneratorLocation.Both;
     private bool _autoInherit = true;
-    public bool IsEditorExtension { get; set; }
 
     public MemberGeneratorLocation Location
     {
@@ -19,7 +18,7 @@ public class TemplateClass : Attribute
         set { _classNameFormat = value; }
     }
 
-    public string OutputFolderName { get; set; }
+
 
     public bool AutoInherit
     {
@@ -36,15 +35,10 @@ public class TemplateClass : Attribute
         Location = location;
     }
 
-    public TemplateClass(string outputFolderName, MemberGeneratorLocation location)
-    {
-        OutputFolderName = outputFolderName;
-        Location = location;
-    }
 
-    public TemplateClass(string outputFolderName, string classNameFormat, MemberGeneratorLocation location)
+
+    public TemplateClass(MemberGeneratorLocation location, string classNameFormat)
     {
-        OutputFolderName = outputFolderName;
         ClassNameFormat = classNameFormat;
         Location = location;
     }
@@ -180,5 +174,5 @@ public class TemplateProperty : TemplateMember
     {
         DesignerFile = 0,
         EditableFile = 1,
-        Both = DesignerFile | EditableFile
+        Both = 2
     }

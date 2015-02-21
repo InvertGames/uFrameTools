@@ -2,11 +2,16 @@ using System;
 using System.CodeDom;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Invert.Core.GraphDesigner
 {
     public static class CodeDomHelpers
     {
+        public static string Clean(this string str)
+        {
+            return Regex.Replace(str, @"[^a-zA-Z0-9_\.]+", "");
+        }
         public static CodeTypeDeclaration MakeStatic(this CodeTypeDeclaration type)
         {
             type.BaseTypes.Clear();

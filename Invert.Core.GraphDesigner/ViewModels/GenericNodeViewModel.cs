@@ -30,14 +30,21 @@ namespace Invert.Core.GraphDesigner
 
         public virtual NodeConfigBase NodeConfig
         {
-            get { return _nodeConfig ?? (
-                _nodeConfig = InvertGraphEditor.Container.GetNodeConfig<TData>()); }
+            get
+            {
+                return _nodeConfig ?? (
+                  _nodeConfig = InvertGraphEditor.Container.GetNodeConfig(DataObject.GetType()) as NodeConfigBase);
+            }
         }
 
         public override IEnumerable<string> Tags
         {
             get
             {
+                if (GraphItem.Graph.Identifier != DiagramViewModel.DiagramData.Identifier)
+                {
+                    yield return "->" + GraphItem.Graph.Name;
+                }
                 yield return NodeConfig.Name;
 
                 foreach (var item in GraphItem.Flags)
@@ -387,7 +394,7 @@ namespace Invert.Core.GraphDesigner
 
     //    public override string Name
     //    {
-    //        get { throw new NotImplementedException(); }
+    //        get { return true; }
     //        set { throw new NotImplementedException(); }
     //    }
     //}

@@ -249,7 +249,7 @@ namespace Invert.Json
             }
             return null;
         }
-
+        public static IJsonTypeResolver TypeResolver { get; set; }
         public static IJsonObject DeserializeObject(this JSONNode node, Type genericTypeArg = null, bool failOnMissingType = true)
         {
             if (node == null) return null;
@@ -267,6 +267,10 @@ namespace Invert.Json
             if (clrType == null)
             {
                 clrType = FindTypeByName(clrTypeString);
+            }
+            if (clrType == null && TypeResolver != null)
+            {
+                clrType = TypeResolver.FindType(clrTypeString);
             }
             if (clrType == null)
             {
@@ -298,5 +302,10 @@ namespace Invert.Json
             throw new Exception("Type must be of type IJsonObject" + clrTypeString);
 
         }
+    }
+
+    public interface IJsonTypeResolver
+    {
+        Type FindType(string clrTypeString);
     }
 }

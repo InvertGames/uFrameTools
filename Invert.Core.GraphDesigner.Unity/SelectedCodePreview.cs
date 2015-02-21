@@ -33,7 +33,7 @@ using UnityEngine;
             if (GeneratorDrawers != null)
             {
                 _scrollPosition= GUILayout.BeginScrollView(_scrollPosition);
-                var rect = new Vector2(0f, 25f);
+                var rect = new Vector2(0f, 28f);
                 foreach (var fileGenerator in GeneratorDrawers)
                 {
                     if (GUIHelpers.DoToolbarEx(fileGenerator.ViewModelObject.Name))
@@ -42,11 +42,11 @@ using UnityEngine;
 
                         fileGenerator.Refresh(InvertGraphEditor.PlatformDrawer, rect);
                         rect.y += fileGenerator.Bounds.height;
-                        GUILayoutUtility.GetRect(fileGenerator.Bounds.width, fileGenerator.Bounds.height);
+                        GUILayoutUtility.GetRect(Screen.width, fileGenerator.Bounds.height);
                         fileGenerator.Draw(InvertGraphEditor.PlatformDrawer, 1f);
                         //EditorGUILayout.TextArea(fileGenerator.ToString());
                     }
-                    rect.y += 25f;
+                    rect.y += 28f;
                 }
                 GUILayout.EndScrollView();
             }
@@ -78,15 +78,15 @@ using UnityEngine;
             GeneratorDrawers.Clear();
             fileGenerators = null;
 
-            SelectedNode = InvertGraphEditor.CurrentDiagramViewModel.SelectedNode;
+            SelectedNode = InvertGraphEditor.CurrentDiagramViewModel.SelectedGraphItem;
 
             if (SelectedNode == null)
             {
                 return;
             }
-            Issues = SelectedNode.Issues.Any(p => p.Siverity == ValidatorType.Error);
-            if (Issues) return;
-            var item = SelectedNode == null ? null:SelectedNode.GraphItemObject;
+            //Issues = SelectedNode.Issues.Any(p => p.Siverity == ValidatorType.Error);
+            //if (Issues) return;
+            var item = SelectedNode == null ? null:SelectedNode.DataObject;
 
             fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,
                 InvertGraphEditor.DesignerWindow.DiagramViewModel.CurrentRepository, true).ToArray();
@@ -109,5 +109,5 @@ using UnityEngine;
 
         public bool Issues { get; set; }
 
-        public DiagramNodeViewModel SelectedNode { get; set; }
+        public GraphItemViewModel SelectedNode { get; set; }
     }

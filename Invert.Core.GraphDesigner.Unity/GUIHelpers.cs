@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Invert.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -160,6 +161,22 @@ namespace Invert.Common.UI
                 EditorPrefs.SetBool(label,!EditorPrefs.GetBool(label));
             }
             return EditorPrefs.GetBool(label);
+        }
+
+        public static void DoArray<TType>(string label, IEnumerable<TType> items, Action<TType> removeItem, Action add) where TType : IItem
+        {
+            if (DoToolbarEx(label, add))
+            {
+                foreach (var item in items)
+                {
+                    var item1 = item;
+                    DoTriggerButton(new UFStyle(item.Title, ElementDesignerStyles.EventButtonStyleSmall, null,
+                        ElementDesignerStyles.RemoveButtonStyle, () =>
+                        {
+                            removeItem(item1);
+                        }));
+                }
+            }
         }
         public static bool DoTriggerButton(UFStyle ubTriggerContent)
         {

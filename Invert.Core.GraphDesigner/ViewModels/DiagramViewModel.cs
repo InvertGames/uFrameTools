@@ -69,7 +69,7 @@ namespace Invert.Core.GraphDesigner
                         yield return item;
                     }
                 }
-                
+
             }
         }
         public float SnapSize
@@ -101,7 +101,7 @@ namespace Invert.Core.GraphDesigner
                     yield return item;
                 }
             }
-        } 
+        }
         public IEnumerable<GraphItemViewModel> SelectedGraphItems
         {
             get { return AllViewModels.Where(p => p.IsSelected); }
@@ -277,9 +277,9 @@ namespace Invert.Core.GraphDesigner
 
         public void RefreshConnectors()
         {
-            
-            var items  = GraphItems.OfType<ConnectorViewModel>().ToArray();
-            var connections  = GraphItems.OfType<ConnectionViewModel>().ToArray();
+
+            var items = GraphItems.OfType<ConnectorViewModel>().ToArray();
+            var connections = GraphItems.OfType<ConnectionViewModel>().ToArray();
 
             foreach (var item in items)
             {
@@ -298,16 +298,16 @@ namespace Invert.Core.GraphDesigner
         }
         private void RefreshConnectors(List<ConnectorViewModel> connectors)
         {
-            
+
 
             foreach (var item in connectors)
             {
                 item.DiagramViewModel = this;
                 GraphItems.Add(item);
             }
-          //  var startTime = DateTime.Now;
-            
-            
+            //  var startTime = DateTime.Now;
+
+
             foreach (var connection in DiagramData.Connections)
             {
                 var startConnector = connectors.FirstOrDefault(p => p.DataObject == connection.Output && p.Direction == ConnectorDirection.Output);
@@ -323,7 +323,7 @@ namespace Invert.Core.GraphDesigner
                     Color = Color.white,
                     Remove = (a) =>
                     {
-                        DiagramData.RemoveConnection(connection.Output,connection.Input);
+                        DiagramData.RemoveConnection(connection.Output, connection.Input);
                     }
                 });
             }
@@ -435,6 +435,9 @@ namespace Invert.Core.GraphDesigner
             {
                 item.EndEditing();
             }
+#if UNITY_DLL
+            UnityEngine.GUI.FocusControl("");
+#endif
         }
 
         //public void UpgradeProject()
@@ -444,7 +447,22 @@ namespace Invert.Core.GraphDesigner
 
         public void NothingSelected()
         {
+            var items = SelectedNodeItems.OfType<ItemViewModel>().Where(p => p.IsEditing).ToArray();
+            if (items.Length > 0)
+            {
+                InvertGraphEditor.ExecuteCommand(_ =>
+                {
+                    foreach (var item in items)
+                    {
+                        item.IsEditing = false;
+                        
+                    }
+                    
+                });
+            }
+
             DeselectAll();
+            InvertGraphEditor.ExecuteCommand(_=>{});
         }
 
         public void Select(GraphItemViewModel viewModelObject)
@@ -503,7 +521,7 @@ namespace Invert.Core.GraphDesigner
             {
                 yield return this;
                 yield return DataObject;
-                
+
                 foreach (var nodeItem in GraphItems.Where(p => p.IsMouseOver || p.IsSelected).OfType<ConnectorViewModel>())
                 {
                     yield return nodeItem;

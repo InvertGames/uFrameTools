@@ -90,9 +90,19 @@ public class EnumChildItem : GenericNodeChildItem
     
 }
 
-[TemplateClass("Enums",MemberGeneratorLocation.DesignerFile)]
+[TemplateClass(MemberGeneratorLocation.DesignerFile)]
 public class EnumNodeGenerator : IClassTemplate<EnumNode>
 {
+    public string OutputPath
+    {
+        get { return "Enums"; }
+    }
+
+    public bool CanGenerate
+    {
+        get { return true; }
+    }
+
     public void TemplateSetup()
     {
         Ctx.CurrentDecleration.IsEnum = true;

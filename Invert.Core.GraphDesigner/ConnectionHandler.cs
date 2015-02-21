@@ -92,7 +92,12 @@ namespace Invert.Core.GraphDesigner
 
                     foreach (var connector in nodeAtMouse.Connectors)
                     {
-
+                        // Skip anything that might still be visible but not "visible"
+                        if (nodeAtMouse.IsCollapsed)
+                        {
+                            if (connector != connector.InputConnector || connector != connector.OutputConnector)
+                                continue;
+                        }
                         ConnectionViewModel connection = null;
                         foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
                         {

@@ -199,6 +199,10 @@ public class ProjectRepositoryInspector : Editor
     private void DoDiagramInspector()
     {
         var selected = InvertGraphEditor.CurrentDiagramViewModel.SelectedGraphItem;
+        //if (selected == null)
+        //{
+        //    selected = InvertGraphEditor.CurrentDiagramViewModel.SelectedNode;
+        //}
         if (selected == null) return;
         if (SelectedItem != selected.DataObject)
         {
@@ -216,6 +220,17 @@ public class ProjectRepositoryInspector : Editor
                 var unityDrawer = InvertGraphEditor.PlatformDrawer as UnityDrawer;
                 unityDrawer.DrawInspector(item);
             }
+
+            var drawer = InvertGraphEditor.DesignerWindow.DiagramDrawer;
+            if (drawer != null)
+            {
+                var dr = drawer.Children.OfType<IInspectorDrawer>().FirstOrDefault(p => p.ViewModelObject.IsSelected);
+                if (dr != null)
+                {
+                    dr.DrawInspector(InvertGraphEditor.PlatformDrawer);
+                }
+            }
+
         }
         return;
         //var connectable = SelectedItem as IConnectable;

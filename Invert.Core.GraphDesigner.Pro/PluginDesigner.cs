@@ -48,6 +48,7 @@ public class PluginDesigner : DiagramPlugin
             .HasSubNode<ShellGraphTypeNode>()
             .HasSubNode<ShellSlotTypeNode>()
             .HasSubNode<TypeReferenceNode>()
+            .HasSubNode<ShellNodeConfig>()
             ;
 
         var graphConfig = container.AddNode<ShellGraphTypeNode>("Graph Type")
@@ -56,7 +57,40 @@ public class PluginDesigner : DiagramPlugin
            .Validator(_=>_.RootNode == null,"A graph must have a root node.")
            ;
 
-        var shellNodeConfig = container.AddNode<ShellNodeTypeNode>("Node Type")
+        var shellConfigurationNode =
+            container.AddNode<ShellNodeConfig, ShellNodeConfigViewModel, ShellNodeConfigDrawer>("Node Config")
+                .HasSubNode<ShellNodeConfig>()
+                .HasSubNode<ShellTemplateConfigNode>()
+            ;
+        shellConfigurationNode.AddFlag("Graph Type");
+
+        container.AddNode<ShellTemplateConfigNode>("Code Template")
+            .Color(NodeColor.Purple);
+        
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfig, ShellNodeConfigTemplate>();
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfigSection, ShellNodeConfigReferenceSectionTemplate>();
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfigSection, ShellNodeConfigChildItemTemplate>();
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfig, ShellNodeAsGraphTemplate>();
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellPluginNode, ShellConfigPluginTemplate>();
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfig, ShellNodeConfigViewModelTemplate>();
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfig, ShellNodeConfigDrawerTemplate>();
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellTemplateConfigNode, ShellNodeConfigTemplateTemplate>();
+
+        container.Connectable<ShellNodeConfigSection, ShellNodeConfig>();
+        container.Connectable<ShellNodeConfigOutput, ShellNodeConfigInput>();
+        container.Connectable<ShellNodeConfigOutput, ShellNodeConfig>();
+        container.Connectable<ShellNodeConfigOutput, ShellNodeConfigSection>();
+        container.Connectable<ShellNodeConfig, ShellNodeConfigInput>();
+        container.Connectable<ShellNodeConfig, ShellNodeConfigSection>();
+        container.Connectable<IShellNodeConfigItem, ShellTemplateConfigNode>();
+
+        container.Connectable<ShellNodeConfigSection, ShellNodeConfigInput>();
+       
+        container.Connectable<ShellNodeConfigSection, ShellNodeConfigSection>();
+  
+
+
+        var shellNodeConfig = container.AddNode<ShellNodeTypeNode,ShellNodeTypeNodeViewModel,ShellNodeTypeNodeDrawer>("Node Type")
             .AddFlag("Custom")
             .AddFlag("Inheritable")
             .HasSubNode<ShellSlotTypeNode>()
@@ -104,12 +138,13 @@ public class PluginDesigner : DiagramPlugin
             .AddFlag("Custom")
             .AddFlag("Typed");
 
-        pluginConfig.AddCodeTemplate<ShellPluginTemplate>();
+        //pluginConfig.AddCodeTemplate<ShellPluginTemplate>();
         graphConfig.AddCodeTemplate<ShellGraphTemplate>();
         shellNodeConfig.AddCodeTemplate<ShellNodeTypeTemplate>();
         shellNodeConfig.AddCodeTemplate<ShellNodeTypeViewModelTemplate>();
         shellNodeConfig.AddCodeTemplate<ShellNodeTypeDrawerTemplate>();
-        shellSlotConfig.AddCodeTemplate<ShellSlotItemTemplate>();
+        //shellSlotConfig.AddCodeTemplate<ShellSlotItemTemplate>();
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<IShellSlotType,ShellSlotItemTemplate>();
         shellChildItemConfig.AddCodeTemplate<ShellChildTemplate>();
         shellReferenceConfig.AddCodeTemplate<ShellReferenceSectionTemplate>();
 

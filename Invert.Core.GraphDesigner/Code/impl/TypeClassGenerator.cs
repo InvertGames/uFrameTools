@@ -2,14 +2,16 @@ using System;
 using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
     public class TypeClassGenerator<TData, TTemplateType> : CodeGenerator
-        where TData : DiagramNode
+        where TData : class, IDiagramNodeItem
         where TTemplateType : class, IClassTemplate<TData>, new()
     {
         private CodeTypeDeclaration _decleration;
@@ -20,6 +22,22 @@ namespace Invert.Core.GraphDesigner
         public Type TemplateType
         {
             get { return typeof(TTemplateType); }
+        }
+
+       
+        public override string Filename
+        {
+            get
+            {
+                var template = new TTemplateType { Ctx = new TemplateContext<TData>(TemplateType) { DataObject = Data,IsDesignerFile = IsDesignerFile} };
+                if (IsDesignerFile)
+                {
+                    return Path.Combine("_DesignerFiles", template.OutputPath + ".designer.cs");
+                }
+
+                return Path.Combine(template.OutputPath,ClassName(Data) + ".cs");
+            }
+            set { base.Filename = value; }
         }
 
         public TTemplateType TemplateClass
@@ -72,6 +90,13 @@ namespace Invert.Core.GraphDesigner
             set { ObjectData = value; }
         }
 
+        public override bool IsValid()
+        {
+            
+            var template = new TTemplateType {Ctx = new TemplateContext<TData>(TemplateType) {DataObject = Data}};
+            return template.CanGenerate;
+        }
+
         public CodeTypeDeclaration Decleration
         {
             get
@@ -86,17 +111,21 @@ namespace Invert.Core.GraphDesigner
             get { return Attribute.ClassNameFormat; }
         }
 
-        public virtual string ClassName(DiagramNode node)
+        public virtual string ClassName(IDiagramNodeItem node)
         {
-            //var typeNode = node as IClassTypeNode;
-            //if (typeNode != null)
-            //{
-            //    return typeNode.ClassName;
-            //}
-            return string.Format(ClassNameFormat, node.Name);
+            if (!string.IsNullOrEmpty(ClassNameFormat))
+            {
+                return Regex.Replace(string.Format(ClassNameFormat, node.Name), @"[^a-zA-Z0-9_\.]+", "");
+            }
+            var typeNode = node as IClassTypeNode;
+            if (typeNode != null)
+            {
+                return Regex.Replace(typeNode.ClassName, @"[^a-zA-Z0-9_\.]+", "");
+            }
+            return Regex.Replace(node.Name, @"[^a-zA-Z0-9_\.]+", "");
         }
 
-        public virtual string ClassNameBase(DiagramNode node)
+        public virtual string ClassNameBase(IDiagramNodeItem node)
         {
             if (IsDesignerFileOnly)
                 return ClassName(node);
@@ -537,7 +566,7 @@ namespace Invert.Core.GraphDesigner
         public void AddCondition(string memberName, Func<TData, bool> condition)
         {
 
-            AddIterator("AllowMultipleOutputs", _ => condition(_) ? Enumerable.Repeat(_, 1) : Enumerable.Empty<TData>());
+            AddIterator(memberName, _ => condition(_) ? Enumerable.Repeat(_, 1) : Enumerable.Empty<TData>());
         }
 
         public T ItemAs<T>()
@@ -552,7 +581,7 @@ namespace Invert.Core.GraphDesigner
             CurrentAttribute = templateProperty.Value;
             if (templateProperty.Value.AutoFill != AutoFillType.None)
             {
-                domObject.Name = string.Format(templateProperty.Value.NameFormat, this.Item.Name);
+                domObject.Name = string.Format(templateProperty.Value.NameFormat, this.Item.Name.Clean());
             }
 
             if (templateProperty.Value.AutoFill == AutoFillType.NameAndType ||
@@ -589,7 +618,7 @@ namespace Invert.Core.GraphDesigner
                 templateProperty.Value.AutoFill == AutoFillType.NameOnlyWithBackingField)
             {
                 //templateProperty.Key.GetValue(instance, null);
-                var field = CurrentDecleration._private_(domObject.Type, "_{0}", domObject.Name);
+                var field = CurrentDecleration._private_(domObject.Type, "_{0}", domObject.Name.Clean());
                 domObject.GetStatements._("return {0}", field.Name);
                 domObject.SetStatements._("{0} = value", field.Name);
 
@@ -741,6 +770,7 @@ namespace Invert.Core.GraphDesigner
         {
             MethodInfo info;
             var dom = TemplateType.MethodFromTypeMethod(templateMethod.Key.Name, out info, false);
+            
             CurrentMember = dom;
             CurrentAttribute = templateMethod.Value;
             PushStatements(dom.Statements);
@@ -753,7 +783,7 @@ namespace Invert.Core.GraphDesigner
             }
             if (templateMethod.Value.AutoFill != AutoFillType.None)
             {
-                dom.Name = string.Format(templateMethod.Value.NameFormat, data.Name);
+                dom.Name = string.Format(templateMethod.Value.NameFormat, data.Name.Clean());
             }
 
             CurrentDecleration.Members.Add(dom);

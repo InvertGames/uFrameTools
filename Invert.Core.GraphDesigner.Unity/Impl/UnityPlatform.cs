@@ -423,10 +423,10 @@ namespace Invert.Core.GraphDesigner.Unity
             DiagramDrawer.IsEditingField = true;
             var newName = EditorGUI.TextField(rect, value, (GUIStyle)itemTextEditingStyle);
 
-            if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
-            {
+            //if (EditorGUI.EndChangeCheck() && !string.IsNullOrEmpty(newName))
+            //{
                 valueChangedAction(newName, false);
-            }
+            //}
             if (Event.current.keyCode == KeyCode.Return)
             {
                 valueChangedAction(value, true);
@@ -450,17 +450,17 @@ namespace Invert.Core.GraphDesigner.Unity
                     text = item.Label;
                 }
                 //GUILayout.BeginHorizontal();
-                GUILayout.Label(d.CachedName, ElementDesignerStyles.ClearItemStyle);
-                if (GUILayout.Button(text, ElementDesignerStyles.ItemTextEditingStyle))
+               
+                if (GUILayout.Button(d.ViewModel.Label + ": " + text,ElementDesignerStyles.ButtonStyle))
                 {
                     var type = d.ViewModel.Type;
-                    var nodeItem = d.ViewModel.NodeViewModel.DataObject as IDiagramNodeItem;
-                    var items = nodeItem.Node.Project.AllGraphItems.Where(p => type.IsAssignableFrom(p.GetType()));
+                    //var nodeItem = d.ViewModel.NodeViewModel.DataObject as IDiagramNodeItem;
+                    var items = InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.AllGraphItems.Where(p => type.IsAssignableFrom(p.GetType()));
                     InvertGraphEditor.WindowManager.InitItemWindow(items, (i) =>
                     {
 
                         d.ViewModel.Setter(i);
-                    });
+                    },true);
 
                 }
                 //GUILayout.EndHorizontal();
@@ -487,13 +487,15 @@ namespace Invert.Core.GraphDesigner.Unity
 
                     if (GUILayout.Button((string)d.CachedValue))
                     {
-                        InvertGraphEditor.WindowManager.InitTypeListWindow(InvertApplication.GetDerivedTypes<System.Object>(true, true).Select(p => new GraphTypeInfo()
-                        {
-                            Name = p.Name,
-                            Group = p.Namespace,
-                            Label = p.Name,
+                        var items =
+                            new[] {new GraphTypeInfo() { Name = null, Group = "", Label = "[NONE]"} }.Concat(InvertApplication.GetDerivedTypes<System.Object>(true, true).Select(p => new GraphTypeInfo()
+                            {
+                                Name = p.Name,
+                                Group = p.Namespace,
+                                Label = p.Name,
 
-                        }).ToArray()
+                            })).ToArray();
+                        InvertGraphEditor.WindowManager.InitTypeListWindow(items
                         , (type) =>
                         {
                             InvertGraphEditor.ExecuteCommand(x => d.ViewModel.Setter(type.Name), true);
@@ -585,7 +587,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 d.CachedValue = EditorGUILayout.EnumPopup(d.ViewModel.Name, (Enum)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    d.ViewModel.Setter(d.CachedValue);
+                    InvertGraphEditor.ExecuteCommand(_ => d.ViewModel.Setter(d.CachedValue));
                 }
             }
             else if (d.ViewModel.Type == typeof(Type))

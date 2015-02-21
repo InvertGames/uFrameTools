@@ -12,9 +12,6 @@ namespace Invert.Core.GraphDesigner
 
     public interface IBindableTypedItem : IRefactorable, ITypedItem
     {
-    
-   
-    
         bool AllowEmptyRelatedType { get;  }
         string FieldName { get; }
         string NameAsChangedMethod { get;  }

@@ -36,6 +36,13 @@ namespace Invert.Core.GraphDesigner
             //ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name)).x + 20);
             HeaderBounds = new Rect(position.x - 2, position.y, width + 6, 25);
             Bounds = new Rect(position.x + 5, position.y, width + 20, 25);
+            
+        }
+
+        public override void OnLayout()
+        {
+            base.OnLayout();
+            ViewModel.ConnectorBounds = Bounds;
         }
 
         public Rect HeaderBounds { get; set; }

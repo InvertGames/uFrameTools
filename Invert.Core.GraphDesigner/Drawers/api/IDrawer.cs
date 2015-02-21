@@ -7,6 +7,11 @@ namespace Invert.Core.GraphDesigner
     {
     
     }
+
+    public interface IInspectorDrawer : IDrawer
+    {
+        void DrawInspector(IPlatformDrawer platformDrawer);
+    }
     public interface IDrawer 
     {
         GraphItemViewModel ViewModelObject { get; }

@@ -74,7 +74,7 @@ namespace Invert.Core.GraphDesigner
             get { return InvertApplication.Container; }
         }
 
-     
+
 
         public static DiagramViewModel CurrentDiagramViewModel
         {
@@ -107,7 +107,7 @@ namespace Invert.Core.GraphDesigner
         //        }
         //    }
         //}
-        
+
         public static IGraphWindow DesignerWindow
         {
             get { return _designerWindow; }
@@ -128,7 +128,7 @@ namespace Invert.Core.GraphDesigner
 
         //public static IProjectRepository[] GetAllProjects()
         //{
-            
+
         //}
         public static IGraphEditorSettings Settings
         {
@@ -162,11 +162,11 @@ namespace Invert.Core.GraphDesigner
             return Connectable<TSource, TTarget>(container, Color.white, oneToMany);
         }
 
-        public static IUFrameContainer Connectable<TSource, TTarget>(this IUFrameContainer container,Color color, bool oneToMany = true)
+        public static IUFrameContainer Connectable<TSource, TTarget>(this IUFrameContainer container, Color color, bool oneToMany = true)
             where TSource : class, IConnectable
             where TTarget : class, IConnectable
         {
-            
+
             //if (oneToMany)
             container.RegisterInstance<IConnectionStrategy>(new CustomInputOutputStrategy<TSource, TTarget>(color), typeof(TSource).Name + "_" + typeof(TTarget).Name + "Connection");
             //else
@@ -192,7 +192,7 @@ namespace Invert.Core.GraphDesigner
             }
             return (TCommandUI)ui;
         }
-        public static TCommandUI CreateCommandUI<TCommandUI>( params Type[] contextTypes) where TCommandUI : class,ICommandUI
+        public static TCommandUI CreateCommandUI<TCommandUI>(params Type[] contextTypes) where TCommandUI : class,ICommandUI
         {
             var ui = Container.Resolve<TCommandUI>() as ICommandUI;
             ui.Handler = DesignerWindow;
@@ -211,7 +211,7 @@ namespace Invert.Core.GraphDesigner
 
         public static void DesignerPluginLoaded()
         {
-            
+
             Settings = Container.Resolve<IGraphEditorSettings>();
             AssetManager = Container.Resolve<IAssetManager>();
             OrganizeFilters();
@@ -234,7 +234,7 @@ namespace Invert.Core.GraphDesigner
             }
 
             ConnectionStrategies = Container.ResolveAll<IConnectionStrategy>().ToArray();
-            
+
             KeyBindings = Container.ResolveAll<IKeyBinding>().Concat(commandKeyBindings).ToArray();
         }
 
@@ -243,7 +243,7 @@ namespace Invert.Core.GraphDesigner
             ExecuteCommand(DesignerWindow, action);
         }
 
-        public static void ExecuteCommand(Action<DiagramViewModel> action,bool recordUndo = false)
+        public static void ExecuteCommand(Action<DiagramViewModel> action, bool recordUndo = false)
         {
             ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action), recordUndo);
         }
@@ -256,8 +256,16 @@ namespace Invert.Core.GraphDesigner
         {
             var objs = handler.ContextObjects.ToArray();
             if (recordUndo)
-            DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.DiagramData,command.Name);
-            //CurrentProject.RecordUndo(CurrentProject.CurrentGraph, command.Title);
+            {
+                foreach (
+                   var item in
+                       DesignerWindow.DiagramViewModel.ContextObjects.OfType<IDiagramNodeItem>()
+                           .Select(p => p.Node.Graph)
+                           .Distinct())
+                {
+                    DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(item, command.Name);
+                }
+            }
             foreach (var o in objs)
             {
                 if (o == null) continue;
@@ -269,7 +277,7 @@ namespace Invert.Core.GraphDesigner
 #if (UNITY_DLL)
 
                     command.Execute(o);
-                    
+
 #else
                     command.Perform(o);
 #endif
@@ -287,7 +295,18 @@ namespace Invert.Core.GraphDesigner
                 }
             }
             if (recordUndo)
-            DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.DiagramData);
+            {
+                foreach (
+                    var item in
+                        DesignerWindow.DiagramViewModel.ContextObjects.OfType<IDiagramNodeItem>()
+                            .Select(p => p.Node.Graph)
+                            .Distinct())
+                {
+                    DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(item);
+                }
+                
+            }
+                
             //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
         }
 
@@ -301,7 +320,7 @@ namespace Invert.Core.GraphDesigner
             {
                 diagrams = proj.Graphs.ToArray();
             }
-                    
+
             foreach (var diagramItemGenerator in diagramItemGenerators)
             {
                 DesignerGeneratorFactory generator = diagramItemGenerator;
@@ -324,7 +343,8 @@ namespace Invert.Core.GraphDesigner
 
                                 codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                                 codeGenerator.Settings = settings;
-                                codeGenerator.ObjectData = diagram;
+                                if (codeGenerator.ObjectData == null)
+                                    codeGenerator.ObjectData = diagram;
                                 codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                                 yield return codeGenerator;
                             }
@@ -344,7 +364,8 @@ namespace Invert.Core.GraphDesigner
                             //if (!codeGenerator.IsEnabled(project)) continue;
                             codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                             codeGenerator.Settings = settings;
-                            codeGenerator.ObjectData = project;
+                            if (codeGenerator.ObjectData == null)
+                                codeGenerator.ObjectData = project;
                             codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                             yield return codeGenerator;
                         }
@@ -360,7 +381,7 @@ namespace Invert.Core.GraphDesigner
 
         public static IEnumerable<OutputGenerator> GetCodeGeneratorsForNode(this IDiagramNode node)
         {
-            return GetAllCodeGenerators(null,node.Project).Where(p=>p.ObjectData == node);
+            return GetAllCodeGenerators(null, node.Project).Where(p => p.ObjectData == node);
         }
 
         private static IEnumerable<OutputGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, INodeRepository project,
@@ -378,7 +399,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (diagram.Precompiled) continue;
                 if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
-                var items = diagram.NodeItems.Where(p => p.GetType() == generator.DiagramItemType);
+                var items = diagram.AllGraphItems.OfType<IDiagramNodeItem>().Where(p => p.GetType() == generator.DiagramItemType);
 
                 foreach (var item in items)
                 {
@@ -390,7 +411,8 @@ namespace Invert.Core.GraphDesigner
                         //if (!codeGenerator.IsEnabled(project)) continue;
                         codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
                         codeGenerator.Settings = settings;
-                        codeGenerator.ObjectData = item;
+                        if (codeGenerator.ObjectData == null)
+                            codeGenerator.ObjectData = item;
                         codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
                         yield return codeGenerator;
                     }
@@ -488,9 +510,14 @@ namespace Invert.Core.GraphDesigner
             return container;
         }
 
+        public static IUFrameContainer RegisterCodeTemplate<TFor, TTemplateType>(this IUFrameContainer container)
+        {
+            container.RegisterRelation<TFor, CodeGenerator, TTemplateType>();
+            return container;
+        }
         public static void RegisterConnectable<TOutput, TInput>(this IUFrameContainer container)
         {
-            container.RegisterInstance<RegisteredConnection>(new RegisteredConnection() {TInputType = typeof(TInput),TOutputType = typeof(TOutput)}, typeof(TOutput).Name + typeof(TInput).Name);
+            container.RegisterInstance<RegisteredConnection>(new RegisteredConnection() { TInputType = typeof(TInput), TOutputType = typeof(TOutput) }, typeof(TOutput).Name + typeof(TInput).Name);
 
         }
         public static void RegisterConnectable(this IUFrameContainer container, Type outputType, Type inputType)
@@ -521,7 +548,7 @@ namespace Invert.Core.GraphDesigner
         public static IUFrameContainer RegisterConnectionStrategy<TConnectionStrategy>(this IUFrameContainer container)
             where TConnectionStrategy : IConnectionStrategy, new()
         {
-            container.RegisterInstance<IConnectionStrategy>(new TConnectionStrategy(),typeof(TConnectionStrategy).Name);
+            container.RegisterInstance<IConnectionStrategy>(new TConnectionStrategy(), typeof(TConnectionStrategy).Name);
             return container;
         }
 
@@ -561,7 +588,7 @@ namespace Invert.Core.GraphDesigner
             }
             FilterExtensions.AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
         }
-        public static void RegisterFilterNode(this IUFrameContainer container,Type filter, Type tnode)
+        public static void RegisterFilterNode(this IUFrameContainer container, Type filter, Type tnode)
         {
             if (!FilterExtensions.AllowedFilterNodes.ContainsKey(filter))
             {
@@ -578,7 +605,7 @@ namespace Invert.Core.GraphDesigner
             FilterExtensions.AllowedFilterNodes[typeof(TFilterData)].Add(typeof(TAllowedItem));
         }
 
-       
+
         public static IUFrameContainer RegisterGraphItem<TModel, TViewModel>(this IUFrameContainer container)
         {
             container.RegisterRelation<TModel, ViewModel, TViewModel>();
@@ -615,7 +642,7 @@ namespace Invert.Core.GraphDesigner
 
         public static void ListenToProjectEvents(this IUFrameContainer container, IProjectEvents events)
         {
-            container.RegisterInstance<IProjectEvents>(events,events.GetType().Name);
+            container.RegisterInstance<IProjectEvents>(events, events.GetType().Name);
         }
 
         public static GraphItemViewModel CreateViewModel(this IUFrameContainer container, object data)
@@ -634,6 +661,121 @@ namespace Invert.Core.GraphDesigner
             {
                 _.NavigateTo(identifier);
             });
+        }
+    }
+
+    public class RegisteredTemplateGeneratorsFactory : DesignerGeneratorFactory<IGraphData>
+    {
+        private static Dictionary<Type, List<Type>> _registeredTemplates = new Dictionary<Type, List<Type>>();
+
+        protected static Dictionary<Type, List<Type>> RegisteredTemplates
+        {
+            get { return _registeredTemplates; }
+            set { _registeredTemplates = value; }
+        }
+
+        public static void RegisterTemplate<TFor, TTemplate>()
+            where TTemplate : class, IClassTemplate<TFor>, new()
+            where TFor : class, IDiagramNodeItem
+        {
+            var type = typeof(TypeClassGenerator<TFor, TTemplate>);
+            List<Type> list;
+            if (!RegisteredTemplates.TryGetValue(typeof(TFor), out list))
+            {
+                RegisteredTemplates.Add(typeof(TFor), list = new List<Type>());
+            }
+            if (!list.Contains(type))
+                list.Add(type);
+        }
+        public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData,
+            IGraphData item)
+        {
+            foreach (var graphItem in item.AllGraphItems.OfType<IDiagramNodeItem>())
+            {
+                foreach (var template in RegisteredTemplates)
+                {
+                    if (template.Key.IsAssignableFrom(graphItem.GetType()))
+                    {
+                        foreach (var templateType in template.Value)
+                        {
+                            foreach (var t in CreateTemplateGenerators(pathStrategy, graphItem, templateType))
+                            {
+                                yield return t;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        private IEnumerable<OutputGenerator> CreateTemplateGenerators(ICodePathStrategy pathStrategy, IDiagramNodeItem graphItem, Type templateType)
+        {
+            var templateClassType = templateType.GetGenericArguments()[1];
+            var templateAttribute = templateClassType.GetCustomAttributes(typeof(TemplateClass), true)
+                .OfType<TemplateClass>()
+                .FirstOrDefault();
+            if (templateAttribute == null)
+            {
+                Debug.Log(string.Format("ClassTemplate attribute not found on {0} ", templateClassType.Name));
+                yield break;
+            }
+
+           // var outputFolderName = templateAttribute.OutputFolderName ?? templateType.Name;
+            if (templateAttribute.Location == MemberGeneratorLocation.DesignerFile || templateAttribute.Location == MemberGeneratorLocation.Both)
+            {
+                var template = Activator.CreateInstance(templateType) as CodeGenerator;
+                template.ObjectData = graphItem;
+                template.IsDesignerFile = true;
+                template.AssetPath = pathStrategy.AssetPath;
+
+                //if (templateAttribute.IsEditorExtension)
+                //{
+                //    template.Filename = Path.Combine(Path.Combine("_DesignerFiles", "Editor"),
+                //        outputFolderName + ".designer.cs");
+                //}
+                //else
+                //{
+                //    template.Filename = Path.Combine("_DesignerFiles", template. + ".designer.cs");
+                //}
+                if (template.IsValid())
+                {
+                    yield return template;
+                }
+
+
+            }
+            if (templateAttribute.Location == MemberGeneratorLocation.EditableFile || templateAttribute.Location == MemberGeneratorLocation.Both)
+            {
+                var template = Activator.CreateInstance(templateType) as CodeGenerator;
+                template.ObjectData = graphItem;
+                template.IsDesignerFile = false;
+                template.AssetPath = pathStrategy.AssetPath;
+
+                //var className = string.Format(templateAttribute.ClassNameFormat, graphItem.Name);
+                //var typeItem = graphItem as IClassTypeNode;
+                //if (typeItem != null)
+                //{
+                //    className = typeItem.ClassName;
+                //}
+
+                //if (templateAttribute.IsEditorExtension)
+                //{
+                //    template.Filename = Path.Combine("Editor", Path.Combine(outputFolderName, className +".cs"));
+
+                //}
+                //else
+                //{
+                //    template.Filename = Path.Combine(outputFolderName,
+                //        className + ".cs");
+
+                //}
+                if (template.IsValid())
+                {
+                    yield return template;
+                }
+
+            }
         }
     }
 }

@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 
+public interface IShellSlotType : IShellNodeConfigItem
+{
+    bool IsOutput { get; set; }
+    bool AllowMultiple { get; set; }
+    string ReferenceClassName { get; }
+   
+}
 public class ShellSlotTypeNode : ShellNode, IReferenceNode
 {
 
@@ -24,7 +31,7 @@ public class ShellSlotTypeNode : ShellNode, IReferenceNode
 
     public IEnumerable<IShellNode> PossibleAcceptableTypes
     {
-        get { return Project.NodeItems.OfType<IShellNode>(); }
+        get { return Project.AllGraphItems.OfType<IShellNode>(); }
     }
 
     public IShellNode ReferenceType
@@ -36,7 +43,7 @@ public class ShellSlotTypeNode : ShellNode, IReferenceNode
     {
         get
         {
-            return Project.NodeItems.OfType<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
+            return Project.AllGraphItems.OfType<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
         }
     }
 

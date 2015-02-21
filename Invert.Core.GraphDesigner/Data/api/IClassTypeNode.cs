@@ -1,6 +1,6 @@
 namespace Invert.Core.GraphDesigner
 {
-    public interface IClassTypeNode : IDiagramNode
+    public interface IClassTypeNode : IDiagramNodeItem
     {
         string ClassName { get; }
     }

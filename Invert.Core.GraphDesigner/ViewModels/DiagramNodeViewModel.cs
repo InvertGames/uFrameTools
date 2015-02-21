@@ -224,8 +224,8 @@ namespace Invert.Core.GraphDesigner
         public override void GetConnectors(List<ConnectorViewModel> list)
         {
            // base.GetConnectors(list);
-            //if (!IsCollapsed)
-            //{
+            if (!IsCollapsed)
+            {
                 foreach (var item in ContentItems)
                 {
                     if (IsCollapsed)
@@ -246,7 +246,7 @@ namespace Invert.Core.GraphDesigner
                     
                     
                 }
-            //}
+            }
             if (InputConnector != null)
                 list.Add(InputConnector);
             if (OutputConnector != null)
@@ -257,7 +257,7 @@ namespace Invert.Core.GraphDesigner
         }
 
 
-        public bool IsCollapsed
+        public virtual bool IsCollapsed
         {
             get
             {
@@ -495,7 +495,6 @@ namespace Invert.Core.GraphDesigner
                 }
             });
         }
-
 
 
     }

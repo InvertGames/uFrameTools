@@ -275,15 +275,7 @@ namespace Invert.Core.GraphDesigner
             }
 
 
-            foreach (var item in Children)
-            {
-                if (item.Dirty)
-                {
-                    Refresh((IPlatformDrawer) platform);
-                    item.Dirty = false;
-                }
-                item.Draw(platform, scale);
-            }
+            DrawChildren(platform, scale);
             bool hasErrors = _cachedIssues.Length > 0;
 
 
@@ -322,6 +314,19 @@ namespace Invert.Core.GraphDesigner
                 }
             }
           
+        }
+
+        protected virtual void DrawChildren(IPlatformDrawer platform, float scale)
+        {
+            foreach (var item in Children)
+            {
+                if (item.Dirty)
+                {
+                    Refresh((IPlatformDrawer) platform);
+                    item.Dirty = false;
+                }
+                item.Draw(platform, scale);
+            }
         }
 
         public object GetNodeColorStyle()

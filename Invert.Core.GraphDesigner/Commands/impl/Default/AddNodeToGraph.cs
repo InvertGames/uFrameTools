@@ -173,7 +173,7 @@ namespace Invert.Core.GraphDesigner
             return base.CanPerform(node);
         }
     }
-    public class PullFromCommand : EditorCommand<DiagramNodeViewModel>,  IDiagramNodeCommand
+    public class PullFromCommand : EditorCommand<DiagramNode>,  IDiagramNodeCommand
     {
         public override string Group
         {
@@ -196,26 +196,26 @@ namespace Invert.Core.GraphDesigner
             
         //}
 
-        public override void Perform(DiagramNodeViewModel node)
+        public override void Perform(DiagramNode node)
         {
-            var sourceDiagram = node.GraphItemObject.Graph;
-            var targetDiagram = node.GraphItemObject.Project.Graphs.FirstOrDefault(p => p.NodeItems.Contains(node.GraphItemObject));
+            var sourceDiagram = node.Graph;
+            var targetDiagram = InvertGraphEditor.DesignerWindow.DiagramViewModel.DiagramData;
             if (targetDiagram == null) return;
 
-            targetDiagram.RemoveNode(node.GraphItemObject);
-            sourceDiagram.AddNode(node.GraphItemObject);
-            node.IsLocal = true;
+            targetDiagram.RemoveNode(node);
+            sourceDiagram.AddNode(node);
         }
 
-        public override string CanPerform(DiagramNodeViewModel node)
+        public override string CanPerform(DiagramNode node)
         {
             if (node == null) return "Invalid input";
-            if (node.GraphItemObject == node.DiagramViewModel.DiagramData.RootFilter)
-                return "This node is the main part of a diagram and can't be removed.";
-            if(node.IsLocal) 
-                return "The node must be external to pull it.";
+            //if (node == node.Graph.RootFilter)
+            //    return "This node is the main part of a diagram and can't be removed.";
+            //if (node.Graph != InvertGraphEditor.DesignerWindow.DiagramViewModel.DiagramData) 
+            //    return "The node must be external to pull it.";
             return null;
         }
+
 
     }
 

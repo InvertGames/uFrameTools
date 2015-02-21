@@ -65,17 +65,19 @@ namespace Invert.Core.GraphDesigner
             }
             return sb.ToString();
         }
-
+        
         public override bool CanGenerate(FileInfo fileInfo)
         {
+         
+            if (Generators.Any(p => !p.IsValid())) return false;
             if (Generators.Any(p => p.AlwaysRegenerate)) return true;
 
-            var doesTypeExist = Generators.Any(p => !p.IsValid(fileInfo));
-            if (doesTypeExist || fileInfo.Exists)
+            var doesAnyTypeExist = Generators.Any(p => p.DoesTypeExist(fileInfo));
+            if (doesAnyTypeExist || fileInfo.Exists)
             {
                 return false;
             }
-
+            
             return true;
         }
     }

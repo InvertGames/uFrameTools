@@ -1,9 +1,19 @@
 using Invert.Core.GraphDesigner;
 
-[TemplateClass("ChildItems", MemberGeneratorLocation.Both, ClassNameFormat = "{0}ChildItem", IsEditorExtension = true)]
+[TemplateClass( MemberGeneratorLocation.Both, ClassNameFormat = "{0}ChildItem")]
 public class ShellChildItemTemplate : GenericNodeChildItem,
     IClassTemplate<ShellNodeChildTypeNode>
 {
+    public string OutputPath
+    {
+        get { return Path2.Combine("Editor", "ChildItems"); }
+    }
+
+    public bool CanGenerate
+    {
+        get { return true; }
+    }
+
     public void TemplateSetup()
     {
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");

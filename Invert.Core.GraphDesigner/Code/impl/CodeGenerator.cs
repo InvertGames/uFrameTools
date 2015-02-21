@@ -42,10 +42,13 @@ namespace Invert.Core.GraphDesigner
             if (customAttribute == null) return true;
 
             return project.GetSetting(customAttribute.Group, true);
-
         }
 
-        public virtual bool IsValid(FileInfo fileInfo)
+        public virtual bool DoesTypeExist(FileInfo fileInfo)
+        {
+            return false;
+        }
+        public virtual bool IsValid()
         {
            
             return true;
@@ -55,10 +58,14 @@ namespace Invert.Core.GraphDesigner
 
     public abstract class CodeGenerator : OutputGenerator
     {
-        public override bool IsValid(FileInfo fileInfo)
+        public override bool DoesTypeExist(FileInfo fileInfo)
         {
-            if (IsDesignerFile) return true;
-            return RelatedType == null;
+            return RelatedType != null;
+        }
+
+        public override bool IsValid()
+        {
+            return true;
         }
 
         private CodeNamespace _ns;

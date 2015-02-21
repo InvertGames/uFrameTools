@@ -461,7 +461,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 {
                     if (DiagramViewModel.SelectedNodeItem == null)
                     {
-                        Debug.Log("Sending key command");
+                        
                         if (DiagramDrawer.HandleKeyEvent(evt, ModifierKeyStates))
                         {
                             evt.Use();

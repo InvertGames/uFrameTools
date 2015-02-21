@@ -7,7 +7,7 @@ using Invert.Core.GraphDesigner;
 using Invert.Json;
 using UnityEngine;
 
-public class InvertGraph : IGraphData, IItem
+public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
 {
 
     private FilterPositionData _positionData;
@@ -472,6 +472,7 @@ public class InvertGraph : IGraphData, IItem
 
     public void DeserializeFromJson(JSONNode jsonNode)
     {
+        JsonExtensions.TypeResolver = this;
         if (jsonNode == null)
         {
             InvertApplication.Log("Couldn't parse file." + Name);
@@ -569,5 +570,10 @@ public class InvertGraph : IGraphData, IItem
     public void Unsubscribe(IGraphItemEvents handler)
     {
         Listeners.Add(handler);
+    }
+
+    public virtual Type FindType(string clrTypeString)
+    {
+        return null;
     }
 }

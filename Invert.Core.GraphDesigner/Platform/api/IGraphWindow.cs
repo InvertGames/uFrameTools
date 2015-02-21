@@ -4,6 +4,7 @@ namespace Invert.Core.GraphDesigner
     {
         DiagramViewModel DiagramViewModel { get; }
         float Scale { get; set; }
+        DiagramDrawer DiagramDrawer { get; set; }
         void RefreshContent();
     }
 }

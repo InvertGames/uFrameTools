@@ -1,11 +1,27 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 
 namespace Invert.Core.GraphDesigner
 {
+#if UNITY_DLL
+    public static class Path2
+    {
+        public static string Combine(params string[] paths)
+        {
+            var result = paths.First();
+            foreach (var item in paths.Skip(1))
+            {
+                result = Path.Combine(result, item);
+            }
+            return result;
+        }
+    }
+#endif
     public static class ConfigExtensions
     {
 
-   
+         
         public static NodeConfig<TNode> GetNodeConfig<TNode>(this IUFrameContainer container) where TNode : GenericNode, IConnectable
         {
             var config = GetNodeConfig(container, typeof(TNode)) as NodeConfig<TNode>;

@@ -3,9 +3,19 @@ using System.Linq;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 
-[TemplateClass("Graphs", MemberGeneratorLocation.Both, ClassNameFormat = "{0}Graph", IsEditorExtension = true)]
+[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}Graph")]
 public class ShellGraphTemplate : GenericGraphData<GenericNode>, IClassTemplate<ShellGraphTypeNode>
 {
+    public string OutputPath
+    {
+        get { return Path2.Combine("Editor", "Graphs"); }
+    }
+
+    public bool CanGenerate
+    {
+        get { return true; }
+    }
+
     public void TemplateSetup()
     {
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");
@@ -23,10 +33,21 @@ public class ShellGraphTemplate : GenericGraphData<GenericNode>, IClassTemplate<
 }
 
 
-[TemplateClass("Plugins", MemberGeneratorLocation.Both, ClassNameFormat = "{0}", IsEditorExtension = true)]
+[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}")]
 public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode>
 {
     #region Template Setup
+
+    public string OutputPath
+    {
+        get { return Path2.Combine("Editor","Plugins"); }
+    }
+
+    public bool CanGenerate
+    {
+        get { return true; }
+    }
+
     public void TemplateSetup()
     {
         Ctx.AddIterator("NodeConfigProperty", _ => _.Graph.NodeItems.OfType<ShellNodeTypeNode>());
@@ -130,7 +151,7 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         }
         foreach (var nodeType in Ctx.Data.Graph.NodeItems.OfType<IReferenceNode>().Where(p => p.IsValid))
         {
-            if (nodeType is ShellSlotTypeNode) continue;
+            
 
             if (nodeType.Flags.ContainsKey("Output") && nodeType.Flags["Output"])
             {

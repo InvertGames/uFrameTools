@@ -118,6 +118,7 @@ namespace Invert.Core.GraphDesigner
                 if (DataObject == null) return null;
                 return _inputConnector ?? (_inputConnector = CreateInputConnector());
             }
+            set { throw new NotImplementedException(); }
         }
 
         protected virtual ConnectorViewModel CreateInputConnector()
@@ -151,6 +152,7 @@ namespace Invert.Core.GraphDesigner
                 if (DataObject == null) return null;
                 return _outputConnector ?? (_outputConnector = CreateOutputConnector());
             }
+            set { throw new NotImplementedException(); }
         }
 
         protected virtual ConnectorViewModel CreateOutputConnector()
