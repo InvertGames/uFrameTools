@@ -31,17 +31,19 @@ namespace Invert.Core.GraphDesigner
     }
 
     public abstract class GenericNodeDrawer<TData, TViewModel> : DiagramNodeDrawer<TViewModel>
-        where TViewModel : DiagramNodeViewModel where TData : GenericNode
+        where TViewModel : DiagramNodeViewModel
+        where TData : GenericNode
     {
 
 
-        protected GenericNodeDrawer(TViewModel viewModel) : base(viewModel)
+        protected GenericNodeDrawer(TViewModel viewModel)
+            : base(viewModel)
         {
         }
 
         protected GenericNodeDrawer()
         {
-            
+
         }
 
         public override void Refresh(IPlatformDrawer platform)
@@ -71,9 +73,9 @@ namespace Invert.Core.GraphDesigner
                         var bounds = new Rect(item.Bounds);
                         bounds.width = item.Bounds.height;
                         bounds.height = item.Bounds.height;
-                        bounds.y += (item.Bounds.height/2) - 12;
+                        bounds.y += (item.Bounds.height / 2) - 12;
                         bounds.x = this.Bounds.x - (bounds.width + 4);
-                        platform.DrawLabel(bounds,index.ToString(),CachedStyles.NodeHeader13,DrawingAlignment.MiddleCenter);
+                        platform.DrawLabel(bounds, index.ToString(), CachedStyles.NodeHeader13, DrawingAlignment.MiddleCenter);
                     }
                 }
             }
@@ -109,7 +111,7 @@ namespace Invert.Core.GraphDesigner
         {
             base.DataContextChanged();
 
-           // ViewModel.ContentItems.CollectionChanged += ContentItemsOnCollectionChangedWith;
+            // ViewModel.ContentItems.CollectionChanged += ContentItemsOnCollectionChangedWith;
             ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         }
 
@@ -120,10 +122,10 @@ namespace Invert.Core.GraphDesigner
                 if (ViewModel.IsDirty)
                 {
                     this.RefreshContent();
-                
+
                     ViewModel.IsDirty = false;
                 }
-           
+
             }
         }
 
@@ -236,10 +238,10 @@ namespace Invert.Core.GraphDesigner
 
             var width = platform.CalculateSize(_cachedTag, CachedStyles.Tag1).x;
             var labelRect =
-                new Rect((Bounds.x + (Bounds.width/2)) - (width/2), Bounds.y - (16f), width, 15f).Scale(Scale);
+                new Rect((Bounds.x + (Bounds.width / 2)) - (width / 2), Bounds.y - (16f), width, 15f).Scale(Scale);
 
             platform.DrawLabel(labelRect, _cachedTag, CachedStyles.Tag1, DrawingAlignment.MiddleCenter);
-          
+
 #if UNITY_DLL
             var adjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
 #else
@@ -247,16 +249,16 @@ namespace Invert.Core.GraphDesigner
 #endif
             var boxRect = adjustedBounds.Scale(Scale);
             platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 18);
-            
+
             //if (ViewModel.IsSelected || ViewModel.IsMouseOver)
             //{
             //    platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 20);
-      
+
             //}
             if (ViewModel.AllowCollapsing)
             {
 
-                var rect = new Rect((Bounds.x + (Bounds.width/2f)) - 21f,
+                var rect = new Rect((Bounds.x + (Bounds.width / 2f)) - 21f,
                     Bounds.y + Bounds.height, 42f, 18f);
                 var style = ViewModel.IsCollapsed
                     ? CachedStyles.NodeExpand
@@ -268,9 +270,9 @@ namespace Invert.Core.GraphDesigner
                     {
                         ViewModel.IsCollapsed = !ViewModel.IsCollapsed;
                         Dirty = true;
-                    },false);
+                    }, false);
                 });
-               
+
 
             }
 
@@ -297,23 +299,23 @@ namespace Invert.Core.GraphDesigner
                 platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter6, 20);
             }
 
-            if (ViewModel.IsMouseOver || ViewModel.IsSelected) 
+            if (ViewModel.IsMouseOver || ViewModel.IsSelected)
             {
                 for (int index = 0; index < _cachedIssues.Length; index++)
                 {
                     var keyValuePair = _cachedIssues[index];
                     var w = platform.CalculateSize(keyValuePair.Message, CachedStyles.DefaultLabel).x;//EditorStyles.label.CalcSize(new GUIContent(keyValuePair.Key)).x);
-                    var x = (Bounds.x + (Bounds.width/2f)) - (w/2f);
-                    var rect = new Rect(x, (Bounds.y + Bounds.height + 18) + (40f*(index)), w + 20f, 40);
+                    var x = (Bounds.x + (Bounds.width / 2f)) - (w / 2f);
+                    var rect = new Rect(x, (Bounds.y + Bounds.height + 18) + (40f * (index)), w + 20f, 40);
                     platform.DrawWarning(rect, keyValuePair.Message);
                     if (keyValuePair.AutoFix != null)
                     {
-                        platform.DoButton(new Rect(rect.x + rect.width + 5,rect.y,75,25).Scale(Scale),"Auto Fix",null,keyValuePair.AutoFix);
+                        platform.DoButton(new Rect(rect.x + rect.width + 5, rect.y, 75, 25).Scale(Scale), "Auto Fix", null, keyValuePair.AutoFix);
                     }
                     hasErrors = true;
                 }
             }
-          
+
         }
 
         protected virtual void DrawChildren(IPlatformDrawer platform, float scale)
@@ -322,7 +324,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (item.Dirty)
                 {
-                    Refresh((IPlatformDrawer) platform);
+                    Refresh((IPlatformDrawer)platform);
                     item.Dirty = false;
                 }
                 item.Draw(platform, scale);
@@ -458,6 +460,7 @@ namespace Invert.Core.GraphDesigner
         public virtual void RefreshContent()
         {
             var drawers = new List<IDrawer>();
+            //if (ViewModel.IsEditable)
             drawers.Add(new HeaderDrawer()
             {
                 BackgroundStyle = HeaderStyle,
@@ -486,7 +489,7 @@ namespace Invert.Core.GraphDesigner
                 _cachedIssues = ViewModel.Issues.ToArray();
                 _cachedTag = string.Join(" | ", ViewModel.Tags.ToArray());
             }
-            
+
             if (Children == null || Children.Count < 1)
             {
                 RefreshContent();
@@ -507,58 +510,141 @@ namespace Invert.Core.GraphDesigner
             {
                 Bounds = new Rect(ViewModel.Position.x, ViewModel.Position.y, minWidth, height);
             }
-            //if (ViewModel.IsCollapsed)
-            //{
-            var cb = new Rect(Children[0].Bounds);
-            cb.x += 15;
-            cb.y += 1;
-            cb.width -=13;
-           // ViewModelObject.ConnectorBounds = cb;
-           // //}
-           // //else
-           // //{
+   
+            if (Children != null && Children.Count > 0)
+            {
+                var cb = new Rect(Children[0].Bounds);
+                cb.x += 15;
+                cb.y += 1;
+                cb.width -= 13;
+                
                 ViewModel.ConnectorBounds = cb;
-           //// }
-            
            
-
-            //_cachedTags = ViewModel.Tags.Reverse().ToArray();
-            //ViewModel.HeaderPosition = new Rect(ViewModel.Position.x, ViewModel.Position.y, maxWidth, ViewModel.HeaderSize);
+            }
         }
 
         protected virtual float LayoutChildren(IPlatformDrawer platform, float startY, ref float minWidth)
         {
+            var currentY = startY;
+            var currentX = this.ViewModel.Position.x;
             var height = 0f;
-
-
-            // Get our content drawers
-            foreach (var child in Children)
+            for (int index = 0; index < Children.Count; index++)
             {
-                child.Refresh(platform, new Vector2(ViewModel.Position.x, startY));
-                startY += child.Bounds.height;
-            }
+                var item = Children[index];
+                var previous = index > 0 ? Children[index - 1] : null;
+                var next = index < Children.Count - 1 ? Children[index + 1] : null;
 
+                // If its a new line adjust the positions
+                if (item.ViewModelObject.IsNewLine)
+                {
+                    
+                    if (previous != null)
+                    {
+                        //var newWidth = currentX - this.ViewModel.Position.x;
+                        //if (newWidth > minWidth)
+                        //{
+                        //    minWidth = newWidth;
+                        //}
+
+                        currentY += previous.Bounds.height;
+                        height += previous.Bounds.height;
+                    }
+                    currentX = this.ViewModel.Position.x;
+                }
+
+                item.Refresh(platform,new Vector2(currentX,currentY));
+               
+                currentX += item.Bounds.width;
+                if (next == null)
+                {
+         
+                    height += item.Bounds.height;
+                }
+                var newWidth = currentX - this.ViewModel.Position.x;
+                if (newWidth > minWidth)
+                {
+                    minWidth = newWidth;
+                }
+
+            }
+            for (int index = 0; index < Children.Count; index++)
+            {
+                var item = Children[index];
+                var previous = index > 0 ? Children[index - 1] : null;
+                var next = index < Children.Count - 1 ? Children[index + 1] : null;
+
+                if ((next != null && next.ViewModelObject.IsNewLine) || next == null)
+                {
+                    var widthAtItem = (item.Bounds.x + item.Bounds.width) - ViewModel.Position.x;
+                    var adjustment = minWidth - widthAtItem;
+                    var newRect = new Rect(item.Bounds);
+                    newRect.width += adjustment;
+                    item.Bounds = newRect;
+                }
+            }
             foreach (var item in Children)
             {
-                if (item.Bounds.width > minWidth) minWidth = item.Bounds.width;
-                height += item.Bounds.height;
+                item.Dirty = false;
+                item.OnLayout();
             }
 
-            foreach (var cachedDrawer in Children)
-            {
-                cachedDrawer.Bounds = new Rect(cachedDrawer.Bounds) {width = minWidth};
-                cachedDrawer.Dirty = false;
-                cachedDrawer.OnLayout();
-            }
             return height;
+            //var height = 0f;
+            //var totalWidth = 0f;
+            //foreach (var group in Children.GroupBy(p => p.ViewModelObject.Column).OrderBy(p=>p.Key).ToArray())
+            //{
+            //    var sY = startY;
+            //    var h = 0f;
+            //    var mw = minWidth;
+
+            //    // Get our content drawers
+            //    foreach (var child in group)
+            //    {
+            //        child.Refresh(platform, new Vector2(ViewModel.Position.x + totalWidth, sY));
+            //        sY += child.Bounds.height;
+            //    }
+
+            //    foreach (var item in group)
+            //    {
+            //        if (item.Bounds.width > mw) mw = item.Bounds.width;
+            //        h += item.Bounds.height;
+
+            //    }
+            //    totalWidth += mw;
+
+            //    //foreach (var cachedDrawer in group)
+            //    //{
+
+            //    //        cachedDrawer.Bounds = new Rect(cachedDrawer.Bounds) { width = mw };
+
+
+
+            //    //}
+
+            //    if (h > height)
+            //    {
+            //        height = h;
+            //    }
+            //    foreach (var item in Children.Where(p => p.ViewModelObject.ColumnSpan >= group.Key))
+            //    {
+            //        item.Bounds = new Rect(item.Bounds) { width = totalWidth };
+            //    } 
+
+
+            //}
+            //foreach (var item in Children)
+            //{
+            //    item.Dirty = false;
+            //    item.OnLayout();
+            //}
+            //if (totalWidth > minWidth)
+            //{
+            //    minWidth = totalWidth;
+            //}
+            //return height;
         }
 
         public bool IsExternal { get; set; }
-
-        public IEnumerable<IDrawer> SelectedChildren
-        {
-            get { return Children.Where(p => p.IsSelected); }
-        }
 
 
         public void Dispose()
@@ -569,8 +655,8 @@ namespace Invert.Core.GraphDesigner
 
     //public class BulletPointDrawer : Drawer<BulletPointViewModel>
     //{
-        
+
     //}
 
-    
+
 }

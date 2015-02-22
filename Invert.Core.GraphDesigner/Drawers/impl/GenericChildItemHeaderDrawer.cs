@@ -35,14 +35,15 @@ namespace Invert.Core.GraphDesigner
             var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 12;
             //ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name)).x + 20);
             HeaderBounds = new Rect(position.x - 2, position.y, width + 6, 25);
-            Bounds = new Rect(position.x + 5, position.y, width + 20, 25);
+            Bounds = new Rect(position.x, position.y, width + 20, 25);
             
         }
 
         public override void OnLayout()
         {
             base.OnLayout();
-            ViewModel.ConnectorBounds = Bounds;
+            //ViewModel.ConnectorBounds = Bounds;
+            ViewModel.ConnectorBounds = new Rect(Bounds.x + 15, Bounds.y, Bounds.width -15, 28);
         }
 
         public Rect HeaderBounds { get; set; }
@@ -52,19 +53,20 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
-            var b = new Rect(HeaderBounds);
-            b.width = Bounds.width + 4;
-            platform.DrawStretchBox(b.Scale(scale), CachedStyles.Item6, 0f);
+     
+            platform.DrawStretchBox(Bounds.Scale(scale), CachedStyles.Item6, 0f);
             //platform.DrawStretchBox(Bounds,CachedStyles.Item1, 0);
             _AddButtonRect = new Rect
             {
                 y = Bounds.y + ((Bounds.height/2) - 8),
-                x = (Bounds.x + Bounds.width) - 25,
+                x = (Bounds.x + Bounds.width) - 22,
                 width = 16,
                 height = 16
             };
-
-            platform.DrawLabel(Bounds.Scale(scale), ViewModel.Name, CachedStyles.HeaderStyle);
+            var b = new Rect(Bounds);
+            b.x += 8;
+            b.width -= 27;
+            platform.DrawLabel(b.Scale(scale), ViewModel.Name, CachedStyles.HeaderStyle);
             
             if (ViewModel.AddCommand != null)
             {

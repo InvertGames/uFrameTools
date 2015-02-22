@@ -229,9 +229,6 @@ namespace Invert.Core.GraphDesigner
                         {
                             item.ViewModel.Position += e.MousePositionDelta;
                         }
-
-
-
                         if (item.ViewModel.Position.x < 0)
                         {
                             item.ViewModel.Position = new Vector2(0f, item.ViewModel.Position.y);
@@ -240,8 +237,8 @@ namespace Invert.Core.GraphDesigner
                         {
                             item.ViewModel.Position = new Vector2(item.ViewModel.Position.x, 0f);
                         }
-
-                        item.Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer,item.Bounds.position,false);
+                        item.Dirty = true;
+                        //item.Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer,item.Bounds.position,false);
                     }
                 }
             }

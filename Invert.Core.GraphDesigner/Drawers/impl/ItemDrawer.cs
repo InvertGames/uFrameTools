@@ -196,6 +196,7 @@ namespace Invert.Core.GraphDesigner
                     (s, finished) =>
                     {
                         ItemViewModel.Rename(s);
+                        CachedName = ItemViewModel.Name;
                         if (finished)
                         {
                             ItemViewModel.IsEditing = false;

@@ -83,6 +83,7 @@ namespace Invert.Core.GraphDesigner
         {
             var vm = InvertGraphEditor.Container.ResolveRelation<ItemViewModel>(item.GetType(), item, this) as GraphItemViewModel;
             vm.DiagramViewModel = DiagramViewModel;
+           
             return vm;
         }
 
@@ -109,6 +110,7 @@ namespace Invert.Core.GraphDesigner
         public DiagramNodeViewModel(IDiagramNode graphItemObject, DiagramViewModel diagramViewModel)
             : this()
         {
+            ColumnSpan = 2;
             DiagramViewModel = diagramViewModel;
             GraphItemObject = graphItemObject;
             
@@ -444,6 +446,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         public IEditorCommand ToggleNode { get; set; }
+        public bool SaveImage { get; set; }
 
 
         public void BeginEditing()

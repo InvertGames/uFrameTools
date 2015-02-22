@@ -150,8 +150,17 @@ namespace Invert.Core.GraphDesigner
                     Name = section.Name,
                     NodeViewModel = this,
                     NodeConfig = NodeConfig,
-                    SectionConfig = section1
+                    SectionConfig = section1,
+
                 };
+                //if (section.AttributeInfo != null)
+                //{
+                //    header.IsNewLine = inputConfig.AttributeInfo.IsNewRow;
+                //}
+                //else
+                //{
+                //    header.IsNewLine = true;
+                //}
                 if (section1.AddCommandType != null)
                 {
                     header.AddCommand = Activator.CreateInstance(section.AddCommandType) as IEditorCommand;
@@ -306,7 +315,14 @@ namespace Invert.Core.GraphDesigner
             header.OutputConnectorType = inputConfig.SourceType;
             header.IsInput = false;
             header.IsOutput = true;
-
+            if (inputConfig.AttributeInfo != null)
+            {
+                header.IsNewLine = inputConfig.AttributeInfo.IsNewRow;
+            }
+            else
+            {
+                header.IsNewLine = true;
+            }
             ContentItems.Add(header);
             ApplyOutputConfiguration(inputConfig, header.DataObject as IGraphItem, header.OutputConnector,  true);
             header.OutputConnector.Configuration = inputConfig;
@@ -332,6 +348,15 @@ namespace Invert.Core.GraphDesigner
             header.DataObject = inputConfig.IsAlias ? DataObject : inputConfig.GetDataObject(nodeToUse);
             header.InputConnectorType = inputConfig.SourceType;
             header.IsInput = true;
+            if (inputConfig.AttributeInfo != null)
+            {
+                header.IsNewLine = inputConfig.AttributeInfo.IsNewRow;
+            }
+            else
+            {
+                header.IsNewLine = true;
+            }
+            
             ContentItems.Add(header);
 
             ApplyInputConfiguration(inputConfig, header.DataObject as IGraphItem,header.InputConnector, true);

@@ -263,6 +263,7 @@ namespace Invert.Core.GraphDesigner
                            .Select(p => p.Node.Graph)
                            .Distinct())
                 {
+                    if (item is UnityEngine.Object)
                     DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(item, command.Name);
                 }
             }
@@ -302,6 +303,7 @@ namespace Invert.Core.GraphDesigner
                             .Select(p => p.Node.Graph)
                             .Distinct())
                 {
+                    if (item is UnityEngine.Object)
                     DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(item);
                 }
                 

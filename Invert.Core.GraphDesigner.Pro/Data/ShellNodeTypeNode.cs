@@ -225,6 +225,19 @@ public class ShellTemplateConfigNode : GenericNode
 
 public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass
 {
+    private string _nodeLabel;
+
+    public string NodeLabel
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_nodeLabel))
+                return Name;
+            return _nodeLabel;
+        }
+        set { _nodeLabel = value; }
+    }
+
     [InspectorProperty, JsonProperty]
     public NodeColor Color { get; set; }
 
@@ -312,7 +325,8 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
     protected override void CreateContent()
     {
         //base.CreateContent();
-        foreach (var column in GraphItem.ChildItems.OfType<IShellNodeConfigItem>().GroupBy(p => p.Column))
+        
+        foreach (var column in GraphItem.ChildItemsWithInherited.OfType<IShellNodeConfigItem>().GroupBy(p => p.Column))
         {
             foreach (var item in column.OrderBy(p => p.Row))
             {
@@ -366,6 +380,9 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
             DiagramViewModel = this.DiagramViewModel,
             Name = output.Name,
             DataObject = dataObject,
+            Column = output.Column,
+            ColumnSpan = output.ColumnSpan,
+            IsNewLine =  output.IsNewRow
         };
         ContentItems.Add(vm);
     }
@@ -379,6 +396,9 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
             DiagramViewModel = this.DiagramViewModel,
             Name = input.Name,
             DataObject = dataObject,
+            Column = input.Column,
+            ColumnSpan = input.ColumnSpan,
+            IsNewLine = input.IsNewRow
         };
         ContentItems.Add(vm);
     }
@@ -392,6 +412,9 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
             DataObject = dataObject,
             NodeViewModel = this,
             AllowConnections = true,
+            Column = item.Column,
+            ColumnSpan = item.ColumnSpan,
+            IsNewLine = item.IsNewRow
         };
         ContentItems.Add(sectionViewModel);
     }
@@ -402,7 +425,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
         {
             Node = GraphItem,
             Name = "New Section",
-
+         IsNewRow = true,
         });
     }
 
@@ -412,7 +435,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
         {
             Node = GraphItem,
             Name = "New Input",
-
+            IsNewRow = true,
         });
 
     }
@@ -423,6 +446,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
         {
             Node = GraphItem,
             Name = "New Output",
+            IsNewRow = true,
 
         });
     }
@@ -477,6 +501,10 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
     public int Row { get; set; }
     [JsonProperty, InspectorProperty]
     public int Column { get; set; }
+    [JsonProperty, InspectorProperty]
+    public int ColumnSpan { get; set; }
+    [JsonProperty, InspectorProperty]
+    public bool IsNewRow { get; set; }
 
     [InspectorProperty]
     public override string Name
@@ -786,14 +814,14 @@ public class ShellNodeConfigDrawer : DiagramNodeDrawer<ShellNodeConfigViewModel>
                 item.Draw(platform, scale);
                 continue;
             }
-            var optionsBounds = new Rect(Bounds.x, item.Bounds.y + 4, item.Bounds.width,
+            var optionsBounds = new Rect(item.Bounds.x, item.Bounds.y + 4, item.Bounds.width,
                 item.Bounds.height);
             if (item.IsSelected)
             {
                 platform.DrawStretchBox(optionsBounds, CachedStyles.Item1, 0f);
             }
             optionsBounds.width -= 35;
-            optionsBounds.x += 15;
+            //optionsBounds.x += 15;
             item.Draw(platform, scale);
             platform.DoButton(optionsBounds, "", CachedStyles.ClearItemStyle, () =>
             {

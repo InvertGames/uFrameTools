@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Invert.Json;
+using UnityEditor;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -711,14 +715,98 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    //public class GenericInheritanceReference : GenericNodeChildItem
-    //{
-    //    public string InputName { get; set; }
+    public class ScreenshotNode : GenericNode
+    {
+        private int _width = 100;
+        private int _height = 100;
 
-    //    public override string Name
-    //    {
-    //        get { return InputName; }
-    //        set { base.Name = value; }
-    //    }
-    //}
+        [JsonProperty, InspectorProperty]
+        public int Width
+        {
+            get { return _width; }
+            set { _width = value; }
+        }
+
+        [JsonProperty, InspectorProperty]
+        public int Height
+        {
+            get { return _height; }
+            set { _height = value; }
+        }
+    }
+
+    public class ScreenshotNodeViewModel : DiagramNodeViewModel<ScreenshotNode>
+    {
+        public ScreenshotNodeViewModel(ScreenshotNode graphItemObject, DiagramViewModel diagramViewModel) : base(graphItemObject, diagramViewModel)
+        {
+        }
+
+        public float Width
+        {
+            get { return GraphItem.Width; }
+            set { GraphItem.Width = Mathf.RoundToInt(value); }
+        }
+        public float Height
+        {
+            get { return GraphItem.Height; }
+            set { GraphItem.Height = Mathf.RoundToInt(value); }
+        }
+    }
+
+    public class ScreenshotNodeDrawer : DiagramNodeDrawer<ScreenshotNodeViewModel>
+    {
+        public ScreenshotNodeDrawer(ScreenshotNodeViewModel viewModel) : base(viewModel)
+        {
+        }
+
+        public override void Refresh(IPlatformDrawer platform)
+        {
+            //base.Refresh(platform);
+            this.Bounds = new Rect(ViewModel.Position.x, ViewModel.Position.y, NodeViewModel.Width, NodeViewModel.Height);
+        }
+
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
+        {
+            //base.Refresh(platform, position, hardRefresh);
+            
+        }
+
+        public override void RefreshContent()
+        {
+            //base.RefreshContent();
+        }
+
+        public override void OnMouseDown(MouseEvent mouseEvent)
+        {
+            base.OnMouseDown(mouseEvent);
+            ViewModel.SaveImage = true;
+        }
+
+        public override void Draw(IPlatformDrawer platform, float scale)
+        {
+            //base.Draw(platform, scale);
+            platform.DrawStretchBox(this.Bounds,CachedStyles.BoxHighlighter1,50f);
+            
+            if (ViewModel.SaveImage)
+            {
+                
+               // Texture2D texture2D = new Texture2D(NodeViewModel.GraphItem.Width,NodeViewModel.GraphItem.Height, (TextureFormat)3, false);
+               // var bounds = new Rect(this.Bounds);
+               // bounds.y += editorWindow.position.height;
+               //// bounds.y = lastRect.height - bounds.y - bounds.height;
+               // texture2D.ReadPixels(bounds, 0, 0);
+               // texture2D.Apply();
+               // //string fullPath = Path.GetFullPath(Application.get_dataPath() + "/../" + Path.Combine(this.screenshotsSavePath, actionName) + ".png");
+               // //if (!FsmEditorUtility.CreateFilePath(fullPath))
+               // //    return;
+               // byte[] bytes = texture2D.EncodeToPNG();
+               // Object.DestroyImmediate((Object)texture2D, true);
+               // File.WriteAllBytes("image.png", bytes);
+               // ViewModel.SaveImage = false;
+               // Debug.Log(this.Bounds.x.ToString() + " : " + this.Bounds.y);
+            }
+
+        }
+    }
+
 }

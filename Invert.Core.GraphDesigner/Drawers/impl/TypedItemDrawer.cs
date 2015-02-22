@@ -20,10 +20,11 @@ namespace Invert.Core.GraphDesigner
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position,hardRefresh);
+
             if (hardRefresh)
             {
-                _cachedTypeName = TypedItemViewModel.RelatedType;
                 _cachedItemName = TypedItemViewModel.Name;
+                _cachedTypeName = TypedItemViewModel.RelatedType;
                 _nameSize = platform.CalculateSize(_cachedItemName, CachedStyles.ClearItemStyle);
                 _typeSize = platform.CalculateSize(_cachedTypeName, CachedStyles.ItemTextEditingStyle);
             }
@@ -63,6 +64,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
+            _cachedItemName = TypedItemViewModel.Name;
             DrawBackground(platform,scale);
             var b = new Rect(Bounds);
             b.x += 10;

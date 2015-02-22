@@ -471,11 +471,12 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
 
             Ctx.SetTypeArgument(item.ClassName);
 
-            Ctx.AddAttribute(typeof(Section))
+            var attribute = Ctx.AddAttribute(typeof(Section))
                 .AddArgument(new CodePrimitiveExpression(Ctx.Item.Name))
                 .AddArgument("SectionVisibility.{0}", item.Visibility.ToString())
-                .Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Row)))
                 ;
+            attribute.Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Row)));
+            attribute.Arguments.Add(new CodeAttributeArgument("IsNewRow", new CodePrimitiveExpression(item.IsNewRow)));
 
             Ctx._("return ChildItems.OfType<{0}>()", item.ClassName);
             return null;
@@ -499,6 +500,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
                 .AddArgument(new CodePrimitiveExpression(referenceSection.IsEditable))
                 .AddArgument("OrderIndex", new CodePrimitiveExpression(referenceSection.Row))
                 .AddArgument("HasPredefinedOptions", new CodePrimitiveExpression(referenceSection.HasPredefinedOptions))
+                .AddArgument("IsNewRow", new CodePrimitiveExpression(referenceSection.IsNewRow))
                 ;
 
             Ctx._("return ChildItems.OfType<{0}>()", referenceSection.ClassName);
@@ -527,12 +529,15 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
             var field = Ctx.CurrentDecleration._private_(item.ClassName, "_" + item.Name);
 
             Ctx.SetType(item.ClassName);
-            Ctx.AddAttribute(typeof(InputSlot))
+            var attribute = Ctx.AddAttribute(typeof(InputSlot))
                 .AddArgument(new CodePrimitiveExpression(item.Name))
                 .AddArgument(new CodePrimitiveExpression(item.AllowMultiple))
                 .AddArgument("SectionVisibility.{0}", item.Visibility.ToString())
-                .Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Row)))
+                
                 ;
+            attribute.Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Row)));
+            attribute.Arguments.Add(new CodeAttributeArgument("IsNewRow", new CodePrimitiveExpression(item.IsNewRow)));
+
             Ctx._if("{0} == null", field.Name)
                 .TrueStatements._("{0} = new {1}() {{ Node = this }}", field.Name, item.ClassName);
             Ctx._("return {0}", field.Name);
@@ -550,12 +555,14 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
             var item = Ctx.ItemAs<ShellNodeConfigOutput>();
             var field = Ctx.CurrentDecleration._private_(item.ClassName, "_" + item.Name);
             Ctx.SetType(item.ClassName);
-            Ctx.AddAttribute(typeof(OutputSlot))
+            var attribute = Ctx.AddAttribute(typeof(OutputSlot))
                 .AddArgument(new CodePrimitiveExpression(item.Name))
                 .AddArgument(new CodePrimitiveExpression(item.AllowMultiple))
                 .AddArgument("SectionVisibility.{0}", item.Visibility.ToString())
-                .Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Row)))
                 ;
+            attribute.Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Row)));
+            attribute.Arguments.Add(new CodeAttributeArgument("IsNewRow", new CodePrimitiveExpression(item.IsNewRow)));
+
             Ctx._if("{0} == null", field.Name)
            .TrueStatements._("{0} = new {1}() {{ Node = this }}", field.Name, item.ClassName);
 
@@ -880,7 +887,7 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         {
 
             method.Statements.Add(
-           new CodeSnippetExpression(string.Format("{1} = container.AddNode<{0},{0}ViewModel,{0}Drawer>(\"{0}\")", nodeType.ClassName, varName)));
+           new CodeSnippetExpression(string.Format("{1} = container.AddNode<{0},{0}ViewModel,{0}Drawer>(\"{2}\")", nodeType.ClassName, varName,nodeType.NodeLabel)));
 
         }
 

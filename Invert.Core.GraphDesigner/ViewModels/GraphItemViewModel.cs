@@ -15,6 +15,7 @@ namespace Invert.Core.GraphDesigner
 
     public abstract class GraphItemViewModel : ViewModel
     {
+        public virtual bool IsNewLine { get; set; }
         public string Comments
         {
             get { return "TODO"; }
@@ -23,6 +24,7 @@ namespace Invert.Core.GraphDesigner
                 
             }
         }
+        
         public abstract Vector2 Position { get; set; }
         public abstract string Name { get; set; }
 
@@ -62,7 +64,7 @@ namespace Invert.Core.GraphDesigner
                 OnPropertyChanged("IsSelected");
             }
         }
-
+        public int Column { get; set; }
         public virtual void Select()
         {
             
@@ -116,6 +118,7 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 if (DataObject == null) return null;
+                
                 return _inputConnector ?? (_inputConnector = CreateInputConnector());
             }
             set { throw new NotImplementedException(); }
@@ -211,6 +214,8 @@ namespace Invert.Core.GraphDesigner
         }
 
         public bool IsScreenshot { get; set; }
+        public int ColumnSpan { get; set; }
+        public int Row { get; set; }
 
         public virtual void GetConnectors(List<ConnectorViewModel> list)
         {

@@ -48,9 +48,9 @@ public class PluginDesigner : DiagramPlugin
             .HasSubNode<ShellGraphTypeNode>()
             .HasSubNode<ShellSlotTypeNode>()
             .HasSubNode<TypeReferenceNode>()
-            .HasSubNode<ShellNodeConfig>()
+            .HasSubNode<ShellNodeConfig>().HasSubNode<ScreenshotNode>()
             ;
-
+        container.AddNode<ScreenshotNode, ScreenshotNodeViewModel, ScreenshotNodeDrawer>("Screenshot");
         var graphConfig = container.AddNode<ShellGraphTypeNode>("Graph Type")
            .HasSubNode<ShellGeneratorTypeNode>()
            .Color(NodeColor.DarkDarkGray)

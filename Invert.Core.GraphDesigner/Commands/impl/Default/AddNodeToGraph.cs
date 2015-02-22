@@ -23,7 +23,7 @@ namespace Invert.Core.GraphDesigner
             {
                 var newNodeData = Activator.CreateInstance(SelectedOption.Value as Type) as IDiagramNode;
                 
-                node.AddNode(newNodeData, new Vector2(25f,25f));
+                node.AddNode(newNodeData);
                 newNodeData.BeginEditing();
             }
         }

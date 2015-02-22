@@ -6,6 +6,7 @@ using System.Text;
 using Invert.Core.GraphDesigner.Unity;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Invert.Core.GraphDesigner.Documentation
 {
@@ -28,14 +29,18 @@ namespace Invert.Core.GraphDesigner.Documentation
         }
     }
 
-    public class SaveNodeToImage : ToolbarCommand<DiagramNodeViewModel>
+    public class SaveNodeToImage : ToolbarCommand<DiagramViewModel>
     {
-        public override void Perform(DiagramNodeViewModel node)
+        public override void Perform(DiagramViewModel node)
         {
-            Extensions.GetScreenshot(node);
+            foreach (var item in node.AllViewModels.OfType<ScreenshotNodeViewModel>())
+            {
+                item.SaveImage = true;
+            }
+            
         }
 
-        public override string CanPerform(DiagramNodeViewModel node)
+        public override string CanPerform(DiagramViewModel node)
         {
             return null;
         }
@@ -44,61 +49,53 @@ namespace Invert.Core.GraphDesigner.Documentation
     public static class Extensions
     {
         private static RenderTexture m_PreviousActiveTexture;
-
-        public static void GetScreenshot(DiagramNodeViewModel node)
+        public  static void SaveScreenshot(ScreenshotNodeViewModel node, Rect region)
+        {
+            if ((double)((Rect)region).height < 1.0)
+                return;
+            Rect local1 = @region;
+            Rect position = node.Bounds;
+            // ISSUE: explicit reference operation
+            // ISSUE: explicit reference operation
+            double num1 = (double)((Rect)@position).height - (double)((Rect)@region).height - 52.0;
+            local1.y = ((float)num1);
+            // ISSUE: explicit reference operation
+            // ISSUE: variable of a reference type
+            Rect local2 = @region;
+            double num2 = (double)((Rect)local2).height + 10.0;
+            local2.height = (float)num2;
+            // ISSUE: explicit reference operation
+            // ISSUE: explicit reference operation
+            Texture2D texture2D = new Texture2D((int)((Rect)@region).width, (int)((Rect)@region).height, (TextureFormat)3, false);
+            var rect = new Rect(region);
+            rect.x += node.Bounds.x;
+            rect.y += node.Bounds.y;
+            texture2D.ReadPixels(rect, 0, 0);
+            texture2D.Apply();
+            //string fullPath = Path.GetFullPath(Application.get_dataPath() + "/../" + Path.Combine(this.screenshotsSavePath, actionName) + ".png");
+            //if (!FsmEditorUtility.CreateFilePath(fullPath))
+            //    return;
+            byte[] bytes = texture2D.EncodeToPNG();
+            Object.DestroyImmediate((Object)texture2D, true);
+            File.WriteAllBytes("image.png", bytes);
+        }
+        public static void GetScreenshot(ScreenshotNodeViewModel node)
         {
             
-            var x = new RenderTexture(Screen.width   , Screen.height, 0);
+            var x = new RenderTexture( node.GraphItem.Width , node.GraphItem.Height, 0);
             //Graphics.SetRenderTarget(x);
             //BeginRenderTextureGUI(x);
-          
-          //  GUILayout.Box("This box goes on a render texture!");
-            
-       //  GUI.Label(new Rect(0f,0f,500,500),"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",EditorStyles.largeLabel );
-            var rect = new Rect(node.Bounds.x - 25, node.Bounds.y + 75, node.Bounds.width + 50, node.Bounds.height + 50);
+  
+         
+
+            var rect = new Rect(node.GraphItem.Location.x, node.GraphItem.Location.y, node.GraphItem.Width, node.GraphItem.Height);
             Texture2D ss = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.RGB24, false, true);
             ss.ReadPixels(rect, 0, 0);
-        
-            ss.Apply(false);
+            InvertGraphEditor.DesignerWindow.DiagramDrawer.Draw(InvertGraphEditor.PlatformDrawer, 1f);
+            ss.Apply();
             //ss.SetPixel(m_PreviousActiveTexture.);
             //EndRenderTextureGUI();
             File.WriteAllBytes("image.png", ss.EncodeToPNG());
-         //   var diagramViewModel = new DiagramViewModel(node.Diagram, node.Project);
-         //   var vm = InvertGraphEditor.Container.GetNodeViewModel(node, diagramViewModel);
-         //   var drawer = InvertGraphEditor.Container.CreateDrawer(vm);
-         //    drawer.Refresh(new Vector2(0f,0f));
-
-
-         //   var width = Mathf.RoundToInt(vm.Bounds.width) + 50;
-         //   var height = Mathf.RoundToInt(vm.Bounds.height + 50);
-
-         //   var oldrt = RenderTexture.active;
-         //   var temp = new RenderTexture(width, height,0);
-         //   RenderTexture.active = temp;
-         //   //RenderTexture.active = temp;
-       
-         //   Texture2D ss = new Texture2D(width, height,TextureFormat.RGB24,false,false);
-         //   var newBoundes = new Rect(drawer.Bounds);
-         //   newBoundes.x = 0;
-         //   newBoundes.y = 0;
-         //   vm.Bounds = newBoundes;
-
-          
-
-         //   Debug.Log(string.Format("X: {2} Y: {3} Width: {0} Height: {1}", width, height, vm.Bounds.x, vm.Bounds.y));
-         //   drawer.Draw(1f);
-         
-            
-         //  // ss.Apply();
-            
-         //   //RenderTexture.ReleaseTemporary(temp);
-         //   var pngBytes = ss.EncodeToPNG();
-         //   File.WriteAllBytes("image.png",pngBytes);
-         //RenderTexture.active = oldrt;
-            //EditorApplication.
-
-
-
         }
         public static void BeginRenderTextureGUI(RenderTexture targetTexture)
         {
@@ -108,7 +105,7 @@ namespace Invert.Core.GraphDesigner.Documentation
                 if (targetTexture != null)
                 {
                     RenderTexture.active = targetTexture;
-                    GL.Clear(false, true, Color.gray);
+                    GL.Clear(false, true, Color.white);
                     
                 }
             //}
@@ -119,7 +116,7 @@ namespace Invert.Core.GraphDesigner.Documentation
         {
             //if (Event.current.type == EventType.Repaint)
             //{
-                RenderTexture.active = m_PreviousActiveTexture;
+                RenderTexture.active = null;
             //}
         }
     }

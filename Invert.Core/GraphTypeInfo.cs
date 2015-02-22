@@ -13,7 +13,9 @@ public class GraphTypeInfo : IItem
     }
 
     public string Name { get; set; }
+
     public bool IsPrimitive { get; set; }
+
     public bool IsUnityEngine { get; set; }
 
     public string Title

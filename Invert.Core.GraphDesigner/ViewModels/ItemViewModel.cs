@@ -30,13 +30,20 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+    
     public class ItemViewModel : GraphItemViewModel
     {
+        public override bool IsNewLine
+        {
+            get { return true; }
+            set { base.IsNewLine = value; }
+        }
+
         private IEditorCommand _removeItemCommand;
         private bool _isEditable = true;
 
         public ItemViewModel(DiagramNodeViewModel nodeViewModel)
-        {
+        { 
             NodeViewModel = nodeViewModel;
         }
         

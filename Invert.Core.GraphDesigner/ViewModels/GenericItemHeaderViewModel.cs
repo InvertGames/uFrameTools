@@ -5,6 +5,11 @@ namespace Invert.Core.GraphDesigner
 {
     public class GenericItemHeaderViewModel : GraphItemViewModel
     {
+        public override bool IsNewLine
+        {
+            get { return true; }
+            set { base.IsNewLine = value; }
+        }
 
         public bool AllowConnections { get; set; }
         public override ConnectorViewModel InputConnector
