@@ -24,7 +24,8 @@ public interface IGraphData : IElementFileData,IItem, ISubscribable<IGraphItemEv
     string Path { get; set; }
     IProjectRepository Project { get; set; }
     bool Precompiled { get; set; }
-
+    bool DocumentationMode { get; set; }
+  
     //IEnumerable<ConnectionData> Connections { get; }
     void AddConnection(IConnectable output, IConnectable input);
     void RemoveConnection(IConnectable output, IConnectable input);

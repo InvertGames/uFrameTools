@@ -23,6 +23,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocTemplates", "DocTemplate
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uFrameTestPlugin", "uFrameTestPlugin\uFrameTestPlugin.csproj", "{69C5FFB4-CC58-47D8-8CA2-54D1875DDA3E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gwen", "..\..\Gwen\Lib\Gwen\Gwen.csproj", "{ADDA2F43-96C0-497F-8216-29C67ABC9806}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gwen.Renderer.OpenTK", "..\..\Gwen\Lib\Gwen.Renderer.OpenTK\Gwen.Renderer.OpenTK.csproj", "{41650C82-D630-4E5C-845A-F1513C8FDC99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gwen.Sample.OpenTK", "..\..\Gwen\Lib\Gwen.Sample.OpenTK\Gwen.Sample.OpenTK.csproj", "{B316F57F-6D02-4487-95AE-EA88B9C995CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.GraphDesigner.Standalone", "Invert.GraphDesigner.Standalone\Invert.GraphDesigner.Standalone.csproj", "{C37741C3-E7EE-4844-A3BB-0593A4BDA1B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gwen.UnitTest", "..\..\Gwen\Lib\Gwen.UnitTest\Gwen.UnitTest.csproj", "{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +79,26 @@ Global
 		{69C5FFB4-CC58-47D8-8CA2-54D1875DDA3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69C5FFB4-CC58-47D8-8CA2-54D1875DDA3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69C5FFB4-CC58-47D8-8CA2-54D1875DDA3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADDA2F43-96C0-497F-8216-29C67ABC9806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADDA2F43-96C0-497F-8216-29C67ABC9806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADDA2F43-96C0-497F-8216-29C67ABC9806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADDA2F43-96C0-497F-8216-29C67ABC9806}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41650C82-D630-4E5C-845A-F1513C8FDC99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41650C82-D630-4E5C-845A-F1513C8FDC99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41650C82-D630-4E5C-845A-F1513C8FDC99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41650C82-D630-4E5C-845A-F1513C8FDC99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B316F57F-6D02-4487-95AE-EA88B9C995CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B316F57F-6D02-4487-95AE-EA88B9C995CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B316F57F-6D02-4487-95AE-EA88B9C995CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B316F57F-6D02-4487-95AE-EA88B9C995CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C37741C3-E7EE-4844-A3BB-0593A4BDA1B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C37741C3-E7EE-4844-A3BB-0593A4BDA1B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C37741C3-E7EE-4844-A3BB-0593A4BDA1B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C37741C3-E7EE-4844-A3BB-0593A4BDA1B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

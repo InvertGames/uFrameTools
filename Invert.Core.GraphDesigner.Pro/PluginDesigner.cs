@@ -1,7 +1,9 @@
 ﻿using System;
 using System.CodeDom;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 
@@ -53,6 +55,7 @@ public class PluginDesigner : DiagramPlugin
         container.AddNode<ScreenshotNode, ScreenshotNodeViewModel, ScreenshotNodeDrawer>("Screenshot");
         var graphConfig = container.AddNode<ShellGraphTypeNode>("Graph Type")
            .HasSubNode<ShellGeneratorTypeNode>()
+           .HasSubNode<ScreenshotNode>()
            .Color(NodeColor.DarkDarkGray)
            .Validator(_=>_.RootNode == null,"A graph must have a root node.")
            ;
@@ -60,6 +63,7 @@ public class PluginDesigner : DiagramPlugin
         var shellConfigurationNode =
             container.AddNode<ShellNodeConfig, ShellNodeConfigViewModel, ShellNodeConfigDrawer>("Node Config")
                 .HasSubNode<ShellNodeConfig>()
+                .HasSubNode<ScreenshotNode>()
                 .HasSubNode<ShellTemplateConfigNode>()
             ;
         shellConfigurationNode.AddFlag("Graph Type");
@@ -155,3 +159,4 @@ public class PluginDesigner : DiagramPlugin
         get { return Path.Combine("Editor", "Plugin.cs"); }
     }
 }
+

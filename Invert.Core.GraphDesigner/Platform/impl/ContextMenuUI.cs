@@ -28,5 +28,10 @@ namespace Invert.Core.GraphDesigner
         {
                 
         }
+
+        public virtual void AddSeparator(string empty)
+        {
+            
+        }
     }
 }

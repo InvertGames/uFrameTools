@@ -91,7 +91,7 @@ public class SelectionRectHandler : Drawer, IInputHandler
             {
                 item.IsSelected = SelectionRect.Scale(scale).Overlaps(item.Bounds.Scale(scale));
             }
-            platform.DrawStretchBox(SelectionRect.Scale(scale), CachedStyles.BoxHighlighter4, 12);
+            platform.DrawStretchBox(SelectionRect.Scale(scale), CachedStyles.BoxHighlighter4, 0);
         }
     }
 }

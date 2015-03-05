@@ -42,6 +42,10 @@ namespace Invert.Core.GraphDesigner
         private IEditorCommand _removeItemCommand;
         private bool _isEditable = true;
 
+        public ItemViewModel()
+        {
+        }
+
         public ItemViewModel(DiagramNodeViewModel nodeViewModel)
         { 
             NodeViewModel = nodeViewModel;
@@ -145,7 +149,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Select()
         {
-            NodeViewModel.Select();
+           
             var items = NodeViewModel.DiagramViewModel.SelectedNodeItems.ToArray();
             foreach (var item in items)
                 item.IsSelected = false;
@@ -155,6 +159,7 @@ namespace Invert.Core.GraphDesigner
          
             IsSelected = true;
             IsEditing = true;
+            NodeViewModel.Select();
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 #if !UNITY_DLL
@@ -6,7 +8,7 @@ using KeyCode = System.Windows.Forms.Keys;
 #endif
 namespace Invert.Core.GraphDesigner
 {
-    public class GraphDesignerPlugin : DiagramPlugin
+    public class GraphDesignerPlugin : DiagramPlugin, IPrefabNodeProvider
     {
         public override decimal LoadPriority
         {
@@ -60,10 +62,11 @@ namespace Invert.Core.GraphDesigner
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(DateTime), Group = "", Label = "date", IsPrimitive = true }, "date");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(Vector2), Group = "", Label = "Vector2", IsPrimitive = true }, "Vector2");
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(Vector3), Group = "", Label = "Vector3", IsPrimitive = true }, "Vector3");
-            typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(Quaternion), Group = "", Label = "Quaternion", IsPrimitive = true }, "Quaternion");
+   
             container.Register<DesignerGeneratorFactory, RegisteredTemplateGeneratorsFactory>("TemplateGenerators");
             
-#if UNITY_DLL
+#if UNITY_DLL        
+            typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(Quaternion), Group = "", Label = "Quaternion", IsPrimitive = true }, "Quaternion");
             container.Register<DesignerGeneratorFactory, Invert.uFrame.CodeGen.ClassNodeGenerators.SimpleClassNodeCodeFactory>("ClassNodeData");
             
             // Enums
@@ -85,6 +88,8 @@ namespace Invert.Core.GraphDesigner
             container.AddNode<TypeReferenceNode, TypeReferenceNodeViewModel, TypeReferenceNodeDrawer>("Type Reference");
 
             // Toolbar commands
+            container.RegisterInstance<IToolbarCommand>(new SelectProjectCommand(), "SelectProjectCommand");
+            container.RegisterInstance<IToolbarCommand>(new SelectDiagramCommand(), "SelectDiagramCommand");
             container.RegisterInstance<IToolbarCommand>(new PopToFilterCommand(), "PopToFilterCommand");
             container.RegisterInstance<IToolbarCommand>(new SaveCommand(), "SaveCommand");
             container.RegisterInstance<IToolbarCommand>(new AddNewCommand(), "AddNewCommand");
@@ -146,6 +151,15 @@ namespace Invert.Core.GraphDesigner
         public override void Loaded(uFrameContainer container)
         {
             InvertGraphEditor.DesignerPluginLoaded();
+        }
+
+        public IEnumerable<QuickAddItem> PrefabNodes(INodeRepository nodeRepository)
+        {
+            return nodeRepository.GetImportableItems(nodeRepository.CurrentFilter).OfType<DiagramNode>().Select(p=>new QuickAddItem("Show Item",p.Name,
+                _ =>
+                {
+                    nodeRepository.SetItemLocation(p, _.MousePosition);
+                }));
         }
     }
 }

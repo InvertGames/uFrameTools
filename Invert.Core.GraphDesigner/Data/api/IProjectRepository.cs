@@ -7,25 +7,7 @@ using Object = System.Object;
 
 namespace Invert.Core.GraphDesigner
 {
-    public interface ISubscribable<T>
-    {
-        List<T> Listeners { get; set; }
-
-        Action Subscribe(T handler);
-        void Unsubscribe(T handler);
-    }
-
-    public static class SubscribableExtensions
-    {
-        public static void Signal<T>(this ISubscribable<T> t, Action<T> action)
-        {
-            foreach (var listener in t.Listeners)
-            {
-                action(listener);
-            }
-        }
-    }
-
+  
     public interface IProjectRepository : INodeRepository, ISubscribable<IGraphEvents>
     {
         IGraphData CurrentGraph { get; set; }
@@ -67,7 +49,7 @@ namespace Invert.Core.GraphDesigner
         private List<OpenGraph> _openTabs = new List<OpenGraph>();
         private Dictionary<string, bool> _settingsBag;
         private List<IGraphData> _includedGraphs;
-        private List<IGraphEvents> _listeners;
+        
         protected IGraphItem[] _allGraphItems;
 
         public IEnumerable<IGraphData> PrecompiledGraphs
@@ -423,6 +405,14 @@ namespace Invert.Core.GraphDesigner
             
         }
 
+        public void Document(IDocumentationBuilder docs)
+        {
+            foreach (var graph in Graphs)
+            {
+                graph.Document(docs);
+            }
+        }
+
         /// <summary>
         /// Records an undo operation, this may be moved to a more reasonable place in the future.
         /// </summary>
@@ -511,35 +501,6 @@ namespace Invert.Core.GraphDesigner
         public bool SetSetting(string key, bool value)
         {
             return this[key] = value;
-        }
-
-        /// <summary>
-        /// The current GraphEvent listeners. See: IGraphEvents
-        /// </summary>
-        public List<IGraphEvents> Listeners
-        {
-            get { return _listeners ?? (_listeners = new List<IGraphEvents>()); }
-            set { _listeners = value; }
-        }
-
-        /// <summary>
-        /// Subscribe to graph events, these events will be invoked on the handler when a graph event occurs
-        /// </summary>
-        /// <param name="handler">The handler object that will handle the graph events.</param>
-        /// <returns>An action for unsubscribing the handler from these events.</returns>
-        public Action Subscribe(IGraphEvents handler)
-        {
-            Listeners.Add(handler);
-            return () => { Unsubscribe(handler); };
-        }
-
-        /// <summary>
-        /// Unsubscribe a graph event handler
-        /// </summary>
-        /// <param name="handler">The handler to unsubscribe</param>
-        public void Unsubscribe(IGraphEvents handler)
-        {
-            Listeners.Remove(handler);
         }
 
         /// <summary>

@@ -18,29 +18,33 @@ namespace Invert.GraphDesigner.WPF
         private string _name;
         private IGraphData _currentGraph1;
 
-        public JsonProjectRepository(FileInfo projectFileInfo, IGraphData currentGraph, IEnumerable<IGraphData> graphs)
+        public JsonProjectRepository(FileInfo projectFileInfo, IEnumerable<IGraphData> graphs)
         {
             ProjectFileInfo = projectFileInfo;
-            CurrentGraph = currentGraph;
-            Graphs = graphs;
-            if (projectFileInfo.Exists)
+
+            foreach (var item in graphs)
             {
-                Deserialize(JSON.Parse(File.ReadAllText(projectFileInfo.FullName)).AsObject,this);
-                foreach (var graph in Directory.GetFiles(projectFileInfo.Directory.FullName,"*.ufgraph"))
-                {
-                    var graphJson = JSON.Parse(File.ReadAllText(graph));
-                    var type = InvertApplication.FindType(graphJson["Type"].Value);
-                    var instance = Activator.CreateInstance(type) as InvertGraph;
-                    if (instance == null) continue;
-                    instance.Path = graph;
-                    instance.DeserializeFromJson(graphJson);
-                    AddGraph(instance);
-                    CurrentGraph = instance;
-                }
-                foreach (var item in IncludedGraphs)
-                {
-                    item.SetProject(this);
-                }
+                AddGraph(item);
+                CurrentGraph = item;
+            }
+            //if (projectFileInfo.Exists)
+            //{
+            //    Deserialize(JSON.Parse(File.ReadAllText(projectFileInfo.FullName)).AsObject);
+            //    foreach (var graph in Directory.GetFiles(projectFileInfo.Directory.FullName,"*.ufgraph"))
+            //    {
+            //        var graphJson = JSON.Parse(File.ReadAllText(graph));
+            //        var type = InvertApplication.FindType(graphJson["Type"].Value);
+            //        var instance = Activator.CreateInstance(type) as InvertGraph;
+            //        if (instance == null) continue;
+            //        instance.Path = graph;
+            //        instance.DeserializeFromJson(graphJson);
+            //        AddGraph(instance);
+            //        CurrentGraph = instance;
+            //    }
+            //}
+            foreach (var item in IncludedGraphs)
+            {
+                item.SetProject(this);
             }
         }
 
@@ -49,6 +53,7 @@ namespace Invert.GraphDesigner.WPF
         protected sealed override void AddGraph(IGraphData graphData)
         {
             base.AddGraph(graphData);
+            if (!IncludedGraphs.Contains(graphData))
             IncludedGraphs.Add(graphData);
             this.Signal(p=>p.GraphLoaded(this, graphData));
 
@@ -142,7 +147,7 @@ namespace Invert.GraphDesigner.WPF
             }
         }
 
-        public void Deserialize(JSONClass cls, INodeRepository repository)
+        public void Deserialize(JSONClass cls)
         {
             var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.IsDefined(typeof(JsonProperty))).ToArray();
             foreach (var property in properties)

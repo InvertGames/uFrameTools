@@ -299,6 +299,11 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         return true;
     }
 
+    public virtual void Document(IDocumentationBuilder docs)
+    {
+        docs.Title3(Name);
+    }
+
 
     public IEnumerable<ConnectionData> Inputs
     {

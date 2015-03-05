@@ -248,24 +248,15 @@ namespace Invert.Core.GraphDesigner
             ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action), recordUndo);
         }
 
-        public static SelectionService Selection
-        {
-            get { return Container.Resolve<SelectionService>(); }
-        }
+  
         private static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command, bool recordUndo = true)
         {
             var objs = handler.ContextObjects.ToArray();
             if (recordUndo)
             {
-                foreach (
-                   var item in
-                       DesignerWindow.DiagramViewModel.ContextObjects.OfType<IDiagramNodeItem>()
-                           .Select(p => p.Node.Graph)
-                           .Distinct())
-                {
-                    if (item is UnityEngine.Object)
-                    DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(item, command.Name);
-                }
+
+                DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.DiagramData, command.Name);
+                
             }
             foreach (var o in objs)
             {
@@ -297,15 +288,8 @@ namespace Invert.Core.GraphDesigner
             }
             if (recordUndo)
             {
-                foreach (
-                    var item in
-                        DesignerWindow.DiagramViewModel.ContextObjects.OfType<IDiagramNodeItem>()
-                            .Select(p => p.Node.Graph)
-                            .Distinct())
-                {
-                    if (item is UnityEngine.Object)
-                    DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(item);
-                }
+                DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.DiagramData);
+
                 
             }
                 
@@ -575,6 +559,13 @@ namespace Invert.Core.GraphDesigner
             container.RegisterInstance<IDiagramContextCommand>(new TCommand(), typeof(TCommand).Name);
             return container;
         }
+        public static IUFrameContainer RegisterToolbarCommand<TCommand>(this IUFrameContainer container)
+             where TCommand : IToolbarCommand, new()
+        {
+            //container.RegisterInstance<IDiagramContextCommand>(new AddNodeToGraph(), "AddItemCommand");
+            container.RegisterInstance<IToolbarCommand>(new TCommand(), typeof(TCommand).Name);
+            return container;
+        }
 
         //public static IUFrameContainer ConnectionStrategy<TSource, TTarget>(this IUFrameContainer container, Color connectionColor,
         //    Func<TSource, TTarget, bool> isConnected, Action<TSource, TTarget> apply, Action<TSource, TTarget> remove) where TSource : class, IConnectable where TTarget : class, IConnectable
@@ -719,7 +710,7 @@ namespace Invert.Core.GraphDesigner
                 .FirstOrDefault();
             if (templateAttribute == null)
             {
-                Debug.Log(string.Format("ClassTemplate attribute not found on {0} ", templateClassType.Name));
+                InvertApplication.Log(string.Format("ClassTemplate attribute not found on {0} ", templateClassType.Name));
                 yield break;
             }
 

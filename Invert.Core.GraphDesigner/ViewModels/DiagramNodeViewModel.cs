@@ -263,6 +263,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                if (ShowHelp) return false;
                 if (AllowCollapsing)
                     return GraphItemObject.IsCollapsed;
                 return true;
@@ -381,8 +382,10 @@ namespace Invert.Core.GraphDesigner
         {
             if (DiagramViewModel.SelectedGraphItems.Count() < 2)
                 DiagramViewModel.DeselectAll();
+            DiagramViewModel.Select(this);
             base.Select();
-
+           
+            
         }
 
         public string editText = string.Empty;

@@ -61,10 +61,10 @@ namespace DiagramDesigner
                     Header = graphType.Name,
                     Command = new SimpleEditorCommand<MainWindowUIViewModel>((d) =>
                     {
-                        var diagram = d.CurrentProject.CreateNewDiagram(type.To, null);
-                        d.CurrentProject.CurrentGraph = diagram;
-                        d.LoadDiagram(diagram);
-                        CommandExecuted(null);
+                      //  var diagram = d.CurrentProject.CreateNewDiagram(type.To, null);
+                       // d.CurrentProject.CurrentGraph = diagram;
+                        //d.LoadDiagram(diagram);
+                        //CommandExecuted(null);
                     })
 
                 };
@@ -115,6 +115,12 @@ namespace DiagramDesigner
             {
                 
             }
+        }
+
+        public DiagramDrawer DiagramDrawer
+        {
+            get { return MyDesigner.Drawer; }
+            set { MyDesigner.Drawer = value; }
         }
 
         public void RefreshContent()

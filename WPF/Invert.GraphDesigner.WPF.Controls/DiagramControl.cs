@@ -33,11 +33,11 @@ namespace Invert.GraphDesigner.WPF.Controls
         public Pen GridSecondaryColor { get; set; }
         public DiagramControl()
         {
-            
+
             this.DataContextChanged += DiagramControl_DataContextChanged;
             GridColor = DesignerStyles.GridLine;// new Pen(new SolidColorBrush(new Color() { ScR = 0.01f, ScG = 0.01f, ScB = 0.01f, ScA = 1f }), 1);
             GridSecondaryColor = DesignerStyles.GridLineSecondary; //new Pen(new SolidColorBrush(Colors.Black), 1);
-            
+
         }
 
         private MouseEvent _event;
@@ -51,7 +51,7 @@ namespace Invert.GraphDesigner.WPF.Controls
             }
             set { _event = value; }
         }
-        
+
         //protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
         //{
         //    base.OnMouseDoubleClick(e);
@@ -87,8 +87,8 @@ namespace Invert.GraphDesigner.WPF.Controls
             {
                 MouseEvent.ModifierKeyStates.Alt = true;
             }
-            
-            
+
+
         }
 
         protected override void OnKeyUp(KeyEventArgs e)
@@ -110,11 +110,11 @@ namespace Invert.GraphDesigner.WPF.Controls
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            
+
             base.OnMouseDown(e);
             MouseEvent.IsMouseDown = true;
             MouseEvent.MouseDownPosition = e.GetPosition(this).ToVector2();
-           
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 MouseEvent.MouseButton = 0;
@@ -132,16 +132,17 @@ namespace Invert.GraphDesigner.WPF.Controls
                 if (e.ClickCount == 2)
                 {
                     MouseEvent.CurrentHandler.OnMouseDoubleClick(MouseEvent);
-                }else 
-                if (MouseEvent.MouseButton == 1)
-                {
-                    MouseEvent.CurrentHandler.OnRightClick(MouseEvent);
                 }
                 else
-                {
-                    MouseEvent.CurrentHandler.OnMouseDown(MouseEvent);    
-                }
-                
+                    if (MouseEvent.MouseButton == 1)
+                    {
+                        MouseEvent.CurrentHandler.OnRightClick(MouseEvent);
+                    }
+                    else
+                    {
+                        MouseEvent.CurrentHandler.OnMouseDown(MouseEvent);
+                    }
+
             }
             if (SelectionChanged != null)
             {
@@ -151,7 +152,7 @@ namespace Invert.GraphDesigner.WPF.Controls
             e.Handled = true;
             InvalidateVisual();
         }
-        
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
@@ -159,24 +160,24 @@ namespace Invert.GraphDesigner.WPF.Controls
             MouseEvent.MousePosition = e.GetPosition(this).ToVector2();
             MouseEvent.MousePositionDelta = MouseEvent.MousePosition - MouseEvent.LastMousePosition;
             MouseEvent.MousePositionDeltaSnapped = MouseEvent.MousePosition.Snap(ViewModel.SnapSize * InvertGraphEditor.DesignerWindow.Scale) - MouseEvent.LastMousePosition.Snap(ViewModel.SnapSize * InvertGraphEditor.DesignerWindow.Scale);
-            
+
             if (Drawer != null)
             {
                 foreach (var child in Drawer.Children.OfType<ConnectorDrawer>())
                 {
-            
-                        child.Refresh(InvertGraphEditor.PlatformDrawer, Vector2.zero);
-                    
+
+                    child.Refresh(InvertGraphEditor.PlatformDrawer, Vector2.zero);
+
                 }
-            
+
                 MouseEvent.CurrentHandler.OnMouseMove(MouseEvent);
             }
             InvalidateVisual();
-            
+
             MouseEvent.LastMousePosition = MouseEvent.MousePosition;
-            
+
         }
-        
+
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
@@ -218,27 +219,27 @@ namespace Invert.GraphDesigner.WPF.Controls
         protected override Size ArrangeOverride(Size arrangeSize)
         {
             if (Drawer != null)
-            { 
-             
-       
-            
-        
-          
+            {
+
+
+
+
+
             }
             return base.ArrangeOverride(arrangeSize);
         }
         protected override Size MeasureOverride(Size constraint)
         {
             if (Drawer != null)
-            { 
+            {
                 Drawer.Refresh(InvertGraphEditor.PlatformDrawer);
-               
+
             }
             foreach (UIElement item in this.InternalChildren)
             {
                 item.Measure(constraint);
             }
-            
+
             if (ViewModel != null)
             {
 
@@ -249,8 +250,8 @@ namespace Invert.GraphDesigner.WPF.Controls
 
         void DiagramControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
- 
-            if (ViewModel == null) 
+
+            if (ViewModel == null)
                 return;
 
             if (ViewModel != null)
@@ -303,24 +304,24 @@ namespace Invert.GraphDesigner.WPF.Controls
             }
 
 
-        
+
             if (Drawer != null)
             {
                 PlatformDrawer.BeginRender(this, MouseEvent);
                 var platform = InvertGraphEditor.PlatformDrawer as WindowsPlatformDrawer;
                 platform.Context = dc;
-              
+
                 Drawer.Draw(InvertGraphEditor.PlatformDrawer, 1f);
                 PlatformDrawer.EndRender();
             }
-      
-            
+
+
         }
 
         void GraphItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            
-          
+
+
         }
     }
 

@@ -242,7 +242,7 @@ namespace Invert.Core.GraphDesigner
 
             platform.DrawLabel(labelRect, _cachedTag, CachedStyles.Tag1, DrawingAlignment.MiddleCenter);
 
-#if UNITY_DLL
+#if UNITY_DLL || USE_IMAGES
             var adjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
 #else
                  var adjustedBounds = Bounds; //new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);

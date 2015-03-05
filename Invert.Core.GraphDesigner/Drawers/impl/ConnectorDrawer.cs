@@ -192,6 +192,95 @@ namespace Invert.Core.GraphDesigner
             //}
         }
 
+        public override void OnLayout()
+        {
+            base.OnLayout();
+            var connectorFor = ViewModel.ConnectorFor;
+            var connectorBounds = ViewModel.ConnectorFor.ConnectorBounds;
+            var forItem = connectorFor as ItemViewModel;
+            if (forItem != null)
+            {
+                if (forItem.NodeViewModel.IsCollapsed)
+                {
+                    connectorBounds = forItem.NodeViewModel.ConnectorBounds;
+                }
+            }
+            var nodePosition = connectorBounds;
+            var texture = Texture;
+            var pos = new Vector2(0f, 0f);
+
+            if (ViewModel.Side == ConnectorSide.Left)
+            {
+                pos.x = nodePosition.x;
+                pos.y = nodePosition.y + (nodePosition.height * ViewModel.SidePercentage);
+                pos.y -= (TextureHeight / 2f);
+                pos.x -= (TextureWidth) + 2;
+            }
+            else if (ViewModel.Side == ConnectorSide.Right)
+            {
+                pos.x = nodePosition.x + nodePosition.width;
+                pos.y = nodePosition.y + (nodePosition.height * ViewModel.SidePercentage);
+                pos.y -= (TextureHeight / 2f);
+                pos.x += 2;
+            }
+            else if (ViewModel.Side == ConnectorSide.Bottom)
+            {
+                pos.x = nodePosition.x + (nodePosition.width * ViewModel.SidePercentage);
+                pos.y = nodePosition.y + nodePosition.height;
+                pos.x -= (TextureWidth / 2f);
+                //pos.y += TextureHeight;
+            }
+            else if (ViewModel.Side == ConnectorSide.Top)
+            {
+                pos.x = nodePosition.x + (nodePosition.width * ViewModel.SidePercentage);
+                pos.y = nodePosition.y;
+                pos.x -= (TextureWidth / 2f);
+                pos.y -= TextureHeight;
+            }
+
+
+            //if (ViewModel.IsMouseOver)
+            //{
+            //    var mouseOverBounds = new Rect(bounds);
+            //    ////mouseOverBounds.x -= mouseOverBounds.width*0.2f;
+            //    //mouseOverBounds.y += mouseOverBounds.height * 0.125f;
+            //    //mouseOverBounds.x += mouseOverBounds.width * 0.125f;
+            //    mouseOverBounds.width = 20;
+            //    mouseOverBounds.height = 20;
+            //    bounds = mouseOverBounds;
+            //}
+
+            //if (ViewModelObject.IsMouseOver)
+            //{
+            //    EditorGUI.DrawRect(Bounds.Scale(scale), Color.black);
+            //}
+            //if (!ViewModel.HasConnections)
+            //if (!ViewModel.ConnectorFor.IsMouseOver && !ViewModel.ConnectorFor.IsSelected && !ViewModel.IsMouseOver) return;
+            if (!ViewModel.AlwaysVisible)
+            {
+                if (!ViewModel.ConnectorFor.IsMouseOver && !ViewModel.ConnectorFor.IsSelected && !ViewModel.IsMouseOver && !ViewModel.HasConnections) return;
+            }
+
+            //if (ViewModel.HasConnections)
+            //{
+            //    platform.DrawImage(bounds, Texture, true);
+
+
+
+            //}
+            if (ViewModel.Direction == ConnectorDirection.Output && ViewModel.Side == ConnectorSide.Right)
+            {
+                Bounds = new Rect(pos.x, pos.y, TextureWidth, TextureHeight);
+
+                //return;
+            }
+            else
+            {
+                Bounds = new Rect(pos.x, pos.y, TextureWidth, TextureHeight);
+
+            }
+        }
+
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);

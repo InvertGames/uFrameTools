@@ -5,9 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Invert.Json;
-using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -600,6 +598,7 @@ namespace Invert.Core.GraphDesigner
 
     public class GenericReferenceItem<TSourceType> : GenericReferenceItem
     {
+        
         [Browsable(false)]
         public TSourceType SourceItem
         {
@@ -646,10 +645,12 @@ namespace Invert.Core.GraphDesigner
                 if (Node == null)
                 {
                     InvertApplication.Log("NODE IS NULL GENERIC REFERENCE ITEM");
+                    return null;
                 }
                 else if (Node.Graph == null)
                 {
                     InvertApplication.Log("Node Graph IS NULL");
+                    return null;
                 }
                 return Node.Project.AllGraphItems.FirstOrDefault(p => p.Identifier == SourceIdentifier) as IDiagramNodeItem;
             }
@@ -719,6 +720,12 @@ namespace Invert.Core.GraphDesigner
     {
         private int _width = 100;
         private int _height = 100;
+        [InspectorProperty]
+        public override string Name
+        {
+            get { return base.Name; }
+            set { base.Name = value; }
+        }
 
         [JsonProperty, InspectorProperty]
         public int Width

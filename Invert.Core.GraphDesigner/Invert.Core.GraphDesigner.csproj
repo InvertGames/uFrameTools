@@ -57,6 +57,7 @@
     <Compile Include="Data\impl\ConnectionData.cs" />
     <Compile Include="Data\api\NodeColor.cs" />
     <Compile Include="Data\impl\BaseClassReference.cs" />
+    <Compile Include="DesignerWindow.cs" />
     <Compile Include="Drawers\impl\DiagramDrawer.cs" />
     <Compile Include="Drawers\api\IDrawer.cs" />
     <Compile Include="Drawers\api\INodeDrawer.cs" />

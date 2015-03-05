@@ -143,6 +143,11 @@ public class EnumItem : IDiagramNodeItem
         return false;
     }
 
+    public void Document(IDocumentationBuilder docs)
+    {
+        
+    }
+
 
     public Vector2[] ConnectionPoints { get; set; }
 

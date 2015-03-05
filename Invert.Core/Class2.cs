@@ -25,6 +25,43 @@ namespace Invert.Core
             File.AppendAllText("uframe-log.txt", ex.Message + "\r\n\r\n" + ex.StackTrace +"\r\n\r\n");
         }
     }
+
+    public interface IEventManager
+    {
+        
+    }
+    public class EventManager<T> : IEventManager
+    {
+        private List<T> _listeners;
+
+        public List<T> Listeners
+        {
+            get { return _listeners ?? (_listeners = new List<T>()); }
+            set { _listeners = value; }
+        }
+
+        public void Signal(Action<T> action)
+        {
+            foreach (var item in Listeners)
+            {
+                action(item);
+            }
+        }
+
+        public Action Subscribe(T listener)
+        {
+            if (!Listeners.Contains(listener))
+                Listeners.Add(listener);
+
+            return () => { Unsubscribe(listener); };
+        }
+
+        private void Unsubscribe(T listener)
+        {
+            Listeners.Remove(listener);
+        }
+    }
+
     public static class InvertApplication
     {
         public static bool IsTestMode { get; set; }
@@ -37,6 +74,7 @@ namespace Invert.Core
         private static uFrameContainer _container;
         private static ICorePlugin[] _plugins;
         private static IDebugLogger _logger;
+        private static Dictionary<Type, IEventManager> _eventManagers;
 
         public static List<Assembly> CachedAssemblies { get; set; }
         static InvertApplication()
@@ -106,16 +144,26 @@ namespace Invert.Core
             }
             else
             {
+                var items = new List<Type>();
                 foreach (var assembly in CachedAssemblies)
                 {
                     //if (!assembly.FullName.StartsWith("Invert")) continue;
-                    foreach (var t in assembly
-                        .GetTypes()
-                        .Where(x => type.IsAssignableFrom(x) && !x.IsAbstract))
+                    try
                     {
-                        yield return t;
+                        foreach (var t in assembly
+                            .GetTypes()
+                            .Where(x => type.IsAssignableFrom(x) && !x.IsAbstract))
+                        {
+                            items.Add(t);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        InvertApplication.Log(ex.Message);
                     }
                 }
+                foreach (var item in items)
+                    yield return item;
             }
         }
 
@@ -211,6 +259,42 @@ namespace Invert.Core
 
         }
 
+        private static Dictionary<Type, IEventManager> EventManagers
+        {
+            get { return _eventManagers ?? (_eventManagers = new Dictionary<Type, IEventManager>()); }
+            set { _eventManagers = value; }
+        }
+
+        /// <summary>
+        /// Subscribes to a series of related events defined by an interface.
+        /// </summary>
+        /// <typeparam name="TEvents">The interface type the describes the events.</typeparam>
+        /// <param name="listener">The listener that implements the event interface TEvents.</param>
+        public static Action ListenFor<TEvents>(TEvents listener)
+        {
+            IEventManager manager;
+            if (!EventManagers.TryGetValue(typeof (TEvents), out manager))
+            {
+                EventManagers.Add(typeof (TEvents), manager = new EventManager<TEvents>());
+            }
+            var m = manager as EventManager<TEvents>;
+            return m.Subscribe(listener);
+        }
+
+        /// <summary>
+        /// Signals and event to all listeners
+        /// </summary>
+        /// <typeparam name="TEvents">The lambda that invokes the action.</typeparam>
+        public static void SignalEvent<TEvents>(Action<TEvents> action)
+        {
+            IEventManager manager;
+            if (!EventManagers.TryGetValue(typeof(TEvents), out manager))
+            {
+                EventManagers.Add(typeof(TEvents), manager = new EventManager<TEvents>());
+            }
+            var m = manager as EventManager<TEvents>;
+            m.Signal(action);
+        }
         public static void Log(string s)
         {
 #if DEBUG
@@ -306,4 +390,21 @@ namespace Invert.Core
             Logger.Log(format);
         }
     }
+    public interface ISubscribable<T>
+    {
+        
+    }
+
+    public static class SubscribableExtensions
+    {
+        public static Action Watch<T>(this ISubscribable<T> t, T listener)
+        {
+            return InvertApplication.ListenFor(listener);
+        }
+        public static void Signal<T>(this ISubscribable<T> t, Action<T> action)
+        {
+            InvertApplication.SignalEvent(action);
+        }
+    }
+
 }

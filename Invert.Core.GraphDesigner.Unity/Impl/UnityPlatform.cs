@@ -200,6 +200,7 @@ namespace Invert.Core.GraphDesigner.Unity
         public override void Go()
         {
             base.Go();
+               GUILayout.BeginHorizontal(EditorStyles.toolbar);
             foreach (var editorCommand in LeftCommands.OrderBy(p => p.Order))
             {
                 DoCommand(editorCommand);
@@ -211,11 +212,13 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 DoCommand(editorCommand);
             }
+            GUILayout.EndHorizontal();
         }
 
         public override void GoBottom()
         {
             base.GoBottom();
+                 GUILayout.BeginHorizontal(EditorStyles.toolbar);
             var scale = GUILayout.HorizontalSlider(ElementDesignerStyles.Scale, 0.8f, 1f, GUILayout.Width(200f));
             if (scale != ElementDesignerStyles.Scale)
             {
@@ -232,6 +235,7 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 DoCommand(editorCommand);
             }
+              GUILayout.EndHorizontal();
         }
         public void DoCommand(IEditorCommand command)
         {
@@ -332,6 +336,7 @@ namespace Invert.Core.GraphDesigner.Unity
             }
         }
 
+ 
         public void DrawWarning(Rect rect, string key)
         {
             EditorGUI.HelpBox(rect, key, MessageType.Warning);
@@ -346,11 +351,10 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DrawPropertyField(PropertyFieldDrawer d, float scale)
         {
             //base.Draw(scale);
-            GUILayout.BeginArea(d.Bounds.Scale(scale), ElementDesignerStyles.SelectedItemStyle);
+            //GUILayout.BeginArea(d.Bounds.Scale(scale), ElementDesignerStyles.SelectedItemStyle);
             EditorGUIUtility.labelWidth = d.Bounds.width * 0.55f;
-
             DrawInspector(d);
-            GUILayout.EndArea();
+            //GUILayout.EndArea();
         }
 
         public void EndRender()
@@ -358,6 +362,87 @@ namespace Invert.Core.GraphDesigner.Unity
 
         }
 
+        public void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale)
+        {
+            Rect adjustedBounds;
+            if (isCollapsed)
+            {
+                adjustedBounds = new Rect(boxRect.x - 9, boxRect.y + 1, boxRect.width + 19, boxRect.height + 9);
+                DrawStretchBox(adjustedBounds, backgroundStyle, 20 * scale);
+            }
+            else
+            {
+                adjustedBounds = new Rect(boxRect.x - 9, boxRect.y + 1, boxRect.width + 19, 27 * scale);
+                DrawStretchBox(adjustedBounds,
+                     backgroundStyle,
+                     new Rect(Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(27 * scale), 0)
+                );
+            }
+  
+        }
+
+        public void DoToolbar(Rect toolbarTopRect, DesignerWindow designerWindow, ToolbarPosition position)
+        {
+            GUILayout.BeginArea(toolbarTopRect);
+            if (toolbarTopRect.y > 20)
+            {
+                designerWindow.Toolbar.GoBottom();
+            }
+            else
+            {
+                designerWindow.Toolbar.Go();
+            }
+            GUILayout.EndArea();
+        }
+
+        public void DoTabs(Rect tabsRect, DesignerWindow designerWindow)
+        {
+            EditorGUI.DrawRect(tabsRect, InvertGraphEditor.Settings.BackgroundColor);
+            var color = new Color(InvertGraphEditor.Settings.BackgroundColor.r*0.8f,
+                InvertGraphEditor.Settings.BackgroundColor.g*0.8f, InvertGraphEditor.Settings.BackgroundColor.b*0.8f);
+            EditorGUI.DrawRect(tabsRect, color);
+
+            if (designerWindow != null && designerWindow.Designer != null)
+            {
+                GUILayout.BeginArea(tabsRect);
+                GUILayout.BeginHorizontal();
+
+                foreach (var tab in designerWindow.Designer.Tabs.ToArray())
+                {
+                    var isCurrent = designerWindow.CurrentProject != null && designerWindow.CurrentProject.CurrentGraph != null && tab.GraphIdentifier == designerWindow.CurrentProject.CurrentGraph.Identifier;
+                    if (GUILayout.Button(tab.GraphName,
+                        isCurrent
+                            ? ElementDesignerStyles.TabStyle
+                            : ElementDesignerStyles.TabInActiveStyle,GUILayout.MinWidth(150)))
+                    {
+                        if (Event.current.button == 1)
+                        {
+                           var isLastGraph = designerWindow.CurrentProject.OpenGraphs.Count() <= 1;
+
+                           if (!isLastGraph)
+                            {
+                                designerWindow.CurrentProject.CloseGraph(tab);
+                                var lastGraph = designerWindow.CurrentProject.OpenGraphs.LastOrDefault();
+                                if (isCurrent && lastGraph != null)
+                                {
+                                    var graph = designerWindow.CurrentProject.Graphs.FirstOrDefault(p => p.Identifier == lastGraph.GraphIdentifier);
+                                    designerWindow.SwitchDiagram(graph);
+                                }
+                            
+                            }
+                        }
+                        else
+                        {
+                            designerWindow.SwitchDiagram(designerWindow.CurrentProject.Graphs.FirstOrDefault(p => p.Identifier == tab.GraphIdentifier));    
+                        }
+                        
+                    }
+                }
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                GUILayout.EndArea();
+            }
+        }
 
 
         public void BeginRender(object sender, MouseEvent mouseEvent)
@@ -472,8 +557,9 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 if (d.ViewModel.InspectorType == InspectorType.TextArea)
                 {
-                    EditorGUI.BeginChangeCheck();
                     EditorGUILayout.LabelField(d.ViewModel.Name);
+
+                    EditorGUI.BeginChangeCheck();
                     d.CachedValue = EditorGUILayout.TextArea((string)d.CachedValue, GUILayout.Height(50));
                     if (EditorGUI.EndChangeCheck())
                     {

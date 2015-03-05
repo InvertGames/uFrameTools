@@ -41,7 +41,7 @@ namespace Invert.Core.GraphDesigner
 
             if (NodeViewModel.IsCollapsed)
             {
-                this.Bounds = new Rect(position.x, position.y, width + 12, TextSize.y + (Padding * 2));
+                this.Bounds = new Rect(position.x, position.y, width + 12, 25 + (Padding * 2));
 
             }
             else
@@ -55,50 +55,13 @@ namespace Invert.Core.GraphDesigner
 
         public Vector2 TextSize { get; set; }
 
-        public Rect AdjustedBounds { get; set; }
+
 
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
-
-
-            if (NodeViewModel.IsCollapsed)
-            {
-
-#if UNITY_DLL
-                AdjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
-#else
-                AdjustedBounds = new Rect(Bounds.x , Bounds.y, Bounds.width, Bounds.height);
-#endif
-            }
-            else
-            {
-
-#if UNITY_DLL
-                AdjustedBounds = new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, 27 * scale);
-
-#else
-                AdjustedBounds = new Rect(Bounds.x, Bounds.y , Bounds.width, 27);
-#endif
-            }
-            var boxRect = AdjustedBounds.Scale(scale);
-            if (NodeViewModel.IsCollapsed)
-            {
-                platform.DrawStretchBox(boxRect, BackgroundStyle, 20 * scale);
-
-            }
-            else
-            {
-                platform.DrawStretchBox(boxRect,
-                    BackgroundStyle,
-                    new Rect(Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(27 * scale), 0)
-                    );
-
-                //ElementDesignerStyles.DrawExpandableBox(AdjustedBounds.Scale(scale), BackgroundStyle, string.Empty,
-                //    new RectOffset(Mathf.RoundToInt(20*scale), Mathf.RoundToInt(20*scale), Mathf.RoundToInt(27*scale), 0));
-            }
-
+            platform.DrawNodeHeader(Bounds, BackgroundStyle, NodeViewModel.IsCollapsed, scale);
 
             // The bounds for the main text
 #if UNITY_DLL

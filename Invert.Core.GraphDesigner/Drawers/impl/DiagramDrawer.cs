@@ -89,10 +89,10 @@ namespace Invert.Core.GraphDesigner
             //// Draw the title box
             //GUI.Box(new Rect(0, 0f, DiagramSize.width, 30f), DiagramViewModel.Title , ElementDesignerStyles.DiagramTitle);
 
-            if (LastMouseEvent != null)
+            if (DiagramViewModel.LastMouseEvent != null)
             {
-                var handler = LastMouseEvent.CurrentHandler;
-                if (handler != this)
+                var handler = DiagramViewModel.LastMouseEvent.CurrentHandler;
+                if (!(handler is DiagramDrawer))
                     handler.Draw(platform, scale);
             }
             // Draw all of our drawers
@@ -159,7 +159,17 @@ namespace Invert.Core.GraphDesigner
 #endif
         public override void OnMouseDoubleClick(MouseEvent mouseEvent)
         {
-            LastMouseEvent = mouseEvent;
+            DiagramViewModel.LastMouseEvent = mouseEvent;
+            if (DrawersAtMouse == null)
+            {
+
+                DrawersAtMouse = GetDrawersAtPosition(this, mouseEvent.MousePosition).ToArray();
+            }
+            if (DrawersAtMouse.Length < 1)
+            {
+                DiagramViewModel.ShowQuickAdd();
+                return;
+            }
             BubbleEvent(d => d.OnMouseDoubleClick(mouseEvent), mouseEvent);
             DiagramViewModel.Navigate();
             Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
@@ -174,19 +184,22 @@ namespace Invert.Core.GraphDesigner
         public override void OnMouseExit(MouseEvent e)
         {
             base.OnMouseExit(e);
-            LastMouseEvent = e;
+            DiagramViewModel.LastMouseEvent = e;
             BubbleEvent(d => d.OnMouseExit(e), e);
         }
-
+        
         public override void OnMouseDown(MouseEvent mouseEvent)
         {
             base.OnMouseDown(mouseEvent);
-            LastMouseEvent = mouseEvent;
+            DiagramViewModel.LastMouseEvent = mouseEvent;
             if (DrawersAtMouse == null) return;
             if (!DrawersAtMouse.Any())
             {
                 DiagramViewModel.NothingSelected();
-
+                if (mouseEvent.ModifierKeyStates.Ctrl)
+                {
+                    DiagramViewModel.ShowQuickAdd();
+                }
                 mouseEvent.Begin(SelectionRectHandler);
             }
             else
@@ -213,13 +226,14 @@ namespace Invert.Core.GraphDesigner
         public override void OnMouseMove(MouseEvent e)
         {
             base.OnMouseMove(e);
-            LastMouseEvent = e;
+            DiagramViewModel.LastMouseEvent = e;
             if (e.IsMouseDown && e.MouseButton == 0 && !e.ModifierKeyStates.Any)
             {
                 foreach (var item in Children.OfType<DiagramNodeDrawer>())
                 {
                     if (item.ViewModelObject.IsSelected)
                     {
+#if UNITY_DLL
                         if (DiagramViewModel.Settings.Snap)
                         {
                             item.ViewModel.Position += e.MousePositionDeltaSnapped;
@@ -227,8 +241,11 @@ namespace Invert.Core.GraphDesigner
                         }
                         else
                         {
+#endif
                             item.ViewModel.Position += e.MousePositionDelta;
+#if UNITY_DLL
                         }
+#endif
                         if (item.ViewModel.Position.x < 0)
                         {
                             item.ViewModel.Position = new Vector2(0f, item.ViewModel.Position.y);
@@ -275,7 +292,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public static MouseEvent LastMouseEvent { get; set; }
+        //public static MouseEvent LastMouseEvent { get; set; }
 
         public IDrawer[] DrawersAtMouse { get; set; }
 
@@ -299,7 +316,7 @@ namespace Invert.Core.GraphDesigner
         }
         public override void OnMouseUp(MouseEvent mouseEvent)
         {
-            LastMouseEvent = mouseEvent;
+            DiagramViewModel.LastMouseEvent = mouseEvent;
             BubbleEvent(d => d.OnMouseUp(mouseEvent), mouseEvent);
 
         }
@@ -499,5 +516,75 @@ namespace Invert.Core.GraphDesigner
             return false;
         }
 #endif
+    }
+
+    public class DiagramInspectorDrawer : Drawer
+    {
+        public DiagramViewModel DiagramViewModel
+        {
+            get { return DataContext as DiagramViewModel; }
+        }
+
+        public DiagramInspectorDrawer(DiagramViewModel viewModel)
+        {
+            DataContext = viewModel;
+        }
+
+        public override void Refresh(IPlatformDrawer platform)
+        {
+            base.Refresh(platform);
+        }
+        
+        public float InspectorWidth { get; set; }
+
+        public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
+        {
+            base.Refresh(platform, position, hardRefresh);
+           
+            this.Children.Clear();
+            Children.AddRange(CreateDrawers());
+            var y = position.y;
+            foreach (var child in Children)
+            {
+                child.Refresh(platform, new Vector2(position.x,y),hardRefresh);
+                var rect = new Rect(child.Bounds);
+                rect.y = y;
+                child.Bounds = rect;
+                y += child.Bounds.height;
+            }
+            foreach (var child in Children)
+            {
+                var newRect = new Rect(child.Bounds) {width = InspectorWidth};
+                child.Bounds = newRect;
+                child.OnLayout();
+            }
+            this.Bounds = new Rect(position.x,position.y,InspectorWidth, y);
+            //Debug.Log("Bounds at " + position);
+        }
+
+        private IEnumerable<IDrawer> CreateDrawers()
+        {
+            foreach (var item in DiagramViewModel.InspectorItems)
+            {
+                var drawer = InvertGraphEditor.Container.CreateDrawer(item);
+                if (drawer == null)
+                {
+                    InvertApplication.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.",
+                        item.GetType().Name));
+                    continue;
+                }
+                yield return drawer;
+            }
+        }
+
+        public override void Draw(IPlatformDrawer platform, float scale)
+        {
+            base.Draw(platform, scale);
+            foreach (var child in Children)
+            {
+               // UnityEditor.EditorGUI.DrawRect(child.Bounds,Color.blue);
+                child.Draw(platform, scale);
+            }
+        }
     }
 }

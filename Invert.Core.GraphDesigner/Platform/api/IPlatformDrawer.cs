@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -16,7 +18,7 @@ namespace Invert.Core.GraphDesigner
         BottomRight
     }
 
-  
+
 
     public interface IPlatformDrawer
     {
@@ -27,10 +29,10 @@ namespace Invert.Core.GraphDesigner
 
         void DoButton(Rect scale, string label, object style, Action action);
 
-        void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent,
-            Color color, float width);
+        void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent, Color color, float width);
 
-        void DrawColumns(Rect rect,float[] columnWidths, params Action<Rect>[] columns);
+        void DrawColumns(Rect rect, float[] columnWidths, params Action<Rect>[] columns);
+
         void DrawColumns(Rect rect, params Action<Rect>[] columns);
 
         void DrawImage(Rect bounds, string texture, bool b);
@@ -49,8 +51,18 @@ namespace Invert.Core.GraphDesigner
 
         void DrawWarning(Rect rect, string key);
 
+        void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale);
+
+        void DoToolbar(Rect toolbarTopRect, DesignerWindow designerWindow, ToolbarPosition position);
+
+        void DoTabs(Rect tabsRect, DesignerWindow designerWindow);
+
         void EndRender();
+        //Rect GetRect(object style);
     }
+
+
+
 
     public interface IStyleProvider
     {
@@ -59,7 +71,118 @@ namespace Invert.Core.GraphDesigner
         object GetStyle(InvertStyles name);
     }
 
+    public interface IImmediateControlsDrawer<TControl> : IPlatformDrawer
+    {
+        List<string> ControlsLeftOver { get; set; }
+        Dictionary<string, TControl> Controls { get; set; }
+        void AddControlToCanvas(TControl control);
+        void RemoveControlFromCanvas(TControl control);
+        void SetControlPosition(TControl control, float x, float y, float width, float height);
+    }
+    public static class PlatformDrawerExtensions
+    {
+        //public static void DoVertical(float startX, float startY, float width, float itemHeight, params Action<Rect>[] rows)
+        //{
 
+        //}
+        //public static bool DoToolbar(this IPlatformDrawer drawer, Rect rect, string label, bool open, Action add = null, Action leftButton = null, Action paste = null, GUIStyle addButtonStyle = null, GUIStyle pasteButtonStyle = null, bool fullWidth = true)
+        //{
+        //    var style =  open ? CachedStyles.Toolbar : CachedStyles.ToolbarButton;
+        //    drawer.DrawStretchBox(rect, style ,0f);
+
+        //    var labelRect = new Rect(rect.x + 2, rect.y + (rect.height / 2) - 8, rect.width - (add != null ? 50 : 0), 16);
+        //    var result = open;
+        //    if (leftButton == null)
+        //    {
+        //        drawer.DoButton(rect, label, style, () =>
+        //        {
+
+        //        });
+        //    }
+        //    else
+        //    {
+        //        if (GUI.Button(labelRect, new GUIContent(label, ElementDesignerStyles.ArrowLeftTexture), labelStyle))
+        //        {
+        //            leftButton();
+        //        }
+        //    }
+
+        //    if (paste != null)
+        //    {
+        //        var addButtonRect = new Rect(rect.x + rect.width - 42, rect.y + (rect.height / 2) - 8, 16, 16);
+        //        if (GUI.Button(addButtonRect, "", pasteButtonStyle ?? ElementDesignerStyles.PasteButtonStyle))
+        //        {
+        //            paste();
+        //        }
+        //    }
+
+        //    if (add != null)
+        //    {
+        //        var addButtonRect = new Rect(rect.x + rect.width - 21, rect.y + (rect.height / 2) - 8, 16, 16);
+        //        if (GUI.Button(addButtonRect, "", addButtonStyle ?? ElementDesignerStyles.AddButtonStyleUnscaled))
+        //        {
+        //            add();
+        //        }
+        //    }
+        //    return result;
+        //}
+
+        //public static bool DoSectionBar(this IPlatformDrawer drawer, Rect rect, string title)
+        //{
+        //    var tBar = DoToolbar(label, EditorPrefs.GetBool(label, true), add, leftButton, paste);
+        //    if (tBar)
+        //    {
+        //        EditorPrefs.SetBool(label, !EditorPrefs.GetBool(label));
+        //    }
+        //    return EditorPrefs.GetBool(label);
+        //}
+        //public static void DoTriggerButton()
+        //{
+
+        //}
+
+        public static void BeginImmediate<TControl>(this IImmediateControlsDrawer<TControl> drawer)
+        {
+            if (drawer.Controls == null)
+            {
+                drawer.Controls = new Dictionary<string, TControl>();
+            }
+            if (drawer.ControlsLeftOver == null)
+            {
+                drawer.ControlsLeftOver = new List<string>();
+            }
+            drawer.ControlsLeftOver.AddRange(drawer.Controls.Select(p => p.Key));
+        }
+        public static void EndImmediate<TControl>(this IImmediateControlsDrawer<TControl> drawer)
+        {
+            for (int index = 0; index < drawer.ControlsLeftOver.Count; index++)
+            {
+                var item = drawer.ControlsLeftOver[index];
+                drawer.RemoveControlFromCanvas(drawer.Controls[item]);
+                drawer.Controls.Remove(item);
+            }
+            drawer.ControlsLeftOver.Clear();
+
+        }
+        public static TControlType EnsureControl<TControl, TControlType>(this IImmediateControlsDrawer<TControl> drawer, string id, Rect rect, Func<TControlType> init = null) where TControlType : TControl
+        {
+
+            TControl control;
+            if (!drawer.Controls.TryGetValue(id, out control))
+            {
+                if (init != null)
+                {
+                    control = init();
+                    drawer.AddControlToCanvas(control);
+                    drawer.Controls.Add(id, control);
+                }
+
+            }
+            drawer.ControlsLeftOver.Remove(id);
+            drawer.SetControlPosition(control, rect.x, rect.y, rect.width, rect.height);
+            return (TControlType)control;
+        }
+    }
     public static class CachedStyles
     {
         private static object _boxHighlighter5;
@@ -100,6 +223,9 @@ namespace Invert.Core.GraphDesigner
         private static object _item5;
         private static object _item6;
         private static object _tag1;
+        private static object _toolbar;
+        private static object _toolbarButton;
+        private static object _toolbarButtonDrop;
 
         public static object Item1
         {
@@ -255,8 +381,19 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _tag1 ?? (_tag1 = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.Tag1)); }
         }
+        public static object Toolbar
+        {
+            get { return _toolbar ?? (_toolbar = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.Toolbar)); }
+        }
+        public static object ToolbarButton
+        {
+            get { return _toolbarButton ?? (_toolbarButton = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.ToolbarButton)); }
+        }
+        public static object ToolbarButtonDrop
+        {
+            get { return _toolbarButtonDrop ?? (_toolbarButtonDrop = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.ToolbarButtonDown)); }
+        }
 
-        
     }
     public enum InvertStyles
     {
@@ -297,6 +434,9 @@ namespace Invert.Core.GraphDesigner
         DefaultLabelLarge,
         HeaderStyle,
         AddButtonStyle,
-        ItemTextEditingStyle
+        ItemTextEditingStyle,
+        Toolbar,
+        ToolbarButton,
+        ToolbarButtonDown
     }
 }

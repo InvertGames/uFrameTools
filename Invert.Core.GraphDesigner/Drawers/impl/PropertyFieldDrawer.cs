@@ -55,7 +55,8 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                var bounds = new Rect(Bounds);
+               
+                var bounds = new Rect(Bounds) {x = position.x, y = position.y};
                 bounds.width *= 2;
                 if (ViewModel.Type == typeof(Vector2) || ViewModel.Type == typeof(Vector3))// || ViewModel.Type == typeof(Quaternion))
                 {
@@ -65,7 +66,7 @@ namespace Invert.Core.GraphDesigner
                 Bounds = bounds;
 
             }
-
+            
             
    
         }

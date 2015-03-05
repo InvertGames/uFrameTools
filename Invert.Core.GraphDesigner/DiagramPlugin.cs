@@ -1,9 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
+    public interface IPrefabNodeProvider
+    {
+        IEnumerable<QuickAddItem> PrefabNodes(INodeRepository nodeRepository);
+    }
+
+    public class QuickAddItem :IItem
+    {
+        private string _searchTag;
+
+        public QuickAddItem(string @group, string title, Action<QuickAddItem> action)
+        {
+            Group = @group;
+            Title = title;
+            Action = action;
+        }
+        public DiagramViewModel Diagram { get; set; }
+        public Vector2 MousePosition { get; set; }
+        public IDiagramNodeItem Item { get; set; }
+        public Action<QuickAddItem> Action { get; set; }
+
+        public string Title { get; set; }
+
+        public string Group { get; set; }
+
+        public string SearchTag
+        {
+            get { return _searchTag ?? Group + Title; }
+            set { _searchTag = value; }
+        }
+    }
     public abstract class DiagramPlugin : CorePlugin, IDiagramPlugin
     {
         public override bool Enabled
@@ -72,12 +103,58 @@ namespace Invert.Core.GraphDesigner
         void ProjectLoaded(IProjectRepository project);
         void ProjectUnloaded(IProjectRepository project);
         void ProjectRemoved(IProjectRepository project);
+        void ProjectChanged(IProjectRepository project);
     }
 
     public class ProjectService : DiagramPlugin, ISubscribable<IProjectEvents>
     {
         private IProjectRepository[] _projects;
-        private List<IProjectEvents> _listeners;
+        
+        private IProjectRepository _currentProject;
+        public string LastLoadedProject
+        {
+            get
+            {
+                return InvertGraphEditor.Prefs.GetString("UF_LastLoadedProject", String.Empty);
+            }
+            set { InvertGraphEditor.Prefs.SetString("UF_LastLoadedProject", value); }
+        }
+
+        public IProjectRepository CurrentProject
+        {
+            get
+            {
+                if (_currentProject == null)
+                {
+                
+                    if (!String.IsNullOrEmpty(LastLoadedProject))
+                    {
+                        _currentProject = this.Projects.FirstOrDefault(p => p.Name == LastLoadedProject);
+                    }
+                    if (_currentProject == null)
+                    {
+                        _currentProject = this.Projects.FirstOrDefault();
+                    }
+                }
+                return _currentProject;
+            }
+            set
+            {
+                var changed = _currentProject != value;
+
+                _currentProject = value;
+
+                if (value != null)
+                {
+                    if (changed)
+                    {
+                        this.Signal(_=>_.ProjectChanged(value));
+                    }
+                    LastLoadedProject = value.Name;
+                    _currentProject.CurrentGraph.SetProject(_currentProject);
+                }
+            }
+        }
 
         public override bool Enabled
         {
@@ -111,7 +188,6 @@ namespace Invert.Core.GraphDesigner
         public override void Loaded(uFrameContainer container)
         {
             container.Inject(this);
-            Listeners.AddRange(container.ResolveAll<IProjectEvents>());
         }
 
         private void LoadProjects()
@@ -136,65 +212,13 @@ namespace Invert.Core.GraphDesigner
             _projects = projects;
         }
 
-        public List<IProjectEvents> Listeners
-        {
-            get { return _listeners ?? (_listeners = new List<IProjectEvents>()); }
-            set { _listeners = value; }
-        }
-
-        public Action Subscribe(IProjectEvents handler)
-        {
-            Listeners.Add(handler);
-            return () => Unsubscribe(handler);
-        }
-
-        public void Unsubscribe(IProjectEvents handler)
-        {
-            Listeners.Remove(handler);
-        }
-
         public void RefreshProjects()
         {
             LoadProjects();
         }
     }
 
-    public class SelectionService : Feature, ISubscribable<ISelectionEvents>
-    {
-        private object[] _selectedObjects;
-
-        public object[] SelectedObjects
-        {
-            get { return _selectedObjects; }
-            set
-            {
-                _selectedObjects = value; 
-                this.Signal(p=>p.SelectionChanged(value));
-            }
-        }
-
-        public override void Initialize(uFrameContainer container)
-        {
-            
-        }
-
-        public override void Loaded(uFrameContainer container)
-        {
-            
-        }
-
-        public List<ISelectionEvents> Listeners { get; set; }
-        public Action Subscribe(ISelectionEvents handler)
-        {
-            Listeners.Add(handler);
-            return () => Unsubscribe(handler);
-        }
-
-        public void Unsubscribe(ISelectionEvents handler)
-        {
-            Listeners.Remove(handler);
-        }
-    }
+    
     public interface ISelectionEvents {
         void SelectionChanged(object[] value);
     }

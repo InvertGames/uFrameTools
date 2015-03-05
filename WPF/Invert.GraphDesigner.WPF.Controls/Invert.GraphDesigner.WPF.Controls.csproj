@@ -61,7 +61,11 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DesignerStyles.cs" />
     <Compile Include="DiagramControl.cs" />
+    <Compile Include="GraphStyle.cs" />
+    <Compile Include="InvertControl.cs" />
+    <Compile Include="PlatformPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -78,6 +82,10 @@
     <Compile Include="SelectItemTypeControl.xaml.cs">
       <DependentUpon>SelectItemTypeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WindowsPlatformDrawer.cs" />
+    <Compile Include="WindowsPlatformOperations.cs" />
+    <Compile Include="WPFContextMenu.cs" />
+    <Compile Include="WPFPlugin.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

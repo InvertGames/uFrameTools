@@ -33,6 +33,7 @@ namespace Invert.Core.GraphDesigner
         void Validate(List<ErrorInfo> info);
         bool ValidateInput(IDiagramNodeItem arg1, IDiagramNodeItem arg2);
         bool ValidateOutput(IDiagramNodeItem arg1, IDiagramNodeItem arg2);
+        void Document(IDocumentationBuilder docs);
     }
 
     public class ErrorInfo

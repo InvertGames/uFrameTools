@@ -1,3 +1,4 @@
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -96,5 +97,28 @@ namespace Invert.Core.GraphDesigner
     {
         IEnumerable<Refactorer> Refactorings { get;  }
         void RefactorApplied();
+    }
+
+    public interface IDocumentationBuilder
+    {
+        void BeginArea(string id);
+        void EndArea();
+        void BeginSection(string id);
+        void EndSection();
+        void PushIndent();
+        void PopIndent();
+        void LinkToNode(IDiagramNodeItem node, string text = null);
+        void NodeImage(DiagramNode node);
+        void Paragraph(string text, params object[] args);
+        void Title(string text, params object[] args);
+        void Title2(string text, params object[] args);
+        void Title3(string text, params object[] args);
+        void Note(string text, params object[] args);
+        void TemplateLink();
+        void Literal(string text, params object[] args);
+        void Section(string text, params object[] args);
+        void Rows(params Action[] actions);
+        void Columns(params Action[] actions);
+        
     }
 }

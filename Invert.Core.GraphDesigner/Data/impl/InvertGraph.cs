@@ -24,7 +24,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
     private bool _errors;
     private List<ConnectionData> _connections;
     private string _ns;
-    private List<IGraphItemEvents> _listeners;
+    
 
 #if !UNITY_DLL
     public FileInfo GraphFileInfo { get; set; }
@@ -316,6 +316,22 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         Nodes.Remove(enumData);
     }
 
+    public bool DocumentationMode { get; set; }
+
+    public virtual void Document(IDocumentationBuilder docs)
+    {
+        docs.Title(Name);
+        foreach (var node in NodeItems)
+        {
+            var node1 = node;
+            docs.Rows(()=>docs.LinkToNode(node1 as DiagramNode));
+        }
+        foreach (var node in NodeItems)
+        {
+            node.Document(docs);
+        }
+    }
+
     public void AddConnection(IConnectable output, IConnectable input)
     {
         var connection = new ConnectionData(output.Identifier, input.Identifier)
@@ -367,11 +383,11 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         {
             if (item.Output == null)
             {
-                Debug.Log(string.Format("Output Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
+                InvertApplication.Log(string.Format("Output Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
             }
             if (item.Input == null)
             {
-                Debug.Log(string.Format("Input Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
+                InvertApplication.Log(string.Format("Input Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
             }
         }
         ConnectedItems.RemoveAll(p => p.Output == null || p.Input == null);
@@ -391,7 +407,8 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
             {"Name", new JSONData(data.Name)}, // Name of the diagram
             {"Version", new JSONData(data.Version)},// Version of the diagram
             {"Identifier", new JSONData(data.Identifier)},// Version of the diagram
-            {"Type", new JSONData(data.GetType().FullName)}
+            {"Type", new JSONData(data.GetType().FullName)},
+            {"DocumentationMode", new JSONData(data.DocumentationMode) }
             // Version of the diagram
         };
         // Store the root filter
@@ -480,7 +497,8 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         }
         if (jsonNode["Name"] != null)
         Name = jsonNode["Name"].Value;
-
+        if (jsonNode["DocumentationMode"] != null)
+            DocumentationMode = jsonNode["DocumentationMode"].AsBool;
         if (jsonNode["SceneFlow"] is JSONClass)
         {
             RootFilter = jsonNode["SceneFlow"].DeserializeObject() as IDiagramFilter;
@@ -555,25 +573,31 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         }
     }
 
-    public List<IGraphItemEvents> Listeners
-    {
-        get { return _listeners ?? (_listeners = new List<IGraphItemEvents>()); }
-        set { _listeners = value; }
-    }
+    //public List<IGraphItemEvents> Listeners
+    //{
+    //    get { return _listeners ?? (_listeners = new List<IGraphItemEvents>()); }
+    //    set { _listeners = value; }
+    //}
 
-    public Action Subscribe(IGraphItemEvents handler)
-    {
-        Listeners.Add(handler);
-        return () => Unsubscribe(handler);
-    }
+    //public Action Subscribe(IGraphItemEvents handler)
+    //{
+    //    Listeners.Add(handler);
+    //    return () => Unsubscribe(handler);
+    //}
 
-    public void Unsubscribe(IGraphItemEvents handler)
-    {
-        Listeners.Add(handler);
-    }
+    //public void Unsubscribe(IGraphItemEvents handler)
+    //{
+    //    Listeners.Add(handler);
+    //}
 
     public virtual Type FindType(string clrTypeString)
     {
+        var name = clrTypeString.Split(',').FirstOrDefault();
+        if (name != null)
+        {
+            return InvertApplication.FindType(name);
+        }
+        return null;
         return null;
     }
 }

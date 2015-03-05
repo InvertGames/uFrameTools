@@ -21,7 +21,7 @@ public interface INodeRepository
     void RemoveItem(IDiagramNodeItem nodeItem);
     void AddItem(IDiagramNodeItem item);
 
-    void Save();
+    void Save();  void Document(IDocumentationBuilder docs);
     void RecordUndo(INodeRepository data, string title);
     void MarkDirty(INodeRepository data);
     void SetItemLocation(IDiagramNode node, Vector2 position);

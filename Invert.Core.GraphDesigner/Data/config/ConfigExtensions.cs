@@ -2,9 +2,8 @@
 using System.IO;
 using System.Linq;
 
-namespace Invert.Core.GraphDesigner
-{
-#if UNITY_DLL
+namespace Invert.Core.GraphDesigner {
+
     public static class Path2
     {
         public static string Combine(params string[] paths)
@@ -17,7 +16,7 @@ namespace Invert.Core.GraphDesigner
             return result;
         }
     }
-#endif
+
     public static class ConfigExtensions
     {
 

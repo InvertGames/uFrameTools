@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DLL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DLL USE_IMAGES</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -30,18 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Commands\SelectColorCommand.cs">
@@ -512,6 +508,12 @@
     <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\ElementDiagramSettings.cs">
       <Link>impl\ElementDiagramSettings.cs</Link>
     </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\Enums\EnumData.cs">
+      <Link>impl\EnumData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\Enums\EnumItem.cs">
+      <Link>impl\EnumItem.cs</Link>
+    </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\FilterCollapsedDictionary.cs">
       <Link>impl\FilterCollapsedDictionary.cs</Link>
     </Compile>
@@ -559,6 +561,12 @@
     </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\Data\impl\UFListExtensions.cs">
       <Link>impl\UFListExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\DefaultGraphSettings.cs">
+      <Link>DefaultGraphSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\DesignerWindow.cs">
+      <Link>DesignerWindow.cs</Link>
     </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\DiagramPlugin.cs">
       <Link>DiagramPlugin.cs</Link>
@@ -770,14 +778,7 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Compatability.cs" />
     <Compile Include="JsonProjectRepository.cs" />
-    <Compile Include="Platform\impl\DesignerStyles.cs" />
-    <Compile Include="Platform\impl\GraphStyle.cs" />
-    <Compile Include="Platform\impl\InvertControl.cs" />
-    <Compile Include="Platform\impl\PlatformPlugin.cs" />
-    <Compile Include="Platform\impl\ShadowChrome.cs" />
-    <Compile Include="Platform\impl\WindowsPlatformDrawer.cs" />
     <Compile Include="Platform\impl\WindowsAssetManager.cs" />
-    <Compile Include="Platform\impl\WindowsPlatformOperations.cs" />
     <Compile Include="Platform\impl\WindowsPrefs.cs" />
     <Compile Include="Platform\impl\WindowsWindowManager.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -788,8 +789,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="WindowViewModels\SelectItemTypeViewModel.cs" />
-    <Compile Include="WPFContextMenu.cs" />
-    <Compile Include="WPFPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Invert.Attributes\Invert.Attributes.csproj">

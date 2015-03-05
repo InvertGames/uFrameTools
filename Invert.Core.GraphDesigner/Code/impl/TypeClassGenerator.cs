@@ -32,7 +32,7 @@ namespace Invert.Core.GraphDesigner
                 var template = new TTemplateType { Ctx = new TemplateContext<TData>(TemplateType) { DataObject = Data,IsDesignerFile = IsDesignerFile} };
                 if (IsDesignerFile)
                 {
-                    return Path.Combine("_DesignerFiles", template.OutputPath + ".designer.cs");
+                    return template.OutputPath + ".designer.cs";
                 }
 
                 return Path.Combine(template.OutputPath,ClassName(Data) + ".cs");

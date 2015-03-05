@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+
 using Invert.Common;
-using Invert.Common.UI;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
-using UnityEditor;
 using UnityEngine;
 
 public interface IShellNodeTypeClass : IShellNodeConfigItem
@@ -226,6 +226,41 @@ public class ShellTemplateConfigNode : GenericNode
 public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass
 {
     private string _nodeLabel;
+    public override void Document(IDocumentationBuilder docs)
+    {
+        docs.BeginSection(this.Name);
+        docs.Section(this.Node.Name);
+        docs.NodeImage(this);
+        var className = FullName + "Node";
+        var type = InvertApplication.FindType(className);
+        if (type == null)
+        {
+            //Debug.Log("Couldn't find type in documentation " + className);
+           // base.Document(docs);
+        }
+        else
+        {
+            var instance =  Activator.CreateInstance(type) as IDiagramNodeItem;
+            if (instance == null)
+            {
+               //base.Document(docs);
+            }
+            else
+            {
+                instance.Document(docs);
+            }
+
+        }
+
+        foreach (var item in PersistedItems.OfType<IShellNodeConfigItem>())
+        {
+            docs.BeginArea("NODEITEM");
+            item.Document(docs);
+            docs.EndArea();
+        }
+            
+        docs.EndSection();
+    }
 
     public string NodeLabel
     {
@@ -506,6 +541,9 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
     [JsonProperty, InspectorProperty]
     public bool IsNewRow { get; set; }
 
+    [JsonProperty,InspectorProperty(InspectorType.TextArea)]
+    public string Comments { get; set; }
+
     [InspectorProperty]
     public override string Name
     {
@@ -553,6 +591,31 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
         get
         {
             return this.OutputsTo<IShellNodeConfigItem>();
+        }
+    }
+
+    public override void Document(IDocumentationBuilder docs)
+    {
+        base.Document(docs);
+        var className = ClassName;
+        var type = InvertApplication.FindTypeByName(className);
+        if (type == null)
+        {
+            InvertApplication.Log("Couldn't find type in documentation " + className);
+            // base.Document(docs);
+        }
+        else
+        {
+            var instance = Activator.CreateInstance(type) as IDiagramNodeItem;
+            if (instance == null)
+            {
+                //base.Document(docs);
+            }
+            else
+            {
+                instance.Document(docs);
+            }
+
         }
     }
 }
@@ -728,68 +791,70 @@ public class ShellNodeConfigDrawer : DiagramNodeDrawer<ShellNodeConfigViewModel>
     public override void Draw(IPlatformDrawer platform, float scale)
     {
         base.Draw(platform, scale);
-#if UNITY_DLL
+
         if (IsSelected)
         {
             var selectedChild = Children.Skip(1).FirstOrDefault(p => p.IsSelected);
             var width = 75f;
+            var buttonHeight = 25;
+            var toolbarRect = new Rect(this.Bounds.x - width - 4, this.Bounds.y + 8, width, selectedChild == null ? (buttonHeight *3) + 20 : (buttonHeight *4) + 20);
 
-            var toolbarRect = new Rect(this.Bounds.x - width - 4, this.Bounds.y + 8, width, selectedChild == null ? 100 : 135);
-            platform.DrawStretchBox(toolbarRect, ElementDesignerStyles.DiagramBox11, 12f);
+            platform.DrawStretchBox(toolbarRect, CachedStyles.Item3, 12f);
             toolbarRect.y += 10;
-            GUILayout.BeginArea(toolbarRect);
-            GUILayout.BeginVertical();
+            var x = toolbarRect.x;
+            var y = toolbarRect.y;
+
             if (selectedChild != null)
             {
-                if (GUILayout.Button("Remove", ElementDesignerStyles.ButtonStyle))
-                {
-                    InvertGraphEditor.ExecuteCommand(_ =>
+                platform.DoButton(new Rect(x,y,toolbarRect.width,buttonHeight),"Remove",CachedStyles.Item2,
+                    () =>
                     {
                         NodeViewModel.RemoveSelected();
                     });
-
-                }
+                y += buttonHeight;
             }
+            platform.DoButton(new Rect(x, y, toolbarRect.width, buttonHeight), "+ Add Section", CachedStyles.Item2,
+                   () =>
+                   {
+                       ShowAddPointerMenu<ShellNodeConfigSection>("Section", () =>
+                       {
+                           NodeViewModel.AddSectionItem();
+                       }, _ => { NodeViewModel.AddSectionPointer(_); });
+                   });
+            y += buttonHeight;
+            platform.DoButton(new Rect(x, y, toolbarRect.width, buttonHeight), "+ Input", CachedStyles.Item2,
+                   () =>
+                   {
+                       ShowAddPointerMenu<ShellNodeConfigInput>("Input", () =>
+                       {
+                           NodeViewModel.AddInputItem();
+                       }, _ => { NodeViewModel.AddInputPointer(_); });
+                   });
+            y += buttonHeight;
+            platform.DoButton(new Rect(x, y, toolbarRect.width, buttonHeight), "+ Output", CachedStyles.Item2,
+                   () =>
+                   {
+                       ShowAddPointerMenu<ShellNodeConfigOutput>("Output", () =>
+                       {
+                           NodeViewModel.AddOutputItem();
+                       }, _ => { NodeViewModel.AddOutputPointer(_); });
 
-            if (GUILayout.Button("+ Section", ElementDesignerStyles.ButtonStyle))
-            {
-                ShowAddPointerMenu<ShellNodeConfigSection>("Section", () =>
-                {
-                    NodeViewModel.AddSectionItem();
-                }, _ => { NodeViewModel.AddSectionPointer(_); });
-            }
-            if (GUILayout.Button("+ Input", ElementDesignerStyles.ButtonStyle))
-            {
-                ShowAddPointerMenu<ShellNodeConfigInput>("Input", () =>
-                {
-                    NodeViewModel.AddInputItem();
-                }, _ => { NodeViewModel.AddInputPointer(_); });
+                   });
+            y += buttonHeight;
 
 
-            }
-            if (GUILayout.Button("+ Output", ElementDesignerStyles.ButtonStyle))
-            {
-                ShowAddPointerMenu<ShellNodeConfigOutput>("Output", () =>
-                {
-                    NodeViewModel.AddOutputItem();
-                }, _ => { NodeViewModel.AddOutputPointer(_); });
-
-
-            }
-
-           
-            GUILayout.EndVertical();
-            GUILayout.FlexibleSpace();
-            GUILayout.EndArea();
 
         }
 
-#endif
+
     }
 
     private void ShowAddPointerMenu<TItem>(string name, Action addItem, Action<TItem> addPointer) where TItem : IDiagramNodeItem
     {
-        var ctxMenu = new GenericMenu();
+
+
+#if UNITY_DLL
+        var ctxMenu = new UnityEditor.GenericMenu();
         ctxMenu.AddItem(new GUIContent("New " + name), false,
             () => { InvertGraphEditor.ExecuteCommand(_ => { addItem(); }); });
         ctxMenu.AddSeparator("");
@@ -801,6 +866,20 @@ public class ShellNodeConfigDrawer : DiagramNodeDrawer<ShellNodeConfigViewModel>
                 () => { InvertGraphEditor.ExecuteCommand(_ => { addPointer(item); }); });
         }
         ctxMenu.ShowAsContext();
+#else
+        var menu = InvertGraphEditor.Container.Resolve<ContextMenuUI>();
+        menu.Handler = InvertGraphEditor.DesignerWindow;
+        menu.AddCommand(new SimpleEditorCommand<DiagramNodeViewModel>(_ =>
+        {
+            addItem();
+        }, "New " + name));
+        menu.Go();
+        //menu.AddSeparator("");
+        //menu.AddCommand(new SimpleEditorCommand<DiagramNodeViewModel>(_ =>
+        //{
+        //    addItem();
+        //}, "New " + name));
+#endif
     }
 
     protected override void DrawChildren(IPlatformDrawer platform, float scale)

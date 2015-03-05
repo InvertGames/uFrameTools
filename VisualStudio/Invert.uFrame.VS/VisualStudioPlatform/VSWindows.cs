@@ -30,7 +30,8 @@ namespace Invert.uFrame.VS
             }));
         }
 
-        public void InitItemWindow<TItem>(IEnumerable<TItem> items, Action<TItem> action) where TItem : IItem
+
+        public void InitItemWindow<TItem>(IEnumerable<TItem> items, Action<TItem> action, bool allowNone = false) where TItem : IItem
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {

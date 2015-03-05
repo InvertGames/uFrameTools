@@ -176,6 +176,11 @@ public class SceneManagerTransition : IDiagramNodeItem
         return false;
     }
 
+    public void Document(IDocumentationBuilder docs)
+    {
+        
+    }
+
 
     public void Disconnect()
     {

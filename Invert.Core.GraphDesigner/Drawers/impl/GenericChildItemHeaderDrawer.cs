@@ -34,7 +34,7 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform, position);
             var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 12;
             //ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name)).x + 20);
-            HeaderBounds = new Rect(position.x - 2, position.y, width + 6, 25);
+            //HeaderBounds = new Rect(position.x - 2, position.y, width + 6, 25);
             Bounds = new Rect(position.x, position.y, width + 20, 25);
             
         }

@@ -283,7 +283,14 @@ namespace Invert.Core.GraphDesigner
         [Browsable(false)]
         public virtual bool IsCollapsed
         {
-            get { return _isCollapsed; }
+            get
+            {
+                if (Filter != null)
+                {
+                    return _isCollapsed = Filter.CollapsedValues[this];
+                }
+                return _isCollapsed;
+            }
             set
             {
                 _isCollapsed = value;
@@ -483,6 +490,9 @@ namespace Invert.Core.GraphDesigner
             if (cls["Locations"] != null)
             {
                 Locations.Deserialize(cls["Locations"].AsObject);
+            }
+            if (cls["CollapsedValues"] != null)
+            {
                 CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject);
             }
             if (cls["Flags"] is JSONClass)
@@ -686,6 +696,15 @@ namespace Invert.Core.GraphDesigner
             return true;
             
             return a != b && a.GetType() != b.GetType();
+        }
+
+        public virtual void Document(IDocumentationBuilder docs)
+        {
+            docs.Section(this.Node.Name);
+            docs.NodeImage(this);
+            docs.Paragraph(this.Comments);
+            foreach (var item in PersistedItems)
+                item.Document(docs);
         }
     }
 

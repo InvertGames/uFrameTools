@@ -28,7 +28,24 @@ public class ItemSelectionWindow : SearchableScrollWindow
     public IItem[] ItemsArray { get; set; }
     public Action<IItem> SelectedAction { get; set; }
     public bool IsClosing { get; set; }
+    public int HighlightedIndex { get; set; }
 
+    public void MoveUp()
+    {
+        HighlightedIndex++;
+    }
+
+    public void MoveDown()
+    {
+        if (HighlightedIndex <= 1)
+        {
+            HighlightedIndex = 0;
+        }
+        else
+        {
+            HighlightedIndex--;
+        }
+    }
     protected override void ApplySearch()
     {
         if (Items == null) return;
@@ -45,6 +62,7 @@ public class ItemSelectionWindow : SearchableScrollWindow
                     st = st.ToLower();
                     return (st.Contains(text) || st == text);
                 }).OrderBy(p => p.Title).GroupBy(p => p.Group).ToArray();
+            HighlightedIndex = 0;
         }
         else
         {
@@ -57,6 +75,14 @@ public class ItemSelectionWindow : SearchableScrollWindow
 
     public override void OnGUIScrollView()
     {
+        if (Event.current != null && Event.current.isKey && Event.current.keyCode == KeyCode.UpArrow && Event.current.type == EventType.KeyUp)
+        {
+            MoveDown();
+        }
+        if (Event.current != null && Event.current.isKey && Event.current.keyCode == KeyCode.DownArrow && Event.current.type == EventType.KeyUp)
+        {
+            MoveUp();
+        }
         if (AllowNode)
         {
             if (
@@ -76,7 +102,8 @@ public class ItemSelectionWindow : SearchableScrollWindow
         {
             return;
         }
-
+        var index = 0;
+        var isFirst = true;
         foreach (var group in ItemGroups)
         {
             if (group.Any())
@@ -87,6 +114,7 @@ public class ItemSelectionWindow : SearchableScrollWindow
                     {   
                         foreach (var item in group)
                         {
+                            var item1 = item;
                             if (item == null) continue;
                             if (
                                 GUIHelpers.DoTriggerButton(new UFStyle()
@@ -94,12 +122,19 @@ public class ItemSelectionWindow : SearchableScrollWindow
                                     Label = item.Title,
                                     IsWindow = true,
                                     FullWidth = true,
-                                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall
+
+                                    BackgroundStyle = index == HighlightedIndex ? ElementDesignerStyles.Item1 : ElementDesignerStyles.EventButtonStyleSmall
                                 }))
                             {
-                                SelectedAction(item);
+                                SelectedAction(item1);
                                 IsClosing = true;
                             }
+                            if (index == HighlightedIndex && Event.current != null && Event.current.isKey && Event.current.keyCode == KeyCode.Return)
+                            {
+                                SelectedAction(item1);
+                            }
+                            isFirst = false;
+                            index++;
                         }
                     }
                 }
@@ -109,11 +144,23 @@ public class ItemSelectionWindow : SearchableScrollWindow
                         foreach (var item in group)
                         {
                             if (item == null) continue;
-                            if (GUIHelpers.DoTriggerButton(new UFStyle() { Label = item.Group + " : " + item.Title, IsWindow = true, FullWidth = true, BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall }))
+                            var item1 = item;
+                            if (GUIHelpers.DoTriggerButton(new UFStyle()
                             {
-                                SelectedAction(item);
+                                Label = item.Group + " : " + item.Title, IsWindow = true, FullWidth = true,
+                                BackgroundStyle = index == HighlightedIndex ? ElementDesignerStyles.Item1 : ElementDesignerStyles.EventButtonStyleSmall
+                            }))
+                            {
+                                SelectedAction(item1);
                                 IsClosing = true;
                             }
+                            if (index == HighlightedIndex && Event.current != null && Event.current.isKey && Event.current.keyCode == KeyCode.Return)
+                            {
+                                SelectedAction(item1);
+                                IsClosing = true;
+                            }
+                            isFirst = false;
+                            index++;
                         }
                     
                 }

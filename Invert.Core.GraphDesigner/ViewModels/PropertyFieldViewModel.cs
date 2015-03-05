@@ -12,6 +12,10 @@ namespace Invert.Core.GraphDesigner
         public Action<object> Setter { get; set; }
         public override bool IsEditing { get; set; }
 
+        public PropertyFieldViewModel()
+        {
+        }
+
         public PropertyFieldViewModel(DiagramNodeViewModel nodeViewModel) : base(nodeViewModel)
         {
       

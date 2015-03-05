@@ -24,7 +24,7 @@ namespace Invert.Core.GraphDesigner.Documentation
 
         public override void Initialize(uFrameContainer container)
         {
-            InvertGraphEditor.Container.RegisterInstance<IToolbarCommand>(new SaveNodeToImage(), "SaveNodeToImage");
+            //InvertGraphEditor.Container.RegisterInstance<IToolbarCommand>(new SaveNodeToImage(), "SaveNodeToImage");
 
         }
     }

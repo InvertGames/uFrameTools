@@ -19,14 +19,7 @@ namespace Invert.Core.GraphDesigner
             set { Data.Name = value; }
         }
 
-        public virtual NodeConfigSectionBase SectionConfig
-        {
-            get
-            {
-                var nodeConfig = InvertGraphEditor.Container.Resolve<NodeConfigBase>(NodeViewModel.GetType().Name);
-                return nodeConfig.Sections.FirstOrDefault(p=>p.SourceType==typeof(TData));
-            }
-        } 
+
         public override ConnectorViewModel InputConnector
         {
             get

@@ -320,6 +320,17 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         set { Graph.Precompiled = value; }
     }
 
+    public bool DocumentationMode
+    {
+        get { return Graph.DocumentationMode; }
+        set { Graph.DocumentationMode = value; }
+    }
+
+    public void Document(IDocumentationBuilder docs)
+    {
+        Graph.Document(docs);
+    }
+
     public void AddConnection(IConnectable output, IConnectable input)
     {
         Graph.AddConnection(output, input);

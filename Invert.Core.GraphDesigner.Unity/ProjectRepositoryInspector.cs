@@ -47,6 +47,7 @@ public class ProjectRepositoryInspector : Editor
         serializedObject.Update();
         GUIHelpers.IsInsepctor = true;
 
+
         if (GUIHelpers.DoToolbarEx("Project Diagrams", ImportDiagram))
         {
             for (int index = 0; index < Target.Diagrams.Count; index++)
@@ -86,27 +87,17 @@ public class ProjectRepositoryInspector : Editor
       
 
         }
+        if (InvertGraphEditor.CurrentDiagramViewModel == null) return;
+        InvertGraphEditor.CurrentDiagramViewModel.LoadInspector();
+        var diagramInspectorDrawer = new DiagramInspectorDrawer(InvertGraphEditor.CurrentDiagramViewModel);
+        
+        var lastRectangle = GUILayoutUtility.GetLastRect();
+        diagramInspectorDrawer.InspectorWidth = Screen.width;
+        var rect = GUILayoutUtility.GetRect(Screen.width, Screen.width, 1f,1f);
 
-        //if (GUIHelpers.DoToolbarEx("Settings"))
-        //{
-        //    var settingsProperty = serializedObject.FindProperty("_generatorSettings");
-
-
-        //    var property = settingsProperty.FindPropertyRelative("_namespaceProvider").FindPropertyRelative("_rootNamespace");
-        //    EditorGUILayout.PropertyField(property);
-
-
-        //    property = settingsProperty.FindPropertyRelative("_generateComments");
-        //    var newValue = GUIHelpers.DoToggle("Generate Comments", property.boolValue);
-        //    if (newValue != property.boolValue)
-        //    {
-        //        property.boolValue = newValue;
-
-        //    }
-        //}
-      
-        if (InvertGraphEditor.CurrentDiagramViewModel != null)
-        DoDiagramInspector();
+        diagramInspectorDrawer.Refresh(InvertGraphEditor.PlatformDrawer, new Vector2(rect.x, rect.y )); 
+        diagramInspectorDrawer.Draw(InvertGraphEditor.PlatformDrawer, 1f);
+        GUILayout.Space(diagramInspectorDrawer.Bounds.height);
         if (InvertGraphEditor.CurrentDiagramViewModel != null)
         if (GUIHelpers.DoToolbarEx("Project Issues"))
         {
@@ -212,26 +203,27 @@ public class ProjectRepositoryInspector : Editor
             SelectedItemChanged();
        
         }
-        if (GUIHelpers.DoToolbarEx("Selected"))
-        {
-            foreach (var item in SelectedItemDrawers)
-            {
-                item.CachedValue = item.ViewModel.Getter();
-                var unityDrawer = InvertGraphEditor.PlatformDrawer as UnityDrawer;
-                unityDrawer.DrawInspector(item);
-            }
+        //if (GUIHelpers.DoToolbarEx("Selected"))
+        //{
+        //    foreach (var item in SelectedItemDrawers)
+        //    {
+        //        item.CachedValue = item.ViewModel.Getter();
+        //        var unityDrawer = InvertGraphEditor.PlatformDrawer as UnityDrawer;
+        //        unityDrawer.DrawInspector(item);
+        //    }
 
-            var drawer = InvertGraphEditor.DesignerWindow.DiagramDrawer;
-            if (drawer != null)
-            {
-                var dr = drawer.Children.OfType<IInspectorDrawer>().FirstOrDefault(p => p.ViewModelObject.IsSelected);
-                if (dr != null)
-                {
-                    dr.DrawInspector(InvertGraphEditor.PlatformDrawer);
-                }
-            }
+        //    var drawer = InvertGraphEditor.DesignerWindow.DiagramDrawer;
+        //    if (drawer != null)
+        //    {
+        //        var dr = drawer.Children.OfType<IInspectorDrawer>().FirstOrDefault(p => p.ViewModelObject.IsSelected);
+        //        if (dr != null)
+        //        {
+        //            dr.DrawInspector(InvertGraphEditor.PlatformDrawer);
+        //        }
+        //    }
 
-        }
+        //}
+
         return;
         //var connectable = SelectedItem as IConnectable;
         //if (connectable != null)

@@ -229,6 +229,30 @@ namespace Invert.Core.GraphDesigner
                 item.GetConnectors(list);
             }
         }
+
+        public virtual void GetInspectorOptions(List<ViewModel> viewModel )
+        {
+            var dataObject = this.DataObject;
+            if (dataObject == null) return;
+            foreach (var item in dataObject.GetPropertiesWithAttribute<InspectorProperty>())
+            {
+                var property = item.Key;
+                var attribute = item.Value;
+                var fieldViewModel = new PropertyFieldViewModel()
+                {
+                    Name = property.Name,
+                    DiagramViewModel = DiagramViewModel,
+                    
+                };
+                fieldViewModel.Getter = () => property.GetValue(dataObject, null);
+                fieldViewModel.Setter = _ => property.SetValue(dataObject, _, null);
+                fieldViewModel.InspectorType = attribute.InspectorType;
+                fieldViewModel.Type = property.PropertyType;
+                fieldViewModel.CustomDrawerType = attribute.CustomDrawerType;
+                viewModel.Add(fieldViewModel);
+
+            }
+        }
     }
 
 }

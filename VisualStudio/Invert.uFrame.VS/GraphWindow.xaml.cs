@@ -178,6 +178,12 @@ namespace Invert.uFrame.VS
             }
         }
 
+        public DiagramDrawer DiagramDrawer
+        {
+            get { return  Diagram.Drawer; }
+            set { Diagram.Drawer = value; }
+        }
+
         public void RefreshContent()
         {
             
