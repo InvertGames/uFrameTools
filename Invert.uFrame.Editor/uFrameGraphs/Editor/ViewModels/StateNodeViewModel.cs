@@ -10,5 +10,6 @@ namespace Invert.uFrame.Editor {
         public StateNodeViewModel(StateNode graphItemObject, Invert.Core.GraphDesigner.DiagramViewModel diagramViewModel) : 
                 base(graphItemObject, diagramViewModel) {
         }
+     
     }
 }

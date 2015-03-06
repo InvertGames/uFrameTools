@@ -12,8 +12,19 @@ namespace Invert.Core.GraphDesigner
         void AfterDrawGraph(Rect diagramRect);
         void DrawComplete();
     }
-    public class DesignerWindow : DiagramPlugin, IProjectEvents, ISubscribable<IDesignerWindowEvents>, IGraphWindow
+    public class DesignerWindow : DiagramPlugin, IProjectEvents, IGraphWindow
     {
+        public override bool Enabled
+        {
+            get { return true; }
+            set { base.Enabled = value; }
+        }
+
+        public override bool Required
+        {
+            get { return true; }
+        }
+
         public string LastLoadedDiagram
         {
             get
@@ -201,7 +212,8 @@ namespace Invert.Core.GraphDesigner
         {
             base.Loaded(container);
             ProjectService = container.Resolve<ProjectService>();
-            ProjectService.Watch(this);
+            InvertApplication.ListenFor<IProjectEvents>(this);
+            
         }
 
         public ProjectService ProjectService { get; set; }
@@ -258,8 +270,8 @@ namespace Invert.Core.GraphDesigner
 
          
 
-          
-            this.Signal(_ => _.DrawComplete());
+            InvertApplication.SignalEvent<IDesignerWindowEvents>(_=>_.DrawComplete());
+            
         }
 
         private bool DrawDiagram(IPlatformDrawer drawer, Vector2 scrollPosition, float scale, Rect diagramRect)
@@ -334,10 +346,10 @@ namespace Invert.Core.GraphDesigner
                     every10++;
                 }
             }
-            this.Signal(_ => _.BeforeDrawGraph(DiagramRect));
+            InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.BeforeDrawGraph(DiagramRect));
             DiagramDrawer.Draw(drawer, 1f);
-            this.Signal(_ => _.ProcessInput());
-            this.Signal(_ => _.AfterDrawGraph(DiagramRect));
+            InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.ProcessInput());
+            InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.AfterDrawGraph(DiagramRect));
             return false;
         }
 
@@ -396,10 +408,14 @@ namespace Invert.Core.GraphDesigner
             {
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
             }
-            if (CurrentProject.CurrentGraph != null)
+            if (CurrentProject != null)
             {
-                CurrentProject.Save();
+                if (CurrentProject.CurrentGraph != null)
+                {
+                    CurrentProject.Save();
+                }
             }
+            
         }
 
         public void CommandExecuting(IEditorCommand command)

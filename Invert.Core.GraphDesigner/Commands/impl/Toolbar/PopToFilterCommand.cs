@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 
@@ -46,6 +47,29 @@ namespace Invert.Core.GraphDesigner
 
     public class SelectProjectCommand : ToolbarCommand<DesignerWindow>
     {
+      
+
+        public ProjectService ProjectService
+        {
+            get
+            {
+                return  InvertGraphEditor.Container.Resolve<ProjectService>();
+            }
+        }
+        public override string Name
+        {
+            get
+            {
+                var ps = ProjectService;
+                if (ps == null) return "-- Select Project --";
+                if (ps.CurrentProject != null)
+                {
+                    return ps.CurrentProject.Name;
+                }
+                return "-- Select Project --";
+            }
+        }
+
         public override void Perform(DesignerWindow node)
         {
             var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
@@ -56,7 +80,7 @@ namespace Invert.Core.GraphDesigner
             foreach (var project in projects)
             {
                 IProjectRepository project1 = project;
-                var command = new SimpleEditorCommand<DiagramViewModel>(_ =>
+                var command = new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
                     projectService.CurrentProject = project1;      
               
@@ -71,7 +95,7 @@ namespace Invert.Core.GraphDesigner
             }
 
             contextMenu.AddSeparator("");
-            contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
+            contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
             {
                 projectService.RefreshProjects();
             }, "Force Refresh"));
@@ -90,6 +114,29 @@ namespace Invert.Core.GraphDesigner
 
     public class SelectDiagramCommand : ToolbarCommand<DesignerWindow>
     {
+     
+        public ProjectService ProjectService
+        {
+            get
+            {
+                return InvertGraphEditor.Container.Resolve<ProjectService>();
+            }
+        }
+
+        public override string Name
+        {
+            get
+            {
+                var ps = ProjectService;
+                if (ps == null || ps.CurrentProject == null || ps.CurrentProject.CurrentGraph == null)
+                {
+                    return "-- Select Diagram --";
+                }
+
+                return ps.CurrentProject.CurrentGraph.Name;
+            }
+        }
+
         public override void Perform(DesignerWindow node)
         {
             var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
@@ -99,7 +146,7 @@ namespace Invert.Core.GraphDesigner
             {
                 IGraphData item1 = item;
 
-                contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
+                contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
                     projectService.CurrentProject.CurrentGraph = item1;
                     node.SwitchDiagram(item1);
@@ -110,14 +157,15 @@ namespace Invert.Core.GraphDesigner
             foreach (var graphType in InvertGraphEditor.Container.Mappings.Where(p => p.From == typeof(IGraphData)))
             {
                 TypeMapping type = graphType;
-                contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
+                contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
+                    InvertApplication.Log("Creating type " + type.To.Name);
                     var diagram = projectService.CurrentProject.CreateNewDiagram(type.To);
                     node.SwitchDiagram(diagram);
                 }, "Create " + type.To.Name));
             }
             contextMenu.AddSeparator("");
-            contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
+            contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
             {
                 projectService.CurrentProject.Refresh();
             }, "Force Refresh"));

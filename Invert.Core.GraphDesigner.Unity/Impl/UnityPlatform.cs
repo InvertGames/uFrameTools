@@ -174,6 +174,7 @@ namespace Invert.Core.GraphDesigner.Unity
                             groupCount++;
                             genericMenu.AddItem(new GUIContent(Flatten ? editorCommand.Title : editorCommand.Path), editorCommand.IsChecked(argument), () =>
                             {
+                                
                                 InvertGraphEditor.ExecuteCommand(command);
                             });
                         }

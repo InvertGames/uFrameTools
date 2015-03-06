@@ -75,12 +75,18 @@ namespace Invert.Core.GraphDesigner.Unity
                 {
                     _designerWindow = InvertApplication.Plugins.OfType<DesignerWindow>().FirstOrDefault();
                     //if (_designerWindow != null)
-                        _designerWindow.Subscribe(this);
+                    if (DesignerWindowDisposer != null)
+                    {
+                        DesignerWindowDisposer();
+                    }
+                    DesignerWindowDisposer = InvertApplication.ListenFor<IDesignerWindowEvents>(this);
                 }
                 return _designerWindow;
             }
             set { _designerWindow = value; }
         }
+
+        public Action DesignerWindowDisposer { get; set; }
 
         public DiagramViewModel DiagramViewModel
         {
@@ -91,6 +97,14 @@ namespace Invert.Core.GraphDesigner.Unity
             get { return DesignerWindow.DiagramDrawer; }
         }
 
+        public void OnDestroy()
+        {
+            if (DesignerWindowDisposer != null)
+            {
+                DesignerWindowDisposer();
+            }
+            InvertApplication.Container = null;
+        }
         public IProjectRepository CurrentProject
         {
             get { return DesignerWindow.CurrentProject; }
@@ -251,7 +265,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 var diagramRect = new Rect(0f, tabsRect.y + tabsRect.height, width - 3, height - ((toolbarTopRect.height * 2)) - tabsRect.height - 20);
                 var toolbarBottomRect = new Rect(0f, diagramRect.y + diagramRect.height, width - 3, toolbarTopRect.height);
 
-
+                EditorGUI.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
                 DesignerWindow.Draw(InvertGraphEditor.PlatformDrawer, Screen.width, Screen.height, _scrollPosition, 1f);
             }
   
@@ -275,6 +289,9 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             InvertGraphEditor.DesignerWindow = this.DesignerWindow;
             IsFocused = false;
+            DesignerWindow.ModifierKeyStates = null;
+            DesignerWindow.MouseEvent = null;
+            DesignerWindow.Toolbar = null;
         }
 
         private int fpsCount = 0;
@@ -331,7 +348,9 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void BeforeDrawGraph(Rect diagramRect)
         {
+            
             _scrollPosition = GUI.BeginScrollView(diagramRect, _scrollPosition, DiagramViewModel.DiagramBounds);
+
         }
 
         public void AfterDrawGraph(Rect diagramRect)

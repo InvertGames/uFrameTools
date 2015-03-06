@@ -1,7 +1,10 @@
-public interface IElementFileData : INodeRepository
+namespace Invert.Core.GraphDesigner
 {
-    /// <summary>
-    /// Should be called when first loaded.
-    /// </summary>
-    void Initialize();
+    public interface IElementFileData : INodeRepository
+    {
+        /// <summary>
+        /// Should be called when first loaded.
+        /// </summary>
+        void Initialize();
+    }
 }

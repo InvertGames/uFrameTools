@@ -10,6 +10,7 @@ using Invert.Core;
 using Invert.Core.GraphDesigner;
 using UnityEngine;
 
+
 public interface IShellNodeTypeClass : IShellNodeConfigItem
 {
     //bool AllowMultipleInputs { get; set; }

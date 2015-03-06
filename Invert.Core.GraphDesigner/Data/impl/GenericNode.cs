@@ -606,7 +606,7 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    public class GenericReferenceItem : GenericSlot
+    public class GenericReferenceItem : GenericSlot, ITypedItem
     {
         private string _sourceIdentifier;
         [Browsable(false)]
@@ -667,6 +667,36 @@ namespace Invert.Core.GraphDesigner
             base.Serialize(cls);
             if (!string.IsNullOrEmpty(SourceIdentifier))
                 cls.Add("SourceIdentifier", SourceIdentifier);
+        }
+
+        public string RelatedType
+        {
+            get
+            {
+                var source = SourceItemObject;
+                if (source == null)
+                {
+                    return "Missing";
+                }
+                var classItem = source as IClassTypeNode;
+                if (classItem != null)
+                {
+                    return classItem.ClassName;
+                }
+                return source.Name;
+            }
+            set
+            {
+                
+            }
+        }
+
+        public string RelatedTypeName
+        {
+            get
+            {
+                return RelatedType;
+            }
         }
     }
 

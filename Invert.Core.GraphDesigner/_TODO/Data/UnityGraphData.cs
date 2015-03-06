@@ -378,19 +378,5 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         Graph.DeserializeFromJson(graphData);
     }
 
-    public List<IGraphItemEvents> Listeners
-    {
-        get { return Graph.Listeners; }
-        set { Graph.Listeners = value; }
-    }
 
-    public Action Subscribe(IGraphItemEvents handler)
-    {
-        return Graph.Subscribe(handler);
-    }
-
-    public void Unsubscribe(IGraphItemEvents handler)
-    {
-        Graph.Unsubscribe(handler);
-    }
 }

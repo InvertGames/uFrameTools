@@ -146,6 +146,7 @@ namespace Invert.Json
         }
         public static void AddObject(this JSONClass cls, string name, IJsonObject jsonObject)
         {
+            if (jsonObject != null)
             cls.Add(name, SerializeObject(jsonObject));
         }
         public static IEnumerable<T> DeserializePrimitiveArray<T>(this JSONNode array, Func<JSONNode, T> deserialize)

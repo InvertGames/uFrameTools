@@ -228,7 +228,7 @@ namespace Invert.Core.GraphDesigner
 
                                  InvertGraphEditor.ExecuteCommand(_ =>
                                  {
-                                     this.DiagramViewModel.AddNode(value.Key);
+                                     this.DiagramViewModel.AddNode(value.Key,e.MouseUpPosition);
                                      connection.Apply(value.Value as ConnectionViewModel);
                                      value.Key.IsSelected = true;
                                      value.Key.IsEditing = true;

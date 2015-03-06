@@ -121,7 +121,14 @@ namespace Invert.Core
                 InitializeContainer(_container);
                 return _container;
             }
-            set { _container = value; }
+            set
+            {
+                _container = value;
+                if (_container == null)
+                {
+                    EventManagers.Clear();
+                }
+            }
         }
 
         public static IEnumerable<Type> GetDerivedTypes<T>(bool includeAbstract = false, bool includeBase = true)
@@ -225,6 +232,7 @@ namespace Invert.Core
         }
         private static void InitializeContainer(IUFrameContainer container)
         {
+            _plugins = null;
             MainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
             container.RegisterInstance<IUFrameContainer>(container);
             var pluginTypes = GetDerivedTypes<ICorePlugin>(false, false).ToArray();
@@ -278,6 +286,8 @@ namespace Invert.Core
                 EventManagers.Add(typeof (TEvents), manager = new EventManager<TEvents>());
             }
             var m = manager as EventManager<TEvents>;
+            if (m.Listeners.Contains(listener))
+                return () => m.Listeners.Remove(listener);
             return m.Subscribe(listener);
         }
 
@@ -390,21 +400,21 @@ namespace Invert.Core
             Logger.Log(format);
         }
     }
-    public interface ISubscribable<T>
-    {
+    //public interface ISubscribable<T>
+    //{
         
-    }
+    //}
 
-    public static class SubscribableExtensions
-    {
-        public static Action Watch<T>(this ISubscribable<T> t, T listener)
-        {
-            return InvertApplication.ListenFor(listener);
-        }
-        public static void Signal<T>(this ISubscribable<T> t, Action<T> action)
-        {
-            InvertApplication.SignalEvent(action);
-        }
-    }
+    //public static class SubscribableExtensions
+    //{
+    //    public static Action Watch<T>(this ISubscribable<T> t, T listener)
+    //    {
+    //        return InvertApplication.ListenFor(listener);
+    //    }
+    //    public static void Signal<T>(this ISubscribable<T> t, Action<T> action)
+    //    {
+    //        InvertApplication.SignalEvent(action);
+    //    }
+    //}
 
 }

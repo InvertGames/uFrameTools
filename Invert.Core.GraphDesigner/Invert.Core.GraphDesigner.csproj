@@ -35,7 +35,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEditor">
@@ -280,7 +279,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Invert.Attributes\Invert.Attributes.csproj">
-      <Project>{572E3D0C-06D5-4894-A128-A2032684A0B6}</Project>
+      <Project>{572e3d0c-06d5-4894-a128-a2032684a0b6}</Project>
       <Name>Invert.Attributes</Name>
     </ProjectReference>
     <ProjectReference Include="..\Invert.Core\Invert.Core.csproj">
@@ -296,7 +295,6 @@
       <Name>Invert.MVVM</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y

@@ -18,7 +18,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return this.InputFrom<GenericInheritableNode>();
+                return this.InputsFrom<GenericInheritableNode>().FirstOrDefault(p => p.GetType() == this.GetType());
             }
             set { throw new System.NotImplementedException(); }
         }
@@ -82,7 +82,7 @@ namespace Invert.Core.GraphDesigner
 
         public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
         {
-            if (b is GenericInheritableNode)
+            if (b is GenericInheritableNode && b.GetType() == a.GetType())
             {
                 if (a.GetType() != b.GetType()) return false;
             }
@@ -92,7 +92,7 @@ namespace Invert.Core.GraphDesigner
 
         public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
         {
-            if (b is GenericInheritableNode)
+            if (b is GenericInheritableNode && b.GetType() == a.GetType())
             {
                 if (BaseNodes.Any(p => p == b)) return false;
 

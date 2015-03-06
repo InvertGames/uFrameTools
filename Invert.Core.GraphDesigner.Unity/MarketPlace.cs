@@ -383,7 +383,7 @@ namespace Invert.Core.GraphDesigner.Unity
         private MarketInfo jsonInfo;
 
 
-        [MenuItem("Window/Invert Market")]
+        //[MenuItem("Window/Invert Market")]
         internal static void ShowWindow()
         {
             var window = GetWindow<MarketWindow>();

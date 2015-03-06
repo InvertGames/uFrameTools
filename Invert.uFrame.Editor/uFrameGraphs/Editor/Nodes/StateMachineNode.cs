@@ -10,6 +10,7 @@ namespace Invert.uFrame.Editor {
         public override void Validate(List<ErrorInfo> errors)
         {
             base.Validate(errors);
+
             if (this.InputFrom<PropertyChildItem>() == null)
             {
                 errors.AddWarning(string.Format("StateMachine {0} is not used.", Name), this.Identifier);

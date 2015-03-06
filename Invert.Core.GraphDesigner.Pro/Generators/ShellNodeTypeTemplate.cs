@@ -526,7 +526,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         {
 
             var item = Ctx.ItemAs<ShellNodeConfigInput>();
-            var field = Ctx.CurrentDecleration._private_(item.ClassName, "_" + item.Name);
+            var field = Ctx.CurrentDecleration._private_(item.ClassName, "_" + item.Name.Clean());
 
             Ctx.SetType(item.ClassName);
             var attribute = Ctx.AddAttribute(typeof(InputSlot))
@@ -543,7 +543,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
             Ctx._("return {0}", field.Name);
             return null;
         }
-        set { Ctx._("_{0} = value", Ctx.Item.Name); }
+        set { Ctx._("_{0} = value", Ctx.Item.Name.Clean()); }
 
     }
 
@@ -553,7 +553,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         get
         {
             var item = Ctx.ItemAs<ShellNodeConfigOutput>();
-            var field = Ctx.CurrentDecleration._private_(item.ClassName, "_" + item.Name);
+            var field = Ctx.CurrentDecleration._private_(item.ClassName, "_" + item.Name.Clean());
             Ctx.SetType(item.ClassName);
             var attribute = Ctx.AddAttribute(typeof(OutputSlot))
                 .AddArgument(new CodePrimitiveExpression(item.Name))
@@ -569,7 +569,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
             Ctx._("return {0}", field.Name);
             return null;
         }
-        set { Ctx._("_{0} = value", Ctx.Item.Name); }
+        set { Ctx._("_{0} = value", Ctx.Item.Name.Clean()); }
     }
 
 }
@@ -794,8 +794,9 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         foreach (var itemType in Ctx.Data.Project.AllGraphItems.OfType<ShellNodeConfigSection>().Where(p => p.IsValid && p.SectionType == ShellNodeConfigSectionType.ChildItems || p.SectionType == ShellNodeConfigSectionType.ReferenceItems))
         {
 
-            if (itemType.IsTyped && itemType.SectionType == ShellNodeConfigSectionType.ChildItems)
+            if (itemType.IsTyped)
             {
+                if (itemType.SectionType == ShellNodeConfigSectionType.ChildItems)
                 method._(
                "container.RegisterInstance<IEditorCommand>(Get{0}SelectionCommand(), typeof({1}).Name + \"TypeSelection\");", itemType.Name, itemType.ClassName);
 

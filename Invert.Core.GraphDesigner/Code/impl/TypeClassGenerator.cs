@@ -880,7 +880,12 @@ namespace Invert.Core.GraphDesigner
 
         public CodeStatementCollection CurrentStatements
         {
-            get { return ContextStatements.Peek(); }
+            get
+            {
+                if (ContextStatements.Count < 1)
+                    return null;
+                return ContextStatements.Peek();
+            }
             //set
             //{
             //    _currentStatements = value;

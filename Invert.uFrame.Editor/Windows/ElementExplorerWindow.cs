@@ -164,7 +164,7 @@ public class ElementExplorerWindow : SearchableScrollWindow
 {
 
 #if DEBUG
-    [MenuItem("[u]Frame/Element Explorer", false, 1)]
+    //[MenuItem("[u]Frame/Element Explorer", false, 1)]
     public static void Init()
     {
         // Get existing open window or if none, make a new one:

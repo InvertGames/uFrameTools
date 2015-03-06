@@ -4,7 +4,7 @@ using Invert.Core.GraphDesigner;
 
 namespace Invert.uFrame.Editor {
     public partial class ViewBindingsReference : ViewBindingsReferenceBase,IViewBindings {
-        private uFrameBindingType _bindingType;
+        //private uFrameBindingType _bindingType;
 
         [JsonProperty]
         public string BindingName { get; set; }
@@ -42,27 +42,27 @@ namespace Invert.uFrame.Editor {
         //    set { base.Name = value; }
         //}
 
-        public uFrameBindingType BindingType
-        {
-            get
-            {
-                return
-                    _bindingType ?? (_bindingType = uFramePlugin.BindingTypes.Where(p => p.Name == BindingName).Select(p => p.Instance).FirstOrDefault() as uFrameBindingType);
-            }
-            set { _bindingType = value; }
-        }
+        //public uFrameBindingType BindingType
+        //{
+        //    get
+        //    {
+        //        return
+        //            _bindingType ?? (_bindingType = uFramePlugin.BindingTypes.Where(p => p.Name == BindingName).Select(p => p.Instance).FirstOrDefault() as uFrameBindingType);
+        //    }
+        //    set { _bindingType = value; }
+        //}
 
-        public override string Title
-        {
-            get
-            {
-                if (SourceItem == null)
-                {
-                    return "Error: Bindable Not Found";
-                }
-                return string.Format(BindingType.DisplayFormat, SourceItem.Name);
-            }
-        }
+        //public override string Title
+        //{
+        //    get
+        //    {
+        //        if (SourceItem == null)
+        //        {
+        //            return "Error: Bindable Not Found";
+        //        }
+        //        return string.Format(BindingType.DisplayFormat, SourceItem.Name);
+        //    }
+        //}
     }
     
     public partial interface IViewBindings : Invert.Core.GraphDesigner.IDiagramNodeItem, Invert.Core.GraphDesigner.IConnectable {

@@ -106,7 +106,7 @@ namespace Invert.Core.GraphDesigner
         void ProjectChanged(IProjectRepository project);
     }
 
-    public class ProjectService : DiagramPlugin, ISubscribable<IProjectEvents>
+    public class ProjectService : DiagramPlugin
     {
         private IProjectRepository[] _projects;
         
@@ -148,7 +148,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     if (changed)
                     {
-                        this.Signal(_=>_.ProjectChanged(value));
+                        InvertApplication.SignalEvent<IProjectEvents>(_ => _.ProjectChanged(value));
                     }
                     LastLoadedProject = value.Name;
                     _currentProject.CurrentGraph.SetProject(_currentProject);
@@ -177,17 +177,17 @@ namespace Invert.Core.GraphDesigner
             private set { _projects = value; }
         }
 
-        [Inject] 
-        public IAssetManager AssetManager { get; set; }
+        
+        public IAssetManager AssetManager {
+            get { return InvertGraphEditor.Container.Resolve<IAssetManager>(); }}
 
         public override void Initialize(uFrameContainer container)
         {
-            AssetManager = container.Resolve<IAssetManager>();
         }
 
         public override void Loaded(uFrameContainer container)
         {
-            container.Inject(this);
+            
         }
 
         private void LoadProjects()
@@ -200,13 +200,13 @@ namespace Invert.Core.GraphDesigner
             foreach (var projectRepository in projects.Where(p => _projects.All(x => x != p)))
             {
                 var repository = projectRepository;
-                this.Signal(p => p.ProjectLoaded(repository));
+                InvertApplication.SignalEvent<IProjectEvents>(p => p.ProjectLoaded(repository));
             }
 
             foreach (var projectRepository in _projects.Where(p => projects.All(x => x != p)))
             {
                 var repository = projectRepository;
-                this.Signal(p => p.ProjectRemoved(repository));
+                InvertApplication.SignalEvent<IProjectEvents>(p => p.ProjectRemoved(repository));
             }
 
             _projects = projects;

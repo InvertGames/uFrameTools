@@ -252,7 +252,7 @@ namespace Invert.Core.GraphDesigner
         private static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command, bool recordUndo = true)
         {
             var objs = handler.ContextObjects.ToArray();
-            if (recordUndo)
+            if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
             {
 
                 DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.DiagramData, command.Name);
@@ -267,7 +267,7 @@ namespace Invert.Core.GraphDesigner
                     if (command.CanPerform(o) != null) continue;
                     //handler.CommandExecuting(command);
 #if (UNITY_DLL)
-
+                    
                     command.Execute(o);
 
 #else
@@ -286,7 +286,7 @@ namespace Invert.Core.GraphDesigner
                     handler.CommandExecuted(command);
                 }
             }
-            if (recordUndo)
+            if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
             {
                 DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.DiagramData);
 

@@ -58,6 +58,7 @@ namespace Invert.Core.GraphDesigner
 
             var command = InvertGraphEditor.Container.Resolve<IEditorCommand>(commandName);
             TypedItemViewModel.Select();
+            if (command == null) return;
 
             InvertGraphEditor.ExecuteCommand(command);
         }

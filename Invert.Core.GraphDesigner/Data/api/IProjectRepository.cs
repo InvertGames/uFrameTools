@@ -8,7 +8,7 @@ using Object = System.Object;
 namespace Invert.Core.GraphDesigner
 {
   
-    public interface IProjectRepository : INodeRepository, ISubscribable<IGraphEvents>
+    public interface IProjectRepository : INodeRepository
     {
         IGraphData CurrentGraph { get; set; }
 
@@ -341,7 +341,7 @@ namespace Invert.Core.GraphDesigner
             }
      
             // Send the signal to any listeners that a new a graph has been created
-            this.Signal(p => p.GraphCreated(this, graph));
+            InvertApplication.SignalEvent<IGraphEvents>(p => p.GraphCreated(this, graph));
             // Add this graph to the project and do any loading necessary
             AddGraph(graph);
             InvalidateCache();
