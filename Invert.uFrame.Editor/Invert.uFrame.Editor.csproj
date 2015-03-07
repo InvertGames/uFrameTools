@@ -246,7 +246,6 @@
     <Compile Include="uFrame15\uFrameData\ViewModelCommandData.cs" />
     <Compile Include="uFrame15\uFrameData\ViewModelPropertyData.cs" />
     <Compile Include="Windows\uFrameComponentSearchWindow.cs" />
-    <Compile Include="Windows\uFrameStartDialog.cs" />
     <Compile Include="Windows\ElementExplorerWindow.cs" />
     <Compile Include="uFrame15\IAssemblyNameProvider.cs" />
     <Compile Include="uFrameVersionProcessor.cs" />

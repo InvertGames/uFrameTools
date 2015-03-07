@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2156EB05-0408-4CB8-AAE9-46025848FAB8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Invert.uFrame.MVVM</RootNamespace>
+    <AssemblyName>Invert.uFrame.MVVM</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEditor">
+      <HintPath>..\..\Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\Library\UnityAssemblies\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ChildItems.designer.cs">
+      <Link>ChildItems.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ChildItems\CollectionsChildItem.cs">
+      <Link>CollectionsChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ChildItems\CommandsChildItem.cs">
+      <Link>CommandsChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ChildItems\PropertiesChildItem.cs">
+      <Link>PropertiesChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ChildItems\TransitionsChildItem.cs">
+      <Link>TransitionsChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers.designer.cs">
+      <Link>Drawers.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\ComputedPropertyNodeDrawer.cs">
+      <Link>ComputedPropertyNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\ElementNodeDrawer.cs">
+      <Link>ElementNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\MVVMNodeDrawer.cs">
+      <Link>MVVMNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\SceneManagerNodeDrawer.cs">
+      <Link>SceneManagerNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\SimpleClassNodeDrawer.cs">
+      <Link>SimpleClassNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\StateMachineNodeDrawer.cs">
+      <Link>StateMachineNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\StateNodeDrawer.cs">
+      <Link>StateNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\SubsystemNodeDrawer.cs">
+      <Link>SubsystemNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\ViewComponentNodeDrawer.cs">
+      <Link>ViewComponentNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\ViewNodeDrawer.cs">
+      <Link>ViewNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Graphs.designer.cs">
+      <Link>Graphs.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Graphs\MVVMGraph.cs">
+      <Link>MVVMGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Graphs\StateMachineGraph.cs">
+      <Link>StateMachineGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes.designer.cs">
+      <Link>Nodes.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\ComputedPropertyNode.cs">
+      <Link>ComputedPropertyNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\ElementNode.cs">
+      <Link>ElementNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\MVVMNode.cs">
+      <Link>MVVMNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\SceneManagerNode.cs">
+      <Link>SceneManagerNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\SimpleClassNode.cs">
+      <Link>SimpleClassNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\StateMachineNode.cs">
+      <Link>StateMachineNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\StateNode.cs">
+      <Link>StateNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\SubsystemNode.cs">
+      <Link>SubsystemNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\ViewComponentNode.cs">
+      <Link>ViewComponentNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\ViewNode.cs">
+      <Link>ViewNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Plugins.designer.cs">
+      <Link>Plugins.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Plugins\uFrameMVVM.cs">
+      <Link>uFrameMVVM.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections.designer.cs">
+      <Link>Sections.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\BindingsReference.cs">
+      <Link>BindingsReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\InstancesReference.cs">
+      <Link>InstancesReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\SceneTransitionsReference.cs">
+      <Link>SceneTransitionsReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\StateTransitionsReference.cs">
+      <Link>StateTransitionsReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\SubPropertiesReference.cs">
+      <Link>SubPropertiesReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots.designer.cs">
+      <Link>Slots.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\Export.cs">
+      <Link>Export.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\Import.cs">
+      <Link>Import.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\SceneProperties.cs">
+      <Link>SceneProperties.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\StartState.cs">
+      <Link>StartState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\Subsystem.cs">
+      <Link>Subsystem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels.designer.cs">
+      <Link>ViewModels.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\ComputedPropertyNodeViewModel.cs">
+      <Link>ComputedPropertyNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\ElementNodeViewModel.cs">
+      <Link>ElementNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\MVVMNodeViewModel.cs">
+      <Link>MVVMNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\SceneManagerNodeViewModel.cs">
+      <Link>SceneManagerNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\SimpleClassNodeViewModel.cs">
+      <Link>SimpleClassNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\StateMachineNodeViewModel.cs">
+      <Link>StateMachineNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\StateNodeViewModel.cs">
+      <Link>StateNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\SubsystemNodeViewModel.cs">
+      <Link>SubsystemNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\ViewComponentNodeViewModel.cs">
+      <Link>ViewComponentNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\ViewNodeViewModel.cs">
+      <Link>ViewNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="Class1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Invert.Core.GraphDesigner\Invert.Core.GraphDesigner.csproj">
+      <Project>{06e581d4-daf3-4404-9426-e3be6478bc48}</Project>
+      <Name>Invert.Core.GraphDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.Core\Invert.Core.csproj">
+      <Project>{cfcc5f2c-7a2f-4fd1-90d8-52420b7eb337}</Project>
+      <Name>Invert.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.JSON\Invert.JSON.csproj">
+      <Project>{51e51ae2-77c1-498f-9b88-c2eed1e3aeed}</Project>
+      <Name>Invert.JSON</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.MVVM\Invert.MVVM.csproj">
+      <Project>{cb024a98-ee90-4497-8af3-2c574d665a8a}</Project>
+      <Name>Invert.MVVM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

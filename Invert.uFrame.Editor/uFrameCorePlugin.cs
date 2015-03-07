@@ -30,10 +30,10 @@ namespace Invert.uFrame.Editor
             //container.RegisterInstance<IDiagramNodeCommand>(new MarkIsTemplateCommand(), "MarkAsTemplate");
 
             // Graph Diagrams
-            container.Register<IGraphData, ElementsGraph>("Graph");
-            container.Register<IGraphData, ExternalSubsystemGraph>("External Subsystem Graph");
-            container.Register<IGraphData, ExternalElementGraph>("External Element Graph");
-            container.Register<IGraphData, ExternalStateMachineGraph>("External State Machine Graph");
+            //container.Register<IGraphData, ElementsGraph>("Graph");
+            //container.Register<IGraphData, ExternalSubsystemGraph>("External Subsystem Graph");
+            //container.Register<IGraphData, ExternalElementGraph>("External Element Graph");
+            //container.Register<IGraphData, ExternalStateMachineGraph>("External State Machine Graph");
 
             // Scene Managers
             container.RegisterGraphItem<SceneManagerData, SceneManagerViewModel, SceneManagerDrawer>();

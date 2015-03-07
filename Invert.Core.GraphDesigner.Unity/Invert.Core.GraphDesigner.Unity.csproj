@@ -55,6 +55,7 @@
     <Compile Include="GUIHelpers.cs" />
     <Compile Include="Impl\ProjectRepository.cs" />
     <Compile Include="Impl\UnityPlatform.cs" />
+    <Compile Include="ImportTypeListWindow.cs" />
     <Compile Include="ItemSelectionWindow.cs" />
     <Compile Include="MarketPlace.cs" />
     <Compile Include="ProjectRepositoryInspector.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="uFrameMenu.cs" />
     <Compile Include="UFrameSettings.cs" />
     <Compile Include="uFrameSettingsWindow.cs" />
+    <Compile Include="uFrameStartDialog.cs" />
     <Compile Include="UFStyle.cs" />
     <Compile Include="UnityAssetManager.cs" />
     <Compile Include="UnityPlatformPlugin.cs" />

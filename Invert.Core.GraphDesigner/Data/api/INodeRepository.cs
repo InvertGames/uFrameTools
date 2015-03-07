@@ -15,7 +15,7 @@ namespace Invert.Core.GraphDesigner
         ElementDiagramSettings Settings { get; }
 
         void AddNode(IDiagramNode data);
-        void RemoveNode(IDiagramNode enumData);
+        void RemoveNode(IDiagramNode node);
         IDiagramFilter CurrentFilter { get; }
         FilterPositionData PositionData { get; set; }
         string Namespace { get; set; }

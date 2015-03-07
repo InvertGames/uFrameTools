@@ -249,9 +249,9 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         Graph.AddNode(data);
     }
 
-    public void RemoveNode(IDiagramNode enumData)
+    public void RemoveNode(IDiagramNode node)
     {
-        Graph.RemoveNode(enumData);
+        Graph.RemoveNode(node);
     }
 
     public void OnBeforeSerialize()

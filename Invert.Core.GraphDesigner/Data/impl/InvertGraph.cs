@@ -299,9 +299,9 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         Nodes.Add(data);
     }
 
-    public void RemoveNode(IDiagramNode enumData)
+    public void RemoveNode(IDiagramNode node)
     {
-        if (enumData == RootFilter) return;
+        if (node == RootFilter) return;
         //foreach (var item in Nodes)
         //{
         //    if (item.Locations.Keys.Contains(item.Identifier))
@@ -311,9 +311,9 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         //}
         foreach (var item in PositionData.Positions)
         {
-            item.Value.Remove(enumData.Identifier);
+            item.Value.Remove(node.Identifier);
         }
-        Nodes.Remove(enumData);
+        Nodes.Remove(node);
     }
 
     public bool DocumentationMode { get; set; }
@@ -379,17 +379,17 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
             item.Input = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.InputIdentifier) as IConnectable;
             item.Output = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.OutputIdentifier) as IConnectable;
         }
-        foreach (var item in ConnectedItems)
-        {
-            if (item.Output == null)
-            {
-                InvertApplication.Log(string.Format("Output Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
-            }
-            if (item.Input == null)
-            {
-                InvertApplication.Log(string.Format("Input Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
-            }
-        }
+        //foreach (var item in ConnectedItems)
+        //{
+        //    if (item.Output == null)
+        //    {
+        //        InvertApplication.Log(string.Format("Output Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
+        //    }
+        //    if (item.Input == null)
+        //    {
+        //        InvertApplication.Log(string.Format("Input Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
+        //    }
+        //}
         ConnectedItems.RemoveAll(p => p.Output == null || p.Input == null);
 
     }

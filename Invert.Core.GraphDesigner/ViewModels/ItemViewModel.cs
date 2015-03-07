@@ -130,6 +130,19 @@ namespace Invert.Core.GraphDesigner
             NodeItem.Rename(NodeItem.Node, newName);
         }
 
+        string editText = null;
+        public void BeginEditing()
+        {
+            editText = Name;
+            IsEditing = true;
+        }
+
+        public void EndEditing()
+        {
+            if (!IsEditing) return;
+            IsEditing = false;
+            InvertApplication.SignalEvent<INodeItemEvents>(_ => _.Renamed(NodeItem,editText,NodeItem.Name));
+        }
         public override bool IsSelected
         {
             get
@@ -140,8 +153,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (!value)
                 {
-                        IsEditing = false;
-                    
+                     EndEditing();
                 }
                 base.IsSelected = value;
             }
@@ -158,8 +170,9 @@ namespace Invert.Core.GraphDesigner
 #endif
          
             IsSelected = true;
-            IsEditing = true;
+            
             NodeViewModel.Select();
+            BeginEditing();
         }
     }
 }

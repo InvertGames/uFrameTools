@@ -6,15 +6,22 @@ namespace Invert.Core.GraphDesigner
     public class SimpleEditorCommand<TFor> : EditorCommand<TFor>
     {
         private string _name;
+        private string _group;
         public override string Name
         {
             get { return _name ?? base.Name; }
         }
 
-        public SimpleEditorCommand(Action<TFor> performAction,string name = null)
+        public SimpleEditorCommand(Action<TFor> performAction,string name = null,string group = null)
         {
             PerformAction = performAction;
             _name = name;
+            _group = group;
+        }
+
+        public override string Group
+        {
+            get { return _group ?? base.Group; }
         }
 
         public Action<TFor> PerformAction { get; set; }

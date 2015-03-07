@@ -23,9 +23,6 @@ namespace Invert.uFrame.Editor {
             container.Connectable<ElementComponentNode, CommandChildItem>();
             container.Connectable<CommandChildItem, CommandChildItem>();
         }
-
-
-
         public static Invert.Core.RegisteredInstance[] BindingTypes { get; set; }
         public override void Loaded(uFrameContainer container)
         {

@@ -13,7 +13,7 @@ public class uFrameStartDialog : EditorWindow
     private bool _ViewingReadme;
 
     [MenuItem("Tools/[u]Frame/Change Log")]
-    internal static void ShowWindow()
+    public static void ShowWindow()
     {
         var window = GetWindow<uFrameStartDialog>();
         window.title = "uFrame";

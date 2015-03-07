@@ -154,7 +154,7 @@ namespace Invert.GraphDesigner.Standalone
     {
 
     }
-    public class WindowsAssetManager : IAssetManager, ISubscribable<IAssetEvents>
+    public class WindowsAssetManager : IAssetManager
     {
         private Dictionary<Type, string> _assetFileMappings = new Dictionary<Type, string>()
         {

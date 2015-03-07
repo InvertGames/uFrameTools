@@ -117,12 +117,18 @@ namespace Invert.Core.GraphDesigner.Unity
         }
 
     }
-
+    
     public class UnityContextMenu : ContextMenuUI
     {
+        public override void AddSeparator(string empty)
+        {
+            base.AddSeparator(empty);
+            
+        }
+
         public void CreateMenuItems(GenericMenu genericMenu)
         {
-            var groups = Commands.GroupBy(p => p.Group).OrderBy(p => p.Key == "Default").ToArray();
+            var groups = Commands.GroupBy(p => p==null? "" : p.Group).OrderBy(p => p.Key == "Default").ToArray();
 
             foreach (var group in groups)
             {

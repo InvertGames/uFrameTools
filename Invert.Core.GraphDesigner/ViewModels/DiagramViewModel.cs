@@ -523,7 +523,7 @@ namespace Invert.Core.GraphDesigner
         {
             foreach (var item in AllViewModels.OfType<ItemViewModel>())
             {
-                item.IsEditing = false;
+                item.EndEditing();
             }
             foreach (var item in SelectedGraphItems)
             {
@@ -553,7 +553,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     foreach (var item in items)
                     {
-                        item.IsEditing = false;
+                        item.EndEditing();
                         
                     }
                     
@@ -693,6 +693,17 @@ namespace Invert.Core.GraphDesigner
                 _.Diagram = this;
                 _.MousePosition = mousePosition;
                 _.Action(_);
+            });
+        }
+
+        public void ShowContainerDebug()
+        {
+            var mousePosition = LastMouseEvent.MouseDownPosition;
+            var items = InvertApplication.Container.Instances.Select(p=>new DefaultItem(string.Format("{0} : {1}", p.Name, p.Instance.GetType().Name), p.Base.Name));
+
+            InvertGraphEditor.WindowManager.InitItemWindow(items, _ =>
+            {
+               
             });
         }
     }

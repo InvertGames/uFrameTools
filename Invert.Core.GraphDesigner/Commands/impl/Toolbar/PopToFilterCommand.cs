@@ -128,7 +128,7 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 var ps = ProjectService;
-                if (ps == null || ps.CurrentProject == null || ps.CurrentProject.CurrentGraph == null)
+                if (ps == null || ps.CurrentProject == null || ps.CurrentProject.CurrentGraph == null || object.ReferenceEquals(ps.CurrentProject.CurrentGraph, null))
                 {
                     return "-- Select Diagram --";
                 }
@@ -146,11 +146,13 @@ namespace Invert.Core.GraphDesigner
             {
                 IGraphData item1 = item;
 
-                contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
+                var simpleEditorCommand = new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
                     projectService.CurrentProject.CurrentGraph = item1;
                     node.SwitchDiagram(item1);
-                }, item.Name));
+                }, item.Name, "Switch");
+             
+                contextMenu.AddCommand(simpleEditorCommand);
 
             }
             contextMenu.AddSeparator("");
@@ -162,13 +164,13 @@ namespace Invert.Core.GraphDesigner
                     InvertApplication.Log("Creating type " + type.To.Name);
                     var diagram = projectService.CurrentProject.CreateNewDiagram(type.To);
                     node.SwitchDiagram(diagram);
-                }, "Create " + type.To.Name));
+                }, "Create " + type.To.Name,"Create"));
             }
             contextMenu.AddSeparator("");
             contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
             {
                 projectService.CurrentProject.Refresh();
-            }, "Force Refresh"));
+            }, "Force Refresh", "Refresh"));
             contextMenu.Go();
         }
 

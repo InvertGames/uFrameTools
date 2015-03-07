@@ -99,10 +99,7 @@ namespace Invert.Core.GraphDesigner
             container.RegisterGraphCommand<AddNodeToGraph>();
             container.RegisterGraphCommand<AddReferenceNode>();
             container.RegisterGraphCommand<ShowItemCommand>();
-#if UNITY_DLL
-            container.RegisterGraphCommand<PushToCommand>();
-            container.RegisterGraphCommand<PullFromCommand>();
-#endif
+            container.RegisterNodeCommand<PullFromCommand>();
             container.RegisterNodeCommand<OpenCommand>();
             container.RegisterNodeCommand<DeleteCommand>();
             container.RegisterNodeCommand<RenameCommand>();

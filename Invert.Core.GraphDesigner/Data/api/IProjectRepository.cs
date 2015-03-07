@@ -434,36 +434,40 @@ namespace Invert.Core.GraphDesigner
         public virtual void RemoveItem(IDiagramNodeItem nodeItem)
         {
             //nodeItem.Node.RemoveItem(nodeItem);
+            
 
             foreach (var node in NodeItems.ToArray())
             {
                 node.NodeItemRemoved(nodeItem);
+                
                 foreach (var item in node.PersistedItems.ToArray())
                 {
                     item.NodeItemRemoved(nodeItem);
                 }
             }
             InvalidateCache();
+            InvertApplication.SignalEvent<INodeItemEvents>(_ => _.Deleted(nodeItem));
         }
 
         /// <summary>
         /// Remove a node, anytime you want to remove a node it should be called here, this way the project can properly
         /// notify other graphs and nodes about this node being removed.
         /// </summary>
-        /// <param name="enumData"></param>
-        public virtual void RemoveNode(IDiagramNode enumData)
+        /// <param name="node"></param>
+        public virtual void RemoveNode(IDiagramNode node)
         {
             _nodeItems = null;
-            foreach (var item in enumData.PersistedItems.ToArray())
+            foreach (var item in node.PersistedItems.ToArray())
             {
                 RemoveItem(item);
             }
-            CurrentGraph.RemoveNode(enumData);
+            CurrentGraph.RemoveNode(node);
             foreach (var item in NodeItems.ToArray())
             {
-                item.NodeRemoved(enumData);
+                item.NodeRemoved(node);
             }
             InvalidateCache();
+            InvertApplication.SignalEvent<INodeItemEvents>(_ => _.Deleted(node));
         }
 
         /// <summary>

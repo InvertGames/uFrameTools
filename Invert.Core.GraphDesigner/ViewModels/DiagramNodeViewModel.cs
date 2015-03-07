@@ -399,11 +399,14 @@ namespace Invert.Core.GraphDesigner
         public void EndEditing()
         {
             if (!IsEditable) return;
+            
             if (string.IsNullOrEmpty(GraphItemObject.Name))
             {
                 GraphItemObject.Name = "RenameMe";
-            }
+            } else if (!IsEditing) return;
+
             GraphItemObject.EndEditing();
+            InvertApplication.SignalEvent<INodeItemEvents>(_ => _.Renamed(GraphItemObject, editText, GraphItemObject.Name));
             Dirty = true;
         }
 
@@ -457,6 +460,7 @@ namespace Invert.Core.GraphDesigner
             if (!IsEditable) return;
             editText = Name;
             GraphItemObject.BeginEditing();
+
         }
 
         public void Remove()
@@ -469,6 +473,8 @@ namespace Invert.Core.GraphDesigner
             
 
             DiagramViewModel.CurrentRepository.HideNode(GraphItemObject.Identifier);
+            InvertApplication.SignalEvent<INodeItemEvents>(_=>_.Hidden(GraphItemObject));
+
             //DiagramViewModel.Data.CurrentFilter.Locations.Remove(GraphItemObject.Identifier);
         }
 

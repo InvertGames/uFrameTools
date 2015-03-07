@@ -14,8 +14,6 @@ namespace Invert.Core.GraphDesigner
             : base(viewModelObject)
         {
         }
-
-        
     }
 
     public class ItemDrawer : Drawer
@@ -199,7 +197,7 @@ namespace Invert.Core.GraphDesigner
                         CachedName = ItemViewModel.Name;
                         if (finished)
                         {
-                            ItemViewModel.IsEditing = false;
+                            ItemViewModel.EndEditing();
                         }
                     });
             }

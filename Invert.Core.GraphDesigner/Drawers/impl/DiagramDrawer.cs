@@ -167,7 +167,15 @@ namespace Invert.Core.GraphDesigner
             }
             if (DrawersAtMouse.Length < 1)
             {
-                DiagramViewModel.ShowQuickAdd();
+                if (mouseEvent.ModifierKeyStates.Alt)
+                {
+                    DiagramViewModel.ShowContainerDebug();
+                }
+                else
+                {
+                    DiagramViewModel.ShowQuickAdd();
+                }
+                
                 return;
             }
             BubbleEvent(d => d.OnMouseDoubleClick(mouseEvent), mouseEvent);

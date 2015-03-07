@@ -255,7 +255,7 @@ namespace Invert.Core.GraphDesigner
                 drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Right);
                 drawer.DoTabs(tabsRect, this); DiagramRect = diagramRect;
                 DiagramRect = diagramRect;
-                if (DrawDiagram(drawer, scrollPosition, scale, diagramRect)) return;
+                DrawDiagram(drawer, scrollPosition, scale, diagramRect);
                 drawer.DoToolbar(toolbarBottomRect, this, ToolbarPosition.BottomLeft);
                 drawer.DoToolbar(toolbarBottomRect, this, ToolbarPosition.BottomRight);
 
@@ -264,7 +264,7 @@ namespace Invert.Core.GraphDesigner
             {
                 diagramRect = new Rect(0f, 0f, width, height);
                 DiagramRect = diagramRect;
-                if (DrawDiagram(drawer, scrollPosition, scale, diagramRect)) return;
+                DrawDiagram(drawer, scrollPosition, scale, diagramRect);
             }
           
 
@@ -287,12 +287,8 @@ namespace Invert.Core.GraphDesigner
                 }
             }
 
-            if (DiagramDrawer == null)
-            {
-                return true;
-            }
-
-            if (DiagramViewModel != null && InvertGraphEditor.Settings.UseGrid)
+            
+            if (DiagramDrawer !=null && DiagramViewModel != null && InvertGraphEditor.Settings.UseGrid)
             {
                 var softColor = InvertGraphEditor.Settings.GridLinesColor;
                 var hardColor = InvertGraphEditor.Settings.GridLinesColorSecondary;
@@ -347,7 +343,11 @@ namespace Invert.Core.GraphDesigner
                 }
             }
             InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.BeforeDrawGraph(DiagramRect));
-            DiagramDrawer.Draw(drawer, 1f);
+            if (DiagramDrawer != null)
+            {
+                DiagramDrawer.Draw(drawer, 1f);
+            }
+            
             InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.ProcessInput());
             InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.AfterDrawGraph(DiagramRect));
             return false;

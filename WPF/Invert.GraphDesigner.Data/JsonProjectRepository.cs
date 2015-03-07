@@ -55,7 +55,7 @@ namespace Invert.GraphDesigner.WPF
             base.AddGraph(graphData);
             if (!IncludedGraphs.Contains(graphData))
             IncludedGraphs.Add(graphData);
-            this.Signal(p=>p.GraphLoaded(this, graphData));
+            InvertApplication.SignalEvent<IGraphEvents>(p=>p.GraphLoaded(this, graphData));
 
         }
         [JsonProperty]
