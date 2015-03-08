@@ -82,3 +82,4 @@ D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Edi
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\UnityEditor.xml
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\UnityEngine.xml
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\ICSharpCode.NRefactory.dll

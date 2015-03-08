@@ -81,6 +81,5 @@ public class uFrameMenu : AssetPostprocessor
         //InvertGraphEditor.Projects = null;
         var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
         projectService.RefreshProjects();
-        Debug.Log("Set Projects");
     }
 }

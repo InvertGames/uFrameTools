@@ -72,11 +72,6 @@ namespace Invert.Core.GraphDesigner.Unity
 
         }
 
-        public override void CommandExecuted(ICommandHandler handler, IEditorCommand command)
-        {
-            base.CommandExecuted(handler, command);
-
-        }
 
         public void Deleted(IDiagramNodeItem node)
         {
@@ -121,7 +116,7 @@ namespace Invert.Core.GraphDesigner.Unity
             var files = InvertGraphEditor.GetAllFileGenerators(null, graph, false).Select(p=>p.AssetPath).ToList();
             files.Add(AssetDatabase.GetAssetPath(graph as UnityEngine.Object));
 
-            var path = EditorUtility.SaveFilePanelInProject("Export Diagram Unity Package",
+            var path = EditorUtility.SaveFilePanelInProject("Export Graph Unity Package",
 								graph.Name + ".unitypackage",
 								"unitypackage",
 								"Please enter a file name to export to.");

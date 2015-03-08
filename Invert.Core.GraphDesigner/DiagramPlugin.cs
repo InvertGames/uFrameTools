@@ -48,10 +48,7 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        public virtual void CommandExecuted(ICommandHandler handler, IEditorCommand command)
-        {
-
-        }
+   
     }
 
     public abstract class Feature : CorePlugin
@@ -77,8 +74,8 @@ namespace Invert.Core.GraphDesigner
     }
     public interface ICommandEvents
     {
-        void CommandExecuting(ICommandHandler handler, IEditorCommand command);
-        void CommandExecuted(ICommandHandler handler, IEditorCommand command);
+        void CommandExecuting(ICommandHandler handler, IEditorCommand command, object o);
+        void CommandExecuted(ICommandHandler handler, IEditorCommand command, object o);
     }
 
     public interface IGraphItemEvents

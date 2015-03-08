@@ -265,6 +265,8 @@ namespace Invert.Core.GraphDesigner
                 if (command.For.IsAssignableFrom(o.GetType()))
                 {
                     if (command.CanPerform(o) != null) continue;
+                    var o1 = o;
+                    InvertApplication.SignalEvent<ICommandEvents>(_ => _.CommandExecuting(handler, command, o1));
                     //handler.CommandExecuting(command);
 #if (UNITY_DLL)
                     
@@ -278,11 +280,9 @@ namespace Invert.Core.GraphDesigner
                         {
                             ExecuteCommand(handler, p);
                         });
+                    InvertApplication.SignalEvent<ICommandEvents>(_=>_.CommandExecuted(handler,command, o1));
 
-                    foreach (var plugin in InvertApplication.Plugins.OfType<DiagramPlugin>())
-                    {
-                        plugin.CommandExecuted(handler, command);
-                    }
+                    
                     handler.CommandExecuted(command);
                 }
             }

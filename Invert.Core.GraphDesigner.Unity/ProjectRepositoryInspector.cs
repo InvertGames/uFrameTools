@@ -10,6 +10,7 @@ using Invert.Common.UI;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Core.GraphDesigner.Unity;
+using Invert.Core.GraphDesigner.Unity.Refactoring;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
 using UnityEditor;
@@ -23,6 +24,7 @@ public class ProjectRepositoryInspector : Editor
     private CodeFileGenerator[] fileGenerators;
     private List<PropertyFieldDrawer> _selectedItemDrawers;
     private List<IDrawer> _generatorDrawers;
+    private URefactor _refactorPlugin;
 
     public ProjectRepository Target
     {
@@ -34,9 +36,25 @@ public class ProjectRepositoryInspector : Editor
         get { return _generators ?? (_generators = InvertApplication.Container.Mappings.Where(p => p.From == typeof(DesignerGeneratorFactory)).ToArray()); }
     }
 
+    public URefactor RefactorPlugin
+    {
+        get { return _refactorPlugin ?? (_refactorPlugin = InvertApplication.Container.Resolve<URefactor>()); }
+        set { _refactorPlugin = value; }
+    }
+
     public void OnEnable()
     {
 
+    }
+
+    public void OnDisable()
+    {
+        RefactorPlugin = null;
+    }
+
+    public void OnDestroy()
+    {
+        RefactorPlugin = null;
     }
     public override void OnInspectorGUI()
     {
@@ -121,7 +139,25 @@ public class ProjectRepositoryInspector : Editor
                 }
             }
         }
-
+        if (GUIHelpers.DoToolbarEx("Refactors"))
+        {
+            foreach (var item in RefactorPlugin.Refactoring.Refactorers)
+            {
+                if (GUIHelpers.DoTriggerButton(new UFStyle()
+                {
+                    Label = item.ToString(),
+                    Enabled = true,
+                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                    TextAnchor = TextAnchor.MiddleRight,
+                    IconStyle = ElementDesignerStyles.BreakpointButtonStyle,
+                    //IconStyle = UBStyles.RemoveButtonStyle,
+                    ShowArrow = true
+                }))
+                {
+                    InvertGraphEditor.NavigateTo(item.Item.Identifier);
+                }
+            }
+        }
 #if DEBUG
         //if (GUIHelpers.DoToolbarEx("Project Nodes"))
         //{

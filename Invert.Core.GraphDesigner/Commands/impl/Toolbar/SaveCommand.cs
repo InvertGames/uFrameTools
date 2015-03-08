@@ -79,18 +79,18 @@ namespace Invert.Core.GraphDesigner
         /// </summary>
         public void ProcessRefactorings(DiagramViewModel diagram)
         {
-            var refactorer = new RefactorContext(diagram.DiagramData.GetRefactorings());
+            //var refactorer = new RefactorContext(diagram.DiagramData.GetRefactorings());
             
-            var files = InvertGraphEditor.GetAllFileGenerators(null,diagram.CurrentRepository).Where(p=>!p.AssetPath.EndsWith(".designer.cs")).Select(p => p.SystemPath).ToArray();
+            //var files = InvertGraphEditor.GetAllFileGenerators(null,diagram.CurrentRepository).Where(p=>!p.AssetPath.EndsWith(".designer.cs")).Select(p => p.SystemPath).ToArray();
 
-            if (refactorer.Refactors.Count > 0)
-            {
-                //uFrameEditor.Log(string.Format("{0} : {1}", refactorer.GetType().Name , refactorer.CurrentFilename));
+            //if (refactorer.Refactors.Count > 0)
+            //{
+            //    //uFrameEditor.Log(string.Format("{0} : {1}", refactorer.GetType().Name , refactorer.CurrentFilename));
 
-                refactorer.Refactor(files);
-            }
+            //    refactorer.Refactor(files);
+            //}
             
-            InvertApplication.Log(string.Format("Applied {0} refactors.", refactorer.Refactors.Count));
+            //InvertApplication.Log(string.Format("Applied {0} refactors.", refactorer.Refactors.Count));
             
         }
 
