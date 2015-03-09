@@ -358,10 +358,10 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DrawPropertyField(PropertyFieldDrawer d, float scale)
         {
             //base.Draw(scale);
-            //GUILayout.BeginArea(d.Bounds.Scale(scale), ElementDesignerStyles.SelectedItemStyle);
+            GUILayout.BeginArea(d.Bounds.Scale(scale), ElementDesignerStyles.SelectedItemStyle);
             EditorGUIUtility.labelWidth = d.Bounds.width * 0.55f;
             DrawInspector(d);
-            //GUILayout.EndArea();
+            GUILayout.EndArea();
         }
 
         public void EndRender()

@@ -79,6 +79,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
+
                 platform.DrawPropertyField(this, scale);
             }
         }

@@ -105,17 +105,23 @@ public class ProjectRepositoryInspector : Editor
       
 
         }
-        if (InvertGraphEditor.CurrentDiagramViewModel == null) return;
-        InvertGraphEditor.CurrentDiagramViewModel.LoadInspector();
-        var diagramInspectorDrawer = new DiagramInspectorDrawer(InvertGraphEditor.CurrentDiagramViewModel);
+        //if (InvertGraphEditor.CurrentDiagramViewModel == null) return;
+        //InvertGraphEditor.CurrentDiagramViewModel.LoadInspector();
+        //var diagramInspectorDrawer = new DiagramInspectorDrawer(InvertGraphEditor.CurrentDiagramViewModel);
         
-        var lastRectangle = GUILayoutUtility.GetLastRect();
-        diagramInspectorDrawer.InspectorWidth = Screen.width;
-        var rect = GUILayoutUtility.GetRect(Screen.width, Screen.width, 1f,1f);
+        //var lastRectangle = GUILayoutUtility.GetLastRect();
+        //diagramInspectorDrawer.InspectorWidth = Screen.width;
+        //var rect = GUILayoutUtility.GetRect(Screen.width, Screen.width, 1f,1f);
+        
+        //diagramInspectorDrawer.Refresh(InvertGraphEditor.PlatformDrawer, new Vector2(rect.x, rect.y ));
+        //foreach (var child in diagramInspectorDrawer.Children)
+        //{
+        //    child.Bounds = GUILayoutUtility.GetRect(Screen.width, Screen.width, child.Bounds.height, child.Bounds.height);
+        //    child.Draw(InvertGraphEditor.PlatformDrawer,1f);
+        //}
+        //diagramInspectorDrawer.Draw(InvertGraphEditor.PlatformDrawer, 1f);
 
-        diagramInspectorDrawer.Refresh(InvertGraphEditor.PlatformDrawer, new Vector2(rect.x, rect.y )); 
-        diagramInspectorDrawer.Draw(InvertGraphEditor.PlatformDrawer, 1f);
-        GUILayout.Space(diagramInspectorDrawer.Bounds.height);
+        //GUILayout.Space(diagramInspectorDrawer.Bounds.height);
         if (InvertGraphEditor.CurrentDiagramViewModel != null)
         if (GUIHelpers.DoToolbarEx("Project Issues"))
         {
@@ -158,6 +164,7 @@ public class ProjectRepositoryInspector : Editor
                 }
             }
         }
+        DoDiagramInspector();
 #if DEBUG
         //if (GUIHelpers.DoToolbarEx("Project Nodes"))
         //{
@@ -239,26 +246,26 @@ public class ProjectRepositoryInspector : Editor
             SelectedItemChanged();
        
         }
-        //if (GUIHelpers.DoToolbarEx("Selected"))
-        //{
-        //    foreach (var item in SelectedItemDrawers)
-        //    {
-        //        item.CachedValue = item.ViewModel.Getter();
-        //        var unityDrawer = InvertGraphEditor.PlatformDrawer as UnityDrawer;
-        //        unityDrawer.DrawInspector(item);
-        //    }
+        if (GUIHelpers.DoToolbarEx("Selected"))
+        {
+            foreach (var item in SelectedItemDrawers)
+            {
+                item.CachedValue = item.ViewModel.Getter();
+                var unityDrawer = InvertGraphEditor.PlatformDrawer as UnityDrawer;
+                unityDrawer.DrawInspector(item);
+            }
 
-        //    var drawer = InvertGraphEditor.DesignerWindow.DiagramDrawer;
-        //    if (drawer != null)
-        //    {
-        //        var dr = drawer.Children.OfType<IInspectorDrawer>().FirstOrDefault(p => p.ViewModelObject.IsSelected);
-        //        if (dr != null)
-        //        {
-        //            dr.DrawInspector(InvertGraphEditor.PlatformDrawer);
-        //        }
-        //    }
+            var drawer = InvertGraphEditor.DesignerWindow.DiagramDrawer;
+            if (drawer != null)
+            {
+                var dr = drawer.Children.OfType<IInspectorDrawer>().FirstOrDefault(p => p.ViewModelObject.IsSelected);
+                if (dr != null)
+                {
+                    dr.DrawInspector(InvertGraphEditor.PlatformDrawer);
+                }
+            }
 
-        //}
+        }
 
         return;
         //var connectable = SelectedItem as IConnectable;

@@ -581,6 +581,7 @@ namespace Invert.Core.GraphDesigner
                         item.GetType().Name));
                     continue;
                 }
+                
                 yield return drawer;
             }
         }

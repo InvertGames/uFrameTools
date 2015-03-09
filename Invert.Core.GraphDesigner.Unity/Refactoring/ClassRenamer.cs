@@ -96,6 +96,16 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
         public void CommandExecuting(ICommandHandler handler, IEditorCommand command, object arg)
         {
+            if (command is SaveCommand)
+            {
+                var diagram = arg as DiagramViewModel;
+                if (diagram != null)
+                {
+                    Refactoring.ProcessAndApply(diagram.CurrentRepository);
+                    Debug.Log("Applied Refactors!");
+                }
+                
+            }
             
         }
 
@@ -109,7 +119,12 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
         public void ProcessInput()
         {
-            EditorGUI.HelpBox(new Rect(20f,20f,200,50),string.Format("You have {0} refactors pending.", Refactoring.Refactorers.Count),MessageType.Info );
+            EditorGUI.HelpBox(new Rect(20f,20f,200,30),string.Format("You have {0} refactors pending.", Refactoring.Refactorers.Count),MessageType.Info );
+            if (GUI.Button(new Rect(20f, 60f, 200, 30), "Apply Now"))
+            {
+                var currentProject = InvertApplication.Container.Resolve<ProjectService>().CurrentProject;
+                Refactoring.ProcessAndApply(currentProject);
+            }
         }
 
         public void BeforeDrawGraph(Rect diagramRect)
@@ -141,7 +156,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
         public IEnumerable<Refactor> Process(INodeRepository repository)
         {
             Refactorers.RemoveAll(p => !p.IsValid);
-            var files = InvertGraphEditor.GetAllFileGenerators(null, repository, false, null);
+            var files = InvertGraphEditor.GetAllFileGenerators(null, repository, false, null).Where(p=>p.Generators.Any(x=>!x.AlwaysRegenerate));
             foreach (var file in files)
             {
                 if (!File.Exists(file.SystemPath)) continue;
@@ -151,10 +166,23 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                 var changed = false;
                 foreach (var item in Refactorers)
                 {
+                    
                     parser.CompilationUnit.AcceptVisitor(item, null);
                     if (item.Changed)
                     {
                         changed = true;
+                    }
+                }
+                var finalFilename = file.SystemPath;
+                foreach (var item in Refactorers.OfType<TypeRenameRefactorer>())
+                {
+                    var fileName = Path.GetFileNameWithoutExtension(file.SystemPath);
+                    Debug.Log(string.Format("Filename Before: {0}", fileName));
+                    if (fileName == item.Old)
+                    {
+                        finalFilename = file.SystemPath.Replace(item.Old + ".cs", item.New + ".cs");
+                        Debug.Log(string.Format("Filename After: {0}", finalFilename));
+                        File.Move(file.SystemPath, finalFilename);
                     }
                 }
                 if (!changed) continue;
@@ -162,7 +190,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                 parser.CompilationUnit.AcceptVisitor(outputVisitor, null);
                 yield return new Refactor()
                 {
-                    Filename = file.SystemPath,
+                    Filename = finalFilename,
                     BeforeText = text,
                     AfterText = outputVisitor.Text,
                     
@@ -170,6 +198,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
                 InvertApplication.Log(outputVisitor.Text);
             }
+
         }
 
         public void ProcessAndApply(INodeRepository repository)
@@ -223,6 +252,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             if (typeDeclaration.Name == Old)
             {
                 typeDeclaration.Name = New;
+
                 Changed = true;
             }
             return base.VisitTypeDeclaration(typeDeclaration, data);
