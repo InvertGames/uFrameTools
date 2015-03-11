@@ -6,20 +6,47 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
+
+    /// <summary>
+    /// Events that are fired during the compilation process.
+    /// </summary>
+    public interface ICompileEvents
+    {
+        /// <summary>
+        /// When the "Save & Compile" button is clicked. This is called first
+        /// </summary>
+        /// <param name="repository">The repository we are compiling.</param>
+        /// <param name="diagramData">The diagram that is currently open</param>
+        void PreCompile(INodeRepository repository, IGraphData diagramData);
+        /// <summary>
+        /// When a file is generated, this method is called.
+        /// </summary>
+        /// <param name="generator"></param>
+        void FileGenerated(CodeFileGenerator generator);
+        /// <summary>
+        /// When saving & compiling is complete.
+        /// </summary>
+        /// <param name="repository">The repository that compiled.</param>
+        /// <param name="diagramData">The current graph that was open when compiling.</param>
+        void PostCompile(INodeRepository repository, IGraphData diagramData);
+
+    }
     public class SaveCommand : ElementsDiagramToolbarCommand
     {
         public override string Title
         {
             get { return "Save & Compile"; }
         }
-
+       
         public override void Perform(DiagramViewModel diagram)
         {
             InvertGraphEditor.Platform.SaveAssets();
             InvertGraphEditor.Platform.Progress(0, "Refactoring");
-            // Go ahead and process any code refactors
-            ProcessRefactorings(diagram);
 
+            InvertApplication.SignalEvent<ICompileEvents>(_=>_.PreCompile(diagram.CurrentRepository, diagram.DiagramData));
+
+            // Go ahead and process any code refactors
+            //ProcessRefactorings(diagram);
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
             //var generatorSettings = InvertGraphEditor.CurrentProject.GeneratorSettings;
             var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, diagram.CurrentRepository).ToArray();
@@ -57,20 +84,24 @@ namespace Invert.Core.GraphDesigner
                     InvertApplication.LogException(ex);
                     InvertApplication.Log("Coudln't create file " + fileInfo.FullName);
                 }
-
+                CodeFileGenerator generator = codeFileGenerator;
+                InvertApplication.SignalEvent<ICompileEvents>(_=>_.FileGenerated(generator));
             }
             
             foreach (var allDiagramItem in diagram.DiagramData.NodeItems)
             {
                 allDiagramItem.IsNewNode = false;
             }
-            RefactorApplied(diagram.DiagramData);
+
+            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(diagram.CurrentRepository, diagram.DiagramData));
+            //RefactorApplied(diagram.DiagramData);
             InvertGraphEditor.Platform.Progress(101f, "Done");
             InvertGraphEditor.Platform.RefreshAssets();
             diagram.Save();
 #if UNITY_DLL
             UnityEditor.AssetDatabase.SaveAssets();
 #endif
+           
           
         }
 

@@ -391,6 +391,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         //    }
         //}
         ConnectedItems.RemoveAll(p => p.Output == null || p.Input == null);
+        this.Prepare();
 
     }
 

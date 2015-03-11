@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Json;
 
@@ -45,11 +46,12 @@ public class FilterState : IJsonObject {
     public void Reload(IGraphData graphData)
     {
         
+        if (_persistedFilterStack.Count < 1) return;
         if (_persistedFilterStack.Count != (FilterStack.Count))
         {
             foreach (var filterName in _persistedFilterStack)
             {
-                var filter = graphData.GetFilters().FirstOrDefault(p => p.Name == filterName);
+                var filter = graphData.Project.GetFilters().FirstOrDefault(p => p.Name == filterName);
                 if (filter == null)
                 {
                     _persistedFilterStack.Clear();

@@ -195,7 +195,7 @@ namespace Invert.Core.GraphDesigner.Unity
                         mouse.ModifierKeyStates.Shift = false;
                     if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl || LastEvent.keyCode == KeyCode.LeftCommand || LastEvent.keyCode == KeyCode.RightCommand)
                         mouse.ModifierKeyStates.Ctrl = false;
-                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt || LastEvent.keyCode == KeyCode.LeftApple || LastEvent.keyCode == KeyCode.RightApple)
+                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt )
                         mouse.ModifierKeyStates.Alt = false;
                 }
             }
@@ -204,11 +204,11 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 if (LastEvent.type == EventType.keyDown)
                 {
-                    if (LastEvent.keyCode == KeyCode.LeftShift || LastEvent.keyCode == KeyCode.RightShift)
+                    if (LastEvent.keyCode == KeyCode.LeftShift || LastEvent.keyCode == KeyCode.RightShift )
                         mouse.ModifierKeyStates.Shift = true;
-                    if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl)
+                    if (LastEvent.keyCode == KeyCode.LeftControl || LastEvent.keyCode == KeyCode.RightControl || LastEvent.keyCode == KeyCode.LeftCommand || LastEvent.keyCode == KeyCode.RightCommand)
                         mouse.ModifierKeyStates.Ctrl = true;
-                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt)
+                    if (LastEvent.keyCode == KeyCode.LeftAlt || LastEvent.keyCode == KeyCode.RightAlt )
                         mouse.ModifierKeyStates.Alt = true;
                 }
                 // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));

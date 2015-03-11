@@ -232,6 +232,7 @@ public class ProjectRepositoryInspector : Editor
 
     private void DoDiagramInspector()
     {
+        if (InvertGraphEditor.CurrentDiagramViewModel == null) return;
         var selected = InvertGraphEditor.CurrentDiagramViewModel.SelectedGraphItem;
         //if (selected == null)
         //{

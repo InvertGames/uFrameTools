@@ -51,7 +51,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void Log(string message)
         {
-            Debug.Log(message);
+            Debug.Log(message); 
         }
 
         public void LogException(Exception ex)
@@ -89,18 +89,18 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void SetString(string name, string value)
         {
-            EditorPrefs.GetString(name, value);
+            EditorPrefs.SetString(name, value);
         }
 
         public void SetFloat(string name, float value)
         {
-            EditorPrefs.GetFloat(name, value);
+            EditorPrefs.SetFloat(name, value);
         }
 
         public void SetInt(string name, int value)
         {
 
-            EditorPrefs.GetInt(name, value);
+            EditorPrefs.SetInt(name, value);
         }
 
         public bool HasKey(string name)

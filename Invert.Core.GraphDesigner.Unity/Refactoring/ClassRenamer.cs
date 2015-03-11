@@ -12,29 +12,36 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity.Refactoring
 {
-    public class URefactor : DiagramPlugin, INodeItemEvents, ICommandEvents, IDesignerWindowEvents
+    public class URefactor : DiagramPlugin, INodeItemEvents, IDesignerWindowEvents, ICompileEvents
     {
+        public override bool Ignore
+        {
+            get { return true; }
+        }
+
         public Refactoring Refactoring = new Refactoring();
 
         public override void Initialize(uFrameContainer container)
         {
             InvertApplication.ListenFor<INodeItemEvents>(this);
-            InvertApplication.ListenFor<ICommandEvents>(this);
+            InvertApplication.ListenFor<ICompileEvents>(this);
             InvertApplication.ListenFor<IDesignerWindowEvents>(this);
         }
 
         public void Deleted(IDiagramNodeItem node)
         {
-            
+
         }
 
         public void Hidden(IDiagramNodeItem node)
         {
-            
+
         }
 
         public void Renamed(IDiagramNodeItem node, string previousName, string newName)
         {
+            if (string.IsNullOrEmpty(previousName)) return;
+
             // Hey, wait just a second :p
             var multiClassTypeNode = node as IClassRefactorable;
             if (multiClassTypeNode != null)
@@ -94,32 +101,10 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             }
         }
 
-        public void CommandExecuting(ICommandHandler handler, IEditorCommand command, object arg)
-        {
-            if (command is SaveCommand)
-            {
-                var diagram = arg as DiagramViewModel;
-                if (diagram != null)
-                {
-                    Refactoring.ProcessAndApply(diagram.CurrentRepository);
-                    Debug.Log("Applied Refactors!");
-                }
-                
-            }
-            
-        }
-
-        public void CommandExecuted(ICommandHandler handler, IEditorCommand command, object arg)
-        {
-            if (command is SaveCommand)
-            {
-                Refactoring = new Refactoring();
-            }
-        }
-
         public void ProcessInput()
         {
-            EditorGUI.HelpBox(new Rect(20f,20f,200,30),string.Format("You have {0} refactors pending.", Refactoring.Refactorers.Count),MessageType.Info );
+            if (Refactoring.Refactorers.Count < 1) return;
+            EditorGUI.HelpBox(new Rect(20f, 20f, 200, 30), string.Format("You have {0} refactors pending.", Refactoring.Refactorers.Count), MessageType.Info);
             if (GUI.Button(new Rect(20f, 60f, 200, 30), "Apply Now"))
             {
                 var currentProject = InvertApplication.Container.Resolve<ProjectService>().CurrentProject;
@@ -129,17 +114,32 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
         public void BeforeDrawGraph(Rect diagramRect)
         {
-            
+
         }
 
         public void AfterDrawGraph(Rect diagramRect)
         {
-            
+
         }
 
         public void DrawComplete()
         {
-            
+
+        }
+
+        public void PreCompile(INodeRepository repository, IGraphData diagramData)
+        {
+            Refactoring.ProcessAndApply(repository);
+        }
+
+        public void FileGenerated(CodeFileGenerator generator)
+        {
+
+        }
+
+        public void PostCompile(INodeRepository repository, IGraphData diagramData)
+        {
+            Refactoring = new Refactoring();
         }
     }
 
@@ -156,7 +156,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
         public IEnumerable<Refactor> Process(INodeRepository repository)
         {
             Refactorers.RemoveAll(p => !p.IsValid);
-            var files = InvertGraphEditor.GetAllFileGenerators(null, repository, false, null).Where(p=>p.Generators.Any(x=>!x.AlwaysRegenerate));
+            var files = InvertGraphEditor.GetAllFileGenerators(null, repository, false, null).Where(p => p.Generators.Any(x => !x.AlwaysRegenerate));
             foreach (var file in files)
             {
                 if (!File.Exists(file.SystemPath)) continue;
@@ -166,7 +166,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                 var changed = false;
                 foreach (var item in Refactorers)
                 {
-                    
+
                     parser.CompilationUnit.AcceptVisitor(item, null);
                     if (item.Changed)
                     {
@@ -193,7 +193,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                     Filename = finalFilename,
                     BeforeText = text,
                     AfterText = outputVisitor.Text,
-                    
+
                 };
 
                 InvertApplication.Log(outputVisitor.Text);
@@ -225,7 +225,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
     public class Refactorer : AbstractAstTransformer
     {
-        public bool Changed { get; set; }       
+        public bool Changed { get; set; }
         public IDiagramNodeItem Item { get; set; }
 
         public virtual bool IsValid
@@ -241,7 +241,12 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
         public string Format { get; set; }
         public override bool IsValid
         {
-            get { return Old != New; }
+            get
+            {
+                if (string.IsNullOrEmpty(Old)) return false;
+                if (string.IsNullOrEmpty(New)) return false;
+                return Old != New;
+            }
         }
 
     }
@@ -263,11 +268,11 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             return string.Format("Rename {0} to {1}", Old, New);
         }
 
-     
+
     }
     public class IdentifierRenameRefactorer : RenameRefactorer
     {
- 
+
         public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
         {
             if (identifierExpression.Identifier == Old)

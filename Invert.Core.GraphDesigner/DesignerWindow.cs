@@ -122,7 +122,7 @@ namespace Invert.Core.GraphDesigner
 
         public void LoadDiagram(IGraphData diagram)
         {
-         
+
             if (diagram == null) return;
             try
             {
@@ -133,7 +133,7 @@ namespace Invert.Core.GraphDesigner
                 //SerializedGraph = new SerializedObject(diagram as UnityEngine.Object);
                 //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
                 DiagramDrawer = new DiagramDrawer(new DiagramViewModel(diagram, CurrentProject));
-               
+
             }
             catch (Exception ex)
             {
@@ -146,8 +146,8 @@ namespace Invert.Core.GraphDesigner
             DiagramDrawer.Dirty = true;
             //DiagramDrawer.Data.ApplyFilter();
             DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
-        
-           
+
+
         }
 
         public ModifierKeyState ModifierKeyStates
@@ -158,7 +158,7 @@ namespace Invert.Core.GraphDesigner
 
         private MouseEvent _event;
         private ModifierKeyState _modifierKeyStates;
-        
+
         private ICommandUI _toolbar;
         private DesignerViewModel _designerViewModel;
         private bool _drawToolbar = true;
@@ -189,14 +189,14 @@ namespace Invert.Core.GraphDesigner
         {
             _designerViewModel = null;
             DiagramDrawer = null;
-            
+
             if (project.CurrentGraph != null)
             {
                 LoadDiagram(project.CurrentGraph);
             }
 
         }
-         
+
         public IProjectRepository CurrentProject
         {
             get { return ProjectService.CurrentProject; }
@@ -213,7 +213,7 @@ namespace Invert.Core.GraphDesigner
             base.Loaded(container);
             ProjectService = container.Resolve<ProjectService>();
             InvertApplication.ListenFor<IProjectEvents>(this);
-            
+
         }
 
         public ProjectService ProjectService { get; set; }
@@ -246,7 +246,7 @@ namespace Invert.Core.GraphDesigner
                 var tabsRect = new Rect(0, toolbarTopRect.height, width, 31);
 
                 diagramRect = new Rect(0f, tabsRect.y + tabsRect.height, width - 3,
-                    height - ((toolbarTopRect.height*2)) - tabsRect.height - 20);
+                    height - ((toolbarTopRect.height * 2)) - tabsRect.height - 20);
                 var toolbarBottomRect = new Rect(0f, diagramRect.y + diagramRect.height, width - 3,
                     toolbarTopRect.height);
 
@@ -266,12 +266,12 @@ namespace Invert.Core.GraphDesigner
                 DiagramRect = diagramRect;
                 DrawDiagram(drawer, scrollPosition, scale, diagramRect);
             }
-          
 
-         
 
-            InvertApplication.SignalEvent<IDesignerWindowEvents>(_=>_.DrawComplete());
-            
+
+
+            InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.DrawComplete());
+
         }
 
         private bool DrawDiagram(IPlatformDrawer drawer, Vector2 scrollPosition, float scale, Rect diagramRect)
@@ -287,8 +287,8 @@ namespace Invert.Core.GraphDesigner
                 }
             }
 
-            
-            if (DiagramDrawer !=null && DiagramViewModel != null && InvertGraphEditor.Settings.UseGrid)
+
+            if (DiagramDrawer != null && DiagramViewModel != null && InvertGraphEditor.Settings.UseGrid)
             {
                 var softColor = InvertGraphEditor.Settings.GridLinesColor;
                 var hardColor = InvertGraphEditor.Settings.GridLinesColorSecondary;
@@ -315,7 +315,7 @@ namespace Invert.Core.GraphDesigner
                     }
 
 
-                    x += DiagramViewModel.Settings.SnapSize*scale;
+                    x += DiagramViewModel.Settings.SnapSize * scale;
                     every10++;
                 }
                 var y = -scrollPosition.y;
@@ -338,24 +338,26 @@ namespace Invert.Core.GraphDesigner
                     }
 
 
-                    y += DiagramViewModel.Settings.SnapSize*scale;
+                    y += DiagramViewModel.Settings.SnapSize * scale;
                     every10++;
                 }
             }
-            InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.BeforeDrawGraph(DiagramRect));
             if (DiagramDrawer != null)
             {
+                InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.BeforeDrawGraph(DiagramRect));
+
                 DiagramDrawer.Draw(drawer, 1f);
+
+
+                InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.ProcessInput());
+                InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.AfterDrawGraph(DiagramRect));
             }
-            
-            InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.ProcessInput());
-            InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.AfterDrawGraph(DiagramRect));
             return false;
         }
 
         public Rect DiagramRect { get; set; }
 
-      
+
         public DiagramViewModel DiagramViewModel
         {
             get
@@ -376,7 +378,7 @@ namespace Invert.Core.GraphDesigner
 
         public void SwitchDiagram(IGraphData data)
         {
-            
+
             Designer.OpenTab(data);
             LoadDiagram(CurrentProject.CurrentGraph);
         }
@@ -415,12 +417,12 @@ namespace Invert.Core.GraphDesigner
                     CurrentProject.Save();
                 }
             }
-            
+
         }
 
         public void CommandExecuting(IEditorCommand command)
         {
         }
     }
-    
+
 }
