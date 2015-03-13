@@ -82,65 +82,6 @@
     <Compile Include="uFrame15\SubSystemPathStrategy.cs" />
     <Compile Include="uFrameCorePlugin.cs" />
     <Compile Include="uFrame15\OldConnectionStrategies\ComputedPropertyInputsConnectionStrategy.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\BinderNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\ElementComponentNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\ElementComputedPropertyNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\ElementNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\ElementsGraphRootNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\ElementViewComponentNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\ElementViewNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\HandlerNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\SceneManagerNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\StateMachineNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\StateNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Drawers\SubsystemNodeDrawer.cs" />
-    <Compile Include="uFrameGraphs\Editor\Graphs\ElementsGraph.cs" />
-    <Compile Include="uFrameGraphs\Editor\Graphs\StateMachineGraph.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\BinderNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\ElementComponentNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\ElementComputedPropertyNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\ElementNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\ElementsGraphRootNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\ElementViewComponentNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\ElementViewNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\HandlerNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\SceneManagerNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\StateMachineNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\StateNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Nodes\SubsystemNode.cs" />
-    <Compile Include="uFrameGraphs\Editor\Plugins\GameFramework.cs" />
-    <Compile Include="uFrameGraphs\Editor\Plugins\uFrameGraph.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\CollectionChildItem.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\CommandChildItem.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\ComponentsReference.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\ComputedSubPropertiesReference.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\PropertyChildItem.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\RegisteredInstanceReference.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\SceneManagerTransitionReference.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\StateMachineTransitionChildItem.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\StateTransitionReference.cs" />
-    <Compile Include="uFrameGraphs\Editor\Sections\ViewBindingsReference.cs" />
-    <Compile Include="uFrameGraphs\Editor\Slots\BinderComponentSlot.cs" />
-    <Compile Include="uFrameGraphs\Editor\Slots\ElementInputSlot.cs" />
-    <Compile Include="uFrameGraphs\Editor\Slots\ExportSubSystemSlot.cs" />
-    <Compile Include="uFrameGraphs\Editor\Slots\Handlers.cs" />
-    <Compile Include="uFrameGraphs\Editor\Slots\ImportSubSystemSlot.cs" />
-    <Compile Include="uFrameGraphs\Editor\Slots\ScenePropertiesSlot.cs" />
-    <Compile Include="uFrameGraphs\Editor\Slots\StartStateSlot.cs" />
-    <Compile Include="uFrameGraphs\Editor\Slots\SubsystemSlot.cs" />
-    <Compile Include="uFrameGraphs\Editor\uFramePlugin.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\BinderNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\ElementComponentNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\ElementComputedPropertyNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\ElementNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\ElementsGraphRootNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\ElementViewComponentNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\ElementViewNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\HandlerNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\SceneManagerNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\StateMachineNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\StateNodeViewModel.cs" />
-    <Compile Include="uFrameGraphs\Editor\ViewModels\SubsystemNodeViewModel.cs" />
     <Compile Include="uFrame15\ModelData\ModelClassNodeDrawer.cs" />
     <Compile Include="uFrame15\ModelData\ModelClassNodeViewModel.cs" />
     <Compile Include="uFrame15\Refactoring\RenameCollectionRefactorer.cs" />
@@ -186,10 +127,6 @@
     <Compile Include="uFrame15\OldConnectionStrategies\ViewInheritanceConnectionStrategy.cs" />
     <Compile Include="uFrame15\OldViewModels\Elements\ElementNodeViewModel.cs" />
     <Compile Include="uFrameContainerExtensions.cs" />
-    <Compile Include="uFrameGraphs\GameFramework.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>GameFramework.ufgraph</DependentUpon>
-    </Compile>
     <Compile Include="Upgrading\UFrame15Upgrade.cs" />
     <Compile Include="Windows\AddBindingWindow.cs" />
     <Compile Include="uFrame15\ComputedProperties.cs" />
@@ -250,11 +187,6 @@
     <Compile Include="uFrame15\IAssemblyNameProvider.cs" />
     <Compile Include="uFrameVersionProcessor.cs" />
     <None Include="documentation.dxp" />
-    <None Include="uFrameGraphs\GameFramework.ufgraph">
-      <Generator>UFrameFileGenerator</Generator>
-      <CustomToolNamespace>Invert.uFrame.Editor</CustomToolNamespace>
-      <LastGenOutput>GameFramework.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Invert.Core.GraphDesigner.Unity\Invert.Core.GraphDesigner.Unity.csproj">

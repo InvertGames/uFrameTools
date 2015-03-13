@@ -12,18 +12,8 @@ namespace Invert.Core.GraphDesigner
         void AfterDrawGraph(Rect diagramRect);
         void DrawComplete();
     }
-    public class DesignerWindow : DiagramPlugin, IProjectEvents, IGraphWindow
+    public class DesignerWindow : IGraphWindow
     {
-        public override bool Enabled
-        {
-            get { return true; }
-            set { base.Enabled = value; }
-        }
-
-        public override bool Required
-        {
-            get { return true; }
-        }
 
         public string LastLoadedDiagram
         {
@@ -122,7 +112,7 @@ namespace Invert.Core.GraphDesigner
 
         public void LoadDiagram(IGraphData diagram)
         {
-
+            InvertGraphEditor.DesignerWindow = this;
             if (diagram == null) return;
             try
             {
@@ -133,20 +123,21 @@ namespace Invert.Core.GraphDesigner
                 //SerializedGraph = new SerializedObject(diagram as UnityEngine.Object);
                 //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
                 DiagramDrawer = new DiagramDrawer(new DiagramViewModel(diagram, CurrentProject));
+               
+                MouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer);
+                DiagramDrawer.Dirty = true;
+                //DiagramDrawer.Data.ApplyFilter();
+                DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
 
             }
             catch (Exception ex)
             {
+                
                 InvertApplication.LogException(ex);
                 InvertApplication.Log("Either a plugin isn't installed or the file could no longer be found. See Exception error");
 
             }
-            InvertGraphEditor.DesignerWindow = this;
-            MouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer);
-            DiagramDrawer.Dirty = true;
-            //DiagramDrawer.Data.ApplyFilter();
-            DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
-
+          
 
         }
 
@@ -162,6 +153,7 @@ namespace Invert.Core.GraphDesigner
         private ICommandUI _toolbar;
         private DesignerViewModel _designerViewModel;
         private bool _drawToolbar = true;
+        private ProjectService _projectService;
 
         public MouseEvent MouseEvent
         {
@@ -171,28 +163,23 @@ namespace Invert.Core.GraphDesigner
 
         public DiagramDrawer DiagramDrawer { get; set; }
 
-        public void ProjectLoaded(IProjectRepository project)
-        {
-
-        }
-
-        public void ProjectUnloaded(IProjectRepository project)
-        {
-
-        }
-
-        public void ProjectRemoved(IProjectRepository project)
-        {
-        }
-
         public void ProjectChanged(IProjectRepository project)
         {
+            
             _designerViewModel = null;
+            
+            _projectService = null;
+            
             DiagramDrawer = null;
 
             if (project.CurrentGraph != null)
             {
                 LoadDiagram(project.CurrentGraph);
+                
+            }
+            else
+            {
+                
             }
 
         }
@@ -203,20 +190,24 @@ namespace Invert.Core.GraphDesigner
             set { ProjectService.CurrentProject = value; }
         }
 
-        public override void Initialize(uFrameContainer container)
+        //public override void Initialize(uFrameContainer container)
+        //{
+
+        //}
+
+        //public override void Loaded(uFrameContainer container)
+        //{
+        //    base.Loaded(container);
+        //    //ProjectService = container.Resolve<ProjectService>();
+        //    //InvertApplication.ListenFor<IProjectEvents>(this);
+
+        //}
+
+        public ProjectService ProjectService
         {
-
+            get { return _projectService ?? (_projectService = InvertGraphEditor.Container.Resolve<ProjectService>()); }
+            set { _projectService = value; }
         }
-
-        public override void Loaded(uFrameContainer container)
-        {
-            base.Loaded(container);
-            ProjectService = container.Resolve<ProjectService>();
-            InvertApplication.ListenFor<IProjectEvents>(this);
-
-        }
-
-        public ProjectService ProjectService { get; set; }
 
         public ICommandUI Toolbar
         {
@@ -269,11 +260,12 @@ namespace Invert.Core.GraphDesigner
 
 
 
-
+            ParentHandler.DrawComplete();
             InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.DrawComplete());
 
         }
 
+        public IDesignerWindowEvents ParentHandler { get; set; }
         private bool DrawDiagram(IPlatformDrawer drawer, Vector2 scrollPosition, float scale, Rect diagramRect)
         {
             if (DiagramDrawer == null)
@@ -344,12 +336,12 @@ namespace Invert.Core.GraphDesigner
             }
             if (DiagramDrawer != null)
             {
+                ParentHandler.BeforeDrawGraph(DiagramRect);
                 InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.BeforeDrawGraph(DiagramRect));
-
                 DiagramDrawer.Draw(drawer, 1f);
-
-
+                ParentHandler.ProcessInput();
                 InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.ProcessInput());
+                ParentHandler.AfterDrawGraph(diagramRect);
                 InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.AfterDrawGraph(DiagramRect));
             }
             return false;

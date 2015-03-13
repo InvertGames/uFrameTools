@@ -82,9 +82,15 @@ public class ProjectRepositoryInspector : Editor
                     ShowArrow = true,
                     OnShowOptions = () =>
                     {
+                        if (!InvertGraphEditor.Platform.MessageBox("Confirm Delete",
+                            "Are you sure you want to delete this diagram? It will be removed completely.", "Yes",
+                            "Cancel"))
+                        return;
+
+
                         var items = Target.Diagrams.ToList();
                         items.RemoveAt(index1);
-
+                        
                         var so = new SerializedObject(target);
                         so.Update();
                         var property = serializedObject.FindProperty("_diagrams");
@@ -96,6 +102,7 @@ public class ProjectRepositoryInspector : Editor
                             property.GetArrayElementAtIndex(i).objectReferenceValue = item;
                         }
                         so.ApplyModifiedProperties();
+                        AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(items[index1]));
                         var project = InvertApplication.Container.Resolve<ProjectService>();
                         project.RefreshProjects();
                     }
@@ -105,23 +112,7 @@ public class ProjectRepositoryInspector : Editor
       
 
         }
-        //if (InvertGraphEditor.CurrentDiagramViewModel == null) return;
-        //InvertGraphEditor.CurrentDiagramViewModel.LoadInspector();
-        //var diagramInspectorDrawer = new DiagramInspectorDrawer(InvertGraphEditor.CurrentDiagramViewModel);
-        
-        //var lastRectangle = GUILayoutUtility.GetLastRect();
-        //diagramInspectorDrawer.InspectorWidth = Screen.width;
-        //var rect = GUILayoutUtility.GetRect(Screen.width, Screen.width, 1f,1f);
-        
-        //diagramInspectorDrawer.Refresh(InvertGraphEditor.PlatformDrawer, new Vector2(rect.x, rect.y ));
-        //foreach (var child in diagramInspectorDrawer.Children)
-        //{
-        //    child.Bounds = GUILayoutUtility.GetRect(Screen.width, Screen.width, child.Bounds.height, child.Bounds.height);
-        //    child.Draw(InvertGraphEditor.PlatformDrawer,1f);
-        //}
-        //diagramInspectorDrawer.Draw(InvertGraphEditor.PlatformDrawer, 1f);
-
-        //GUILayout.Space(diagramInspectorDrawer.Bounds.height);
+       
         if (InvertGraphEditor.CurrentDiagramViewModel != null)
         if (GUIHelpers.DoToolbarEx("Project Issues"))
         {

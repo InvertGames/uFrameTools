@@ -135,7 +135,7 @@ namespace Invert.Core.GraphDesigner
         {
             var output = connectionViewModel.ConnectorA.DataObject as IConnectable;
             var input = connectionViewModel.ConnectorB.DataObject as IConnectable;
-            var diagramData = connectionViewModel.DiagramViewModel.DiagramData;
+            var diagramData = InvertGraphEditor.CurrentDiagramViewModel.DiagramData;
 
             if (!output.AllowMultipleOutputs)
             {

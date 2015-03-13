@@ -247,7 +247,11 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DoCommand(IEditorCommand command)
         {
 
-
+            var style = EditorStyles.toolbarButton;
+            if (command is IDropDownCommand)
+            {
+                style = EditorStyles.toolbarDropDown;
+            }
             if (command is IDynamicOptionsCommand)
             {
                 var obj = Handler.ContextObjects.FirstOrDefault(p => command.For.IsAssignableFrom(p.GetType()));
@@ -255,14 +259,14 @@ namespace Invert.Core.GraphDesigner.Unity
                 var cmd = command as IDynamicOptionsCommand;
                 foreach (var ufContextMenuItem in cmd.GetOptions(obj))
                 {
-                    if (GUILayout.Button(new GUIContent(ufContextMenuItem.Name), EditorStyles.toolbarButton))
+                    if (GUILayout.Button(new GUIContent(ufContextMenuItem.Name), style))
                     {
                         cmd.SelectedOption = ufContextMenuItem;
                         InvertGraphEditor.ExecuteCommand(command);
                     }
                 }
             }
-            else if (GUILayout.Button(new GUIContent(command.Title), EditorStyles.toolbarButton))
+            else if (GUILayout.Button(new GUIContent(command.Title), style))
             {
 
                 if (command is IParentCommand)
@@ -279,7 +283,6 @@ namespace Invert.Core.GraphDesigner.Unity
             GUI.enabled = true;
         }
     }
-
 
     public class UnityDrawer : IPlatformDrawer
     {
@@ -366,7 +369,8 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void EndRender()
         {
-
+            EditorGUI.FocusTextInControl("EditingField");
+            
         }
 
         public void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale)
@@ -495,22 +499,21 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawingComplete()
         {
-            if (DiagramDrawer.IsEditingField)
-            {
+            //if (DiagramDrawer.IsEditingField)
+            //{
                 //GUI.FocusControl("EditingField");
 
-                EditorGUI.FocusTextInControl("EditingField");
-                EditorGUI.FocusTextInControl("EditingField");
-            }
-            else
-            {
+              
+            //}
+            //else
+            //{
 
-            }
+            //}
         }
 
         public void DrawTextbox(string id, Rect rect, string value, object itemTextEditingStyle, Action<string, bool> valueChangedAction)
         {
-            EditorGUI.BeginChangeCheck();
+            //EditorGUI.BeginChangeCheck();
             GUI.SetNextControlName("EditingField");
             DiagramDrawer.IsEditingField = true;
             var newName = EditorGUI.TextField(rect, value, (GUIStyle)itemTextEditingStyle);
@@ -523,6 +526,7 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 valueChangedAction(value, true);
             }
+            EditorGUI.FocusTextInControl("EditingField");
         }
 
         public void DrawingStarted()

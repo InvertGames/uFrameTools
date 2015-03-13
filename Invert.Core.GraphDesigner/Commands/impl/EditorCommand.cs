@@ -12,7 +12,7 @@ namespace Invert.Core.GraphDesigner
  IEditorCommand
     {
         private List<IEditorCommand> _hooks;
-        private string _title;
+        protected string _title;
 
 
         public abstract Type For { get; }

@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
-    public class UnityPlatformPlugin : DiagramPlugin, INodeItemEvents
+    public class UnityPlatformPlugin : DiagramPlugin, INodeItemEvents, IProjectEvents
     {
         public override decimal LoadPriority
         {
@@ -35,6 +35,7 @@ namespace Invert.Core.GraphDesigner.Unity
         public override void Initialize(uFrameContainer container)
         {
             InvertApplication.ListenFor<INodeItemEvents>(this);
+            InvertApplication.ListenFor<IProjectEvents>(this);
             container.RegisterInstance<IPlatformDrawer>(InvertGraphEditor.PlatformDrawer);
             container.RegisterInstance<IStyleProvider>(new UnityStyleProvider());
 #if DOCS
@@ -100,6 +101,34 @@ namespace Invert.Core.GraphDesigner.Unity
                     openGraph.GraphName = newName;
                 }
             }
+        }
+
+        public void ProjectLoaded(IProjectRepository project)
+        {
+            
+        }
+
+        public void ProjectUnloaded(IProjectRepository project)
+        {
+            
+        }
+
+        public void ProjectRemoved(IProjectRepository project)
+        {
+            
+        }
+
+        public void ProjectChanged(IProjectRepository project)
+        {
+            if (InvertGraphEditor.DesignerWindow != null)
+            {
+                InvertGraphEditor.DesignerWindow.ProjectChanged(project);
+            }
+        }
+
+        public void ProjectsRefreshed(ProjectService service)
+        {
+            
         }
     }
 

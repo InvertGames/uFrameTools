@@ -6,5 +6,6 @@ namespace Invert.Core.GraphDesigner
         float Scale { get; set; }
         DiagramDrawer DiagramDrawer { get; set; }
         void RefreshContent();
+        void ProjectChanged(IProjectRepository project);
     }
 }

@@ -16,6 +16,7 @@ namespace Invert.Core.GraphDesigner
         {
             PerformAction = performAction;
             _name = name;
+            _title = name;
             _group = group;
         }
 

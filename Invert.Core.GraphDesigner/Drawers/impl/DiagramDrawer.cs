@@ -80,8 +80,7 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(IPlatformDrawer platform, float scale)
         {
 
-            bool shouldEditField = IsEditingField;
-            IsEditingField = false;
+       
             // Make sure they've upgraded to the latest json format
 #if UNITY_DLL
             if (UpgradeOldProject()) return;

@@ -202,7 +202,12 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return InvertApplication.Container.Resolve<NodeConfigBase>(this.GetType().Name);
+                var config = InvertApplication.Container.Resolve<NodeConfigBase>(this.GetType().Name);
+                if (config == null)
+                {
+                    throw new Exception("Config for type " + this.GetType().Name + " couldn't be found.");
+                }
+                return config;
             }
         }
         
@@ -551,6 +556,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                
                 foreach (var slot in Config.GraphItemConfigurations.OfType<NodeInputConfig>())
                 {
                     yield return slot.GetDataObject(this) as GenericSlot;

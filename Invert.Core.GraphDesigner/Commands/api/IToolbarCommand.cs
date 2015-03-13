@@ -4,4 +4,9 @@ namespace Invert.Core.GraphDesigner
     {
         ToolbarPosition Position { get; }
     }
+
+    public interface IDropDownCommand
+    {
+        
+    }
 }

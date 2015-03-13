@@ -135,10 +135,6 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
     {
         get
         {
-            if (!InvertApplication.IsMainThread)
-            {
-                return _name;
-            }
             return (_name = name);
         }
         set
@@ -203,11 +199,11 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         get
         {
             if (Diagrams == null) return null;
-            if (_currentGraph == null)
+            if (_currentGraph == null || object.ReferenceEquals(_currentGraph, null))
             {
                 if (!String.IsNullOrEmpty(LastLoadedDiagram))
                 {
-                    CurrentGraph = Enumerable.FirstOrDefault<ScriptableObject>(Diagrams, p => p != null && p.name == LastLoadedDiagram) as IGraphData;
+                    CurrentGraph = Enumerable.FirstOrDefault<ScriptableObject>(Diagrams, p => p != null && !object.ReferenceEquals(p, null) && p.name == LastLoadedDiagram) as IGraphData;
                 }
                 if (_currentGraph == null)
                 {

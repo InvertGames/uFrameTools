@@ -107,6 +107,7 @@ namespace Invert.Core.GraphDesigner
         void ProjectUnloaded(IProjectRepository project);
         void ProjectRemoved(IProjectRepository project);
         void ProjectChanged(IProjectRepository project);
+        void ProjectsRefreshed(ProjectService service);
     }
 
     public class ProjectService : DiagramPlugin
@@ -127,7 +128,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (_currentProject == null)
+                if (_currentProject == null || object.ReferenceEquals(_currentProject, null))
                 {
                 
                     if (!String.IsNullOrEmpty(LastLoadedProject))
@@ -150,14 +151,16 @@ namespace Invert.Core.GraphDesigner
 
                 if (value != null)
                 {
-                    if (changed) 
-                    {
-                        InvertApplication.SignalEvent<IProjectEvents>(_ => _.ProjectChanged(value));
-                    }
+                 
                    
                     LastLoadedProject = value.Name;
                     if (_currentProject.CurrentGraph != null)
                     _currentProject.CurrentGraph.SetProject(_currentProject);
+
+                    if (changed)
+                    {
+                        InvertApplication.SignalEvent<IProjectEvents>(_ => _.ProjectChanged(value));
+                    }
                 }
             }
         }
@@ -216,11 +219,14 @@ namespace Invert.Core.GraphDesigner
             }
 
             _projects = projects;
+            InvertApplication.Log("Projects Loaded");
         }
 
         public void RefreshProjects()
         {
+            _currentProject = null;
             LoadProjects();
+            InvertApplication.SignalEvent<IProjectEvents>(p => p.ProjectsRefreshed(this));
         }
     }
 

@@ -13,25 +13,6 @@ namespace Invert.Core.GraphDesigner.Unity
     {
         private Vector2 _scrollPosition;
 
-        private DesignerViewModel _designerViewModel;
-
-        public DesignerViewModel Designer
-        {
-            get
-            {
-                if (CurrentProject == null)
-                    return null;
-                if (_designerViewModel == null)
-                {
-                    _designerViewModel = new DesignerViewModel()
-                    {
-                        Data = CurrentProject
-                    };
-                }
-                return _designerViewModel;
-            }
-        }
-
         public IEnumerable<object> ContextObjects
         {
             get
@@ -73,13 +54,11 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 if (_designerWindow == null)
                 {
-                    _designerWindow = InvertApplication.Plugins.OfType<DesignerWindow>().FirstOrDefault();
-                    //if (_designerWindow != null)
-                    if (DesignerWindowDisposer != null)
+                    _designerWindow = new DesignerWindow()
                     {
-                        DesignerWindowDisposer();
-                    }
-                    DesignerWindowDisposer = InvertApplication.ListenFor<IDesignerWindowEvents>(this);
+                        ParentHandler = this
+                    };
+                    
                 }
                 return _designerWindow;
             }
@@ -105,10 +84,7 @@ namespace Invert.Core.GraphDesigner.Unity
             }
             InvertApplication.Container = null;
         }
-        public IProjectRepository CurrentProject
-        {
-            get { return DesignerWindow.CurrentProject; }
-        }
+   
         private void HandleInput(MouseEvent mouse)
         {
             if (DiagramDrawer == null) return;
@@ -137,9 +113,9 @@ namespace Invert.Core.GraphDesigner.Unity
                 }
                 if (IsFocused)
                 {
-                    if (CurrentProject != null)
+                    if (DesignerWindow.CurrentProject != null)
                     {
-                        Selection.activeObject = CurrentProject as UnityEngine.Object;
+                        Selection.activeObject = DesignerWindow.CurrentProject as UnityEngine.Object;
                         EditorUtility.SetDirty(Selection.activeObject);
                     }
                 }
@@ -362,5 +338,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             
         }
+
+     
     }
 }

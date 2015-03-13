@@ -10,6 +10,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Perform(DiagramViewModel node)
         {
+            node.NothingSelected();
             node.DiagramData.PopToFilter(SelectedOption.Name);
         }
 
@@ -45,7 +46,7 @@ namespace Invert.Core.GraphDesigner
         public MultiOptionType OptionsType { get{ return MultiOptionType.Buttons; } }
     }
 
-    public class SelectProjectCommand : ToolbarCommand<DesignerWindow>
+    public class SelectProjectCommand : ToolbarCommand<DesignerWindow>, IDropDownCommand
     {
       
 
@@ -61,12 +62,12 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 var ps = ProjectService;
-                if (ps == null) return "-- Select Project --";
-                if (ps.CurrentProject != null)
+                if (ps == null) return "Project: [None]";
+                if (ps.CurrentProject != null && !object.ReferenceEquals(ps.CurrentProject, null))
                 {
-                    return ps.CurrentProject.Name;
+                    return "Project: " + ps.CurrentProject.Name;
                 }
-                return "-- Select Project --";
+                return "Project: [None]";
             }
         }
 
@@ -79,6 +80,7 @@ namespace Invert.Core.GraphDesigner
             //var menu = new GenericMenu();
             foreach (var project in projects)
             {
+                
                 IProjectRepository project1 = project;
                 var command = new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
@@ -112,7 +114,7 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    public class SelectDiagramCommand : ToolbarCommand<DesignerWindow>
+    public class SelectDiagramCommand : ToolbarCommand<DesignerWindow>, IDropDownCommand
     {
      
         public ProjectService ProjectService
@@ -130,10 +132,10 @@ namespace Invert.Core.GraphDesigner
                 var ps = ProjectService;
                 if (ps == null || ps.CurrentProject == null || ps.CurrentProject.CurrentGraph == null || object.ReferenceEquals(ps.CurrentProject.CurrentGraph, null))
                 {
-                    return "-- Select Diagram --";
+                    return "Graph: [None]";
                 }
 
-                return ps.CurrentProject.CurrentGraph.Name;
+                return string.Format("Graph: {0}", ps.CurrentProject.CurrentGraph.Name);
             }
         }
 
@@ -149,6 +151,7 @@ namespace Invert.Core.GraphDesigner
                 var simpleEditorCommand = new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
                     projectService.CurrentProject.CurrentGraph = item1;
+                    
                     node.SwitchDiagram(item1);
                 }, item.Name, "Switch");
              

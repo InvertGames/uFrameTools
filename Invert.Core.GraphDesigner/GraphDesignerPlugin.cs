@@ -92,7 +92,7 @@ namespace Invert.Core.GraphDesigner
             container.RegisterInstance<IToolbarCommand>(new SelectDiagramCommand(), "SelectDiagramCommand");
             container.RegisterInstance<IToolbarCommand>(new PopToFilterCommand(), "PopToFilterCommand");
             container.RegisterInstance<IToolbarCommand>(new SaveCommand(), "SaveCommand");
-            container.RegisterInstance<IToolbarCommand>(new AddNewCommand(), "AddNewCommand");
+            //container.RegisterInstance<IToolbarCommand>(new AddNewCommand(), "AddNewCommand");
             
 
             // For no selection diagram context menu

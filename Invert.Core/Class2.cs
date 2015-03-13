@@ -62,6 +62,11 @@ namespace Invert.Core
         }
     }
 
+    public interface ISystemResetEvents
+    {
+        void SystemResetting();
+        void SystemRestarted();
+    }
     public static class InvertApplication
     {
         public static bool IsTestMode { get; set; }
@@ -126,7 +131,14 @@ namespace Invert.Core
                 _container = value;
                 if (_container == null)
                 {
+                    IEventManager eventManager;
+                    EventManagers.TryGetValue(typeof (ISystemResetEvents), out eventManager);
                     EventManagers.Clear();
+                    var events = eventManager as EventManager<ISystemResetEvents>;
+                    if (events != null)
+                    {
+                        events.Signal(_=>_.SystemResetting());
+                    }
                 }
             }
         }
@@ -233,7 +245,6 @@ namespace Invert.Core
         private static void InitializeContainer(IUFrameContainer container)
         {
             _plugins = null;
-            MainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
             container.RegisterInstance<IUFrameContainer>(container);
             var pluginTypes = GetDerivedTypes<ICorePlugin>(false, false).ToArray();
             // Load all plugins
@@ -264,7 +275,7 @@ namespace Invert.Core
                 }
                    
             }
-
+            SignalEvent<ISystemResetEvents>(_=>_.SystemRestarted());
         }
 
         private static Dictionary<Type, IEventManager> EventManagers
