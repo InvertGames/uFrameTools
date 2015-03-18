@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Data.Odbc;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
+using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -78,10 +80,10 @@ namespace Invert.Core.GraphDesigner
 
     public abstract class CrossDiagramCommand : EditorCommand<DiagramNodeViewModel>, IDiagramContextCommand, IDynamicOptionsCommand, IDiagramNodeCommand
     {
-        public override void Execute(object item)
+        public override void Execute(ICommandHandler handler)
         {
 
-            base.Execute(item);
+            base.Execute(handler);
             //var node = item as DiagramViewModel;
             //if (node == null) return;
 
@@ -201,9 +203,50 @@ namespace Invert.Core.GraphDesigner
             var sourceDiagram = node.Graph;
             var targetDiagram = InvertGraphEditor.DesignerWindow.DiagramViewModel.DiagramData;
             if (targetDiagram == null) return;
+            var editableFilesBefore = InvertGraphEditor.GetAllFileGenerators(null, node.Project, false).Where(p=>p.Generators.Any(x=>!x.AlwaysRegenerate)).ToArray();
 
-            targetDiagram.RemoveNode(node);
-            sourceDiagram.AddNode(node);
+            sourceDiagram.RemoveNode(node, false);
+            targetDiagram.AddNode(node);
+
+            var editableFilesAfter = InvertGraphEditor.GetAllFileGenerators(null, node.Project, false).Where(p => p.Generators.Any(x => !x.AlwaysRegenerate)).ToArray();
+            //if (editableFilesBefore.Any(p => File.Exists(System.IO.Path.Combine(p.AssetPath, p.Filename))))
+            //{
+            //    InvertGraphEditor.Platform.MessageBox("Move Files",
+            //        "Pulling this item causes some output paths to change. I'm going to move them now.", "OK");
+            //}
+            foreach (var beforeFile in editableFilesBefore)
+            {
+                var before = beforeFile.Generators.FirstOrDefault();
+                if (before == null) continue;
+                foreach (var afterFile in editableFilesAfter)
+                {
+                    var after = afterFile.Generators.FirstOrDefault();
+                    if (after == null) continue;
+
+                    if (before.ObjectData == after.ObjectData)
+                    {
+                      
+                        var beforeFilename = beforeFile.SystemPath;
+                        var afterFilename = afterFile.SystemPath;
+                        if (beforeFilename == afterFilename) continue; // No change in path
+                        if (System.IO.Path.GetFileName(beforeFilename) != System.IO.Path.GetFileName(afterFilename))
+                            continue; // Filenames aren't the same
+                        //InvertApplication.Log(string.Format("Moving {0} to {1}", beforeFilename, afterFilename));
+                        if (File.Exists(beforeFilename))
+                        File.Move(beforeFilename, afterFilename);
+                        var beforeMetaFilename = beforeFilename + ".meta";
+                        var afterMetaFilename = afterFilename + ".meta";
+
+                        if (File.Exists(beforeMetaFilename))
+                        File.Move(beforeMetaFilename, afterMetaFilename);
+                    }
+                }
+            }
+#if UNITY_DLL
+            sourceDiagram.Project.MarkDirty(sourceDiagram);
+            sourceDiagram.Project.MarkDirty(targetDiagram);
+            AssetDatabase.Refresh();
+#endif
         }
 
         public override string CanPerform(DiagramNode node)

@@ -376,6 +376,8 @@ namespace Invert.Core.GraphDesigner
         }
         public void RefreshContent()
         {
+           
+
             if (DiagramDrawer != null)
             {
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);

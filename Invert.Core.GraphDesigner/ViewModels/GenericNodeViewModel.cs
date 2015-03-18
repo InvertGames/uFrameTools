@@ -76,15 +76,15 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator
-        {
-            get { return GraphItem.ValidateInput; }
-        }
+        //public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator
+        //{
+        //    get { return GraphItem.ValidateInput; }
+        //}
 
-        public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator
-        {
-            get { return GraphItem.ValidateOutput; }
-        }
+        //public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator
+        //{
+        //    get { return GraphItem.ValidateOutput; }
+        //}
 
         protected override void CreateContent()
         {
@@ -332,11 +332,11 @@ namespace Invert.Core.GraphDesigner
         protected static void ApplyOutputConfiguration(GraphItemConfiguration inputConfig, IGraphItem dataItem, ConnectorViewModel connector, bool alwaysVisible = false)
         {
             connector.AlwaysVisible = alwaysVisible;
-            var slot = dataItem as IDiagramNodeItem;
-            if (slot != null)
-            {
-                connector.Validator = slot.ValidateOutput;
-            }
+            //var slot = dataItem as IDiagramNodeItem;
+            //if (slot != null)
+            //{
+            //    connector.Validator = slot.ValidateOutput;
+            //}
         }
 
         private void AddInput(NodeInputConfig inputConfig, GenericNode node = null)
@@ -369,11 +369,11 @@ namespace Invert.Core.GraphDesigner
 
             connector.AlwaysVisible = alwaysVisible;
             
-            var slot = dataItem as IDiagramNodeItem;
-            if (slot != null)
-            {
-                connector.Validator = slot.ValidateInput;
-            }
+            //var slot = dataItem as IDiagramNodeItem;
+            //if (slot != null)
+            //{
+            //    connector.Validator = slot.ValidateInput;
+            //}
        
         }
 

@@ -28,7 +28,7 @@ public class ElementData : ElementDataBase, IDesignerType
         get
         {
             return
-                Project.GetSubSystems().SelectMany(p => p.Instances).Where(p => p.RelatedType == this.Identifier);
+                Graph.GetSubSystems().SelectMany(p => p.Instances).Where(p => p.RelatedType == this.Identifier);
         }
     }
 
@@ -209,7 +209,7 @@ public class ElementData : ElementDataBase, IDesignerType
         get
         {
             HashSet<ElementData> set = new HashSet<ElementData>();
-            foreach (ElementData element in Project.GetElements())
+            foreach (ElementData element in Graph.GetElements())
             {
                 foreach (IBindableTypedItem item in element.ViewModelItems)
                 {
@@ -289,7 +289,7 @@ public class ElementData : ElementDataBase, IDesignerType
     {
         get
         {
-            foreach (var v in Project.GetViews())
+            foreach (var v in Graph.GetViews())
             {
                 if (v.ForElementIdentifier == this.Identifier)
                 {
@@ -329,7 +329,7 @@ public class ElementData : ElementDataBase, IDesignerType
         get
         {
             return
-                Project.NodeItems.OfType<SubSystemData>()
+                Graph.NodeItems.OfType<SubSystemData>()
                     .SelectMany(p => p.Instances).Any(p => p.RelatedType == this.Identifier);
 
         }
@@ -389,7 +389,7 @@ public class ElementData : ElementDataBase, IDesignerType
         base.RemoveFromDiagram();
         Project.RemoveNode(this);
 
-        foreach (var elementData in Project.GetElements())
+        foreach (var elementData in Graph.GetElements())
         {
             foreach (var diagramSubItem in elementData.ViewModelItems)
             {

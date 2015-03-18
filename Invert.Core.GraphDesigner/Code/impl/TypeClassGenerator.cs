@@ -155,8 +155,8 @@ namespace Invert.Core.GraphDesigner
         public override void Initialize(CodeFileGenerator codeFileGenerator)
         {
             base.Initialize(codeFileGenerator);
-            if (!string.IsNullOrEmpty(TemplateType.Namespace))
-                TryAddNamespace(TemplateType.Namespace);
+            //if (!string.IsNullOrEmpty(TemplateType.Namespace))
+            //    TryAddNamespace(TemplateType.Namespace);
             Decleration = TemplateType.ToClassDecleration();
 
             var inheritable = Data as GenericInheritableNode;

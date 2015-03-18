@@ -18,8 +18,10 @@ namespace Invert.Core.GraphDesigner
                 {
                     foreach (var node in repository.NodeItems)
                     {
+                        if (node == filter) continue;
                         if (locations.Keys.Contains(node.Identifier))
                         {
+                            
                             yield return node;
                         }
                     }

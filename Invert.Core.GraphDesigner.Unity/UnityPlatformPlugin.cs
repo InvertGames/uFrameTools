@@ -34,14 +34,19 @@ namespace Invert.Core.GraphDesigner.Unity
         public override bool Enabled { get { return true; } set { } }
         public override void Initialize(uFrameContainer container)
         {
+            Undo.undoRedoPerformed = delegate
+            {
+                container.Resolve<ProjectService>().RefreshProjects();
+                InvertGraphEditor.DesignerWindow.RefreshContent();
+            };
             InvertApplication.ListenFor<INodeItemEvents>(this);
             InvertApplication.ListenFor<IProjectEvents>(this);
             container.RegisterInstance<IPlatformDrawer>(InvertGraphEditor.PlatformDrawer);
             container.RegisterInstance<IStyleProvider>(new UnityStyleProvider());
-#if DOCS
+//#if DOCS
             container.RegisterToolbarCommand<GenerateDocsCommand>();
             container.RegisterToolbarCommand<DocsModeCommand>();
-#endif
+//#endif
             container.RegisterToolbarCommand<ExportDiagramCommand>();
 
             container.RegisterInstance<IAssetManager>(new UnityAssetManager());
@@ -149,9 +154,12 @@ namespace Invert.Core.GraphDesigner.Unity
 								graph.Name + ".unitypackage",
 								"unitypackage",
 								"Please enter a file name to export to.");
-
+            if (path.Length != 0)
+            {
+                AssetDatabase.ExportPackage(files.Distinct().ToArray(), path, ExportPackageOptions.Default | ExportPackageOptions.Interactive);
+            }
             
-            AssetDatabase.ExportPackage(files.Distinct().ToArray(),path,ExportPackageOptions.Default | ExportPackageOptions.Interactive);
+            
         }
 
         public override string CanPerform(DiagramViewModel node)
@@ -231,6 +239,8 @@ namespace Invert.Core.GraphDesigner.Unity
         public void BeginArea(string id)
         {
             Output.AppendFormat("<div class='{0}'>",id);
+
+            
         }
 
         public void EndArea()

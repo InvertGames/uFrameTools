@@ -64,16 +64,7 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
             return NodeColor.Gray;
         }
     }
-    public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
-    {
-        return true;
-        return base.ValidateInput(a, b);
-    }
 
-    public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
-    {
-        return true;
-    }
     [Browsable(false)]
     public IShellNode ReferenceType
     {
@@ -90,11 +81,7 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
 
     }
 
-    //[InputSlot("Base Class")]
-    //public SingleInputSlot<ShellNodeTypeNode> BaseSlot { get; set; }
 
-    //[OutputSlot("Generators")]
-    //public MultiOutputSlot<ShellGeneratorTypeNode> GeneratorsSlot { get; set; }
     [Browsable(false)]
     [OutputSlot("Sub Nodes")]
     public MultiOutputSlot<ShellNodeTypeNode> SubNodesSlot { get; set; }
@@ -104,13 +91,6 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
         get { return SubNodesSlot.Items; }
     }
 
-    //public IEnumerable<ShellGeneratorTypeNode> Generators
-    //{
-    //    get
-    //    {
-    //        return GeneratorsSlot.Items;
-    //    }
-    //}
 
     [Browsable(false)]
     [ReferenceSection("Sections", SectionVisibility.WhenNodeIsFilter, false)]

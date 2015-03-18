@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Invert.Json;
 using UnityEngine;
 
@@ -211,17 +212,6 @@ namespace Invert.Core.GraphDesigner
             }
         }
         
-        public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
-        {
-            //return false;
-            return base.ValidateInput(a, b);
-        }
-
-        public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
-        {
-            //return false;
-            return base.ValidateOutput(a, b);
-        }
 
         [GeneratorProperty]
         public override string Name
@@ -710,12 +700,23 @@ namespace Invert.Core.GraphDesigner
     public class TypeReferenceNode : GenericNode, IClassTypeNode, ITypedItem
     {
         private string _fullName;
+        private string _name1;
 
         [JsonProperty]
         public override string FullName
         {
             get { return _fullName; }
             set { _fullName = value; }
+        }
+
+        [JsonProperty]
+        public override string Name
+        {
+            get { return _name1 ; }
+            set
+            {
+                _name1 = value;
+            }
         }
 
         public string ClassName
@@ -733,10 +734,10 @@ namespace Invert.Core.GraphDesigner
         {
         }
 
-        public override bool IsEditable
-        {
-            get { return false; }
-        }
+        //public override bool IsEditable
+        //{
+        //    get { return false; }
+        //}
 
         protected override void DataObjectChanged()
         {

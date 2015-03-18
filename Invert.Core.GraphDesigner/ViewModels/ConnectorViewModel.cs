@@ -28,7 +28,7 @@ namespace Invert.Core.GraphDesigner
 
         public GraphItemViewModel ConnectorFor { get; set; }
 
-        public Func<IDiagramNodeItem, IDiagramNodeItem, bool> Validator { get; set; }
+//        public Func<IDiagramNodeItem, IDiagramNodeItem, bool> Validator { get; set; }
 
         public NodeInputConfig Configuration { get; set; }
 
@@ -43,5 +43,6 @@ namespace Invert.Core.GraphDesigner
         public Type ConnectorForType { get; set; }
 
         public bool AlwaysVisible { get; set; }
+        public bool Disabled { get; set; }
     }
 }

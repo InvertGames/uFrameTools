@@ -72,7 +72,7 @@ public class StateMachineNodeData : DiagramNode,IDesignerType
 
     public ElementData Element
     {
-        get { return Project.NodeItems.OfType<ElementData>().FirstOrDefault(p => p.Identifier == ElementIdentifier); }
+        get { return Graph.NodeItems.OfType<ElementData>().FirstOrDefault(p => p.Identifier == ElementIdentifier); }
     }
     public string ElementIdentifier { get; set; }
     public string StatePropertyIdentifier { get; set; }

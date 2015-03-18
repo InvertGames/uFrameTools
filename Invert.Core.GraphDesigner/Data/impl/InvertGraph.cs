@@ -277,6 +277,11 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         PositionData.Remove(CurrentFilter, identifier);
     }
 
+    IEnumerable<ErrorInfo> INodeRepository.Validate()
+    {
+        return Validate();
+    }
+
     public virtual IDiagramFilter CreateDefaultFilter()
     {
         return null;
@@ -299,7 +304,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         Nodes.Add(data);
     }
 
-    public void RemoveNode(IDiagramNode node)
+    public void RemoveNode(IDiagramNode node,bool removePositionData = true)
     {
         if (node == RootFilter) return;
         //foreach (var item in Nodes)
@@ -309,10 +314,14 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         //        item.Locations.Remove(item.Identifier);
         //    }
         //}
-        foreach (var item in PositionData.Positions)
+        if (removePositionData)
         {
-            item.Value.Remove(node.Identifier);
+            foreach (var item in PositionData.Positions)
+            {
+                item.Value.Remove(node.Identifier);
+            }
         }
+        
         Nodes.Remove(node);
     }
 

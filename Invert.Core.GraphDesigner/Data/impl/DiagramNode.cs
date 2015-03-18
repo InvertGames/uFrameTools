@@ -50,6 +50,16 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public virtual bool AllowInputs
+        {
+            get { return true; }
+        }
+
+        public virtual bool AllowOutputs
+        {
+            get { return true; }
+        }
+
         public virtual bool AllowMultipleInputs
         {
             get { return true; }
@@ -63,6 +73,24 @@ namespace Invert.Core.GraphDesigner
         public virtual void OnConnectionApplied(IConnectable output, IConnectable input)
         {
             
+        }
+
+        public virtual bool CanOutputTo(IConnectable input)
+        {
+            if (!AllowMultipleOutputs && this.Outputs.Any())
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public virtual bool CanInputFrom(IConnectable output)
+        {
+            if (!AllowMultipleInputs && this.Inputs.Any())
+            {
+                return false;
+            }
+            return true;
         }
 
         private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
@@ -684,19 +712,7 @@ namespace Invert.Core.GraphDesigner
             return new CodeTypeReference(this.Name);
         }
 
-
-        public virtual bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
-        {
-            return true;
-            return a != b && a.GetType() != b.GetType();
-        }
-
-        public virtual bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
-        {
-            return true;
-            
-            return a != b && a.GetType() != b.GetType();
-        }
+        
 
         public virtual void Document(IDocumentationBuilder docs)
         {

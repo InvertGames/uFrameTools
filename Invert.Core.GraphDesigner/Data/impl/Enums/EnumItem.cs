@@ -171,6 +171,16 @@ public class EnumItem : IDiagramNodeItem
         get { yield break; }
     }
 
+    public virtual bool AllowInputs
+    {
+        get { return true; }
+    }
+
+    public virtual bool AllowOutputs
+    {
+        get { return true; }
+    }
+
     public bool AllowMultipleInputs
     {
         get { return false; }
@@ -184,5 +194,15 @@ public class EnumItem : IDiagramNodeItem
     public void OnConnectionApplied(IConnectable output, IConnectable input)
     {
         
+    }
+
+    public bool CanOutputTo(IConnectable input)
+    {
+        return true;
+    }
+
+    public bool CanInputFrom(IConnectable output)
+    {
+        return true;
     }
 }

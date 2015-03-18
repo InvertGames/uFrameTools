@@ -89,7 +89,7 @@ public class ProjectRepositoryInspector : Editor
 
 
                         var items = Target.Diagrams.ToList();
-                        items.RemoveAt(index1);
+                       
                         
                         var so = new SerializedObject(target);
                         so.Update();
@@ -101,8 +101,10 @@ public class ProjectRepositoryInspector : Editor
                             var item = items[i];
                             property.GetArrayElementAtIndex(i).objectReferenceValue = item;
                         }
-                        so.ApplyModifiedProperties();
+                     
                         AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(items[index1]));
+                        items.RemoveAt(index1);
+                        so.ApplyModifiedProperties();
                         var project = InvertApplication.Container.Resolve<ProjectService>();
                         project.RefreshProjects();
                     }

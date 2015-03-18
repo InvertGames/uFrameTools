@@ -188,7 +188,7 @@ namespace Invert.Core
 
         public static Type FindType(string name)
         {
-            //if (string.IsNullOrEmpty(name)) return null;
+            if (string.IsNullOrEmpty(name)) return null;
 
             foreach (var assembly in CachedAssemblies)
             {
@@ -204,7 +204,7 @@ namespace Invert.Core
 
         public static Type FindTypeByName(string name)
         {
-            //if (string.IsNullOrEmpty(name)) return null;
+            if (string.IsNullOrEmpty(name)) return null;
 
             foreach (var assembly in CachedAssemblies)
             {

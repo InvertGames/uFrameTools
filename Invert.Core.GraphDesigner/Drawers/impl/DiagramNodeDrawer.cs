@@ -282,24 +282,33 @@ namespace Invert.Core.GraphDesigner
 
 
 
-            if (!ViewModel.IsLocal)
-            {
-                platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter5, 20);
-            }
-            if (ViewModel.IsMouseOver)
-            {
-                platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter3, 20);
-            }
-            if (ViewModel.IsSelected)
-            {
-                platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter2, 20);
-            }
+     
             if (hasErrors)
             {
                 platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter6, 20);
+                
+                if (ViewModel.IsSelected)
+                {
+                    platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter2, 20);
+                }
+            }
+            else
+            {
+                if (!ViewModel.IsLocal)
+                {
+                    platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter5, 20);
+                }
+                if (ViewModel.IsMouseOver)
+                {
+                    platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter3, 20);
+                }
+                if (ViewModel.IsSelected)
+                {
+                    platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter2, 20);
+                }
             }
 
-            if (ViewModel.IsMouseOver || ViewModel.IsSelected)
+            if (ViewModel.IsSelected)
             {
                 for (int index = 0; index < _cachedIssues.Length; index++)
                 {
@@ -310,7 +319,11 @@ namespace Invert.Core.GraphDesigner
                     platform.DrawWarning(rect, keyValuePair.Message);
                     if (keyValuePair.AutoFix != null)
                     {
-                        platform.DoButton(new Rect(rect.x + rect.width + 5, rect.y, 75, 25).Scale(Scale), "Auto Fix", null, keyValuePair.AutoFix);
+                        platform.DoButton(new Rect(rect.x + rect.width + 5, rect.y, 75, 25).Scale(Scale), "Auto Fix", null,
+                            () =>
+                            {
+                                InvertGraphEditor.ExecuteCommand(new SimpleEditorCommand<DesignerWindow>(_=> { keyValuePair.AutoFix(); }));
+                            });
                     }
                     hasErrors = true;
                 }

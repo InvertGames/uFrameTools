@@ -93,7 +93,13 @@ namespace Invert.Core.GraphDesigner
         {
             base.OnMouseDown(mouseEvent);
             ViewModelObject.Select();
-            InvertApplication.Log("Selected Item");
+            
+        }
+
+        public override void OnMouseDoubleClick(MouseEvent mouseEvent)
+        {
+            base.OnMouseDoubleClick(mouseEvent);
+            mouseEvent.NoBubble = true;
         }
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)

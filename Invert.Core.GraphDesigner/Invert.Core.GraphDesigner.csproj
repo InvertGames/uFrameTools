@@ -131,7 +131,6 @@
     <Compile Include="Commands\api\IDynamicOptionsCommand.cs" />
     <Compile Include="Commands\api\IParentCommand.cs" />
     <Compile Include="Commands\api\MultiOptionType.cs" />
-    <Compile Include="_TODO\AddItemCommand.cs" />
     <Compile Include="Commands\impl\Default\AddNodeToGraph.cs" />
     <Compile Include="Commands\impl\Default\DeleteCommand.cs" />
     <Compile Include="Commands\impl\Default\DeleteItemCommand.cs" />

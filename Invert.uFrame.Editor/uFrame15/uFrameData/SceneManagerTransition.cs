@@ -55,7 +55,7 @@ public class SceneManagerTransition : IDiagramNodeItem
 
     public ViewModelCommandData Command
     {
-        get { return Node.Project.GetElements().SelectMany(p=>p.Commands).FirstOrDefault(p=>p.Identifier == CommandIdentifier); }
+        get { return Node.Graph.GetElements().SelectMany(p => p.Commands).FirstOrDefault(p => p.Identifier == CommandIdentifier); }
     }
     public string ToIdentifier
     {
@@ -202,6 +202,16 @@ public class SceneManagerTransition : IDiagramNodeItem
         get { yield break; }
     }
 
+    public bool AllowInputs
+    {
+        get { throw new NotImplementedException(); }
+    }
+
+    public bool AllowOutputs
+    {
+        get { throw new NotImplementedException(); }
+    }
+
     public bool AllowMultipleInputs
     {
         get { return false; }
@@ -215,6 +225,16 @@ public class SceneManagerTransition : IDiagramNodeItem
     public void OnConnectionApplied(IConnectable output, IConnectable input)
     {
         
+    }
+
+    public bool CanOutputTo(IConnectable input)
+    {
+        return true;
+    }
+
+    public bool CanInputFrom(IConnectable output)
+    {
+        return true;
     }
 }
 

@@ -15,7 +15,7 @@ namespace Invert.Core.GraphDesigner
         ElementDiagramSettings Settings { get; }
 
         void AddNode(IDiagramNode data);
-        void RemoveNode(IDiagramNode node);
+        void RemoveNode(IDiagramNode node, bool removePositionData = true);
         IDiagramFilter CurrentFilter { get; }
         FilterPositionData PositionData { get; set; }
         string Namespace { get; set; }
@@ -28,5 +28,6 @@ namespace Invert.Core.GraphDesigner
         void SetItemLocation(IDiagramNode node, Vector2 position);
         Vector2 GetItemLocation(IDiagramNode node);
         void HideNode(string identifier);
+        IEnumerable<ErrorInfo> Validate();
     }
 }

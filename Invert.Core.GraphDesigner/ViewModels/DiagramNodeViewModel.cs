@@ -19,12 +19,12 @@ namespace Invert.Core.GraphDesigner
         {
 
         }
-        
+
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
-          
-       
+
+
         }
 
         public bool ShowHelp
@@ -34,13 +34,13 @@ namespace Invert.Core.GraphDesigner
 
         protected override void CreateContent()
         {
-           
+
             base.CreateContent();
-           
+
             foreach (var item in GraphItem.DisplayedItems)
             {
                 var vm = GetDataViewModel(item);
-             
+
                 if (vm == null)
                 {
                     InvertApplication.LogError(string.Format("Couldn't find view-model for {0}", item.GetType()));
@@ -58,11 +58,11 @@ namespace Invert.Core.GraphDesigner
             if (ps.Length < 1) return;
 
             if (!string.IsNullOrEmpty(headerText))
-            ContentItems.Add(new SectionHeaderViewModel()
-            {
-                Name = headerText,
-            });
-            
+                ContentItems.Add(new SectionHeaderViewModel()
+                {
+                    Name = headerText,
+                });
+
             foreach (var property in ps)
             {
                 PropertyInfo property1 = property.Key;
@@ -83,7 +83,7 @@ namespace Invert.Core.GraphDesigner
         {
             var vm = InvertGraphEditor.Container.ResolveRelation<ItemViewModel>(item.GetType(), item, this) as GraphItemViewModel;
             vm.DiagramViewModel = DiagramViewModel;
-           
+
             return vm;
         }
 
@@ -113,7 +113,7 @@ namespace Invert.Core.GraphDesigner
             ColumnSpan = 2;
             DiagramViewModel = diagramViewModel;
             GraphItemObject = graphItemObject;
-            
+
             OutputConnectorType = graphItemObject.GetType();
             InputConnectorType = graphItemObject.GetType();
             ToggleNode = new SimpleEditorCommand<DiagramNodeViewModel>(_ =>
@@ -131,7 +131,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return null; }
         }
-        
+
         public override ConnectorViewModel InputConnector
         {
             get
@@ -148,7 +148,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (!HasOutputs) 
+                if (!HasOutputs)
                     return null;
                 return base.OutputConnector;
             }
@@ -164,7 +164,7 @@ namespace Invert.Core.GraphDesigner
         }
         protected override ConnectorViewModel CreateInputConnector()
         {
-            
+
             return base.CreateInputConnector();
         }
 
@@ -172,7 +172,7 @@ namespace Invert.Core.GraphDesigner
         {
 
         }
-        
+
         public ModelCollection<GraphItemViewModel> PropertyViewModels { get; set; }
 
         public override Vector2 Position
@@ -181,7 +181,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (IsScreenshot)
                 {
-                    return new Vector2(45,45);
+                    return new Vector2(45, 45);
                 }
                 return DiagramViewModel.CurrentRepository.GetItemLocation(GraphItemObject);
                 //return GraphItemObject.Location;
@@ -196,7 +196,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     DiagramViewModel.CurrentRepository.SetItemLocation(GraphItemObject, value);
                 }
-               
+
             }
         }
 
@@ -225,36 +225,27 @@ namespace Invert.Core.GraphDesigner
 
         public override void GetConnectors(List<ConnectorViewModel> list)
         {
-           // base.GetConnectors(list);
-            if (!IsCollapsed)
-            {
-                foreach (var item in ContentItems)
-                {
-                    if (IsCollapsed)
-                    {
-                        item.GetConnectors(list);
-                        if (item.InputConnector != null)
-                            item.InputConnector.ConnectorFor = this;
-                        if (item.OutputConnector != null)
-                            item.OutputConnector.ConnectorFor = this;
-                    }
-                    else
-                    {
-                        item.GetConnectors(list);
-                    
-                    }
-                    
+            // base.GetConnectors(list);
 
-                    
-                    
+            foreach (var item in ContentItems)
+            {
+
+                item.GetConnectors(list);
+                if (IsCollapsed)
+                {
+                    if (item.InputConnector != null)
+                        item.InputConnector.Disabled = true;
+                    if (item.OutputConnector != null)
+                        item.OutputConnector.Disabled = true;
                 }
             }
+
             if (InputConnector != null)
                 list.Add(InputConnector);
             if (OutputConnector != null)
                 list.Add(OutputConnector);
 
-      
+
 
         }
 
@@ -296,8 +287,8 @@ namespace Invert.Core.GraphDesigner
         {
             base.DataObjectChanged();
             ContentItems.Clear();
-            
-            IsLocal = DiagramViewModel == null ||DiagramViewModel.CurrentRepository.NodeItems.Contains(GraphItemObject);
+
+            IsLocal = DiagramViewModel == null || DiagramViewModel.CurrentRepository.NodeItems.Contains(GraphItemObject);
             CreateContent();
             if (GraphItemObject.IsEditing)
             {
@@ -309,7 +300,7 @@ namespace Invert.Core.GraphDesigner
 
         protected virtual void CreateContent()
         {
-            
+
         }
         public bool IsLocal { get; set; }
         public bool IsEditing
@@ -380,12 +371,11 @@ namespace Invert.Core.GraphDesigner
 
         public override void Select()
         {
-            if (DiagramViewModel.SelectedGraphItems.Count() < 2)
-                DiagramViewModel.DeselectAll();
+
             DiagramViewModel.Select(this);
             base.Select();
-           
-            
+
+
         }
 
         public string editText = string.Empty;
@@ -399,11 +389,12 @@ namespace Invert.Core.GraphDesigner
         public void EndEditing()
         {
             if (!IsEditable) return;
-            
+
             if (string.IsNullOrEmpty(GraphItemObject.Name))
             {
                 GraphItemObject.Name = "RenameMe";
-            } else if (!IsEditing) return;
+            }
+            else if (!IsEditing) return;
 
             GraphItemObject.EndEditing();
             InvertApplication.SignalEvent<INodeItemEvents>(_ => _.Renamed(GraphItemObject, editText, GraphItemObject.Name));
@@ -434,10 +425,24 @@ namespace Invert.Core.GraphDesigner
                 {
                     return false;
                 }
-                return filter.GetContainingNodes(DiagramViewModel.CurrentRepository).Any();
+                return filter.GetContainingNodesInProject(GraphItemObject.Project).Any(p => p != GraphItemObject);
             }
         }
-
+        public IEnumerable<IDiagramNode> ContainedItems
+        {
+            get
+            {
+                var filter = GraphItemObject as IDiagramFilter;
+                if (filter == null)
+                {
+                    yield break;
+                }
+                foreach (var item in filter.GetContainingNodesInProject(GraphItemObject.Project))
+                {
+                    yield return item;
+                }
+            }
+        }
         public virtual IEnumerable<string> Tags
         {
             get { yield break; }
@@ -453,6 +458,12 @@ namespace Invert.Core.GraphDesigner
 
         public IEditorCommand ToggleNode { get; set; }
         public bool SaveImage { get; set; }
+
+        public bool IsCurrentFilter
+        {
+            get { return GraphItemObject.Graph.CurrentFilter == GraphItemObject; }
+
+        }
 
 
         public void BeginEditing()
@@ -470,12 +481,8 @@ namespace Invert.Core.GraphDesigner
 
         public void Hide()
         {
-            
-
             DiagramViewModel.CurrentRepository.HideNode(GraphItemObject.Identifier);
-            InvertApplication.SignalEvent<INodeItemEvents>(_=>_.Hidden(GraphItemObject));
-
-            //DiagramViewModel.Data.CurrentFilter.Locations.Remove(GraphItemObject.Identifier);
+            InvertApplication.SignalEvent<INodeItemEvents>(_ => _.Hidden(GraphItemObject));
         }
 
 
@@ -489,7 +496,7 @@ namespace Invert.Core.GraphDesigner
                     var filePath = fileGenerator.FullPathName;
                     //var filename = repository.GetControllerCustomFilename(this.Name);
                     InvertGraphEditor.Platform.OpenScriptFile(filePath);
-                
+
                 }
             });
         }
@@ -503,7 +510,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     var filePath = fileGenerator.FullPathName;
                     InvertGraphEditor.Platform.OpenScriptFile(filePath);
-                 
+
                 }
             });
         }

@@ -13,9 +13,9 @@ namespace Invert.Core.GraphDesigner
 #endif
     {
         Type For { get; }
-        void Execute(object item);
+        void Execute(ICommandHandler handler);
         List<IEditorCommand> Hooks { get; }
-        string Name { get; }
+        string Name { get; } 
         string Title { get; set; }
         decimal Order { get; }
         bool ShowAsDiabled { get; }
@@ -26,5 +26,6 @@ namespace Invert.Core.GraphDesigner
 #endif
 
         IKeyBinding GetKeyBinding();
+        string CanExecute(ICommandHandler handler);
     }
 }

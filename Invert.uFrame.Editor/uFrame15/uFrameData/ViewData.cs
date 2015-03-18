@@ -42,14 +42,14 @@ public class ViewData : DiagramNode, ISubSystemType
         {
 
             if (string.IsNullOrEmpty(BaseViewIdentifier)) return null;
-            return Project.GetViews().FirstOrDefault(p => p.Identifier == BaseViewIdentifier);
+            return Graph.GetViews().FirstOrDefault(p => p.Identifier == BaseViewIdentifier);
         }
     }
     public IEnumerable<ViewComponentData> ViewComponents
     {
         get
         {
-            foreach (var viewComponentData in Project.GetViewComponents())
+            foreach (var viewComponentData in Graph.GetViewComponents())
             {
                 if (viewComponentData.ViewIdentifier == this.Identifier)
                 {
@@ -108,7 +108,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public IEnumerable<ViewComponentData> Components
     {
-        get { return Project.GetViewComponents().Where(p => ComponentIdentifiers.Contains(p.Identifier)); }
+        get { return Graph.GetViewComponents().Where(p => ComponentIdentifiers.Contains(p.Identifier)); }
     }
 
     public override IEnumerable<IDiagramNodeItem> PersistedItems
@@ -289,7 +289,7 @@ public class ViewData : DiagramNode, ISubSystemType
 
     public IDiagramNode BaseNode
     {
-        get { return Project.NodeItems.FirstOrDefault(p => p.Identifier == BaseViewIdentifier); }
+        get { return Graph.NodeItems.FirstOrDefault(p => p.Identifier == BaseViewIdentifier); }
     }
 
     public ElementData ViewForElement
@@ -299,7 +299,7 @@ public class ViewData : DiagramNode, ISubSystemType
             var bn = ForElementIdentifier;
             if (bn != null)
             {
-                var item = Project.NodeItems.OfType<ElementData>().FirstOrDefault(p => p.Identifier == bn);
+                var item = Graph.NodeItems.OfType<ElementData>().FirstOrDefault(p => p.Identifier == bn);
                 if (item != null)
                     return item;
             }
@@ -396,7 +396,7 @@ public class ViewData : DiagramNode, ISubSystemType
     {
         base.RemoveFromDiagram();
         Project.RemoveNode(this);
-        foreach (var source in Project.GetViews().Where(p => p.ForElementIdentifier == this.Identifier))
+        foreach (var source in Graph.GetViews().Where(p => p.ForElementIdentifier == this.Identifier))
         {
             source.ForElementIdentifier = null;
         }

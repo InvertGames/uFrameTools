@@ -30,8 +30,6 @@ namespace Invert.Core.GraphDesigner
         void Refresh();
 
         bool SetSetting(string key, bool value);
-
-        
     }
 
 
@@ -196,7 +194,10 @@ namespace Invert.Core.GraphDesigner
         /// </summary>
         public IEnumerable<OpenGraph> OpenGraphs
         {
-            get { return OpenTabs; }
+            get
+            {
+                return OpenTabs;
+            }
         }
 
         /// <summary>
@@ -286,8 +287,8 @@ namespace Invert.Core.GraphDesigner
                 }
             }
 
-            InvalidateCache();
             CurrentGraph.AddNode(data);
+            InvalidateCache();
         }
 
         protected void InvalidateCache()
@@ -454,7 +455,8 @@ namespace Invert.Core.GraphDesigner
         /// notify other graphs and nodes about this node being removed.
         /// </summary>
         /// <param name="node"></param>
-        public virtual void RemoveNode(IDiagramNode node)
+        /// <param name="removePositionData"></param>
+        public virtual void RemoveNode(IDiagramNode node, bool removePositionData = true)
         {
             _nodeItems = null;
             foreach (var item in node.PersistedItems.ToArray())
@@ -505,6 +507,17 @@ namespace Invert.Core.GraphDesigner
         public bool SetSetting(string key, bool value)
         {
             return this[key] = value;
+        }
+
+        public IEnumerable<ErrorInfo> Validate()
+        {
+            foreach (var graph in this.Graphs)
+            {
+                foreach (var item in graph.Validate())
+                {
+                    yield return item;
+                }
+            }
         }
 
         /// <summary>

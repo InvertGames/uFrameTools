@@ -187,6 +187,9 @@
     <Compile Include="uFrame15\IAssemblyNameProvider.cs" />
     <Compile Include="uFrameVersionProcessor.cs" />
     <None Include="documentation.dxp" />
+    <None Include="PluginGraph1.ufgraph">
+      <Generator>UFrameFileGenerator</Generator>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Invert.Core.GraphDesigner.Unity\Invert.Core.GraphDesigner.Unity.csproj">

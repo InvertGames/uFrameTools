@@ -64,6 +64,9 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers.designer.cs">
       <Link>Drawers.designer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\CommandNodeDrawer.cs">
+      <Link>CommandNodeDrawer.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\ComputedPropertyNodeDrawer.cs">
       <Link>ComputedPropertyNodeDrawer.cs</Link>
     </Compile>
@@ -75,6 +78,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\SceneManagerNodeDrawer.cs">
       <Link>SceneManagerNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\ServiceNodeDrawer.cs">
+      <Link>ServiceNodeDrawer.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\SimpleClassNodeDrawer.cs">
       <Link>SimpleClassNodeDrawer.cs</Link>
@@ -103,8 +109,14 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Graphs\StateMachineGraph.cs">
       <Link>StateMachineGraph.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Graphs\SubsystemGraph.cs">
+      <Link>SubsystemGraph.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes.designer.cs">
       <Link>Nodes.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\CommandNode.cs">
+      <Link>CommandNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\ComputedPropertyNode.cs">
       <Link>ComputedPropertyNode.cs</Link>
@@ -117,6 +129,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\SceneManagerNode.cs">
       <Link>SceneManagerNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\ServiceNode.cs">
+      <Link>ServiceNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\SimpleClassNode.cs">
       <Link>SimpleClassNode.cs</Link>
@@ -147,6 +162,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\BindingsReference.cs">
       <Link>BindingsReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\HandlersReference.cs">
+      <Link>HandlersReference.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\InstancesReference.cs">
       <Link>InstancesReference.cs</Link>
@@ -181,6 +199,9 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels.designer.cs">
       <Link>ViewModels.designer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\CommandNodeViewModel.cs">
+      <Link>CommandNodeViewModel.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\ComputedPropertyNodeViewModel.cs">
       <Link>ComputedPropertyNodeViewModel.cs</Link>
     </Compile>
@@ -192,6 +213,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\SceneManagerNodeViewModel.cs">
       <Link>SceneManagerNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\ServiceNodeViewModel.cs">
+      <Link>ServiceNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\SimpleClassNodeViewModel.cs">
       <Link>SimpleClassNodeViewModel.cs</Link>

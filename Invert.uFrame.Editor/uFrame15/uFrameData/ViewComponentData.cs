@@ -32,7 +32,7 @@ public class ViewComponentData : DiagramNode
 
     public ViewComponentData Base
     {
-        get { return Project.GetViewComponents().FirstOrDefault(p => p.Identifier == this.BaseIdentifier); }
+        get { return Graph.GetViewComponents().FirstOrDefault(p => p.Identifier == this.BaseIdentifier); }
     }
 
     public string BaseIdentifier
@@ -64,7 +64,7 @@ public class ViewComponentData : DiagramNode
             {
                 return Base.View;
             }
-            return Project.GetViews().FirstOrDefault(p => p.Identifier == ViewIdentifier);
+            return Graph.GetViews().FirstOrDefault(p => p.Identifier == ViewIdentifier);
         }
     }
 
@@ -120,7 +120,7 @@ public class ViewComponentData : DiagramNode
     {
         base.RemoveFromDiagram();
         Project.RemoveNode(this);
-        foreach (var viewComponentData in Project.GetViewComponents())
+        foreach (var viewComponentData in Graph.GetViewComponents())
         {
             if (viewComponentData.BaseIdentifier == this.Identifier)
             {

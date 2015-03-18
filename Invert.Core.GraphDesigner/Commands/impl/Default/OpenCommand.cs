@@ -5,6 +5,11 @@ namespace Invert.Core.GraphDesigner
 {
     public class OpenCommand : EditorCommand<DiagramNodeViewModel>, IDynamicOptionsCommand, IDiagramNodeCommand
     {
+        public override bool CanProcessMultiple
+        {
+            get { return false; }
+        }
+
         public override string Group
         {
             get { return "File"; }

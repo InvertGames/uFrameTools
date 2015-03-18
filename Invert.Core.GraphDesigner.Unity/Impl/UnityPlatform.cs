@@ -145,7 +145,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     var dynamicCommand = command as IDynamicOptionsCommand;
                     if (dynamicCommand != null)
                     {
-                        var canPerform = command.CanPerform(argument);
+                        var canPerform = command.CanExecute(Handler);
                         if (canPerform == null)
                         {
                             foreach (var option in dynamicCommand.GetOptions(argument).OrderBy(p => p.Name))
@@ -169,7 +169,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     }
                     else
                     {
-                        var canPerform = command.CanPerform(argument);
+                        var canPerform = command.CanExecute(Handler);
                         if (canPerform != null)
                         {
                             if (command.ShowAsDiabled)
@@ -226,15 +226,16 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             base.GoBottom();
                  GUILayout.BeginHorizontal(EditorStyles.toolbar);
-            var scale = GUILayout.HorizontalSlider(ElementDesignerStyles.Scale, 0.8f, 1f, GUILayout.Width(200f));
-            if (scale != ElementDesignerStyles.Scale)
-            {
-                ElementDesignerStyles.Scale = scale;
-                InvertGraphEditor.ExecuteCommand(new ScaleCommand() { Scale = scale });
+            //var scale = GUILayout.HorizontalSlider(ElementDesignerStyles.Scale, 0.8f, 1f, GUILayout.Width(200f));
+            //if (scale != ElementDesignerStyles.Scale)
+            //{
+            //    ElementDesignerStyles.Scale = scale;
+            //    InvertGraphEditor.ExecuteCommand(new ScaleCommand() { Scale = scale });
 
-            }
+            //}
             foreach (var editorCommand in BottomLeftCommands.OrderBy(p => p.Order))
             {
+                
                 DoCommand(editorCommand);
             }
             GUILayout.FlexibleSpace();
@@ -255,7 +256,7 @@ namespace Invert.Core.GraphDesigner.Unity
             if (command is IDynamicOptionsCommand)
             {
                 var obj = Handler.ContextObjects.FirstOrDefault(p => command.For.IsAssignableFrom(p.GetType()));
-                GUI.enabled = command.CanPerform(obj) == null;
+                GUI.enabled = command.CanExecute(Handler) == null;
                 var cmd = command as IDynamicOptionsCommand;
                 foreach (var ufContextMenuItem in cmd.GetOptions(obj))
                 {

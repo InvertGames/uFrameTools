@@ -188,6 +188,7 @@ namespace Invert.Core.GraphDesigner
             ui.Handler = DesignerWindow;
             foreach (var action in actions)
             {
+                if (action.CanExecute(DesignerWindow) == null)
                 ui.AddCommand(action);
             }
             return (TCommandUI)ui;
@@ -202,7 +203,13 @@ namespace Invert.Core.GraphDesigner
 
                 foreach (var command in commands)
                 {
-                    ui.AddCommand(command);
+                    if (command.CanExecute(DesignerWindow) == null)
+                    {
+                       
+                        ui.AddCommand(command);
+                    }
+
+                   
                 }
             }
             return (TCommandUI)ui;
@@ -254,43 +261,15 @@ namespace Invert.Core.GraphDesigner
             var objs = handler.ContextObjects.ToArray();
             if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
             {
-
                 DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.DiagramData, command.Name);
-                
             }
-            foreach (var o in objs)
-            {
-                if (o == null) continue;
+           
+            command.Execute(handler);
 
-                if (command.For.IsAssignableFrom(o.GetType()))
-                {
-                    if (command.CanPerform(o) != null) continue;
-                    var o1 = o;
-                    InvertApplication.SignalEvent<ICommandEvents>(_ => _.CommandExecuting(handler, command, o1));
-                    //handler.CommandExecuting(command);
-#if (UNITY_DLL)
-                    
-                    command.Execute(o);
 
-#else
-                    command.Perform(o);
-#endif
-                    if (command.Hooks != null)
-                        command.Hooks.ForEach(p =>
-                        {
-                            ExecuteCommand(handler, p);
-                        });
-                    InvertApplication.SignalEvent<ICommandEvents>(_=>_.CommandExecuted(handler,command, o1));
-
-                    
-                    handler.CommandExecuted(command);
-                }
-            }
             if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
             {
                 DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.DiagramData);
-
-                
             }
                 
             //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);

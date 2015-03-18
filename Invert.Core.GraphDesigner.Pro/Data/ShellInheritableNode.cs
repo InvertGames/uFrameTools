@@ -33,13 +33,5 @@ public class ShellInheritableNode : GenericInheritableNode, IShellNode
         get { return string.Format("{0}", Name); }
     }
     
-    public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
-    {
-        return true;
-    }
 
-    public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
-    {
-        return true;
-    }
 }

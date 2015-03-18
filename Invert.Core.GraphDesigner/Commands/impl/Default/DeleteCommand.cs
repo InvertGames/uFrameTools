@@ -28,14 +28,16 @@ namespace Invert.Core.GraphDesigner
 
             var customFiles = generators.Select(p=>p.Filename).ToArray();
             var customFileFullPaths = generators.Select(p=>System.IO.Path.Combine(pathStrategy.AssetPath, p.Filename)).Where(File.Exists).ToArray();
+            var customMetaFiles = generators.Select(p=>System.IO.Path.Combine(pathStrategy.AssetPath, p.Filename) + ".meta").Where(File.Exists).ToArray();
 
             if (selected.IsFilter)
             {
                 
                 if (selected.HasFilterItems)
                 {
+                    var list = selected.ContainedItems.Select(p => string.Format("{0} node inside '{1}'graph", p.Name,p.Graph.Name)).ToArray();
                     InvertGraphEditor.Platform.MessageBox("Delete sub items first.",
-                        "There are items defined inside this item please hide or delete them before removing this item.", "OK");
+                        "There are items defined inside this item please hide or delete them before removing this item." + Environment.NewLine + string.Join(Environment.NewLine,list), "OK");
                     return;
                 }
             }
@@ -58,6 +60,10 @@ namespace Invert.Core.GraphDesigner
                             {
                                 File.Delete(customFileFullPath);
                             }
+                            foreach (var metaFile in customMetaFiles)
+                            {
+                                File.Delete(metaFile);
+                            }
                             var saveCommand = InvertGraphEditor.Container.Resolve<IToolbarCommand>("SaveCommand");
                             //Execute the save command
                             InvertGraphEditor.ExecuteCommand(saveCommand);
@@ -69,8 +75,12 @@ namespace Invert.Core.GraphDesigner
 
         public override string CanPerform(DiagramViewModel diagram)
         {
-            if (diagram.SelectedNode == null) return "Select something first.";
-            if (!diagram.SelectedNode.IsLocal) return "Must be local to delete. Use hide instead.";
+            if (diagram.SelectedNode.IsCurrentFilter) 
+                return "Can't delete while inside of the node.";
+            if (diagram.SelectedNode == null) 
+                return "Select something first.";
+            if (!diagram.SelectedNode.IsLocal) 
+                return "Must be local to delete. Use hide instead.";
             return null;
         }
     }

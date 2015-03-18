@@ -11,6 +11,10 @@ namespace Invert.Core.GraphDesigner
             get { return true; }
         }
 
+        public override bool AllowMultipleInputs
+        {
+            get { return false; }
+        }
 
         private BaseClassReference _baseReference;
         [Browsable(false)]
@@ -80,27 +84,41 @@ namespace Invert.Core.GraphDesigner
         //    set { _baseReference = value; }
         //}
 
-        public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
+        public override bool CanInputFrom(IConnectable output)
         {
-            if (b is GenericInheritableNode && b.GetType() == a.GetType())
-            {
-                if (a.GetType() != b.GetType()) return false;
-            }
-
-            return base.ValidateInput(a, b);
+            return base.CanInputFrom(output);
         }
 
-        public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
+        public override bool CanOutputTo(IConnectable input)
         {
-            if (b is GenericInheritableNode && b.GetType() == a.GetType())
-            {
-                if (BaseNodes.Any(p => p == b)) return false;
+            if (input == this) return false;
+            if (this.GetType() != input.GetType()) return false;
+            if (BaseNodes.Any(p => p == input)) return false;
 
-                if (a == b) return false; // Can't inherit from the same item
-                if (a.GetType() != b.GetType()) return false; // Can't inherit from another type    
-            }
-
-            return base.ValidateOutput(a, b);
+            return base.CanOutputTo(input);
         }
+
+        //public override bool ValidateInput(IDiagramNodeItem a, IDiagramNodeItem b)
+        //{
+        //    if (b is GenericInheritableNode && b.GetType() == a.GetType())
+        //    {
+        //        if (a.GetType() != b.GetType()) return false;
+        //    }
+
+        //    return base.ValidateInput(a, b);
+        //}
+
+        //public override bool ValidateOutput(IDiagramNodeItem a, IDiagramNodeItem b)
+        //{
+        //    if (b is GenericInheritableNode && b.GetType() == a.GetType())
+        //    {
+        //        if (BaseNodes.Any(p => p == b)) return false;
+
+        //        if (a == b) return false; // Can't inherit from the same item
+        //        if (a.GetType() != b.GetType()) return false; // Can't inherit from another type    
+        //    }
+
+        //    return base.ValidateOutput(a, b);
+        //}
     }
 }

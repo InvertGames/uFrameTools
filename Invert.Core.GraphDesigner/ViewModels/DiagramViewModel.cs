@@ -358,7 +358,7 @@ namespace Invert.Core.GraphDesigner
             //  var startTime = DateTime.Now;
 
 
-            foreach (var connection in DiagramData.Connections)
+            foreach (var connection in CurrentRepository.Connections)
             {
                 var startConnector = connectors.FirstOrDefault(p => p.DataObject == connection.Output && p.Direction == ConnectorDirection.Output);
                 var endConnector = connectors.FirstOrDefault(p => p.DataObject == connection.Input && p.Direction == ConnectorDirection.Input);
@@ -566,8 +566,12 @@ namespace Invert.Core.GraphDesigner
 
         public void Select(GraphItemViewModel viewModelObject)
         {
-            //if (SelectedGraphItems.Count() <= 1)
-            //    DeselectAll();
+            if (viewModelObject.IsSelected)
+            {
+                return;
+            }
+            if (!LastMouseEvent.ModifierKeyStates.Alt)
+                DeselectAll();
 
             viewModelObject.IsSelected = true;
             InvertApplication.SignalEvent<IGraphSelectionEvents>(

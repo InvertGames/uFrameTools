@@ -80,7 +80,7 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(IPlatformDrawer platform, float scale)
         {
 
-       
+
             // Make sure they've upgraded to the latest json format
 #if UNITY_DLL
             if (UpgradeOldProject()) return;
@@ -137,19 +137,16 @@ namespace Invert.Core.GraphDesigner
                 var command = keyBinding.Command;
                 if (command != null)
                 {
-                    var acceptableArguments = DiagramViewModel.ContextObjects.Where(p => command.For.IsAssignableFrom(p.GetType())).ToArray();
-                    var used = false;
-                    foreach (var argument in acceptableArguments)
+                    if (command.CanExecute(InvertGraphEditor.DesignerWindow) == null)
                     {
-
-                        if (command.CanPerform(argument) == null)
-                        {
-                            InvertApplication.Log("Key Command Executed: " + command.GetType().Name);
-                            InvertGraphEditor.ExecuteCommand(command);
-                            used = true;
-                        }
+                        InvertGraphEditor.ExecuteCommand(command);
                     }
-                    return used;
+                    else
+                    {
+                        return false;
+                    }
+
+                    return true;
                 }
                 return false;
             }
@@ -174,10 +171,10 @@ namespace Invert.Core.GraphDesigner
                 {
                     DiagramViewModel.ShowQuickAdd();
                 }
-                
+
                 return;
             }
-            BubbleEvent(d => d.OnMouseDoubleClick(mouseEvent), mouseEvent);
+            if (!BubbleEvent(d => d.OnMouseDoubleClick(mouseEvent), mouseEvent)) return;
             DiagramViewModel.Navigate();
             Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
             Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
@@ -194,7 +191,7 @@ namespace Invert.Core.GraphDesigner
             DiagramViewModel.LastMouseEvent = e;
             BubbleEvent(d => d.OnMouseExit(e), e);
         }
-        
+
         public override void OnMouseDown(MouseEvent mouseEvent)
         {
             base.OnMouseDown(mouseEvent);
@@ -215,19 +212,22 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public void BubbleEvent(Action<IDrawer> action, MouseEvent e)
+        public bool BubbleEvent(Action<IDrawer> action, MouseEvent e)
         {
-            if (DrawersAtMouse == null) return;
+            if (DrawersAtMouse == null) return true;
 
-            foreach (var item in DrawersAtMouse)
+            foreach (var item in DrawersAtMouse.OrderByDescending(p => p.ZOrder))
             {
                 action(item);
                 if (e.NoBubble)
                 {
                     e.NoBubble = false;
+                    return false;
+
                     break;
                 }
             }
+            return true;
         }
 
         public override void OnMouseMove(MouseEvent e)
@@ -354,7 +354,7 @@ namespace Invert.Core.GraphDesigner
                     ConnectionViewModel connection1 = connection;
                     menu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel model)
                     {
-                        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); },true);
+                        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); }, true);
                     }, "Disconnect: " + connection.Name));
                 }
                 //a.ShowAsContext();
@@ -376,8 +376,8 @@ namespace Invert.Core.GraphDesigner
                 ShowContextMenu();
                 return;
             }
-            
-        
+
+
             ShowAddNewContextMenu(true);
         }
 
@@ -446,7 +446,7 @@ namespace Invert.Core.GraphDesigner
             //    }
             //    EditorGUILayout.LabelField("Open Code: Ctrl+Click");
             //    GUILayout.EndArea();
-          
+
             //}
 #endif
         }
@@ -541,19 +541,19 @@ namespace Invert.Core.GraphDesigner
         {
             base.Refresh(platform);
         }
-        
+
         public float InspectorWidth { get; set; }
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position, hardRefresh);
-           
+
             this.Children.Clear();
             Children.AddRange(CreateDrawers());
             var y = position.y;
             foreach (var child in Children)
             {
-                child.Refresh(platform, new Vector2(position.x,y),hardRefresh);
+                child.Refresh(platform, new Vector2(position.x, y), hardRefresh);
                 var rect = new Rect(child.Bounds);
                 rect.y = y;
                 child.Bounds = rect;
@@ -561,11 +561,11 @@ namespace Invert.Core.GraphDesigner
             }
             foreach (var child in Children)
             {
-                var newRect = new Rect(child.Bounds) {width = InspectorWidth};
+                var newRect = new Rect(child.Bounds) { width = InspectorWidth };
                 child.Bounds = newRect;
                 child.OnLayout();
             }
-            this.Bounds = new Rect(position.x,position.y,InspectorWidth, y);
+            this.Bounds = new Rect(position.x, position.y, InspectorWidth, y);
             //Debug.Log("Bounds at " + position);
         }
 
@@ -580,7 +580,7 @@ namespace Invert.Core.GraphDesigner
                         item.GetType().Name));
                     continue;
                 }
-                
+
                 yield return drawer;
             }
         }
@@ -590,7 +590,7 @@ namespace Invert.Core.GraphDesigner
             base.Draw(platform, scale);
             foreach (var child in Children)
             {
-               // UnityEditor.EditorGUI.DrawRect(child.Bounds,Color.blue);
+                // UnityEditor.EditorGUI.DrawRect(child.Bounds,Color.blue);
                 child.Draw(platform, scale);
             }
         }

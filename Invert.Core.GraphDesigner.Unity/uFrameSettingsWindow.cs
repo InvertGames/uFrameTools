@@ -16,7 +16,7 @@ public class uFrameSettingsWindow : EditorWindow
         window.title = "uFrame Settings";
         window.minSize = new Vector2(400, 500);
 
-        window.Show();
+        window.ShowUtility();
     }
 
     private void OnEnable()

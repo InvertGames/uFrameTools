@@ -40,7 +40,7 @@ public class ViewBindingData : DiagramNodeItem
         {
             if (string.IsNullOrEmpty(PropertyIdentifier)) return null;
             return
-                Node.Project.NodeItems.OfType<ElementData>()
+                Node.Graph.NodeItems.OfType<ElementData>()
                     .SelectMany(p => p.ViewModelItems)
                     .FirstOrDefault(p => p.Identifier == PropertyIdentifier);
         }

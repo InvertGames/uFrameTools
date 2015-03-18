@@ -25,6 +25,7 @@ namespace Invert.Core.GraphDesigner
 
         protected virtual void OnOnAddItem()
         {
+           
             AddItemClickedEventHandler handler = OnAddItem;
             if (handler != null) handler();
         }
@@ -72,7 +73,8 @@ namespace Invert.Core.GraphDesigner
             {
                 platform.DoButton(_AddButtonRect.Scale(scale), string.Empty, CachedStyles.AddButtonStyle, () =>
                 {
-                    this.ViewModel.Select();
+                    var vm = this.ViewModel.NodeViewModel as GraphItemViewModel;
+                    vm.Select();
                     InvertGraphEditor.ExecuteCommand(ViewModel.AddCommand);
                 });
                

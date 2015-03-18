@@ -118,7 +118,9 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 if (DataObject == null) return null;
-                
+                var connectable = DataObject as IConnectable;
+                if (connectable != null && !connectable.AllowInputs) 
+                    return null;
                 return _inputConnector ?? (_inputConnector = CreateInputConnector());
             }
             set { throw new NotImplementedException(); }
@@ -135,7 +137,7 @@ namespace Invert.Core.GraphDesigner
                 ConnectorForType = InputConnectorType ?? DataObject.GetType(),
                 Side = ConnectorSide.Left,
                 SidePercentage = 0.5f,
-                Validator = InputValidator
+                //Validator = InputValidator
             };
         }
 
@@ -153,6 +155,9 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 if (DataObject == null) return null;
+                var connectable = DataObject as IConnectable;
+                if (connectable != null && !connectable.AllowOutputs)
+                    return null;
                 return _outputConnector ?? (_outputConnector = CreateOutputConnector());
             }
             set { throw new NotImplementedException(); }
@@ -169,7 +174,7 @@ namespace Invert.Core.GraphDesigner
                 ConnectorForType = OutputConnectorType ?? DataObject.GetType(),
                 Side = ConnectorSide.Right,
                 SidePercentage = 0.5f,
-                Validator = OutputValidator
+                //Validator = OutputValidator
             };
         }
 
@@ -191,17 +196,17 @@ namespace Invert.Core.GraphDesigner
             set { _connectorBounds = value; }
         }
 
-        public virtual  Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator
-        {
-            get { return _inputValidator; }
-            set { _inputValidator = value; }
-        }
+        //public virtual  Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator
+        //{
+        //    get { return _inputValidator; }
+        //    set { _inputValidator = value; }
+        //}
 
-        public virtual Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator
-        {
-            get { return _outputValidator; }
-            set { _outputValidator = value; }
-        }
+        //public virtual Func<IDiagramNodeItem, IDiagramNodeItem, bool> OutputValidator
+        //{
+        //    get { return _outputValidator; }
+        //    set { _outputValidator = value; }
+        //}
 
         public bool ShowHelp
         {
@@ -217,6 +222,7 @@ namespace Invert.Core.GraphDesigner
         public int ColumnSpan { get; set; }
         public int Row { get; set; }
 
+        
         public virtual void GetConnectors(List<ConnectorViewModel> list)
         {
             if (InputConnector != null)

@@ -567,20 +567,20 @@ namespace Invert.Core.GraphDesigner
         }
 
 
-        public NodeConfig<TNode> AddFlag(string inheritable)
+        public NodeConfig<TNode> AddFlag(string flag)
         {
-            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(inheritable, inheritable), typeof(TNode).Name + inheritable + "FlagCommand");
+            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(flag, flag), typeof(TNode).Name + flag + "FlagCommand");
             return this;
         }
 
-        public NodeConfig<TNode> AddFlag(string inheritable, Func<TNode, bool> get, Action<TNode, bool> set)
+        public NodeConfig<TNode> AddFlag(string flag, Func<TNode, bool> get, Action<TNode, bool> set)
         {
-            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(inheritable, inheritable)
+            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(flag, flag)
             {
                 IsProperty = true,
                 Get = get,
                 Set = set
-            }, inheritable + "Command");
+            }, flag + "Command");
             return this;
         }
 

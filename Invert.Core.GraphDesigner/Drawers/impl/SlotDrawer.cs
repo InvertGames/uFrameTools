@@ -49,7 +49,7 @@ namespace Invert.Core.GraphDesigner
         public override void OnLayout()
         {
             base.OnLayout();
-            ViewModel.ConnectorBounds = new Rect(Bounds.x + 15, Bounds.y, Bounds.width - 28, 28);
+            ViewModel.ConnectorBounds = new Rect(Bounds.x + 15, Bounds.y, Bounds.width - 35, 28);
         }
 
         public override void Draw(IPlatformDrawer platform, float scale)

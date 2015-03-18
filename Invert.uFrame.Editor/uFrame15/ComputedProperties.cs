@@ -81,7 +81,7 @@ public class ComputedPropertyData : DiagramNode, IBindableTypedItem
         get
         {
             var properties =
-                Node.Project.GetElements()
+                Graph.GetElements()
                     .SelectMany(
                         p => p.Properties.Cast<IBindableTypedItem>().Concat(p.ComputedProperties.Cast<IBindableTypedItem>()))
                     .ToArray();

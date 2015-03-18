@@ -29,7 +29,7 @@ public class StateMachineTransition : DiagramNodeItem
         get
         {
             return
-                Node.Project.NodeItems.FirstOrDefault(p => p.Identifier == TransitionToIdentifier) as StateMachineStateData;
+                Node.Graph.NodeItems.FirstOrDefault(p => p.Identifier == TransitionToIdentifier) as StateMachineStateData;
 
         }
     }

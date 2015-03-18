@@ -14,6 +14,11 @@ namespace Invert.Core.GraphDesigner
             get { return -1; }
         }
 
+        public override bool CanProcessMultiple
+        {
+            get { return false; }
+        }
+
         public override void Perform(DiagramNodeViewModel node)
         {
             node.BeginEditing();

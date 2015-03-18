@@ -36,7 +36,7 @@ public class StateMachineStateData : DiagramNode
     {
         get
         {
-            return Project.NodeItems.OfType<StateMachineNodeData>().FirstOrDefault(p => p.States.Contains(this));
+            return Graph.NodeItems.OfType<StateMachineNodeData>().FirstOrDefault(p => p.States.Contains(this));
         }
     }
 

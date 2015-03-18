@@ -120,7 +120,7 @@ public class SceneManagerData : DiagramNode
     {
         get
         {
-            return Project.GetSubSystems().FirstOrDefault(p => p.Identifier == SubSystemIdentifier);
+            return Graph.GetSubSystems().FirstOrDefault(p => p.Identifier == SubSystemIdentifier);
         }
     }
 

@@ -40,6 +40,16 @@ namespace Invert.Core.GraphDesigner
        
         public override void Perform(DiagramViewModel diagram)
         {
+            if (diagram.CurrentRepository.Validate().Any())
+            {
+                if (InvertGraphEditor.Platform.MessageBox("Issues", "Please fix all issues before compiling.", "Ok",
+                    "Do it anyways"))
+                {
+                    return;
+                }
+               
+            }
+
             InvertGraphEditor.Platform.SaveAssets();
             InvertGraphEditor.Platform.Progress(0, "Refactoring");
 

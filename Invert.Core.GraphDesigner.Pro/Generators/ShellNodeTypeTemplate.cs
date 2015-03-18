@@ -953,6 +953,7 @@ public class ShellNodeConfigTemplateTemplate : IClassTemplate<ShellTemplateConfi
     public void TemplateSetup()
     {
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");
+        Ctx.TryAddNamespace("System.CodeDom");
         //Ctx.CurrentDecleration.IsPartial = true;
         //Ctx.CurrentDecleration.Name = Ctx.Data.Name;
         if (Ctx.IsDesignerFile)

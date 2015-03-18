@@ -15,19 +15,19 @@ namespace Invert.Core.GraphDesigner
         public abstract Color ConnectionColor { get; }
         public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
-            if (a.Validator != null)
-                if (!a.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
-                {
-                    // Debug.Log("Output validator denied this connection");
-                    return null;
-                }
+            //if (a.Validator != null)
+            //    if (!a.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
+            //    {
+            //        // Debug.Log("Output validator denied this connection");
+            //        return null;
+            //    }
 
-            if (b.Validator != null)
-                if (!b.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
-                {
-                    // Debug.Log("Input validator denied this connection");
-                    return null;
-                }
+            //if (b.Validator != null)
+            //    if (!b.Validator(a.DataObject as IDiagramNodeItem, b.DataObject as IDiagramNodeItem))
+            //    {
+            //        // Debug.Log("Input validator denied this connection");
+            //        return null;
+            //    }
                     
             return TryConnect<TOutputData, TInputData>(diagramViewModel, a, b, Apply, CanConnect);
         }
@@ -170,6 +170,7 @@ namespace Invert.Core.GraphDesigner
 
         protected virtual void ApplyConnection(IGraphData graph, IConnectable output, IConnectable input)
         {
+
             graph.AddConnection(output, input);
         }
 

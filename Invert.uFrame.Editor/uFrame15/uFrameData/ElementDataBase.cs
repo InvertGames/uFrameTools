@@ -94,7 +94,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         get
         {
             return
-                Project.NodeItems.ToArray().OfType<ElementDataBase>()
+                Graph.NodeItems.ToArray().OfType<ElementDataBase>()
                     .SelectMany(p => p.Collections)
                     .Any(p => p.RelatedType == Identifier) || AllBaseTypes.Any(p => p != this && p.IsMultiInstance);
         }

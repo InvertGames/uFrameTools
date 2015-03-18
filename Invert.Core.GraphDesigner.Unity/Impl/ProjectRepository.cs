@@ -58,8 +58,19 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
 
     public override void MarkDirty(INodeRepository data)
     {
-        if (data != null)
-            EditorUtility.SetDirty(data as UnityEngine.Object);
+        base.MarkDirty(data);
+        if (data is InvertGraph)
+        {
+            foreach (var graph in Diagrams.OfType<UnityGraphData>())
+            {
+                if (graph.Graph == data)
+                {
+                    EditorUtility.SetDirty(graph);
+                }
+            }
+        }
+        if (data is UnityEngine.Object)
+           EditorUtility.SetDirty((UnityEngine.Object) data);
     }
 
     protected string[] _diagramNames;
@@ -225,7 +236,6 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
                     GraphName = value.Name,
                     GraphIdentifier = value.Identifier
                 });
-                Debug.Log("Opened Tab");
             }
 
             LastLoadedDiagram = value.Name;

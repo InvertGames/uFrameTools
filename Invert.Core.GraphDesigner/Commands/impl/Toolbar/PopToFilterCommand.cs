@@ -130,7 +130,7 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 var ps = ProjectService;
-                if (ps == null || ps.CurrentProject == null || ps.CurrentProject.CurrentGraph == null || object.ReferenceEquals(ps.CurrentProject.CurrentGraph, null))
+                if (ps == null || ps.CurrentProject == null || ps.CurrentProject.Equals(null) || ps.CurrentProject.CurrentGraph == null || ps.CurrentProject.CurrentGraph.Equals(null))
                 {
                     return "Graph: [None]";
                 }
@@ -164,7 +164,6 @@ namespace Invert.Core.GraphDesigner
                 TypeMapping type = graphType;
                 contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
-                    InvertApplication.Log("Creating type " + type.To.Name);
                     var diagram = projectService.CurrentProject.CreateNewDiagram(type.To);
                     node.SwitchDiagram(diagram);
                 }, "Create " + type.To.Name,"Create"));
@@ -179,6 +178,9 @@ namespace Invert.Core.GraphDesigner
 
         public override string CanPerform(DesignerWindow node)
         {
+            if (node.CurrentProject == null)
+                return "No project selected.";
+
             return null;
         }
 

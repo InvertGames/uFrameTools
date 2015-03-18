@@ -46,19 +46,17 @@ public class PluginDesigner : DiagramPlugin
             .AddGraph<PluginGraphData,ShellPluginNode>("Shell Plugin")
             .Color(NodeColor.Green)
             .HasSubNode<IShellNode>()
-            .HasSubNode<ShellNodeTypeNode>()
-            .HasSubNode<ShellGraphTypeNode>()
-            .HasSubNode<ShellSlotTypeNode>()
             .HasSubNode<TypeReferenceNode>()
             .HasSubNode<ShellNodeConfig>().HasSubNode<ScreenshotNode>()
             ;
+
         container.AddNode<ScreenshotNode, ScreenshotNodeViewModel, ScreenshotNodeDrawer>("Screenshot");
-        var graphConfig = container.AddNode<ShellGraphTypeNode>("Graph Type")
-           .HasSubNode<ShellGeneratorTypeNode>()
-           .HasSubNode<ScreenshotNode>()
-           .Color(NodeColor.DarkDarkGray)
-           .Validator(_=>_.RootNode == null,"A graph must have a root node.")
-           ;
+        //var graphConfig = container.AddNode<ShellGraphTypeNode>("Graph Type")
+        //   .HasSubNode<ShellGeneratorTypeNode>()
+        //   .HasSubNode<ScreenshotNode>()
+        //   .Color(NodeColor.DarkDarkGray)
+        //   .Validator(_=>_.RootNode == null,"A graph must have a root node.")
+        //   ;
 
         var shellConfigurationNode =
             container.AddNode<ShellNodeConfig, ShellNodeConfigViewModel, ShellNodeConfigDrawer>("Node Config")
@@ -96,63 +94,63 @@ public class PluginDesigner : DiagramPlugin
   
 
 
-        var shellNodeConfig = container.AddNode<ShellNodeTypeNode,ShellNodeTypeNodeViewModel,ShellNodeTypeNodeDrawer>("Node Type")
-            .AddFlag("Custom")
-            .AddFlag("Inheritable")
-            .HasSubNode<ShellSlotTypeNode>()
-            .HasSubNode<ShellSectionNode>()
-            .HasSubNode<ShellChildItemTypeNode>()
-            .HasSubNode<ShellGeneratorTypeNode>()
-            .HasSubNode<ShellNodeTypeReferenceSection>()
-            .HasSubNode<ShellNodeTypeNode>()
-            .HasSubNode<TypeReferenceNode>()
-            .Inheritable()
-            .ColorConfig(_ =>
-            {
-                if (!string.IsNullOrEmpty(_.DataBag["Color"]))
-                {
-                    var parsed = (NodeColor)Enum.Parse(typeof(NodeColor), _.DataBag["Color"], true);
-                    return parsed;
-                }
-                return NodeColor.Gray;
-            })
-            ;
+        //var shellNodeConfig = container.AddNode<ShellNodeTypeNode,ShellNodeTypeNodeViewModel,ShellNodeTypeNodeDrawer>("Node Type")
+        //    .AddFlag("Custom")
+        //    .AddFlag("Inheritable")
+        //    .HasSubNode<ShellSlotTypeNode>()
+        //    .HasSubNode<ShellSectionNode>()
+        //    .HasSubNode<ShellChildItemTypeNode>()
+        //    .HasSubNode<ShellGeneratorTypeNode>()
+        //    .HasSubNode<ShellNodeTypeReferenceSection>()
+        //    .HasSubNode<ShellNodeTypeNode>()
+        //    .HasSubNode<TypeReferenceNode>()
+        //    .Inheritable()
+        //    .ColorConfig(_ =>
+        //    {
+        //        if (!string.IsNullOrEmpty(_.DataBag["Color"]))
+        //        {
+        //            var parsed = (NodeColor)Enum.Parse(typeof(NodeColor), _.DataBag["Color"], true);
+        //            return parsed;
+        //        }
+        //        return NodeColor.Gray;
+        //    })
+        //    ;
 
         
-        var shellSlotConfig = container.AddNode<ShellSlotTypeNode>("Slot")
-            .Color(NodeColor.Black)
-            .AddFlag("Multiple")
-            .AddFlag("Custom")
-            .Validator(_ => _.ReferenceType == null, "This must be connected to a reference.")
-            ;
+        //var shellSlotConfig = container.AddNode<ShellSlotTypeNode>("Slot")
+        //    .Color(NodeColor.Black)
+        //    .AddFlag("Multiple")
+        //    .AddFlag("Custom")
+        //    .Validator(_ => _.ReferenceType == null, "This must be connected to a reference.")
+        //    ;
 
        
-        var shellReferenceConfig = container.AddNode<ShellNodeTypeReferenceSection>("Reference Section")
-            .Color(NodeColor.Blue)
-            .AddFlag("Automatic")
-            .AddFlag("Custom")
-            .Validator(_ => _.ReferenceClassName == null, "This must be connected to a reference.");
+        //var shellReferenceConfig = container.AddNode<ShellNodeTypeReferenceSection>("Reference Section")
+        //    .Color(NodeColor.Blue)
+        //    .AddFlag("Automatic")
+        //    .AddFlag("Custom")
+        //    .Validator(_ => _.ReferenceClassName == null, "This must be connected to a reference.");
 
-        var shellSectionConfig = container.AddNode<ShellSectionNode>("Node Section")
-            .Color(NodeColor.Red)
-            .AddFlag("Read Only")
-            .Validator(_ => _.ReferenceType == null, "This must be connected to a reference.")
-            ;
+        //var shellSectionConfig = container.AddNode<ShellSectionNode>("Node Section")
+        //    .Color(NodeColor.Red)
+        //    .AddFlag("Read Only")
+        //    .Validator(_ => _.ReferenceType == null, "This must be connected to a reference.")
+        //    ;
 
-        var shellChildItemConfig = container.AddNode<ShellChildItemTypeNode>("Child Item")
-            .Color(NodeColor.Blue)
-            .AddFlag("Custom")
-            .AddFlag("Typed");
+        //var shellChildItemConfig = container.AddNode<ShellChildItemTypeNode>("Child Item")
+        //    .Color(NodeColor.Blue)
+        //    .AddFlag("Custom")
+        //    .AddFlag("Typed");
 
         //pluginConfig.AddCodeTemplate<ShellPluginTemplate>();
-        graphConfig.AddCodeTemplate<ShellGraphTemplate>();
-        shellNodeConfig.AddCodeTemplate<ShellNodeTypeTemplate>();
-        shellNodeConfig.AddCodeTemplate<ShellNodeTypeViewModelTemplate>();
-        shellNodeConfig.AddCodeTemplate<ShellNodeTypeDrawerTemplate>();
-        //shellSlotConfig.AddCodeTemplate<ShellSlotItemTemplate>();
-        RegisteredTemplateGeneratorsFactory.RegisterTemplate<IShellSlotType,ShellSlotItemTemplate>();
-        shellChildItemConfig.AddCodeTemplate<ShellChildTemplate>();
-        shellReferenceConfig.AddCodeTemplate<ShellReferenceSectionTemplate>();
+        //graphConfig.AddCodeTemplate<ShellGraphTemplate>();
+        //shellNodeConfig.AddCodeTemplate<ShellNodeTypeTemplate>();
+        //shellNodeConfig.AddCodeTemplate<ShellNodeTypeViewModelTemplate>();
+        //shellNodeConfig.AddCodeTemplate<ShellNodeTypeDrawerTemplate>();
+        ////shellSlotConfig.AddCodeTemplate<ShellSlotItemTemplate>();
+        //RegisteredTemplateGeneratorsFactory.RegisterTemplate<IShellSlotType,ShellSlotItemTemplate>();
+        //shellChildItemConfig.AddCodeTemplate<ShellChildTemplate>();
+        //shellReferenceConfig.AddCodeTemplate<ShellReferenceSectionTemplate>();
 
     }
 

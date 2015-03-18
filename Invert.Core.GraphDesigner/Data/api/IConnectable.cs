@@ -8,10 +8,16 @@ namespace Invert.Core.GraphDesigner
         IEnumerable<ConnectionData> Inputs { get; }
         IEnumerable<ConnectionData> Outputs { get; }
 
+        bool AllowInputs { get; }
+        bool AllowOutputs { get; }
+
         bool AllowMultipleInputs { get; }
         bool AllowMultipleOutputs { get; }
 
         void OnConnectionApplied(IConnectable output, IConnectable input);
+        bool CanOutputTo(IConnectable input);
+        bool CanInputFrom(IConnectable output);
+
     }
 
     public static class ConnectableExtensions

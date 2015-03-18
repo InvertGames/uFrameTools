@@ -103,7 +103,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
         public void ProcessInput()
         {
-            if (Refactoring.Refactorers.Count < 1) return;
+            //if (Refactoring.Refactorers.Count < 1) return;
             EditorGUI.HelpBox(new Rect(20f, 20f, 200, 30), string.Format("You have {0} refactors pending.", Refactoring.Refactorers.Count), MessageType.Info);
             if (GUI.Button(new Rect(20f, 60f, 200, 30), "Apply Now"))
             {
@@ -166,7 +166,6 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                 var changed = false;
                 foreach (var item in Refactorers)
                 {
-
                     parser.CompilationUnit.AcceptVisitor(item, null);
                     if (item.Changed)
                     {
@@ -250,8 +249,10 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
         }
 
     }
+    
     public class TypeRenameRefactorer : RenameRefactorer
     {
+        
         public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
         {
             if (typeDeclaration.Name == Old)

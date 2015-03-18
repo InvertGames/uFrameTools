@@ -142,6 +142,11 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         Graph.HideNode(identifier);
     }
 
+    IEnumerable<ErrorInfo> INodeRepository.Validate()
+    {
+        return Validate();
+    }
+
     public IDiagramFilter CurrentFilter
     {
         get { return Graph.CurrentFilter; }
@@ -249,7 +254,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         Graph.AddNode(data);
     }
 
-    public void RemoveNode(IDiagramNode node)
+    public void RemoveNode(IDiagramNode node, bool removePositionData = true)
     {
         Graph.RemoveNode(node);
     }

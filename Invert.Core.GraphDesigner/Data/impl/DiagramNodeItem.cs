@@ -1,6 +1,7 @@
 using Invert.Core.GraphDesigner;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Invert.Json;
 using UnityEngine;
@@ -345,6 +346,16 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         }
     }
 
+    public virtual bool AllowInputs
+    {
+        get { return true; }
+    }
+
+    public virtual bool AllowOutputs
+    {
+        get { return true; }
+    }
+
     public virtual bool AllowMultipleInputs
     {
         get { return true; }
@@ -358,5 +369,23 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     public virtual void OnConnectionApplied(IConnectable output, IConnectable input)
     {
         
+    }
+
+    public virtual bool CanOutputTo(IConnectable input)
+    {
+        if (!AllowMultipleOutputs && this.Outputs.Any())
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public virtual bool CanInputFrom(IConnectable output)
+    {
+        if (!AllowMultipleInputs && this.Inputs.Any())
+        {
+            return false;
+        }
+        return true;
     }
 }

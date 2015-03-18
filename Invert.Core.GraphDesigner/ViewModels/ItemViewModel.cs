@@ -134,6 +134,7 @@ namespace Invert.Core.GraphDesigner
         public void BeginEditing()
         {
             editText = Name;
+            
             IsEditing = true;
         }
 
@@ -158,21 +159,23 @@ namespace Invert.Core.GraphDesigner
                 base.IsSelected = value;
             }
         }
-
+        
         public override void Select()
         {
-           
+            if (IsSelected)
+            {
+                BeginEditing();
+                return;
+            }
             var items = NodeViewModel.DiagramViewModel.SelectedNodeItems.ToArray();
             foreach (var item in items)
                 item.IsSelected = false;
 #if UNITY_DLL
             GUIUtility.keyboardControl = 0;
 #endif
-         
-            IsSelected = true;
-            
             NodeViewModel.Select();
-            BeginEditing();
+            IsSelected = true;
+            //BeginEditing();
         }
     }
 }
