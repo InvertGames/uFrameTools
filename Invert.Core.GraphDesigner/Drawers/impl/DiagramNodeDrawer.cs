@@ -278,7 +278,7 @@ namespace Invert.Core.GraphDesigner
 
 
             DrawChildren(platform, scale);
-            bool hasErrors = _cachedIssues.Length > 0;
+            bool hasErrors = _cachedIssues != null && _cachedIssues.Length > 0;
 
 
 
@@ -308,7 +308,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
 
-            if (ViewModel.IsSelected)
+            if (ViewModel.IsSelected && _cachedIssues != null)
             {
                 for (int index = 0; index < _cachedIssues.Length; index++)
                 {
@@ -337,7 +337,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (item.Dirty)
                 {
-                    Refresh((IPlatformDrawer)platform);
+                    Refresh((IPlatformDrawer)platform,item.Bounds.position,false);
                     item.Dirty = false;
                 }
                 item.Draw(platform, scale);
@@ -497,7 +497,7 @@ namespace Invert.Core.GraphDesigner
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             _headerStyle = null;
-            if (hardRefresh)
+            if (_cachedIssues == null)
             {
                 _cachedIssues = ViewModel.Issues.ToArray();
                 _cachedTag = string.Join(" | ", ViewModel.Tags.ToArray());
@@ -511,7 +511,7 @@ namespace Invert.Core.GraphDesigner
             var startY = ViewModel.Position.y;
             // Now lets stretch all the content drawers to the maximum width
             var minWidth = Math.Max(120f, platform.CalculateSize(_cachedTag, CachedStyles.Tag1).x);
-            var height = LayoutChildren(platform, startY, ref minWidth);
+            var height = LayoutChildren(platform, startY, ref minWidth, hardRefresh);
 
             _cachedLabel = ViewModel.Label;
 
@@ -536,7 +536,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        protected virtual float LayoutChildren(IPlatformDrawer platform, float startY, ref float minWidth)
+        protected virtual float LayoutChildren(IPlatformDrawer platform, float startY, ref float minWidth, bool hardRefresh)
         {
             var currentY = startY;
             var currentX = this.ViewModel.Position.x;
@@ -565,7 +565,7 @@ namespace Invert.Core.GraphDesigner
                     currentX = this.ViewModel.Position.x;
                 }
 
-                item.Refresh(platform,new Vector2(currentX,currentY));
+                item.Refresh(platform, new Vector2(currentX, currentY), hardRefresh);
                
                 currentX += item.Bounds.width;
                 if (next == null)

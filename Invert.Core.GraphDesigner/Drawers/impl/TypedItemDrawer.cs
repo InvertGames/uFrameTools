@@ -65,7 +65,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
-            _cachedItemName = TypedItemViewModel.Name;
+           
             DrawBackground(platform,scale);
             var b = new Rect(Bounds);
             b.x += 10;

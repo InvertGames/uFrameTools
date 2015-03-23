@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,11 +8,35 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
+using Invert.Common;
+using Invert.Common.UI;
 using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity.Refactoring
 {
+    public class ChangeTrackingService : DiagramPlugin,  IProjectInspectorEvents
+    {
+        public override void Initialize(uFrameContainer container)
+        {
+         //   InvertApplication.ListenFor<IProjectInspectorEvents>(this);
+        }
+
+        public void DoInspector(IProjectRepository target)
+        {
+
+            foreach (var item in target.CurrentGraph.ChangeData)
+            {
+
+                GUIHelpers.DoTriggerButton(new UFStyle(item.ToString(),
+                    ElementDesignerStyles.EventButtonStyleSmall));
+
+            }
+
+            
+        }
+    }
+
     public class URefactor : DiagramPlugin, INodeItemEvents, IDesignerWindowEvents, ICompileEvents
     {
         public override bool Ignore
@@ -141,6 +166,40 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
         {
             Refactoring = new Refactoring();
         }
+
+        public void FileSkipped(CodeFileGenerator codeFileGenerator)
+        {
+            //if (codeFileGenerator.Generators.Any(p => !p.AlwaysRegenerate))
+            //{
+            if (!File.Exists(codeFileGenerator.SystemPath))
+            {
+                return;
+            }
+            var editableFile = File.ReadAllText(codeFileGenerator.SystemPath);
+            var generated = codeFileGenerator.CreateOutput();
+
+            var parsedEditableFile = ParserFactory.CreateParser(SupportedLanguage.CSharp,
+                new StreamReader(editableFile));
+            var parsedGeneratedFile = ParserFactory.CreateParser(SupportedLanguage.CSharp,
+                new StreamReader(generated));
+
+            parsedEditableFile.Parse();
+            parsedGeneratedFile.Parse();
+
+            var methodVisitor = new GetMethodsVisitor();
+            parsedGeneratedFile.CompilationUnit.AcceptVisitor(methodVisitor, null);
+            var methods = methodVisitor.Methods;
+            var methodMerge = new MethodMergeRefactorer()
+            {
+                GeneratedMethods = methods.ToArray()
+            };
+
+            parsedEditableFile.CompilationUnit.AcceptVisitor(methodMerge, null);
+            CSharpOutputVisitor visitor = new CSharpOutputVisitor();
+            parsedEditableFile.CompilationUnit.AcceptVisitor(visitor, null);
+            Debug.Log(visitor.Text);
+        }
+
     }
 
     public class Refactoring
@@ -249,10 +308,10 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
         }
 
     }
-    
+
     public class TypeRenameRefactorer : RenameRefactorer
     {
-        
+
         public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
         {
             if (typeDeclaration.Name == Old)
@@ -270,6 +329,88 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
         }
 
 
+    }
+
+    public class FilenameRefactor
+    {
+
+    }
+    public class ChangeRefactorer : AbstractAstVisitor
+    {
+        public List<IChangeData> Changes { get; set; }
+
+        public List<FilenameRefactor> FilenameChanges { get; set; }
+
+        public bool HasChanged { get; set; }
+
+        public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+        {
+            foreach (var item in Changes.Where(p => p.Item is IClassRefactorable).OfType<NameChange>())
+            {
+                var refactorable = item.Item as IClassRefactorable;
+
+                if (refactorable != null)
+                    foreach (var format in refactorable.ClassNameFormats)
+                    {
+                        if (string.Format(format, item.Old) == typeDeclaration.Name)
+                        {
+                            typeDeclaration.Name = string.Format(format, item.New);
+                            HasChanged = true;
+                        }
+                    }
+            }
+            return base.VisitTypeDeclaration(typeDeclaration, data);
+        }
+
+        public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+        {
+            foreach (var item in Changes.Where(p => p.Item is IMethodRefactorable).OfType<NameChange>())
+            {
+                var refactorable = item.Item as IMethodRefactorable;
+
+                if (refactorable != null)
+                    foreach (var format in refactorable.MethodFormats)
+                    {
+                        if (string.Format(format, item.Old) == methodDeclaration.Name)
+                        {
+                            methodDeclaration.Name = string.Format(format, item.New);
+                            HasChanged = true;
+                        }
+                    }
+            }
+            return base.VisitMethodDeclaration(methodDeclaration, data);
+        }
+
+        public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
+        {
+            foreach (var item in Changes.Where(p => p.Item is IPropertyRefactorable).OfType<NameChange>())
+            {
+                var refactorable = item.Item as IPropertyRefactorable;
+
+                if (refactorable != null)
+                    foreach (var format in refactorable.PropertyFormats)
+                    {
+                        if (string.Format(format, item.Old) == propertyDeclaration.Name)
+                        {
+                            propertyDeclaration.Name = string.Format(format, item.New);
+                            HasChanged = true;
+                        }
+                    }
+            }
+            foreach (var item in Changes.Where(p => p.Item is ITypedItem).OfType<TypeChange>())
+            {
+                if (propertyDeclaration.TypeReference.Type == item.Old)
+                {
+                    propertyDeclaration.TypeReference.Type = item.New;
+                }
+            }
+            return base.VisitPropertyDeclaration(propertyDeclaration, data);
+        }
+
+        public override object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+        {
+            return base.VisitParameterDeclarationExpression(parameterDeclarationExpression, data);
+        }
     }
     public class IdentifierRenameRefactorer : RenameRefactorer
     {
@@ -310,4 +451,40 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             return base.VisitMethodDeclaration(methodDeclaration, data);
         }
     }
+
+    public class MethodMergeRefactorer : Refactorer
+    {
+        public MethodDeclaration[] GeneratedMethods { get; set; }
+
+        public List<MethodDeclaration> MethodsToAdd { get; set; }
+
+        public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+        {
+
+            return base.VisitTypeDeclaration(typeDeclaration, data);
+        }
+
+        public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+        {
+            var generated = GeneratedMethods.FirstOrDefault(p => p.Name == methodDeclaration.Name);
+            if (generated != null)
+            {
+                MethodsToAdd.Remove(generated);
+
+            }
+            return base.VisitMethodDeclaration(methodDeclaration, data);
+        }
+    }
+
+    public class GetMethodsVisitor : AbstractAstVisitor
+    {
+        public List<MethodDeclaration> Methods { get; set; }
+
+        public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+        {
+            Methods.Add(methodDeclaration);
+            return base.VisitMethodDeclaration(methodDeclaration, data);
+        }
+    }
+
 }

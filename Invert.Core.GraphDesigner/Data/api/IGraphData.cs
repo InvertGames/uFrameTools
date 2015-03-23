@@ -6,6 +6,7 @@ namespace Invert.Core.GraphDesigner
 {
     public interface IGraphData : IElementFileData,IItem
     {
+        List<IChangeData> ChangeData { get; set; }
         string Identifier { get; set; }
 
         int RefactorCount { get; set; }
@@ -27,6 +28,7 @@ namespace Invert.Core.GraphDesigner
   
         //IEnumerable<ConnectionData> Connections { get; }
         void AddConnection(IConnectable output, IConnectable input);
+        void AddConnection(string output, string input);
         void RemoveConnection(IConnectable output, IConnectable input);
         void ClearOutput(IConnectable output);
         void ClearInput(IConnectable input); 
@@ -37,5 +39,6 @@ namespace Invert.Core.GraphDesigner
         void Deserialize(string jsonData);
         void CleanUpDuplicates();
         List<ErrorInfo> Validate();
+        void TrackChange(IChangeData data);
     }
 }

@@ -175,14 +175,26 @@ namespace Invert.Core.GraphDesigner
             //}
             return container;
         }
+        public static IUFrameContainer AddNodeFlag<TSource>(this IUFrameContainer container, string flag) where TSource : class, IDiagramNodeItem
+        {
+            container.RegisterInstance<IDiagramNodeCommand>(new GraphItemFlagCommand<TSource>(flag, flag), typeof(TSource).Name + flag + "FlagCommand");
+            return container;
+        }
+        public static IUFrameContainer AddItemFlag<TSource>(this IUFrameContainer container, string flag, Color color) where TSource : class, IDiagramNodeItem
+        {
+            var command = new GraphItemFlagCommand<TSource>(flag, flag) {Color = color};
 
+            container.RegisterInstance<IDiagramNodeItemCommand>(command,typeof (TSource).Name + flag + "FlagCommand");
+            container.RegisterInstance<IFlagCommand>(command, flag);
+            return container;
+        }
         public static IEnumerable<IEditorCommand> CreateCommandsFor<T>()
         {
             var commands = Container.ResolveAll<T>();
 
             return Enumerable.Where(Commands, p => typeof(T).IsAssignableFrom(p.For));
         }
-        public static TCommandUI CreateCommandUI<TCommandUI>(params IEditorCommand[] actions) where TCommandUI : class,ICommandUI
+        public static TCommandUI CreateCommandUIWithCommands<TCommandUI>(params IEditorCommand[] actions) where TCommandUI : class,ICommandUI
         {
             var ui = Container.Resolve<TCommandUI>() as ICommandUI;
             ui.Handler = DesignerWindow;

@@ -18,13 +18,14 @@ using UnityEngine;
 
 
 [CustomEditor(typeof(ProjectRepository))]
-public class ProjectRepositoryInspector : Editor
+public class ProjectRepositoryInspector : Editor , ICommandEvents
 {
     private TypeMapping[] _generators;
     private CodeFileGenerator[] fileGenerators;
     private List<PropertyFieldDrawer> _selectedItemDrawers;
     private List<IDrawer> _generatorDrawers;
     private URefactor _refactorPlugin;
+    private IEnumerable<ErrorInfo> _issues;
 
     public ProjectRepository Target
     {
@@ -42,19 +43,26 @@ public class ProjectRepositoryInspector : Editor
         set { _refactorPlugin = value; }
     }
 
+    private Action destory;
     public void OnEnable()
     {
-
+        _issues = null;
+        destory = InvertApplication.ListenFor<ICommandEvents>(this);
     }
 
     public void OnDisable()
     {
         RefactorPlugin = null;
+        _issues = null;
+        if (destory != null)
+        destory();
     }
 
     public void OnDestroy()
     {
         RefactorPlugin = null;
+        if (destory != null)
+        destory();
     }
     public override void OnInspectorGUI()
     {
@@ -82,10 +90,10 @@ public class ProjectRepositoryInspector : Editor
                     ShowArrow = true,
                     OnShowOptions = () =>
                     {
-                        if (!InvertGraphEditor.Platform.MessageBox("Confirm Delete",
-                            "Are you sure you want to delete this diagram? It will be removed completely.", "Yes",
-                            "Cancel"))
-                        return;
+                        var removeFile = InvertGraphEditor.Platform.MessageBox("Confirm Delete",
+                            "Would you like to remove the file as well?", "Yes",
+                            "No");
+                  
 
 
                         var items = Target.Diagrams.ToList();
@@ -101,8 +109,12 @@ public class ProjectRepositoryInspector : Editor
                             var item = items[i];
                             property.GetArrayElementAtIndex(i).objectReferenceValue = item;
                         }
-                     
-                        AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(items[index1]));
+
+                        if (removeFile)
+                        {
+                            AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(items[index1]));
+                        }
+                        Target.Diagrams.Remove(items[index1]);
                         items.RemoveAt(index1);
                         so.ApplyModifiedProperties();
                         var project = InvertApplication.Container.Resolve<ProjectService>();
@@ -119,7 +131,7 @@ public class ProjectRepositoryInspector : Editor
         if (GUIHelpers.DoToolbarEx("Project Issues"))
         {
 
-            foreach (var item in InvertGraphEditor.CurrentDiagramViewModel.Issues)
+            foreach (var item in Issues)
             {
       
                 if (GUIHelpers.DoTriggerButton(new UFStyle()
@@ -158,6 +170,7 @@ public class ProjectRepositoryInspector : Editor
             }
         }
         DoDiagramInspector();
+        InvertApplication.SignalEvent<IProjectInspectorEvents>(_=>_.DoInspector(Target));
 #if DEBUG
         //if (GUIHelpers.DoToolbarEx("Project Nodes"))
         //{
@@ -223,6 +236,10 @@ public class ProjectRepositoryInspector : Editor
         GUIHelpers.IsInsepctor = false;
     }
 
+    public IEnumerable<ErrorInfo> Issues
+    {
+        get { return _issues ?? (_issues = InvertGraphEditor.CurrentDiagramViewModel.Issues.ToArray()); }
+    }
     private void DoDiagramInspector()
     {
         if (InvertGraphEditor.CurrentDiagramViewModel == null) return;
@@ -423,5 +440,15 @@ public class ProjectRepositoryInspector : Editor
 
             so.ApplyModifiedProperties();
         });
+    }
+
+    public void CommandExecuting(ICommandHandler handler, IEditorCommand command, object o)
+    {
+        
+    }
+
+    public void CommandExecuted(ICommandHandler handler, IEditorCommand command, object o)
+    {
+        _issues = null;
     }
 }

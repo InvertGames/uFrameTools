@@ -39,7 +39,7 @@ namespace Invert.Core.GraphDesigner
             set { _allCommands = value; }
         }
 
-  
+
 
     }
 
@@ -89,7 +89,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                
+
 
                 return Settings.SnapSize * Scale;
             }
@@ -304,8 +304,8 @@ namespace Invert.Core.GraphDesigner
             //    Name = "Graphs",
             //    DataObject = DiagramData,
             //};
-            
-           // InspectorItems.Add(graphsHeader);
+
+            // InspectorItems.Add(graphsHeader);
             var vms = new List<ViewModel>();
             foreach (var item in SelectedGraphItems)
             {
@@ -314,7 +314,7 @@ namespace Invert.Core.GraphDesigner
                 //    Name = item.Name,
                 //    DataObject = item
                 //};
-                
+
                 //InspectorItems.Add(header);
                 item.GetInspectorOptions(vms);
             }
@@ -349,22 +349,64 @@ namespace Invert.Core.GraphDesigner
         private void RefreshConnectors(List<ConnectorViewModel> connectors)
         {
 
+            var strategies = InvertGraphEditor.ConnectionStrategies;
+
+            var outputs = new List<ConnectorViewModel>();
+            var inputs = new List<ConnectorViewModel>();
+
 
             foreach (var item in connectors)
             {
                 item.DiagramViewModel = this;
                 GraphItems.Add(item);
+                if (item.Direction == ConnectorDirection.Output)
+                {
+                    outputs.Add(item);
+                }
+                else
+                {
+                    inputs.Add(item);
+                }
             }
-            //  var startTime = DateTime.Now;
-
+          
+            foreach (var output in outputs)
+            {
+                foreach (var input in inputs)
+                {
+                    foreach (var strategy in strategies)
+                    {
+                        if (strategy.IsConnected(output, input))
+                        {
+                            var strategy1 = strategy;
+                            var output1 = output;
+                            var input1 = input;
+                            output.HasConnections = true;
+                            input.HasConnections = true;
+                            GraphItems.Add(new ConnectionViewModel(this)
+                            {
+                                ConnectorA = output,
+                                ConnectorB = input,
+                                Color = strategy.ConnectionColor,
+                                Remove = (a) =>
+                                {
+                                    strategy1.Remove(output1, input1);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
 
             foreach (var connection in CurrentRepository.Connections)
             {
                 var startConnector = connectors.FirstOrDefault(p => p.DataObject == connection.Output && p.Direction == ConnectorDirection.Output);
                 var endConnector = connectors.FirstOrDefault(p => p.DataObject == connection.Input && p.Direction == ConnectorDirection.Input);
+
+
                 if (startConnector == null || endConnector == null) continue;
+
                 var vm = endConnector.ConnectorFor.DataObject as IDiagramNodeItem;
-  
+
                 startConnector.HasConnections = true;
                 endConnector.HasConnections = true;
                 GraphItems.Add(new ConnectionViewModel(this)
@@ -554,14 +596,14 @@ namespace Invert.Core.GraphDesigner
                     foreach (var item in items)
                     {
                         item.EndEditing();
-                        
+
                     }
-                    
+
                 });
             }
 
             DeselectAll();
-            InvertGraphEditor.ExecuteCommand(_=>{});
+            InvertGraphEditor.ExecuteCommand(_ => { });
         }
 
         public void Select(GraphItemViewModel viewModelObject)
@@ -575,7 +617,7 @@ namespace Invert.Core.GraphDesigner
 
             viewModelObject.IsSelected = true;
             InvertApplication.SignalEvent<IGraphSelectionEvents>(
-                _=>_.SelectionChanged(viewModelObject));
+                _ => _.SelectionChanged(viewModelObject));
         }
 
         public IEnumerable<IDiagramNode> GetImportableItems()
@@ -608,8 +650,8 @@ namespace Invert.Core.GraphDesigner
         {
             newNodeData.Graph = DiagramData;
             if (string.IsNullOrEmpty(newNodeData.Name))
-            newNodeData.Name =
-                CurrentRepository.GetUniqueName("New" + newNodeData.GetType().Name.Replace("Data", ""));
+                newNodeData.Name =
+                    CurrentRepository.GetUniqueName("New" + newNodeData.GetType().Name.Replace("Data", ""));
             CurrentRepository.SetItemLocation(newNodeData, position);
             CurrentRepository.AddNode(newNodeData);
 
@@ -690,7 +732,7 @@ namespace Invert.Core.GraphDesigner
         public void ShowQuickAdd()
         {
             var mousePosition = LastMouseEvent.MouseDownPosition;
-            var items = InvertApplication.Plugins.OfType<IPrefabNodeProvider>().SelectMany(p=>p.PrefabNodes(CurrentRepository)).ToArray();
+            var items = InvertApplication.Plugins.OfType<IPrefabNodeProvider>().SelectMany(p => p.PrefabNodes(CurrentRepository)).ToArray();
 
             InvertGraphEditor.WindowManager.InitItemWindow(items, _ =>
             {
@@ -703,11 +745,11 @@ namespace Invert.Core.GraphDesigner
         public void ShowContainerDebug()
         {
             var mousePosition = LastMouseEvent.MouseDownPosition;
-            var items = InvertApplication.Container.Instances.Select(p=>new DefaultItem(string.Format("{0} : {1}", p.Name, p.Instance.GetType().Name), p.Base.Name));
+            var items = InvertApplication.Container.Instances.Select(p => new DefaultItem(string.Format("{0} : {1}", p.Name, p.Instance.GetType().Name), p.Base.Name));
 
             InvertGraphEditor.WindowManager.InitItemWindow(items, _ =>
             {
-               
+
             });
         }
     }

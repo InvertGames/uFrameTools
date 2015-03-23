@@ -84,7 +84,6 @@ public class EnumNode : GenericNode , IClassTypeNode
 
 }
 
-
 public class EnumChildItem : GenericNodeChildItem
 {
     
@@ -95,7 +94,7 @@ public class EnumNodeGenerator : IClassTemplate<EnumNode>
 {
     public string OutputPath
     {
-        get { return "Enums"; }
+        get { return Path2.Combine(Ctx.Data.Graph.Name, "Enums"); }
     }
 
     public bool CanGenerate

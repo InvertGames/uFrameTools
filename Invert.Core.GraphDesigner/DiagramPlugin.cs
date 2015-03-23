@@ -37,6 +37,10 @@ namespace Invert.Core.GraphDesigner
     }
     public abstract class DiagramPlugin : CorePlugin, IDiagramPlugin
     {
+        public void ListenFor<TEvents>() where TEvents : class
+        {
+            InvertApplication.ListenFor<TEvents>(this);
+        }
         public override bool Enabled
         {
             get { return InvertGraphEditor.Prefs.GetBool("UFRAME_PLUGIN_" + this.GetType().Name, EnabledByDefault); }
@@ -231,5 +235,16 @@ namespace Invert.Core.GraphDesigner
     
     public interface ISelectionEvents {
         void SelectionChanged(object[] value);
+    }
+
+    public interface IChangeTrackingEvents
+    {
+        void ChangeOccured(IChangeData data);
+    }
+
+    public interface IConnectionEvents
+    {
+        void ConnectionApplying(IGraphData graph, IConnectable output, IConnectable input);
+        void ConnectionApplied(IGraphData graph, IConnectable output, IConnectable input);
     }
 }

@@ -21,6 +21,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         {
             return _graph ?? (_graph = new InvertGraph()
             {
+
                 Name = this.name
             });
         }
@@ -147,9 +148,20 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         return Validate();
     }
 
+    public void TrackChange(IChangeData data)
+    {
+        Graph.TrackChange(data);
+    }
+
     public IDiagramFilter CurrentFilter
     {
         get { return Graph.CurrentFilter; }
+    }
+
+    public List<IChangeData> ChangeData
+    {
+        get { return Graph.ChangeData; }
+        set { Graph.ChangeData = value; }
     }
 
     public string Identifier
@@ -172,12 +184,10 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         get
         {
 #if UNITY_DLL
+            
             return this.name;
 #endif
-            if (!InvertApplication.IsMainThread)
-            {
-                return _name;
-            }
+
             return (_name = Regex.Replace(this.name, "[^a-zA-Z0-9_.]+", "")); ;
         }
         set
@@ -261,6 +271,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
 
     public void OnBeforeSerialize()
     {
+        Graph.Name = this.name;
         var backup = _jsonData;
         try
         {
@@ -288,18 +299,25 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
             var actualType = InvertApplication.FindType(type);
             if (actualType != null)
             {
-                Graph = Activator.CreateInstance(actualType) as IGraphData;
-                if (Graph != null)
-                Graph.Name = this.name;
-            }
-            Graph.DeserializeFromJson(json);
-            Graph.Path = Application.dataPath + Path.Substring(7);
-            
-            Graph.CodePathStrategy = this.CodePathStrategy;
-            //Graph.Deserialize(_jsonData);
+                var g = Activator.CreateInstance(actualType) as InvertGraph;
+                
+                Graph = g;
+                
 
-            Graph.CleanUpDuplicates();
-            Graph.Errors = false;
+            }
+            if (Graph != null)
+            {
+                Graph.DeserializeFromJson(json);
+                Graph.Name = this.name;
+                Graph.Path = Application.dataPath + Path.Substring(7);
+
+                Graph.CodePathStrategy = this.CodePathStrategy;
+                //Graph.Deserialize(_jsonData);
+
+                Graph.CleanUpDuplicates();
+                Graph.Errors = false;
+            }
+         
         }
         catch (Exception ex)
         {
@@ -339,6 +357,11 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
     public void AddConnection(IConnectable output, IConnectable input)
     {
         Graph.AddConnection(output, input);
+    }
+
+    public void AddConnection(string output, string input)
+    {
+        Graph.AddConnection(output,input);
     }
 
     public void RemoveConnection(IConnectable output, IConnectable input)
@@ -381,6 +404,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
     public void DeserializeFromJson(JSONNode graphData)
     {
         Graph.DeserializeFromJson(graphData);
+        Graph.Name = this.name;
     }
 
 

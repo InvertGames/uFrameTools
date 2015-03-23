@@ -23,13 +23,13 @@
             {
             }
         }
-        public class ScaffoldTypedItemDrawer : ScaffoldNodeTypedChildItem<TData>.Drawer
-        {
-            public ScaffoldTypedItemDrawer(ScaffoldNodeTypedChildItem<TData>.ViewModel viewModel)
-                : base(viewModel)
-            {
-            }
-        }
+        //public class ScaffoldTypedItemDrawer : ScaffoldNodeTypedChildItem<TData>.Drawer
+        //{
+        //    public ScaffoldTypedItemDrawer(ScaffoldNodeTypedChildItem<TData>.ViewModel viewModel)
+        //        : base(viewModel)
+        //    {
+        //    }
+        //}
 
 
         public class ItemViewModel : ScaffoldNodeChildItem<TData>.ViewModel
@@ -40,13 +40,13 @@
             }
         }
 
-        public class TypedItemViewModel : ScaffoldNodeTypedChildItem<TData>.ViewModel
-        {
-            public TypedItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
-                : base(graphItemObject, diagramViewModel)
-            {
-            }
-        }
+        //public class TypedItemViewModel : ScaffoldNodeTypedChildItem<TData>.ViewModel
+        //{
+        //    public TypedItemViewModel(TData graphItemObject, DiagramNodeViewModel diagramViewModel)
+        //        : base(graphItemObject, diagramViewModel)
+        //    {
+        //    }
+        //}
 
         public class ViewModel : GenericNodeViewModel<TData>
         {

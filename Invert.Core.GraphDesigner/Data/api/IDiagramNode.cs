@@ -2,14 +2,144 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
+using Invert.Json;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    
+    public interface IChangeData : IJsonObject
+    {
+        bool IsValid { get; }
+        IGraphItem Item { get; set; }
+        string ItemIdentifier { get; set; }
+        void Update(IChangeData data);
+    }
+
+    public interface IChangeData<T> : IChangeData
+    {
+        T Old { get; set; }
+        T New { get; set; }
+    }
+
+
+    public class NameChange : StringChange
+    {
+        public NameChange(IGraphItem item, string old, string @new) : base(item, old, @new)
+        {
+        }
+
+        public NameChange()
+        {
+        }
+
+        public override void Update(IChangeData data)
+        {
+            var tc = data as NameChange;
+            if (tc != null)
+            {
+                if (New == tc.Old)
+                {
+                    New = tc.New;
+                }
+            }
+        }
+        public override string ToString()
+        {
+            return string.Format("{0}: Name {1} Changed to {2}", Item.Label, Old, New);
+        }
+    }
+
+    public class TypeChange : StringChange
+    {
+        public TypeChange(IGraphItem item, string old, string @new) : base(item, old, @new)
+        {
+        }
+
+        public TypeChange()
+        {
+        }
+
+        public override void Update(IChangeData data)
+        {
+            var tc = data as TypeChange;
+            if (tc != null)
+            {
+                if (New == tc.Old)
+                {
+                    New = tc.New;
+                }
+            }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}: Type {1} Changed to {2}",Item.Label, Old, New);
+        }
+    }
+    public abstract class StringChange : IChangeData<string>
+    {
+        public string Old { get; set; }
+        public string New { get; set; }
+        public IGraphItem Item { get; set; }
+        public string ItemIdentifier { get; set; }
+        public bool IsValid
+        {
+            get { return Old != null&& New != null && Old != New; }
+        }
+
+        protected StringChange()
+        {
+        }
+
+        protected StringChange(IGraphItem item, string old, string @new)
+        {
+            Old = old;
+            New = @new;
+            Item = item;
+            ItemIdentifier = item.Identifier;
+        }
+
+        public abstract void Update(IChangeData data);
+        public void Serialize(JSONClass cls)
+        {
+            if (Item != null)
+            {
+                cls.Add("ItemIdentifier", new JSONData(Item.Identifier));
+            }
+            if (!string.IsNullOrEmpty(Old))
+            {
+                cls.Add("Old", new JSONData(Old));
+            }
+            if (!string.IsNullOrEmpty(New))
+            {
+                cls.Add("New", new JSONData(New));
+            }
+        }
+
+        public void Deserialize(JSONClass cls)
+        {
+            if (cls["ItemIdentifier"] != null)
+            {
+                ItemIdentifier = cls["ItemIdentifier"].Value;
+            }
+            if (cls["Old"] != null)
+            {
+                Old = cls["Old"].Value;
+            }
+            if (cls["New"] != null)
+            {
+                Old = cls["New"].Value;
+            }
+        }
+
+        
+    }
+
     public interface IDiagramNode : IDiagramNodeItem
     {
-    
+
+        void TrackChange(IChangeData data);
         string SubTitle { get; }
         /// <summary>
         /// The label that sits above the node providing additional insight.

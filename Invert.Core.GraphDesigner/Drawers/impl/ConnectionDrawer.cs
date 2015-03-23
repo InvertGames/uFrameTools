@@ -103,7 +103,7 @@ namespace Invert.Core.GraphDesigner
 
             var shadowCol = new Color(0, 0, 0, 0.1f);
             
-            if (ViewModel.IsFullColor)
+            //if (ViewModel.IsFullColor)
                 for (int i = 0; i < 3; i++) // Draw a shadow
                     platform.DrawBezier(_startPos * scale, _endPos * scale, startTan * scale,
                         endTan*scale, shadowCol,  (i + 1)*5);

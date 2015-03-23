@@ -3,7 +3,7 @@ using Invert.Core.GraphDesigner;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class SimpleEditorCommand<TFor> : EditorCommand<TFor>
+    public class SimpleEditorCommand<TFor> : EditorCommand<TFor> where TFor : class
     {
         private string _name;
         private string _group;

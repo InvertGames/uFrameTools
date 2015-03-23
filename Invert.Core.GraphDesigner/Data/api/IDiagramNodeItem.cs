@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
@@ -21,6 +22,8 @@ namespace Invert.Core.GraphDesigner
         /// Is this node currently in edit mode/ rename mode.
         /// </summary>
         bool IsEditing { get; set; }
+
+        bool this[string flag] { get; set; }
 
         FlagsDictionary Flags { get; set; }
 

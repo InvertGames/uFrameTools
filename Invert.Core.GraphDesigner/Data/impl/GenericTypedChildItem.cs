@@ -27,13 +27,21 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
     public string RelatedType
     {
         get { return _type; }
-        set { _type = value; }
+        set
+        {
+            if (this.Node.Graph != null && this.Node.Project 
+                 != null)
+            this.Node.TrackChange(new TypeChange(this, _type, RelatedTypeName));
+            _type = value;
+            
+        }
     }
 
     public virtual string DefaultTypeName
     {
         get { return string.Empty; }
     }
+
     public virtual string RelatedTypeName
     {
         get
@@ -73,6 +81,7 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
             return result;
         }
     }
+
     public bool AllowEmptyRelatedType
     {
         get { return false; }

@@ -8,7 +8,7 @@ using KeyCode = System.Windows.Forms.Keys;
 #endif
 namespace Invert.Core.GraphDesigner
 {
-    public class GraphDesignerPlugin : DiagramPlugin, IPrefabNodeProvider
+    public class GraphDesignerPlugin : DiagramPlugin, IPrefabNodeProvider, ICommandEvents, IConnectionEvents
     {
         public override decimal LoadPriority
         {
@@ -21,6 +21,8 @@ namespace Invert.Core.GraphDesigner
 
         public override void Initialize(uFrameContainer container)
         {
+            ListenFor<ICommandEvents>();
+            ListenFor<IConnectionEvents>();
 //#if UNITY_DLL
         
 //            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -44,9 +46,9 @@ namespace Invert.Core.GraphDesigner
             //typeContainer.AddItem<BaseClassReference, InputOutputViewModel, SlotDrawer>();
 
             container.RegisterInstance<IConnectionStrategy>(new InputOutputStrategy(),"InputOutputStrategy");
-            container.RegisterConnectable<GenericTypedChildItem, IClassTypeNode>();
+            //container.RegisterConnectable<GenericTypedChildItem, IClassTypeNode>();
             container.RegisterConnectable<GenericInheritableNode, GenericInheritableNode>();
-            container.RegisterInstance<IConnectionStrategy>(new ReferenceConnectionStrategy(), "ReferenceConnectionStrategy");
+            container.RegisterInstance<IConnectionStrategy>(new TypedItemConnectionStrategy(), "TypedConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new RegisteredConnectionStrategy(),"RegisteredConnectablesStrategy");
 
             container.AddNode<EnumNode>("Enum")
@@ -78,7 +80,7 @@ namespace Invert.Core.GraphDesigner
             container.RegisterGraphItem<ClassPropertyData, ClassPropertyItemViewModel>();
             container.RegisterGraphItem<ClassCollectionData, ClassCollectionItemViewModel>();
             container.RegisterGraphItem<ClassNodeData, ClassNodeViewModel>();
-            container.RegisterInstance<IConnectionStrategy>(new ClassNodeInheritanceConnectionStrategy(), "ClassNodeInheritanceConnectionStrategy");
+            
 
 #endif
             // Register the container itself
@@ -100,6 +102,7 @@ namespace Invert.Core.GraphDesigner
             container.RegisterGraphCommand<AddReferenceNode>();
             container.RegisterGraphCommand<ShowItemCommand>();
             container.RegisterNodeCommand<PullFromCommand>();
+            //container.RegisterNodeCommand<ToExternalGraph>();
             container.RegisterNodeCommand<OpenCommand>();
             container.RegisterNodeCommand<DeleteCommand>();
             container.RegisterNodeCommand<RenameCommand>();
@@ -157,6 +160,44 @@ namespace Invert.Core.GraphDesigner
                 {
                     nodeRepository.SetItemLocation(p, _.MousePosition);
                 }));
+        }
+
+        public void CommandExecuting(ICommandHandler handler, IEditorCommand command, object o)
+        {
+            
+        }
+
+        public void CommandExecuted(ICommandHandler handler, IEditorCommand command, object o)
+        {
+            var item = o as IDiagramNodeItem;
+            if (item != null)
+            {
+                var projectService = InvertApplication.Container.Resolve<ProjectService>();
+                foreach (var graph in projectService.CurrentProject.Graphs)
+                {
+                    if (graph.Identifier == item.Node.Graph.Identifier)
+                    {
+                        UnityEditor.EditorUtility.SetDirty(graph as UnityEngine.Object);
+                    }
+                }
+            }
+        }
+
+        public void ConnectionApplying(IGraphData graph, IConnectable output, IConnectable input)
+        {
+            
+        }
+
+        public void ConnectionApplied(IGraphData g, IConnectable output, IConnectable input)
+        {
+            var projectService = InvertApplication.Container.Resolve<ProjectService>();
+            foreach (var graph in projectService.CurrentProject.Graphs)
+            {
+                if (graph.Identifier == g.Identifier)
+                {
+                    UnityEditor.EditorUtility.SetDirty(graph as UnityEngine.Object);
+                }
+            }
         }
     }
 }

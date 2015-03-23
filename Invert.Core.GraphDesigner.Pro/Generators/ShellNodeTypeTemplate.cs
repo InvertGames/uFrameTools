@@ -385,6 +385,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
 
     public void TemplateSetup()
     {
+        Ctx.TryAddNamespace("Invert.Core");
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");
         var i = new CodeTypeDeclaration(Ctx.Data.ReferenceClassName)
         {
@@ -455,8 +456,8 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         get
         {
             var referenceName = Ctx.ItemAs<ShellNodeConfigSection>().ReferenceClassName;
-            Ctx.SetTypeArgument(referenceName);
-            Ctx._("return this.Project.AllGraphItems.OfType<{0}>()", referenceName);
+            Ctx.SetTypeArgument(typeof(IItem));
+            Ctx._("return this.Project.AllGraphItems.OfType<{0}>().Cast<IItem>()", referenceName);
             //Ctx.AddAttribute(typeof (ReferenceSection), Ctx.Item.Name);
             return null;
         }

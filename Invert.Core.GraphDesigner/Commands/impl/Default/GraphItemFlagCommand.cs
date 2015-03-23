@@ -1,12 +1,18 @@
 using System;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class NodeFlagCommand<T> : EditorCommand<T>, IDiagramNodeCommand where T :DiagramNode
+    public interface IFlagCommand : IEditorCommand
+    {
+        UnityEngine.Color Color { get; set; }
+        string FlagName { get; }
+    }
+    public class GraphItemFlagCommand<T> : EditorCommand<T>, IDiagramNodeCommand, IDiagramNodeItemCommand, IFlagCommand where T : class, IDiagramNodeItem
     {
         private string _title;
 
-        public NodeFlagCommand(string flagName,string title = null)
+        public GraphItemFlagCommand(string flagName,string title = null)
         {
             _title = title;
             FlagName = flagName;
@@ -33,7 +39,8 @@ namespace Invert.Core.GraphDesigner
         //}
         public bool IsProperty { get; set; }
         public Func<T, bool> Get { get; set; }
-        public Action<T, bool> Set { get; set; } 
+        public Action<T, bool> Set { get; set; }
+        public Color Color { get; set; }
         public string FlagName { get; set; }
         
         public override bool IsChecked(T node)
@@ -61,4 +68,5 @@ namespace Invert.Core.GraphDesigner
             return null;
         }
     }
+  
 }

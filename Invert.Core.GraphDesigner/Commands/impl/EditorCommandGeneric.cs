@@ -2,7 +2,7 @@
 
 namespace Invert.Core.GraphDesigner
 {
-    public abstract class EditorCommand<TFor> : EditorCommand, IDiagramContextCommand, IDiagramNodeCommand
+    public abstract class EditorCommand<TFor> : EditorCommand, IDiagramContextCommand, IDiagramNodeCommand where TFor : class
     {
         public override Type For
         {
@@ -23,8 +23,10 @@ namespace Invert.Core.GraphDesigner
 
         public sealed override bool IsChecked(object arg)
         {
-            if (arg == null) return false;
-            return IsChecked((TFor)arg);
+            var @for = arg as TFor;
+            if (@for != null) 
+            return IsChecked(@for);
+            return false;
         }
 
         public virtual bool IsChecked(TFor arg)

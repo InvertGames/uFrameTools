@@ -144,7 +144,7 @@
     <Compile Include="Commands\impl\Default\ImportCommand.cs" />
     <Compile Include="Commands\impl\Default\MoveDownCommand.cs" />
     <Compile Include="Commands\impl\Default\MoveUpCommand.cs" />
-    <Compile Include="Commands\impl\Default\NodeFlagCommand.cs" />
+    <Compile Include="Commands\impl\Default\GraphItemFlagCommand.cs" />
     <Compile Include="Commands\impl\Default\OpenCommand.cs" />
     <Compile Include="Commands\impl\Default\RemoveLinkCommand.cs" />
     <Compile Include="Commands\impl\Default\RenameCommand.cs" />

@@ -11,4 +11,6 @@ namespace Invert.Core.GraphDesigner
         IGraphItem Copy();
 
     }
+
+     
 }

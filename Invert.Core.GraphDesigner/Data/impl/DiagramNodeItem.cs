@@ -169,12 +169,15 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         get { return _name; }
         set
         {
+            var oldName = _name;
             if (AutoFixName)
-            _name = Regex.Replace(value, @"[^a-zA-Z0-9_\.]+", "");
+                _name = Regex.Replace(value, @"[^a-zA-Z0-9_\.]+", "");
             else
             {
                 _name = value;
             }
+            if (Node != null)
+            Node.TrackChange(new NameChange(this,oldName, _name));
         }
     }
 
@@ -221,15 +224,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
 
     public virtual void EndEditing()
     {
-        if (OldName != Name)
-        {
-            if (RenameRefactorer == null)
-            {
-                return;
-            }
-
-            RenameRefactorer.Set(this);
-        }
+        
     }
 
     //public abstract IEnumerable<IDiagramLink> GetLinks(IDiagramNode[] diagramNode);
@@ -366,11 +361,6 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         get { return true; }
     }
 
-    public virtual void OnConnectionApplied(IConnectable output, IConnectable input)
-    {
-        
-    }
-
     public virtual bool CanOutputTo(IConnectable input)
     {
         if (!AllowMultipleOutputs && this.Outputs.Any())
@@ -388,4 +378,25 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         }
         return true;
     }
+
+    public virtual void OnOutputConnectionRemoved(IConnectable input)
+    {
+
+    }
+
+    public virtual void OnInputConnectionRemoved(IConnectable output)
+    {
+
+    }
+
+    public virtual void OnConnectedToInput(IConnectable input)
+    {
+
+    }
+
+    public virtual void OnConnectedFromOutput(IConnectable output)
+    {
+
+    }
+
 }

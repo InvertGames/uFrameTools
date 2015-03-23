@@ -43,10 +43,10 @@ namespace Invert.Core.GraphDesigner.Unity
             InvertApplication.ListenFor<IProjectEvents>(this);
             container.RegisterInstance<IPlatformDrawer>(InvertGraphEditor.PlatformDrawer);
             container.RegisterInstance<IStyleProvider>(new UnityStyleProvider());
-//#if DOCS
+#if DOCS
             container.RegisterToolbarCommand<GenerateDocsCommand>();
             container.RegisterToolbarCommand<DocsModeCommand>();
-//#endif
+#endif
             container.RegisterToolbarCommand<ExportDiagramCommand>();
 
             container.RegisterInstance<IAssetManager>(new UnityAssetManager());
@@ -91,7 +91,9 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void Renamed(IDiagramNodeItem node, string previousName, string newName)
         {
-            var n = node.Node;
+            var n = node as DiagramNode;
+            if (n == null) return;
+
             if (n == n.Graph.RootFilter)
             {
                 var graph = n.Graph.Project.Graphs.FirstOrDefault(p=>p.Identifier == n.Graph.Identifier) as UnityEngine.Object;

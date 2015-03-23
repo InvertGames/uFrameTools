@@ -13,7 +13,7 @@ namespace Invert.Core.GraphDesigner
     /// The base data class for all diagram nodes.
     /// </summary>
     [Browsable(false)]
-    public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter, ITypedItem
+    public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
     {
         [Browsable(false)]
         public IEnumerable<ConnectionData> Inputs
@@ -91,6 +91,26 @@ namespace Invert.Core.GraphDesigner
                 return false;
             }
             return true;
+        }
+
+        public virtual void OnOutputConnectionRemoved(IConnectable input)
+        {
+            
+        }
+
+        public virtual void OnInputConnectionRemoved(IConnectable output)
+        {
+          
+        }
+
+        public virtual void OnConnectedToInput(IConnectable input)
+        {
+          
+        }
+
+        public virtual void OnConnectedFromOutput(IConnectable output)
+        {
+           
         }
 
         private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
@@ -395,13 +415,14 @@ namespace Invert.Core.GraphDesigner
             }
             set
             {
+                var previous = _name;
                 if (value == null) return;
                 _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
                 if (this.Graph != null && this.Graph.RootFilter == this)
                 {
                     this.Graph.Name = _name;
                 }
-           
+                Node.TrackChange(new NameChange(this,previous,_name));
                 Dirty = true;
             }
         }
@@ -473,6 +494,13 @@ namespace Invert.Core.GraphDesigner
         public string SearchTag { get { return Name; } }
         [Browsable(false)]
         public virtual bool ShouldRenameRefactor { get { return true; } }
+
+        public void TrackChange(IChangeData data)
+        {
+            if (Graph != null)
+            Graph.TrackChange(data);
+        }
+
         [Browsable(false)]
         public virtual string SubTitle { get { return string.Empty; } }
         [Browsable(false)]
@@ -699,6 +727,12 @@ namespace Invert.Core.GraphDesigner
         {
             get { return this.Name; }
         }
+
+        public void RemoveType()
+        {
+            
+        }
+
         [Browsable(false)]
         public string AssemblyQualifiedName { get; set; }
 

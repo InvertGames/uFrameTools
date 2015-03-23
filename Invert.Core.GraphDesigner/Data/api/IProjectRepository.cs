@@ -30,6 +30,7 @@ namespace Invert.Core.GraphDesigner
         void Refresh();
 
         bool SetSetting(string key, bool value);
+        void TrackChange(IChangeData data);
     }
 
 
@@ -507,6 +508,11 @@ namespace Invert.Core.GraphDesigner
         public bool SetSetting(string key, bool value)
         {
             return this[key] = value;
+        }
+        
+        public void TrackChange(IChangeData data)
+        {
+            InvertApplication.SignalEvent<IChangeTrackingEvents>(_=>_.ChangeOccured(data));
         }
 
         public IEnumerable<ErrorInfo> Validate()

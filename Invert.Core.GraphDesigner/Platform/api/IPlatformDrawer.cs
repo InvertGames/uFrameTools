@@ -7,14 +7,16 @@ namespace Invert.Core.GraphDesigner
 {
     public enum DrawingAlignment
     {
-        MiddleLeft,
-        MiddleRight,
-        MiddleCenter,
-        TopRight,
-        TopCenter,
         TopLeft,
-        BottomCenter,
+        TopCenter,
+        TopRight,
+        MiddleLeft,
+        MiddleCenter,
+        MiddleRight,
+
         BottomLeft,
+        BottomCenter,
+
         BottomRight
     }
 
@@ -59,6 +61,7 @@ namespace Invert.Core.GraphDesigner
 
         void EndRender();
         //Rect GetRect(object style);
+        void DrawRect(Rect boundsRect, Color color);
     }
 
 

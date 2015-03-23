@@ -24,7 +24,8 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
     private bool _errors;
     private List<ConnectionData> _connections;
     private string _ns;
-    
+    private List<IChangeData> _changeData;
+
 
 #if !UNITY_DLL
     public FileInfo GraphFileInfo { get; set; }
@@ -53,7 +54,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
 
     public ICodePathStrategy CodePathStrategy { get; set; }
 
-    public IEnumerable<IGraphItem> AllGraphItems 
+    public IEnumerable<IGraphItem> AllGraphItems
     {
         get
         {
@@ -62,7 +63,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
                 yield return node;
                 foreach (var item in node.GraphItems)
                     yield return item;
-                
+
             }
         }
     }
@@ -90,6 +91,12 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         }
     }
 
+    public List<IChangeData> ChangeData
+    {
+        get { return _changeData ?? (_changeData = new List<IChangeData>()); }
+        set { _changeData = value; }
+    }
+
     public string Identifier
     {
         get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; }
@@ -102,8 +109,10 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         set { _settings = value; }
     }
 #if UNITY_DLL
-        public string Path { get; set; }
+    public string Path { get; set; }
+
     public string Name { get; set; }
+
 #else
     public string Path
     {
@@ -144,9 +153,6 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
                 yield return RootFilter as IDiagramNode;
             foreach (var item in Nodes)
                 yield return item;
-            List<IDiagramNode> precompiledList;
-            
-    
         }
     }
 
@@ -164,7 +170,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
             {
                 return _rootFilter;
             }
-            
+
             RootFilter = CreateDefaultFilter();
             return _rootFilter;
         }
@@ -254,12 +260,12 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
 
     public void RecordUndo(INodeRepository data, string title)
     {
-        
+
     }
 
     public void MarkDirty(INodeRepository data)
     {
-        
+
     }
 
     public void SetItemLocation(IDiagramNode node, Vector2 position)
@@ -282,6 +288,22 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         return Validate();
     }
 
+    public void TrackChange(IChangeData data)
+    {
+        if (Project != null)
+            Project.TrackChange(data);
+        var existing = ChangeData.FirstOrDefault(p => p.Item == data.Item && p.GetType() == data.GetType());
+        if (existing != null)
+        {
+            existing.Update(data);
+        }
+        else
+        {
+            ChangeData.Add(data);
+        }
+        ChangeData.RemoveAll(p => !p.IsValid);
+    }
+
     public virtual IDiagramFilter CreateDefaultFilter()
     {
         return null;
@@ -300,11 +322,11 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
     {
         data.Graph = this;
         data.IsCollapsed = true;
-        
+
         Nodes.Add(data);
     }
 
-    public void RemoveNode(IDiagramNode node,bool removePositionData = true)
+    public void RemoveNode(IDiagramNode node, bool removePositionData = true)
     {
         if (node == RootFilter) return;
         //foreach (var item in Nodes)
@@ -321,7 +343,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
                 item.Value.Remove(node.Identifier);
             }
         }
-        
+
         Nodes.Remove(node);
     }
 
@@ -333,7 +355,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         foreach (var node in NodeItems)
         {
             var node1 = node;
-            docs.Rows(()=>docs.LinkToNode(node1 as DiagramNode));
+            docs.Rows(() => docs.LinkToNode(node1 as DiagramNode));
         }
         foreach (var node in NodeItems)
         {
@@ -343,35 +365,78 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
 
     public void AddConnection(IConnectable output, IConnectable input)
     {
+        if (ConnectedItems.Any(p => p.InputIdentifier == input.Identifier && p.OutputIdentifier == output.Identifier)) return;
         var connection = new ConnectionData(output.Identifier, input.Identifier)
         {
             Graph = this,
             Output = output,
             Input = input
         };
-     
-
-        output.OnConnectionApplied(output, input);
-        input.OnConnectionApplied(output, input);
+        if (!output.AllowMultipleOutputs)
+        {
+            ClearOutput(output);
+        }
+        if (!input.AllowMultipleInputs)
+        {
+            ClearInput(input);
+        }
+        output.OnConnectedToInput(input);
+        input.OnConnectedFromOutput(output);
+        Debug.Log("Connecting");
+        //output.OnConnectionApplied(output, input);
+        //input.OnConnectionApplied(output, input);
         ConnectedItems.Add(connection);
     }
 
+    /// <summary>
+    /// DO NOT USE! For upgrading projects only! Use other overload
+    /// </summary>
+    /// <param name="output"></param>
+    /// <param name="input"></param>
+    public void AddConnection(string output, string input)
+    {
+        if (ConnectedItems.Any(p => p.InputIdentifier == input && p.OutputIdentifier == output)) return;
+        var connection = new ConnectionData(output, input)
+        {
+            Graph = this,
+            Output = AllGraphItems.FirstOrDefault(p => p.Identifier == output) as IConnectable,
+            Input = AllGraphItems.FirstOrDefault(p => p.Identifier == input) as IConnectable
+        };
+
+        ConnectedItems.Add(connection);
+    }
+
+
+    /// <summary>
+    /// Removes a connection from this graph
+    /// </summary>
+    /// <param name="output">The output of the connection.</param>
+    /// <param name="input">The input of the connection.</param>
     public void RemoveConnection(IConnectable output, IConnectable input)
     {
+        output.OnOutputConnectionRemoved(input);
+        input.OnInputConnectionRemoved(output);
         ConnectedItems.RemoveAll(p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
     }
 
+    /// <summary>
+    /// Removes all connections from an output
+    /// </summary>
+    /// <param name="output"></param>
     public void ClearOutput(IConnectable output)
     {
         ConnectedItems.RemoveAll(p => p.OutputIdentifier == output.Identifier);
     }
-
+    /// <summary>
+    /// Removes all connections to an input
+    /// </summary>
+    /// <param name="output"></param>
     public void ClearInput(IConnectable input)
     {
         ConnectedItems.RemoveAll(p => p.InputIdentifier == input.Identifier);
     }
 
-    public IProjectRepository Project { get;  set; }
+    public IProjectRepository Project { get; set; }
 
     public bool Precompiled { get; set; }
 
@@ -423,7 +488,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         };
         // Store the root filter
         root.AddObject("RootNode", data.RootFilter as IJsonObject);
-        
+
         // Nodes
         root.AddObjectArray("Nodes", data.NodeItems.Where(p => p.Identifier != data.RootFilter.Identifier && !p.Precompiled));
         root.AddObjectArray("ConnectedItems", data.Connections);
@@ -441,9 +506,10 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
             // Add the settings
             root.AddObject("Settings", data.Settings);
 
-        
-     
-    
+        root.AddObjectArray("Changes", data.ChangeData);
+
+
+
         return root;
     }
 
@@ -506,7 +572,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
             return;
         }
         if (jsonNode["Name"] != null)
-        Name = jsonNode["Name"].Value;
+            Name = jsonNode["Name"].Value;
         if (jsonNode["DocumentationMode"] != null)
             DocumentationMode = jsonNode["DocumentationMode"].AsBool;
         if (jsonNode["SceneFlow"] is JSONClass)
@@ -549,7 +615,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         {
             Nodes.Clear();
             //uFrameEditor.Log(this.name + jsonNode["Nodes"].ToString());
-            Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>( (node =>
+            Nodes.AddRange(jsonNode["Nodes"].AsArray.DeserializeObjectArray<IDiagramNode>((node =>
             {
                 var missingNode = new MissingNodeData();
                 missingNode.Deserialize(node.AsObject);
@@ -561,13 +627,23 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
             ConnectedItems.Clear();
             ConnectedItems.AddRange(jsonNode["ConnectedItems"].AsArray.DeserializeObjectArray<ConnectionData>());
         }
+        if (jsonNode["Changes"] is JSONArray)
+        {
+            ChangeData.Clear();
+            ChangeData.AddRange(jsonNode["Changes"].AsArray.DeserializeObjectArray<IChangeData>());
+            foreach (var item in ChangeData)
+            {
+                item.Item = AllGraphItems.FirstOrDefault(p => p.Identifier == item.ItemIdentifier);
+            }
+            ChangeData.RemoveAll(p => p.Item == null);
+        }
         foreach (var item in NodeItems)
         {
             item.Graph = this;
         }
         if (string.IsNullOrEmpty(Version))
         {
-            foreach (var filter in NodeItems.OfType<IDiagramFilter>().Concat(new[] {RootFilter}).ToArray())
+            foreach (var filter in NodeItems.OfType<IDiagramFilter>().Concat(new[] { RootFilter }).ToArray())
             {
                 var index = 0;
                 foreach (var itemLoction in filter.Locations.Keys)

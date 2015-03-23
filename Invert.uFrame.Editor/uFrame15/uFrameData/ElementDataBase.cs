@@ -41,7 +41,7 @@ public abstract class ElementDataBase : DiagramNode, ISubSystemType
         }
     }
 
-    public ElementData BaseElement { get { return Project.GetAllElements().FirstOrDefault(p => p.Identifier == this.BaseIdentifier); } }
+    public ElementData BaseElement { get { return Graph.GetAllElements().FirstOrDefault(p => p.Identifier == this.BaseIdentifier); } }
 
     public abstract string BaseTypeName { get; }
 

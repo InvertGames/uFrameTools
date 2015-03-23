@@ -23,13 +23,6 @@ namespace Invert.Core.GraphDesigner
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
-
-
-        }
-
-        public bool ShowHelp
-        {
-            get { return true; }
         }
 
         protected override void CreateContent()
@@ -234,9 +227,20 @@ namespace Invert.Core.GraphDesigner
                 if (IsCollapsed)
                 {
                     if (item.InputConnector != null)
+                    {
                         item.InputConnector.Disabled = true;
+                        item.InputConnector.ConnectorFor = this;
+                    }
+
                     if (item.OutputConnector != null)
+                    {
                         item.OutputConnector.Disabled = true;
+                        item.OutputConnector.ConnectorFor = this;
+
+                    }
+                        
+                    
+                    
                 }
             }
 

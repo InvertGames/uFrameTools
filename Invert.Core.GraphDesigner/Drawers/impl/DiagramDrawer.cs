@@ -99,7 +99,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (drawer.Dirty)
                 {
-                    drawer.Refresh((IPlatformDrawer)platform);
+                    drawer.Refresh((IPlatformDrawer)platform,drawer.Bounds.position,false);
                     drawer.Dirty = false;
                 }
                 drawer.Draw(platform, Scale);

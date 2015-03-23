@@ -331,6 +331,7 @@ namespace Invert.Core.GraphDesigner
 
         protected static void ApplyOutputConfiguration(GraphItemConfiguration inputConfig, IGraphItem dataItem, ConnectorViewModel connector, bool alwaysVisible = false)
         {
+            if (connector != null)
             connector.AlwaysVisible = alwaysVisible;
             //var slot = dataItem as IDiagramNodeItem;
             //if (slot != null)
@@ -366,7 +367,7 @@ namespace Invert.Core.GraphDesigner
 
         protected static void ApplyInputConfiguration(GraphItemConfiguration inputConfig, IGraphItem dataItem, ConnectorViewModel connector,bool alwaysVisible = false)
         {
-
+            if (connector != null)
             connector.AlwaysVisible = alwaysVisible;
             
             //var slot = dataItem as IDiagramNodeItem;

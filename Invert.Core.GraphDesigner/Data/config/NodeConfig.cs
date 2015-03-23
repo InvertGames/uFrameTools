@@ -569,13 +569,13 @@ namespace Invert.Core.GraphDesigner
 
         public NodeConfig<TNode> AddFlag(string flag)
         {
-            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(flag, flag), typeof(TNode).Name + flag + "FlagCommand");
+            Container.RegisterInstance<IDiagramNodeCommand>(new GraphItemFlagCommand<TNode>(flag, flag), typeof(TNode).Name + flag + "FlagCommand");
             return this;
         }
 
         public NodeConfig<TNode> AddFlag(string flag, Func<TNode, bool> get, Action<TNode, bool> set)
         {
-            Container.RegisterInstance<IDiagramNodeCommand>(new NodeFlagCommand<TNode>(flag, flag)
+            Container.RegisterInstance<IDiagramNodeCommand>(new GraphItemFlagCommand<TNode>(flag, flag)
             {
                 IsProperty = true,
                 Get = get,

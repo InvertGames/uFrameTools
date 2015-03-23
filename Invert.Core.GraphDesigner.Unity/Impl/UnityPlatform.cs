@@ -318,7 +318,7 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
         {
             var s = (GUIStyle)style;
-            s.alignment = ((TextAnchor)Enum.Parse(typeof(TextAnchor), alignment.ToString(), true));
+            s.alignment = ((TextAnchor)(int)alignment);
 
             GUI.Label(rect, label, s);
         }
@@ -372,6 +372,11 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             EditorGUI.FocusTextInControl("EditingField");
             
+        }
+
+        public void DrawRect(Rect boundsRect, Color color)
+        {
+            EditorGUI.DrawRect(boundsRect,color);
         }
 
         public void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale)

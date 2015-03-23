@@ -117,7 +117,7 @@ namespace Invert.Core.GraphDesigner
             return result;
         }
     }
-    public class ReferenceSection<TReference> : GenericReferenceItem<TReference>
+    public class ReferenceSection<TReference> : GenericReferenceItem<TReference> where TReference : class
     {
         
     }
@@ -592,13 +592,21 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    public class GenericReferenceItem<TSourceType> : GenericReferenceItem
+    public class GenericReferenceItem<TSourceType> : GenericReferenceItem where TSourceType : class 
     {
         
         [Browsable(false)]
         public TSourceType SourceItem
         {
-            get { return (TSourceType)SourceItemObject; }
+            get
+            {
+                var sourceItem = SourceItemObject;
+                if (sourceItem is TSourceType)
+                {
+                    return (TSourceType)sourceItem;
+                }
+                return null;
+            }
         }
     }
 
@@ -694,6 +702,11 @@ namespace Invert.Core.GraphDesigner
                 return RelatedType;
             }
         }
+
+        public void RemoveType()
+        {
+            this.Node.Graph.Project.RemoveItem(this); 
+        }
     }
 
 
@@ -732,6 +745,11 @@ namespace Invert.Core.GraphDesigner
     {
         public TypeReferenceNodeViewModel(TypeReferenceNode graphItemObject, DiagramViewModel diagramViewModel) : base(graphItemObject, diagramViewModel)
         {
+        }
+
+        public override IEnumerable<string> Tags
+        {
+            get { yield return "Type Reference"; }
         }
 
         //public override bool IsEditable

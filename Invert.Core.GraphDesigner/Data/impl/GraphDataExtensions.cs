@@ -288,6 +288,10 @@ namespace Invert.Core.GraphDesigner
             {
                 return gt.RelatedTypeNode as IDiagramNode;
             }
+            if (item.Node.Project == null)
+            {
+                return item.Node.Graph.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
+            }
             return item.Node.Project.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
         }
 

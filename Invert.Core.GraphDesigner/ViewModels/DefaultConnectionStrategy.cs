@@ -10,9 +10,6 @@ namespace Invert.Core.GraphDesigner
         where TOutputData : IGraphItem
         where TInputData : IGraphItem
     {
-
-
-        public abstract Color ConnectionColor { get; }
         public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
             //if (a.Validator != null)
@@ -37,12 +34,12 @@ namespace Invert.Core.GraphDesigner
             return true;
         }
 
-        public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
-        {
-            base.GetConnections(connections, info);
-            connections.AddRange(info.ConnectionsByData(this));
-            //foreach (var item in info.DiagramData.Connections.Cont)
-        }
+        //public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
+        //{
+        //    base.GetConnections(connections, info);
+        //    connections.AddRange(info.ConnectionsByData(this));
+        //    //foreach (var item in info.DiagramData.Connections.Cont)
+        //}
 
         public virtual bool IsConnected(INodeRepository currentRepository, TOutputData output, TInputData input)
         {
@@ -75,14 +72,19 @@ namespace Invert.Core.GraphDesigner
         {
             get { return false; }
         }
+
+        public abstract Color ConnectionColor { get; }
+
+        public abstract void Remove(ConnectorViewModel output, ConnectorViewModel input);
+
         public virtual ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
             return null;
         }
 
-        public virtual void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
+        public virtual bool IsConnected(ConnectorViewModel output, ConnectorViewModel input)
         {
-
+            return false;
         }
 
         protected ConnectionViewModel TryConnect<TOutput, TInput>(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b, Action<ConnectionViewModel> apply, Func<TOutput, TInput, bool> canConnect = null)
@@ -99,7 +101,7 @@ namespace Invert.Core.GraphDesigner
                                 !canConnect((TOutput)a.ConnectorFor.DataObject, (TInput)b.ConnectorFor.DataObject))
                                 return null;
 
-                            return CreateConnection<TOutput, TInput>(diagramViewModel, a, b, apply);
+                            return CreateConnection(diagramViewModel, a, b, apply);
                         //}
                         //return null;
                     //}
@@ -119,7 +121,7 @@ namespace Invert.Core.GraphDesigner
             return null;
         }
 
-        protected ConnectionViewModel CreateConnection<TOutput, TInput>(DiagramViewModel diagramViewModel, ConnectorViewModel a,
+        protected ConnectionViewModel CreateConnection(DiagramViewModel diagramViewModel, ConnectorViewModel a,
             ConnectorViewModel b, Action<ConnectionViewModel> apply)
         {
             return new ConnectionViewModel(diagramViewModel)
@@ -133,26 +135,27 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void Apply(ConnectionViewModel connectionViewModel)
         {
+        
             var output = connectionViewModel.ConnectorA.DataObject as IConnectable;
             var input = connectionViewModel.ConnectorB.DataObject as IConnectable;
             var diagramData = InvertGraphEditor.CurrentDiagramViewModel.DiagramData;
 
-            if (!output.AllowMultipleOutputs)
-            {
-                var remove = output.Outputs.Where(p => p.Input.GetType().IsAssignableFrom(input.GetType())).ToArray();
-                foreach (var item in remove)
-                {
-                    item.Remove();
-                }
-            }
-            if (!input.AllowMultipleInputs)
-            {
-                var remove = output.Inputs.Where(p => p.Output.GetType().IsAssignableFrom(input.GetType())).ToArray();
-                foreach (var item in remove)
-                {
-                    item.Remove();
-                }
-            }
+            //if (!output.AllowMultipleOutputs)
+            //{
+            //    var remove = output.Outputs.Where(p => p.Input.GetType().IsAssignableFrom(input.GetType())).ToArray();
+            //    foreach (var item in remove)
+            //    {
+            //        item.Remove();
+            //    }
+            //}
+            //if (!input.AllowMultipleInputs)
+            //{
+            //    var remove = output.Inputs.Where(p => p.Output.GetType().IsAssignableFrom(input.GetType())).ToArray();
+            //    foreach (var item in remove)
+            //    {
+            //        item.Remove();
+            //    }
+            //}
             //if (!connectionViewModel.ConnectorA.AllowMultiple)
             //{
 
@@ -162,16 +165,18 @@ namespace Invert.Core.GraphDesigner
             //{
             //    diagramData.ClearInput(input);
             //}
-
+      
+            InvertApplication.SignalEvent<IConnectionEvents>(_ => _.ConnectionApplying(diagramData, output, input));
             ApplyConnection(diagramData, output, input);
-            
+            InvertApplication.SignalEvent<IConnectionEvents>(_ => _.ConnectionApplied(diagramData, output, input));
             //base.Apply(connectionViewModel);
         }
 
         protected virtual void ApplyConnection(IGraphData graph, IConnectable output, IConnectable input)
         {
-
+           
             graph.AddConnection(output, input);
+           
         }
 
         protected virtual void RemoveConnection(IGraphData graph, IConnectable output, IConnectable input)

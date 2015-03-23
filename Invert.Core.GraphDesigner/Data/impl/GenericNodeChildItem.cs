@@ -8,11 +8,6 @@ namespace Invert.Core.GraphDesigner
 {
     public class GenericNodeChildItem : DiagramNodeItem
     {
-        public override void OnConnectionApplied(IConnectable output, IConnectable input)
-        {
-            base.OnConnectionApplied(output, input);
-    
-        }
 
         public override string FullLabel
         {
@@ -52,6 +47,12 @@ namespace Invert.Core.GraphDesigner
                 this.DeserializeProperty(property,cls);
             }
 
+        }
+
+        public override void OnConnectedToInput(IConnectable input)
+        {
+            base.OnConnectedToInput(input);
+            
         }
 
         //private List<string> _connectedGraphItemIds = new List<string>();

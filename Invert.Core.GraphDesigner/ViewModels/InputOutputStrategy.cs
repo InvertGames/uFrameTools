@@ -20,6 +20,11 @@ namespace Invert.Core.GraphDesigner
         }
 
 
+        public override void Remove(ConnectorViewModel output, ConnectorViewModel input)
+        {
+            
+        }
+
         public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
              
@@ -33,24 +38,29 @@ namespace Invert.Core.GraphDesigner
 
     }
 
-    public class RegisteredConnectionStrategy : DefaultConnectionStrategy
-    {
-        private static RegisteredConnection[] _connectionTypes;
+    //public class RegisteredConnectionStrategy : DefaultConnectionStrategy
+    //{
+    //    private static RegisteredConnection[] _connectionTypes;
 
-        public static RegisteredConnection[] ConnectionTypes
-        {
-            get { return _connectionTypes ?? (_connectionTypes = InvertGraphEditor.Container.ResolveAll<RegisteredConnection>().ToArray()); }
-        }
+    //    public static RegisteredConnection[] ConnectionTypes
+    //    {
+    //        get { return _connectionTypes ?? (_connectionTypes = InvertGraphEditor.Container.ResolveAll<RegisteredConnection>().ToArray()); }
+    //    }
 
-        public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
-        {
-            if (ConnectionTypes.Any(p => p.CanConnect(a.DataObject.GetType(), b.DataObject.GetType())))
-            {
-                return CreateConnection<IConnectable, IConnectable>(diagramViewModel, a, b, Apply);
-            }
-            return null;
-        }
-    }
+    //    public override Color ConnectionColor
+    //    {
+    //        get { return Color.white; }
+    //    }
+
+    //    public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
+    //    {
+    //        if (ConnectionTypes.Any(p => p.CanConnect(a.DataObject.GetType(), b.DataObject.GetType())))
+    //        {
+    //            return CreateConnection(diagramViewModel, a, b, Apply);
+    //        }
+    //        return null;
+    //    }
+    //}
 
     public class RegisteredConnection
     {
@@ -96,7 +106,7 @@ namespace Invert.Core.GraphDesigner
 
         protected override bool CanConnect(TOutput output, TInput input)
         {
-            
+
             return base.CanConnect(output, input);
         }
 
@@ -104,82 +114,94 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _connectionColor; }
         }
-    }
 
-    public class ReferenceConnectionStrategy : DefaultConnectionStrategy
-    {
-        
-        public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
+        public override void Remove(ConnectorViewModel output, ConnectorViewModel input)
         {
-            return null;
-            return base.Connect(diagramViewModel, a, b);
-        }
-
-        public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
-        {
-            base.GetConnections(connections, info);
-            foreach (var item in info.Inputs.Where(p => p.ConnectorFor.DataObject is GenericReferenceItem))
-            {
-                var referenceItem = item.ConnectorFor.DataObject as GenericReferenceItem;
-                var sourceObject = referenceItem.SourceItemObject;
-                foreach (var input in info.Outputs.Where(p=>p.ConnectorFor.DataObject == sourceObject))
-                {
-                    connections.Add(new ConnectionViewModel(info.DiagramViewModel)
-                    {
-                        Remove = Remove,
-                        Name = item.Name + "->" + input.Name,
-                        ConnectorA = item,
-                        ConnectorB = input,
-                        Color = info.GetColor(input.ConnectorFor.DataObject as IGraphItem),
-                        InActiveColor = new Color(0.3f, 0.4f, 0.75f,0.1f),
-                    });
-                }
-            }
-        }
-
-        public override void Remove(ConnectionViewModel connectionViewModel)
-        {
-            base.Remove(connectionViewModel);
-            var obj = connectionViewModel.ConnectorA.ConnectorFor.DataObject as IDiagramNodeItem;
-            if (obj != null)
-            {
-                connectionViewModel.DiagramViewModel.CurrentRepository.RemoveItem(obj);
-            }
+            InvertGraphEditor.DesignerWindow.DiagramViewModel.DiagramData.RemoveConnection(output.DataObject as IConnectable, input.DataObject as IConnectable);
         }
     }
+
     public class TypedItemConnectionStrategy : DefaultConnectionStrategy
     {
+        public override Color ConnectionColor
+        {
+            get { return Color.white; }
+        }
+
+        public override void Remove(ConnectorViewModel output, ConnectorViewModel input)
+        {
+            var typedItem = output.DataObject as ITypedItem;
+            if (typedItem != null)
+            {
+                typedItem.RemoveType();
+            }
+        }
+
+        public override bool IsConnected(ConnectorViewModel output, ConnectorViewModel input)
+        {
+            if (output.DataObject == input.DataObject) return false;
+            var typedItem = output.DataObject as ITypedItem;
+            var classItem = input.DataObject as IClassTypeNode;
+            if (typedItem != null && classItem != null)
+            {
+                if (typedItem.RelatedType == classItem.Identifier)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public override ConnectionViewModel Connect(DiagramViewModel diagramViewModel, ConnectorViewModel a, ConnectorViewModel b)
         {
+            var typedItem = a.DataObject as GenericTypedChildItem;
+            var clsType = b.DataObject as IClassTypeNode;
+            if (clsType != null && typedItem != null)
+            {
+                if (a.Direction == ConnectorDirection.Output && b.Direction == ConnectorDirection.Input)
+                return CreateConnection(diagramViewModel, a, b, Apply);
+            }
             return null;
             return base.Connect(diagramViewModel, a, b);
         }
 
-        public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
+        protected override void ApplyConnection(IGraphData graph, IConnectable output, IConnectable input)
         {
-            base.GetConnections(connections, info);
-            foreach (var item in info.Outputs.Where(p => p.ConnectorFor.DataObject is ITypedItem))
+            //base.ApplyConnection(graph, output, input);
+            var typedItem = output as ITypedItem;
+            
+            if (typedItem != null)
             {
-                var referenceItem = item.ConnectorFor.DataObject as ITypedItem;
-                if (referenceItem == null) continue;
-                var sourceObject = referenceItem.RelatedNode();
-                if (sourceObject == null) continue;
-                foreach (var input in info.Inputs.Where(p => p.ConnectorFor.DataObject == sourceObject))
-                {
-                    connections.Add(new ConnectionViewModel(info.DiagramViewModel)
-                    {
-                        Remove = Remove,
-                        Name = item.Name + "->" + input.Name,
-                        ConnectorA = item,
-                        ConnectorB = input,
-                        Color = new Color(0.3f, 0.4f, 0.75f)
-                    });
-                }
+                typedItem.RelatedType = input.Identifier;
             }
         }
 
+        //public override void GetConnections(List<ConnectionViewModel> connections, ConnectorInfo info)
+        //{
+        //    base.GetConnections(connections, info);
+        //    foreach (var item in info.Outputs.Where(p => p.ConnectorFor.DataObject is ITypedItem))
+        //    {
+        //        var referenceItem = item.ConnectorFor.DataObject as ITypedItem;
+        //        if (referenceItem == null) continue;
+        //        var sourceObject = referenceItem.RelatedNode();
+        //        if (sourceObject == null) continue;
+        //        foreach (var input in info.Inputs.Where(p => p.ConnectorFor.DataObject == sourceObject))
+        //        {
+        //            connections.Add(new ConnectionViewModel(info.DiagramViewModel)
+        //            {
+        //                Remove = Remove,
+        //                Name = item.Name + "->" + input.Name,
+        //                ConnectorA = item,
+        //                ConnectorB = input,
+        //                Color = new Color(0.3f, 0.4f, 0.75f)
+        //            });
+        //        }
+        //    }
+        //}
+
         public override void Remove(ConnectionViewModel connectionViewModel)
         {
+            
             base.Remove(connectionViewModel);
             var obj = connectionViewModel.ConnectorA.ConnectorFor.DataObject as ITypedItem;
             if (obj != null)

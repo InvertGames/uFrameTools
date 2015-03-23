@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -32,6 +33,8 @@ namespace Invert.Core.GraphDesigner
         private object _textStyle;
         private object _backgroundStyle;
         private Vector2 _textSize;
+        private static IFlagCommand[] _flags;
+        private IFlagCommand[] _cachedFlags;
         public string CachedName { get; private set; }
 
 
@@ -107,16 +110,21 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform, position);
             // Calculate the size of the label and add the padding * 2 for left and right
             CachedName = ItemViewModel.Name;
+            
             if (hardRefresh)
             {
+                _cachedFlags = Flags.Where(p => p.IsChecked(ViewModelObject.DataObject)).ToArray();
                 _textSize = platform.CalculateSize(CachedName, CachedStyles.ItemTextEditingStyle);// TextStyle.CalcSize(new GUIContent(ItemViewModel.Name));
             }
+            var flagWidth = 4f;
 
-            var width = _textSize.x + (Padding * 2);
+            var width = _textSize.x + (Padding * 2) + (_cachedFlags.Length * flagWidth);
             var height = _textSize.y + (Padding * 2);
+            
+            
 
             this.Bounds = new Rect(position.x, position.y, width, height);
-           
+            
 
         }
 
@@ -140,8 +148,22 @@ namespace Invert.Core.GraphDesigner
             {
                 platform.DrawStretchBox(Bounds.Scale(scale), CachedStyles.Item5, 0f);
             }
+
+            if (_cachedFlags != null)
+            for (int index = 0; index < _cachedFlags.Length; index++)
+            {
+                var item = _cachedFlags[index];
+                var boundsRect = new Rect(this.Bounds);
+                boundsRect.x += (4f * index);
+                boundsRect.width = 4f;
+                platform.DrawRect(boundsRect, item.Color);
+            }
         }
 
+        public static IFlagCommand[] Flags
+        {
+            get { return _flags ?? (_flags = InvertApplication.Container.ResolveAll<IFlagCommand>().ToArray()); }
+        }
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
@@ -195,12 +217,13 @@ namespace Invert.Core.GraphDesigner
            
             if (ItemViewModel.IsEditing && ItemViewModel.IsEditable)
             {
-                platform.DrawTextbox(ItemViewModel.NodeItem.Identifier, rect.Scale(scale), ItemViewModel.Name,
+                platform.DrawTextbox(ItemViewModel.NodeItem.Identifier, rect.Scale(scale), CachedName,
                     CachedStyles.ItemTextEditingStyle,
                     (s, finished) =>
                     {
+                        CachedName = s;
                         ItemViewModel.Rename(s);
-                        CachedName = ItemViewModel.Name;
+                        //CachedName = ItemViewModel.Name;
                         if (finished)
                         {
                             ItemViewModel.EndEditing();
@@ -214,4 +237,5 @@ namespace Invert.Core.GraphDesigner
         }
 
     }
+
 }

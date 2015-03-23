@@ -345,7 +345,7 @@ namespace Invert.Core.GraphDesigner
             // Initialize the template
             TemplateContext.Iterators.Clear();
             TemplateClass.TemplateSetup();
-
+            InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.TemplateGenerating(TemplateClass, TemplateContext));
             var templateProperties =
                 TemplateType.GetPropertiesWithAttribute<TemplateProperty>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -658,6 +658,7 @@ namespace Invert.Core.GraphDesigner
             info.Invoke(instance, args.ToArray());
             PopStatements();
             CurrentDecleration.Members.Add(dom);
+            InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.ConstructorAdded(instance, this, dom));
         }
         public void RenderTemplateProperty(object instance, string propertyName)
         {
@@ -690,6 +691,7 @@ namespace Invert.Core.GraphDesigner
                     Item = item;
                     var domObject = DoTemplateProperty(instance, templateProperty);
                     CurrentDecleration.Members.Add(domObject);
+                    InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.PropertyAdded(instance, this, domObject));
                 }
             }
             else
@@ -697,6 +699,7 @@ namespace Invert.Core.GraphDesigner
                 Item = Data as IDiagramNodeItem;
                 var domObject = DoTemplateProperty(instance, templateProperty);
                 CurrentDecleration.Members.Add(domObject);
+                InvertApplication.SignalEvent<ICodeTemplateEvents>(_=>_.PropertyAdded(instance, this, domObject));
             }
         }
         public void RenderTemplateMethod(object instance, string methodName)
@@ -724,6 +727,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     Item = item;
                     RenderMethod(instance, templateMethod, item);
+                    
                 }
             }
             else
@@ -818,11 +822,21 @@ namespace Invert.Core.GraphDesigner
 
                 }
             }
-
+            InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.MethodAdded(instance, this, dom));
 
 
         }
     }
+
+    public interface ICodeTemplateEvents
+    {
+        void PropertyAdded(object template, TemplateContext templateContext, CodeMemberProperty codeMemberProperty);
+        void MethodAdded(object template, TemplateContext templateContext, CodeMemberMethod codeMemberMethod);
+
+        void ConstructorAdded(object template, TemplateContext templateContext, CodeConstructor codeConstructor);
+        void TemplateGenerating(object templateClass, TemplateContext templateContext);
+    }
+
     public class TemplateContext
     {
         private Stack<CodeStatementCollection> _contextStatements;

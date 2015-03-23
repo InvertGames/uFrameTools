@@ -30,6 +30,7 @@ namespace Invert.Core.GraphDesigner
         /// <param name="diagramData">The current graph that was open when compiling.</param>
         void PostCompile(INodeRepository repository, IGraphData diagramData);
 
+        void FileSkipped(CodeFileGenerator codeFileGenerator);
     }
     public class SaveCommand : ElementsDiagramToolbarCommand
     {
@@ -40,8 +41,16 @@ namespace Invert.Core.GraphDesigner
        
         public override void Perform(DiagramViewModel diagram)
         {
-            if (diagram.CurrentRepository.Validate().Any())
+            var issues = diagram.CurrentRepository.Validate().ToArray();
+            if (issues.Any())
             {
+                foreach (var item in issues)
+                {
+                    if (item.Siverity == ValidatorType.Error)
+                    {
+                        Debug.LogError(item.Message);
+                    }
+                }
                 if (InvertGraphEditor.Platform.MessageBox("Issues", "Please fix all issues before compiling.", "Ok",
                     "Do it anyways"))
                 {
@@ -75,6 +84,8 @@ namespace Invert.Core.GraphDesigner
                 if (!codeFileGenerator.CanGenerate(fileInfo))
                 {
                     //Debug.Log("Can't generate " + fileInfo.FullName);
+                    var fileGenerator = codeFileGenerator;
+                    InvertApplication.SignalEvent<ICompileEvents>(_ => _.FileSkipped(fileGenerator));
                     continue;
                 }
                  
@@ -106,6 +117,14 @@ namespace Invert.Core.GraphDesigner
             InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(diagram.CurrentRepository, diagram.DiagramData));
             //RefactorApplied(diagram.DiagramData);
             InvertGraphEditor.Platform.Progress(101f, "Done");
+
+            var projectService = InvertApplication.Container.Resolve<ProjectService>();
+
+            foreach (var graph in projectService.CurrentProject.Graphs)
+            {
+                graph.ChangeData.Clear();
+            }
+
             InvertGraphEditor.Platform.RefreshAssets();
             diagram.Save();
 #if UNITY_DLL

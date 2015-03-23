@@ -8,6 +8,7 @@ namespace Invert.Core.GraphDesigner
         string RelatedTypeName { get; }
         //CodeTypeReference GetFieldType();
         //CodeTypeReference GetPropertyType();
+        void RemoveType();
     }
 
     public interface IBindableTypedItem : IRefactorable, ITypedItem
@@ -18,6 +19,6 @@ namespace Invert.Core.GraphDesigner
         string ViewFieldName { get; }
 
         void SetType(IDesignerType input);
-        void RemoveType();
+       
     }
 }

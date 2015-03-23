@@ -9,6 +9,7 @@ using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -144,44 +145,85 @@ namespace Invert.Core.GraphDesigner
         protected abstract void Perform(IGraphData sourceDiagram, IDiagramNode selectedNode, IGraphData targetDiagram);
     }
 
-    public class PushToCommand : CrossDiagramCommand
-    {
-        public override string Group
-        {
-            get { return "Moving"; }
-        }
-        public override string Path
-        {
-            get { return "Push To"; }
-        }
+    //public class ToExternalGraph :PullFromCommand
+    //{
+    //    public override string Name
+    //    {
+    //        get { return "To External Graph"; }
+    //    }
+    //    public override string Path
+    //    {
+    //        get { return "To External Graph"; }
+    //    }
+    //    protected override void Process(DiagramNode node, IGraphData sourceDiagram, IGraphData targetDiagram)
+    //    {
+    //       var graph = node.Project.CreateNewDiagram(typeof (InvertGraph), node) as IGraphData;
+    //       graph.Name = node.Name;
 
-        public override void Perform(DiagramNodeViewModel diagram)
-        {
-            base.Perform(diagram);
-            diagram.IsLocal = false;
-        }
+    //       // MoveNode(node, targetDiagram, graph);
+    //        var allchildren = GetAllChildNodes(node).ToArray();
+    //        foreach (var item in allchildren)
+    //        {
+    //            graph.AddNode(item);
+    //            Debug.Log(string.Format("moving {0} in graph {1} to graph {2}",  item.Name, targetDiagram.Name, node.Name));
+    //        }
+    //        foreach (var item in allchildren)
+    //        {
+    //            targetDiagram.RemoveNode(item);
+    //        }
+    //        // targetDiagram.RemoveNode(node);
 
-        protected override void Perform(IGraphData sourceDiagram, IDiagramNode selectedNode,
-            IGraphData targetDiagram)
-        {
-            sourceDiagram.PushNode(targetDiagram,selectedNode);
+    //    }
 
-        }
+    //    private IEnumerable<DiagramNode> GetAllChildNodes(DiagramNode node)
+    //    {
+    //        foreach (var item in node.GetContainingNodesInProject(node.Project).OfType<DiagramNode>())
+    //        {
+    //            if (item == node) continue;
+    //            if (item.Graph != node.Graph) continue;
+    //            //if (item.GetParentNodes().Count() > 1)
+    //            //{
+    //            //    UnityEngine.Debug.Log(string.Format("Skipping {0} because it is located in more than one place.", item.Name));
+    //            //    continue;
+    //            //}
+    //            yield return item;
+    //            foreach (var x in GetAllChildNodes(item))
+    //            {
+    //                yield return x;
+    //            }
+    //        }
+    //    }
+    //    private void MoveNode(DiagramNode node, IGraphData sourceDiagram, IGraphData targetDiagram)
+    //    {
+    //        foreach (var item in node.GetContainingNodes(sourceDiagram).Where(p=>p.Graph == sourceDiagram).OfType<DiagramNode>())
+    //        {
+    //            if (item == node) continue; 
+    //            MoveNode(item, sourceDiagram, targetDiagram);
+    //            var positionData = sourceDiagram.PositionData[node, item];
+    //            targetDiagram.AddNode(item);
+    //            targetDiagram.PositionData[node, item] = positionData;
+    //            sourceDiagram.RemoveNode(item);
+               
+    //        }
+    //    }
 
-        public override string CanPerform(DiagramNodeViewModel node)
-        {
-            if (node == null) return "Invalid input";
-            if (!node.IsLocal) return "Node must be local to push it.";
-            return base.CanPerform(node);
-        }
-    }
+    //    public override string CanPerform(DiagramNode node)
+    //    {
+    //        //if (node.Graph != InvertGraphEditor.DesignerWindow.DiagramViewModel.DiagramData)
+    //        //{
+    //        //    return "Node must be local.";
+    //        //}
+    //        return null;
+    //    }
+    //}
+
     public class PullFromCommand : EditorCommand<DiagramNode>,  IDiagramNodeCommand
     {
         public override string Group
         {
             get { return "Moving"; }
         }
-
+         
         public override string Path
         {
             get { return "Pull From"; }
@@ -197,6 +239,10 @@ namespace Invert.Core.GraphDesigner
         //{
             
         //}
+        public override bool CanProcessMultiple
+        {
+            get { return false; }
+        }
 
         public override void Perform(DiagramNode node)
         {
@@ -204,9 +250,8 @@ namespace Invert.Core.GraphDesigner
             var targetDiagram = InvertGraphEditor.DesignerWindow.DiagramViewModel.DiagramData;
             if (targetDiagram == null) return;
             var editableFilesBefore = InvertGraphEditor.GetAllFileGenerators(null, node.Project, false).Where(p=>p.Generators.Any(x=>!x.AlwaysRegenerate)).ToArray();
-
-            sourceDiagram.RemoveNode(node, false);
-            targetDiagram.AddNode(node);
+            
+            Process(node, sourceDiagram, targetDiagram);
 
             var editableFilesAfter = InvertGraphEditor.GetAllFileGenerators(null, node.Project, false).Where(p => p.Generators.Any(x => !x.AlwaysRegenerate)).ToArray();
             //if (editableFilesBefore.Any(p => File.Exists(System.IO.Path.Combine(p.AssetPath, p.Filename))))
@@ -247,6 +292,12 @@ namespace Invert.Core.GraphDesigner
             sourceDiagram.Project.MarkDirty(targetDiagram);
             AssetDatabase.Refresh();
 #endif
+        }
+
+        protected virtual void Process(DiagramNode node, IGraphData sourceDiagram, IGraphData targetDiagram)
+        {
+            sourceDiagram.RemoveNode(node, false);
+            targetDiagram.AddNode(node);
         }
 
         public override string CanPerform(DiagramNode node)

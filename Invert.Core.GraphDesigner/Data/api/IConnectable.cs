@@ -14,14 +14,30 @@ namespace Invert.Core.GraphDesigner
         bool AllowMultipleInputs { get; }
         bool AllowMultipleOutputs { get; }
 
-        void OnConnectionApplied(IConnectable output, IConnectable input);
+        //void OnConnectionApplied(IConnectable output, IConnectable input);
         bool CanOutputTo(IConnectable input);
         bool CanInputFrom(IConnectable output);
 
+        void OnOutputConnectionRemoved(IConnectable input);
+        void OnInputConnectionRemoved(IConnectable output);
+        void OnConnectedToInput(IConnectable input);
+        void OnConnectedFromOutput(IConnectable output);
     }
 
     public static class ConnectableExtensions
     {
+        public static IEnumerable<ITypedItem> References(this IClassTypeNode node)
+        {
+           return node.Node.Graph.Project.AllGraphItems.OfType<ITypedItem>().Where(p => p.RelatedType == node.Identifier);
+        }
+        public static IEnumerable<TType> ReferencesOf<TType>(this IClassTypeNode node)
+        {
+            return node.Node.Graph.Project.AllGraphItems.OfType<ITypedItem>().Where(p => p.RelatedType == node.Identifier).OfType<TType>();
+        }
+        public static TType ReferenceOf<TType>(this IClassTypeNode node) where TType : ITypedItem
+        {
+            return node.Node.Graph.Project.AllGraphItems.OfType<ITypedItem>().OfType<TType>().FirstOrDefault(p => p.RelatedType == node.Identifier);
+        }
         public static IEnumerable<TType> InputsFrom<TType>(this IConnectable connectable)
             where TType : IGraphItem
         {

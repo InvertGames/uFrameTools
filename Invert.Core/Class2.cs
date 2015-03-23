@@ -301,7 +301,28 @@ namespace Invert.Core
                 return () => m.Listeners.Remove(listener);
             return m.Subscribe(listener);
         }
-
+        /// <summary>
+        /// Subscribes to a series of related events defined by an interface.
+        /// </summary>
+        /// <typeparam name="TEvents">The interface type the describes the events.</typeparam>
+        /// <param name="listenerObject">The listener that implements the event interface TEvents.</param>
+        public static Action ListenFor<TEvents>(object listenerObject) where TEvents : class
+        {
+            var listener = listenerObject as TEvents;
+            if (listener == null)
+            {
+                throw new Exception(string.Format("Listener object is not of type {0}", typeof(TEvents).Name));
+            }
+            IEventManager manager;
+            if (!EventManagers.TryGetValue(typeof(TEvents), out manager))
+            {
+                EventManagers.Add(typeof(TEvents), manager = new EventManager<TEvents>());
+            }
+            var m = manager as EventManager<TEvents>;
+            if (m.Listeners.Contains(listener))
+                return () => m.Listeners.Remove(listener);
+            return m.Subscribe(listener);
+        }
         /// <summary>
         /// Signals and event to all listeners
         /// </summary>

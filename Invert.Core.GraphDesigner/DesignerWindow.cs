@@ -12,6 +12,11 @@ namespace Invert.Core.GraphDesigner
         void AfterDrawGraph(Rect diagramRect);
         void DrawComplete();
     }
+
+    public interface IProjectInspectorEvents
+    {
+        void DoInspector(IProjectRepository target);
+    }
     public class DesignerWindow : IGraphWindow
     {
 

@@ -85,6 +85,15 @@ public class EnumItem : IDiagramNodeItem
 
     public bool IsEditing { get; set; }
 
+    public bool this[string flag]
+    {
+        get { return false; }
+        set
+        {
+            
+        }
+    }
+
     public FlagsDictionary Flags
     {
         get { return _flags ?? (_flags = new FlagsDictionary()); }
@@ -204,5 +213,25 @@ public class EnumItem : IDiagramNodeItem
     public bool CanInputFrom(IConnectable output)
     {
         return true;
+    }
+
+    public void OnOutputConnectionRemoved(IConnectable input)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnInputConnectionRemoved(IConnectable output)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnConnectedToInput(IConnectable input)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnConnectedFromOutput(IConnectable output)
+    {
+        throw new NotImplementedException();
     }
 }

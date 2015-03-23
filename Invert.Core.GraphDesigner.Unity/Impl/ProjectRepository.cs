@@ -108,12 +108,17 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         {
             // Set it as the root filter
             diagram.RootFilter = defaultFilter;
-
+            diagram.name = defaultFilter.Name;
             var nodeItem = defaultFilter as IDiagramNode;
             if (nodeItem != null)
             {
                 nodeItem.Graph = diagram;
             }
+        }
+        else
+        {
+            diagram.RootFilter = diagram.CreateDefaultFilter();
+
         }
         // Set the current version of the data to the current version of the grapheditor version
         diagram.Version = InvertGraphEditor.CURRENT_VERSION_NUMBER.ToString();
