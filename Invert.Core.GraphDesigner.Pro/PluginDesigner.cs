@@ -77,6 +77,7 @@ public class PluginDesigner : DiagramPlugin
         RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfig, ShellNodeConfigViewModelTemplate>();
         RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfig, ShellNodeConfigDrawerTemplate>();
         RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellTemplateConfigNode, ShellNodeConfigTemplateTemplate>();
+        RegisteredTemplateGeneratorsFactory.RegisterTemplate<IShellSlotType, ShellSlotItemTemplate>();
 
         container.Connectable<ShellNodeConfigSection, ShellNodeConfig>();
         container.Connectable<ShellNodeConfigSection, ShellNodeConfigSection>();

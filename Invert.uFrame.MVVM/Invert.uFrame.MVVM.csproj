@@ -181,6 +181,9 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots.designer.cs">
       <Link>Slots.designer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\Element.cs">
+      <Link>Element.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\Export.cs">
       <Link>Export.cs</Link>
     </Compile>
