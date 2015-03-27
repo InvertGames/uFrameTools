@@ -195,7 +195,7 @@ namespace Invert.Core.GraphDesigner
                     if (item.IsAbstract) continue;
 
                     var node = Activator.CreateInstance(item) as IDiagramNode;
-                    node.Graph = this.DiagramViewModel.DiagramData;
+                    node.Graph = this.DiagramViewModel.GraphData;
                     var vm = InvertGraphEditor.Container.GetNodeViewModel(node, this.DiagramViewModel) as DiagramNodeViewModel;
                     
                     

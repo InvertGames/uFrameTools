@@ -14,7 +14,7 @@ namespace Invert.Core.GraphDesigner
         public ConnectorInfo(ConnectorViewModel[] allConnectors, DiagramViewModel viewModel, INodeRepository currentRepository)
         {
             AllConnectors = allConnectors;
-            DiagramData = viewModel.DiagramData;
+            DiagramData = viewModel.GraphData;
             DiagramViewModel = viewModel;
             CurrentRepository = currentRepository;
         }

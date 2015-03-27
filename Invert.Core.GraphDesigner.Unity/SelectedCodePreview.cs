@@ -18,7 +18,7 @@ public class SelectedCodePreview : EditorWindow
     private CodeFileGenerator[] fileGenerators;
     private Vector2 _scrollPosition;
 
-    [MenuItem("Tools/[u]Frame/Code Preview Window")]
+    [MenuItem("uFrame/Code Preview Window")]
     internal static void ShowWindow()
     {
         var window = GetWindow<SelectedCodePreview>();
@@ -127,7 +127,7 @@ public class DocumentationWindow : EditorWindow
     private int _currentScreenshotIndex = 0;
     private bool _capturing = false;
     private bool _exitOnComplete = false;
-    [MenuItem("Tools/[u]Frame/Documentation")]
+
     internal static void ShowWindow()
     {
         var window = GetWindow<DocumentationWindow>();

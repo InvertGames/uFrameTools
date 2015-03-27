@@ -273,7 +273,7 @@ namespace Invert.Core.GraphDesigner
             var objs = handler.ContextObjects.ToArray();
             if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
             {
-                DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.DiagramData, command.Name);
+                DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.GraphData, command.Name);
             }
            
             command.Execute(handler);
@@ -281,7 +281,7 @@ namespace Invert.Core.GraphDesigner
 
             if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
             {
-                DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.DiagramData);
+                DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.GraphData);
             }
                 
             //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);

@@ -22,7 +22,7 @@ namespace Invert.Core.GraphDesigner
             if (node == null) return;
             var selected = node.SelectedNode;
 
-            var pathStrategy = node.DiagramData.CodePathStrategy;
+            var pathStrategy = node.GraphData.CodePathStrategy;
 
             var generators = selected.CodeGenerators.Where(p => !p.AlwaysRegenerate).ToArray();
 

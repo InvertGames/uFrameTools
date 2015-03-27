@@ -9,7 +9,7 @@ using UnityEngine;
 public class uFrameSettingsWindow : EditorWindow
 {
 
-    [MenuItem("Tools/[u]Frame/Settings")]
+    [MenuItem("uFrame/Settings")]
     internal static void ShowWindow()
     {
         var window = GetWindow<uFrameSettingsWindow>();
@@ -121,4 +121,6 @@ public class uFrameSettingsWindow : EditorWindow
             InvertApplication.Container = null;
         }
     }
+
+  
 }

@@ -148,7 +148,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public override void Perform(DiagramViewModel node)
         {
-            var graph = node.DiagramData as INodeRepository;
+            var graph = node.GraphData as INodeRepository;
             var files = InvertGraphEditor.GetAllFileGenerators(null, graph, false).Select(p=>p.AssetPath).ToList();
             files.Add(AssetDatabase.GetAssetPath(graph as UnityEngine.Object));
 
@@ -179,18 +179,18 @@ namespace Invert.Core.GraphDesigner.Unity
         public override void Perform(DiagramViewModel node)
         {
             DocumentationWindow.ShowWindowAndGenerate();
-            var htmlOutput = new HtmlDocsBuilder();
-            htmlOutput.ScreenshotsRelativePath = "Screenshots";
-            htmlOutput.StyleSheet = "styles";
-            node.DiagramData.Document(htmlOutput);
+            //var htmlOutput = new HtmlDocsBuilder();
+            //htmlOutput.ScreenshotsRelativePath = "Screenshots";
+            //htmlOutput.StyleSheet = "styles";
+            //node.DiagramData.Document(htmlOutput);
 
-            File.WriteAllText(Path2.Combine("Documentation", "index.html"), htmlOutput.ToString());
+            //File.WriteAllText(Path2.Combine("Documentation", "index.html"), htmlOutput.ToString());
 
         }
 
         public override string CanPerform(DiagramViewModel node)
         {
-            if (!node.DiagramData.DocumentationMode) return "You must be in documentation mode first";
+            if (!node.GraphData.DocumentationMode) return "You must be in documentation mode first";
             return null;
         }
         public override string Name
@@ -218,7 +218,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public override void Perform(DiagramViewModel node)
         {
-            node.DiagramData.DocumentationMode = !node.DiagramData.DocumentationMode;
+            node.GraphData.DocumentationMode = !node.GraphData.DocumentationMode;
         }
 
         public override string CanPerform(DiagramViewModel node)
@@ -227,151 +227,184 @@ namespace Invert.Core.GraphDesigner.Unity
         }
     }
 
-    public class HtmlDocsBuilder : IDocumentationBuilder
-    {
-        private StringBuilder _output;
+    //public class HtmlDocsBuilder : IDocumentationBuilder
+    //{
+    //    private StringBuilder _output;
 
-        private StringBuilder Output
-        {
-            get { return _output ?? (_output = new StringBuilder()); }
-            set { _output = value; }
-        }
-        public string ScreenshotsRelativePath { get; set; }
-        public string StyleSheet { get; set; }
-        public void BeginArea(string id)
-        {
-            Output.AppendFormat("<div class='{0}'>",id);
+    //    private StringBuilder Output
+    //    {
+    //        get { return _output ?? (_output = new StringBuilder()); }
+    //        set { _output = value; }
+    //    }
+    //    public string ScreenshotsRelativePath { get; set; }
+    //    public string StyleSheet { get; set; }
+    //    public void BeginArea(string id)
+    //    {
+    //        Output.AppendFormat("<div class='{0}'>",id);
 
             
-        }
+    //    }
 
-        public void EndArea()
-        {
-            Output.AppendFormat("</div>");
-        }
-        public void BeginSection(string id)
-        {
-            Output.AppendFormat("<div id='{0}' class='{0}'>", id);
-        }
+    //    public void EndArea()
+    //    {
+    //        Output.AppendFormat("</div>");
+    //    }
+    //    public void BeginSection(string id)
+    //    {
+    //        Output.AppendFormat("<div id='{0}' class='{0}'>", id);
+    //    }
 
-        public void EndSection()
-        {
-            Output.AppendFormat("</div>");
-        }
-        public void PushIndent()
-        {
-            Output.AppendFormat("<div style='margin-left: 10px;'>");
-        }
-        public void PopIndent()
-        {
-            Output.AppendFormat("</div>");
-        }
-        public void LinkToNode(IDiagramNodeItem node, string text = null)
-        {
-            Output.AppendFormat("<a href='#{0}'>{1}</a>", node.Name, text ?? node.Name);
-        }
+    //    public void EndSection()
+    //    {
+    //        Output.AppendFormat("</div>");
+    //    }
+    //    public void PushIndent()
+    //    {
+    //        Output.AppendFormat("<div style='margin-left: 10px;'>");
+    //    }
+    //    public void PopIndent()
+    //    {
+    //        Output.AppendFormat("</div>");
+    //    }
+    //    public void LinkToNode(IDiagramNodeItem node, string text = null)
+    //    {
+    //        Output.AppendFormat("<a href='#{0}'>{1}</a>", node.Name, text ?? node.Name);
+    //    }
 
-        public void Columns(params Action[] actions)
-        {
-            foreach (var item in actions)
-            {
-                Output.AppendFormat("<div style='float: left'>");
-                item();
-                Output.AppendFormat("</div>");
-            }
-        }
-        public void Rows(params Action[] actions)
-        {
-            foreach (var item in actions)
-            {
-                Output.AppendFormat("<div style='clear: both;'>");
-                item();
-                Output.AppendFormat("</div>");
-            }
-        }
-        public void NodeImage(DiagramNode node)
-        {
-            Output.AppendFormat("<img src='{0}' />", string.Format(Path.Combine(ScreenshotsRelativePath, node.Name + ".png")));
-        }
+    //    public void Columns(params Action[] actions)
+    //    {
+    //        foreach (var item in actions)
+    //        {
+    //            Output.AppendFormat("<div style='float: left'>");
+    //            item();
+    //            Output.AppendFormat("</div>");
+    //        }
+    //    }
 
-        public void Paragraph(string text, params object[] args)
-        {
-            if (string.IsNullOrEmpty(text)) return;
-            Output.AppendFormat("<p>{0}</p>", string.Format(text, args));
-        }
+    //    public void YouTubeLink(string id)
+    //    {
+            
+    //    }
 
-        public void Section(string text, params object[] args)
-        {
-            if (string.IsNullOrEmpty(text)) return;
-            Output.AppendFormat("<h1 id='{0}'>{1}</h1>", string.Format(text, args).Replace(" ", ""), string.Format(text, args));
-        }
+    //    public void TemplateExample<TTemplate, TData>(TData data, string templateMember = null) where TTemplate : IClassTemplate<TData>
+    //    {
+    //    }
 
-        public void Title(string text, params object[] args)
-        {
-            if (string.IsNullOrEmpty(text)) return;
-            Output.AppendFormat("<h1 class='title'>{0}</h1>", string.Format(text, args));
-        }
+    //    public void ShowGist(string id, string filename, string userId = "micahosborne")
+    //    {
+         
+    //    }
 
-        public void Title2(string text, params object[] args)
-        {
-            if (string.IsNullOrEmpty(text)) return;
-            Output.AppendFormat("<h2 class='title2'>{0}</h2>", string.Format(text, args));
-        }
+    //    public void ShowTutorialStep(ITutorialStep step)
+    //    {
+            
+    //    }
 
-        public void Title3(string text, params object[] args)
-        {
-            if (string.IsNullOrEmpty(text)) return;
-            Output.AppendFormat("<h3 class='title3'>{0}</h3>", string.Format(text, args));
-        }
+    //    public void BeginTutorial(string walkthrough)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public void Note(string text, params object[] args)
-        {
-            if (string.IsNullOrEmpty(text)) return;
-            Output.AppendFormat("<div class='note'>{0}</div>", string.Format(text, args));
-        }
+    //    public void Rows(params Action[] actions)
+    //    {
+    //        foreach (var item in actions)
+    //        {
+    //            Output.AppendFormat("<div style='clear: both;'>");
+    //            item();
+    //            Output.AppendFormat("</div>");
+    //        }
+    //    }
+    //    public void NodeImage(DiagramNode node)
+    //    {
+    //        Output.AppendFormat("<img src='{0}' />", string.Format(Path.Combine(ScreenshotsRelativePath, node.Name + ".png")));
+    //    }
 
-        public void TemplateLink()
-        {
+    //    public void Paragraph(string text, params object[] args)
+    //    {
+    //        if (string.IsNullOrEmpty(text)) return;
+    //        Output.AppendFormat("<p>{0}</p>", string.Format(text, args));
+    //    }
 
-        }
+    //    public void Lines(params string[] lines)
+    //    {
+    //        foreach (var item in lines)
+    //        {
+                
+    //        }
+    //    }
 
-        public void Literal(string text, params object[] args)
-        {
-            Output.AppendFormat(text, args);
-        }
+    //    public void Section(string text, params object[] args)
+    //    {
+    //        if (string.IsNullOrEmpty(text)) return;
+    //        Output.AppendFormat("<h1 id='{0}'>{1}</h1>", string.Format(text, args).Replace(" ", ""), string.Format(text, args));
+    //    }
 
-        public override string ToString()
-        {
-            var finalOutput = new StringBuilder();
-            finalOutput.AppendLine("<html>");
-            finalOutput.AppendLine("<head>");
-            if (this.StyleSheet != null)
-                finalOutput.AppendLine(string.Format("<link rel='stylesheet' type='text/css' href='{0}.css'>", this.StyleSheet));
+    //    public void Title(string text, params object[] args)
+    //    {
+    //        if (string.IsNullOrEmpty(text)) return;
+    //        Output.AppendFormat("<h1 class='title'>{0}</h1>", string.Format(text, args));
+    //    }
 
-            finalOutput.AppendLine("</head>");
-            finalOutput.AppendLine("<body>");
-            finalOutput.Append(Output.ToString());
-            finalOutput.AppendLine("</body>");
-            finalOutput.AppendLine("</html>");
-            return finalOutput.ToString();
-        }
-    }
-    public class DocsGenerator
-    {
-        public INodeRepository NodeRepository { get; set; }
+    //    public void Title2(string text, params object[] args)
+    //    {
+    //        if (string.IsNullOrEmpty(text)) return;
+    //        Output.AppendFormat("<h2 class='title2'>{0}</h2>", string.Format(text, args));
+    //    }
 
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.AppendFormat("<h2>{0}</h2>", NodeRepository.Name);
-            foreach (var nodeConfig in NodeRepository.AllGraphItems.OfType<DiagramNode>())
-            {
-                sb.AppendFormat("<h3>{0}</h3>", nodeConfig.Name);
-                sb.AppendFormat("<img src='{0}' />",
-                    Path2.Combine("Screenshots", nodeConfig.Name + ".png"));
-            }
-            return sb.ToString();
-        }
-    }
+    //    public void Title3(string text, params object[] args)
+    //    {
+    //        if (string.IsNullOrEmpty(text)) return;
+    //        Output.AppendFormat("<h3 class='title3'>{0}</h3>", string.Format(text, args));
+    //    }
+
+    //    public void Note(string text, params object[] args)
+    //    {
+    //        if (string.IsNullOrEmpty(text)) return;
+    //        Output.AppendFormat("<div class='note'>{0}</div>", string.Format(text, args));
+    //    }
+
+    //    public void TemplateLink()
+    //    {
+
+    //    }
+
+    //    public void Literal(string text, params object[] args)
+    //    {
+    //        Output.AppendFormat(text, args);
+    //    }
+
+    //    public override string ToString()
+    //    {
+    //        var finalOutput = new StringBuilder();
+    //        finalOutput.AppendLine("<html>");
+    //        finalOutput.AppendLine("<head>");
+    //        if (this.StyleSheet != null)
+    //            finalOutput.AppendLine(string.Format("<link rel='stylesheet' type='text/css' href='{0}.css'>", this.StyleSheet));
+
+    //        finalOutput.AppendLine("</head>");
+    //        finalOutput.AppendLine("<body>");
+    //        finalOutput.Append(Output.ToString());
+    //        finalOutput.AppendLine("</body>");
+    //        finalOutput.AppendLine("</html>");
+    //        return finalOutput.ToString();
+    //    }
+    //}
+    //public class DocsGenerator
+    //{
+    //    public INodeRepository NodeRepository { get; set; }
+
+    //    public override string ToString()
+    //    {
+    //        var sb = new StringBuilder();
+    //        sb.AppendFormat("<h2>{0}</h2>", NodeRepository.Name);
+    //        foreach (var nodeConfig in NodeRepository.AllGraphItems.OfType<DiagramNode>())
+    //        {
+    //            sb.AppendFormat("<h3>{0}</h3>", nodeConfig.Name);
+    //            sb.AppendFormat("<img src='{0}' />",
+    //                Path2.Combine("Screenshots", nodeConfig.Name + ".png"));
+    //        }
+    //        return sb.ToString();
+    //    }
+    //}
 
 }

@@ -68,6 +68,7 @@
     <Compile Include="SearchableScrollWindow.cs" />
     <Compile Include="SelectedCodePreview.cs" />
     <Compile Include="SyntaxDrawer.cs" />
+    <Compile Include="uFrameHelp.cs" />
     <Compile Include="uFrameMenu.cs" />
     <Compile Include="UFrameSettings.cs" />
     <Compile Include="uFrameSettingsWindow.cs" />

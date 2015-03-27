@@ -40,7 +40,7 @@ namespace Invert.Common.UI
 
         public GUIStyle IconStyle
         {
-            get { return _iconStyle ?? ElementDesignerStyles.TriggerActiveButtonStyle; }
+            get { return _iconStyle ; }
             set { _iconStyle = value; }
         }
 

@@ -12,7 +12,7 @@ public class uFrameStartDialog : EditorWindow
 
     private bool _ViewingReadme;
 
-    [MenuItem("Tools/[u]Frame/Change Log")]
+  
     public static void ShowWindow()
     {
         var window = GetWindow<uFrameStartDialog>();

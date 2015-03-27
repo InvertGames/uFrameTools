@@ -83,7 +83,7 @@ public class StateMachineNodeViewModel : DiagramNodeViewModel<StateMachineNodeDa
 
     public bool IsCurrentFilter
     {
-        get { return DiagramViewModel.DiagramData.CurrentFilter == GraphItem; }
+        get { return DiagramViewModel.GraphData.CurrentFilter == GraphItem; }
     }
 
     //public void AddVariable()

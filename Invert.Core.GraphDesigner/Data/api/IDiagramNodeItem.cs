@@ -7,6 +7,10 @@ using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
 {
+    public interface IDocumentable : IDiagramNodeItem
+    {
+        
+    }
     public interface IDiagramNodeItem : ISelectable, IJsonObject, IItem, IConnectable
     {
         bool Precompiled { get; set; }

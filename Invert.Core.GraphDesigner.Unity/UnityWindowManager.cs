@@ -35,4 +35,9 @@ public class UnityWindowManager : IWindowManager
 
         }, allowNone);
     }
+
+    public void ShowHelpWindow(string helpProviderName, Type graphItemType)
+    {
+        uFrameHelp.ShowWindow(graphItemType);
+    }
 }

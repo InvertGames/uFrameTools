@@ -22,7 +22,7 @@ namespace Invert.Core.GraphDesigner
             Type T = typeof(GUIUtility);
             PropertyInfo systemCopyBufferProperty = T.GetProperty("systemCopyBuffer", BindingFlags.Static | BindingFlags.NonPublic);
             
-            systemCopyBufferProperty.SetValue(null, InvertGraph.Serialize(node.DiagramData).ToString(), null);
+            systemCopyBufferProperty.SetValue(null, InvertGraph.Serialize(node.GraphData).ToString(), null);
             Debug.Log("Json copied to clipboard.");
         }
     }

@@ -41,7 +41,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (GraphItem.Graph.Identifier != DiagramViewModel.DiagramData.Identifier)
+                if (GraphItem.Graph.Identifier != DiagramViewModel.GraphData.Identifier)
                 {
                     yield return "->" + GraphItem.Graph.Name;
                 }

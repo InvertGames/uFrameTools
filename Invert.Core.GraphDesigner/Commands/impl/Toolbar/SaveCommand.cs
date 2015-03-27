@@ -62,7 +62,7 @@ namespace Invert.Core.GraphDesigner
             InvertGraphEditor.Platform.SaveAssets();
             InvertGraphEditor.Platform.Progress(0, "Refactoring");
 
-            InvertApplication.SignalEvent<ICompileEvents>(_=>_.PreCompile(diagram.CurrentRepository, diagram.DiagramData));
+            InvertApplication.SignalEvent<ICompileEvents>(_=>_.PreCompile(diagram.CurrentRepository, diagram.GraphData));
 
             // Go ahead and process any code refactors
             //ProcessRefactorings(diagram);
@@ -109,12 +109,12 @@ namespace Invert.Core.GraphDesigner
                 InvertApplication.SignalEvent<ICompileEvents>(_=>_.FileGenerated(generator));
             }
             
-            foreach (var allDiagramItem in diagram.DiagramData.NodeItems)
+            foreach (var allDiagramItem in diagram.GraphData.NodeItems)
             {
                 allDiagramItem.IsNewNode = false;
             }
 
-            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(diagram.CurrentRepository, diagram.DiagramData));
+            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(diagram.CurrentRepository, diagram.GraphData));
             //RefactorApplied(diagram.DiagramData);
             InvertGraphEditor.Platform.Progress(101f, "Done");
 

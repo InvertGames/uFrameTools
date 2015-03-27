@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -94,6 +95,8 @@ namespace Invert.Core.GraphDesigner
             container.RegisterInstance<IToolbarCommand>(new SelectDiagramCommand(), "SelectDiagramCommand");
             container.RegisterInstance<IToolbarCommand>(new PopToFilterCommand(), "PopToFilterCommand");
             container.RegisterInstance<IToolbarCommand>(new SaveCommand(), "SaveCommand");
+            container.RegisterToolbarCommand<HelpCommand>();
+            container.RegisterNodeCommand<NodeHelpCommand>();
             //container.RegisterInstance<IToolbarCommand>(new AddNewCommand(), "AddNewCommand");
             
 
@@ -198,6 +201,339 @@ namespace Invert.Core.GraphDesigner
                     UnityEditor.EditorUtility.SetDirty(graph as UnityEngine.Object);
                 }
             }
+        }
+    }
+    public interface IDocumentationProvider
+    {
+        void GetDocumentation(IDocumentationBuilder node);
+        void GetPages(List<DocumentationPage> rootPages);
+
+    }
+
+    public abstract class DocumentationPage
+    {
+        public virtual decimal Order
+        {
+            get { return 0; }
+        }
+
+        private static ProjectService _projectService;
+        public static ProjectService ProjectService
+        {
+            get { return _projectService ?? (_projectService = InvertApplication.Container.Resolve<ProjectService>()); }
+            set { _projectService = value; }
+        }
+
+        private List<DocumentationPage> _childPages;
+        private string _name;
+
+        public virtual string Name
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_name))
+                {
+                    return this.GetType().Name;
+                }
+                return _name;
+            }
+            set { _name = value; }
+        }
+
+        public List<DocumentationPage> ChildPages
+        {
+            get { return _childPages ?? (_childPages = new List<DocumentationPage>()); }
+            set { _childPages = value; }
+        }
+
+        public Action<IDocumentationBuilder> PageContent { get; set; }
+        public virtual Type RelatedNodeType { get; set; }
+
+        public virtual Type ParentPage
+        {
+            get { return null; }
+        }
+
+        public DocumentationPage()
+        {
+        }
+
+        public DocumentationPage(string name, Action<IDocumentationBuilder> pageContent)
+        {
+            Name = name;
+            PageContent = pageContent;
+        }
+        public DocumentationPage(string name, Action<IDocumentationBuilder> pageContent, Type relatedNodeType)
+        {
+            Name = name;
+            PageContent = pageContent;
+            RelatedNodeType = relatedNodeType;
+        }
+
+        public virtual void GetContent(IDocumentationBuilder builder)
+        {
+            builder.Title(Name);
+        }
+
+        public T DoNamedNodeStep<T>(IDocumentationBuilder builder, string requiredName, IDiagramFilter requiredFilter = null,
+        Action<IDocumentationBuilder> stepContent = null) where T : IDiagramNodeItem
+        {
+            var existing = ProjectService.CurrentProject.CurrentGraph.NodeItems.OfType<T>().FirstOrDefault(p => p.Name == requiredName);
+            builder.ShowTutorialStep(new TutorialStep(string.Format("Create {0} with the name '{1}'", typeof(T).Name, requiredName), () =>
+            {
+                if (existing == null)
+                {
+                    if (requiredFilter != null)
+                    {
+                        if (ProjectService.CurrentProject.CurrentFilter != requiredFilter)
+                        {
+                            return string.Format("Double-click on the '{0}' Node.", requiredFilter.Name);
+                        }
+                    }
+
+                    return "Node not created yet";
+                }
+
+
+
+                return null;
+            })
+            {
+                StepContent = _ =>
+                {
+                    _.Paragraph("To create a node you need to right click on an empty space on the graph.");
+                    _.Paragraph("Then choose Add {0}", typeof(T).Name.Replace("Node", ""));
+                    if (stepContent != null)
+                    {
+                        stepContent(_);
+                    }
+                }
+            });
+            return existing;
+        }
+
+        public T DoNamedItemStep<T>(IDocumentationBuilder builder,
+            string requiredName,
+            IDiagramNode requiredNode,
+            string singularItemTypeName,
+            Action<IDocumentationBuilder> stepContent
+
+            ) where T : IDiagramNodeItem
+        {
+            var existing = requiredNode.PersistedItems.OfType<T>().FirstOrDefault(p => p.Name == requiredName);
+            builder.ShowTutorialStep(new TutorialStep(string.Format("Create {0} with the name '{1}' on the '{2}' Node.", singularItemTypeName, requiredName, requiredNode.Name), () =>
+            {
+                if (existing == null)
+                {
+                    return "Item not created yet";
+                }
+                return null;
+            })
+            {
+                StepContent = _ =>
+                {
+                    _.Paragraph("To create a node you need to right click on an empty space on the graph.");
+                    _.Paragraph("Then choose Add {0}", typeof(T).Name.Replace("Node", ""));
+
+                    if (stepContent != null)
+                    {
+                        stepContent(_);
+                    }
+                }
+            });
+            return existing;
+        }
+
+
+
+        public TGraphType DoGraphStep<TGraphType>(IDocumentationBuilder builder, Action<IDocumentationBuilder> stepContent = null) where TGraphType : class
+        {
+            var currentGraph =
+                (ProjectService.CurrentProject == null || object.ReferenceEquals(ProjectService.CurrentProject, null))
+                || (ProjectService.CurrentProject.CurrentGraph == null || object.ReferenceEquals(ProjectService.CurrentProject.CurrentGraph, null))
+                ? null : (ProjectService.CurrentProject.CurrentGraph.RootFilter as IDiagramNode).Graph as TGraphType;
+
+            builder.ShowTutorialStep(new TutorialStep(string.Format("Create a new {0} Graph", typeof(TGraphType).Name.Replace("Graph","")), () =>
+            {
+                if (currentGraph == null)
+                {
+                    return "Graph hasn't been created yet.";
+                }
+                return null;
+            })
+            {
+               StepContent = stepContent
+            });
+            return currentGraph;
+        }
+
+        public IProjectRepository DoCreateNewProjectStep(IDocumentationBuilder builder, Action<IDocumentationBuilder> stepContent = null)
+        {
+            var currentProject = ProjectService.CurrentProject;
+            builder.ShowTutorialStep(new TutorialStep("Create A Project", () =>
+            {
+                if (currentProject == null || object.ReferenceEquals(currentProject, null))
+                {
+                    return "Project hasn't been created yet.";
+                }
+                return null;
+            })
+            {
+                StepContent = _ =>
+                {
+                    if (stepContent != null)
+                    {
+                        stepContent(_);
+                    }
+                    _.Paragraph("You need to create a new project to begin this journey.");
+                    _.Paragraph("Navigate to the project window and create an empty folder.");
+                    _.Paragraph("From here right click on the folder and choose uFrame->New Project");
+                    _.Paragraph("This will create a new project repository for you.  " +
+                                "The project repository will hold references to all of your graphs.");
+                    
+                },
+            });
+            return currentProject;
+        }
+        public TutorialStep SaveAndCompile(DiagramNode node)
+        {
+            return new TutorialStep("Save & Compile the project.", () =>
+            {
+                if (InvertApplication.FindType(node.FullName) == null)
+                {
+                    return "A type doesn't exist so you haven't save and compiled your project yet.";
+                }
+                return null;
+            });
+        }
+        public string EnsureCodeInEditableFile(DiagramNode elementNode, string filenameSearchText, string codeSearchText)
+        {
+            var firstOrDefault = elementNode.GetCodeGeneratorsForNode()
+                .FirstOrDefault(p => !p.AlwaysRegenerate && (p.Filename.Contains(filenameSearchText) || p.Filename == filenameSearchText));
+            if (firstOrDefault == null || !File.ReadAllText(firstOrDefault.FullPathName)
+                .Contains(codeSearchText))
+            {
+                return "File not found, or you haven't implemented it properly.";
+            }
+            return null;
+        }
+        public ConnectionData DoCreateConnectionStep(IDocumentationBuilder builder, IDiagramNodeItem output, IDiagramNodeItem input, Action<IDocumentationBuilder> stepContent = null)
+        {
+            var existing =
+                ProjectService.CurrentProject.Connections.FirstOrDefault(
+                    p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
+            var inputName = input.Name;
+            var outputName = output.Name;
+
+            if (input != input.Node)
+            {
+                inputName = input.Node.Name + "'s " + input.Name + " input slot";
+            }
+            if (output != output.Node)
+            {
+                outputName = output.Node.Name + "'s " + output.Name + " output slot";
+            }
+            builder.ShowTutorialStep( new TutorialStep(string.Format("Create a connection from {0} to {1}.", outputName, inputName), () =>
+            {
+                if (existing == null)
+                    return "The connection hasen't been created yet.";
+                return null;
+            })
+            {
+                StepContent = stepContent
+            });
+            return existing;
+        }
+
+    }
+    public class DocumentationDefaultProvider : IDocumentationProvider
+    {
+        private ProjectService _projectService;
+
+        public ProjectService ProjectService
+        {
+            get { return _projectService ?? (_projectService = InvertApplication.Container.Resolve<ProjectService>()); }
+            set { _projectService = value; }
+        }
+
+        public virtual Type RootPageType
+        {
+            get { return null; }
+        }
+
+        public virtual void GetPages(List<DocumentationPage> rootPages)
+        {
+            var pages = InvertApplication.GetDerivedTypes<DocumentationPage>(false, false)
+                .Where(p=>RootPageType == null || RootPageType.IsAssignableFrom(p))
+                .Where(p => p.Name != "DocumentationPageTemplate")
+                .Select(Activator.CreateInstance).OfType<DocumentationPage>().ToArray();
+
+            GetValue(pages, rootPages);
+
+
+        }
+
+        private static void GetValue(DocumentationPage[] allPages, List<DocumentationPage> pages, DocumentationPage parentPage = null)
+        {
+            foreach (var page in allPages.Where(p => p.ParentPage == (parentPage == null ? null : parentPage.GetType())))
+            {
+                pages.Add(page);
+                GetValue(allPages,page.ChildPages,page);
+            }
+        }
+
+
+        public virtual void GetDocumentation(IDocumentationBuilder node)
+        {
+
+        }
+    }
+
+    public class HelpCommand : ToolbarCommand<DiagramViewModel>
+    {
+        public override ToolbarPosition Position
+        {
+            get { return ToolbarPosition.BottomRight; }
+        }
+
+        public override void Perform(DiagramViewModel node)
+        {
+            InvertGraphEditor.WindowManager.ShowHelpWindow(node.GraphData.RootFilter.GetType().Name,null);
+        }
+
+        public override string CanPerform(DiagramViewModel node)
+        {
+            if (node == null)
+            {
+                return "Show a diagram first.";
+            }
+            return null;
+        }
+    }
+    public class NodeHelpCommand : EditorCommand<DiagramNode>, IDiagramNodeCommand
+    {
+        public override string Name
+        {
+            get { return "Help & Documentation"; }
+        }
+
+        public override string Path
+        {
+            get { return "Help & Documentation"; }
+        }
+
+        public override void Perform(DiagramNode node)
+        {
+            InvertGraphEditor.WindowManager.ShowHelpWindow(node.Project.CurrentGraph.RootFilter.GetType().Name, node.GetType());
+        }
+
+        public override string CanPerform(DiagramNode node)
+        {
+            if (node == null)
+            {
+                return "Show a diagram first.";
+            }
+            return null;
         }
     }
 }

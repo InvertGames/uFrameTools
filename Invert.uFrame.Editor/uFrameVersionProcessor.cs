@@ -20,7 +20,7 @@ public class uFrameVersionProcessor : AssetPostprocessor
     private static void ShowChangeLog()
     {
         EditorApplication.delayCall -= ShowChangeLog;
-
-        uFrameStartDialog.ShowWindow();
+        uFrameHelp.ShowPage("Change Log");
+      
     }
 }

@@ -117,7 +117,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Remove(ConnectorViewModel output, ConnectorViewModel input)
         {
-            InvertGraphEditor.DesignerWindow.DiagramViewModel.DiagramData.RemoveConnection(output.DataObject as IConnectable, input.DataObject as IConnectable);
+            InvertGraphEditor.DesignerWindow.DiagramViewModel.GraphData.RemoveConnection(output.DataObject as IConnectable, input.DataObject as IConnectable);
         }
     }
 

@@ -204,7 +204,7 @@ public class ShellTemplateConfigNode : GenericNode
     
 }
 
-public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass
+public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocumentable
 {
     private string _nodeLabel;
     public override void Document(IDocumentationBuilder docs)
@@ -300,6 +300,15 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass
     public IEnumerable<IShellNodeConfigItem> IncludedInSections
     {
         get { return this.OutputsTo<IShellNodeConfigItem>(); }
+    }
+
+    public string TypeName
+    {
+        get { return Name.Clean(); }
+        set
+        {
+            
+        }
     }
 
     [InspectorProperty]
@@ -499,7 +508,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
     }
 }
 
-public interface IShellNodeConfigItem : IDiagramNodeItem
+public interface IShellNodeConfigItem : IDocumentable, IClassTypeNode
 {
     [JsonProperty, InspectorProperty]
     int Row { get; set; }
@@ -508,8 +517,9 @@ public interface IShellNodeConfigItem : IDiagramNodeItem
     [InspectorProperty, JsonProperty]
     SectionVisibility Visibility { get; set; }
     string ReferenceClassName { get; }
-    string ClassName { get; }
+    //string ClassName { get; }
     IEnumerable<IShellNodeConfigItem> IncludedInSections { get; }
+    string TypeName { get; set; }
 }
 public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, IClassTypeNode
 {
@@ -676,6 +686,15 @@ public class ShellNodeConfigSectionPointer : GenericReferenceItem<ShellNodeConfi
     public IEnumerable<IShellNodeConfigItem> IncludedInSections
     {
         get { return this.OutputsTo<IShellNodeConfigItem>(); }
+    }
+
+    public string TypeName
+    {
+        get { return SourceItem.TypeName; }
+        set
+        {
+            
+        }
     }
 
     public bool AllowMultiple { get; set; }

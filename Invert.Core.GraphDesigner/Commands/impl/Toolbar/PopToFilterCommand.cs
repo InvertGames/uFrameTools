@@ -11,7 +11,7 @@ namespace Invert.Core.GraphDesigner
         public override void Perform(DiagramViewModel node)
         {
             node.NothingSelected();
-            node.DiagramData.PopToFilter(SelectedOption.Name);
+            node.GraphData.PopToFilter((string)SelectedOption.Value);
         }
 
         public IEnumerable<UFContextMenuItem> GetOptions(object arg)
@@ -24,15 +24,17 @@ namespace Invert.Core.GraphDesigner
             
             yield return new UFContextMenuItem()
             {
-                Name = item.DiagramData.RootFilter.Name, 
-                Checked = item.DiagramData.CurrentFilter == item.DiagramData.RootFilter
+                Name = item.GraphData.RootFilter.Name, 
+                Value = item.GraphData.RootFilter.Identifier, 
+                Checked = item.GraphData.CurrentFilter == item.GraphData.RootFilter
             };
-            foreach (var filter in item.DiagramData.GetFilterPath())
+            foreach (var filter in item.GraphData.GetFilterPath())
             {
                 yield return new UFContextMenuItem()
                 {
                     Name = filter.Name,
-                    Checked = item.DiagramData.CurrentFilter == filter
+                    Value = filter.Identifier,
+                    Checked = item.GraphData.CurrentFilter == filter
                 };
             }
         }

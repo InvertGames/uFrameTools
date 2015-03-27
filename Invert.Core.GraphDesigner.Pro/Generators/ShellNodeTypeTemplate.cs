@@ -786,6 +786,15 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         if (!Ctx.IsDesignerFile) return;
         Ctx.CurrentMethodAttribute.CallBase = false;
         var method = Ctx.CurrentMethod;
+
+        foreach (var plugin in Ctx.Data.Project.NodeItems.OfType<ShellPluginNode>())
+        {
+            //foreach (var item in Ctx.Data.Project.NodeItems.OfType<ShellNodeConfig>().Where(p => p.IsGraphType))
+            //{
+                Ctx._("container.RegisterInstance<IDocumentationProvider>(new {0}DocumentationProvider(), \"{0}\")",plugin.Name);
+            //}
+        }
+        
         //foreach (var item in Ctx.Data.Graph.NodeItems.OfType<ShellChildItemTypeNode>())
         //{
         //    if (!item["Typed"]) continue;

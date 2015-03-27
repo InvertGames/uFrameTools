@@ -99,7 +99,7 @@ namespace Invert.Core.GraphDesigner
             if (SelectedOption != null)
             {
                 var targetDiagram = SelectedOption.Value as IGraphData;
-                var sourceDiagram = diagram.DiagramViewModel.DiagramData;
+                var sourceDiagram = diagram.DiagramViewModel.GraphData;
                 var selectedNode = diagram.GraphItemObject;
                 Perform(sourceDiagram, selectedNode, targetDiagram);
 
@@ -247,7 +247,7 @@ namespace Invert.Core.GraphDesigner
         public override void Perform(DiagramNode node)
         {
             var sourceDiagram = node.Graph;
-            var targetDiagram = InvertGraphEditor.DesignerWindow.DiagramViewModel.DiagramData;
+            var targetDiagram = InvertGraphEditor.DesignerWindow.DiagramViewModel.GraphData;
             if (targetDiagram == null) return;
             var editableFilesBefore = InvertGraphEditor.GetAllFileGenerators(null, node.Project, false).Where(p=>p.Generators.Any(x=>!x.AlwaysRegenerate)).ToArray();
             

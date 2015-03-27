@@ -188,7 +188,7 @@ namespace Invert.Core.GraphDesigner
 
         public static void PopToFilter(this IGraphData designerData, string filterName)
         {
-            while (designerData.CurrentFilter.Name != filterName)
+            while (designerData.CurrentFilter.Identifier != filterName)
             {
                 designerData.PopFilter(null);
             }

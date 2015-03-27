@@ -240,6 +240,7 @@ namespace Invert.Core.GraphDesigner
         void LinkToNode(IDiagramNodeItem node, string text = null);
         void NodeImage(DiagramNode node);
         void Paragraph(string text, params object[] args);
+        void Lines( params string[] lines);
         void Title(string text, params object[] args);
         void Title2(string text, params object[] args);
         void Title3(string text, params object[] args);
@@ -249,6 +250,66 @@ namespace Invert.Core.GraphDesigner
         void Section(string text, params object[] args);
         void Rows(params Action[] actions);
         void Columns(params Action[] actions);
-        
+        void YouTubeLink(string id);
+        void TemplateExample<TTemplate, TData>(TData data, string templateMember = null) where TTemplate : IClassTemplate<TData>;
+        void ShowGist(string id, string filename, string userId = "micahosborne");
+        bool ShowTutorialStep(ITutorialStep step, Action<IDocumentationBuilder> stepContent = null);
+        void BeginTutorial(string walkthrough);
+        void EndTutorial();
+        void ImageByUrl(string empty);
+    }
+
+
+    public class InteractiveTutorial 
+    {
+        public string Name { get; set; }
+        private List<ITutorialStep> _steps;
+        private bool _lastStepCompleted = true;
+
+        public InteractiveTutorial(string name)
+        {
+            Name = name;
+        }
+
+        public List<ITutorialStep> Steps
+        {
+            get { return _steps ?? (_steps = new List<ITutorialStep>()); }
+            set { _steps = value; }
+        }
+
+        public bool LastStepCompleted
+        {
+            get { return _lastStepCompleted; }
+            set { _lastStepCompleted = value; }
+        }
+    }
+
+    public interface ITutorialStep
+    {
+        string Name { get; set; }
+        Action DoIt { get; set; }
+        Func<string> IsDone { get; set; }
+        Action<IDocumentationBuilder> StepContent { get; set; }
+    }
+
+    public class TutorialStep : ITutorialStep
+    {
+        public TutorialStep( string name, Func<string> isDone)
+            : this( name, isDone, null)
+        {
+        }
+
+        public TutorialStep( string name, Func<string> isDone, Action doIt)
+        {
+         
+            Name = name;
+            IsDone = isDone;
+            DoIt = doIt;
+        }
+
+        public string Name { get; set; }
+        public Action DoIt { get; set; }
+        public Func<string> IsDone { get; set; }
+        public Action<IDocumentationBuilder> StepContent { get; set; }
     }
 }
