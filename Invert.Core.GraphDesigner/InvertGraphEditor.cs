@@ -356,11 +356,18 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public static IEnumerable<OutputGenerator> GetCodeGeneratorsForNode(this IDiagramNode node)
+        public static IEnumerable<OutputGenerator> GetCodeGeneratorsForNode(this IDiagramNodeItem node)
         {
-            return GetAllCodeGenerators(null, node.Project).Where(p => p.ObjectData == node);
+            return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node);
         }
-
+        public static IEnumerable<OutputGenerator> GetAllEditableFilesForNode(this IDiagramNodeItem node)
+        {
+            return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && !p.AlwaysRegenerate);
+        }
+        public static IEnumerable<OutputGenerator> GetAllDesignerFilesForNode(this IDiagramNodeItem node)
+        {
+            return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && p.AlwaysRegenerate);
+        }
         private static IEnumerable<OutputGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, INodeRepository project,
             DesignerGeneratorFactory generator, DesignerGeneratorFactory diagramItemGenerator, bool includeDisabled = false)
         {

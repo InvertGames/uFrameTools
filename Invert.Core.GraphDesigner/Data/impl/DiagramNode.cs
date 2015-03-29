@@ -168,7 +168,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-        [Browsable(false)]
+        [Browsable(false), Obsolete]
         public IEnumerable<Refactorer> AllRefactorers
         {
             get { return Refactorings.Concat(DisplayedItems.OfType<IRefactorable>().SelectMany(p => p.Refactorings)); }
@@ -357,7 +357,7 @@ namespace Invert.Core.GraphDesigner
                 return Project.NodeItems.All(p => p.Identifier != Identifier);
             }
         }
-        [Browsable(false)]
+        [Browsable(false), JsonProperty]
         public bool IsNewNode { get; set; }
         [Browsable(false)]
         public bool IsSelectable { get { return true; } }
@@ -422,6 +422,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     this.Graph.Name = _name;
                 }
+                
                 Node.TrackChange(new NameChange(this,previous,_name));
                 Dirty = true;
             }
@@ -540,7 +541,6 @@ namespace Invert.Core.GraphDesigner
             _name = cls["Name"].Value;
             _isCollapsed = cls["IsCollapsed"].AsBool;
             _identifier = cls["Identifier"].Value;
-            IsNewNode = false;
             PersistedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>();
 
             if (cls["Locations"] != null)

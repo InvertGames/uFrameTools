@@ -64,7 +64,9 @@
     <Compile Include="MarketPlace.cs" />
     <Compile Include="ProjectRepositoryInspector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Refactoring\ChangeRefactorer.cs" />
     <Compile Include="Refactoring\ClassRenamer.cs" />
+    <Compile Include="Refactoring\uFrameRefactoring.cs" />
     <Compile Include="SearchableScrollWindow.cs" />
     <Compile Include="SelectedCodePreview.cs" />
     <Compile Include="SyntaxDrawer.cs" />

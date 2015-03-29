@@ -1,5 +1,4 @@
-﻿using System;
-using System.CodeDom;
+﻿using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,6 +18,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
     {
         public override void Initialize(uFrameContainer container)
         {
+            container.RegisterToolbarCommand<TestCommand>();
          //   InvertApplication.ListenFor<IProjectInspectorEvents>(this);
         }
 
@@ -51,6 +51,8 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             InvertApplication.ListenFor<INodeItemEvents>(this);
             InvertApplication.ListenFor<ICompileEvents>(this);
             InvertApplication.ListenFor<IDesignerWindowEvents>(this);
+
+            
         }
 
         public void Deleted(IDiagramNodeItem node)
@@ -202,6 +204,38 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
     }
 
+    public class TestCommand : ToolbarCommand<DiagramViewModel>
+    {
+        public override string Name
+        {
+            get { return "Testing"; }
+        }
+
+        public override ToolbarPosition Position
+        {
+            get { return ToolbarPosition.BottomRight; }
+        }
+
+        public override void Perform(DiagramViewModel vm)
+        {
+            var node = vm.SelectedNode.DataObject as DiagramNode;
+            if (node == null) return;
+            var originalName = node.Name;
+            var codeGenerators = node.GetAllEditableFilesForNode().ToArray();
+            foreach (var g in codeGenerators)
+                InvertApplication.Log(g.Filename);
+            node.Name = "asdf";
+            foreach (var g in codeGenerators)
+                InvertApplication.Log(g.Filename);
+
+            node.Name = originalName;
+        }
+
+        public override string CanPerform(DiagramViewModel node)
+        {
+            return null;
+        }
+    }
     public class Refactoring
     {
         private List<Refactorer> _refactorers;
@@ -335,83 +369,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
     {
 
     }
-    public class ChangeRefactorer : AbstractAstVisitor
-    {
-        public List<IChangeData> Changes { get; set; }
 
-        public List<FilenameRefactor> FilenameChanges { get; set; }
-
-        public bool HasChanged { get; set; }
-
-        public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
-        {
-            foreach (var item in Changes.Where(p => p.Item is IClassRefactorable).OfType<NameChange>())
-            {
-                var refactorable = item.Item as IClassRefactorable;
-
-                if (refactorable != null)
-                    foreach (var format in refactorable.ClassNameFormats)
-                    {
-                        if (string.Format(format, item.Old) == typeDeclaration.Name)
-                        {
-                            typeDeclaration.Name = string.Format(format, item.New);
-                            HasChanged = true;
-                        }
-                    }
-            }
-            return base.VisitTypeDeclaration(typeDeclaration, data);
-        }
-
-        public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
-        {
-            foreach (var item in Changes.Where(p => p.Item is IMethodRefactorable).OfType<NameChange>())
-            {
-                var refactorable = item.Item as IMethodRefactorable;
-
-                if (refactorable != null)
-                    foreach (var format in refactorable.MethodFormats)
-                    {
-                        if (string.Format(format, item.Old) == methodDeclaration.Name)
-                        {
-                            methodDeclaration.Name = string.Format(format, item.New);
-                            HasChanged = true;
-                        }
-                    }
-            }
-            return base.VisitMethodDeclaration(methodDeclaration, data);
-        }
-
-        public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
-        {
-            foreach (var item in Changes.Where(p => p.Item is IPropertyRefactorable).OfType<NameChange>())
-            {
-                var refactorable = item.Item as IPropertyRefactorable;
-
-                if (refactorable != null)
-                    foreach (var format in refactorable.PropertyFormats)
-                    {
-                        if (string.Format(format, item.Old) == propertyDeclaration.Name)
-                        {
-                            propertyDeclaration.Name = string.Format(format, item.New);
-                            HasChanged = true;
-                        }
-                    }
-            }
-            foreach (var item in Changes.Where(p => p.Item is ITypedItem).OfType<TypeChange>())
-            {
-                if (propertyDeclaration.TypeReference.Type == item.Old)
-                {
-                    propertyDeclaration.TypeReference.Type = item.New;
-                }
-            }
-            return base.VisitPropertyDeclaration(propertyDeclaration, data);
-        }
-
-        public override object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
-        {
-            return base.VisitParameterDeclarationExpression(parameterDeclarationExpression, data);
-        }
-    }
     public class IdentifierRenameRefactorer : RenameRefactorer
     {
 
