@@ -20,7 +20,7 @@ public class ViewComponentDataGeneratorFactory : DesignerGeneratorFactory<ViewCo
             DiagramData = diagramData,
             ViewComponentData = item,
             Filename = pathStrategy.GetEditableFilePath(item),
-            RelatedType = item.CurrentType
+            //RelatedType = item.CurrentType
         };
     }
 

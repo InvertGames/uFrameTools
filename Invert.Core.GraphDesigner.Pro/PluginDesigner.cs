@@ -267,7 +267,7 @@ public class DocumentationPageTemplate : DocumentationPage, IClassTemplate<IDocu
             {
                 if (Ctx.Data.Node != Ctx.Data)
                 {
-                    Ctx._("return typeof({0}Page)", Ctx.Data.Node.Name);
+                    Ctx._("return typeof({0}PageBase)", Ctx.Data.Node.Name);
                 }
                 else
                 {
@@ -308,12 +308,16 @@ public class DocumentationPageTemplate : DocumentationPage, IClassTemplate<IDocu
     {
         get
         {
-           Ctx._("return \"{0}\"", Ctx.Data.Name);
+            if (Ctx.CurrentDecleration.TypeAttributes == TypeAttributes.Abstract)
+            {
+                Ctx._("return base.Name");
+            }
+            else
+            {
+                Ctx._("return \"{0}\"", Ctx.Data.Name);
+            }
+           
             return null;
-        }
-        set
-        {
-            
         }
     }
     [TemplateMethod(MemberGeneratorLocation.Both)]

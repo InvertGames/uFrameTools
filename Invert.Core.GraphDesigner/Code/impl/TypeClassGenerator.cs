@@ -152,6 +152,8 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public string[] FilterToMembers { get; set; }
+
         public override void Initialize(CodeFileGenerator codeFileGenerator)
         {
             base.Initialize(codeFileGenerator);
@@ -351,7 +353,7 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var templateProperty in templateProperties)
             {
-
+                if (FilterToMembers != null && !FilterToMembers.Contains(templateProperty.Key.Name)) continue;
                 TemplateContext.RenderTemplateProperty(TemplateClass, templateProperty);
             }
             var templateMethods =
@@ -359,6 +361,7 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var templateMethod in templateMethods)
             {
+                if (FilterToMembers != null && !FilterToMembers.Contains(templateMethod.Key.Name)) continue;
                 TemplateContext.RenderTemplateMethod(TemplateClass, templateMethod);
             }
 
@@ -367,7 +370,7 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var templateConstructor in templateConstructors)
             {
-
+                if (FilterToMembers != null && !FilterToMembers.Contains(templateConstructor.Key.Name)) continue;
                 TemplateContext.RenderTemplateConstructor(TemplateClass, templateConstructor);
 
             }

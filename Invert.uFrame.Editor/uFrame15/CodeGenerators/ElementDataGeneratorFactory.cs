@@ -36,7 +36,7 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
         return new ControllerGenerator()
         {
             ElementData = item,
-            RelatedType = item.ControllerType,
+           
             DiagramData = diagramData,
             Filename = codePathStrategy.GetEditableFilePath(item, "Controller"),
             IsDesignerFile = false
@@ -60,7 +60,6 @@ public class ElementDataGeneratorFactory : DesignerGeneratorFactory<ElementData>
         {
             IsDesignerFile = false,
             ElementData = item,
-            RelatedType = item.CurrentViewModelType,
             DiagramData = diagramData,
             Filename = codePathStrategy.GetEditableFilePath(item)
         };

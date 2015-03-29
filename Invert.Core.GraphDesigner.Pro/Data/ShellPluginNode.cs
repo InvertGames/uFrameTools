@@ -1,6 +1,6 @@
 using Invert.Core.GraphDesigner;
 
-public class ShellPluginNode : GenericNode
+public class ShellPluginNode : GenericNode, IDocumentable
 {
     
 }

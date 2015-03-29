@@ -7,6 +7,55 @@ using Invert.Core.GraphDesigner;
 using Invert.Json;
 using UnityEngine;
 
+public class ScaffoldGraph : InvertGraph
+{
+    public ScaffoldGraph BeginNode<TNode>(string name) where TNode : GenericNode, new()
+    {
+        CurrentNode = new TNode()
+        {
+            Name = name
+        };
+        AddNode(CurrentNode);
+        return this;
+    }
+    public ScaffoldGraph AddItem<TNodeItem>(string name, out TNodeItem nodeItem, string type = null) where TNodeItem : IDiagramNodeItem, new()
+    {
+        var item = new TNodeItem()
+        {
+            Name = name,
+            Node = CurrentNode,
+        };
+        if (type != null)
+        {
+            var typedItem = item as ITypedItem;
+            typedItem.RelatedType = type;
+        }
+        CurrentNode.ChildItems.Add(item);
+        nodeItem = item;
+        return this;
+    }
+    public ScaffoldGraph AddItem<TNodeItem>(string name, string type = null) where TNodeItem : IDiagramNodeItem, new()
+    {
+        var item = new TNodeItem()
+        {
+            Name = name,
+            Node = CurrentNode,
+        };
+        if (type != null)
+        {
+            var typedItem = item as ITypedItem;
+            typedItem.RelatedType = type;
+        }
+        CurrentNode.ChildItems.Add(item);
+        return this;
+    }
+    public GenericNode CurrentNode { get; set; }
+
+    public GenericNode EndNode()
+    {
+        return CurrentNode;
+    }
+}
 public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
 {
 

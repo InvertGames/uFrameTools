@@ -142,6 +142,8 @@ public class SceneManagerTransition : IDiagramNodeItem
             sceneManagerData.Transitions.Remove(this);
     }
 
+    public string Namespace { get; private set; }
+
     public void Rename(IDiagramNode data, string name)
     {
         Name = name;

@@ -27,7 +27,7 @@ public class ViewDataGeneratorFactory : DesignerGeneratorFactory<ViewData>
             DiagramData = diagramData,
             View = item,
             Filename = pathStrategy.GetEditableFilePath(item),
-            RelatedType = item.CurrentType
+            //RelatedType = item.CurrentType
         };
     }
 

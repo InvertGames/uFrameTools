@@ -597,6 +597,7 @@ namespace Invert.Core.GraphDesigner
         {
             CurrentGraph = currentGraph;
             Graphs = new[] {currentGraph};
+            CurrentGraph.SetProject(this);
         }
 
         public override IGraphData CurrentGraph { get; set; }
@@ -619,5 +620,8 @@ namespace Invert.Core.GraphDesigner
         {
           
         }
+
+        
+
     }
 }

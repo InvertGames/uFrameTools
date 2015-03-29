@@ -66,6 +66,7 @@ D:\Invert\uFrameGit17\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Attribut
 D:\Invert\uFrameGit17\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit17\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.dll
 D:\Invert\uFrameGit17\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.uFrame.Editor.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.uFrame.Editor.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Core.dll
@@ -85,6 +86,5 @@ D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.MVVM.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\UnityEditor.xml
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\UnityEngine.xml
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Attributes.pdb
-D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.pdb
