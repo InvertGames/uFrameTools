@@ -93,8 +93,15 @@ namespace Invert.Core.GraphDesigner
         }
         public virtual Type RelatedType
         {
-            get;
-            set;
+            get
+            {
+                var cls = ObjectData as IClassTypeNode;
+                if (cls != null)
+                {
+                    return InvertApplication.FindType(cls.Namespace + "." + cls.ClassName);
+                }
+                return null;
+            }
         }
 
         public CodeNamespace Namespace

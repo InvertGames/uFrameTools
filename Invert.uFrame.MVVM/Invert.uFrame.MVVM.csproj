@@ -49,84 +49,6 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages.designer.cs">
       <Link>Pages.designer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\BindingsPage.cs">
-      <Link>NewFolder1\BindingsPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\CollectionsPage.cs">
-      <Link>NewFolder1\CollectionsPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\CommandPage.cs">
-      <Link>NewFolder1\CommandPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\CommandsPage.cs">
-      <Link>NewFolder1\CommandsPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\ComputedPropertyPage.cs">
-      <Link>NewFolder1\ComputedPropertyPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\ElementPage.cs">
-      <Link>NewFolder1\ElementPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\ExportPage.cs">
-      <Link>NewFolder1\ExportPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\HandlersPage.cs">
-      <Link>NewFolder1\HandlersPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\ImportPage.cs">
-      <Link>NewFolder1\ImportPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\InstancesPage.cs">
-      <Link>NewFolder1\InstancesPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\MVVMPage.cs">
-      <Link>NewFolder1\MVVMPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\PropertiesPage.cs">
-      <Link>NewFolder1\PropertiesPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\SceneManagerPage.cs">
-      <Link>NewFolder1\SceneManagerPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\ScenePropertiesPage.cs">
-      <Link>NewFolder1\ScenePropertiesPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\SceneTransitionsPage.cs">
-      <Link>NewFolder1\SceneTransitionsPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\ServicePage.cs">
-      <Link>NewFolder1\ServicePage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\SimpleClassPage.cs">
-      <Link>NewFolder1\SimpleClassPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\StartStatePage.cs">
-      <Link>NewFolder1\StartStatePage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\StateMachinePage.cs">
-      <Link>NewFolder1\StateMachinePage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\StatePage.cs">
-      <Link>NewFolder1\StatePage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\StateTransitionsPage.cs">
-      <Link>NewFolder1\StateTransitionsPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\SubPropertiesPage.cs">
-      <Link>NewFolder1\SubPropertiesPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\SubsystemPage.cs">
-      <Link>NewFolder1\SubsystemPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\TransitionsPage.cs">
-      <Link>NewFolder1\TransitionsPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\uFrameMVVMPage.cs">
-      <Link>uFrameMVVMPage.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Documentation\Editor\Pages\ViewPage.cs">
-      <Link>NewFolder1\ViewPage.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\ChildItems.designer.cs">
       <Link>ChildItems.designer.cs</Link>
     </Compile>
@@ -147,6 +69,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Documentation\uFrameMVVMDocumentationProvider.cs">
       <Link>uFrameMVVMDocumentationProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Documentation\uFrameMVVMPage.cs">
+      <Link>uFrameMVVMPage.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers.designer.cs">
       <Link>Drawers.designer.cs</Link>

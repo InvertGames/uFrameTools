@@ -30,6 +30,7 @@ namespace Invert.Core.GraphDesigner
         bool this[string flag] { get; set; }
 
         FlagsDictionary Flags { get; set; }
+        string Namespace { get; }
 
         //void Remove(IDiagramNode diagramNode);
         void Rename(IDiagramNode data, string name);

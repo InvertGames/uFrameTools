@@ -203,6 +203,7 @@ namespace Invert.Core.GraphDesigner
         Vector2 DefaultLocation { get; }
 
         IGraphData Graph { get; set; }
+        string FullName { get; set; }
 
 
         /// <summary>
@@ -240,6 +241,7 @@ namespace Invert.Core.GraphDesigner
         void LinkToNode(IDiagramNodeItem node, string text = null);
         void NodeImage(DiagramNode node);
         void Paragraph(string text, params object[] args);
+        void Break();
         void Lines( params string[] lines);
         void Title(string text, params object[] args);
         void Title2(string text, params object[] args);
@@ -251,12 +253,15 @@ namespace Invert.Core.GraphDesigner
         void Rows(params Action[] actions);
         void Columns(params Action[] actions);
         void YouTubeLink(string id);
-        void TemplateExample<TTemplate, TData>(TData data, string templateMember = null) where TTemplate : IClassTemplate<TData>;
+
+        void TemplateExample<TTemplate, TData>(TData data, bool isDesignerFile = true, params string[] members)
+            where TTemplate : class, IClassTemplate<TData>, new() where TData : class, IDiagramNodeItem;
         void ShowGist(string id, string filename, string userId = "micahosborne");
         bool ShowTutorialStep(ITutorialStep step, Action<IDocumentationBuilder> stepContent = null);
         void BeginTutorial(string walkthrough);
         void EndTutorial();
         void ImageByUrl(string empty);
+        void CodeSnippet(string code);
     }
 
 

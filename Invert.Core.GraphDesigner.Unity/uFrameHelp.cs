@@ -273,7 +273,10 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
             }
             if (item.ChildPages.Count == 0)
             {
-                if (GUIHelpers.DoTriggerButton(new UFStyle(item.Name, ElementDesignerStyles.EventButtonStyleSmall)))
+                if (GUIHelpers.DoTriggerButton(new UFStyle(item.Name, ElementDesignerStyles.Item4)
+                {
+                    
+                }))
                 {
                     this.ShowPage(item);
                 }
@@ -370,6 +373,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
 
     public void Paragraph(string text, params object[] args)
     {
+        GUILayout.Space(5f);
         if (args == null || args.Length == 0)
         {
             GUILayout.Label(text, ParagraphStyle);
@@ -378,7 +382,13 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
         {
             GUILayout.Label(string.Format(text, args), ParagraphStyle);
         }
+      
         
+    }
+
+    public void Break()
+    {
+        this.Paragraph(string.Empty);
     }
 
     public static GUIStyle TitleStyle
@@ -436,7 +446,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
         GUILayout.Space(10f);
         TitleStyle.fontSize = 20;
         GUILayout.Label(text, TitleStyle);
-
+        GUILayout.Space(10f);
     }
 
     public void Title2(string text, params object[] args)
@@ -456,7 +466,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
 
     public void Note(string text, params object[] args)
     {
-
+        EditorGUILayout.HelpBox(text,MessageType.Info);
     }
 
     public void TemplateLink()
@@ -506,8 +516,35 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
         }
     }
 
-    public void TemplateExample<TTemplate, TData>(TData data, string templateMember = null) where TTemplate : IClassTemplate<TData>
+    public void TemplateExample<TTemplate, TData>(TData data, bool isDesignerFile = true, params string[] members)
+        where TTemplate : class, IClassTemplate<TData>, new() where TData : class, IDiagramNodeItem
     {
+        
+        var tempProject = new TemporaryProjectRepository(data.Node.Graph);
+
+        var template = new TypeClassGenerator<TData, TTemplate>()
+        {
+            Data = data,
+            IsDesignerFile = isDesignerFile,
+            // If we don't have any make sure its null
+            FilterToMembers =members != null && members.Length > 0 ? members : null
+        };
+        var name = "Example " + data.Name;
+        if (members != null)
+        {
+            name += string.Join(", ", members);
+        }
+        name += ".cs";
+        if (GUIHelpers.DoToolbarEx(name,null,null,null,null,false,Color.black))
+        {
+            var codeFileGenerator = new CodeFileGenerator
+            {
+                Generators = new OutputGenerator[] { template },
+                RemoveComments = true
+            };
+            EditorGUILayout.TextArea(codeFileGenerator.ToString());
+        }
+      
 
     }
 
@@ -585,6 +622,11 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
     public void ImageByUrl(string empty)
     {
         DrawImage(empty);
+    }
+
+    public void CodeSnippet(string code)
+    {
+        Paragraph(code);
     }
 
     public void TemplateExample<TTemplate, TData>(TData data, bool designerFile = true, string templateMember = null) where TTemplate : IClassTemplate<TData>

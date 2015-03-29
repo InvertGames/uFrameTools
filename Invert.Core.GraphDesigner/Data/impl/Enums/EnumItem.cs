@@ -112,6 +112,8 @@ public class EnumItem : IDiagramNodeItem
         data.Dirty = true;
     }
 
+    public string Namespace { get; private set; }
+
     public void Rename(IDiagramNode data, string name)
     {
         Name = name;

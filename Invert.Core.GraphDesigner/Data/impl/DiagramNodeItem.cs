@@ -236,6 +236,8 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
 
     public abstract void Remove(IDiagramNode diagramNode);
 
+    public string Namespace { get; set; }
+
     public virtual void Rename(IDiagramNode data, string name)
     {
         Name = name;

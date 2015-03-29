@@ -27,7 +27,7 @@ public class SceneManagerDataGeneratorFactory : DesignerGeneratorFactory<SceneMa
             IsDesignerFile = false,
             Data = item,
             DiagramData = diagramData,
-            RelatedType = item.CurrentSettingsType,
+            
             Filename = pathStrategy.GetEditableFilePath(item,"Settings")
         };
     }

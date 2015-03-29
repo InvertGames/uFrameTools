@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions; 
 using UnityEngine;
 #if !UNITY_DLL
 using KeyCode = System.Windows.Forms.Keys;
@@ -217,6 +219,10 @@ namespace Invert.Core.GraphDesigner
             get { return 0; }
         }
 
+        public virtual IEnumerable<ScaffoldGraph> Scaffolds()
+        {
+            yield break;
+        }
         private static ProjectService _projectService;
         public static ProjectService ProjectService
         {
@@ -231,15 +237,27 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (string.IsNullOrEmpty(_name))
-                {
-                    return this.GetType().Name;
-                }
-                return _name;
+                return AddSpacesToSentence(this.GetType().Name, true);
             }
-            set { _name = value; }
+     
         }
-
+        string AddSpacesToSentence(string text, bool preserveAcronyms)
+        {
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
+            StringBuilder newText = new StringBuilder(text.Length * 2);
+            newText.Append(text[0]);
+            for (int i = 1; i < text.Length; i++)
+            {
+                if (char.IsUpper(text[i]))
+                    if ((text[i - 1] != ' ' && !char.IsUpper(text[i - 1])) ||
+                        (preserveAcronyms && char.IsUpper(text[i - 1]) &&
+                         i < text.Length - 1 && !char.IsUpper(text[i + 1])))
+                        newText.Append(' ');
+                newText.Append(text[i]);
+            }
+            return newText.ToString();
+        }
         public List<DocumentationPage> ChildPages
         {
             get { return _childPages ?? (_childPages = new List<DocumentationPage>()); }
@@ -254,25 +272,10 @@ namespace Invert.Core.GraphDesigner
             get { return null; }
         }
 
-        public DocumentationPage()
-        {
-        }
 
-        public DocumentationPage(string name, Action<IDocumentationBuilder> pageContent)
+        public virtual void GetContent(IDocumentationBuilder _)
         {
-            Name = name;
-            PageContent = pageContent;
-        }
-        public DocumentationPage(string name, Action<IDocumentationBuilder> pageContent, Type relatedNodeType)
-        {
-            Name = name;
-            PageContent = pageContent;
-            RelatedNodeType = relatedNodeType;
-        }
-
-        public virtual void GetContent(IDocumentationBuilder builder)
-        {
-            builder.Title(Name);
+            _.Title(Name);
         }
 
         public T DoNamedNodeStep<T>(IDocumentationBuilder builder, string requiredName, IDiagramFilter requiredFilter = null,
@@ -469,16 +472,25 @@ namespace Invert.Core.GraphDesigner
                 .Select(Activator.CreateInstance).OfType<DocumentationPage>().ToArray();
 
             GetValue(pages, rootPages);
-
-
         }
 
         private static void GetValue(DocumentationPage[] allPages, List<DocumentationPage> pages, DocumentationPage parentPage = null)
         {
-            foreach (var page in allPages.Where(p => p.ParentPage == (parentPage == null ? null : parentPage.GetType())))
+            foreach (var page in allPages)
             {
-                pages.Add(page);
-                GetValue(allPages,page.ChildPages,page);
+                //  foreach (var page in allPages
+//                .Where(p => p.ParentPage == (parentPage == null ? null : parentPage.GetType())))
+          
+                if (parentPage != null && page.ParentPage != null && page.ParentPage.IsAssignableFrom(parentPage.GetType()))
+                {
+                    pages.Add(page);
+                    GetValue(allPages, page.ChildPages, page);
+                }
+                else if (parentPage == null && page.ParentPage == null)
+                {
+                    pages.Add(page);
+                    GetValue(allPages, page.ChildPages, page);
+                }
             }
         }
 
