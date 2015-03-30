@@ -1,8 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 
 public static class UFListExtensions
 {
-    public static void Move<T>(this IList<T> list, int iIndexToMove, bool up = true)
+    public static void Move(this IList list, int iIndexToMove, bool up = true)
     {
         if (up)
         {

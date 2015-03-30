@@ -659,6 +659,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void MoveItemUp(IDiagramNodeItem nodeItem)
         {
+            
         }
 
         public virtual void NodeRemoved(IDiagramNode nodeData)
