@@ -172,6 +172,11 @@ public class EnumItem : IDiagramNodeItem
 
     public bool IsSelected { get; set; }
 
+    public IGraphData Graph
+    {
+        get { return this.Node.Graph; }
+    }
+
     public IEnumerable<ConnectionData> Inputs
     {
         get { yield break; }

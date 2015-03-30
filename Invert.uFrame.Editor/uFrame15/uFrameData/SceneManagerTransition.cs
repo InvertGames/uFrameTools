@@ -200,6 +200,11 @@ public class SceneManagerTransition : IDiagramNodeItem
         ToIdentifier = input.Identifier;
     }
 
+    public IGraphData Graph
+    {
+        get { return this.Node.Graph; }
+    }
+
     public IEnumerable<ConnectionData> Inputs
     {
         get { yield break; }

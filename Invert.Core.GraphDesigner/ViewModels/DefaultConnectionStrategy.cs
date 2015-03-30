@@ -140,32 +140,6 @@ namespace Invert.Core.GraphDesigner
             var input = connectionViewModel.ConnectorB.DataObject as IConnectable;
             var diagramData = InvertGraphEditor.CurrentDiagramViewModel.GraphData;
 
-            //if (!output.AllowMultipleOutputs)
-            //{
-            //    var remove = output.Outputs.Where(p => p.Input.GetType().IsAssignableFrom(input.GetType())).ToArray();
-            //    foreach (var item in remove)
-            //    {
-            //        item.Remove();
-            //    }
-            //}
-            //if (!input.AllowMultipleInputs)
-            //{
-            //    var remove = output.Inputs.Where(p => p.Output.GetType().IsAssignableFrom(input.GetType())).ToArray();
-            //    foreach (var item in remove)
-            //    {
-            //        item.Remove();
-            //    }
-            //}
-            //if (!connectionViewModel.ConnectorA.AllowMultiple)
-            //{
-
-            //    diagramData.ClearOutput(output);
-            //}
-            //if (!connectionViewModel.ConnectorB.AllowMultiple)
-            //{
-            //    diagramData.ClearInput(input);
-            //}
-      
             InvertApplication.SignalEvent<IConnectionEvents>(_ => _.ConnectionApplying(diagramData, output, input));
             ApplyConnection(diagramData, output, input);
             InvertApplication.SignalEvent<IConnectionEvents>(_ => _.ConnectionApplied(diagramData, output, input));

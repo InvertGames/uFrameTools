@@ -177,9 +177,8 @@ namespace Invert.Core.GraphDesigner
                 
                 InvertGraphEditor.ExecuteCommand((v) =>
                 {
-
                     CurrentConnection.Apply(CurrentConnection);
-                });
+                },true);
             }
             else
             {

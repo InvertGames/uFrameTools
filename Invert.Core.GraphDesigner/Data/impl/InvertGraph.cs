@@ -439,10 +439,19 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         }
         output.OnConnectedToInput(input);
         input.OnConnectedFromOutput(output);
-        Debug.Log("Connecting");
-        //output.OnConnectionApplied(output, input);
-        //input.OnConnectionApplied(output, input);
         ConnectedItems.Add(connection);
+        if (Project != null)
+        {
+            Project.MarkDirty(this);
+            if (output.Graph != this)
+            {
+                Project.MarkDirty(output.Graph);
+            }
+            if (input.Graph != this)
+            {
+                Project.MarkDirty(input.Graph);
+            }
+        }
     }
 
     /// <summary>
@@ -459,7 +468,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
             Output = AllGraphItems.FirstOrDefault(p => p.Identifier == output) as IConnectable,
             Input = AllGraphItems.FirstOrDefault(p => p.Identifier == input) as IConnectable
         };
-
+      
         ConnectedItems.Add(connection);
     }
 

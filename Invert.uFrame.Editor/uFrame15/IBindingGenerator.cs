@@ -1,8 +1,10 @@
+using System;
 using System.CodeDom;
 using Invert.Core.GraphDesigner;
 
 namespace Invert.uFrame.Code.Bindings
 {
+    [Obsolete]
     public interface IBindingGenerator
     {
         string Title { get; }
