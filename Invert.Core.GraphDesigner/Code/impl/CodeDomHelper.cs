@@ -1,13 +1,46 @@
 using System;
 using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.CSharp;
 
 namespace Invert.Core.GraphDesigner
 {
     public static class CodeDomHelpers
     {
+        public static string GenerateCodeFromMembers(params CodeTypeMember[] items)
+        {
+            var collection = new CodeTypeMemberCollection(items);
+            return GenerateCodeFromMembers(collection);
+        }
+        public static string GenerateCodeFromMembers(CodeTypeMemberCollection collection)
+        {
+            var type = new CodeTypeDeclaration("DUMMY");
+            type.Members.AddRange(collection);
+            var cp = new CSharpCodeProvider();
+            var sb = new StringBuilder();
+            var strWriter = new StringWriter(sb);
+
+
+            var ccu = new CodeCompileUnit();
+            var ns = new CodeNamespace();
+            ns.Types.Add(type);
+            ccu.Namespaces.Add(ns);
+
+            cp.GenerateCodeFromCompileUnit(ccu, strWriter, new CodeGeneratorOptions());
+            var adjusted = new[] { "" }.Concat(
+                sb.ToString()
+                    .Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
+                    .Skip(14)
+                    .Reverse()
+                    .Skip(2)
+                    .Reverse()).ToArray();
+            return string.Join("\r\n", adjusted);
+        }
         public static string Clean(this string str)
         {
             return Regex.Replace(str, @"[^a-zA-Z0-9_\.]+", "");
