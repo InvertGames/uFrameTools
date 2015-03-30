@@ -32,6 +32,7 @@ public class PluginDesigner : DiagramPlugin
     {
 #if DEBUG && UNITY_DLL
         container.RegisterInstance<IToolbarCommand>(new PrintPlugins(), "Json");
+        container.RegisterInstance<IToolbarCommand>(new Test(), "Test");
 #endif
         container.RegisterInstance<IDiagramNodeCommand>(new SelectColorCommand(), "SelectColor");
         var pluginConfig = container

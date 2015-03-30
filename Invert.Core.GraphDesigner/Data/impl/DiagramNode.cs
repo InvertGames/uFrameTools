@@ -418,12 +418,13 @@ namespace Invert.Core.GraphDesigner
                 var previous = _name;
                 if (value == null) return;
                 _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
+                Node.TrackChange(new NameChange(this, previous, _name));
                 if (this.Graph != null && this.Graph.RootFilter == this)
                 {
                     this.Graph.Name = _name;
                 }
                 
-                Node.TrackChange(new NameChange(this,previous,_name));
+              
                 Dirty = true;
             }
         }
@@ -616,6 +617,14 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void NodeItemRemoved(IDiagramNodeItem diagramNodeItem)
         {
+            if (diagramNodeItem.Node == this)
+            {
+                TrackChange(new GraphItemRemoved()
+                {
+                    Item = diagramNodeItem,
+                    ItemIdentifier = diagramNodeItem.Identifier
+                });
+            }
             DataBag[diagramNodeItem.Identifier] = null;
             Flags[diagramNodeItem.Identifier] = false;
 
@@ -628,7 +637,14 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void NodeItemAdded(IDiagramNodeItem data)
         {
-        
+            if (data.Node == this)
+            {
+                TrackChange(new GraphItemAdded()
+                {
+                    Item = data,
+                    ItemIdentifier = data.Identifier
+                });
+            }
         }
 
 
@@ -659,6 +675,7 @@ namespace Invert.Core.GraphDesigner
 
         void IDiagramNodeItem.NodeItemRemoved(IDiagramNodeItem nodeItem)
         {
+            
             NodeItemRemoved(nodeItem);
         
         }

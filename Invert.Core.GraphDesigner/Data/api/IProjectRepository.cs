@@ -260,6 +260,11 @@ namespace Invert.Core.GraphDesigner
         {
             //item.Node = node;
             var node = item.Node;
+
+            // This feels nasty, but for now it works
+            item.NodeItemAdded(item);
+            item.Node.NodeItemAdded(item);
+
             node.PersistedItems = node.PersistedItems.Where(p=>!p.Precompiled).Concat(new[] { item });
 
             foreach (var nodeItem in NodeItems)
@@ -436,7 +441,7 @@ namespace Invert.Core.GraphDesigner
         public virtual void RemoveItem(IDiagramNodeItem nodeItem)
         {
             //nodeItem.Node.RemoveItem(nodeItem);
-            
+
 
             foreach (var node in NodeItems.ToArray())
             {

@@ -371,7 +371,11 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
     {
         data.Graph = this;
         data.IsCollapsed = true;
-
+        TrackChange(new GraphItemAdded()
+        {
+            Item = data,
+            ItemIdentifier = data.Identifier
+        });
         Nodes.Add(data);
     }
 
@@ -392,7 +396,11 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
                 item.Value.Remove(node.Identifier);
             }
         }
-
+          TrackChange(new GraphItemRemoved()
+            {
+                Item = node,
+                ItemIdentifier = node.Identifier
+            });
         Nodes.Remove(node);
     }
 
@@ -682,7 +690,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
             ChangeData.AddRange(jsonNode["Changes"].AsArray.DeserializeObjectArray<IChangeData>());
             foreach (var item in ChangeData)
             {
-                item.Item = AllGraphItems.FirstOrDefault(p => p.Identifier == item.ItemIdentifier);
+                item.Item = AllGraphItems.OfType<IDiagramNodeItem>().FirstOrDefault(p => p.Identifier == item.ItemIdentifier);
             }
             ChangeData.RemoveAll(p => p.Item == null);
         }

@@ -115,6 +115,9 @@ namespace Invert.Core.GraphDesigner
             }
 
             InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(diagram.CurrentRepository, diagram.GraphData));
+
+            
+
             //RefactorApplied(diagram.DiagramData);
             InvertGraphEditor.Platform.Progress(101f, "Done");
 
@@ -124,7 +127,9 @@ namespace Invert.Core.GraphDesigner
             {
                 graph.ChangeData.Clear();
             }
-
+#if UNITY_DLL
+            UnityEditor.AssetDatabase.SaveAssets();
+#endif
             InvertGraphEditor.Platform.RefreshAssets();
             diagram.Save();
 #if UNITY_DLL

@@ -2,6 +2,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Invert.Json;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Invert.Core.GraphDesigner
     public interface IChangeData : IJsonObject
     {
         bool IsValid { get; }
-        IGraphItem Item { get; set; }
+        IDiagramNodeItem Item { get; set; }
         string ItemIdentifier { get; set; }
         void Update(IChangeData data);
     }
@@ -22,10 +23,46 @@ namespace Invert.Core.GraphDesigner
         T New { get; set; }
     }
 
+    public class GraphItemAdded : ChangeData
+    {
+        public override bool IsValid
+        {
+            get { return this.Item.Node.Graph.ChangeData.OfType<GraphItemRemoved>().All(p => p.ItemIdentifier != Item.Identifier); }
+        }
 
+        public override void Update(IChangeData data)
+        {
+            
+        }
+
+        public override string ToString()
+        {
+            return Item.Name + " was added";
+        }
+    }
+    public class GraphItemRemoved : ChangeData
+    {
+        public override bool IsValid
+        {
+            get
+            {
+                return this.Item.Node.Graph.ChangeData.OfType<GraphItemAdded>().All(p => p.ItemIdentifier != Item.Identifier);
+            }
+        }
+
+        public override void Update(IChangeData data)
+        {
+            
+        }
+
+        public override string ToString()
+        {
+            return Item.Name + " was removed";
+        }
+    }
     public class NameChange : StringChange
     {
-        public NameChange(IGraphItem item, string old, string @new) : base(item, old, @new)
+        public NameChange(IDiagramNodeItem item, string old, string @new) : base(item, old, @new)
         {
         }
 
@@ -52,7 +89,7 @@ namespace Invert.Core.GraphDesigner
 
     public class TypeChange : StringChange
     {
-        public TypeChange(IGraphItem item, string old, string @new) : base(item, old, @new)
+        public TypeChange(IDiagramNodeItem item, string old, string @new) : base(item, old, @new)
         {
         }
 
@@ -77,22 +114,66 @@ namespace Invert.Core.GraphDesigner
             return string.Format("{0}: Type {1} Changed to {2}",Item.Label, Old, New);
         }
     }
-    public abstract class StringChange : IChangeData<string>
+
+    public abstract class ChangeData : IChangeData
+    {
+        protected ChangeData()
+        {
+        }
+
+        public virtual bool IsValid
+        {
+            get
+            {
+                return Item.Node.Graph.ChangeData.OfType<GraphItemAdded>().All(p => p.ItemIdentifier != ItemIdentifier);
+            }
+        }
+
+        protected ChangeData(IDiagramNodeItem item)
+        {
+            Item = item;
+            ItemIdentifier = item.Identifier;
+        }
+
+        public virtual void Serialize(JSONClass cls)
+        {
+            if (Item != null)
+            {
+                cls.Add("ItemIdentifier", new JSONData(Item.Identifier));
+            }
+            
+        }
+
+        public virtual void Deserialize(JSONClass cls)
+        {
+            if (cls["ItemIdentifier"] != null)
+            {
+                ItemIdentifier = cls["ItemIdentifier"].Value;
+            }
+            
+        }
+
+        public IDiagramNodeItem Item { get; set; }
+        public string ItemIdentifier { get; set; }
+    
+        public abstract void Update(IChangeData data);
+
+    }
+    public abstract class StringChange : ChangeData
     {
         public string Old { get; set; }
         public string New { get; set; }
-        public IGraphItem Item { get; set; }
-        public string ItemIdentifier { get; set; }
-        public bool IsValid
+
+        public override bool IsValid
         {
-            get { return Old != null&& New != null && Old != New; }
+            get { return Old != null && New != null && Old != New && base.IsValid; }
         }
 
         protected StringChange()
         {
         }
 
-        protected StringChange(IGraphItem item, string old, string @new)
+        protected StringChange(IDiagramNodeItem item, string old, string @new)
         {
             Old = old;
             New = @new;
@@ -100,13 +181,10 @@ namespace Invert.Core.GraphDesigner
             ItemIdentifier = item.Identifier;
         }
 
-        public abstract void Update(IChangeData data);
-        public void Serialize(JSONClass cls)
+        
+        public override void Serialize(JSONClass cls)
         {
-            if (Item != null)
-            {
-                cls.Add("ItemIdentifier", new JSONData(Item.Identifier));
-            }
+            base.Serialize(cls);
             if (!string.IsNullOrEmpty(Old))
             {
                 cls.Add("Old", new JSONData(Old));
@@ -117,19 +195,16 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public void Deserialize(JSONClass cls)
+        public override void Deserialize(JSONClass cls)
         {
-            if (cls["ItemIdentifier"] != null)
-            {
-                ItemIdentifier = cls["ItemIdentifier"].Value;
-            }
+            base.Deserialize(cls);
             if (cls["Old"] != null)
             {
                 Old = cls["Old"].Value;
             }
             if (cls["New"] != null)
             {
-                Old = cls["New"].Value;
+                New = cls["New"].Value;
             }
         }
 

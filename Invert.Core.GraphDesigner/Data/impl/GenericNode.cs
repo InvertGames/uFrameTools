@@ -486,7 +486,11 @@ namespace Invert.Core.GraphDesigner
                     if (ChildItems.OfType<GenericReferenceItem>().Any(p => p.SourceIdentifier == item.Identifier)) continue;
                     AddReferenceItem(mirrorItems, item, mirrorSection);
                 }
-                ChildItems.RemoveAll(p => p.GetType() == section.SourceType && p is GenericReferenceItem && !newItemIds.Contains(((GenericReferenceItem)p).SourceIdentifier));
+                var items = ChildItems.Where(p => p.GetType() == section.SourceType && p is GenericReferenceItem && !newItemIds.Contains(((GenericReferenceItem)p).SourceIdentifier)).ToArray();
+                foreach (var item in items)
+                {
+                    Node.Project.RemoveItem(item);
+                }
             }
         }
 
@@ -498,7 +502,8 @@ namespace Invert.Core.GraphDesigner
             var newMirror = Activator.CreateInstance(mirrorSection.SourceType) as GenericReferenceItem;
             newMirror.SourceIdentifier = item.Identifier;
             newMirror.Node = this;
-            ChildItems.Add(newMirror);
+
+            Node.Project.AddItem(newMirror);
         }
         [Browsable(false)]
         public override IEnumerable<IGraphItem> GraphItems

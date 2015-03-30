@@ -24,7 +24,6 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
     private CodeFileGenerator[] fileGenerators;
     private List<PropertyFieldDrawer> _selectedItemDrawers;
     private List<IDrawer> _generatorDrawers;
-    private URefactor _refactorPlugin;
     private IEnumerable<ErrorInfo> _issues;
 
     public ProjectRepository Target
@@ -37,12 +36,6 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
         get { return _generators ?? (_generators = InvertApplication.Container.Mappings.Where(p => p.From == typeof(DesignerGeneratorFactory)).ToArray()); }
     }
 
-    public URefactor RefactorPlugin
-    {
-        get { return _refactorPlugin ?? (_refactorPlugin = InvertApplication.Container.Resolve<URefactor>()); }
-        set { _refactorPlugin = value; }
-    }
-
     private Action destory;
     public void OnEnable()
     {
@@ -52,7 +45,7 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
 
     public void OnDisable()
     {
-        RefactorPlugin = null;
+  
         _issues = null;
         if (destory != null)
         destory();
@@ -60,7 +53,7 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
 
     public void OnDestroy()
     {
-        RefactorPlugin = null;
+
         if (destory != null)
         destory();
     }
@@ -130,10 +123,8 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
         if (InvertGraphEditor.CurrentDiagramViewModel != null)
         if (GUIHelpers.DoToolbarEx("Project Issues"))
         {
-
             foreach (var item in Issues)
             {
-      
                 if (GUIHelpers.DoTriggerButton(new UFStyle()
                 {
                     Label = item.Message,
@@ -145,27 +136,36 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
                     ShowArrow = true
                 }))
                 {
-
                     InvertGraphEditor.NavigateTo(item.Identifier); 
                 }
             }
         }
-        if (GUIHelpers.DoToolbarEx("Refactors"))
+        if (GUIHelpers.DoToolbarEx("Changes"))
         {
-            foreach (var item in RefactorPlugin.Refactoring.Refactorers)
+            foreach (var graph in Target.Graphs)
             {
-                if (GUIHelpers.DoTriggerButton(new UFStyle()
+                foreach (var change in graph.ChangeData)
                 {
-                    Label = item.ToString(),
-                    Enabled = true,
-                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
-                    TextAnchor = TextAnchor.MiddleRight,
-                    IconStyle = ElementDesignerStyles.BreakpointButtonStyle,
-                    //IconStyle = UBStyles.RemoveButtonStyle,
-                    ShowArrow = true
-                }))
+                    if (GUIHelpers.DoTriggerButton(new UFStyle()
+                    {
+                        Label = change.ToString(),
+                        Enabled = true,
+                        BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                        TextAnchor = TextAnchor.MiddleRight,
+                        IconStyle = ElementDesignerStyles.BreakpointButtonStyle,
+                        //IconStyle = UBStyles.RemoveButtonStyle,
+                        ShowArrow = true
+                    }))
+                    {
+                        InvertGraphEditor.NavigateTo(change.ItemIdentifier);
+                    }
+                }
+            }
+            if (GUILayout.Button("Clear Change Data"))
+            {
+                foreach (var item in Target.Graphs)
                 {
-                    InvertGraphEditor.NavigateTo(item.Item.Identifier);
+                    item.ChangeData.Clear();
                 }
             }
         }
