@@ -5,6 +5,7 @@ namespace Invert.Core.GraphDesigner
 {
     public interface IConnectable : IGraphItem
     {
+        IGraphData Graph { get; }
         IEnumerable<ConnectionData> Inputs { get; }
         IEnumerable<ConnectionData> Outputs { get; }
 

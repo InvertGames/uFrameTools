@@ -188,7 +188,17 @@ namespace Invert.Core.GraphDesigner
     [Browsable(false)]
     public class GenericNode : DiagramNode, IConnectable
     {
-        
+        public override void MoveItemDown(IDiagramNodeItem nodeItem)
+        {
+            base.MoveItemDown(nodeItem);
+            ChildItems.Move(ChildItems.IndexOf(nodeItem),true);
+        }
+
+        public override void MoveItemUp(IDiagramNodeItem nodeItem)
+        {
+            base.MoveItemUp(nodeItem);
+            ChildItems.Move(ChildItems.IndexOf(nodeItem), false);
+        }
 
         private List<IDiagramNodeItem> _childItems = new List<IDiagramNodeItem>();
         private List<string> _connectedGraphItemIds = new List<string>();

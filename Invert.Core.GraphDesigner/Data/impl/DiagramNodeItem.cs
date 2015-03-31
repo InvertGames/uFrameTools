@@ -302,6 +302,11 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         docs.Title3(Name);
     }
 
+    
+    public IGraphData Graph
+    {
+        get { return this.Node.Graph; }
+    }
 
     public IEnumerable<ConnectionData> Inputs
     {
