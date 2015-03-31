@@ -1,4 +1,6 @@
 using System;
+using System.CodeDom;
+using System.Linq;
 using System.Reflection;
 using Invert.Core.GraphDesigner;
 using UnityEngine;
@@ -26,16 +28,5 @@ namespace Invert.Core.GraphDesigner
             Debug.Log("Json copied to clipboard.");
         }
     }
-    public class Test : ElementsDiagramToolbarCommand
-    {
-        public override string Name
-        {
-            get { return "Test Command"; }
-        }
-
-        public override void Perform(DiagramViewModel node)
-        {
-            
-        }
-    }
+   
 }

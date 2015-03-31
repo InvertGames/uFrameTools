@@ -1,8 +1,12 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.PrettyPrinter;
+using Invert.Core.GraphDesigner.Unity.Refactoring;
 using Invert.Core.GraphDesigner.UnitySpecific;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
@@ -11,6 +15,53 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
+    public class Test : ElementsDiagramToolbarCommand
+    {
+        public override string Name
+        {
+            get { return "Test Command"; }
+        }
+
+        public override void Perform(DiagramViewModel node)
+        {
+
+            var selectedNode = node.SelectedNode.DataObject as IDiagramNode;
+
+            var codeTypeMethod = new CodeMemberMethod()
+            {
+                Name = "HelloWorld",
+                ReturnType = typeof(string).ToCodeReference()
+            };
+            var codeTypeMethod2 = new CodeMemberMethod()
+            {
+                Name = "HelloWorld2",
+                ReturnType = typeof(string).ToCodeReference()
+            };
+            var text = CodeDomHelpers.GenerateCodeFromMembers(codeTypeMethod, codeTypeMethod2);
+            var editableFileGenerator = selectedNode.GetAllEditableFilesForNode().FirstOrDefault();
+            var parser =ParserFactory.CreateParser(SupportedLanguage.CSharp,
+                new StringReader(File.ReadAllText(editableFileGenerator.FullPathName)));
+            parser.Parse();
+
+            var insertTextAtBottom = new InsertTextAtBottomRefactorer()
+            {
+                Text = text
+            };
+            parser.CompilationUnit.AcceptVisitor(insertTextAtBottom, null);
+            var csharpOutput = new CSharpOutputVisitor();
+            csharpOutput.BeforeNodeVisit += node1 =>
+            {
+                insertTextAtBottom.OutputNodeVisiting(node1, csharpOutput.OutputFormatter as CSharpOutputFormatter);
+            };
+            csharpOutput.AfterNodeVisit += node1 =>
+            {
+                insertTextAtBottom.OutputNodeVisited(node1, csharpOutput.OutputFormatter as CSharpOutputFormatter);
+            };
+            parser.CompilationUnit.AcceptVisitor(csharpOutput, null);
+            InvertApplication.Log(csharpOutput.Text);
+
+        }
+    }
     public class UnityPlatformPlugin : DiagramPlugin, INodeItemEvents, IProjectEvents
     {
         public override decimal LoadPriority
@@ -47,6 +98,7 @@ namespace Invert.Core.GraphDesigner.Unity
             container.RegisterToolbarCommand<GenerateDocsCommand>();
             container.RegisterToolbarCommand<DocsModeCommand>();
 #endif
+            container.RegisterInstance<IToolbarCommand>(new Test(), "Test");
             container.RegisterToolbarCommand<ExportDiagramCommand>();
 
             container.RegisterInstance<IAssetManager>(new UnityAssetManager());

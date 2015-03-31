@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using UnityEditor;
 
@@ -80,6 +81,24 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                 }
 
                 var outputVisitor = new CSharpOutputVisitor();
+                outputVisitor.BeforeNodeVisit += node =>
+                {
+
+                    foreach (var refactor in refactors)
+                    {
+                        refactor.OutputNodeVisiting(node, outputVisitor.OutputFormatter as CSharpOutputFormatter);
+                    }
+
+                };
+                outputVisitor.AfterNodeVisit += node =>
+                {
+
+                        foreach (var refactor in refactors)
+                        {
+                            refactor.OutputNodeVisited(node, outputVisitor.OutputFormatter as CSharpOutputFormatter);
+                        }
+  
+                };
                 parser.CompilationUnit.AcceptVisitor(outputVisitor, null);
                 File.WriteAllText(file.SystemPath, outputVisitor.Text);
             }
