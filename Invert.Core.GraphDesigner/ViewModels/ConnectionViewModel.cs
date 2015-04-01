@@ -36,7 +36,7 @@ namespace Invert.Core.GraphDesigner
 
         public override string Name
         {
-            get { return ConnectorA.Name + " -> " + ConnectorB.Name; }
+            get { return  ConnectorA.Name + " -> " + ConnectorB.Name; }
             set { }
         }
 

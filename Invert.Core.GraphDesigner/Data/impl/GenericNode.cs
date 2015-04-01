@@ -727,14 +727,13 @@ namespace Invert.Core.GraphDesigner
 
     public class TypeReferenceNode : GenericNode, IClassTypeNode, ITypedItem
     {
-        private string _fullName;
+        
         private string _name1;
 
-        [JsonProperty]
         public override string FullName
         {
-            get { return _fullName; }
-            set { _fullName = value; }
+            get { return Name; }
+            set { Name = value; }
         }
 
         [JsonProperty]

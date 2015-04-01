@@ -39,6 +39,7 @@ namespace Invert.Core.GraphDesigner.Unity
             };
             var text = CodeDomHelpers.GenerateCodeFromMembers(codeTypeMethod, codeTypeMethod2);
             var editableFileGenerator = selectedNode.GetAllEditableFilesForNode().FirstOrDefault();
+            
             var parser =ParserFactory.CreateParser(SupportedLanguage.CSharp,
                 new StringReader(File.ReadAllText(editableFileGenerator.FullPathName)));
             parser.Parse();
@@ -49,14 +50,8 @@ namespace Invert.Core.GraphDesigner.Unity
             };
             parser.CompilationUnit.AcceptVisitor(insertTextAtBottom, null);
             var csharpOutput = new CSharpOutputVisitor();
-            csharpOutput.BeforeNodeVisit += node1 =>
-            {
-                insertTextAtBottom.OutputNodeVisiting(node1, csharpOutput.OutputFormatter as CSharpOutputFormatter);
-            };
-            csharpOutput.AfterNodeVisit += node1 =>
-            {
-                insertTextAtBottom.OutputNodeVisited(node1, csharpOutput.OutputFormatter as CSharpOutputFormatter);
-            };
+            csharpOutput.BeforeNodeVisit += node1 => insertTextAtBottom.OutputNodeVisiting(node1, csharpOutput.OutputFormatter as CSharpOutputFormatter);
+            csharpOutput.AfterNodeVisit += node1 => insertTextAtBottom.OutputNodeVisited(node1, csharpOutput.OutputFormatter as CSharpOutputFormatter);
             parser.CompilationUnit.AcceptVisitor(csharpOutput, null);
             InvertApplication.Log(csharpOutput.Text);
 

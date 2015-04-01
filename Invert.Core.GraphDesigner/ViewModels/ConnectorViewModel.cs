@@ -18,7 +18,15 @@ namespace Invert.Core.GraphDesigner
 
         public override string Name
         {
-            get { return ConnectorFor.Name; }
+            get
+            {
+                var item = ConnectorFor.DataObject as IDiagramNodeItem;
+                if (item != null && item.Node != item)
+                {
+                    return string.Format("{0}:{1}", item.Node.Name, item.Name);
+                }
+                return  ConnectorFor.Name;
+            }
             set { }
         }
 

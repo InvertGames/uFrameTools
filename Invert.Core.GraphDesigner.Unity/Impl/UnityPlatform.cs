@@ -590,18 +590,13 @@ namespace Invert.Core.GraphDesigner.Unity
 
                     if (GUILayout.Button((string)d.CachedValue))
                     {
-                        var items =
-                            new[] {new GraphTypeInfo() { Name = null, Group = "", Label = "[NONE]"} }.Concat(InvertApplication.GetDerivedTypes<System.Object>(true, true).Select(p => new GraphTypeInfo()
-                            {
-                                Name = p.Name,
-                                Group = p.Namespace,
-                                Label = p.Name,
-
-                            })).ToArray();
-                        InvertGraphEditor.WindowManager.InitTypeListWindow(items
-                        , (type) =>
+                        d.ViewModel.NodeViewModel.Select();
+                        InvertGraphEditor.ExecuteCommand(new SelectItemTypeCommand()
                         {
-                            InvertGraphEditor.ExecuteCommand(x => d.ViewModel.Setter(type.Name), true);
+                            IncludePrimitives = true,
+                            PrimitiveOnly = false,
+                            AllowNone = false,
+                            
                         });
                     }
                     GUILayout.EndHorizontal();

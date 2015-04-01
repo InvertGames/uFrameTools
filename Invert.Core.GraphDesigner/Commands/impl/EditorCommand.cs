@@ -61,7 +61,7 @@ namespace Invert.Core.GraphDesigner
         public event EventHandler CanExecuteChanged;
 
         public abstract void Perform(object arg);
-
+        [Obsolete]
         public List<IEditorCommand> Hooks
         {
             get { return _hooks ?? (_hooks = new List<IEditorCommand>()); }

@@ -41,6 +41,12 @@ public class uFrameSettingsWindow : EditorWindow
             if (GUIHelpers.DoToolbarEx("Color Settings"))
             {
                 s.BackgroundColor = EditorGUILayout.ColorField("Background Color", s.BackgroundColor);
+                EditorGUI.BeginChangeCheck();
+                s.TabTextColor = EditorGUILayout.ColorField("Tab Text Color", s.TabTextColor);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    ElementDesignerStyles.TabStyle = null;
+                }
                 s.UseGrid = EditorGUILayout.BeginToggleGroup("Grid", s.UseGrid);
 
                 s.GridLinesColor = EditorGUILayout.ColorField("Grid Lines Color", s.GridLinesColor);

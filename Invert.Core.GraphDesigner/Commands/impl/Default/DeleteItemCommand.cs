@@ -21,6 +21,8 @@ namespace Invert.Core.GraphDesigner
 
         public override string CanPerform(DiagramNodeItem node)
         {
+            if (node == null) return "Invalid node item";
+            if (node is GenericSlot) return "Can't delete a slot";
             return null;
         }
     }

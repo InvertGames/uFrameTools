@@ -732,7 +732,7 @@ namespace Invert.Core.GraphDesigner
             
         }
         [Browsable(false)]
-        public string RelatedType
+        public virtual string RelatedType
         {
             get { return this.Identifier; }
             set
@@ -744,6 +744,7 @@ namespace Invert.Core.GraphDesigner
         public virtual string RelatedTypeName
         {
             get { return this.Name; }
+            set { throw new NotImplementedException(); }
         }
 
         public void RemoveType()

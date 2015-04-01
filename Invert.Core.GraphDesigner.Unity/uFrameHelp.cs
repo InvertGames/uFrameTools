@@ -522,7 +522,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
         
         var tempProject = new TemporaryProjectRepository(data.Node.Graph);
 
-        var template = new TypeClassGenerator<TData, TTemplate>()
+        var template = new TemplateClassGenerator<TData, TTemplate>()
         {
             Data = data,
             IsDesignerFile = isDesignerFile,

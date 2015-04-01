@@ -1,6 +1,7 @@
 using Invert.Common.UI;
 using System;
 using System.Reflection;
+using Invert.Core.GraphDesigner;
 using UnityEditor;
 using UnityEngine;
 
@@ -128,7 +129,7 @@ namespace Invert.Common
                 if (_tabStyle == null)
                     _tabStyle = new GUIStyle
                     {
-                        normal = { background = GetSkinTexture("Tab"), textColor = EditorGUIUtility.isProSkin ? new Color(0.8f, 0.8f, 0.8f) : Color.black },
+                        normal = { background = GetSkinTexture("Tab"), textColor = InvertGraphEditor.Settings.TabTextColor },
                         //padding = new RectOffset(10, 10, 10, 10),
                         border = new RectOffset(11,11,0,0),
                         alignment = TextAnchor.MiddleCenter,
@@ -137,6 +138,7 @@ namespace Invert.Common
                     };
                 return _tabStyle;
             }
+            set { _tabStyle = value; }
         }        public static GUIStyle TabInActiveStyle
         {
             get
@@ -144,7 +146,7 @@ namespace Invert.Common
                 if (_tabInActiveStyle == null)
                     _tabInActiveStyle = new GUIStyle
                     {
-                        normal = { background = GetSkinTexture("TabInActive"), textColor = EditorGUIUtility.isProSkin ? new Color(0.7f, 0.7f, 0.7f) : Color.black },
+                        normal = { background = GetSkinTexture("TabInActive"), textColor = InvertGraphEditor.Settings.TabTextColor },
                         //padding = new RectOffset(10, 10, 10, 10),
                         border = new RectOffset(11,11,0,0),
                         alignment = TextAnchor.MiddleCenter,

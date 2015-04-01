@@ -15,6 +15,7 @@ namespace Invert.Core.GraphDesigner.Unity
         private Color? _gridLinesColor;
         private Color? _backgroundColor;
         private Color? _gridLinesColorSecondary;
+        private Color? _tabTextColor;
 
         public void SetColorPref(string name, Color value)
         {
@@ -33,6 +34,23 @@ namespace Invert.Core.GraphDesigner.Unity
             return new Color(r,g,b,a);
         }
 
+        
+        public virtual Color TabTextColor
+        {
+            get
+            {
+                if (_tabTextColor == null)
+                {
+                    return (_tabTextColor = GetColorPref("_tabTextColor", new Color(0.8f, 0.8f, 0.8f))).Value;
+                }
+                return _tabTextColor.Value;
+            }
+            set
+            {
+                _tabTextColor = value;
+                SetColorPref("_tabTextColor", value);
+            }
+        }
         public virtual Color GridLinesColor
         {
             get

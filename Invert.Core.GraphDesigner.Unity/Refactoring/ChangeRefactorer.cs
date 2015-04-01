@@ -56,6 +56,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             _lastNode = typeDeclaration.Children.Last();
             return base.VisitTypeDeclaration(typeDeclaration, data);
         }
+
         public void OutputNodeVisited(INode node, CSharpOutputFormatter outputFormatter)
         {
             if (node == _lastNode)

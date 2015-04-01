@@ -8,6 +8,7 @@ namespace Invert.Core.GraphDesigner
         bool ShowHelp { get; set; }
         bool ShowGraphDebug { get; set; }
         Color BackgroundColor { get; set; }
+        Color TabTextColor { get; set; }
         Color GridLinesColor { get; set; }
         Color GridLinesColorSecondary { get; set; }
     }

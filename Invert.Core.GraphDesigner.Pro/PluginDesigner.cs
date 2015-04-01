@@ -51,7 +51,9 @@ public class PluginDesigner : DiagramPlugin
            
             .HasSubNode<IShellNode>()
             .HasSubNode<TypeReferenceNode>()
-            .HasSubNode<ShellNodeConfig>().HasSubNode<ScreenshotNode>().AddCodeTemplate<DocumentationTemplate>()
+            .HasSubNode<ShellNodeConfig>()
+            .HasSubNode<ScreenshotNode>()
+            .AddCodeTemplate<DocumentationTemplate>()
             ;
         container.AddNode<ScreenshotNode, ScreenshotNodeViewModel, ScreenshotNodeDrawer>("Screenshot");
 

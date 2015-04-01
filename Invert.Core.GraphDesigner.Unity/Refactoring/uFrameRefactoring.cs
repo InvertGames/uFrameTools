@@ -93,11 +93,11 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                 outputVisitor.AfterNodeVisit += node =>
                 {
 
-                        foreach (var refactor in refactors)
-                        {
-                            refactor.OutputNodeVisited(node, outputVisitor.OutputFormatter as CSharpOutputFormatter);
-                        }
-  
+                    foreach (var refactor in refactors)
+                    {
+                        refactor.OutputNodeVisited(node, outputVisitor.OutputFormatter as CSharpOutputFormatter);
+                    }
+
                 };
                 parser.CompilationUnit.AcceptVisitor(outputVisitor, null);
                 File.WriteAllText(file.SystemPath, outputVisitor.Text);

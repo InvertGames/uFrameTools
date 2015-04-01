@@ -5,6 +5,7 @@ namespace Invert.Core.GraphDesigner
     public class DefaultGraphSettings : IGraphEditorSettings
     {
         public Color BackgroundColor { get; set; }
+        public Color TabTextColor { get; set; }
 
         public Color GridLinesColor { get; set; }
 

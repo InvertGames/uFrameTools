@@ -105,7 +105,7 @@
     <Compile Include="Code\impl\MemberItemGenerator.cs" />
     <Compile Include="Code\impl\GenericNodeGenerator.cs" />
     <Compile Include="Attributes\ShowInSettings.cs" />
-    <Compile Include="Code\impl\TypeClassGenerator.cs" />
+    <Compile Include="Code\impl\TemplateClassGenerator.cs" />
     <Compile Include="Code\impl\TypeGeneratorPostProcessor.cs" />
     <Compile Include="Commands\impl\ContextEditorCommand.cs" />
     <Compile Include="Commands\api\IContextMenuItem.cs" />

@@ -364,6 +364,24 @@ namespace Invert.Core.GraphDesigner
         {
             return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && !p.AlwaysRegenerate);
         }
+        public static IEnumerable<TemplateMemberResult> GetEditableOutputMembers(this IDiagramNodeItem node)
+        {
+          
+            foreach (var item in GetAllEditableFilesForNode(node).OfType<ITemplateClassGenerator>())
+            {
+                var gen = new CodeFileGenerator()
+                {
+                    Generators = new[] {item as OutputGenerator},
+                    SystemPath = string.Empty
+                };
+                item.Initialize(gen);
+                foreach (var result in item.Results)
+                {
+                    yield return result;
+                }
+            }
+        }
+
         public static IEnumerable<OutputGenerator> GetAllDesignerFilesForNode(this IDiagramNodeItem node)
         {
             return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && p.AlwaysRegenerate);
@@ -669,7 +687,7 @@ namespace Invert.Core.GraphDesigner
             where TTemplate : class, IClassTemplate<TFor>, new()
             where TFor : class, IDiagramNodeItem
         {
-            var type = typeof(TypeClassGenerator<TFor, TTemplate>);
+            var type = typeof(TemplateClassGenerator<TFor, TTemplate>);
             List<Type> list;
             if (!RegisteredTemplates.TryGetValue(typeof(TFor), out list))
             {

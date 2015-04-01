@@ -10,14 +10,29 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class TypeClassGenerator<TData, TTemplateType> : CodeGenerator
-        where TData : class, IDiagramNodeItem
+    public interface ITemplateClassGenerator
+    {
+        CodeNamespace Namespace { get; }
+        CodeCompileUnit Unit { get; }
+        Type TemplateType { get; }
+        Type GeneratorFor { get; }
+        TemplateContext Context { get; }
+        string Filename { get; }
+        List<TemplateMemberResult> Results { get; set; }
+        void Initialize(CodeFileGenerator codeFileGenerator);
+    }
+
+    public class TemplateClassGenerator<TData, TTemplateType> : CodeGenerator, ITemplateClassGenerator where TData : class, IDiagramNodeItem
         where TTemplateType : class, IClassTemplate<TData>, new()
     {
         private CodeTypeDeclaration _decleration;
         private TemplateContext<TData> _templateContext;
         private TTemplateType _templateClass;
         private TemplateClass _templateAttribute;
+        private KeyValuePair<MethodInfo, TemplateConstructor>[] _templateConstructors;
+        private KeyValuePair<MethodInfo, TemplateMethod>[] _templateMethods;
+        private KeyValuePair<PropertyInfo, TemplateProperty>[] _templateProperties;
+        private List<TemplateMemberResult> _results;
 
         public Type TemplateType
         {
@@ -152,6 +167,11 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public TemplateContext Context
+        {
+            get { return TemplateContext; }
+        }
+
         public string[] FilterToMembers { get; set; }
 
         public override void Initialize(CodeFileGenerator codeFileGenerator)
@@ -219,279 +239,82 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        protected void OverrideMethod<TItem>(string name, IEnumerable<TItem> selector, Func<CodeMemberMethod, TItem, CodeMemberMethod> postProcess)
-        {
-            foreach (var item in selector)
-            {
-                TItem item1 = item;
-                var i = item1 as IDiagramNodeItem;
-
-                OverrideMethod(name, (m) =>
-                {
-                    if (i != null)
-                    {
-                        m.Name = i.Name;
-                    }
-                    return postProcess(m, item1);
-                });
-
-            }
-        }
-
-        protected void OverrideMethod(string name, Func<CodeMemberMethod, CodeMemberMethod> postProcess)
-        {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
-            if (postProcess == null) throw new ArgumentNullException("postProcess");
-
-            var method = TemplateType.MethodFromTypeMethod(name, false);
-            var result = postProcess(method);
-            if (result != null)
-            {
-                Decleration.Members.Add(result);
-            }
-
-        }
-
-        protected void OverrideProperty(string name, Func<CodeMemberProperty, CodeMemberProperty> postProcess)
-        {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
-            if (postProcess == null) throw new ArgumentNullException("postProcess");
-
-            var oroperty = TemplateType.PropertyFromTypeProperty(name, true);
-            var result = postProcess(oroperty);
-
-            if (result != null)
-            {
-
-                if (oroperty.HasGet && oroperty.GetStatements.Count < 1)
-                {
-                    var field = Decleration._private_(oroperty.Type.ToString(), "_" + oroperty.Name);
-                    oroperty._get("return {0}", field.Name);
-
-                    if (oroperty.HasSet && oroperty.SetStatements.Count < 1)
-                    {
-                        oroperty._set("{0} = value", field.Name);
-                    }
-                }
-                Decleration.Members.Add(result);
-            }
-
-        }
-
-        protected void OverrideProperty<TItem>(string name, IEnumerable<TItem> selector, Func<CodeMemberProperty, TItem, CodeMemberProperty> postProcess)
-        {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
-            if (postProcess == null) throw new ArgumentNullException("postProcess");
-            foreach (var item in selector)
-            {
-                var property = TemplateType.PropertyFromTypeProperty(name, true);
-                var typed = item as GenericTypedChildItem;
-                if (!IsDesignerFile && property.Attributes != MemberAttributes.Final)
-                {
-                    property.Attributes |= MemberAttributes.Override;
-                }
-                if (typed != null)
-                {
-
-                    if (property.Type.TypeArguments.Count > 0)
-                        property.Type.TypeArguments[0] = new CodeTypeReference(typed.RelatedTypeName);
-                    else
-                    {
-                        property.Type = new CodeTypeReference(typed.RelatedTypeName);
-                    }
-                }
-                var graphItem = item as IDiagramNodeItem;
-                if (graphItem != null)
-                {
-                    property.Name = graphItem.Name;
-                }
-                var result = postProcess(property, item);
-                if (result != null)
-                {
-                    if (property.HasGet && property.GetStatements.Count < 1)
-                    {
-                        var field = Decleration._private_(property.Type, "_" + property.Name);
-                        property._get("return {0}", field.Name);
-
-                        if (property.HasSet && property.SetStatements.Count < 1)
-                        {
-                            property._set("{0} = value", field.Name);
-                        }
-                    }
-                    Decleration.Members.Add(result);
-                }
-            }
-
-        }
-
-        public void CallPropertyGet(string name)
-        {
-            TemplateType.GetProperty(name).GetValue(TemplateClass, null);
-            if (TemplateContext.CurrentIterator != null)
-            {
-
-            }
-        }
-
-        public static object GetDefault(Type type)
-        {
-            if (type.IsValueType)
-            {
-                return Activator.CreateInstance(type);
-            }
-            return null;
-        }
-
         public void ProcessTemplate()
         {
             // Initialize the template
             TemplateContext.Iterators.Clear();
             TemplateClass.TemplateSetup();
             InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.TemplateGenerating(TemplateClass, TemplateContext));
-            var templateProperties =
-                TemplateType.GetPropertiesWithAttribute<TemplateProperty>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+          
 
-            foreach (var templateProperty in templateProperties)
+            foreach (var templateProperty in TemplateProperties)
             {
                 if (FilterToMembers != null && !FilterToMembers.Contains(templateProperty.Key.Name)) continue;
-                TemplateContext.RenderTemplateProperty(TemplateClass, templateProperty);
+                foreach (var item in TemplateContext.RenderTemplateProperty(TemplateClass, templateProperty))
+                {
+                    Results.Add(new TemplateMemberResult(this,templateProperty.Key,templateProperty.Value,item));
+                }
             }
-            var templateMethods =
-                TemplateType.GetMethodsWithAttribute<TemplateMethod>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
 
-            foreach (var templateMethod in templateMethods)
+            foreach (var templateMethod in TemplateMethods)
             {
                 if (FilterToMembers != null && !FilterToMembers.Contains(templateMethod.Key.Name)) continue;
-                TemplateContext.RenderTemplateMethod(TemplateClass, templateMethod);
+                foreach (var item in TemplateContext.RenderTemplateMethod(TemplateClass, templateMethod))
+                {
+                    Results.Add(new TemplateMemberResult(this,templateMethod.Key, templateMethod.Value, item));
+                }
             }
 
-            var templateConstructors =
-                TemplateType.GetMethodsWithAttribute<TemplateConstructor>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-
-            foreach (var templateConstructor in templateConstructors)
+            foreach (var templateConstructor in TemplateConstructors)
             {
                 if (FilterToMembers != null && !FilterToMembers.Contains(templateConstructor.Key.Name)) continue;
-                TemplateContext.RenderTemplateConstructor(TemplateClass, templateConstructor);
-
+                foreach (var item in TemplateContext.RenderTemplateConstructor(TemplateClass, templateConstructor))
+                {
+                    Results.Add(new TemplateMemberResult(this,templateConstructor.Key, templateConstructor.Value, item));
+                }
             }
-
         }
 
-        //private CodeMemberProperty DoTemplateProperty(KeyValuePair<PropertyInfo, TemplateProperty> templateProperty)
-        //{
-        //    var domObject = TemplateType.PropertyFromTypeProperty(templateProperty.Key.Name);
-        //    TemplateContext.CurrentMember = domObject;
-        //    if (templateProperty.Value.AutoFill != AutoFillType.None)
-        //    {
-        //        domObject.Name = string.Format(templateProperty.Value.NameFormat, this.TemplateContext.Item.Name);
-        //    }
+        public List<TemplateMemberResult> Results
+        {
+            get { return _results ?? (_results = new List<TemplateMemberResult>()); }
+            set { _results = value; }
+        }
 
-        //    if (templateProperty.Value.AutoFill == AutoFillType.NameAndType ||
-        //        templateProperty.Value.AutoFill == AutoFillType.NameAndTypeWithBackingField)
-        //    {
-        //        var typedItem = this.TemplateContext.Item as ITypedItem;
-        //        if (typedItem != null)
-        //        {
-        //            if (domObject.Type.TypeArguments.Count > 0)
-        //            {
-        //                domObject.Type.TypeArguments.Clear();
-        //                domObject.Type.TypeArguments.Add(typedItem.RelatedTypeName);
-        //            }
-        //            else
-        //            {
-        //                domObject.Type = new CodeTypeReference(typedItem.RelatedTypeName);
-        //            }
-        //        }
-        //    }
-        //    if (templateProperty.Value.AutoFill == AutoFillType.NameAndTypeWithBackingField ||
-        //        templateProperty.Value.AutoFill == AutoFillType.NameOnlyWithBackingField)
-        //    {  
-        //        templateProperty.Key.GetValue(TemplateClass, null);
-        //        var field = Decleration._private_(domObject.Type, "_{0}", domObject.Name);
-        //        domObject.GetStatements._("return {0}", field.Name);
-        //        domObject.SetStatements._("{0} = value", field.Name);
+        public KeyValuePair<MethodInfo, TemplateConstructor>[] TemplateConstructors
+        {
+            get { return _templateConstructors ?? (_templateConstructors = TemplateType.GetMethodsWithAttribute<TemplateConstructor>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
+            set { _templateConstructors = value; }
+        }
 
-        //    }
-        //    else
-        //    {
-        //        this.TemplateContext.CurrentStatements = domObject.GetStatements;
-        //        templateProperty.Key.GetValue(TemplateClass, null);
-        //        if (templateProperty.Key.CanWrite)
-        //        {
-        //            this.TemplateContext.CurrentStatements = domObject.SetStatements;
-        //            templateProperty.Key.SetValue(TemplateClass,
-        //                GetDefault(templateProperty.Key.PropertyType),
-        //                null);
-        //        }
-        //        if (!IsDesignerFile && domObject.Attributes != MemberAttributes.Final && templateProperty.Value.Location == MemberGeneratorLocation.Both)
-        //        {
-        //            domObject.Attributes |= MemberAttributes.Override;
-        //        }
-        //    }
-        //    return domObject;
-        //}
+        public KeyValuePair<MethodInfo, TemplateMethod>[] TemplateMethods
+        {
+            get { return _templateMethods ?? (_templateMethods = TemplateType.GetMethodsWithAttribute<TemplateMethod>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
+            set { _templateMethods = value; }
+        }
 
-        //private void DoTemplateConstructor(KeyValuePair<MethodInfo, TemplateConstructor> templateMethod, IDiagramNodeItem data)
-        //{
-        //    var info = templateMethod.Key;
-        //    var dom = templateMethod.Key.ToCodeConstructor();
-
-        //    TemplateContext.CurrentConstructor = dom;
-        //    TemplateContext.CurrentStatements = dom.Statements;
-        //    var args = new List<object>();
-        //    var parameters = info.GetParameters();
-        //    foreach (var arg in parameters)
-        //    {
-        //        args.Add(GetDefault(arg.ParameterType));
-        //    }
-        //    foreach (var item in templateMethod.Value.BaseCallArgs)
-        //    {
-        //        dom.BaseConstructorArgs.Add(new CodeSnippetExpression(item));
-        //    }
-
-
-        //    info.Invoke(TemplateClass, args.ToArray());
-        //    Decleration.Members.Add(dom);
-        //}
-        //private void DoTemplateMethod(KeyValuePair<MethodInfo, TemplateMethod> templateMethod, IDiagramNodeItem data)
-        //{
-        //    MethodInfo info;
-        //    var dom = TemplateType.MethodFromTypeMethod(templateMethod.Key.Name, out info, false);
-        //    TemplateContext.CurrentMember = dom;
-        //    TemplateContext.CurrentStatements = dom.Statements;
-        //    var args = new List<object>();
-        //    var parameters = info.GetParameters();
-        //    foreach (var arg in parameters)
-        //    {
-        //        args.Add(GetDefault(arg.ParameterType));
-        //    }
-        //    if (templateMethod.Value.AutoFill != AutoFillType.None)
-        //    {
-        //        dom.Name = string.Format(templateMethod.Value.NameFormat, data.Name);
-        //    }
-
-
-        //    info.Invoke(TemplateClass, args.ToArray());
-
-        //    var isOverried = false;
-        //    if (!IsDesignerFile && dom.Attributes != MemberAttributes.Final && templateMethod.Value.Location == MemberGeneratorLocation.Both)
-        //    {
-        //        dom.Attributes |= MemberAttributes.Override;
-        //        isOverried = true;
-        //    }
-        //    if ((info.IsVirtual && !IsDesignerFile) || info.IsOverride() )
-        //    {
-        //        if (templateMethod.Value.CallBase)
-        //        {
-        //            dom.invoke_base(true);
-        //        }
-        //    }
-
-
-        //    Decleration.Members.Add(dom);
-        //}
+        public KeyValuePair<PropertyInfo, TemplateProperty>[] TemplateProperties
+        {
+            get { return _templateProperties ?? (_templateProperties = TemplateType.GetPropertiesWithAttribute<TemplateProperty>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
+            set { _templateProperties = value; }
+        }
     }
 
+    public class TemplateMemberResult
+    {
+        public TemplateMemberResult(ITemplateClassGenerator templateClass, MemberInfo memberInfo, TemplateMember memberAttribute, CodeTypeMember memberOutput)
+        {
+            TemplateClass = templateClass;
+            MemberInfo = memberInfo;
+            MemberAttribute = memberAttribute;
+            MemberOutput = memberOutput;
+        }
+
+        public ITemplateClassGenerator TemplateClass { get; set; }
+        public MemberInfo MemberInfo { get; set; }
+        public TemplateMember MemberAttribute { get; set; }
+        public CodeTypeMember MemberOutput { get; set; }
+    }
 
     public class TemplateContext<TData> : TemplateContext
     {
@@ -577,7 +400,142 @@ namespace Invert.Core.GraphDesigner
             return (T)Item;
         }
 
-        public CodeMemberProperty DoTemplateProperty(object instance, KeyValuePair<PropertyInfo, TemplateProperty> templateProperty)
+        public IEnumerable<CodeConstructor> RenderTemplateConstructor(object instance, string methodName)
+        {
+            return RenderTemplateConstructor(instance, instance.GetType().GetMethod(methodName));
+        }
+
+        public IEnumerable<CodeConstructor> RenderTemplateConstructor(object instance, MethodInfo info)
+        {
+            return RenderTemplateConstructor(instance, new KeyValuePair<MethodInfo, TemplateConstructor>(info, info.GetCustomAttributes(typeof(TemplateConstructor), true).OfType<TemplateConstructor>().FirstOrDefault()));
+        }
+        public IEnumerable<CodeConstructor> RenderTemplateConstructor(object instance, KeyValuePair<MethodInfo, TemplateConstructor> templateConstructor)
+        {
+            if (templateConstructor.Value.Location == MemberGeneratorLocation.DesignerFile &&
+                  templateConstructor.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) yield break;
+            if (templateConstructor.Value.Location == MemberGeneratorLocation.EditableFile &&
+                templateConstructor.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) yield break;
+            if (Iterators.ContainsKey(templateConstructor.Key.Name))
+            {
+                var iterator = Iterators[templateConstructor.Key.Name];
+                var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
+
+                foreach (var item in items)
+                {
+                    Item = item;
+                    yield return RenderConstructor(instance, templateConstructor, item);
+                }
+            }
+            else
+            {
+                Item = Data as IDiagramNodeItem;
+                yield return RenderConstructor(instance, templateConstructor, Data as IDiagramNodeItem);
+            }
+        }
+        
+
+        public IEnumerable<CodeMemberProperty> RenderTemplateProperty(object instance, string propertyName)
+        {
+            return RenderTemplateProperty(instance, instance.GetType().GetProperty(propertyName));
+        }
+
+        public IEnumerable<CodeMemberProperty> RenderTemplateProperty(object instance, PropertyInfo info)
+        {
+            return RenderTemplateProperty(instance, new KeyValuePair<PropertyInfo, TemplateProperty>(info, info.GetCustomAttributes(typeof(TemplateProperty), true).OfType<TemplateProperty>().FirstOrDefault()));
+        }
+        public IEnumerable<CodeMemberProperty> RenderTemplateProperty(object instance, KeyValuePair<PropertyInfo, TemplateProperty> templateProperty)
+        {
+            if (templateProperty.Value.Location == MemberGeneratorLocation.DesignerFile &&
+                templateProperty.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) yield break;
+            if (templateProperty.Value.Location == MemberGeneratorLocation.EditableFile &&
+                templateProperty.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) yield break;
+
+            if (Iterators.ContainsKey(templateProperty.Key.Name))
+            {
+                //Debug.Log("Found iterators for " + templateProperty.Key.Name);
+                var iterator = Iterators[templateProperty.Key.Name];
+                var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
+
+                foreach (var item in items)
+                {
+                    Item = item;
+                    var domObject = RenderProperty(instance, templateProperty);
+                    CurrentDecleration.Members.Add(domObject);
+                    yield return domObject;
+                    InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.PropertyAdded(instance, this, domObject));
+                }
+            }
+            else
+            {
+                Item = Data as IDiagramNodeItem;
+                var domObject = RenderProperty(instance, templateProperty);
+                CurrentDecleration.Members.Add(domObject);
+                yield return domObject;
+                InvertApplication.SignalEvent<ICodeTemplateEvents>(_=>_.PropertyAdded(instance, this, domObject));
+            }
+        }
+        public IEnumerable<CodeMemberMethod> RenderTemplateMethod(object instance, string methodName)
+        {
+            return RenderTemplateMethod(instance, instance.GetType().GetMethod(methodName));
+        }
+
+        public IEnumerable<CodeMemberMethod> RenderTemplateMethod(object instance, MethodInfo info)
+        {
+           return RenderTemplateMethod(instance, new KeyValuePair<MethodInfo, TemplateMethod>(info, info.GetCustomAttributes(typeof(TemplateMethod), true).OfType<TemplateMethod>().FirstOrDefault()));
+        }
+
+        public IEnumerable<CodeMemberMethod> RenderTemplateMethod(object instance, KeyValuePair<MethodInfo, TemplateMethod> templateMethod)
+        {
+            if (templateMethod.Value.Location == MemberGeneratorLocation.DesignerFile &&
+                templateMethod.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) yield break;
+            if (templateMethod.Value.Location == MemberGeneratorLocation.EditableFile &&
+                templateMethod.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) yield break;
+            if (Iterators.ContainsKey(templateMethod.Key.Name))
+            {
+                var iterator = Iterators[templateMethod.Key.Name];
+                var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
+
+                foreach (var item in items)
+                {
+                    Item = item;
+                    yield return RenderMethod(instance, templateMethod, item);
+                    
+                }
+            }
+            else
+            {
+                Item = Data as IDiagramNodeItem;
+                yield return RenderMethod(instance, templateMethod, Data as IDiagramNodeItem);
+            }
+        }
+  
+        protected CodeConstructor RenderConstructor(object instance, KeyValuePair<MethodInfo, TemplateConstructor> templateMethod, IDiagramNodeItem data)
+        {
+            var info = templateMethod.Key;
+            var dom = templateMethod.Key.ToCodeConstructor();
+            CurrentAttribute = templateMethod.Value;
+            CurrentConstructor = dom;
+            PushStatements(dom.Statements);
+            //            CurrentStatements = dom.Statements;
+            var args = new List<object>();
+            var parameters = info.GetParameters();
+            foreach (var arg in parameters)
+            {
+                args.Add(GetDefault(arg.ParameterType));
+            }
+            foreach (var item in templateMethod.Value.BaseCallArgs)
+            {
+                dom.BaseConstructorArgs.Add(new CodeSnippetExpression(item));
+            }
+
+
+            info.Invoke(instance, args.ToArray());
+            PopStatements();
+            CurrentDecleration.Members.Add(dom);
+            InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.ConstructorAdded(instance, this, dom));
+            return dom;
+        }
+        protected CodeMemberProperty RenderProperty(object instance, KeyValuePair<PropertyInfo, TemplateProperty> templateProperty)
         {
             var domObject = TemplateType.PropertyFromTypeProperty(templateProperty.Key.Name);
             CurrentMember = domObject;
@@ -636,144 +594,7 @@ namespace Invert.Core.GraphDesigner
             }
             return domObject;
         }
-
-
-        public void DoTemplateConstructor(object instance, KeyValuePair<MethodInfo, TemplateConstructor> templateMethod, IDiagramNodeItem data)
-        {
-            var info = templateMethod.Key;
-            var dom = templateMethod.Key.ToCodeConstructor();
-            CurrentAttribute = templateMethod.Value;
-            CurrentConstructor = dom;
-            PushStatements(dom.Statements);
-//            CurrentStatements = dom.Statements;
-            var args = new List<object>();
-            var parameters = info.GetParameters();
-            foreach (var arg in parameters)
-            {
-                args.Add(GetDefault(arg.ParameterType));
-            }
-            foreach (var item in templateMethod.Value.BaseCallArgs)
-            {
-                dom.BaseConstructorArgs.Add(new CodeSnippetExpression(item));
-            }
-
-
-            info.Invoke(instance, args.ToArray());
-            PopStatements();
-            CurrentDecleration.Members.Add(dom);
-            InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.ConstructorAdded(instance, this, dom));
-        }
-        public void RenderTemplateProperty(object instance, string propertyName)
-        {
-            RenderTemplateProperty(instance, instance.GetType().GetProperty(propertyName));
-        }
-
-        public void RenderTemplateProperty(object instance, PropertyInfo info)
-        {
-            RenderTemplateProperty(instance, new KeyValuePair<PropertyInfo, TemplateProperty>(info, info.GetCustomAttributes(typeof(TemplateProperty), true).OfType<TemplateProperty>().FirstOrDefault()));
-        }
-        public void RenderTemplateProperty(object instance, KeyValuePair<PropertyInfo, TemplateProperty> templateProperty)
-        {
-            if (templateProperty.Value.Location == MemberGeneratorLocation.DesignerFile &&
-                templateProperty.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) return;
-            if (templateProperty.Value.Location == MemberGeneratorLocation.EditableFile &&
-                templateProperty.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) return;
-
-
-            //Conditions.ContainsKey(templateProperty.Key.Name);
-
-
-            if (Iterators.ContainsKey(templateProperty.Key.Name))
-            {
-                //Debug.Log("Found iterators for " + templateProperty.Key.Name);
-                var iterator = Iterators[templateProperty.Key.Name];
-                var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
-
-                foreach (var item in items)
-                {
-                    Item = item;
-                    var domObject = DoTemplateProperty(instance, templateProperty);
-                    CurrentDecleration.Members.Add(domObject);
-                    InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.PropertyAdded(instance, this, domObject));
-                }
-            }
-            else
-            {
-                Item = Data as IDiagramNodeItem;
-                var domObject = DoTemplateProperty(instance, templateProperty);
-                CurrentDecleration.Members.Add(domObject);
-                InvertApplication.SignalEvent<ICodeTemplateEvents>(_=>_.PropertyAdded(instance, this, domObject));
-            }
-        }
-        public void RenderTemplateMethod(object instance, string methodName)
-        {
-            RenderTemplateMethod(instance, instance.GetType().GetMethod(methodName));
-        }
-
-        public void RenderTemplateMethod(object instance, MethodInfo info)
-        {
-            RenderTemplateMethod(instance, new KeyValuePair<MethodInfo, TemplateMethod>(info, info.GetCustomAttributes(typeof(TemplateMethod), true).OfType<TemplateMethod>().FirstOrDefault()));
-        }
-
-        public void RenderTemplateMethod(object instance, KeyValuePair<MethodInfo, TemplateMethod> templateMethod)
-        {
-            if (templateMethod.Value.Location == MemberGeneratorLocation.DesignerFile &&
-                templateMethod.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) return;
-            if (templateMethod.Value.Location == MemberGeneratorLocation.EditableFile &&
-                templateMethod.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) return;
-            if (Iterators.ContainsKey(templateMethod.Key.Name))
-            {
-                var iterator = Iterators[templateMethod.Key.Name];
-                var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
-
-                foreach (var item in items)
-                {
-                    Item = item;
-                    RenderMethod(instance, templateMethod, item);
-                    
-                }
-            }
-            else
-            {
-                Item = Data as IDiagramNodeItem;
-                RenderMethod(instance, templateMethod, Data as IDiagramNodeItem);
-            }
-        }
-        public void RenderTemplateConstructor(object instance, string methodName)
-        {
-            RenderTemplateConstructor(instance, instance.GetType().GetMethod(methodName));
-        }
-
-        public void RenderTemplateConstructor(object instance, MethodInfo info)
-        {
-            RenderTemplateConstructor(instance, new KeyValuePair<MethodInfo, TemplateConstructor>(info, info.GetCustomAttributes(typeof(TemplateConstructor), true).OfType<TemplateConstructor>().FirstOrDefault()));
-        }
-        public void RenderTemplateConstructor(object instance, KeyValuePair<MethodInfo, TemplateConstructor> templateConstructor)
-        {
-            if (templateConstructor.Value.Location == MemberGeneratorLocation.DesignerFile &&
-                  templateConstructor.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) return;
-            if (templateConstructor.Value.Location == MemberGeneratorLocation.EditableFile &&
-                templateConstructor.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) return;
-            if (Iterators.ContainsKey(templateConstructor.Key.Name))
-            {
-                var iterator = Iterators[templateConstructor.Key.Name];
-                var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
-
-                foreach (var item in items)
-                {
-                    Item = item;
-                    DoTemplateConstructor(instance, templateConstructor, item);
-                }
-            }
-            else
-            {
-                Item = Data as IDiagramNodeItem;
-                DoTemplateConstructor(instance, templateConstructor, Data as IDiagramNodeItem);
-            }
-        }
-
-
-        protected void RenderMethod(object instance, KeyValuePair<MethodInfo, TemplateMethod> templateMethod, IDiagramNodeItem data)
+        protected CodeMemberMethod RenderMethod(object instance, KeyValuePair<MethodInfo, TemplateMethod> templateMethod, IDiagramNodeItem data)
         {
             MethodInfo info;
             var dom = TemplateType.MethodFromTypeMethod(templateMethod.Key.Name, out info, false);
@@ -826,7 +647,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
             InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.MethodAdded(instance, this, dom));
-
+            return dom;
 
         }
     }
