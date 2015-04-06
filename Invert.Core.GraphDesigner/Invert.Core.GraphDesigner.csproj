@@ -79,6 +79,7 @@
     <Compile Include="FilterExtensions.cs" />
     <Compile Include="DefaultGraphSettings.cs" />
     <Compile Include="GraphService.cs" />
+    <Compile Include="JsonExtensions.cs" />
     <Compile Include="Platform\api\IGraphWindow.cs" />
     <Compile Include="InvertGraphEvent.cs" />
     <Compile Include="Platform\api\IWindowManager.cs" />

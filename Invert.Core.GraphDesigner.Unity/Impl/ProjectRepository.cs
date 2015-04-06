@@ -300,17 +300,18 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
 
             foreach (var n in PrecompiledGraphs)
             {
-                //if (n.Project != (IProjectRepository)this)
-                //{
-                //    n.SetProject(this);
-                //}
-                //UnityEngine.Debug.Log("Loaded Project " + n.Identifier);
                 yield return n;
             }
 
 
         }
         set { Diagrams = value.Cast<ScriptableObject>().ToList(); }
+    }
+
+    protected override void RemoveGraph(IGraphData item)
+    {
+        base.RemoveGraph(item);
+        Diagrams.Remove(item as ScriptableObject);
     }
 
     public override void SaveDiagram(INodeRepository data)

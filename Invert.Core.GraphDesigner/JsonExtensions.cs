@@ -1,23 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Invert.Json;
 using UnityEngine;
 
 namespace Invert.Json
 {
-    public interface IJsonSerializable
-    {
-        void Deserialize(JSONNode node);
-        JSONNode Serialize();
-    }
-
     public interface IJsonObject
     {
         void Serialize(JSONClass cls);
         void Deserialize(JSONClass cls);
     }
-
+    public interface IJsonTypeResolver
+    {
+        Type FindType(string clrTypeString);
+    }
     public static class JsonExtensions
     {
         public static void DeserializeProperty(this object obj, PropertyInfo property, JSONClass cls)
@@ -147,7 +143,7 @@ namespace Invert.Json
         public static void AddObject(this JSONClass cls, string name, IJsonObject jsonObject)
         {
             if (jsonObject != null)
-            cls.Add(name, SerializeObject(jsonObject));
+                cls.Add(name, SerializeObject(jsonObject));
         }
         public static IEnumerable<T> DeserializePrimitiveArray<T>(this JSONNode array, Func<JSONNode, T> deserialize)
         {
@@ -303,10 +299,5 @@ namespace Invert.Json
             throw new Exception("Type must be of type IJsonObject" + clrTypeString);
 
         }
-    }
-
-    public interface IJsonTypeResolver
-    {
-        Type FindType(string clrTypeString);
     }
 }

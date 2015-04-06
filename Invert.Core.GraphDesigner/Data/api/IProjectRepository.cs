@@ -301,15 +301,25 @@ namespace Invert.Core.GraphDesigner
         {
             _nodeItems = null;
             _allGraphItems = null;
-            foreach (var item in Graphs)
+            var removeList = new List<IGraphData>();
+            foreach (var graph in Graphs)
             {
-                item.Project = this;
+                if (graph == null || graph.Equals(null))
+                {
+                    removeList.Add(graph);
+                    continue;
+                }
+                graph.Project = this;
+            } 
+            foreach (var graph in removeList)
+            {
+                RemoveGraph(graph);
             }
-            foreach (var item in Graphs)
+            foreach (var graph in Graphs)
             {
                 _nodeItems = null;
                 _allGraphItems = null;
-               item.SetProject(this);
+                graph.SetProject(this);
             }
         }
 
@@ -483,11 +493,26 @@ namespace Invert.Core.GraphDesigner
         /// </summary>
         public virtual void Save()
         {
+            var removeList = new List<IGraphData>();
             foreach (var graph in Graphs)
             {
+                if (graph == null || graph.Equals(null))
+                {
+                    removeList.Add(graph);
+                    continue;
+                }
+                    
                 graph.Save();
             }
+            foreach (var item in removeList)
+            {
+                RemoveGraph(item);
+            }
+        }
 
+        protected virtual void RemoveGraph(IGraphData item)
+        {
+            
         }
 
         public abstract void SaveDiagram(INodeRepository data);

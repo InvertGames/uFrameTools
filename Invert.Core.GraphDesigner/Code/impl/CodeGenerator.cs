@@ -84,6 +84,7 @@ namespace Invert.Core.GraphDesigner
 
         public void TryAddNamespace(string ns)
         {
+            if (_ns == null) return;
             foreach (CodeNamespaceImport n in _ns.Imports)
             {
                 if (n.Namespace == ns)

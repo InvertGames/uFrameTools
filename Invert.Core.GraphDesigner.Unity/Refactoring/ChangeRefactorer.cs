@@ -49,11 +49,16 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
     public class InsertTextAtBottomRefactorer : AbstractAstTransformer, IRefactorer
     {
         public string Text { get; set; }
+        public string ClassName { get; set; }
 
         private INode _lastNode;
         public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
         {
-            _lastNode = typeDeclaration.Children.Last();
+            if (typeDeclaration.Name == ClassName)
+            {
+                _lastNode = typeDeclaration.Children.Last();
+            }
+            
             return base.VisitTypeDeclaration(typeDeclaration, data);
         }
 

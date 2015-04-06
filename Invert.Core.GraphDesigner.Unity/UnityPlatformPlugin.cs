@@ -27,17 +27,11 @@ namespace Invert.Core.GraphDesigner.Unity
 
             var selectedNode = node.SelectedNode.DataObject as IDiagramNode;
 
-            var codeTypeMethod = new CodeMemberMethod()
-            {
-                Name = "HelloWorld",
-                ReturnType = typeof(string).ToCodeReference()
-            };
-            var codeTypeMethod2 = new CodeMemberMethod()
-            {
-                Name = "HelloWorld2",
-                ReturnType = typeof(string).ToCodeReference()
-            };
-            var text = CodeDomHelpers.GenerateCodeFromMembers(codeTypeMethod, codeTypeMethod2);
+
+            var text = CodeDomHelpers.GenerateCodeFromMembers(
+                selectedNode.GetEditableOutputMembers().Select(p=>p.MemberOutput).ToArray()
+                );
+
             var editableFileGenerator = selectedNode.GetAllEditableFilesForNode().FirstOrDefault();
             
             var parser =ParserFactory.CreateParser(SupportedLanguage.CSharp,

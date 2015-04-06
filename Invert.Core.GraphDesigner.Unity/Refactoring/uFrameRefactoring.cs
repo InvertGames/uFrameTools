@@ -171,7 +171,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                 {
                     foreach (var format in classRefactorable.ClassNameFormats)
                     {
-                        refactors.Add(new RenameTypeRefactorer()
+                        refactors.Add(new RenameTypeRefactorer
                         {
                             Old = string.Format(format, changeData.Old),
                             New = string.Format(format, changeData.New)
@@ -179,6 +179,34 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                     }
                 }
             }
+            var addChange = change as GraphItemAdded;
+            if (addChange != null)
+            {
+                var members = change.Item.Node.GetEditableOutputMembers(_ => _.Identifier == change.ItemIdentifier)
+                .Where(p => p != null && p.MemberAttribute !=null && (p.MemberAttribute.Location == MemberGeneratorLocation.EditableFile || p.MemberAttribute.Location == MemberGeneratorLocation.Both))
+                .ToArray();
+
+                var firstMember = members.FirstOrDefault();
+                if (firstMember != null)
+                {
+                    var text = CodeDomHelpers.GenerateCodeFromMembers(members.Select(p => p.MemberOutput).ToArray());
+                   // InvertApplication.Log(string.Format("Inserting test {0}", text));
+                    var insertTextRefactorer = new InsertTextAtBottomRefactorer()
+                    {
+                        ClassName = firstMember.Decleration.Name,
+                        Text = text
+                    };
+                    //InvertApplication.Log("Adding insert text refactoring");
+                    refactors.Add(insertTextRefactorer);
+                }
+                else
+                {
+                    //InvertApplication.Log(string.Format("Added item has no outputmembers {0} ", change.Item.Name));
+                }
+            }
+            
+
+
         }
     }
 }

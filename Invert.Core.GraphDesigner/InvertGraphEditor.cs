@@ -3,6 +3,7 @@ using Invert.uFrame;
 using Invert.uFrame.Editor;
 using Invert.uFrame.Editor.ViewModels;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -356,15 +357,37 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        /// <summary>
+        /// Get all of the output generators for a node.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public static IEnumerable<OutputGenerator> GetCodeGeneratorsForNode(this IDiagramNodeItem node)
         {
             return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node);
         }
+
+        /// <summary>
+        /// Get all of the output generators that are generated only the first time, AKA: Editable Files
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public static IEnumerable<OutputGenerator> GetAllEditableFilesForNode(this IDiagramNodeItem node)
         {
             return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && !p.AlwaysRegenerate);
         }
-        public static IEnumerable<TemplateMemberResult> GetEditableOutputMembers(this IDiagramNodeItem node)
+
+        /// <summary>
+        /// This method gets every method, property, or constructor generated for a node, pass in an item filter to filter only to specific items
+        /// that are set up as iterators on templates.
+        /// 
+        /// For Example:
+        /// You can get only the members of a class that have been added since last save and compile by comparing with with the change tracking data.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="itemFilter"></param>
+        /// <returns></returns>
+        public static IEnumerable<TemplateMemberResult> GetEditableOutputMembers(this IDiagramNodeItem node, Predicate<IDiagramNodeItem> itemFilter = null)
         {
           
             foreach (var item in GetAllEditableFilesForNode(node).OfType<ITemplateClassGenerator>())
@@ -374,6 +397,10 @@ namespace Invert.Core.GraphDesigner
                     Generators = new[] {item as OutputGenerator},
                     SystemPath = string.Empty
                 };
+                gen.Namespace = new CodeNamespace();
+                gen.Unit = new CodeCompileUnit();
+                gen.Unit.Namespaces.Add(gen.Namespace);
+                item.ItemFilter = itemFilter;
                 item.Initialize(gen);
                 foreach (var result in item.Results)
                 {
@@ -382,10 +409,25 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        /// <summary>
+        /// Grab all of the output generators that are always regenerated on a node.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public static IEnumerable<OutputGenerator> GetAllDesignerFilesForNode(this IDiagramNodeItem node)
         {
             return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && p.AlwaysRegenerate);
         }
+
+        /// <summary>
+        /// Get all of the code generators for a repository IE: (Graph, or Project)
+        /// </summary>
+        /// <param name="settings">Obsolete pass null</param>
+        /// <param name="project">Project or graph</param>
+        /// <param name="generator"></param>
+        /// <param name="diagramItemGenerator"></param>
+        /// <param name="includeDisabled"></param>
+        /// <returns></returns>
         private static IEnumerable<OutputGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, INodeRepository project,
             DesignerGeneratorFactory generator, DesignerGeneratorFactory diagramItemGenerator, bool includeDisabled = false)
         {
@@ -426,7 +468,14 @@ namespace Invert.Core.GraphDesigner
         //{
         //    return GetAllFileGenerators(settings, CurrentProject);
         //}
-
+        /// <summary>
+        /// Get all of the merged generators for a project, this will merge any output generators with the same filename into a combined "CodeFileGenerator".
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="project"></param>
+        /// <param name="includeDisabled"></param>
+        /// <param name="systemPath"></param>
+        /// <returns></returns>
         public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings, INodeRepository project, bool includeDisabled = false, string systemPath = null)
         {
             var codeGenerators = GetAllCodeGenerators(settings, project, includeDisabled).ToArray();
@@ -446,6 +495,8 @@ namespace Invert.Core.GraphDesigner
                 yield return generator;
             }
         }
+
+
         public static GraphItemViewModel GetNodeViewModel(this IUFrameContainer container, IGraphItem item, DiagramViewModel diagram)
         {
             var vm = InvertApplication.Container.ResolveRelation<ViewModel>(item.GetType(), item, diagram) as

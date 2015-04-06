@@ -67,7 +67,7 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
         GUIHelpers.IsInsepctor = true;
 
 
-        if (GUIHelpers.DoToolbarEx("Project Diagrams", ImportDiagram))
+        if (GUIHelpers.DoToolbarEx("Project Graphs", ImportDiagram))
         {
             for (int index = 0; index < Target.Diagrams.Count; index++)
             {

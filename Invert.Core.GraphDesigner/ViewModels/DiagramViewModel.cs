@@ -67,20 +67,14 @@ namespace Invert.Core.GraphDesigner
                     foreach (var graph in project.Graphs)
                     {
                         if (graph != null)
-                        {
                             foreach (var item in graph.Validate())
-                            {
                                 yield return item;
-                            }
-                        }
                     }
                 }
                 else
                 {
                     foreach (var item in GraphData.Validate())
-                    {
                         yield return item;
-                    }
                 }
 
             }
@@ -608,11 +602,12 @@ namespace Invert.Core.GraphDesigner
 
         public void Select(GraphItemViewModel viewModelObject)
         {
+            if (viewModelObject == null) return;
             if (viewModelObject.IsSelected)
             {
                 return;
             }
-            if (!LastMouseEvent.ModifierKeyStates.Alt)
+            if (LastMouseEvent != null && LastMouseEvent.ModifierKeyStates != null && !LastMouseEvent.ModifierKeyStates.Alt)
                 DeselectAll();
 
             viewModelObject.IsSelected = true;

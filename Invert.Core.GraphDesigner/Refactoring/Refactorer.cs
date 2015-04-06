@@ -1,5 +1,8 @@
+using System;
+
 namespace Invert.Core.GraphDesigner
 {
+    [Obsolete]
     public abstract class Refactorer
     {
         public virtual int Priority {get { return 0; }}

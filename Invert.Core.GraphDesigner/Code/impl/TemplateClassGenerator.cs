@@ -13,13 +13,21 @@ namespace Invert.Core.GraphDesigner
     public interface ITemplateClassGenerator
     {
         CodeNamespace Namespace { get; }
+        Predicate<IDiagramNodeItem> ItemFilter { get; set; }
         CodeCompileUnit Unit { get; }
+        
         Type TemplateType { get; }
+        
         Type GeneratorFor { get; }
+        
         TemplateContext Context { get; }
+        
         string Filename { get; }
+        
         List<TemplateMemberResult> Results { get; set; }
+
         void Initialize(CodeFileGenerator codeFileGenerator);
+
     }
 
     public class TemplateClassGenerator<TData, TTemplateType> : CodeGenerator, ITemplateClassGenerator where TData : class, IDiagramNodeItem
@@ -33,6 +41,7 @@ namespace Invert.Core.GraphDesigner
         private KeyValuePair<MethodInfo, TemplateMethod>[] _templateMethods;
         private KeyValuePair<PropertyInfo, TemplateProperty>[] _templateProperties;
         private List<TemplateMemberResult> _results;
+        public Predicate<IDiagramNodeItem> ItemFilter { get; set; }
 
         public Type TemplateType
         {
@@ -86,11 +95,12 @@ namespace Invert.Core.GraphDesigner
         protected virtual TemplateContext<TData> CreateTemplateContext()
         {
             var context = new TemplateContext<TData>(TemplateType);
-
+            context.Generator = this;
             context.DataObject = Data;
             context.Namespace = Namespace;
             context.CurrentDecleration = Decleration;
             context.IsDesignerFile = IsDesignerFile;
+            context.ItemFilter = ItemFilter;
             return context;
         }
 
@@ -238,7 +248,7 @@ namespace Invert.Core.GraphDesigner
         {
 
         }
-
+        
         public void ProcessTemplate()
         {
             // Initialize the template
@@ -252,7 +262,7 @@ namespace Invert.Core.GraphDesigner
                 if (FilterToMembers != null && !FilterToMembers.Contains(templateProperty.Key.Name)) continue;
                 foreach (var item in TemplateContext.RenderTemplateProperty(TemplateClass, templateProperty))
                 {
-                    Results.Add(new TemplateMemberResult(this,templateProperty.Key,templateProperty.Value,item));
+                    Results.Add(new TemplateMemberResult(this,templateProperty.Key,templateProperty.Value,item, Decleration));
                 }
             }
 
@@ -261,7 +271,7 @@ namespace Invert.Core.GraphDesigner
                 if (FilterToMembers != null && !FilterToMembers.Contains(templateMethod.Key.Name)) continue;
                 foreach (var item in TemplateContext.RenderTemplateMethod(TemplateClass, templateMethod))
                 {
-                    Results.Add(new TemplateMemberResult(this,templateMethod.Key, templateMethod.Value, item));
+                    Results.Add(new TemplateMemberResult(this, templateMethod.Key, templateMethod.Value, item, Decleration));
                 }
             }
 
@@ -270,7 +280,7 @@ namespace Invert.Core.GraphDesigner
                 if (FilterToMembers != null && !FilterToMembers.Contains(templateConstructor.Key.Name)) continue;
                 foreach (var item in TemplateContext.RenderTemplateConstructor(TemplateClass, templateConstructor))
                 {
-                    Results.Add(new TemplateMemberResult(this,templateConstructor.Key, templateConstructor.Value, item));
+                    Results.Add(new TemplateMemberResult(this, templateConstructor.Key, templateConstructor.Value, item, Decleration));
                 }
             }
         }
@@ -279,6 +289,11 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _results ?? (_results = new List<TemplateMemberResult>()); }
             set { _results = value; }
+        }
+
+        public void Initialize(CodeFileGenerator codeFileGenerator, Predicate<IDiagramNodeItem> itemFilter = null)
+        {
+            
         }
 
         public KeyValuePair<MethodInfo, TemplateConstructor>[] TemplateConstructors
@@ -302,8 +317,11 @@ namespace Invert.Core.GraphDesigner
 
     public class TemplateMemberResult
     {
-        public TemplateMemberResult(ITemplateClassGenerator templateClass, MemberInfo memberInfo, TemplateMember memberAttribute, CodeTypeMember memberOutput)
+        public CodeTypeDeclaration Decleration { get; private set; }
+
+        public TemplateMemberResult(ITemplateClassGenerator templateClass, MemberInfo memberInfo, TemplateMember memberAttribute, CodeTypeMember memberOutput, CodeTypeDeclaration decleration)
         {
+            Decleration = decleration;
             TemplateClass = templateClass;
             MemberInfo = memberInfo;
             MemberAttribute = memberAttribute;
@@ -422,6 +440,8 @@ namespace Invert.Core.GraphDesigner
 
                 foreach (var item in items)
                 {
+                    if (ItemFilter != null && !ItemFilter(item))
+                        continue;
                     Item = item;
                     yield return RenderConstructor(instance, templateConstructor, item);
                 }
@@ -429,6 +449,8 @@ namespace Invert.Core.GraphDesigner
             else
             {
                 Item = Data as IDiagramNodeItem;
+                if (ItemFilter != null && !ItemFilter(Item))
+                    yield break;
                 yield return RenderConstructor(instance, templateConstructor, Data as IDiagramNodeItem);
             }
         }
@@ -458,7 +480,10 @@ namespace Invert.Core.GraphDesigner
 
                 foreach (var item in items)
                 {
+                    if (ItemFilter != null && !ItemFilter(item))
+                        continue;
                     Item = item;
+                  
                     var domObject = RenderProperty(instance, templateProperty);
                     CurrentDecleration.Members.Add(domObject);
                     yield return domObject;
@@ -468,6 +493,8 @@ namespace Invert.Core.GraphDesigner
             else
             {
                 Item = Data as IDiagramNodeItem;
+                if (ItemFilter != null && !ItemFilter(Item))
+                    yield break;
                 var domObject = RenderProperty(instance, templateProperty);
                 CurrentDecleration.Members.Add(domObject);
                 yield return domObject;
@@ -483,7 +510,7 @@ namespace Invert.Core.GraphDesigner
         {
            return RenderTemplateMethod(instance, new KeyValuePair<MethodInfo, TemplateMethod>(info, info.GetCustomAttributes(typeof(TemplateMethod), true).OfType<TemplateMethod>().FirstOrDefault()));
         }
-
+        
         public IEnumerable<CodeMemberMethod> RenderTemplateMethod(object instance, KeyValuePair<MethodInfo, TemplateMethod> templateMethod)
         {
             if (templateMethod.Value.Location == MemberGeneratorLocation.DesignerFile &&
@@ -498,6 +525,8 @@ namespace Invert.Core.GraphDesigner
                 foreach (var item in items)
                 {
                     Item = item;
+                    if (ItemFilter != null && !ItemFilter(item))
+                        continue;
                     yield return RenderMethod(instance, templateMethod, item);
                     
                 }
@@ -505,6 +534,8 @@ namespace Invert.Core.GraphDesigner
             else
             {
                 Item = Data as IDiagramNodeItem;
+                if (ItemFilter != null && !ItemFilter(Item))
+                    yield break;
                 yield return RenderMethod(instance, templateMethod, Data as IDiagramNodeItem);
             }
         }
@@ -663,6 +694,14 @@ namespace Invert.Core.GraphDesigner
 
     public class TemplateContext
     {
+        // TODO Remove this and add the Generator collections to here
+        public ITemplateClassGenerator Generator { get; set; }
+
+        public List<TemplateMemberResult> Results
+        {
+            get { return Generator.Results; }
+        }
+
         private Stack<CodeStatementCollection> _contextStatements;
         private CodeStatementCollection _currentStatements;
         public bool IsDesignerFile { get; set; }
@@ -673,6 +712,8 @@ namespace Invert.Core.GraphDesigner
         {
             get { return Item as ITypedItem; }
         }
+
+        public Predicate<IDiagramNodeItem> ItemFilter { get; set; }
 
         public CodeTypeMember CurrentMember { get; set; }
 
@@ -707,6 +748,7 @@ namespace Invert.Core.GraphDesigner
         public CodeNamespace Namespace { get; set; }
         public void TryAddNamespace(string ns)
         {
+            if (Namespace == null) return;
             if (string.IsNullOrEmpty(ns) || string.IsNullOrEmpty(ns.Trim())) return;
             foreach (CodeNamespaceImport n in Namespace.Imports)
             {

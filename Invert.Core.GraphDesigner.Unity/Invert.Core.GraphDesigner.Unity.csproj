@@ -82,6 +82,10 @@
     <Compile Include="UnityWindowManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Invert.Attributes\Invert.Attributes.csproj">
+      <Project>{572E3D0C-06D5-4894-A128-A2032684A0B6}</Project>
+      <Name>Invert.Attributes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Invert.Core.GraphDesigner\Invert.Core.GraphDesigner.csproj">
       <Project>{06E581D4-DAF3-4404-9426-E3BE6478BC48}</Project>
       <Name>Invert.Core.GraphDesigner</Name>
