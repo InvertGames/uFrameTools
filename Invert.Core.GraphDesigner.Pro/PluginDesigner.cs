@@ -31,7 +31,7 @@ public class PluginDesigner : DiagramPlugin
     public override void Initialize(uFrameContainer container)
     {
 #if DEBUG && UNITY_DLL
-        container.RegisterInstance<IToolbarCommand>(new PrintPlugins(), "Json");
+        //container.RegisterInstance<IToolbarCommand>(new PrintPlugins(), "Json");
       
 #endif
         container.RegisterInstance<IDiagramNodeCommand>(new SelectColorCommand(), "SelectColor");

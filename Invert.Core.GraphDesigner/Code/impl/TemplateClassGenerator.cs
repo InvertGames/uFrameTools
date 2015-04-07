@@ -28,6 +28,7 @@ namespace Invert.Core.GraphDesigner
 
         void Initialize(CodeFileGenerator codeFileGenerator);
 
+        IClassTemplate Template { get; } 
     }
 
     public class TemplateClassGenerator<TData, TTemplateType> : CodeGenerator, ITemplateClassGenerator where TData : class, IDiagramNodeItem
@@ -238,6 +239,15 @@ namespace Invert.Core.GraphDesigner
             }
 
         }
+
+        public IClassTemplate Template
+        {
+            get
+            {
+                return TemplateClass;
+            }
+        }
+
 
         protected virtual void InitializeEditableFile()
         {
@@ -681,6 +691,14 @@ namespace Invert.Core.GraphDesigner
             return dom;
 
         }
+
+        public void AddMemberOutput(IDiagramNodeItem data, TemplateMemberResult templateMemberResult)
+        {
+            if (ItemFilter != null && !ItemFilter(data)) 
+                return;
+            Results.Add(templateMemberResult);
+            InvertApplication.Log("Added result");
+        }
     }
 
     public interface ICodeTemplateEvents
@@ -697,10 +715,11 @@ namespace Invert.Core.GraphDesigner
         // TODO Remove this and add the Generator collections to here
         public ITemplateClassGenerator Generator { get; set; }
 
-        public List<TemplateMemberResult> Results
+        protected List<TemplateMemberResult> Results
         {
             get { return Generator.Results; }
         }
+
 
         private Stack<CodeStatementCollection> _contextStatements;
         private CodeStatementCollection _currentStatements;

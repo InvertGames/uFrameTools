@@ -408,7 +408,14 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
+        public static IEnumerable<IClassTemplate> GetTemplates(this IDiagramNodeItem node, Predicate<IDiagramNodeItem> itemFilter = null)
+        {
 
+            foreach (var item in node.GetCodeGeneratorsForNode().OfType<ITemplateClassGenerator>())
+            {
+                yield return item.Template;
+            }
+        }
         /// <summary>
         /// Grab all of the output generators that are always regenerated on a node.
         /// </summary>

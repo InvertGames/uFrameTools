@@ -139,11 +139,11 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
                 if (!File.Exists(oldFilename))
                 {
-                    InvertApplication.Log(string.Format("Skipping {0} because it doesn't exist.", item.FullPathName));
+                    //InvertApplication.Log(string.Format("Skipping {0} because it doesn't exist.", item.FullPathName));
                     continue;
                 }
 
-                InvertApplication.Log(string.Format("Renaming {0} to {1}", oldFilename, newFilename));
+                //InvertApplication.Log(string.Format("Renaming {0} to {1}", oldFilename, newFilename));
                 File.Move(oldFilename, newFilename);
                 if (File.Exists(oldFilename + ".meta"))
                     File.Move(oldFilename + ".meta", newFilename + ".meta");
@@ -166,31 +166,30 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             var changeData = change as NameChange;
             if (changeData != null)
             {
-                var classRefactorable = change.Item as IClassRefactorable;
-                if (classRefactorable != null)
+                var classRefactorable = change.Item.GetTemplates().OfType<IClassRefactorable>().SelectMany(p => p.ClassNameFormats).ToArray();
+                foreach (var format in classRefactorable)
                 {
-                    foreach (var format in classRefactorable.ClassNameFormats)
+                    refactors.Add(new RenameTypeRefactorer
                     {
-                        refactors.Add(new RenameTypeRefactorer
-                        {
-                            Old = string.Format(format, changeData.Old),
-                            New = string.Format(format, changeData.New)
-                        });
-                    }
+                        Old = string.Format(format, changeData.Old),
+                        New = string.Format(format, changeData.New)
+                    });
                 }
+
             }
             var addChange = change as GraphItemAdded;
             if (addChange != null)
             {
-                var members = change.Item.Node.GetEditableOutputMembers(_ => _.Identifier == change.ItemIdentifier)
-                .Where(p => p != null && p.MemberAttribute !=null && (p.MemberAttribute.Location == MemberGeneratorLocation.EditableFile || p.MemberAttribute.Location == MemberGeneratorLocation.Both))
+                var members = change.Item.Node.GetEditableOutputMembers(_ => _.Identifier == change.ItemIdentifier && _ != change.Item.Node)
+                .Where(p => p != null && p.MemberAttribute != null && (p.MemberAttribute.Location == MemberGeneratorLocation.EditableFile || p.MemberAttribute.Location == MemberGeneratorLocation.Both))
                 .ToArray();
 
                 var firstMember = members.FirstOrDefault();
                 if (firstMember != null)
                 {
+                    
                     var text = CodeDomHelpers.GenerateCodeFromMembers(members.Select(p => p.MemberOutput).ToArray());
-                   // InvertApplication.Log(string.Format("Inserting test {0}", text));
+                     InvertApplication.Log(string.Format("Inserting test {0} {1}",firstMember.Decleration.Name, text));
                     var insertTextRefactorer = new InsertTextAtBottomRefactorer()
                     {
                         ClassName = firstMember.Decleration.Name,
@@ -204,7 +203,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                     //InvertApplication.Log(string.Format("Added item has no outputmembers {0} ", change.Item.Name));
                 }
             }
-            
+
 
 
         }

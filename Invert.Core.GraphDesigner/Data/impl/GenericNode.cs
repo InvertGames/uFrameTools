@@ -663,12 +663,16 @@ namespace Invert.Core.GraphDesigner
             {
                 if (Node == null)
                 {
-                    InvertApplication.Log("NODE IS NULL GENERIC REFERENCE ITEM");
+                    
                     return null;
                 }
                 else if (Node.Graph == null)
                 {
-                    InvertApplication.Log("Node Graph IS NULL");
+                    
+                    return null;
+                }
+                else if (Node.Project == null)
+                {
                     return null;
                 }
                 return Node.Project.AllGraphItems.FirstOrDefault(p => p.Identifier == SourceIdentifier) as IDiagramNodeItem;

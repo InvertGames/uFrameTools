@@ -8,22 +8,22 @@ namespace Invert.Core.GraphDesigner
         string ClassName { get; }
     }
 
-    public interface IClassRefactorable : IDiagramNodeItem
+    public interface IClassRefactorable 
     {
         IEnumerable<string> ClassNameFormats { get; }
     }
 
-    public interface IIdentifierRefactorable : IDiagramNodeItem
+    public interface IIdentifierRefactorable 
     {
         IEnumerable<string> IdentifierFormats { get;  }
     }
 
-    public interface IMethodRefactorable : IDiagramNodeItem
+    public interface IMethodRefactorable 
     {
         IEnumerable<string> MethodFormats { get; }
     }
 
-    public interface IMethodParameterRefactorable : ITypedItem
+    public interface IMethodParameterRefactorable 
     {
         
     }

@@ -1,15 +1,5 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using Invert.Core.GraphDesigner.Unity.Refactoring;
+﻿using System.Linq;
 using Invert.Core.GraphDesigner.UnitySpecific;
-using Invert.uFrame;
-using Invert.uFrame.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,27 +17,17 @@ namespace Invert.Core.GraphDesigner.Unity
 
             var selectedNode = node.SelectedNode.DataObject as IDiagramNode;
 
-
-            var text = CodeDomHelpers.GenerateCodeFromMembers(
-                selectedNode.GetEditableOutputMembers().Select(p=>p.MemberOutput).ToArray()
-                );
-
-            var editableFileGenerator = selectedNode.GetAllEditableFilesForNode().FirstOrDefault();
-            
-            var parser =ParserFactory.CreateParser(SupportedLanguage.CSharp,
-                new StringReader(File.ReadAllText(editableFileGenerator.FullPathName)));
-            parser.Parse();
-
-            var insertTextAtBottom = new InsertTextAtBottomRefactorer()
+            foreach (var item in selectedNode.GetEditableOutputMembers())
             {
-                Text = text
-            };
-            parser.CompilationUnit.AcceptVisitor(insertTextAtBottom, null);
-            var csharpOutput = new CSharpOutputVisitor();
-            csharpOutput.BeforeNodeVisit += node1 => insertTextAtBottom.OutputNodeVisiting(node1, csharpOutput.OutputFormatter as CSharpOutputFormatter);
-            csharpOutput.AfterNodeVisit += node1 => insertTextAtBottom.OutputNodeVisited(node1, csharpOutput.OutputFormatter as CSharpOutputFormatter);
-            parser.CompilationUnit.AcceptVisitor(csharpOutput, null);
-            InvertApplication.Log(csharpOutput.Text);
+                Debug.Log(item.MemberOutput.Name);
+                Debug.Log(string.Format("{0} {1} {2}",item.MemberAttribute.Location, item.Decleration.Name,item.MemberOutput.Name));
+            }
+            //foreach (var item in selectedNode.GetTemplates().OfType<IClassRefactorable>())
+            //{
+            //    foreach (var format in item.ClassNameFormats)
+            //        InvertApplication.Log(string.Format("{0} {1}",item.GetType().Name, format));
+            //}
+         
 
         }
     }
@@ -87,7 +67,7 @@ namespace Invert.Core.GraphDesigner.Unity
             container.RegisterToolbarCommand<GenerateDocsCommand>();
             container.RegisterToolbarCommand<DocsModeCommand>();
 #endif
-            container.RegisterInstance<IToolbarCommand>(new Test(), "Test");
+            //container.RegisterInstance<IToolbarCommand>(new Test(), "Test");
             container.RegisterToolbarCommand<ExportDiagramCommand>();
 
             container.RegisterInstance<IAssetManager>(new UnityAssetManager());
@@ -137,7 +117,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
             if (n == n.Graph.RootFilter)
             {
-                var graph = n.Graph.Project.Graphs.FirstOrDefault(p=>p.Identifier == n.Graph.Identifier) as UnityEngine.Object;
+                var graph = n.Graph.Project.Graphs.FirstOrDefault(p=>p.Identifier == n.Graph.Identifier) as Object;
                 if (graph != null)
                 {
                     graph.name = newName;
@@ -191,7 +171,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             var graph = node.GraphData as INodeRepository;
             var files = InvertGraphEditor.GetAllFileGenerators(null, graph, false).Select(p=>p.AssetPath).ToList();
-            files.Add(AssetDatabase.GetAssetPath(graph as UnityEngine.Object));
+            files.Add(AssetDatabase.GetAssetPath(graph as Object));
 
             var path = EditorUtility.SaveFilePanelInProject("Export Graph Unity Package",
 								graph.Name + ".unitypackage",
