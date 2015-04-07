@@ -10,9 +10,6 @@ namespace Invert.Core.GraphDesigner
 
     public class ViewModel : INotifyPropertyChanged
     {
-        [Inject]
-        public IUFrameContainer Container { get; set; }
-
         private object _dataObject;
 
         public object DataObject
