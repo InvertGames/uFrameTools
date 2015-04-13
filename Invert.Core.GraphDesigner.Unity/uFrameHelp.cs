@@ -573,27 +573,22 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
 
         if (CurrentTutorial.LastStepCompleted == false) return false;
 
+
         var result = step.IsDone();
-        GUILayout.Space(15f);
         if (result == null)
         {
             CurrentTutorial.LastStepCompleted = true;
-            TutorialActionStyle.fontSize = 13;
-            TutorialActionStyle.normal.textColor = new Color(0.3f, 0.6f, 0.3f);
-            GUILayout.Label(string.Format("Step {0}: Complete", CurrentTutorial.Steps.IndexOf(step) + 1),
-                TutorialActionStyle);
+            //TutorialActionStyle.fontSize = 13;
+            //TutorialActionStyle.normal.textColor = new Color(0.3f, 0.6f, 0.3f);
+            //GUILayout.Label(string.Format("Step {0}: Complete", CurrentTutorial.Steps.IndexOf(step) + 1),
+            //    TutorialActionStyle);
             return false;
         }
         else
         {
             CurrentTutorial.LastStepCompleted = false;
         }
-
-        TitleStyle.fontSize = 14;
-        GUILayout.Label(string.Format("Step {0}: {1}", CurrentTutorial.Steps.IndexOf(step) + 1, step.Name), TitleStyle);
-        TutorialActionStyle.fontSize = 16;
-        TutorialActionStyle.normal.textColor = Color.red;
-        GUILayout.Label("Hint: " + result, TutorialActionStyle);
+        Title2("Study Material");
 
         if (stepContent != null)
             stepContent(this);
@@ -601,6 +596,23 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
         {
             step.StepContent(this);
         }
+        Break();
+        Break();
+        Break();
+        Title(string.Format("Step {0}: {1}", CurrentTutorial.Steps.IndexOf(step) + 1, step.Name)); 
+        Break();
+        Title2("Step Trouble Shooting");
+
+        TutorialActionStyle.fontSize = 12;
+        TutorialActionStyle.normal.textColor = Color.red;
+
+        GUILayout.Label(result, TutorialActionStyle);
+        Break();
+
+
+
+
+
 
 
         return true;
@@ -615,7 +627,13 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
 
     public void EndTutorial()
     {
-
+        if (CurrentTutorial.LastStepCompleted)
+        {
+            
+            TutorialActionStyle.fontSize = 20;
+            TutorialActionStyle.normal.textColor = new Color(0.3f, 0.6f, 0.3f);
+            GUILayout.Label("Contratulations, you've completed this tutorial.", TutorialActionStyle);
+        }
         CurrentTutorial = null;
     }
 
@@ -627,6 +645,46 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
     public void CodeSnippet(string code)
     {
         Paragraph(code);
+    }
+
+    public void ToggleContentByNode<TNode>(string name)
+    {
+        var page = FindPage(Pages, p => p.RelatedNodeType == typeof(TNode));
+        if (GUIHelpers.DoToolbarEx(name ?? page.Name,null,null,null,null,false,Color.black))
+        {
+            page.GetContent(this);
+        }
+        
+    }
+    public void ToggleContentByPage<TPage>(string name)
+    {
+        var page = FindPage(Pages, p => p is TPage);
+        if (GUIHelpers.DoToolbarEx(name ??page.Name, null, null, null, null, false, Color.black))
+        {
+            page.GetContent(this);
+        }
+
+    }
+
+    public void ContentByNode<TNode>()
+    {
+        var page = FindPage(Pages, p => p.RelatedNodeType == typeof(TNode));
+        page.GetContent(this);
+    }
+    public void ContentByPage<TPage>()
+    {
+        var page = FindPage(Pages, p => p is TPage);
+        page.GetContent(this);
+    }
+
+    public void LinkToPage<TPage>()
+    {
+        var page = FindPage(Pages, p => p is TPage);
+        if (GUILayout.Button(page.Name))
+        {
+            ShowPage(page);
+            
+        }
     }
 
     public void TemplateExample<TTemplate, TData>(TData data, bool designerFile = true, string templateMember = null) where TTemplate : IClassTemplate<TData>

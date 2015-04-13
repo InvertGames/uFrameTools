@@ -113,13 +113,13 @@ namespace Invert.Core.GraphDesigner
             {
                 allDiagramItem.IsNewNode = false;
             }
-
+            //RefactorApplied(diagram.DiagramData);
+            InvertGraphEditor.Platform.Progress(101f, "Done");
             InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(diagram.CurrentRepository, diagram.GraphData));
 
             
 
-            //RefactorApplied(diagram.DiagramData);
-            InvertGraphEditor.Platform.Progress(101f, "Done");
+         
 
             var projectService = InvertApplication.Container.Resolve<ProjectService>();
 
@@ -127,9 +127,9 @@ namespace Invert.Core.GraphDesigner
             {
                 graph.ChangeData.Clear();
             }
-#if UNITY_DLL
-            UnityEditor.AssetDatabase.SaveAssets();
-#endif
+//#if UNITY_DLL
+//            UnityEditor.AssetDatabase.SaveAssets();
+//#endif
             InvertGraphEditor.Platform.RefreshAssets();
             diagram.Save();
 #if UNITY_DLL

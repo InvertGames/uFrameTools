@@ -98,28 +98,28 @@ public class ElementDiagramSettingsWindow : EditorWindow
             var names = pathStrategies.Select(p => p.Name).ToArray();
             var selected = Array.IndexOf(names, s.CodePathStrategyName);
             //var types = pathStrategies.Select(p => p.to);
-            EditorGUI.BeginChangeCheck();
-            var newIndex = EditorGUILayout.Popup("Generator Path Strategy", Math.Max(0, selected), names);
-            if (EditorGUI.EndChangeCheck())
-            {
-                if (newIndex >= 0 && DesignerData.RefactorCount < 1)
-                {
-                    if (names[newIndex] != s.CodePathStrategyName)
-                    {
-                        DesignerData.Settings.CodePathStrategyName = names[newIndex];
-                        EditorApplication.SaveAssets();
+            //EditorGUI.BeginChangeCheck();
+            //var newIndex = EditorGUILayout.Popup("Generator Path Strategy", Math.Max(0, selected), names);
+            //if (EditorGUI.EndChangeCheck())
+            //{
+            //    if (newIndex >= 0 && DesignerData.RefactorCount < 1)
+            //    {
+            //        if (names[newIndex] != s.CodePathStrategyName)
+            //        {
+            //            DesignerData.Settings.CodePathStrategyName = names[newIndex];
+            //            EditorApplication.SaveAssets();
                         
-                        //var newStrategy = uFrameEditor.Container.Resolve<ICodePathStrategy>(names[newIndex]);
-                        //DesignerData.DiagramData.CodePathStrategy.MoveTo(DesignerData.CurrentRepository.GeneratorSettings, newStrategy, names[newIndex], this.DesignerWindow);
-                    }
+            //            //var newStrategy = uFrameEditor.Container.Resolve<ICodePathStrategy>(names[newIndex]);
+            //            //DesignerData.DiagramData.CodePathStrategy.MoveTo(DesignerData.CurrentRepository.GeneratorSettings, newStrategy, names[newIndex], this.DesignerWindow);
+            //        }
 
-                }
-                else
-                {
-                    EditorUtility.DisplayDialog("Save First",
-                        "Save your diagram first before changing the path strategy.", "OK");
-                }
-            }
+            //    }
+            //    else
+            //    {
+            //        EditorUtility.DisplayDialog("Save First",
+            //            "Save your diagram first before changing the path strategy.", "OK");
+            //    }
+            //}
             
             GUILayout.EndScrollView();
 

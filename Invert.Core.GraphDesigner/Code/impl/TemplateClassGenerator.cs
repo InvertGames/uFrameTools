@@ -485,7 +485,22 @@ namespace Invert.Core.GraphDesigner
             if (Iterators.ContainsKey(templateProperty.Key.Name))
             {
                 //Debug.Log("Found iterators for " + templateProperty.Key.Name);
-                var iterator = Iterators[templateProperty.Key.Name];
+                var forEachAttribute =
+                    templateProperty.Key.GetCustomAttributes(typeof (TemplateForEach), true).FirstOrDefault() as
+                        TemplateForEach;
+
+                var iteratorName = templateProperty.Key.Name;
+                if (forEachAttribute != null)
+                {
+                    iteratorName = forEachAttribute.IteratorProperty;
+                    AddIterator(iteratorName,
+                        delegate
+                        {
+                            return instance.GetType().GetProperty(iteratorName).GetValue(instance, null) as IEnumerable;
+                        });
+                }
+
+                var iterator = Iterators[iteratorName];
                 var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
 
                 foreach (var item in items)

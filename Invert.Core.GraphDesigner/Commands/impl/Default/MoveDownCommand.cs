@@ -2,21 +2,21 @@ using Invert.uFrame.Editor.ViewModels;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class MoveDownCommand : EditorCommand<ItemViewModel>, IDiagramNodeItemCommand, IKeyBindable
+    public class MoveDownCommand : EditorCommand<GenericNodeChildItem>, IDiagramNodeItemCommand, IKeyBindable
     {
         public override string Name
         {
             get { return "Move Down"; }
         }
 
-        public override void Perform(ItemViewModel node)
+        public override void Perform(GenericNodeChildItem node)
         {
-            node.NodeItem.Node.MoveItemDown(node.NodeItem);
+            node.Node.MoveItemDown(node);
         }
 
-        public override string CanPerform(ItemViewModel node)
+        public override string CanPerform(GenericNodeChildItem node)
         {
-            if (node != null && node.NodeItem != null) return null;
+            if (node != null) return null;
             return "Can't move item.";
         }
     }

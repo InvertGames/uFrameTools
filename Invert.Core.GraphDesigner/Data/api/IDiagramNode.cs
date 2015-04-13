@@ -337,6 +337,12 @@ namespace Invert.Core.GraphDesigner
         void EndTutorial();
         void ImageByUrl(string empty);
         void CodeSnippet(string code);
+        void ToggleContentByNode<TNode>(string name);
+        void ToggleContentByPage<TPage>(string name);        
+        void ContentByNode<TNode>();
+        void ContentByPage<TPage>();
+
+        void LinkToPage<T>();
     }
 
 

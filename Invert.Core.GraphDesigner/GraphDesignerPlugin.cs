@@ -296,9 +296,6 @@ namespace Invert.Core.GraphDesigner
 
                     return "Node not created yet";
                 }
-
-
-
                 return null;
             })
             {
@@ -310,6 +307,8 @@ namespace Invert.Core.GraphDesigner
                     {
                         stepContent(_);
                     }
+                    _.Break();
+                    _.ToggleContentByNode<T>(null);
                 }
             });
             return existing;
@@ -404,7 +403,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (InvertApplication.FindType(node.FullName) == null)
                 {
-                    return "A type doesn't exist so you haven't save and compiled your project yet.";
+                    return string.Format("Type {0} doesn't exist so you haven't save and compiled your project yet.", node.FullName);
                 }
                 return null;
             });

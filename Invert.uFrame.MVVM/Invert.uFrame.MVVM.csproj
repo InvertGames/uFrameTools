@@ -88,8 +88,8 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\MVVMNodeDrawer.cs">
       <Link>MVVMNodeDrawer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\SceneManagerNodeDrawer.cs">
-      <Link>SceneManagerNodeDrawer.cs</Link>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\SceneTypeNodeDrawer.cs">
+      <Link>SceneTypeNodeDrawer.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Drawers\ServiceNodeDrawer.cs">
       <Link>ServiceNodeDrawer.cs</Link>
@@ -118,6 +118,9 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Graphs\MVVMGraph.cs">
       <Link>MVVMGraph.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Graphs\ServiceGraph.cs">
+      <Link>ServiceGraph.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Graphs\StateMachineGraph.cs">
       <Link>StateMachineGraph.cs</Link>
     </Compile>
@@ -139,8 +142,8 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\MVVMNode.cs">
       <Link>MVVMNode.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\SceneManagerNode.cs">
-      <Link>SceneManagerNode.cs</Link>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\SceneTypeNode.cs">
+      <Link>SceneTypeNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Nodes\ServiceNode.cs">
       <Link>ServiceNode.cs</Link>
@@ -181,9 +184,6 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\InstancesReference.cs">
       <Link>InstancesReference.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\SceneTransitionsReference.cs">
-      <Link>SceneTransitionsReference.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Sections\StateTransitionsReference.cs">
       <Link>StateTransitionsReference.cs</Link>
     </Compile>
@@ -196,20 +196,11 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\Element.cs">
       <Link>Element.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\Export.cs">
-      <Link>Export.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\Import.cs">
-      <Link>Import.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\SceneProperties.cs">
       <Link>SceneProperties.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\StartState.cs">
       <Link>StartState.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Editor\Slots\Subsystem.cs">
-      <Link>Subsystem.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels.designer.cs">
       <Link>ViewModels.designer.cs</Link>
@@ -226,8 +217,8 @@
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\MVVMNodeViewModel.cs">
       <Link>MVVMNodeViewModel.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\SceneManagerNodeViewModel.cs">
-      <Link>SceneManagerNodeViewModel.cs</Link>
+    <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\SceneTypeNodeViewModel.cs">
+      <Link>SceneTypeNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameMVVM\Editor\ViewModels\ServiceNodeViewModel.cs">
       <Link>ServiceNodeViewModel.cs</Link>

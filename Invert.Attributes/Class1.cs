@@ -99,6 +99,19 @@ public class TemplateMethod : TemplateMember
     public AutoFillType AutoFill { get; set; }
 }
 
+public class TemplateForEach :Attribute
+{
+    public string IteratorProperty { get; set; }
+
+    public TemplateForEach()
+    {
+    }
+
+    public TemplateForEach(string iteratorProperty)
+    {
+        IteratorProperty = iteratorProperty;
+    }
+}
 public class TemplateConstructor : TemplateMember
 {
     public string[] BaseCallArgs { get; set; }

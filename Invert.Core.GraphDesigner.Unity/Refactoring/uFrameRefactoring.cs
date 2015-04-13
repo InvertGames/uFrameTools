@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
+using System.Text;
+using Invert.ICSharpCode.NRefactory.CSharp;
+using Invert.ICSharpCode.NRefactory.CSharp.Expressions;
+using Invert.ICSharpCode.NRefactory.Editor;
 using UnityEditor;
 
 namespace Invert.Core.GraphDesigner.Unity.Refactoring
@@ -54,25 +56,47 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             foreach (var file in files)
             {
                 if (!File.Exists(file.SystemPath)) continue;
-                InvertApplication.Log(string.Format("Refactoring {0}", file.SystemPath));
+                //InvertApplication.Log(string.Format("Refactoring {0}", file.SystemPath));
 
                 var fileText = File.ReadAllText(file.SystemPath);
-                var parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(fileText));
+                CSharpParser parser = new CSharpParser();
+                SyntaxTree tree = null;
+                
+                var document = new StringBuilderDocument(fileText);
+                var formattingOptions = FormattingOptionsFactory.CreateAllman();
+                var o = new TextEditorOptions() {TabsToSpaces = true};
+                var script = new DocumentScript(document, formattingOptions, o);
                 try
                 {
-                    parser.Parse();
+          
+
+                    tree = parser.Parse(document,"filename.cs");
+                    if (parser.HasErrors)
+                    {
+                        InvertApplication.Log(string.Format("Couldn't parse file for refactoring because: {0}", string.Join(Environment.NewLine, parser.Errors.Select(p=>p.Message).ToArray())));
+                        continue;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    InvertApplication.LogError(string.Format("Couldn't parse file for refactoring because {0}", ex.Message));
+                    InvertApplication.LogError(string.Format("Couldn't parse file for refactoring because: {0}", ex.Message));
                     continue;
+                }
+                if (tree == null)
+                {
+            
+                    continue;
+                }
+                
+                foreach (var refactor in refactors)
+                {
+                    refactor.Script = script;
+                    tree.AcceptVisitor(refactor);
                 }
                 try
                 {
-                    foreach (var refactor in refactors)
-                    {
-                        parser.CompilationUnit.AcceptVisitor(refactor, null);
-                    }
+                
+            
                 }
                 catch (Exception ex)
                 {
@@ -80,27 +104,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                     continue;
                 }
 
-                var outputVisitor = new CSharpOutputVisitor();
-                outputVisitor.BeforeNodeVisit += node =>
-                {
-
-                    foreach (var refactor in refactors)
-                    {
-                        refactor.OutputNodeVisiting(node, outputVisitor.OutputFormatter as CSharpOutputFormatter);
-                    }
-
-                };
-                outputVisitor.AfterNodeVisit += node =>
-                {
-
-                    foreach (var refactor in refactors)
-                    {
-                        refactor.OutputNodeVisited(node, outputVisitor.OutputFormatter as CSharpOutputFormatter);
-                    }
-
-                };
-                parser.CompilationUnit.AcceptVisitor(outputVisitor, null);
-                File.WriteAllText(file.SystemPath, outputVisitor.Text);
+                File.WriteAllText(file.SystemPath, document.Text);
             }
 
         }
@@ -166,9 +170,23 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             var changeData = change as NameChange;
             if (changeData != null)
             {
-                var classRefactorable = change.Item.GetTemplates().OfType<IClassRefactorable>().SelectMany(p => p.ClassNameFormats).ToArray();
-                foreach (var format in classRefactorable)
+                var templates = change.Item.GetTemplates().ToArray();
+                var classRefactorable = templates.OfType<IClassRefactorable>().SelectMany(p => p.ClassNameFormats).ToArray();
+                foreach (var format in classRefactorable.Distinct())
                 {
+                    //InvertApplication.Log(string.Format("Adding {0} : {1}", string.Format(format, changeData.Old), string.Format(format, changeData.New)));
+
+                    refactors.Add(new RenameTypeRefactorer
+                    {
+                        Old = string.Format(format, changeData.Old),
+                        New = string.Format(format, changeData.New)
+                    });
+                }
+                var methodRefactorable = templates.OfType<IMethodRefactorable>().SelectMany(p => p.MethodFormats).ToArray();
+                foreach (var format in methodRefactorable.Distinct())
+                {
+                    //InvertApplication.Log(string.Format("Adding {0} : {1}", string.Format(format, changeData.Old), string.Format(format, changeData.New)));
+
                     refactors.Add(new RenameTypeRefactorer
                     {
                         Old = string.Format(format, changeData.Old),
@@ -189,7 +207,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                 {
                     
                     var text = CodeDomHelpers.GenerateCodeFromMembers(members.Select(p => p.MemberOutput).ToArray());
-                     InvertApplication.Log(string.Format("Inserting test {0} {1}",firstMember.Decleration.Name, text));
+                   //  InvertApplication.Log(string.Format("Inserting test {0} {1}",firstMember.Decleration.Name, text));
                     var insertTextRefactorer = new InsertTextAtBottomRefactorer()
                     {
                         ClassName = firstMember.Decleration.Name,
