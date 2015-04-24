@@ -41,12 +41,21 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void Progress(float progress, string message)
         {
-            if (progress > 100f)
+            try
             {
-                EditorUtility.ClearProgressBar();
-                return;
+
+
+                if (progress > 100f)
+                {
+                    EditorUtility.ClearProgressBar();
+                    return;
+                }
+                EditorUtility.DisplayProgressBar("Generating", message, progress/1f);
             }
-            EditorUtility.DisplayProgressBar("Generating", message, progress / 1f);
+            catch (Exception ex)
+            {
+                
+            }
         }
 
         public void Log(string message)
@@ -207,7 +216,8 @@ namespace Invert.Core.GraphDesigner.Unity
         public override void Go()
         {
             base.Go();
-               GUILayout.BeginHorizontal(EditorStyles.toolbar);
+               
+            GUILayout.BeginHorizontal(EditorStyles.toolbar);
             foreach (var editorCommand in LeftCommands.OrderBy(p => p.Order))
             {
                 DoCommand(editorCommand);
@@ -359,12 +369,12 @@ namespace Invert.Core.GraphDesigner.Unity
         }
 
 
-        public void DrawPropertyField(PropertyFieldDrawer d, float scale)
+        public void DrawPropertyField(PropertyFieldViewModel fieldViewModel, float scale)
         {
             //base.Draw(scale);
-            GUILayout.BeginArea(d.Bounds.Scale(scale), ElementDesignerStyles.SelectedItemStyle);
-            EditorGUIUtility.labelWidth = d.Bounds.width * 0.55f;
-            DrawInspector(d);
+            GUILayout.BeginArea(fieldViewModel.Bounds.Scale(scale), ElementDesignerStyles.SelectedItemStyle);
+            EditorGUIUtility.labelWidth = fieldViewModel.Bounds.width * 0.55f;
+            DrawInspector(fieldViewModel);
             GUILayout.EndArea();
         }
 
@@ -540,10 +550,10 @@ namespace Invert.Core.GraphDesigner.Unity
 
         }
 
-        public virtual void DrawInspector(PropertyFieldDrawer d, bool refreshGraph = false, float scale = 1f)
+        public virtual void DrawInspector(PropertyFieldViewModel d)
         {
 
-            if (d.ViewModel.InspectorType == InspectorType.GraphItems)
+            if (d.InspectorType == InspectorType.GraphItems)
             {
                 var item = d.CachedValue as IGraphItem;
                 var text = "--Select--";
@@ -553,15 +563,15 @@ namespace Invert.Core.GraphDesigner.Unity
                 }
                 //GUILayout.BeginHorizontal();
                
-                if (GUILayout.Button(d.ViewModel.Label + ": " + text,ElementDesignerStyles.ButtonStyle))
+                if (GUILayout.Button(d.Label + ": " + text,ElementDesignerStyles.ButtonStyle))
                 {
-                    var type = d.ViewModel.Type;
+                    var type = d.Type;
                     //var nodeItem = d.ViewModel.NodeViewModel.DataObject as IDiagramNodeItem;
                     var items = InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.AllGraphItems.Where(p => type.IsAssignableFrom(p.GetType()));
                     InvertGraphEditor.WindowManager.InitItemWindow(items, (i) =>
                     {
 
-                        d.ViewModel.Setter(i);
+                        d.Setter(i);
                     },true);
 
                 }
@@ -570,27 +580,27 @@ namespace Invert.Core.GraphDesigner.Unity
             }
        
 
-            if (d.ViewModel.Type == typeof(string))
+            if (d.Type == typeof(string))
             {
-                if (d.ViewModel.InspectorType == InspectorType.TextArea)
+                if (d.InspectorType == InspectorType.TextArea)
                 {
-                    EditorGUILayout.LabelField(d.ViewModel.Name);
+                    EditorGUILayout.LabelField(d.Name);
 
                     EditorGUI.BeginChangeCheck();
                     d.CachedValue = EditorGUILayout.TextArea((string)d.CachedValue, GUILayout.Height(50));
                     if (EditorGUI.EndChangeCheck())
                     {
-                        d.ViewModel.Setter(d.CachedValue);
+                        d.Setter(d.CachedValue);
                     }
                 }
-                else if (d.ViewModel.InspectorType == InspectorType.TypeSelection)
+                else if (d.InspectorType == InspectorType.TypeSelection)
                 {
                     GUILayout.BeginHorizontal();
-                    GUILayout.Label(d.ViewModel.Name);
+                    //GUILayout.Label(d.ViewModel.Name);
 
                     if (GUILayout.Button((string)d.CachedValue))
                     {
-                        d.ViewModel.NodeViewModel.Select();
+                        d.NodeViewModel.Select();
                         InvertGraphEditor.ExecuteCommand(new SelectItemTypeCommand()
                         {
                             IncludePrimitives = true,
@@ -605,90 +615,90 @@ namespace Invert.Core.GraphDesigner.Unity
                 else
                 {
                     EditorGUI.BeginChangeCheck();
-                    d.CachedValue = EditorGUILayout.TextField(d.ViewModel.Name, (string)d.CachedValue);
+                    d.CachedValue = EditorGUILayout.TextField(d.Name, (string)d.CachedValue);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        d.ViewModel.Setter(d.CachedValue);
+                        d.Setter(d.CachedValue);
                     }
                 }
 
             }
-            else if (d.ViewModel.Type == typeof(int))
+            else if (d.Type == typeof(int))
             {
                 EditorGUI.BeginChangeCheck();
-                d.CachedValue = EditorGUILayout.IntField(d.ViewModel.Name, (int)d.CachedValue);
+                d.CachedValue = EditorGUILayout.IntField(d.Name, (int)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    d.ViewModel.Setter(d.CachedValue);
+                    d.Setter(d.CachedValue);
                 }
             }
-            else if (d.ViewModel.Type == typeof(float))
+            else if (d.Type == typeof(float))
             {
                 EditorGUI.BeginChangeCheck();
-                d.CachedValue = EditorGUILayout.FloatField(d.ViewModel.Name, (float)d.CachedValue);
+                d.CachedValue = EditorGUILayout.FloatField(d.Name, (float)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    d.ViewModel.Setter(d.CachedValue);
+                    d.Setter(d.CachedValue);
                 }
             }
-            else if (d.ViewModel.Type == typeof(Vector2))
+            else if (d.Type == typeof(Vector2))
             {
                 EditorGUI.BeginChangeCheck();
-                d.CachedValue = EditorGUILayout.Vector2Field(d.ViewModel.Name, (Vector3)d.CachedValue);
+                d.CachedValue = EditorGUILayout.Vector2Field(d.Name, (Vector3)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    d.ViewModel.Setter(d.CachedValue);
+                    d.Setter(d.CachedValue);
                 }
             }
 
-            else if (d.ViewModel.Type == typeof(Vector3))
+            else if (d.Type == typeof(Vector3))
             {
                 EditorGUI.BeginChangeCheck();
-                d.CachedValue = EditorGUILayout.Vector3Field(d.ViewModel.Name, (Vector3)d.CachedValue);
+                d.CachedValue = EditorGUILayout.Vector3Field(d.Name, (Vector3)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    d.ViewModel.Setter(d.CachedValue);
+                    d.Setter(d.CachedValue);
                 }
 
             }
-            else if (d.ViewModel.Type == typeof(Color))
+            else if (d.Type == typeof(Color))
             {
                 EditorGUI.BeginChangeCheck();
-                d.CachedValue = EditorGUILayout.ColorField(d.ViewModel.Name, (Color)d.CachedValue);
+                d.CachedValue = EditorGUILayout.ColorField(d.Name, (Color)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    d.ViewModel.Setter(d.CachedValue);
+                    d.Setter(d.CachedValue);
                 }
 
             }
-            else if (d.ViewModel.Type == typeof(Vector4))
+            else if (d.Type == typeof(Vector4))
             {
                 EditorGUI.BeginChangeCheck();
-                d.CachedValue = EditorGUILayout.Vector4Field(d.ViewModel.Name, (Vector4)d.CachedValue);
+                d.CachedValue = EditorGUILayout.Vector4Field(d.Name, (Vector4)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    d.ViewModel.Setter(d.CachedValue);
+                    d.Setter(d.CachedValue);
                 }
             }
-            else if (d.ViewModel.Type == typeof(bool))
+            else if (d.Type == typeof(bool))
             {
                 EditorGUI.BeginChangeCheck();
-                d.CachedValue = EditorGUILayout.Toggle(d.ViewModel.Name, (bool)d.CachedValue);
+                d.CachedValue = EditorGUILayout.Toggle(d.Name, (bool)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    d.ViewModel.Setter(d.CachedValue);
+                    d.Setter(d.CachedValue);
                 }
             }
-            else if (typeof(Enum).IsAssignableFrom(d.ViewModel.Type))
+            else if (typeof(Enum).IsAssignableFrom(d.Type))
             {
                 EditorGUI.BeginChangeCheck();
-                d.CachedValue = EditorGUILayout.EnumPopup(d.ViewModel.Name, (Enum)d.CachedValue);
+                d.CachedValue = EditorGUILayout.EnumPopup(d.Name, (Enum)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    InvertGraphEditor.ExecuteCommand(_ => d.ViewModel.Setter(d.CachedValue));
+                    InvertGraphEditor.ExecuteCommand(_ => d.Setter(d.CachedValue));
                 }
             }
-            else if (d.ViewModel.Type == typeof(Type))
+            else if (d.Type == typeof(Type))
             {
                 //InvertGraphEditor.WindowManager.InitTypeListWindow();
             }

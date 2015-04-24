@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using UnityEditor;
 
 public class ShellPropertySelectorItem : GenericTypedChildItem, IShellNodeItem
 {
@@ -68,7 +69,7 @@ public class PluginDesigner : DiagramPlugin
         container.AddNode<ShellTemplateConfigNode>("Code Template")
             .Color(NodeColor.Purple);
         
-        RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellPluginNode, DocumentationTemplate>();
+        
         RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfig, ShellNodeConfigTemplate>();
         RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfigSection, ShellNodeConfigReferenceSectionTemplate>();
         RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfigSection, ShellNodeConfigChildItemTemplate>();
@@ -78,7 +79,12 @@ public class PluginDesigner : DiagramPlugin
         RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellNodeConfig, ShellNodeConfigDrawerTemplate>();
         RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellTemplateConfigNode, ShellNodeConfigTemplateTemplate>();
         RegisteredTemplateGeneratorsFactory.RegisterTemplate<IShellSlotType, ShellSlotItemTemplate>();
-        RegisteredTemplateGeneratorsFactory.RegisterTemplate<IDocumentable, DocumentationPageTemplate>();
+        if (GenerateDocumentation)
+        {
+            RegisteredTemplateGeneratorsFactory.RegisterTemplate<ShellPluginNode, DocumentationTemplate>();
+            RegisteredTemplateGeneratorsFactory.RegisterTemplate<IDocumentable, DocumentationPageTemplate>();
+        }
+        
 
         container.Connectable<ShellNodeConfigSection, ShellNodeConfig>();
         container.Connectable<ShellNodeConfigSection, ShellNodeConfigSection>();
@@ -95,13 +101,19 @@ public class PluginDesigner : DiagramPlugin
         container.Connectable<ShellNodeConfigSection, ShellNodeConfigSection>();
     }
 
-    public string PluginClassFilename
+    [InspectorProperty]
+    public static bool GenerateDocumentation
     {
-        get { return Path.Combine("Editor", "Plugin.cs"); }
+        get { return InvertGraphEditor.Prefs.GetBool("PLUGINDESIGNER_GENDOCS", true); }
+        set
+        {
+            InvertGraphEditor.Prefs.SetBool("PLUGINDESIGNER_GENDOCS", value);
+        }
     }
+     
+
+
 }
-
-
 
 [TemplateClass(MemberGeneratorLocation.Both, "{0}DocumentationProvider")]
 public class DocumentationTemplate : DocumentationDefaultProvider, IClassTemplate<ShellPluginNode>

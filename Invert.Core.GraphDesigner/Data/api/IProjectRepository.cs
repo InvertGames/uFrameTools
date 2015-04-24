@@ -630,6 +630,10 @@ namespace Invert.Core.GraphDesigner
             CurrentGraph.SetProject(this);
         }
 
+        public TemporaryProjectRepository()
+        {
+        }
+
         public override IGraphData CurrentGraph { get; set; }
 
         public override IEnumerable<IGraphData> Graphs { get; set; }

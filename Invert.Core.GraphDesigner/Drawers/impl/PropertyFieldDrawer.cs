@@ -13,7 +13,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         public IInspectorPropertyDrawer CustomDrawer { get; set; }
-        public object CachedValue { get; set; }
+
 
         public override object TextStyle
         {
@@ -39,7 +39,7 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform, position,hardRefresh);
             if (hardRefresh)
             {
-                CachedValue = ViewModel.Getter();
+                ViewModel.CachedValue = ViewModel.Getter();
             }
 
             if (ViewModel.CustomDrawerType != null && hardRefresh)
@@ -80,7 +80,7 @@ namespace Invert.Core.GraphDesigner
             else
             {
 
-                platform.DrawPropertyField(this, scale);
+                platform.DrawPropertyField(this.ViewModel, scale);
             }
         }
 

@@ -219,6 +219,10 @@ namespace Invert.Core.GraphDesigner
             get { return 0; }
         }
 
+        public virtual bool ShowInNavigation
+        {
+            get { return true; }
+        }
         public virtual IEnumerable<ScaffoldGraph> Scaffolds()
         {
             yield break;
@@ -279,10 +283,20 @@ namespace Invert.Core.GraphDesigner
         }
 
         public T DoNamedNodeStep<T>(IDocumentationBuilder builder, string requiredName, IDiagramFilter requiredFilter = null,
-        Action<IDocumentationBuilder> stepContent = null) where T : IDiagramNodeItem
+        Action<IDocumentationBuilder> stepContent = null) where T : GenericNode
         {
-            var existing = ProjectService.CurrentProject.CurrentGraph.NodeItems.OfType<T>().FirstOrDefault(p => p.Name == requiredName);
-            builder.ShowTutorialStep(new TutorialStep(string.Format("Create {0} with the name '{1}'", typeof(T).Name, requiredName), () =>
+            
+            T existing = null;
+            if (ProjectService.CurrentProject == null || ProjectService.CurrentProject.CurrentGraph == null)
+            {
+
+            }
+            else
+            {
+                existing = ProjectService.CurrentProject.NodeItems.OfType<T>().FirstOrDefault(p => p.Name == requiredName);
+            }
+            
+            builder.ShowTutorialStep(new TutorialStep(string.Format("Create a '{0}' node with the name '{1}'", InvertApplication.Container.GetNodeConfig<T>().Name, requiredName), () =>
             {
                 if (existing == null)
                 {
@@ -320,10 +334,10 @@ namespace Invert.Core.GraphDesigner
             string singularItemTypeName,
             Action<IDocumentationBuilder> stepContent
 
-            ) where T : IDiagramNodeItem
+            ) where T : class, IDiagramNodeItem
         {
-            var existing = requiredNode.PersistedItems.OfType<T>().FirstOrDefault(p => p.Name == requiredName);
-            builder.ShowTutorialStep(new TutorialStep(string.Format("Create {0} with the name '{1}' on the '{2}' Node.", singularItemTypeName, requiredName, requiredNode.Name), () =>
+            T existing = requiredNode == null ?  (T) null : requiredNode.PersistedItems.OfType<T>().FirstOrDefault(p => p.Name == requiredName);
+            builder.ShowTutorialStep(new TutorialStep(string.Format("Create {0} with the name '{1}' on the '{2}' Node.", singularItemTypeName, requiredName, requiredNode == null ? "the node" : requiredNode.Name), () =>
             {
                 if (existing == null)
                 {
@@ -336,6 +350,8 @@ namespace Invert.Core.GraphDesigner
                 {
                     _.Paragraph("To create a node you need to right click on an empty space on the graph.");
                     _.Paragraph("Then choose Add {0}", typeof(T).Name.Replace("Node", ""));
+                    _.Break();
+                    _.ToggleContentByPage<T>(singularItemTypeName);
 
                     if (stepContent != null)
                     {
@@ -348,18 +364,22 @@ namespace Invert.Core.GraphDesigner
 
 
 
-        public TGraphType DoGraphStep<TGraphType>(IDocumentationBuilder builder, Action<IDocumentationBuilder> stepContent = null) where TGraphType : class
+        public TGraphType DoGraphStep<TGraphType>(IDocumentationBuilder builder, string name = null, Action<IDocumentationBuilder> stepContent = null) where TGraphType : class,IGraphData
         {
             var currentGraph =
                 (ProjectService.CurrentProject == null || object.ReferenceEquals(ProjectService.CurrentProject, null))
                 || (ProjectService.CurrentProject.CurrentGraph == null || object.ReferenceEquals(ProjectService.CurrentProject.CurrentGraph, null))
-                ? null : (ProjectService.CurrentProject.CurrentGraph.RootFilter as IDiagramNode).Graph as TGraphType;
+                ? null : (ProjectService.CurrentProject.Graphs.OfType<UnityGraphData>().Select(p=>p.Graph).OfType<TGraphType>().FirstOrDefault()) as TGraphType;
 
             builder.ShowTutorialStep(new TutorialStep(string.Format("Create a new {0} Graph", typeof(TGraphType).Name.Replace("Graph","")), () =>
             {
                 if (currentGraph == null)
                 {
                     return "Graph hasn't been created yet.";
+                }
+                else if (!string.IsNullOrEmpty(name) && currentGraph.RootFilter.Name != name)
+                {
+                    return string.Format("Rename it to '{0}'", name);
                 }
                 return null;
             })
@@ -412,8 +432,7 @@ namespace Invert.Core.GraphDesigner
         {
             var firstOrDefault = elementNode.GetCodeGeneratorsForNode()
                 .FirstOrDefault(p => !p.AlwaysRegenerate && (p.Filename.Contains(filenameSearchText) || p.Filename == filenameSearchText));
-            if (firstOrDefault == null || !File.ReadAllText(firstOrDefault.FullPathName)
-                .Contains(codeSearchText))
+            if (firstOrDefault == null || !File.Exists(firstOrDefault.FullPathName) || !File.ReadAllText(firstOrDefault.FullPathName).Contains(codeSearchText))
             {
                 return "File not found, or you haven't implemented it properly.";
             }
@@ -421,30 +440,40 @@ namespace Invert.Core.GraphDesigner
         }
         public ConnectionData DoCreateConnectionStep(IDocumentationBuilder builder, IDiagramNodeItem output, IDiagramNodeItem input, Action<IDocumentationBuilder> stepContent = null)
         {
-            var existing =
-                ProjectService.CurrentProject.Connections.FirstOrDefault(
-                    p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
-            var inputName = input.Name;
-            var outputName = output.Name;
+     
+            var inputName = input == null ? "A" :input.Name;
+            var outputName = output == null ? "B" : output.Name;
 
-            if (input != input.Node)
+            if (input != null && input != input.Node)
             {
                 inputName = input.Node.Name + "'s " + input.Name + " input slot";
             }
-            if (output != output.Node)
+            if (output != null && output != output.Node)
             {
                 outputName = output.Node.Name + "'s " + output.Name + " output slot";
             }
             builder.ShowTutorialStep( new TutorialStep(string.Format("Create a connection from {0} to {1}.", outputName, inputName), () =>
             {
+                var existing = output == null || input == null ? null :
+                    ProjectService.CurrentProject.Connections.FirstOrDefault(p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
                 if (existing == null)
+                {
+                    var typedItem = output as ITypedItem;
+                    if (typedItem != null && input != null)
+                    {
+                        if (typedItem.RelatedType == input.Identifier)
+                        {
+                            return null;
+                        }
+                    }
                     return "The connection hasen't been created yet.";
+                }
                 return null;
             })
             {
                 StepContent = stepContent
             });
-            return existing;
+            return null;
         }
 
     }
@@ -525,12 +554,12 @@ namespace Invert.Core.GraphDesigner
     {
         public override string Name
         {
-            get { return "Help & Documentation"; }
+            get { return "Help and Documentation"; }
         }
 
         public override string Path
         {
-            get { return "Help & Documentation"; }
+            get { return "Help and Documentation"; }
         }
 
         public override void Perform(DiagramNode node)

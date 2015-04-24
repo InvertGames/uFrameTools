@@ -43,7 +43,7 @@ namespace Invert.Core.GraphDesigner
 
         void DrawPolyLine(Vector2[] lines, Color color);
 
-        void DrawPropertyField(PropertyFieldDrawer propertyFieldDrawer, float scale);
+        void DrawPropertyField(PropertyFieldViewModel propertyFieldDrawer, float scale);
 
         void DrawStretchBox(Rect scale, object nodeBackground, float offset);
 

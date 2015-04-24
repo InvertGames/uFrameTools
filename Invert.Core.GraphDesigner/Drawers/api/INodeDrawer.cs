@@ -84,7 +84,9 @@ namespace Invert.Core.GraphDesigner
             get { return _children ?? (_children = new List<IDrawer>()); }
             set { _children = value; }
         }
-    
+
+        public IDrawer ParentDrawer { get; set; }
+
 
         public virtual void OnDeselecting()
         {

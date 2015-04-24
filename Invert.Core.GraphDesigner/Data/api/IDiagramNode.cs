@@ -334,7 +334,7 @@ namespace Invert.Core.GraphDesigner
         void ShowGist(string id, string filename, string userId = "micahosborne");
         bool ShowTutorialStep(ITutorialStep step, Action<IDocumentationBuilder> stepContent = null);
         void BeginTutorial(string walkthrough);
-        void EndTutorial();
+        InteractiveTutorial EndTutorial();
         void ImageByUrl(string empty);
         void CodeSnippet(string code);
         void ToggleContentByNode<TNode>(string name);
@@ -343,6 +343,7 @@ namespace Invert.Core.GraphDesigner
         void ContentByPage<TPage>();
 
         void LinkToPage<T>();
+        void AlsoSeePages(params Type[] type);
     }
 
 
@@ -376,6 +377,7 @@ namespace Invert.Core.GraphDesigner
         Action DoIt { get; set; }
         Func<string> IsDone { get; set; }
         Action<IDocumentationBuilder> StepContent { get; set; }
+        string IsComplete { get; set; }
     }
 
     public class TutorialStep : ITutorialStep
@@ -397,5 +399,6 @@ namespace Invert.Core.GraphDesigner
         public Action DoIt { get; set; }
         public Func<string> IsDone { get; set; }
         public Action<IDocumentationBuilder> StepContent { get; set; }
+        public string IsComplete { get; set; }
     }
 }

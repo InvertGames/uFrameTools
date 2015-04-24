@@ -682,7 +682,6 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
         public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
         {
-            InvertApplication.Log(string.Format("{0} : {1}",typeDeclaration.Name,ClassName));
             if (typeDeclaration.Name == ClassName)
             {
                 Script.InsertBefore(typeDeclaration.LastChild, new TextNode(Text));

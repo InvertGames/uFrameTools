@@ -104,7 +104,9 @@ namespace Invert.Core.GraphDesigner.Unity
                 handler.OnMouseDown(mouse);
                 if (e.button == 1)
                 {
+                    e.Use();
                     handler.OnRightClick(mouse);
+                    
                 }
 
                 if (e.clickCount > 1)

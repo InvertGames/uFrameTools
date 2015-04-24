@@ -10,7 +10,7 @@ using Invert.Core.GraphDesigner;
 using UnityEditor;
 using UnityEngine;
 
-public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
+public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, INodeItemEvents
 {
     public static Dictionary<string, Texture> ImageCache
     {
@@ -92,7 +92,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
     public static void ShowPage(Type pageType)
     {
         ShowWindow(FindPage(Pages, _ => _.GetType() == pageType));
-        
+
     }
     public static void ShowPage(string name)
     {
@@ -114,6 +114,10 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
         {
             var page = Pages.FirstOrDefault(p => p.RelatedNodeType == graphItemType);
             ShowWindow(page);
+        }
+        else
+        {
+            ShowWindow();
         }
     }
     public static void ShowWindow(DocumentationPage page)
@@ -159,14 +163,14 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
                 {
                     provider.GetPages(_pages);
                 }
-                
+
             }
             return _pages;
         }
         set { _pages = value; }
     }
 
-    public static DocumentationPage FindPage(IEnumerable<DocumentationPage> inside, Predicate<DocumentationPage> predicate )
+    public static DocumentationPage FindPage(IEnumerable<DocumentationPage> inside, Predicate<DocumentationPage> predicate)
     {
         foreach (var page in inside)
         {
@@ -193,6 +197,11 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
         if (disposer == null)
         {
             disposer = InvertApplication.ListenFor<ICommandEvents>(this);
+        }
+
+        if (disposer2 == null)
+        {
+           disposer2 = InvertApplication.ListenFor<INodeItemEvents>(this);
         }
         GUIHelpers.IsInsepctor = false;
         // DrawTitleBar("uFrame Help");
@@ -227,59 +236,83 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
             EditorGUILayout.EndScrollView();
         }
 
-     
-            _pageScrollPosition = EditorGUILayout.BeginScrollView(_pageScrollPosition);
-            EditorGUI.DrawRect(new Rect(_pageScrollPosition.x, _pageScrollPosition.y, Screen.width, Screen.height), new Color(0.8f, 0.8f, 0.8f));
+
+        _pageScrollPosition = EditorGUILayout.BeginScrollView(_pageScrollPosition);
+        EditorGUI.DrawRect(new Rect(_pageScrollPosition.x, _pageScrollPosition.y, Screen.width, Screen.height), new Color(0.8f, 0.8f, 0.8f));
 
 
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Space(15f);
-            EditorGUILayout.BeginVertical();
-            if (CurrentPage != null)
-            {
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Space(15f);
+        EditorGUILayout.BeginVertical();
+        if (CurrentPage != null)
+        {
 
-                CurrentPage.GetContent(this);
-                if (false)
+            CurrentPage.GetContent(this);
+            if (false)
                 foreach (var childPage in CurrentPage.ChildPages)
                 {
                     childPage.PageContent(this);
                 }
-            }
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.EndHorizontal();
+        }
+        EditorGUILayout.EndVertical();
+        EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.EndScrollView();
-   
+        EditorGUILayout.EndScrollView();
+
 
 
         EditorGUILayout.EndHorizontal();
     }
+    public static GUIStyle Item4
+    {
+        get
+        {
+            if (_item4
+                == null)
+                _item4 = new GUIStyle
+                {
+                    normal = { background = ElementDesignerStyles.GetSkinTexture("Item4"), textColor = Color.white },
+                    stretchHeight = true,
+                    stretchWidth = true,
+                    fontSize = Mathf.RoundToInt(10f),
+                    fixedHeight = 20f,
+                    alignment = TextAnchor.MiddleLeft
+                };
 
+            return _item4;
+        }
+    }
     private void ShowPages(List<DocumentationPage> pages, int indent = 1)
     {
 
         EditorGUILayout.BeginVertical();
-        foreach (var item in pages.OrderBy(p=>p.Order))
+        foreach (var item in pages.OrderBy(p => p.Order))
         {
+         
             if (item == null)
             {
                 GUILayout.Label("Item is null");
                 continue;
-            }
+            } 
+            if (!item.ShowInNavigation) continue;
             if (item.Name == null)
             {
                 GUILayout.Label(string.Format("{0} name is null", item.GetType().Name));
                 continue;
             }
-            if (item.ChildPages.Count == 0)
+            if (item.ChildPages.Count(p=>p.ShowInNavigation) == 0)
             {
-                if (GUIHelpers.DoTriggerButton(new UFStyle(item.Name, ElementDesignerStyles.Item4)
-                {
-                    
-                }))
+                if (GUILayout.Button(item.Name, Item4))
                 {
                     this.ShowPage(item);
                 }
+                //if (GUIHelpers.DoTriggerButton(new UFStyle(item.Name, ElementDesignerStyles.Item4)
+                //{
+                //    TextAnchor = TextAnchor.MiddleLeft
+                //}))
+                //{
+                   
+                //}
             }
             else
             {
@@ -312,7 +345,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
             {
                 if (LastPage != null)
                 {
-                    var page = FindPage(Pages, p=>p.Name == LastPage);
+                    var page = FindPage(Pages, p => p.Name == LastPage);
                     if (page != null)
                     {
                         return page;
@@ -382,8 +415,8 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
         {
             GUILayout.Label(string.Format(text, args), ParagraphStyle);
         }
-      
-        
+
+
     }
 
     public void Break()
@@ -466,7 +499,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
 
     public void Note(string text, params object[] args)
     {
-        EditorGUILayout.HelpBox(text,MessageType.Info);
+        EditorGUILayout.HelpBox(text, MessageType.Info);
     }
 
     public void TemplateLink()
@@ -517,25 +550,33 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
     }
 
     public void TemplateExample<TTemplate, TData>(TData data, bool isDesignerFile = true, params string[] members)
-        where TTemplate : class, IClassTemplate<TData>, new() where TData : class, IDiagramNodeItem
+        where TTemplate : class, IClassTemplate<TData>, new()
+        where TData : class, IDiagramNodeItem
     {
-        
-        var tempProject = new TemporaryProjectRepository(data.Node.Graph);
+
+        var tempProject = CreateInstance<TemporaryProjectRepository>();
+        tempProject.CurrentGraph = data.Node.Graph;
+        tempProject.Graphs = new[] { data.Node.Graph };
+        tempProject.CurrentGraph.SetProject(tempProject);
 
         var template = new TemplateClassGenerator<TData, TTemplate>()
         {
             Data = data,
             IsDesignerFile = isDesignerFile,
             // If we don't have any make sure its null
-            FilterToMembers =members != null && members.Length > 0 ? members : null
+            FilterToMembers = members != null && members.Length > 0 ? members : null
         };
         var name = "Example " + data.Name;
         if (members != null)
         {
             name += string.Join(", ", members);
         }
+        if (isDesignerFile)
+        {
+            name += ".designer";
+        }
         name += ".cs";
-        if (GUIHelpers.DoToolbarEx(name,null,null,null,null,false,Color.black))
+        if (GUIHelpers.DoToolbarEx(name, null, null, null, null, false, Color.black))
         {
             var codeFileGenerator = new CodeFileGenerator
             {
@@ -544,7 +585,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
             };
             EditorGUILayout.TextArea(codeFileGenerator.ToString());
         }
-      
+
 
     }
 
@@ -571,45 +612,56 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
 
         CurrentTutorial.Steps.Add(step);
 
-        if (CurrentTutorial.LastStepCompleted == false) return false;
 
 
-        var result = step.IsDone();
-        if (result == null)
+        if (CurrentTutorial.LastStepCompleted)
         {
-            CurrentTutorial.LastStepCompleted = true;
-            //TutorialActionStyle.fontSize = 13;
-            //TutorialActionStyle.normal.textColor = new Color(0.3f, 0.6f, 0.3f);
-            //GUILayout.Label(string.Format("Step {0}: Complete", CurrentTutorial.Steps.IndexOf(step) + 1),
-            //    TutorialActionStyle);
-            return false;
+            step.IsComplete = step.IsDone();
+            CurrentTutorial.LastStepCompleted = step.IsComplete == null;
         }
         else
         {
-            CurrentTutorial.LastStepCompleted = false;
+            step.IsComplete = "Waiting for previous step to complete.";
         }
-        Title2("Study Material");
+
 
         if (stepContent != null)
-            stepContent(this);
-        else if (step.StepContent != null)
         {
-            step.StepContent(this);
+            step.StepContent = stepContent;
         }
-        Break();
-        Break();
-        Break();
-        Title(string.Format("Step {0}: {1}", CurrentTutorial.Steps.IndexOf(step) + 1, step.Name)); 
-        Break();
-        Title2("Step Trouble Shooting");
+        return step.IsComplete == null;
 
-        TutorialActionStyle.fontSize = 12;
-        TutorialActionStyle.normal.textColor = Color.red;
+        //if (step.IsComplete == null)
+        //{
+        //    CurrentTutorial.LastStepCompleted = true;
+        //    //TutorialActionStyle.fontSize = 13;
+        //    //TutorialActionStyle.normal.textColor = new Color(0.3f, 0.6f, 0.3f);
+        //    //GUILayout.Label(string.Format("Step {0}: Complete", CurrentTutorial.Steps.IndexOf(step) + 1),
+        //    //    TutorialActionStyle);
+        //    return false;
+        //}
+        //else
+        //{
+        //    CurrentTutorial.LastStepCompleted = false;
+        //}
+        //Title(string.Format("Step {0}: {1}", CurrentTutorial.Steps.IndexOf(step) + 1, step.Name));
+        //Break();
+        //Title2("Step Trouble Shooting");
 
-        GUILayout.Label(result, TutorialActionStyle);
-        Break();
+        //TutorialActionStyle.fontSize = 12;
+        //TutorialActionStyle.normal.textColor = Color.red;
 
+        //GUILayout.Label(result, TutorialActionStyle);
+        //Break();
+        //Break();
+        //Title2("Study Material");
 
+        //if (stepContent != null)
+        //    stepContent(this);
+        //else if (step.StepContent != null)
+        //{
+        //    step.StepContent(this);
+        //}
 
 
 
@@ -624,17 +676,152 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
     {
         CurrentTutorial = new InteractiveTutorial(name);
     }
-
-    public void EndTutorial()
+    public static GUIStyle EventButtonStyleSmall
     {
+        get
+        {
+            var textColor = Color.white;
+            if (_eventButtonStyleSmall == null)
+                _eventButtonStyleSmall = new GUIStyle
+                {
+                    normal = { background = ElementDesignerStyles.GetSkinTexture("EventButton"), textColor = new Color(0.1f,0.1f,0.1f) },
+                  
+                    stretchHeight = true,
+
+                    fixedHeight = 40,
+                    border = new RectOffset(3, 3, 3, 3),
+                    fontSize = 16,
+                    padding = new RectOffset(25, 0, 5, 5)
+                };
+
+            return _eventButtonStyleSmall;
+        }
+    }
+    public static GUIStyle Item2
+    {
+        get
+        {
+            if (_item2 == null)
+                _item2 = new GUIStyle
+                {
+                    normal = { background = ElementDesignerStyles.GetSkinTexture("Item2"), textColor = Color.white },
+                    stretchHeight = true,
+                    stretchWidth = true,
+                    fixedHeight = 30f,
+                    fontSize = Mathf.RoundToInt(9f),
+                    alignment = TextAnchor.MiddleLeft,
+                    padding = new RectOffset(10,0,0,0)
+                };
+
+            return _item2;
+        }
+    }
+    public static GUIStyle Item5
+    {
+        get
+        {
+            if (_item5 == null)
+                _item5 = new GUIStyle
+                {
+                    normal = { background = ElementDesignerStyles.GetSkinTexture("Item5"), textColor = new Color(0.8f, 0.8f, 0.8f) },
+                    stretchHeight = false,
+                    fontSize = Mathf.RoundToInt(9),
+                    alignment = TextAnchor.MiddleLeft,
+                    fixedHeight = 30f,
+                    padding = new RectOffset(10,0,0,0)
+                };
+
+            return _item5;
+        }
+    }
+
+    public static GUIStyle Item1
+    {
+        get
+        {
+            if (_item1 == null)
+                _item1 = new GUIStyle
+                {
+                    normal = { background = ElementDesignerStyles.GetSkinTexture("Item1"), textColor = Color.white },
+                    stretchHeight = true,
+                    stretchWidth = true,
+                    fixedHeight = 40f,
+                    fontStyle = FontStyle.Bold,
+                    fontSize = Mathf.RoundToInt(14f),
+                    alignment = TextAnchor.MiddleLeft,
+                    padding = new RectOffset(10, 0, 0, 0)
+                };
+
+            return _item1;
+        }
+    }
+    public InteractiveTutorial EndTutorial()
+    {
+        var index = 1;
+        bool lastStepComplete = true;
+        foreach (var step in CurrentTutorial.Steps)
+        {
+
+            var lbl = string.Format(" Step {1}: {2} {0}", step.IsComplete == null ? "COMPLETE" : string.Empty, index,
+                step.Name);
+
+            GUILayout.Button(lbl, step.IsComplete == null ? Item2 : lastStepComplete ? Item1 : Item5);
+            //GUIHelpers.DoTriggerButton(
+            //    new UFStyle(lbl, step.IsComplete == null ? Item2 : lastStepComplete ? Item1 : Item5, null,
+            //    step.IsComplete == null ? ElementDesignerStyles.TriggerActiveButtonStyle : ElementDesignerStyles.TriggerInActiveButtonStyle)
+            //    {
+            //       Enabled = true
+            //    });
+
+
+            if (step.IsComplete != null && lastStepComplete)
+            {
+                Title2("Step Trouble Shooting");
+                TutorialActionStyle.fontSize = 12;
+                TutorialActionStyle.normal.textColor = Color.red;
+
+                GUILayout.Label(step.IsComplete, TutorialActionStyle);
+            
+
+
+                if (step.StepContent != null)
+                {
+                    Break();
+                    Break();
+                    Title2("Study Material");
+                    step.StepContent(this);
+                }
+
+
+                CurrentTutorial.LastStepCompleted = step.IsComplete == null;
+          
+            }
+            else
+            {
+                
+            }
+            lastStepComplete = step.IsComplete == null;
+            index++;
+        }
+        //EditorGUILayout.BeginHorizontal();
+
+        //EditorGUILayout.BeginVertical();
+
+        //EditorGUILayout.EndVertical();
+        //EditorGUILayout.BeginVertical();
+
+        //EditorGUILayout.EndVertical();
+        //EditorGUILayout.EndHorizontal();
+
         if (CurrentTutorial.LastStepCompleted)
         {
-            
+            Break();
+            Break();
             TutorialActionStyle.fontSize = 20;
             TutorialActionStyle.normal.textColor = new Color(0.3f, 0.6f, 0.3f);
             GUILayout.Label("Contratulations, you've completed this tutorial.", TutorialActionStyle);
         }
-        CurrentTutorial = null;
+        return CurrentTutorial;
     }
 
     public void ImageByUrl(string empty)
@@ -644,22 +831,24 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
 
     public void CodeSnippet(string code)
     {
-        Paragraph(code);
+        GUILayout.TextArea(code);
     }
 
     public void ToggleContentByNode<TNode>(string name)
     {
         var page = FindPage(Pages, p => p.RelatedNodeType == typeof(TNode));
-        if (GUIHelpers.DoToolbarEx(name ?? page.Name,null,null,null,null,false,Color.black))
+        if (page == null) return;
+        if (GUIHelpers.DoToolbarEx(name ?? page.Name, null, null, null, null, false, Color.black))
         {
             page.GetContent(this);
         }
-        
+
     }
     public void ToggleContentByPage<TPage>(string name)
     {
         var page = FindPage(Pages, p => p is TPage);
-        if (GUIHelpers.DoToolbarEx(name ??page.Name, null, null, null, null, false, Color.black))
+        if (page == null) return;
+        if (GUIHelpers.DoToolbarEx(name ?? page.Name, null, null, null, null, false, Color.black))
         {
             page.GetContent(this);
         }
@@ -680,10 +869,26 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
     public void LinkToPage<TPage>()
     {
         var page = FindPage(Pages, p => p is TPage);
-        if (GUILayout.Button(page.Name))
+        if (GUILayout.Button(page.Name,GUILayout.MaxWidth(200)))
         {
             ShowPage(page);
-            
+
+        }
+    }
+
+    public void AlsoSeePages(params Type[] type)
+    {
+        Title2("Also See");
+        foreach (var t in type)
+        {
+            var t1 = t;
+            var page = FindPage(Pages, p => p.GetType() == t1);
+            if (page == null) continue;
+            if (GUILayout.Button(page.Name))
+            {
+                ShowPage(page);
+
+            }
         }
     }
 
@@ -720,13 +925,38 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents
     }
 
     private Action disposer;
+    private static GUIStyle _eventButtonStyleSmall;
+    private Action disposer2;
+    private static GUIStyle _item2;
+    private static GUIStyle _item5;
+    private static GUIStyle _item1;
+    private static GUIStyle _item4;
+
     public void OnDestory()
     {
         if (disposer != null)
         {
             disposer();
         }
+        if (disposer2 != null)
+        {
+            disposer2();
+        }
     }
 
-    
+
+    public void Deleted(IDiagramNodeItem node)
+    {
+        this.Repaint();
+    }
+
+    public void Hidden(IDiagramNodeItem node)
+    {
+        this.Repaint();
+    }
+
+    public void Renamed(IDiagramNodeItem node, string previousName, string newName)
+    {
+        this.Repaint();
+    }
 }

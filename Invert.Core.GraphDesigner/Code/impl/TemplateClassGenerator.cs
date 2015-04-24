@@ -264,6 +264,12 @@ namespace Invert.Core.GraphDesigner
             // Initialize the template
             TemplateContext.Iterators.Clear();
             TemplateClass.TemplateSetup();
+            var initializeMethods = TemplateClass.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public).Where(p=>p.IsDefined(typeof(TemplateSetup),true)).ToArray();
+            foreach (var item in initializeMethods)
+            {
+                item.Invoke(TemplateClass, null);
+            }
+
             InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.TemplateGenerating(TemplateClass, TemplateContext));
           
 
@@ -443,6 +449,22 @@ namespace Invert.Core.GraphDesigner
                   templateConstructor.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) yield break;
             if (templateConstructor.Value.Location == MemberGeneratorLocation.EditableFile &&
                 templateConstructor.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) yield break;
+
+            var forEachAttribute =
+                templateConstructor.Key.GetCustomAttributes(typeof(TemplateForEach), true).FirstOrDefault() as
+          TemplateForEach;
+
+            var iteratorName = templateConstructor.Key.Name;
+            if (forEachAttribute != null)
+            {
+                iteratorName = forEachAttribute.IteratorProperty;
+                AddIterator(iteratorName,
+                 delegate(TData arg1)
+                 {
+                     return CreateIterator(instance, iteratorName, arg1);
+                 });
+            }
+
             if (Iterators.ContainsKey(templateConstructor.Key.Name))
             {
                 var iterator = Iterators[templateConstructor.Key.Name];
@@ -481,24 +503,26 @@ namespace Invert.Core.GraphDesigner
                 templateProperty.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) yield break;
             if (templateProperty.Value.Location == MemberGeneratorLocation.EditableFile &&
                 templateProperty.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) yield break;
+            //Debug.Log("Found iterators for " + templateProperty.Key.Name);
+
+            var forEachAttribute =
+                templateProperty.Key.GetCustomAttributes(typeof(TemplateForEach), true).FirstOrDefault() as
+                    TemplateForEach;
+
+            var iteratorName = templateProperty.Key.Name;
+            if (forEachAttribute != null)
+            {
+                iteratorName = forEachAttribute.IteratorProperty;
+                AddIterator(iteratorName,
+                 delegate(TData arg1)
+                 {
+                     return CreateIterator(instance, iteratorName, arg1);
+                 });
+            }
 
             if (Iterators.ContainsKey(templateProperty.Key.Name))
             {
-                //Debug.Log("Found iterators for " + templateProperty.Key.Name);
-                var forEachAttribute =
-                    templateProperty.Key.GetCustomAttributes(typeof (TemplateForEach), true).FirstOrDefault() as
-                        TemplateForEach;
-
-                var iteratorName = templateProperty.Key.Name;
-                if (forEachAttribute != null)
-                {
-                    iteratorName = forEachAttribute.IteratorProperty;
-                    AddIterator(iteratorName,
-                        delegate
-                        {
-                            return instance.GetType().GetProperty(iteratorName).GetValue(instance, null) as IEnumerable;
-                        });
-                }
+               
 
                 var iterator = Iterators[iteratorName];
                 var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
@@ -542,6 +566,22 @@ namespace Invert.Core.GraphDesigner
                 templateMethod.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) yield break;
             if (templateMethod.Value.Location == MemberGeneratorLocation.EditableFile &&
                 templateMethod.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) yield break;
+
+            var forEachAttribute =
+           templateMethod.Key.GetCustomAttributes(typeof(TemplateForEach), true).FirstOrDefault() as
+               TemplateForEach;
+
+            var iteratorName = templateMethod.Key.Name;
+            if (forEachAttribute != null)
+            {
+                iteratorName = forEachAttribute.IteratorProperty;
+                AddIterator(iteratorName,
+                    delegate(TData arg1)
+                    {
+                        return CreateIterator(instance, iteratorName, arg1);
+                    });
+            }
+
             if (Iterators.ContainsKey(templateMethod.Key.Name))
             {
                 var iterator = Iterators[templateMethod.Key.Name];
@@ -564,7 +604,22 @@ namespace Invert.Core.GraphDesigner
                 yield return RenderMethod(instance, templateMethod, Data as IDiagramNodeItem);
             }
         }
-  
+
+        private static IEnumerable CreateIterator(object instance, string iteratorName, TData arg1)
+        {
+            var property = instance.GetType().GetProperty(iteratorName);
+            if (property == null && arg1 != null)
+            {
+                property = arg1.GetType().GetProperty(iteratorName);
+            }
+            if (property == null)
+            {
+                throw new Exception(string.Format("ForEach on property '{0}' could not be found on the template, or the node.",
+                    iteratorName));
+            }
+            return property.GetValue(instance, null) as IEnumerable;
+        }
+
         protected CodeConstructor RenderConstructor(object instance, KeyValuePair<MethodInfo, TemplateConstructor> templateMethod, IDiagramNodeItem data)
         {
             var info = templateMethod.Key;

@@ -34,13 +34,13 @@ public class FilterState : IJsonObject {
 
     public void FilterPushed(IDiagramFilter filter)
     {
-        if (!_persistedFilterStack.Contains(filter.Name))
-            _persistedFilterStack.Add(filter.Name);
+        if (!_persistedFilterStack.Contains(filter.Identifier))
+            _persistedFilterStack.Add(filter.Identifier);
     }
 
     public void FilterPoped(IDiagramFilter pop)
     {
-        _persistedFilterStack.Remove(pop.Name);
+        _persistedFilterStack.Remove(pop.Identifier);
     }
 
     public void Reload(IGraphData graphData)
@@ -51,7 +51,7 @@ public class FilterState : IJsonObject {
         {
             foreach (var filterName in _persistedFilterStack)
             {
-                var filter = graphData.Project.GetFilters().FirstOrDefault(p => p.Name == filterName);
+                var filter = graphData.Project.GetFilters().FirstOrDefault(p => p.Identifier == filterName);
                 if (filter == null)
                 {
                     _persistedFilterStack.Clear();

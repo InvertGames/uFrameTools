@@ -99,6 +99,10 @@ public class TemplateMethod : TemplateMember
     public AutoFillType AutoFill { get; set; }
 }
 
+public class TemplateSetup:Attribute
+{
+    
+}
 public class TemplateForEach :Attribute
 {
     public string IteratorProperty { get; set; }

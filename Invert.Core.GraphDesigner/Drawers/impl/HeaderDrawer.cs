@@ -92,6 +92,7 @@ namespace Invert.Core.GraphDesigner
                 platform.DrawTextbox(NodeViewModel.GraphItemObject.Identifier, textBounds.Scale(scale), NodeViewModel.Name, CachedStyles.ViewModelHeaderStyle, (v, finished) =>
                 {
                     NodeViewModel.Rename(v);
+                    ParentDrawer.Refresh(platform);
                     if (finished)
                     {
                         NodeViewModel.EndEditing();

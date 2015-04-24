@@ -25,7 +25,8 @@ namespace Invert.Core.GraphDesigner
         void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true);
         int ZOrder { get; }
         List<IDrawer> Children { get; set; }
-   
+        IDrawer ParentDrawer { get; set; }
+
         void OnDeselecting();
         void OnSelecting();
         void OnDeselected();

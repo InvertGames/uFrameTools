@@ -130,10 +130,11 @@ namespace Invert.Core.GraphDesigner
 //#if UNITY_DLL
 //            UnityEditor.AssetDatabase.SaveAssets();
 //#endif
-            InvertGraphEditor.Platform.RefreshAssets();
+            
             diagram.Save();
 #if UNITY_DLL
             UnityEditor.AssetDatabase.SaveAssets();
+            InvertGraphEditor.Platform.RefreshAssets();
 #endif
            
           

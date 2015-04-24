@@ -364,6 +364,7 @@ namespace Invert.Core.GraphDesigner
             item = DrawersAtMouse.OfType<ItemDrawer>().FirstOrDefault();
             if (item != null)
             {
+                
                 ShowItemContextMenu(item);
                 return;
             }
@@ -372,6 +373,7 @@ namespace Invert.Core.GraphDesigner
                 item = DrawersAtMouse.OfType<HeaderDrawer>().FirstOrDefault();
             if (item != null)
             {
+                if (!item.ViewModelObject.IsSelected)
                 item.ViewModelObject.Select();
                 ShowContextMenu();
                 return;

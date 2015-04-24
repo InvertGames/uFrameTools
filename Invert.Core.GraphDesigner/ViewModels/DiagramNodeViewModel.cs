@@ -312,9 +312,10 @@ namespace Invert.Core.GraphDesigner
             get { return GraphItemObject.IsEditing; }
             set
             {
-                GraphItemObject.IsEditing = value;
                 if (value == false)
                     EndEditing();
+                GraphItemObject.IsEditing = value;
+                
             }
         }
 

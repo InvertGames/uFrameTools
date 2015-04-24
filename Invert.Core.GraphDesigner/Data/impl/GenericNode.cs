@@ -191,13 +191,23 @@ namespace Invert.Core.GraphDesigner
         public override void MoveItemDown(IDiagramNodeItem nodeItem)
         {
             base.MoveItemDown(nodeItem);
-            ChildItems.Move(ChildItems.IndexOf(nodeItem),true);
+            var items = ChildItems.Where(p => p.GetType() == nodeItem.GetType()).ToList();
+            ChildItems.RemoveAll(p => items.Contains(p));
+
+            items.Move(items.IndexOf(nodeItem),false);
+            ChildItems.AddRange(items);
+
         }
 
         public override void MoveItemUp(IDiagramNodeItem nodeItem)
         {
             base.MoveItemUp(nodeItem);
-            ChildItems.Move(ChildItems.IndexOf(nodeItem), false);
+            var items = ChildItems.Where(p => p.GetType() == nodeItem.GetType()).ToList();
+            ChildItems.RemoveAll(p => items.Contains(p));
+
+            items.Move(items.IndexOf(nodeItem), true);
+            ChildItems.AddRange(items);
+
         }
 
         private List<IDiagramNodeItem> _childItems = new List<IDiagramNodeItem>();

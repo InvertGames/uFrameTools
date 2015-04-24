@@ -432,21 +432,5 @@ namespace Invert.Core
             Logger.Log(format);
         }
     }
-    //public interface ISubscribable<T>
-    //{
-        
-    //}
-
-    //public static class SubscribableExtensions
-    //{
-    //    public static Action Watch<T>(this ISubscribable<T> t, T listener)
-    //    {
-    //        return InvertApplication.ListenFor(listener);
-    //    }
-    //    public static void Signal<T>(this ISubscribable<T> t, Action<T> action)
-    //    {
-    //        InvertApplication.SignalEvent(action);
-    //    }
-    //}
 
 }

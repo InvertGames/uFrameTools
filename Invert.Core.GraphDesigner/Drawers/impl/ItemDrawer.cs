@@ -95,7 +95,16 @@ namespace Invert.Core.GraphDesigner
         public override void OnMouseDown(MouseEvent mouseEvent)
         {
             base.OnMouseDown(mouseEvent);
-            ViewModelObject.Select();
+            if (mouseEvent.MouseButton != 0)
+            {
+                if (!ViewModelObject.IsSelected)
+                ViewModelObject.Select();
+            }
+            else
+            {
+                ViewModelObject.Select();
+            }
+            
             
         }
 

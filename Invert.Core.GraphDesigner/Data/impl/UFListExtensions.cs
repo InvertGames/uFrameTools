@@ -8,15 +8,16 @@ public static class UFListExtensions
         if (up)
         {
             var move = iIndexToMove - 1;
-            if (move < 0) return;
+            if (move < 0 || move >= list.Count) return;
             var old = list[move];
             list[move] = list[iIndexToMove];
             list[iIndexToMove] = old;
         }
         else
         {
+
             var move = iIndexToMove + 1;
-            if (move >= list.Count) return;
+            if (move < 0 || move >= list.Count) return;
             var old = list[move];
             list[move] = list[iIndexToMove];
             list[iIndexToMove] = old;

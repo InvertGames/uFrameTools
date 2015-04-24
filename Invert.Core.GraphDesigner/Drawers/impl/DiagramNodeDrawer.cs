@@ -222,9 +222,15 @@ namespace Invert.Core.GraphDesigner
             foreach (var item in ViewModel.ContentItems)
             {
                 var drawer = InvertGraphEditor.Container.CreateDrawer(item);
+
                 if (drawer == null)
+                {
                     InvertApplication.Log(string.Format("Couldn't create drawer for {0} make sure it is registered.",
                         item.GetType().Name));
+                    continue;
+                }
+                    
+                drawer.ParentDrawer = drawer;
                 drawers.Add(drawer);
             }
         }
@@ -234,7 +240,7 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(IPlatformDrawer platform, float scale)
         {
 
-
+            
 
             var width = platform.CalculateSize(_cachedTag, CachedStyles.Tag1).x;
             var labelRect =
@@ -473,14 +479,13 @@ namespace Invert.Core.GraphDesigner
         public virtual void RefreshContent()
         {
             var drawers = new List<IDrawer>();
-            //if (ViewModel.IsEditable)
             drawers.Add(new HeaderDrawer()
             {
                 BackgroundStyle = HeaderStyle,
                 TextStyle = CachedStyles.ViewModelHeaderStyle,
                 ViewModelObject = ViewModelObject,
                 Padding = HeaderPadding,
-
+                ParentDrawer = this
             });
             if (!ViewModel.IsCollapsed)
             {
@@ -602,59 +607,7 @@ namespace Invert.Core.GraphDesigner
             }
 
             return height;
-            //var height = 0f;
-            //var totalWidth = 0f;
-            //foreach (var group in Children.GroupBy(p => p.ViewModelObject.Column).OrderBy(p=>p.Key).ToArray())
-            //{
-            //    var sY = startY;
-            //    var h = 0f;
-            //    var mw = minWidth;
-
-            //    // Get our content drawers
-            //    foreach (var child in group)
-            //    {
-            //        child.Refresh(platform, new Vector2(ViewModel.Position.x + totalWidth, sY));
-            //        sY += child.Bounds.height;
-            //    }
-
-            //    foreach (var item in group)
-            //    {
-            //        if (item.Bounds.width > mw) mw = item.Bounds.width;
-            //        h += item.Bounds.height;
-
-            //    }
-            //    totalWidth += mw;
-
-            //    //foreach (var cachedDrawer in group)
-            //    //{
-
-            //    //        cachedDrawer.Bounds = new Rect(cachedDrawer.Bounds) { width = mw };
-
-
-
-            //    //}
-
-            //    if (h > height)
-            //    {
-            //        height = h;
-            //    }
-            //    foreach (var item in Children.Where(p => p.ViewModelObject.ColumnSpan >= group.Key))
-            //    {
-            //        item.Bounds = new Rect(item.Bounds) { width = totalWidth };
-            //    } 
-
-
-            //}
-            //foreach (var item in Children)
-            //{
-            //    item.Dirty = false;
-            //    item.OnLayout();
-            //}
-            //if (totalWidth > minWidth)
-            //{
-            //    minWidth = totalWidth;
-            //}
-            //return height;
+      
         }
 
         public bool IsExternal { get; set; }

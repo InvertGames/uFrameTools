@@ -233,7 +233,7 @@ namespace Invert.Common.UI
                 GUI.Box(seperatorRect, String.Empty, ElementDesignerStyles.SeperatorStyle);
             }
 
-            var labelStyle =  new GUIStyle(EditorStyles.label) { alignment = ubTriggerContent.TextAnchor, fontSize = 11,fontStyle = FontStyle.Bold};
+            var labelStyle =  new GUIStyle(EditorStyles.label) { alignment = ubTriggerContent.TextAnchor, fontSize = 11,fontStyle = FontStyle.Bold,normal = new GUIStyleState() { textColor = ubTriggerContent.BackgroundStyle.normal.textColor}};
             if (!ubTriggerContent.Enabled)
             {
                 labelStyle.normal.textColor = new Color(0.4f,0.4f,0.4f);

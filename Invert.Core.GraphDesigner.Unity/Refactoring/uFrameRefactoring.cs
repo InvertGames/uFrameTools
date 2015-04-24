@@ -195,12 +195,16 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
                 }
 
             }
-            var addChange = change as GraphItemAdded;
-            if (addChange != null)
+            var addChange = change as GraphItemAdded; 
+            var isNodeAdded =
+                   change.Item.Node.Graph.ChangeData.OfType<GraphItemAdded>()
+                       .FirstOrDefault(p => p.ItemIdentifier == change.Item.Node.Identifier) != null;
+
+            if (addChange != null && !isNodeAdded)
             {
                 var members = change.Item.Node.GetEditableOutputMembers(_ => _.Identifier == change.ItemIdentifier && _ != change.Item.Node)
-                .Where(p => p != null && p.MemberAttribute != null && (p.MemberAttribute.Location == MemberGeneratorLocation.EditableFile || p.MemberAttribute.Location == MemberGeneratorLocation.Both))
-                .ToArray();
+                    .Where(p => p != null && p.MemberAttribute != null && (p.MemberAttribute.Location == MemberGeneratorLocation.EditableFile || p.MemberAttribute.Location == MemberGeneratorLocation.Both))
+                    .ToArray();
 
                 var firstMember = members.FirstOrDefault();
                 if (firstMember != null)

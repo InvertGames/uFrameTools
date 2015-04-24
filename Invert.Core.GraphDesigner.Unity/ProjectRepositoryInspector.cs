@@ -261,9 +261,9 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
         {
             foreach (var item in SelectedItemDrawers)
             {
-                item.CachedValue = item.ViewModel.Getter();
+                item.ViewModel.CachedValue = item.ViewModel.Getter();
                 var unityDrawer = InvertGraphEditor.PlatformDrawer as UnityDrawer;
-                unityDrawer.DrawInspector(item);
+                unityDrawer.DrawInspector(item.ViewModel);
             }
 
             var drawer = InvertGraphEditor.DesignerWindow.DiagramDrawer;
