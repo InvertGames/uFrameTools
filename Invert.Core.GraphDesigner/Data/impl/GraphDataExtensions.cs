@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -196,10 +197,20 @@ namespace Invert.Core.GraphDesigner
 
         public static void PushFilter(this IGraphData designerData, IDiagramFilter filter)
         {
+            var node = filter as IDiagramNode;
+            
+            var position = node == null ? Vector2.zero : designerData.GetItemLocation(node);
+
             designerData.FilterLeave();
             designerData.FilterState.FilterStack.Push(filter);
             designerData.FilterState.FilterPushed(filter);
+            
             designerData.ApplyFilter();
+            if (!designerData.PositionData.HasPosition(filter, node))
+            {
+                designerData.SetItemLocation(node,position);
+            }
+            
         }
 
 

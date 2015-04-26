@@ -35,7 +35,7 @@
             get { return false; }
         }
 
-        public string Title
+        public virtual string Title
         {
             get { return this.GetType().Name; }
         }

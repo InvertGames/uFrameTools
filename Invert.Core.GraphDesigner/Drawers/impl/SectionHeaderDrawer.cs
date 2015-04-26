@@ -47,7 +47,7 @@ namespace Invert.Core.GraphDesigner
             {
                 platform.DoButton(_AddButtonRect.Scale(scale), string.Empty, CachedStyles.AddButtonStyle, () =>
                 {
-                         this.ViewModel.Select();
+                    this.ViewModel.Select();
                     InvertGraphEditor.ExecuteCommand(ViewModel.AddCommand);
                 });
 

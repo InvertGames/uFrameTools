@@ -80,6 +80,10 @@ namespace Invert.Core.GraphDesigner.Unity
             container.RegisterDrawer<ClassCollectionItemViewModel, TypedItemDrawer>();
             container.RegisterDrawer<ClassNodeViewModel, ClassNodeDrawer>();
 
+            //container.RegisterKeyBinding(new SimpleEditorCommand<DiagramViewModel>((p) =>
+            //{
+            //    SelectedCodePreview.ShowWindow();
+            //}), "Open Code Preview", KeyCode.Return);
 
             // Command Drawers
             container.Register<ToolbarUI, UnityToolbar>();

@@ -527,6 +527,7 @@ namespace Invert.Core.GraphDesigner
             if (SelectedNode == null) return;
             if (SelectedNode.IsFilter)
             {
+
                 if (SelectedNode.GraphItemObject == GraphData.CurrentFilter)
                 {
                     GraphData.PopFilter(null);

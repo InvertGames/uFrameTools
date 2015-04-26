@@ -346,13 +346,22 @@ namespace Invert.Core.GraphDesigner.Unity
 
         }
 
-        public void DoButton(Rect scale, string label, object style, Action action)
+        public void DoButton(Rect scale, string label, object style, Action action, Action rightClick = null)
         {
             var s = style == null ? EditorStyles.miniButton : (GUIStyle)style;
+       
             if (GUI.Button(scale, label, s))
             {
-           
+                if (Event.current.button == 0)
+                {
                     action();
+                }
+                else
+                {
+                    if (rightClick != null)
+                    rightClick();
+                }
+                    
            
             }
         }

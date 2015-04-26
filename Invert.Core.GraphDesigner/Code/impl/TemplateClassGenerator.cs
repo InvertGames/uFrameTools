@@ -458,7 +458,7 @@ namespace Invert.Core.GraphDesigner
             if (forEachAttribute != null)
             {
                 iteratorName = forEachAttribute.IteratorProperty;
-                AddIterator(iteratorName,
+                AddIterator(templateConstructor.Key.Name,
                  delegate(TData arg1)
                  {
                      return CreateIterator(instance, iteratorName, arg1);
@@ -513,7 +513,7 @@ namespace Invert.Core.GraphDesigner
             if (forEachAttribute != null)
             {
                 iteratorName = forEachAttribute.IteratorProperty;
-                AddIterator(iteratorName,
+                AddIterator(templateProperty.Key.Name,
                  delegate(TData arg1)
                  {
                      return CreateIterator(instance, iteratorName, arg1);
@@ -575,7 +575,7 @@ namespace Invert.Core.GraphDesigner
             if (forEachAttribute != null)
             {
                 iteratorName = forEachAttribute.IteratorProperty;
-                AddIterator(iteratorName,
+                AddIterator(templateMethod.Key.Name,
                     delegate(TData arg1)
                     {
                         return CreateIterator(instance, iteratorName, arg1);
@@ -611,13 +611,15 @@ namespace Invert.Core.GraphDesigner
             if (property == null && arg1 != null)
             {
                 property = arg1.GetType().GetProperty(iteratorName);
+                return property.GetValue(arg1, null) as IEnumerable;
             }
-            if (property == null)
+            if (property != null)
             {
-                throw new Exception(string.Format("ForEach on property '{0}' could not be found on the template, or the node.",
-                    iteratorName));
+                return property.GetValue(instance, null) as IEnumerable;
             }
-            return property.GetValue(instance, null) as IEnumerable;
+
+            throw new Exception(string.Format("ForEach on property '{0}' could not be found on the template, or the node.",
+                iteratorName));
         }
 
         protected CodeConstructor RenderConstructor(object instance, KeyValuePair<MethodInfo, TemplateConstructor> templateMethod, IDiagramNodeItem data)

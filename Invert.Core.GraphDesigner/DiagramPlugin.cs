@@ -25,7 +25,7 @@ namespace Invert.Core.GraphDesigner
         public IDiagramNodeItem Item { get; set; }
         public Action<QuickAddItem> Action { get; set; }
 
-        public string Title { get; set; }
+        public virtual string Title { get; set; }
 
         public string Group { get; set; }
 

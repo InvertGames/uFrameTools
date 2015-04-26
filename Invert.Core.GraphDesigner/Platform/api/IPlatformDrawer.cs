@@ -29,7 +29,7 @@ namespace Invert.Core.GraphDesigner
         //void DrawConnector(float scale, ConnectorViewModel viewModel);
         Vector2 CalculateSize(string text, object tag1);
 
-        void DoButton(Rect scale, string label, object style, Action action);
+        void DoButton(Rect scale, string label, object style, Action action, Action rightClick = null);
 
         void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent, Color color, float width);
 

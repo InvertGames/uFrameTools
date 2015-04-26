@@ -72,9 +72,34 @@ namespace Invert.Core.GraphDesigner
             b.width -= 20;
             //base.Draw(platform, scale);
             platform.DrawColumns(b.Scale(scale), new float[] { _typeSize.x + 5, _nameSize.x },
-                _ => platform.DoButton(_, _cachedTypeName, CachedStyles.ClearItemStyle, OptionClicked),
+                _ => platform.DoButton(_, _cachedTypeName, CachedStyles.ClearItemStyle, OptionClicked, OptionRightClicked),
                 _=>DrawName(_, platform,scale,DrawingAlignment.MiddleRight)
                 );
+        }
+
+        public virtual void OptionRightClicked()
+        {
+            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramNodeItemCommand));
+
+            var types = InvertGraphEditor.TypesContainer.ResolveAll<GraphTypeInfo>();
+            foreach (var type in types)
+            {
+                var type1 = type;
+                menu.AddCommand(new SimpleEditorCommand<GenericTypedChildItem>((_) =>
+                {
+                    _.RelatedType = type1.Name;
+                },type1.Label,type1.Group));
+            }
+            foreach (var type in InvertGraphEditor.CurrentDiagramViewModel.CurrentNodes)
+            {
+                var type1 = type;
+                menu.AddCommand(new SimpleEditorCommand<GenericTypedChildItem>((_) =>
+                {
+                    _.RelatedType = type1.Identifier;
+                }, type1.Label, type1.Group)); 
+            }
+
+            menu.Go();
         }
     }
 }

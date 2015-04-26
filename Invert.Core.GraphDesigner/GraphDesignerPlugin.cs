@@ -125,7 +125,7 @@ namespace Invert.Core.GraphDesigner
             {
                 p.DeselectAll();
             }), "End All Editing", KeyCode.Return);
-
+      
             container.RegisterKeyBinding(new DeleteItemCommand(), "Delete Item", KeyCode.X, true);
             container.RegisterKeyBinding(new DeleteCommand(), "Delete", KeyCode.Delete);
 #if UNITY_DLL
