@@ -105,6 +105,7 @@ namespace Invert.Core.GraphDesigner
                 drawer.Draw(platform, Scale);
 
             }
+          //  platform.DrawLabel(new Rect(5f, 5f, 200f, 100f), DiagramViewModel.Title, CachedStyles.GraphTitleLabel);
 
 
             DrawErrors();

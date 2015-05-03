@@ -106,6 +106,7 @@ namespace Invert.Common
         private static GUIStyle _tabInActiveStyle;
         private static Texture2D _arrowRightTexture2;
         private static Texture2D _diagramCircleConnector;
+        private static GUIStyle _graphTitleLabel;
 
         public static GUIStyle AddButtonStyle
         {
@@ -1713,6 +1714,21 @@ namespace Invert.Common
                 }
                 return _viewModelHeaderStyle;
             }
+        }
+
+        public static GUIStyle GraphTitleLabel
+        {
+            get
+            {
+                return _graphTitleLabel ?? (_graphTitleLabel = new GUIStyle()
+                {
+                    normal = new GUIStyleState() { textColor = new Color(1f, 0.396f, 0.173f) },
+                    fontSize = 24,
+                    fontStyle = FontStyle.Bold,
+                    wordWrap = true
+                });
+            }
+
         }
 
         public static GUIStyle CreateHeader(string texture, Color color)

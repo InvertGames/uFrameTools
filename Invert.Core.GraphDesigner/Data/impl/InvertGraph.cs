@@ -324,6 +324,9 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
 
     public Vector2 GetItemLocation(IDiagramNode node)
     {
+        if (PositionData == null || CurrentFilter == null || node == null)
+            return Vector2.zero;
+
         return PositionData[CurrentFilter, node];
     }
 

@@ -371,7 +371,7 @@ namespace Invert.Core.GraphDesigner
                 || (ProjectService.CurrentProject.CurrentGraph == null || object.ReferenceEquals(ProjectService.CurrentProject.CurrentGraph, null))
                 ? null : (ProjectService.CurrentProject.Graphs.OfType<UnityGraphData>().Select(p=>p.Graph).OfType<TGraphType>().FirstOrDefault()) as TGraphType;
 
-            builder.ShowTutorialStep(new TutorialStep(string.Format("Create a new {0} Graph", typeof(TGraphType).Name.Replace("Graph","")), () =>
+            builder.ShowTutorialStep(new TutorialStep(string.Format("Create a new {0} Graph with the name '{1}'", typeof(TGraphType).Name.Replace("Graph",""),name ?? "ANYTHING"), () =>
             {
                 if (currentGraph == null)
                 {
@@ -384,7 +384,15 @@ namespace Invert.Core.GraphDesigner
                 return null;
             })
             {
-               StepContent = stepContent
+               StepContent = b =>
+               {
+                   b.Paragraph("Graphs are used to create various sections of your project.  Graphs can also share nodes between each other as long as they belong to the same project.");
+                   b.ImageByUrl("http://i.imgur.com/MqXxE6h.png");
+                   if (stepContent != null)
+                   {
+                       stepContent(b);
+                   }
+               }
             });
             return currentGraph;
         }

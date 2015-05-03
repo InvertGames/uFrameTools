@@ -229,6 +229,7 @@ namespace Invert.Core.GraphDesigner
         private static object _toolbar;
         private static object _toolbarButton;
         private static object _toolbarButtonDrop;
+        private static object _graphTitleLabel;
 
         public static object Item1
         {
@@ -364,6 +365,10 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _defaultLabelLarge ?? (_defaultLabelLarge = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.DefaultLabelLarge)); }
         }
+        public static object GraphTitleLabel
+        {
+            get { return _graphTitleLabel ?? (_graphTitleLabel = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.GraphTitleLabel)); }
+        }
         public static object ClearItemStyle
         {
             get { return _clearItemStyle ?? (_clearItemStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.ClearItemStyle)); }
@@ -440,6 +445,7 @@ namespace Invert.Core.GraphDesigner
         ItemTextEditingStyle,
         Toolbar,
         ToolbarButton,
-        ToolbarButtonDown
+        ToolbarButtonDown,
+        GraphTitleLabel
     }
 }

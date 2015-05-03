@@ -112,7 +112,8 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     {
         if (graphItemType != null)
         {
-            var page = Pages.FirstOrDefault(p => p.RelatedNodeType == graphItemType);
+
+            var page = FindPage(Pages, p => p.RelatedNodeType == graphItemType);
             ShowWindow(page);
         }
         else
@@ -708,7 +709,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                     stretchHeight = true,
                     stretchWidth = true,
                     fixedHeight = 30f,
-                    fontSize = Mathf.RoundToInt(9f),
+                    fontSize = Mathf.RoundToInt(12f),
                     alignment = TextAnchor.MiddleLeft,
                     padding = new RectOffset(10,0,0,0)
                 };
@@ -725,7 +726,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 {
                     normal = { background = ElementDesignerStyles.GetSkinTexture("Item5"), textColor = new Color(0.8f, 0.8f, 0.8f) },
                     stretchHeight = false,
-                    fontSize = Mathf.RoundToInt(9),
+                    fontSize = Mathf.RoundToInt(12f),
                     alignment = TextAnchor.MiddleLeft,
                     fixedHeight = 30f,
                     padding = new RectOffset(10,0,0,0)
@@ -755,8 +756,16 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             return _item1;
         }
     }
+
+    public bool ShowAllSteps
+    {
+        get { return EditorPrefs.GetBool("UF_SHOWALLSTEPS", false); }
+        set { EditorPrefs.SetBool("UF_SHOWALLSTEPS",value); }
+    }
+
     public InteractiveTutorial EndTutorial()
     {
+        ShowAllSteps = GUILayout.Toggle(ShowAllSteps,"Show All Steps");
         var index = 1;
         bool lastStepComplete = true;
         foreach (var step in CurrentTutorial.Steps)
@@ -764,8 +773,10 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
             var lbl = string.Format(" Step {1}: {2} {0}", step.IsComplete == null ? "COMPLETE" : string.Empty, index,
                 step.Name);
-
+         
             GUILayout.Button(lbl, step.IsComplete == null ? Item2 : lastStepComplete ? Item1 : Item5);
+            if (ShowAllSteps)
+            Break();
             //GUIHelpers.DoTriggerButton(
             //    new UFStyle(lbl, step.IsComplete == null ? Item2 : lastStepComplete ? Item1 : Item5, null,
             //    step.IsComplete == null ? ElementDesignerStyles.TriggerActiveButtonStyle : ElementDesignerStyles.TriggerInActiveButtonStyle)
@@ -798,10 +809,16 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             }
             else
             {
-                
+                if (ShowAllSteps)
+                {
+                    if (step.StepContent != null)
+                    {
+                        step.StepContent(this);
+                    }
+                }
             }
             lastStepComplete = step.IsComplete == null;
-            index++;
+            index++; if (ShowAllSteps) Break();
         }
         //EditorGUILayout.BeginHorizontal();
 
@@ -820,7 +837,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             TutorialActionStyle.fontSize = 20;
             TutorialActionStyle.normal.textColor = new Color(0.3f, 0.6f, 0.3f);
             GUILayout.Label("Contratulations, you've completed this tutorial.", TutorialActionStyle);
-        }
+        } 
         return CurrentTutorial;
     }
 

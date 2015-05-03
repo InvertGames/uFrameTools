@@ -842,6 +842,8 @@ namespace Invert.Core.GraphDesigner.Unity
                     return ElementDesignerStyles.AddButtonStyle;
                 case InvertStyles.ItemTextEditingStyle:
                     return ElementDesignerStyles.ItemTextEditingStyle;
+                case InvertStyles.GraphTitleLabel:
+                    return ElementDesignerStyles.GraphTitleLabel;
             }
             return ElementDesignerStyles.ClearItemStyle;
         }

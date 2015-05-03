@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Invert.Attributes\Invert.Attributes.csproj">
-      <Project>{572E3D0C-06D5-4894-A128-A2032684A0B6}</Project>
+      <Project>{572e3d0c-06d5-4894-a128-a2032684a0b6}</Project>
       <Name>Invert.Attributes</Name>
     </ProjectReference>
     <ProjectReference Include="..\Invert.Core.GraphDesigner\Invert.Core.GraphDesigner.csproj">

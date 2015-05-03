@@ -83,8 +83,6 @@ D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Core.Graph
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Core.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.JSON.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.MVVM.pdb
-D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\UnityEditor.xml
-D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\UnityEngine.xml
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.ICSharpCode.NRefactory.CSharp.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.ICSharpCode.NRefactory.CSharp.xml
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.ICSharpCode.NRefactory.pdb
@@ -93,3 +91,8 @@ D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Attributes
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Mono.Cecil.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Unity.SerializationLogic.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Unity.DataContract.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\ICSharpCode.NRefactory.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Unity.CecilTools.dll
