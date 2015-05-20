@@ -423,6 +423,8 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         }
     }
 
+
+
     public void AddConnection(IConnectable output, IConnectable input)
     {
         if (ConnectedItems.Any(p => p.InputIdentifier == input.Identifier && p.OutputIdentifier == output.Identifier)) return;

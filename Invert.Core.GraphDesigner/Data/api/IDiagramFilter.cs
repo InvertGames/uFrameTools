@@ -9,6 +9,7 @@ namespace Invert.Core.GraphDesigner
         FilterLocations Locations { get; set; }
         FilterCollapsedDictionary CollapsedValues { get; set; }
         string Name { get; set; }
+        bool UseStraightLines { get; }
 
         //bool IsAllowed(object item, Type t);
         //bool IsItemAllowed(object item, Type t);

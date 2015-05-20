@@ -116,6 +116,10 @@ namespace Invert.Core.GraphDesigner
 
         }
 
+        public bool IsExternal
+        {
+            get { return GraphItemObject.Graph.Identifier != DiagramViewModel.GraphData.Identifier; }
+        }
         public string TagsString
         {
             get { return string.Join(" | ", Tags.ToArray()); }

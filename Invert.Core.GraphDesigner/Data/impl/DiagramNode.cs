@@ -429,6 +429,11 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public virtual bool UseStraightLines
+        {
+            get { return false; }
+        }
+
         public virtual string Namespace
         {
             get

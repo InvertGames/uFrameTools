@@ -45,6 +45,11 @@ namespace Invert.Core.GraphDesigner
             set { }
         }
 
+        public virtual bool UseStraightLines
+        {
+            get { return false; }
+        }
+
         public string InfoLabel { get; private set; }
 
         public FilterCollapsedDictionary CollapsedValues

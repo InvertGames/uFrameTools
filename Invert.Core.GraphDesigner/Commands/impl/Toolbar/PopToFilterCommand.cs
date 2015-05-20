@@ -146,7 +146,7 @@ namespace Invert.Core.GraphDesigner
             var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
             var contextMenu = InvertApplication.Container.Resolve<ContextMenuUI>();
             contextMenu.Handler = node;
-            foreach (var item in projectService.CurrentProject.Graphs)
+            foreach (var item in projectService.CurrentProject.Graphs.OrderBy(p=>p.Name))
             {
                 IGraphData item1 = item;
 

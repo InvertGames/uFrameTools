@@ -2,11 +2,14 @@ using System;
 using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Invert.Common;
 using Invert.Common.UI;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Core.GraphDesigner.Unity;
 using UnityEditor;
 using UnityEngine;
 
@@ -202,7 +205,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
         if (disposer2 == null)
         {
-           disposer2 = InvertApplication.ListenFor<INodeItemEvents>(this);
+            disposer2 = InvertApplication.ListenFor<INodeItemEvents>(this);
         }
         GUIHelpers.IsInsepctor = false;
         // DrawTitleBar("uFrame Help");
@@ -225,6 +228,33 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             }
         }
         GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Export To Html", EditorStyles.toolbarButton))
+        {
+            var folder = EditorUtility.SaveFolderPanel("Documentation Output Path", null, null);
+
+            if (folder != null)
+            {
+                var tocDocs = new HtmlDocsBuilder(Pages, "toc", "Screenshots");
+                tocDocs.Output.AppendFormat("<div class='toc'>");
+                foreach (var page in Pages.OrderBy(p=>p.Order))
+                {
+                    tocDocs.OutputTOC(page,tocDocs.Output);
+                } 
+                tocDocs.Output.Append("</div>");
+                File.WriteAllText(Path.Combine(folder, "toc.html"), tocDocs.ToString());
+
+                foreach (var page in AllPages())
+                {
+                    var docsBuilder = new HtmlDocsBuilder(Pages, "content", "Screenshots");
+                    tocDocs.Output.AppendFormat("<div class='content'>");
+                    page.GetContent(docsBuilder);
+                    tocDocs.Output.Append("</div>");
+             
+
+                    File.WriteAllText(Path.Combine(folder, page.Name.Replace(" ", "") + ".html"), docsBuilder.ToString());
+                }
+            }
+        }
         EditorGUILayout.EndHorizontal();
 
 
@@ -264,6 +294,33 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
         EditorGUILayout.EndHorizontal();
     }
+
+    public IEnumerable<DocumentationPage> AllPages(DocumentationPage parentPage = null)
+    {
+        if (parentPage == null)
+        {
+            foreach (var page in Pages)
+            {
+                yield return page;
+                foreach (var item in AllPages(page))
+                {
+                    yield return item;
+                }
+            }
+        }
+        else
+        {
+            foreach (var childPage in parentPage.ChildPages)
+            {
+                yield return childPage;
+                foreach (var item in AllPages(childPage))
+                {
+                    yield return item;
+                }
+            }
+        }
+
+    }
     public static GUIStyle Item4
     {
         get
@@ -289,19 +346,19 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
         EditorGUILayout.BeginVertical();
         foreach (var item in pages.OrderBy(p => p.Order))
         {
-         
+
             if (item == null)
             {
                 GUILayout.Label("Item is null");
                 continue;
-            } 
+            }
             if (!item.ShowInNavigation) continue;
             if (item.Name == null)
             {
                 GUILayout.Label(string.Format("{0} name is null", item.GetType().Name));
                 continue;
             }
-            if (item.ChildPages.Count(p=>p.ShowInNavigation) == 0)
+            if (item.ChildPages.Count(p => p.ShowInNavigation) == 0)
             {
                 if (GUILayout.Button(item.Name, Item4))
                 {
@@ -312,7 +369,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 //    TextAnchor = TextAnchor.MiddleLeft
                 //}))
                 //{
-                   
+
                 //}
             }
             else
@@ -685,8 +742,8 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             if (_eventButtonStyleSmall == null)
                 _eventButtonStyleSmall = new GUIStyle
                 {
-                    normal = { background = ElementDesignerStyles.GetSkinTexture("EventButton"), textColor = new Color(0.1f,0.1f,0.1f) },
-                  
+                    normal = { background = ElementDesignerStyles.GetSkinTexture("EventButton"), textColor = new Color(0.1f, 0.1f, 0.1f) },
+
                     stretchHeight = true,
 
                     fixedHeight = 40,
@@ -711,7 +768,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                     fixedHeight = 30f,
                     fontSize = Mathf.RoundToInt(12f),
                     alignment = TextAnchor.MiddleLeft,
-                    padding = new RectOffset(10,0,0,0)
+                    padding = new RectOffset(10, 0, 0, 0)
                 };
 
             return _item2;
@@ -729,7 +786,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                     fontSize = Mathf.RoundToInt(12f),
                     alignment = TextAnchor.MiddleLeft,
                     fixedHeight = 30f,
-                    padding = new RectOffset(10,0,0,0)
+                    padding = new RectOffset(10, 0, 0, 0)
                 };
 
             return _item5;
@@ -760,12 +817,12 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     public bool ShowAllSteps
     {
         get { return EditorPrefs.GetBool("UF_SHOWALLSTEPS", false); }
-        set { EditorPrefs.SetBool("UF_SHOWALLSTEPS",value); }
+        set { EditorPrefs.SetBool("UF_SHOWALLSTEPS", value); }
     }
 
     public InteractiveTutorial EndTutorial()
     {
-        ShowAllSteps = GUILayout.Toggle(ShowAllSteps,"Show All Steps");
+        ShowAllSteps = GUILayout.Toggle(ShowAllSteps, "Show All Steps");
         var index = 1;
         bool lastStepComplete = true;
         foreach (var step in CurrentTutorial.Steps)
@@ -773,10 +830,10 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
             var lbl = string.Format(" Step {1}: {2} {0}", step.IsComplete == null ? "COMPLETE" : string.Empty, index,
                 step.Name);
-         
+
             GUILayout.Button(lbl, step.IsComplete == null ? Item2 : lastStepComplete ? Item1 : Item5);
             if (ShowAllSteps)
-            Break();
+                Break();
             //GUIHelpers.DoTriggerButton(
             //    new UFStyle(lbl, step.IsComplete == null ? Item2 : lastStepComplete ? Item1 : Item5, null,
             //    step.IsComplete == null ? ElementDesignerStyles.TriggerActiveButtonStyle : ElementDesignerStyles.TriggerInActiveButtonStyle)
@@ -792,7 +849,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 TutorialActionStyle.normal.textColor = Color.red;
 
                 GUILayout.Label(step.IsComplete, TutorialActionStyle);
-            
+
 
 
                 if (step.StepContent != null)
@@ -805,7 +862,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
 
                 CurrentTutorial.LastStepCompleted = step.IsComplete == null;
-          
+
             }
             else
             {
@@ -837,7 +894,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             TutorialActionStyle.fontSize = 20;
             TutorialActionStyle.normal.textColor = new Color(0.3f, 0.6f, 0.3f);
             GUILayout.Label("Contratulations, you've completed this tutorial.", TutorialActionStyle);
-        } 
+        }
         return CurrentTutorial;
     }
 
@@ -886,7 +943,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     public void LinkToPage<TPage>()
     {
         var page = FindPage(Pages, p => p is TPage);
-        if (GUILayout.Button(page.Name,GUILayout.MaxWidth(200)))
+        if (GUILayout.Button(page.Name, GUILayout.MaxWidth(200)))
         {
             ShowPage(page);
 

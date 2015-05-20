@@ -66,6 +66,7 @@ D:\Invert\uFrameGit17\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Attribut
 D:\Invert\uFrameGit17\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit17\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.dll
 D:\Invert\uFrameGit17\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.pdb
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.uFrame.Editor.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.uFrame.Editor.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Core.dll
@@ -78,6 +79,11 @@ D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\UnityEngine.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.ICSharpCode.NRefactory.CSharp.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.ICSharpCode.NRefactory.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Attributes.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Mono.Cecil.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Unity.SerializationLogic.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Unity.DataContract.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\ICSharpCode.NRefactory.dll
+D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Unity.CecilTools.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Core.GraphDesigner.Unity.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Core.GraphDesigner.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Core.pdb
@@ -88,11 +94,5 @@ D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.ICSharpCod
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.ICSharpCode.NRefactory.pdb
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.ICSharpCode.NRefactory.xml
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Invert.Attributes.pdb
-D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.dll
 D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\obj\Debug\Invert.uFrame.Editor.pdb
-D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Mono.Cecil.dll
-D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Unity.SerializationLogic.dll
-D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Unity.DataContract.dll
-D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\ICSharpCode.NRefactory.dll
-D:\Invert\uFrameGit\uFrameTools\Invert.uFrame.Editor\bin\Debug\Unity.CecilTools.dll

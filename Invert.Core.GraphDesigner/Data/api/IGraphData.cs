@@ -25,7 +25,8 @@ namespace Invert.Core.GraphDesigner
         IProjectRepository Project { get; set; }
         bool Precompiled { get; set; }
         bool DocumentationMode { get; set; }
-  
+ 
+
         //IEnumerable<ConnectionData> Connections { get; }
         void AddConnection(IConnectable output, IConnectable input);
         void AddConnection(string output, string input);

@@ -425,6 +425,7 @@ namespace Invert.Core
         public static void LogException(Exception exception)
         {
             Logger.LogException(exception);
+            
         }
 
         public static void LogError(string format)

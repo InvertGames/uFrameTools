@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Invert.Core.GraphDesigner.Unity
 {
     public class ElementsDesigner : EditorWindow, IDesignerWindowEvents
-    {
+    { 
         private Vector2 _scrollPosition;
 
         public IEnumerable<object> ContextObjects
@@ -205,6 +205,7 @@ namespace Invert.Core.GraphDesigner.Unity
                         if (DiagramDrawer.HandleKeyEvent(evt, mouse.ModifierKeyStates))
                         {
                             evt.Use();
+                            mouse.ModifierKeyStates = null;
                         }
                     }
                     

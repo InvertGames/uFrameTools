@@ -66,6 +66,10 @@ namespace Invert.Core.GraphDesigner.Unity
         public void LogException(Exception ex)
         {
             Debug.LogException(ex);
+            if (ex.InnerException != null)
+            {
+                Debug.LogException(ex.InnerException);
+            }
         }
     }
 

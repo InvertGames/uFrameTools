@@ -300,10 +300,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                if (!ViewModel.IsLocal)
-                {
-                    platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter5, 20);
-                }
+             
                 if (ViewModel.IsMouseOver)
                 {
                     platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter3, 20);
@@ -313,7 +310,11 @@ namespace Invert.Core.GraphDesigner
                     platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter2, 20);
                 }
             }
-
+            if (ViewModel.IsExternal)
+            {
+                platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter5, 20);
+            }
+            
             if (ViewModel.IsSelected && _cachedIssues != null)
             {
                 for (int index = 0; index < _cachedIssues.Length; index++)

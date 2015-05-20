@@ -354,6 +354,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         Graph.Document(docs);
     }
 
+
     public void AddConnection(IConnectable output, IConnectable input)
     {
         Graph.AddConnection(output, input);

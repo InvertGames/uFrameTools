@@ -769,7 +769,6 @@ namespace Invert.Core.GraphDesigner
             if (ItemFilter != null && !ItemFilter(data)) 
                 return;
             Results.Add(templateMemberResult);
-            InvertApplication.Log("Added result");
         }
     }
 

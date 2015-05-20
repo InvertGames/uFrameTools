@@ -706,6 +706,11 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public bool UseStraightLines
+        {
+            get { return GraphData.CurrentFilter.UseStraightLines; }
+        }
+
         public void CommandExecuted(IEditorCommand command)
         {
             this.Load();

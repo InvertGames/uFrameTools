@@ -125,7 +125,7 @@ namespace Invert.Core.GraphDesigner
             ConnectorViewModel b, Action<ConnectionViewModel> apply)
         {
             return new ConnectionViewModel(diagramViewModel)
-            {
+            {   
                 IsStateLink = this.IsStateLink,
                 ConnectorA = a,
                 ConnectorB = b,

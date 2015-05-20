@@ -30,7 +30,8 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
-            if (ViewModel.IsStateLink)
+            var lines = ViewModel.DiagramViewModel.UseStraightLines;
+            if (lines)
             {
                 DrawStateLink(platform, scale);
             }
@@ -43,8 +44,8 @@ namespace Invert.Core.GraphDesigner
 
         private void DrawStateLink(IPlatformDrawer platform, float scale)
         {
-            var _startPos = ViewModel.ConnectorA.Bounds.center;
-            var _endPos = ViewModel.ConnectorB.Bounds.center;
+            var _startPos = ViewModel.ConnectorB.Bounds.center;
+            var _endPos = ViewModel.ConnectorA.Bounds.center;
 
             var _startRight = ViewModel.ConnectorA.Direction == ConnectorDirection.Output;
             var _endRight = ViewModel.ConnectorB.Direction == ConnectorDirection.Output;
@@ -55,10 +56,10 @@ namespace Invert.Core.GraphDesigner
    
             if (_endPos.x < _startPos.x)
             {
-                points.Add(curr = curr + new Vector2(15f, 0f));
+                points.Add(curr = curr + new Vector2(20f, 0f));
                 points.Add(curr = curr + new Vector2(0f, (_endPos.y - _startPos.y)/2f));
-                points.Add(_endPos - new Vector2(15f, (_endPos.y - _startPos.y)/2f));
-                points.Add(_endPos - new Vector2(15f, 0f));
+                points.Add(_endPos - new Vector2(20f, (_endPos.y - _startPos.y)/2f));
+                points.Add(_endPos - new Vector2(20f, 0f));
             }
             else
             {

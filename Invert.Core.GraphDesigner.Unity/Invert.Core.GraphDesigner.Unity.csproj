@@ -54,6 +54,7 @@
     <Compile Include="ElementItemTypesWindow.cs" />
     <Compile Include="ElementsDesigner.cs" />
     <Compile Include="GUIHelpers.cs" />
+    <Compile Include="HtmlDocsBuilder.cs" />
     <Compile Include="Impl\ProjectRepository.cs" />
     <Compile Include="Impl\UnityPlatform.cs" />
     <Compile Include="ImportTypeListWindow.cs" />
