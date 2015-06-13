@@ -72,8 +72,8 @@ namespace Invert.Core.GraphDesigner
             if (Generators.Any(p => !p.IsValid())) return false;
             if (Generators.Any(p => p.AlwaysRegenerate)) return true;
 
-            var doesAnyTypeExist = Generators.Any(p => p.DoesTypeExist(fileInfo));
-            if (doesAnyTypeExist || fileInfo.Exists)
+            //var doesAnyTypeExist = Generators.Any(p => p.DoesTypeExist(fileInfo));
+            if (fileInfo.Exists)
             {
                 return false;
             }

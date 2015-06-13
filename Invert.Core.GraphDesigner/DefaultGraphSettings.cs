@@ -6,6 +6,9 @@ namespace Invert.Core.GraphDesigner
     {
         public Color BackgroundColor { get; set; }
         public Color TabTextColor { get; set; }
+        public Color SectionTitleColor { get; set; }
+        public Color SectionItemColor { get; set; }
+        public Color SectionItemTypeColor { get; set; }
 
         public Color GridLinesColor { get; set; }
 

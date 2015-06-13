@@ -43,19 +43,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\INotifyCollectionChanged.cs">
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\MVVM\UnityMVVM\INotifyCollectionChanged.cs">
       <Link>INotifyCollectionChanged.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\NotifyCollectionChangedAction.cs">
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\MVVM\UnityMVVM\NotifyCollectionChangedAction.cs">
       <Link>NotifyCollectionChangedAction.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\NotifyCollectionChangedEventArgs.cs">
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\MVVM\UnityMVVM\NotifyCollectionChangedEventArgs.cs">
       <Link>NotifyCollectionChangedEventArgs.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\NotifyCollectionChangedEventHandler.cs">
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\MVVM\UnityMVVM\NotifyCollectionChangedEventHandler.cs">
       <Link>NotifyCollectionChangedEventHandler.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\UnityMVVM\ObservableCollection.cs">
+    <Compile Include="..\..\Assets\uFrameComplete\uFrame\MVVM\UnityMVVM\ObservableCollection.cs">
       <Link>ObservableCollection.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

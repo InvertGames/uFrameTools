@@ -1,3 +1,4 @@
+using Invert.IOC;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -78,7 +79,7 @@ namespace Invert.Core.GraphDesigner
             container.Register<IGraphData, TGraphType>(name);
             return AddNode<TGraphNode>(container, name);
         }
-        public static IUFrameContainer RegisterGraphItem<TModel>(this uFrameContainer container) where TModel : GenericNode
+        public static IUFrameContainer RegisterGraphItem<TModel>(this UFrameContainer container) where TModel : GenericNode
         {
             container.RegisterGraphItem<TModel, ScaffoldNode<TModel>.ViewModel, ScaffoldNode<TModel>.Drawer>();
             //RegisterDrawer();

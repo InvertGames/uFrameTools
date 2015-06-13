@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Invert.Core.GraphDesigner
 {
     public class AddNewCommand : ElementsDiagramToolbarCommand, IParentCommand,IDiagramContextCommand
@@ -12,4 +14,5 @@ namespace Invert.Core.GraphDesigner
             // No implementation
         }
     }
+
 }

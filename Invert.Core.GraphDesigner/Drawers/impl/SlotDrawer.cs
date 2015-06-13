@@ -30,7 +30,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
-            base.Refresh(platform, position);
+            base.Refresh(platform, position, hardRefresh);
             var size = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle);
             if (ViewModel.InputConnector != null)
             ViewModel.InputConnector.AlwaysVisible = true;

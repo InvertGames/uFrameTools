@@ -11,7 +11,7 @@ namespace Invert.Core.GraphDesigner
     //    }
 
     //    public CodeTypeDeclaration Decleration { get; set; }
-    //    public MemberGeneratorLocation Location { get; set; }
+    //    public TemplateLocation Location { get; set; }
     //    public object DataObject { get; set; }
     //    public abstract CodeTypeMember Create(bool isDesignerFile);
 

@@ -1,6 +1,6 @@
 using Invert.Core.GraphDesigner;
 
-[TemplateClass( MemberGeneratorLocation.Both, ClassNameFormat = "{0}ChildItem")]
+[TemplateClass( TemplateLocation.Both, ClassNameFormat = "{0}ChildItem")]
 public class ShellChildItemTemplate : GenericNodeChildItem,
     IClassTemplate<ShellNodeChildTypeNode>
 {
@@ -32,7 +32,7 @@ public class ShellChildItemTemplate : GenericNodeChildItem,
 
     public TemplateContext<ShellNodeChildTypeNode> Ctx { get; set; }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleInputs
     {
         get
@@ -41,7 +41,7 @@ public class ShellChildItemTemplate : GenericNodeChildItem,
             return base.AllowMultipleInputs;
         }
     }
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleOutputs
     {
         get

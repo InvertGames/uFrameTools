@@ -261,7 +261,7 @@ namespace Invert.Core.GraphDesigner
             CurrentNodes = GraphData.CurrentFilter.FilterItems(CurrentRepository).ToArray();
 
 
-            LoadInspector();
+            //LoadInspector();
 
             foreach (var item in CurrentNodes)
             {
@@ -597,7 +597,7 @@ namespace Invert.Core.GraphDesigner
             }
 
             DeselectAll();
-            InvertGraphEditor.ExecuteCommand(_ => { });
+            //InvertGraphEditor.ExecuteCommand(_ => { });
         }
 
         public void Select(GraphItemViewModel viewModelObject)

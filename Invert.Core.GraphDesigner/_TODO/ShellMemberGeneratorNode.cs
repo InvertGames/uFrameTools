@@ -14,10 +14,10 @@ namespace Invert.Core.GraphDesigner
     }
     public abstract class ShellMemberGeneratorNode : GenericNode, IMemberGenerator
     {
-        private MemberGeneratorLocation _memberLocation;
+        private TemplateLocation _memberLocation;
         
         [NodeProperty]
-        public MemberGeneratorLocation MemberLocation
+        public TemplateLocation MemberLocation
         {
             get { return _memberLocation; }
             set { _memberLocation = value; }
@@ -70,9 +70,9 @@ namespace Invert.Core.GraphDesigner
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    MemberLocation = MemberGeneratorLocation.DesignerFile;
+                    MemberLocation = TemplateLocation.DesignerFile;
                 }
-                MemberLocation = (MemberGeneratorLocation)Enum.Parse(typeof(MemberGeneratorLocation), value);
+                MemberLocation = (TemplateLocation)Enum.Parse(typeof(TemplateLocation), value);
             }
         }
     }

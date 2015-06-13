@@ -193,7 +193,7 @@ public class ShellTemplateConfigNode : GenericNode
     public string TemplateBaseClass { get; set; }
 
     [JsonProperty, NodeProperty]
-    public MemberGeneratorLocation Files { get; set; }
+    public TemplateLocation Files { get; set; }
 
     [JsonProperty,NodeProperty]
     public bool AutoInherit
@@ -206,6 +206,11 @@ public class ShellTemplateConfigNode : GenericNode
 
 public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocumentable
 {
+    public override bool AllowMultipleInputs
+    {
+        get { return true; }
+    }
+
     private string _nodeLabel;
     public override void Document(IDocumentationBuilder docs)
     {

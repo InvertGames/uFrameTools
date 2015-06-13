@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.GraphDesigner.Standa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gwen.UnitTest", "..\..\Gwen\Lib\Gwen.UnitTest\Gwen.UnitTest.csproj", "{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.Platform.Gwen", "Invert.Platform.Gwen\Invert.Platform.Gwen.csproj", "{5BB15AA7-5F56-4096-B728-D26FC712F3CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BB15AA7-5F56-4096-B728-D26FC712F3CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BB15AA7-5F56-4096-B728-D26FC712F3CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BB15AA7-5F56-4096-B728-D26FC712F3CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BB15AA7-5F56-4096-B728-D26FC712F3CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

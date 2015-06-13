@@ -57,10 +57,11 @@ namespace Invert.GraphDesigner.WPF
         {
             Items = items;
             Selected = selected;
-            OkCommand = new SimpleEditorCommand<DiagramViewModel>(_ =>
-            {
-                ok(Selected);
-            });
+            // TODO Commands still with WPF?
+            //OkCommand = new SimpleEditorCommand<DiagramViewModel>(_ =>
+            //{
+            //    ok(Selected);
+            //});
         }
 
         public ICommand OkCommand { get; set; }

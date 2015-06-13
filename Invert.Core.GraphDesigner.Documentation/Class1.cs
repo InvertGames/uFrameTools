@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Invert.Core.GraphDesigner.Unity;
+using Invert.IOC;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -22,7 +23,7 @@ namespace Invert.Core.GraphDesigner.Documentation
             get { return true; }
         }
 
-        public override void Initialize(uFrameContainer container)
+        public override void Initialize(UFrameContainer container)
         {
             //InvertGraphEditor.Container.RegisterInstance<IToolbarCommand>(new SaveNodeToImage(), "SaveNodeToImage");
 

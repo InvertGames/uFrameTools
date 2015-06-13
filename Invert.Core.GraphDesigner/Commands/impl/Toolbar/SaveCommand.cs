@@ -48,7 +48,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     if (item.Siverity == ValidatorType.Error)
                     {
-                        Debug.LogError(item.Message);
+                        InvertApplication.LogError(item.Message);
                     }
                 }
                 if (InvertGraphEditor.Platform.MessageBox("Issues", "Please fix all issues before compiling.", "Ok",
@@ -114,7 +114,7 @@ namespace Invert.Core.GraphDesigner
                 allDiagramItem.IsNewNode = false;
             }
             //RefactorApplied(diagram.DiagramData);
-            InvertGraphEditor.Platform.Progress(101f, "Done");
+         
             InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(diagram.CurrentRepository, diagram.GraphData));
 
             
@@ -130,11 +130,13 @@ namespace Invert.Core.GraphDesigner
 //#if UNITY_DLL
 //            UnityEditor.AssetDatabase.SaveAssets();
 //#endif
-            
+            //InvertGraphEditor.Platform.Progress(101f, "Done");
             diagram.Save();
+        
 #if UNITY_DLL
-            UnityEditor.AssetDatabase.SaveAssets();
+            //UnityEditor.AssetDatabase.SaveAssets();
             InvertGraphEditor.Platform.RefreshAssets();
+            UnityEditor.EditorUtility.ClearProgressBar();
 #endif
            
           

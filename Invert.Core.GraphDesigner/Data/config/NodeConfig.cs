@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Invert.IOC;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -69,7 +70,7 @@ namespace Invert.Core.GraphDesigner
             //    .FirstOrDefault();
             //var generatorConfig = GetGeneratorConfig<TypeClassGenerator<TNode, TGeneratorTemplate>>();
             //var outputFolderName = templateAttribute.OutputFolderName ?? typeof(TGeneratorTemplate).Name;
-            //if (templateAttribute.Location == MemberGeneratorLocation.DesignerFile || templateAttribute.Location == MemberGeneratorLocation.Both)
+            //if (templateAttribute.Location == TemplateLocation.DesignerFile || templateAttribute.Location == TemplateLocation.Both)
             //{
             //    AddDesignerGenerator<TypeClassGenerator<TNode, TGeneratorTemplate>>(outputFolderName,
             //        templateAttribute.IsEditorExtension);
@@ -83,7 +84,7 @@ namespace Invert.Core.GraphDesigner
             //    }
 
             //}
-            //if (templateAttribute.Location == MemberGeneratorLocation.EditableFile || templateAttribute.Location == MemberGeneratorLocation.Both)
+            //if (templateAttribute.Location == TemplateLocation.EditableFile || templateAttribute.Location == TemplateLocation.Both)
             //{
             //    AddEditableGenerator<TypeClassGenerator<TNode, TGeneratorTemplate>>(outputFolderName);
             //    if (templateAttribute.IsEditorExtension)

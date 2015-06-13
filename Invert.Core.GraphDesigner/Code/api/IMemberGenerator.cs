@@ -4,7 +4,7 @@ namespace Invert.Core.GraphDesigner
 {
     public interface IMemberGenerator
     {
-        MemberGeneratorLocation MemberLocation { get; set; }
+        TemplateLocation MemberLocation { get; set; }
         
         CodeTypeMember Create(CodeTypeDeclaration decleration, object data, bool isDesignerFile);
     }

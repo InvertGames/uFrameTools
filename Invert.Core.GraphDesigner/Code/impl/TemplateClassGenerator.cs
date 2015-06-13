@@ -38,9 +38,9 @@ namespace Invert.Core.GraphDesigner
         private TemplateContext<TData> _templateContext;
         private TTemplateType _templateClass;
         private TemplateClass _templateAttribute;
-        private KeyValuePair<MethodInfo, TemplateConstructor>[] _templateConstructors;
-        private KeyValuePair<MethodInfo, TemplateMethod>[] _templateMethods;
-        private KeyValuePair<PropertyInfo, TemplateProperty>[] _templateProperties;
+        private KeyValuePair<MethodInfo, GenerateConstructor>[] _templateConstructors;
+        private KeyValuePair<MethodInfo, GenerateMethod>[] _templateMethods;
+        private KeyValuePair<PropertyInfo, GenerateProperty>[] _templateProperties;
         private List<TemplateMemberResult> _results;
         public Predicate<IDiagramNodeItem> ItemFilter { get; set; }
 
@@ -197,7 +197,7 @@ namespace Invert.Core.GraphDesigner
             {
                 inheritable = null;
             }
-            if (IsDesignerFile && Attribute.Location != MemberGeneratorLocation.DesignerFile)
+            if (IsDesignerFile && Attribute.Location != TemplateLocation.DesignerFile)
             {
                 Decleration.Name = ClassNameBase(Data);
                 if (inheritable != null && inheritable.BaseNode != null)
@@ -211,7 +211,7 @@ namespace Invert.Core.GraphDesigner
             else
             {
                 Decleration.Name = ClassName(Data);
-                if (Attribute.Location != MemberGeneratorLocation.DesignerFile)
+                if (Attribute.Location != TemplateLocation.DesignerFile)
                 {
                     Decleration.BaseTypes.Clear();
                     Decleration.BaseTypes.Add(ClassNameBase(Data));
@@ -312,21 +312,21 @@ namespace Invert.Core.GraphDesigner
             
         }
 
-        public KeyValuePair<MethodInfo, TemplateConstructor>[] TemplateConstructors
+        public KeyValuePair<MethodInfo, GenerateConstructor>[] TemplateConstructors
         {
-            get { return _templateConstructors ?? (_templateConstructors = TemplateType.GetMethodsWithAttribute<TemplateConstructor>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
+            get { return _templateConstructors ?? (_templateConstructors = TemplateType.GetMethodsWithAttribute<GenerateConstructor>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
             set { _templateConstructors = value; }
         }
 
-        public KeyValuePair<MethodInfo, TemplateMethod>[] TemplateMethods
+        public KeyValuePair<MethodInfo, GenerateMethod>[] TemplateMethods
         {
-            get { return _templateMethods ?? (_templateMethods = TemplateType.GetMethodsWithAttribute<TemplateMethod>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
+            get { return _templateMethods ?? (_templateMethods = TemplateType.GetMethodsWithAttribute<GenerateMethod>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
             set { _templateMethods = value; }
         }
 
-        public KeyValuePair<PropertyInfo, TemplateProperty>[] TemplateProperties
+        public KeyValuePair<PropertyInfo, GenerateProperty>[] TemplateProperties
         {
-            get { return _templateProperties ?? (_templateProperties = TemplateType.GetPropertiesWithAttribute<TemplateProperty>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
+            get { return _templateProperties ?? (_templateProperties = TemplateType.GetPropertiesWithAttribute<GenerateProperty>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
             set { _templateProperties = value; }
         }
     }
@@ -335,7 +335,7 @@ namespace Invert.Core.GraphDesigner
     {
         public CodeTypeDeclaration Decleration { get; private set; }
 
-        public TemplateMemberResult(ITemplateClassGenerator templateClass, MemberInfo memberInfo, TemplateMember memberAttribute, CodeTypeMember memberOutput, CodeTypeDeclaration decleration)
+        public TemplateMemberResult(ITemplateClassGenerator templateClass, MemberInfo memberInfo, GenerateMember memberAttribute, CodeTypeMember memberOutput, CodeTypeDeclaration decleration)
         {
             Decleration = decleration;
             TemplateClass = templateClass;
@@ -346,7 +346,7 @@ namespace Invert.Core.GraphDesigner
 
         public ITemplateClassGenerator TemplateClass { get; set; }
         public MemberInfo MemberInfo { get; set; }
-        public TemplateMember MemberAttribute { get; set; }
+        public GenerateMember MemberAttribute { get; set; }
         public CodeTypeMember MemberOutput { get; set; }
     }
 
@@ -441,28 +441,31 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerable<CodeConstructor> RenderTemplateConstructor(object instance, MethodInfo info)
         {
-            return RenderTemplateConstructor(instance, new KeyValuePair<MethodInfo, TemplateConstructor>(info, info.GetCustomAttributes(typeof(TemplateConstructor), true).OfType<TemplateConstructor>().FirstOrDefault()));
+            return RenderTemplateConstructor(instance, new KeyValuePair<MethodInfo, GenerateConstructor>(info, info.GetCustomAttributes(typeof(GenerateConstructor), true).OfType<GenerateConstructor>().FirstOrDefault()));
         }
-        public IEnumerable<CodeConstructor> RenderTemplateConstructor(object instance, KeyValuePair<MethodInfo, TemplateConstructor> templateConstructor)
+        public IEnumerable<CodeConstructor> RenderTemplateConstructor(object instance, KeyValuePair<MethodInfo, GenerateConstructor> templateConstructor)
         {
-            if (templateConstructor.Value.Location == MemberGeneratorLocation.DesignerFile &&
-                  templateConstructor.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) yield break;
-            if (templateConstructor.Value.Location == MemberGeneratorLocation.EditableFile &&
-                templateConstructor.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) yield break;
+            CurrentAttribute = templateConstructor.Value;
+            var attributes = templateConstructor.Key.GetCustomAttributes(typeof(TemplateAttribute), true).OfType<TemplateAttribute>().OrderBy(p => p.Priority).ToArray();
 
-            var forEachAttribute =
-                templateConstructor.Key.GetCustomAttributes(typeof(TemplateForEach), true).FirstOrDefault() as
-          TemplateForEach;
-
-            var iteratorName = templateConstructor.Key.Name;
-            if (forEachAttribute != null)
+            bool success = true;
+            foreach (var attribute in attributes)
             {
-                iteratorName = forEachAttribute.IteratorProperty;
-                AddIterator(templateConstructor.Key.Name,
-                 delegate(TData arg1)
-                 {
-                     return CreateIterator(instance, iteratorName, arg1);
-                 });
+                if (!attribute.CanGenerate(instance, templateConstructor.Key, this))
+                {
+                    success = false;
+                }
+            }
+            if (!success)
+            {
+                yield break;
+            }
+
+
+            // Default to designer file only
+            if (!attributes.OfType<Inside>().Any())
+            {
+                if (!IsDesignerFile) yield break;
             }
 
             if (Iterators.ContainsKey(templateConstructor.Key.Name))
@@ -495,36 +498,37 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerable<CodeMemberProperty> RenderTemplateProperty(object instance, PropertyInfo info)
         {
-            return RenderTemplateProperty(instance, new KeyValuePair<PropertyInfo, TemplateProperty>(info, info.GetCustomAttributes(typeof(TemplateProperty), true).OfType<TemplateProperty>().FirstOrDefault()));
+            return RenderTemplateProperty(instance, new KeyValuePair<PropertyInfo, GenerateProperty>(info, info.GetCustomAttributes(typeof(GenerateProperty), true).OfType<GenerateProperty>().FirstOrDefault()));
         }
-        public IEnumerable<CodeMemberProperty> RenderTemplateProperty(object instance, KeyValuePair<PropertyInfo, TemplateProperty> templateProperty)
+        public IEnumerable<CodeMemberProperty> RenderTemplateProperty(object instance, KeyValuePair<PropertyInfo, GenerateProperty> templateProperty)
         {
-            if (templateProperty.Value.Location == MemberGeneratorLocation.DesignerFile &&
-                templateProperty.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) yield break;
-            if (templateProperty.Value.Location == MemberGeneratorLocation.EditableFile &&
-                templateProperty.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) yield break;
-            //Debug.Log("Found iterators for " + templateProperty.Key.Name);
+            CurrentAttribute = templateProperty.Value;
+            var attributes = templateProperty.Key.GetCustomAttributes(typeof (TemplateAttribute), true).OfType<TemplateAttribute>().OrderBy(p=>p.Priority).ToArray();
 
-            var forEachAttribute =
-                templateProperty.Key.GetCustomAttributes(typeof(TemplateForEach), true).FirstOrDefault() as
-                    TemplateForEach;
-
-            var iteratorName = templateProperty.Key.Name;
-            if (forEachAttribute != null)
+            bool success = true;
+            foreach (var attribute in attributes)
             {
-                iteratorName = forEachAttribute.IteratorProperty;
-                AddIterator(templateProperty.Key.Name,
-                 delegate(TData arg1)
-                 {
-                     return CreateIterator(instance, iteratorName, arg1);
-                 });
+                if (!attribute.CanGenerate(instance, templateProperty.Key, this))
+                {
+                    success = false;
+                }
+            }
+            if (!success)
+            {
+                yield break;
+            }
+
+            // Default to designer file only
+            if (!attributes.OfType<Inside>().Any())
+            {
+                if (!IsDesignerFile) yield break;
             }
 
             if (Iterators.ContainsKey(templateProperty.Key.Name))
             {
-               
 
-                var iterator = Iterators[iteratorName];
+
+                var iterator = Iterators[templateProperty.Key.Name];
                 var items = iterator(Data).OfType<IDiagramNodeItem>().ToArray();
 
                 foreach (var item in items)
@@ -534,10 +538,15 @@ namespace Invert.Core.GraphDesigner
                     Item = item;
                   
                     var domObject = RenderProperty(instance, templateProperty);
+                    foreach (var attribute in attributes)
+                    {
+                        attribute.Modify(instance,templateProperty.Key,this);
+                    }
                     CurrentDecleration.Members.Add(domObject);
                     yield return domObject;
                     InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.PropertyAdded(instance, this, domObject));
                 }
+                Item = null;
             }
             else
             {
@@ -545,9 +554,14 @@ namespace Invert.Core.GraphDesigner
                 if (ItemFilter != null && !ItemFilter(Item))
                     yield break;
                 var domObject = RenderProperty(instance, templateProperty);
+                foreach (var attribute in attributes)
+                {
+                    attribute.Modify(instance, templateProperty.Key, this);
+                }
                 CurrentDecleration.Members.Add(domObject);
                 yield return domObject;
                 InvertApplication.SignalEvent<ICodeTemplateEvents>(_=>_.PropertyAdded(instance, this, domObject));
+                Item = null;
             }
         }
         public IEnumerable<CodeMemberMethod> RenderTemplateMethod(object instance, string methodName)
@@ -557,30 +571,51 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerable<CodeMemberMethod> RenderTemplateMethod(object instance, MethodInfo info)
         {
-           return RenderTemplateMethod(instance, new KeyValuePair<MethodInfo, TemplateMethod>(info, info.GetCustomAttributes(typeof(TemplateMethod), true).OfType<TemplateMethod>().FirstOrDefault()));
+           return RenderTemplateMethod(instance, new KeyValuePair<MethodInfo, GenerateMethod>(info, info.GetCustomAttributes(typeof(GenerateMethod), true).OfType<GenerateMethod>().FirstOrDefault()));
         }
         
-        public IEnumerable<CodeMemberMethod> RenderTemplateMethod(object instance, KeyValuePair<MethodInfo, TemplateMethod> templateMethod)
+        public IEnumerable<CodeMemberMethod> RenderTemplateMethod(object instance, KeyValuePair<MethodInfo, GenerateMethod> templateMethod)
         {
-            if (templateMethod.Value.Location == MemberGeneratorLocation.DesignerFile &&
-                templateMethod.Value.Location != MemberGeneratorLocation.Both && !IsDesignerFile) yield break;
-            if (templateMethod.Value.Location == MemberGeneratorLocation.EditableFile &&
-                templateMethod.Value.Location != MemberGeneratorLocation.Both && IsDesignerFile) yield break;
+            CurrentAttribute = templateMethod.Value;
+            var attributes = templateMethod.Key.GetCustomAttributes(typeof(TemplateAttribute), true).OfType<TemplateAttribute>().OrderBy(p => p.Priority).ToArray();
 
-            var forEachAttribute =
-           templateMethod.Key.GetCustomAttributes(typeof(TemplateForEach), true).FirstOrDefault() as
-               TemplateForEach;
-
-            var iteratorName = templateMethod.Key.Name;
-            if (forEachAttribute != null)
+            bool success = true;
+            foreach (var attribute in attributes)
             {
-                iteratorName = forEachAttribute.IteratorProperty;
-                AddIterator(templateMethod.Key.Name,
-                    delegate(TData arg1)
-                    {
-                        return CreateIterator(instance, iteratorName, arg1);
-                    });
+                if (!attribute.CanGenerate(instance, templateMethod.Key, this))
+                {
+                    success = false;
+                }
             }
+            if (!success)
+            {
+                yield break;
+            }
+
+            // Default to designer file only
+            if (!attributes.OfType<Inside>().Any())
+            {
+                if (!IsDesignerFile) yield break;
+            }
+           // if (templateMethod.Value.Location == TemplateLocation.DesignerFile &&
+           //     templateMethod.Value.Location != TemplateLocation.Both && !IsDesignerFile) yield break;
+           // if (templateMethod.Value.Location == TemplateLocation.EditableFile &&
+           //     templateMethod.Value.Location != TemplateLocation.Both && IsDesignerFile) yield break;
+
+           // var forEachAttribute =
+           //templateMethod.Key.GetCustomAttributes(typeof(TemplateForEach), true).FirstOrDefault() as
+           //    TemplateForEach;
+
+           // var iteratorName = templateMethod.Key.Name;
+           // if (forEachAttribute != null)
+           // {
+           //     iteratorName = forEachAttribute.IteratorProperty;
+           //     AddIterator(templateMethod.Key.Name,
+           //         delegate(TData arg1)
+           //         {
+           //             return CreateIterator(instance, iteratorName, arg1);
+           //         });
+           // }
 
             if (Iterators.ContainsKey(templateMethod.Key.Name))
             {
@@ -592,16 +627,28 @@ namespace Invert.Core.GraphDesigner
                     Item = item;
                     if (ItemFilter != null && !ItemFilter(item))
                         continue;
-                    yield return RenderMethod(instance, templateMethod, item);
-                    
+                    var result = RenderMethod(instance, templateMethod, item);
+                    foreach (var attribute in attributes)
+                    {
+                        attribute.Modify(instance, templateMethod.Key, this);
+                    }
+                    yield return result;
+
                 }
+                Item = null;
             }
             else
             {
                 Item = Data as IDiagramNodeItem;
                 if (ItemFilter != null && !ItemFilter(Item))
                     yield break;
-                yield return RenderMethod(instance, templateMethod, Data as IDiagramNodeItem);
+                var result = RenderMethod(instance, templateMethod, Data as IDiagramNodeItem);
+                foreach (var attribute in attributes)
+                {
+                    attribute.Modify(instance, templateMethod.Key, this);
+                }
+                yield return result;
+                Item = null;
             }
         }
 
@@ -622,7 +669,7 @@ namespace Invert.Core.GraphDesigner
                 iteratorName));
         }
 
-        protected CodeConstructor RenderConstructor(object instance, KeyValuePair<MethodInfo, TemplateConstructor> templateMethod, IDiagramNodeItem data)
+        protected CodeConstructor RenderConstructor(object instance, KeyValuePair<MethodInfo, GenerateConstructor> templateMethod, IDiagramNodeItem data)
         {
             var info = templateMethod.Key;
             var dom = templateMethod.Key.ToCodeConstructor();
@@ -648,33 +695,33 @@ namespace Invert.Core.GraphDesigner
             InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.ConstructorAdded(instance, this, dom));
             return dom;
         }
-        protected CodeMemberProperty RenderProperty(object instance, KeyValuePair<PropertyInfo, TemplateProperty> templateProperty)
+        protected CodeMemberProperty RenderProperty(object instance, KeyValuePair<PropertyInfo, GenerateProperty> templateProperty)
         {
             var domObject = TemplateType.PropertyFromTypeProperty(templateProperty.Key.Name);
             CurrentMember = domObject;
             CurrentAttribute = templateProperty.Value;
-            if (templateProperty.Value.AutoFill != AutoFillType.None)
-            {
-                domObject.Name = string.Format(templateProperty.Value.NameFormat, this.Item.Name.Clean());
-            }
+            //if (templateProperty.Value.AutoFill != AutoFillType.None)
+            //{
+            //    domObject.Name = string.Format(templateProperty.Value.NameFormat, this.Item.Name.Clean());
+            //}
 
-            if (templateProperty.Value.AutoFill == AutoFillType.NameAndType ||
-                templateProperty.Value.AutoFill == AutoFillType.NameAndTypeWithBackingField)
-            {
-                var typedItem = Item as ITypedItem;
-                if (typedItem != null)
-                {
-                    if (domObject.Type.TypeArguments.Count > 0)
-                    {
-                        domObject.Type.TypeArguments.Clear();
-                        domObject.Type.TypeArguments.Add(typedItem.RelatedTypeName);
-                    }
-                    else
-                    {
-                        domObject.Type = new CodeTypeReference(typedItem.RelatedTypeName);
-                    }
-                }
-            }
+            //if (templateProperty.Value.AutoFill == AutoFillType.NameAndType ||
+            //    templateProperty.Value.AutoFill == AutoFillType.NameAndTypeWithBackingField)
+            //{
+            //    var typedItem = Item as ITypedItem;
+            //    if (typedItem != null)
+            //    {
+            //        if (domObject.Type.TypeArguments.Count > 0)
+            //        {
+            //            domObject.Type.TypeArguments.Clear();
+            //            domObject.Type.TypeArguments.Add(typedItem.RelatedTypeName);
+            //        }
+            //        else
+            //        {
+            //            domObject.Type = new CodeTypeReference(typedItem.RelatedTypeName);
+            //        }
+            //    }
+            //}
             PushStatements(domObject.GetStatements);
             templateProperty.Key.GetValue(instance, null);
             PopStatements();
@@ -688,26 +735,14 @@ namespace Invert.Core.GraphDesigner
                 PopStatements();
             }
 
-            if (templateProperty.Value.AutoFill == AutoFillType.NameAndTypeWithBackingField ||
-                templateProperty.Value.AutoFill == AutoFillType.NameOnlyWithBackingField)
-            {
-                //templateProperty.Key.GetValue(instance, null);
-                var field = CurrentDecleration._private_(domObject.Type, "_{0}", domObject.Name.Clean());
-                domObject.GetStatements._("return {0}", field.Name);
-                domObject.SetStatements._("{0} = value", field.Name);
-
-            }
-            else
-            {
-
-                if (!IsDesignerFile && domObject.Attributes != MemberAttributes.Final && templateProperty.Value.Location == MemberGeneratorLocation.Both)
+                if (!IsDesignerFile && domObject.Attributes != MemberAttributes.Final && templateProperty.Value.Location == TemplateLocation.Both)
                 {
                     domObject.Attributes |= MemberAttributes.Override;
                 }
-            }
+            
             return domObject;
         }
-        protected CodeMemberMethod RenderMethod(object instance, KeyValuePair<MethodInfo, TemplateMethod> templateMethod, IDiagramNodeItem data)
+        protected CodeMemberMethod RenderMethod(object instance, KeyValuePair<MethodInfo, GenerateMethod> templateMethod, IDiagramNodeItem data)
         {
             MethodInfo info;
             var dom = TemplateType.MethodFromTypeMethod(templateMethod.Key.Name, out info, false);
@@ -721,10 +756,6 @@ namespace Invert.Core.GraphDesigner
             foreach (var arg in parameters)
             {
                 args.Add(GetDefault(arg.ParameterType));
-            }
-            if (templateMethod.Value.AutoFill != AutoFillType.None)
-            {
-                dom.Name = string.Format(templateMethod.Value.NameFormat, data.Name.Clean());
             }
 
             CurrentDecleration.Members.Add(dom);
@@ -742,23 +773,23 @@ namespace Invert.Core.GraphDesigner
 
             PopStatements();
 
-            var isOverried = false;
-            if (!IsDesignerFile && dom.Attributes != MemberAttributes.Final && templateMethod.Value.Location == MemberGeneratorLocation.Both)
-            {
-                dom.Attributes |= MemberAttributes.Override;
-                isOverried = true;
-            }
-            if ((info.IsVirtual && !IsDesignerFile) || (info.IsOverride() && !info.GetBaseDefinition().IsAbstract && IsDesignerFile))
-            {
-                if (templateMethod.Value.CallBase)
-                {
-                    //if (!info.IsOverride() || !info.GetBaseDefinition().IsAbstract && IsDesignerFile)
-                    //{ 
-                    dom.invoke_base(true);
-                    //}
+            //var isOverried = false;
+            //if (!IsDesignerFile && dom.Attributes != MemberAttributes.Final && templateMethod.Value.Location == TemplateLocation.Both)
+            //{
+            //    dom.Attributes |= MemberAttributes.Override;
+            //    isOverried = true;
+            //}
+            //if ((info.IsVirtual && !IsDesignerFile) || (info.IsOverride() && !info.GetBaseDefinition().IsAbstract && IsDesignerFile))
+            //{
+            //    if (templateMethod.Value.CallBase)
+            //    {
+            //        //if (!info.IsOverride() || !info.GetBaseDefinition().IsAbstract && IsDesignerFile)
+            //        //{ 
+            //        dom.invoke_base(true);
+            //        //}
 
-                }
-            }
+            //    }
+            //}
             InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.MethodAdded(instance, this, dom));
             return dom;
 
@@ -769,6 +800,12 @@ namespace Invert.Core.GraphDesigner
             if (ItemFilter != null && !ItemFilter(data)) 
                 return;
             Results.Add(templateMemberResult);
+        }
+
+        public override void AddMemberIterator(string name, Func<object, IEnumerable> func)
+        {
+            base.AddMemberIterator(name, func);
+            AddIterator(name, _=> { return func(_); });
         }
     }
 
@@ -781,8 +818,58 @@ namespace Invert.Core.GraphDesigner
         void TemplateGenerating(object templateClass, TemplateContext templateContext);
     }
 
+    public class TemplateException :Exception
+    {
+        public TemplateException(string message) : base(message)
+        {
+        }
+
+        public TemplateException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+    }
     public class TemplateContext
     {
+
+        public string ProcessType(Type t)
+        {
+            var genericParameter = t.GetGenericParameter();
+            if (genericParameter != null)
+            {
+                var gt = ProcessType(genericParameter);
+                if (gt == null) return null;
+                return string.Format("{0}<{1}>", t.Name.Replace("`1",""), gt);
+            }
+            if (typeof(_TEMPLATETYPE_).IsAssignableFrom(t))
+            {
+                var type = Activator.CreateInstance(t) as _TEMPLATETYPE_;
+                return type.TheType(this);
+            }
+
+            return null;
+
+        }
+        public object GetTemplateProperty(object templateInstance, string propertyName)
+        {
+            var property = templateInstance.GetType().GetProperty(propertyName);
+            if (property == null)
+            {
+                property = (Item ?? DataObject).GetType()
+                    .GetProperty(propertyName);
+
+                if (property == null)
+                {
+                    throw new TemplateException(string.Format("Template Property Not Found {0}", propertyName));
+                }
+
+                return property.GetValue(Item ?? DataObject, null);
+            }
+            else
+            {
+                return property.GetValue(templateInstance, null);
+            }
+        }
+
         // TODO Remove this and add the Generator collections to here
         public ITemplateClassGenerator Generator { get; set; }
 
@@ -794,9 +881,15 @@ namespace Invert.Core.GraphDesigner
 
         private Stack<CodeStatementCollection> _contextStatements;
         private CodeStatementCollection _currentStatements;
+        private IDiagramNodeItem _item;
         public bool IsDesignerFile { get; set; }
         public IDiagramNodeItem DataObject { get; set; }
-        public IDiagramNodeItem Item { get; set; }
+
+        public IDiagramNodeItem Item
+        {
+            get { return _item ?? DataObject; }
+            set { _item = value; }
+        }
 
         public ITypedItem TypedItem
         {
@@ -821,19 +914,19 @@ namespace Invert.Core.GraphDesigner
         {
             get { return CurrentMember as CodeMemberMethod; }
         }
-        public TemplateMethod CurrentMethodAttribute
+        public GenerateMethod CurrentMethodAttribute
         {
-            get { return CurrentAttribute as TemplateMethod; }
+            get { return CurrentAttribute as GenerateMethod; }
         }
-        public TemplateProperty CurrentPropertyAttribute
+        public GenerateProperty CurrentPropertyAttribute
         {
-            get { return CurrentAttribute as TemplateProperty; }
+            get { return CurrentAttribute as GenerateProperty; }
         }
-        public TemplateConstructor CurrentConstructorAttribute
+        public GenerateConstructor CurrentConstructorAttribute
         {
-            get { return CurrentAttribute as TemplateConstructor; }
+            get { return CurrentAttribute as GenerateConstructor; }
         }
-        public TemplateMember CurrentAttribute { get; set; }
+        public GenerateMember CurrentAttribute { get; set; }
         public CodeTypeDeclaration CurrentDecleration { get; set; }
         public CodeNamespace Namespace { get; set; }
         public void TryAddNamespace(string ns)
@@ -952,5 +1045,11 @@ namespace Invert.Core.GraphDesigner
             ContextStatements.Pop();
         }
 
+
+
+        public virtual void AddMemberIterator(string name, Func<object, IEnumerable> func)
+        {
+        
+        }
     }
 }

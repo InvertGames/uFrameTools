@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Invert.Core.GraphDesigner;
 using Invert.GraphDesigner.WPF;
+using Invert.IOC;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Invert.Core.Tests
@@ -110,13 +111,13 @@ namespace Invert.Core.Tests
         [Inject]
         public ProjectService ProjectService { get; set; }
 
-        public override void Initialize(uFrameContainer container)
+        public override void Initialize(UFrameContainer container)
         {
             container.RegisterInstance<IAssetManager>(new TestAssetManager(new IProjectRepository[] { new JsonProjectRepository(new FileInfo("Test.json"), null, null), }));
             //container.ListenToProjectEvents(this);
         }
 
-        public override void Loaded(uFrameContainer container)
+        public override void Loaded(UFrameContainer container)
         {
             base.Loaded(container);
             ProjectService.Subscribe(this);

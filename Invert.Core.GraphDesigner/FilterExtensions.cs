@@ -8,7 +8,11 @@ namespace Invert.Core.GraphDesigner
     {
         public static IEnumerable<IDiagramNode> GetContainingNodesInProject(this IDiagramFilter filter, IProjectRepository repository)
         {
+            return GetContainerNodesInProjectInternal(filter, repository).Distinct();
+        }
 
+        private static IEnumerable<IDiagramNode> GetContainerNodesInProjectInternal(IDiagramFilter filter, IProjectRepository repository)
+        {
             foreach (var item in repository.Graphs)
             {
                 var positionData = item.PositionData;
@@ -21,28 +25,13 @@ namespace Invert.Core.GraphDesigner
                         if (node == filter) continue;
                         if (locations.Keys.Contains(node.Identifier))
                         {
-                            
                             yield return node;
                         }
                     }
                 }
-
             }
-            //foreach (var node in repository.NodeItems)
-            //{
-            //    if (node == filter) continue;
-            //    var nodeAsFilter = node as IDiagramFilter;
-
-            //    foreach (var item in repository.Graphs)
-            //    {
-            //        if (item.PositionData.HasPosition(filter, node))
-            //        {
-            //            yield return node;
-            //        }
-            //    }
-            //}
-            //return repository.NodeItems.Where(node => node != filter && repository.PositionData.HasPosition(filter, node));
         }
+
         public static IEnumerable<IDiagramNode> GetContainingNodes(this IDiagramFilter filter, INodeRepository repository)
         {
 

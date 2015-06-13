@@ -116,7 +116,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
-            base.Refresh(platform, position);
+            base.Refresh(platform, position, hardRefresh);
             // Calculate the size of the label and add the padding * 2 for left and right
             CachedName = ItemViewModel.Name;
             

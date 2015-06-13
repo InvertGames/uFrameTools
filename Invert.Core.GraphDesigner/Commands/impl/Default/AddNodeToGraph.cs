@@ -1,15 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Odbc;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.ViewModels;
-using UnityEditor;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
+
 
 namespace Invert.Core.GraphDesigner
 {
@@ -287,11 +281,13 @@ namespace Invert.Core.GraphDesigner
                     }
                 }
             }
-#if UNITY_DLL
             sourceDiagram.Project.MarkDirty(sourceDiagram);
             sourceDiagram.Project.MarkDirty(targetDiagram);
-            AssetDatabase.Refresh();
+#if UNITY_DLL
+       
+            UnityEditor.AssetDatabase.Refresh();
 #endif
+
         }
 
         protected virtual void Process(DiagramNode node, IGraphData sourceDiagram, IGraphData targetDiagram)

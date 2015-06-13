@@ -14,7 +14,7 @@ namespace Invert.Core.GraphDesigner
             return Create(decleration, (TData) data, isDesignerFile);
         }
 
-        public MemberGeneratorLocation MemberLocation { get; set; }
+        public TemplateLocation MemberLocation { get; set; }
         
         public abstract CodeTypeMember Create(CodeTypeDeclaration decleration, TData data, bool isDesignerFile);
 

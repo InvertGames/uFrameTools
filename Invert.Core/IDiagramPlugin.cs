@@ -1,4 +1,6 @@
-﻿namespace Invert.Core
+﻿using Invert.IOC;
+
+namespace Invert.Core
 {
     public interface ICorePlugin
     {
@@ -8,8 +10,8 @@
         string PackageName { get; }
         bool Required { get; }
         bool Ignore { get; }
-        void Initialize(uFrameContainer container);
-        void Loaded(uFrameContainer container);
+        void Initialize(UFrameContainer container);
+        void Loaded(UFrameContainer container);
         
     }
 
@@ -48,8 +50,8 @@
         }
 
         public virtual decimal LoadPriority { get { return 1; } }
-        public abstract void Initialize(uFrameContainer container);
-        public abstract void Loaded(uFrameContainer container);
+        public abstract void Initialize(UFrameContainer container);
+        public abstract void Loaded(UFrameContainer container);
     }
 
 

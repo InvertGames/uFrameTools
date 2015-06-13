@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.IOC;
 using Invert.uFrame.Editor;
 
 public class StateMachineCodeFactory : DesignerGeneratorFactory<StateMachineNodeData>
@@ -40,7 +41,7 @@ public class CustomizedGeneratorPlugin : DiagramPlugin
         get { return 2; } // Make sure it loads last
     }
 
-    public override void Initialize(uFrameContainer container)
+    public override void Initialize(UFrameContainer container)
     {
         container.Register<DesignerGeneratorFactory, StateMachineCodeFactory>("StateMachineCodeFactory");
     }

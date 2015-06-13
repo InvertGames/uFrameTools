@@ -259,7 +259,7 @@ namespace Invert.Core.GraphDesigner
             return this;
         }
 
-        public NodeGeneratorConfig<TNode> Member(Func<LambdaMemberGenerator<TNode>, CodeTypeMember> generate, MemberGeneratorLocation location = MemberGeneratorLocation.DesignerFile)
+        public NodeGeneratorConfig<TNode> Member(Func<LambdaMemberGenerator<TNode>, CodeTypeMember> generate, TemplateLocation location = TemplateLocation.DesignerFile)
         {
             MemberGenerators.Add(new LambdaMemberGenerator<TNode>(generate)
             {
@@ -293,7 +293,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         public NodeGeneratorConfig<TNode> MembersFor<TChildItem>(Func<TNode, IEnumerable<TChildItem>> selector, Func<LambdaMemberGenerator<TChildItem>, CodeTypeMember> generate
-            , MemberGeneratorLocation location = MemberGeneratorLocation.DesignerFile)
+            , TemplateLocation location = TemplateLocation.DesignerFile)
             where TChildItem : IGraphItem
         {
             ChildItemMemberGenerators.Add(new NodeChildGeneratorConfig<TNode>()
@@ -319,7 +319,7 @@ namespace Invert.Core.GraphDesigner
             return this;
         }
 
-        public NodeGeneratorConfig<TNode> MembersPerChild<TChildItem>(Func<LambdaMemberGenerator<TChildItem>, CodeTypeMember> generate, MemberGeneratorLocation location = MemberGeneratorLocation.DesignerFile)
+        public NodeGeneratorConfig<TNode> MembersPerChild<TChildItem>(Func<LambdaMemberGenerator<TChildItem>, CodeTypeMember> generate, TemplateLocation location = TemplateLocation.DesignerFile)
             where TChildItem : GenericNodeChildItem
         {
             ChildItemMemberGenerators.Add(new NodeChildGeneratorConfig<TNode>()
@@ -333,13 +333,13 @@ namespace Invert.Core.GraphDesigner
             return this;
         }
 
-        public IEnumerable<CodeTypeMember> GetMembers(CodeTypeDeclaration decleration, GenericNode data, MemberGeneratorLocation location, bool isDesignerFile)
+        public IEnumerable<CodeTypeMember> GetMembers(CodeTypeDeclaration decleration, GenericNode data, TemplateLocation location, bool isDesignerFile)
         {
             if (!data.IsValid) yield break;
             foreach (var generator in MemberGenerators)
             {
 
-                if (generator.MemberLocation == location || generator.MemberLocation == MemberGeneratorLocation.Both)
+                if (generator.MemberLocation == location || generator.MemberLocation == TemplateLocation.Both)
                 {
                     var result =  generator.Create(decleration, data, isDesignerFile);
                     if (result == null) continue;
@@ -348,7 +348,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public IEnumerable<CodeTypeMember> GetChildMembers(CodeTypeDeclaration decleration, TNode data, MemberGeneratorLocation location, bool isDesignerFile)
+        public IEnumerable<CodeTypeMember> GetChildMembers(CodeTypeDeclaration decleration, TNode data, TemplateLocation location, bool isDesignerFile)
         {
             if (!data.IsValid) yield break;
             foreach (var generatorConfig in ChildItemMemberGenerators)
@@ -365,7 +365,7 @@ namespace Invert.Core.GraphDesigner
                         //Debug.Log(generatorConfig.ChildType.Name + " -----> " +item.GetType().Name);
                         continue;
                     }
-                    if (generatorConfig.Generator.MemberLocation == location || generatorConfig.Generator.MemberLocation == MemberGeneratorLocation.Both)
+                    if (generatorConfig.Generator.MemberLocation == location || generatorConfig.Generator.MemberLocation == TemplateLocation.Both)
                     {
                         var generator = generatorConfig.Generator as IMemberGenerator;
                         var result = generator.Create(decleration, item, isDesignerFile);
@@ -379,7 +379,7 @@ namespace Invert.Core.GraphDesigner
         }
 
 
-        public NodeGeneratorConfig<TNode> OverrideTypedMethod(Type type, string methodName,Action<TNode,CodeMemberMethod> fillMethod = null, bool callBase = true, MemberGeneratorLocation location = MemberGeneratorLocation.DesignerFile)
+        public NodeGeneratorConfig<TNode> OverrideTypedMethod(Type type, string methodName, Action<TNode, CodeMemberMethod> fillMethod = null, bool callBase = true, TemplateLocation location = TemplateLocation.DesignerFile)
         {
             MemberGenerators.Add(new LambdaMemberGenerator<TNode>(_ =>
             {

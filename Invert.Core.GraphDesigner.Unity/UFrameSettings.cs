@@ -16,6 +16,8 @@ namespace Invert.Core.GraphDesigner.Unity
         private Color? _backgroundColor;
         private Color? _gridLinesColorSecondary;
         private Color? _tabTextColor;
+        private Color? _sectionItemColor;
+        private Color? _sectionTitleColor;
 
         public void SetColorPref(string name, Color value)
         {
@@ -51,6 +53,43 @@ namespace Invert.Core.GraphDesigner.Unity
                 SetColorPref("_tabTextColor", value);
             }
         }
+
+        public Color SectionTitleColor
+        {
+            get
+            {
+                if (_sectionTitleColor == null)
+                {
+                    return (_sectionTitleColor = GetColorPref("_sectionTitleColor", new Color(0.35f, 0.35f, 0.35f))).Value;
+                }
+                return _sectionTitleColor.Value;
+            }
+            set
+            {
+                _sectionTitleColor = value;
+                SetColorPref("_sectionTitleColor", value);
+            }
+        }
+
+        public virtual Color SectionItemColor
+        {
+            get
+            {
+                if (_sectionItemColor == null)
+                {
+                    return (_sectionItemColor = GetColorPref("_sectionItemColor", new Color(0.65f, 0.65f, 0.65f))).Value;
+                }
+                return _sectionItemColor.Value;
+            }
+            set
+            {
+                _sectionItemColor = value;
+                SetColorPref("_sectionItemColor", value);
+            }
+        }
+
+        public Color SectionItemTypeColor { get; set; }
+
         public virtual Color GridLinesColor
         {
             get

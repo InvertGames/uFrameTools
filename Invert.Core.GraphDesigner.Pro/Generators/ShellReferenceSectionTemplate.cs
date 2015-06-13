@@ -2,7 +2,7 @@ using System.CodeDom;
 using System.IO;
 using Invert.Core.GraphDesigner;
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}Reference")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}Reference")]
 public class ShellReferenceSectionTemplate : GenericReferenceItem<IDiagramNodeItem>,
     IClassTemplate<ShellNodeTypeReferenceSection>
 {
@@ -41,7 +41,7 @@ public class ShellReferenceSectionTemplate : GenericReferenceItem<IDiagramNodeIt
     }
 
     public TemplateContext<ShellNodeTypeReferenceSection> Ctx { get; set; }
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleInputs
     {
         get
@@ -50,7 +50,7 @@ public class ShellReferenceSectionTemplate : GenericReferenceItem<IDiagramNodeIt
             return base.AllowMultipleInputs;
         }
     }
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleOutputs
     {
         get

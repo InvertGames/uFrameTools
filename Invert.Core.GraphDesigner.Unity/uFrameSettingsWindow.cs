@@ -53,9 +53,15 @@ public class uFrameSettingsWindow : EditorWindow
                 s.BackgroundColor = EditorGUILayout.ColorField("Background Color", s.BackgroundColor);
                 EditorGUI.BeginChangeCheck();
                 s.TabTextColor = EditorGUILayout.ColorField("Tab Text Color", s.TabTextColor);
+                s.SectionItemColor = EditorGUILayout.ColorField("Item Text Color", s.SectionItemColor);
+                //s.SectionItemTypeColor = EditorGUILayout.ColorField("Item Type Text Color", s.SectionItemTypeColor);
+                s.SectionTitleColor = EditorGUILayout.ColorField("Section Title Color", s.SectionTitleColor);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ElementDesignerStyles.TabStyle = null;
+                    ElementDesignerStyles.ItemTextEditingStyle = null;
+                    ElementDesignerStyles.HeaderStyle = null;
+                    
                 }
                 s.UseGrid = EditorGUILayout.BeginToggleGroup("Grid", s.UseGrid);
 
@@ -137,6 +143,8 @@ public class uFrameSettingsWindow : EditorWindow
             }
             if (plugin.Enabled)
             {
+                var inspect = plugin as IPluginInspector;
+                
                 var properties = plugin.GetType().GetPropertiesWithAttribute<InspectorProperty>(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
                 var platform = InvertGraphEditor.PlatformDrawer as UnityDrawer;
                 foreach (var property in properties)
@@ -156,6 +164,10 @@ public class uFrameSettingsWindow : EditorWindow
                         Type = property.Key.PropertyType
                     });
                
+                }
+                if (inspect != null)
+                {
+                    inspect.DoInspector();
                 }
             }
 

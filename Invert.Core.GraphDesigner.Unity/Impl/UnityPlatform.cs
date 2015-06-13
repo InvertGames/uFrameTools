@@ -37,14 +37,13 @@ namespace Invert.Core.GraphDesigner.Unity
         public void RefreshAssets()
         {
             AssetDatabase.Refresh();
+            //AssetDatabase.Refresh();
         }
 
         public void Progress(float progress, string message)
         {
             try
             {
-
-
                 if (progress > 100f)
                 {
                     EditorUtility.ClearProgressBar();
@@ -270,7 +269,7 @@ namespace Invert.Core.GraphDesigner.Unity
             if (command is IDynamicOptionsCommand)
             {
                 var obj = Handler.ContextObjects.FirstOrDefault(p => command.For.IsAssignableFrom(p.GetType()));
-                GUI.enabled = command.CanExecute(Handler) == null;
+               // GUI.enabled = command.CanExecute(Handler) == null;
                 var cmd = command as IDynamicOptionsCommand;
                 foreach (var ufContextMenuItem in cmd.GetOptions(obj))
                 {
@@ -326,7 +325,9 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public Vector2 CalculateSize(string text, object tag1)
         {
-            return ((GUIStyle)tag1).CalcSize(new GUIContent(text));
+            var style = ((GUIStyle) tag1);
+            //return text.Length * ()
+            return style.CalcSize(new GUIContent(text));
         }
 
         public void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
@@ -750,13 +751,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         static UnityStyleProvider()
         {
-            Textures.Add("DiagramArrowRight", ElementDesignerStyles.ArrowRightTexture);
-            Textures.Add("DiagramArrowLeft", ElementDesignerStyles.ArrowLeftTexture);
-            Textures.Add("DiagramArrowUp", ElementDesignerStyles.ArrowUpTexture);
-            Textures.Add("DiagramArrowDown", ElementDesignerStyles.ArrowDownTexture);
-            Textures.Add("DiagramArrowRightEmpty", ElementDesignerStyles.ArrowRightEmptyTexture);
-            Textures.Add("DiagramArrowLeftEmpty", ElementDesignerStyles.ArrowLeftEmptyTexture);
-            Textures.Add("DiagramCircleConnector", ElementDesignerStyles.DiagramCircleConnector);
+            
 
 
         }
@@ -772,6 +767,16 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public object GetStyle(InvertStyles name)
         {
+            if (Textures.Count < 1)
+            {
+                Textures.Add("DiagramArrowRight", ElementDesignerStyles.ArrowRightTexture);
+                Textures.Add("DiagramArrowLeft", ElementDesignerStyles.ArrowLeftTexture);
+                Textures.Add("DiagramArrowUp", ElementDesignerStyles.ArrowUpTexture);
+                Textures.Add("DiagramArrowDown", ElementDesignerStyles.ArrowDownTexture);
+                Textures.Add("DiagramArrowRightEmpty", ElementDesignerStyles.ArrowRightEmptyTexture);
+                Textures.Add("DiagramArrowLeftEmpty", ElementDesignerStyles.ArrowLeftEmptyTexture);
+                Textures.Add("DiagramCircleConnector", ElementDesignerStyles.DiagramCircleConnector);
+            }
             switch (name)
             {
                 case InvertStyles.DefaultLabel:

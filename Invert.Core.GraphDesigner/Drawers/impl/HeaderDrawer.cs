@@ -35,7 +35,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
-            base.Refresh(platform, position);
+            base.Refresh(platform, position, hardRefresh);
             TextSize = platform.CalculateSize(NodeViewModel.Label, TextStyle); //.CalcSize(new GUIContent(NodeViewModel.Label)));
             var width = TextSize.x + (Padding * 2);
 

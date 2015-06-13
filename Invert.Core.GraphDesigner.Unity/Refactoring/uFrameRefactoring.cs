@@ -7,6 +7,7 @@ using System.Text;
 using Invert.ICSharpCode.NRefactory.CSharp;
 using Invert.ICSharpCode.NRefactory.CSharp.Expressions;
 using Invert.ICSharpCode.NRefactory.Editor;
+using Invert.IOC;
 using UnityEditor;
 
 namespace Invert.Core.GraphDesigner.Unity.Refactoring
@@ -18,7 +19,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
     }
     public class uFrameRefactoring : DiagramPlugin, ICompileEvents, INodeItemEvents, IRefactoringEvents
     {
-        public override void Initialize(uFrameContainer container)
+        public override void Initialize(UFrameContainer container)
         {
             ListenFor<INodeItemEvents>();
             ListenFor<ICompileEvents>();
@@ -203,7 +204,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             if (addChange != null && !isNodeAdded)
             {
                 var members = change.Item.Node.GetEditableOutputMembers(_ => _.Identifier == change.ItemIdentifier && _ != change.Item.Node)
-                    .Where(p => p != null && p.MemberAttribute != null && (p.MemberAttribute.Location == MemberGeneratorLocation.EditableFile || p.MemberAttribute.Location == MemberGeneratorLocation.Both))
+                    .Where(p => p != null && p.MemberAttribute != null && (p.MemberAttribute.Location == TemplateLocation.EditableFile || p.MemberAttribute.Location == TemplateLocation.Both))
                     .ToArray();
 
                 var firstMember = members.FirstOrDefault();

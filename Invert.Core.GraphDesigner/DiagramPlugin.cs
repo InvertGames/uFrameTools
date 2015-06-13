@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.IOC;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -47,7 +48,7 @@ namespace Invert.Core.GraphDesigner
             set { InvertGraphEditor.Prefs.SetBool("UFRAME_PLUGIN_" + this.GetType().Name, value); }
         }
 
-        public override void Loaded(uFrameContainer container)
+        public override void Loaded(UFrameContainer container)
         {
 
         }
@@ -193,11 +194,11 @@ namespace Invert.Core.GraphDesigner
         public IAssetManager AssetManager {
             get { return InvertGraphEditor.Container.Resolve<IAssetManager>(); }}
 
-        public override void Initialize(uFrameContainer container)
+        public override void Initialize(UFrameContainer container)
         {
         }
 
-        public override void Loaded(uFrameContainer container)
+        public override void Loaded(UFrameContainer container)
         {
             
         }

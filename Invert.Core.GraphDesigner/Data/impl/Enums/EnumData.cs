@@ -89,7 +89,7 @@ public class EnumChildItem : GenericNodeChildItem
     
 }
 
-[TemplateClass(MemberGeneratorLocation.DesignerFile)]
+[TemplateClass(TemplateLocation.DesignerFile)]
 public class EnumNodeGenerator : IClassTemplate<EnumNode>
 {
     public string OutputPath

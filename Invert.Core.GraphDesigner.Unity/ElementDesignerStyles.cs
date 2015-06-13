@@ -441,7 +441,6 @@ namespace Invert.Common
                         normal = { textColor = new Color(0.6f, 0.6f, 0.8f) },
                         stretchHeight = true,
                         stretchWidth = true,
-                        
                         fontSize = Mathf.RoundToInt(8f * Scale),
                         
                         fontStyle = FontStyle.Bold,
@@ -896,7 +895,7 @@ namespace Invert.Common
                 {
                     _headerStyle = new GUIStyle()
                     {
-                        normal = { textColor = new Color(0.35f, 0.35f, 0.35f) },
+                        normal = { textColor = InvertGraphEditor.Settings.SectionTitleColor },//new Color(0.35f, 0.35f, 0.35f) },
                         //padding = new RectOffset(4, 4, 4, 4),
                         fontSize = Mathf.RoundToInt(10f * Scale),
                         fontStyle = FontStyle.Bold,
@@ -905,6 +904,7 @@ namespace Invert.Common
                 }
                 return _headerStyle;
             }
+            set { _headerStyle = null; }
         }
 
         public static GUIStyle Item1
@@ -1048,7 +1048,7 @@ namespace Invert.Common
                 {
                     _itemTextEditingStyle = new GUIStyle();
                     _itemTextEditingStyle.normal.background = null;
-                    _itemTextEditingStyle.normal.textColor = new Color(0.65f,0.65f,0.65f);
+                    _itemTextEditingStyle.normal.textColor = InvertGraphEditor.Settings.SectionItemColor; //new Color(0.65f,0.65f,0.65f);
                     _itemTextEditingStyle.active.background = null;
                     _itemTextEditingStyle.hover.background = null;
                     _itemTextEditingStyle.focused.background = null;
@@ -1061,6 +1061,7 @@ namespace Invert.Common
                 }
                 return _itemTextEditingStyle;
             }
+            set { _itemTextEditingStyle = value; }
         }
 
         public static GUIStyle NavigateNextStyle

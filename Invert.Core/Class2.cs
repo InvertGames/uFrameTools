@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Invert.IOC;
 
 namespace Invert.Core
 {
@@ -76,7 +77,7 @@ namespace Invert.Core
             set { _logger = value; }
         }
 
-        private static uFrameContainer _container;
+        private static UFrameContainer _container;
         private static ICorePlugin[] _plugins;
         private static IDebugLogger _logger;
         private static Dictionary<Type, IEventManager> _eventManagers;
@@ -117,12 +118,12 @@ namespace Invert.Core
                 InvertApplication.CachedAssemblies.Add(assembly);
             }
         }
-        public static uFrameContainer Container
+        public static UFrameContainer Container
         {
             get
             {
                 if (_container != null) return _container;
-                _container = new uFrameContainer();
+                _container = new UFrameContainer();
                 InitializeContainer(_container);
                 return _container;
             }

@@ -15,7 +15,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
-            base.Refresh(platform, position);
+            base.Refresh(platform, position, hardRefresh);
             guiStyle = new GUIStyle(EditorStyles.label);
             guiStyle.padding = new RectOffset(0,0,0,0);
             guiStyle.margin = new RectOffset(0,0,0,0);

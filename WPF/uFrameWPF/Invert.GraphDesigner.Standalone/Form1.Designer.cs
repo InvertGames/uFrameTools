@@ -54,7 +54,7 @@ namespace Invert.GraphDesigner.Standalone
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1430, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(748, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -69,7 +69,7 @@ namespace Invert.GraphDesigner.Standalone
             // createToolStripMenuItem
             // 
             this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.createToolStripMenuItem.Text = "Create";
             // 
             // editToolStripMenuItem
@@ -94,9 +94,9 @@ namespace Invert.GraphDesigner.Standalone
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 780);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 416);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1430, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(748, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -115,7 +115,7 @@ namespace Invert.GraphDesigner.Standalone
             // 
             this.Toolbar.Location = new System.Drawing.Point(0, 24);
             this.Toolbar.Name = "Toolbar";
-            this.Toolbar.Size = new System.Drawing.Size(1430, 25);
+            this.Toolbar.Size = new System.Drawing.Size(748, 25);
             this.Toolbar.TabIndex = 4;
             this.Toolbar.Text = "toolStrip1";
             // 
@@ -123,7 +123,7 @@ namespace Invert.GraphDesigner.Standalone
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1430, 802);
+            this.ClientSize = new System.Drawing.Size(748, 438);
             this.Controls.Add(this.Toolbar);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);

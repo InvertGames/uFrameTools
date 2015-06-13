@@ -34,7 +34,7 @@ namespace Invert.Core.GraphDesigner
                 Name = string.Format(MethodNameFormat, data.Name),
 
             };
-            if (AlwaysOverride || (!isDesignerFile && MemberLocation == MemberGeneratorLocation.Both))
+            if (AlwaysOverride || (!isDesignerFile && MemberLocation == TemplateLocation.Both))
             {
                 method.Attributes |= MemberAttributes.Override;
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Invert.IOC;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -53,7 +54,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
-            base.Refresh(platform, position);
+            base.Refresh(platform, position, hardRefresh);
 
 
         }
@@ -490,9 +491,11 @@ namespace Invert.Core.GraphDesigner
             });
             if (!ViewModel.IsCollapsed)
             {
+          
                 GetContentDrawers(drawers);
+              
             }
-            Children = drawers.ToList();
+            Children = drawers;
         }
 
         public virtual float HeaderPadding
@@ -502,16 +505,19 @@ namespace Invert.Core.GraphDesigner
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
+        
             _headerStyle = null;
             if (_cachedIssues == null)
             {
-                _cachedIssues = ViewModel.Issues.ToArray();
+                _cachedIssues = new ErrorInfo[] {};// ViewModel.Issues.ToArray();
                 _cachedTag = string.Join(" | ", ViewModel.Tags.ToArray());
             }
 
             if (Children == null || Children.Count < 1)
             {
+             
                 RefreshContent();
+            
             }
 
             var startY = ViewModel.Position.y;
@@ -540,6 +546,7 @@ namespace Invert.Core.GraphDesigner
                 ViewModel.ConnectorBounds = cb;
            
             }
+          
         }
 
         protected virtual float LayoutChildren(IPlatformDrawer platform, float startY, ref float minWidth, bool hardRefresh)

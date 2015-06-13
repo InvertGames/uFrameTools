@@ -386,7 +386,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
-            base.Refresh(platform, position);
+            base.Refresh(platform, position, hardRefresh);
             // Eventually it will all be viewmodels
             if (DiagramViewModel == null) return;
             Children.Clear();
@@ -499,11 +499,18 @@ namespace Invert.Core.GraphDesigner
             if (changeArgs.NewItems != null)
                 foreach (var item in changeArgs.NewItems.OfType<ViewModel>())
                 {
+            
                     if (item == null) InvertApplication.Log("Graph Item is null");
+                 
                     var drawer = InvertGraphEditor.Container.CreateDrawer<IDrawer>(item);
+                    
                     if (drawer == null) InvertApplication.Log("Drawer is null");
+       
                     Children.Add(drawer);
+                  
+        
                     drawer.Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
+                
                 }
         }
 #if UNITY_DLL

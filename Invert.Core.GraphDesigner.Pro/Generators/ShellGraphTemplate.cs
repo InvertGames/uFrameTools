@@ -2,8 +2,9 @@ using System.CodeDom;
 using System.Linq;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.IOC;
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}Graph")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}Graph")]
 public class ShellGraphTemplate : GenericGraphData<GenericNode>, IClassTemplate<ShellGraphTypeNode>
 {
     public string OutputPath
@@ -33,7 +34,7 @@ public class ShellGraphTemplate : GenericGraphData<GenericNode>, IClassTemplate<
 }
 
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}")]
 public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode>
 {
     #region Template Setup
@@ -56,7 +57,7 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");
     }
 
-    [TemplateMethod("Get{0}SelectionCommand",MemberGeneratorLocation.Both, true)]
+    [GenerateMethod("Get{0}SelectionCommand",TemplateLocation.Both, true)]
     public virtual Invert.Core.GraphDesigner.SelectItemTypeCommand GetSelectionCommand()
     {
         Ctx._("return new SelectItemTypeCommand() {{ IncludePrimitives = true, AllowNone = false }}");
@@ -75,7 +76,7 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         }
     }
 
-    [TemplateProperty("{0}",AutoFillType.NameAndTypeWithBackingField)]
+    [GenerateProperty("{0}"),WithField]
     public NodeConfig<GenericNode> NodeConfigProperty {
         get
         {
@@ -89,8 +90,8 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         }
     }
 
-    [TemplateMethod(MemberGeneratorLocation.Both,true)]
-    public override void Initialize(uFrameContainer container)
+    [GenerateMethod(TemplateLocation.Both,true)]
+    public override void Initialize(UFrameContainer container)
     {
         if (!Ctx.IsDesignerFile) return;
         Ctx.CurrentMethodAttribute.CallBase = false;

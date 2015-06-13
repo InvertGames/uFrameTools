@@ -1,6 +1,6 @@
 using Invert.Core.GraphDesigner;
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}ChildItem")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}ChildItem")]
 public class ShellChildTemplate : GenericNodeChildItem,
     IClassTemplate<ShellChildItemTypeNode>
 {

@@ -11,6 +11,7 @@ using Gwen.Control;
 using Gwen.Input;
 using Invert.Core.GraphDesigner;
 using Invert.GraphDesigner.Standalone;
+using Invert.Platform.Gwen;
 using OpenTK.Graphics;
 using KeyPressEventArgs = System.Windows.Forms.KeyPressEventArgs;
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;

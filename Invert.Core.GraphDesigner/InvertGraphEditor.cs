@@ -7,6 +7,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Invert.IOC;
 using UnityEngine;
 #if !UNITY_DLL
 using KeyCode = System.Windows.Forms.Keys;
@@ -32,12 +33,13 @@ namespace Invert.Core.GraphDesigner
 
         private static IGraphEditorSettings _settings;
 
-        private static uFrameContainer _TypesContainer;
+        private static UFrameContainer _TypesContainer;
 
         private static IWindowManager _windowManager;
         private static MouseEvent _currentMouseEvent;
         private static IGraphWindow _designerWindow;
         private static IStyleProvider _styleProvider;
+        private static IUFrameContainer _uiContainer;
 
         public static IPlatformOperations Platform { get; set; }
         public static IPlatformPreferences Prefs { get; set; }
@@ -74,7 +76,10 @@ namespace Invert.Core.GraphDesigner
         {
             get { return InvertApplication.Container; }
         }
-
+        public static IUFrameContainer UIContainer
+        {
+            get { return _uiContainer ?? (_uiContainer = new UFrameContainer()); }
+        }
 
 
         public static DiagramViewModel CurrentDiagramViewModel
@@ -137,12 +142,12 @@ namespace Invert.Core.GraphDesigner
             set { _settings = value; }
         }
 
-        public static uFrameContainer TypesContainer
+        public static UFrameContainer TypesContainer
         {
             get
             {
                 if (_TypesContainer != null) return _TypesContainer;
-                _TypesContainer = new uFrameContainer();
+                _TypesContainer = new UFrameContainer();
                 InitializeTypesContainer(_TypesContainer);
                 return _TypesContainer;
             }
@@ -692,8 +697,14 @@ namespace Invert.Core.GraphDesigner
         {
             return CreateDrawer<IDrawer>(container, viewModel);
         }
+
+        public static Dictionary<Type, Type> _drawers;
         public static IDrawer CreateDrawer<TDrawerBase>(this IUFrameContainer container, ViewModel viewModel) where TDrawerBase : IDrawer
         {
+            if (_drawers != null)
+            {
+                
+            }
             if (viewModel == null)
             {
                 InvertApplication.LogError("Data is null.");
@@ -716,7 +727,7 @@ namespace Invert.Core.GraphDesigner
         {
             return container.ResolveRelation<ViewModel>(data.GetType(), data, null) as GraphItemViewModel;
         }
-        private static void InitializeTypesContainer(uFrameContainer container)
+        private static void InitializeTypesContainer(UFrameContainer container)
         {
 
         }
@@ -789,7 +800,7 @@ namespace Invert.Core.GraphDesigner
             }
 
            // var outputFolderName = templateAttribute.OutputFolderName ?? templateType.Name;
-            if (templateAttribute.Location == MemberGeneratorLocation.DesignerFile || templateAttribute.Location == MemberGeneratorLocation.Both)
+            if (templateAttribute.Location == TemplateLocation.DesignerFile || templateAttribute.Location == TemplateLocation.Both)
             {
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;
@@ -812,7 +823,7 @@ namespace Invert.Core.GraphDesigner
 
 
             }
-            if (templateAttribute.Location == MemberGeneratorLocation.EditableFile || templateAttribute.Location == MemberGeneratorLocation.Both)
+            if (templateAttribute.Location == TemplateLocation.EditableFile || templateAttribute.Location == TemplateLocation.Both)
             {
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;

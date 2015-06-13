@@ -6,6 +6,7 @@ using System.Text;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Core.GraphDesigner.Unity;
+using Invert.IOC;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor.ElementDesigner.Commands;
 
@@ -22,13 +23,13 @@ namespace Invert.uFrame.Editor
             get { return -90; }
         }
 
-   
-        public override void Initialize(uFrameContainer container)
+
+        public override void Initialize(UFrameContainer container)
         {
 
             container.RegisterInstance<IDiagramNodeCommand>(new SelectViewBaseElement(), "SelectView");
             //container.RegisterInstance<IDiagramNodeCommand>(new MarkIsTemplateCommand(), "MarkAsTemplate");
-
+            container.RegisterToolbarCommand<PrintPlugins>();
             // Graph Diagrams
             //container.Register<IGraphData, ElementsGraph>("Graph");
             //container.Register<IGraphData, ExternalSubsystemGraph>("External Subsystem Graph");
@@ -160,7 +161,7 @@ namespace Invert.uFrame.Editor
             //    "StateMachineViewModelPostProcessor");
         }
 
-        public override void Loaded(uFrameContainer container)
+        public override void Loaded(UFrameContainer container)
         {
             base.Loaded(container);
             

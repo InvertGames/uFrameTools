@@ -37,6 +37,18 @@ namespace Invert.Core.GraphDesigner
             {
                 this.Add(jsonNode.Key,jsonNode.Value.AsBool);
             }
+            var removeKeys = new List<string>();
+            foreach (var item in this)
+            {
+                if (item.Value == false)
+                {
+                    removeKeys.Add(item.Key);
+                }
+            }
+            foreach (var removeKey in removeKeys)
+            {
+                this.Remove(removeKey);
+            }
         }
     }
 

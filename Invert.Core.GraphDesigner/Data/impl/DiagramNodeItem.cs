@@ -32,13 +32,18 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         }
         set
         {
+            if (value == false)
+            {
+                Flags.Remove(flag);
+                return;
+            }
             if (Flags.ContainsKey(flag))
             {
-                Flags[flag] = value;
+                Flags[flag] = true;
             }
             else
             {
-                Flags.Add(flag, value);
+                Flags.Add(flag, true);
             }
         }
     }
@@ -254,10 +259,9 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
             }
         }
 
-        if (this[Identifier])
-        {
+     
             this[Identifier] = false;
-        }
+   
         
     }
     
@@ -316,7 +320,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
             {
                 throw new Exception("NODE IS NULL");
             }
-            foreach (var connectionData in Node.Project.Connections)
+            foreach (var connectionData in Node.Graph.Connections)
             {
                 if (connectionData.InputIdentifier == this.Identifier)
                 {
@@ -337,7 +341,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
                 throw new Exception("NODE IS NULL");
             }
             if (Node.Project == null) yield break;
-            foreach (var connectionData in Node.Project.Connections)
+            foreach (var connectionData in Node.Graph.Connections)
             {
                 if (connectionData.OutputIdentifier == this.Identifier)
                 {

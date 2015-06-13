@@ -40,6 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Assets\uFrameComplete\uFrame\Kernel\Serialization\JSON.cs">
+      <Link>Data\JSON.cs</Link>
+    </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner.Pro\Commands\SelectColorCommand.cs">
       <Link>PluginDesigner\Commands\SelectColorCommand.cs</Link>
     </Compile>
@@ -220,8 +223,11 @@
     <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\MemberGenerator.cs">
       <Link>Code\impl\MemberGenerator.cs</Link>
     </Compile>
-    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\TypeClassGenerator.cs">
-      <Link>Code\impl\TypeClassGenerator.cs</Link>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\TemplateAttribute.cs">
+      <Link>Code\TemplateAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\TemplateClassGenerator.cs">
+      <Link>Code\TemplateClassGenerator.cs</Link>
     </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\Code\impl\TypeGeneratorPostProcessor.cs">
       <Link>Code\impl\TypeGeneratorPostProcessor.cs</Link>
@@ -298,6 +304,9 @@
     <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\ExportCommand.cs">
       <Link>Commands\impl\Default\ExportCommand.cs</Link>
     </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\GraphItemFlagCommand.cs">
+      <Link>Commands\impl\Default\GraphItemFlagCommand.cs</Link>
+    </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\HideCommand.cs">
       <Link>Commands\impl\Default\HideCommand.cs</Link>
     </Compile>
@@ -309,9 +318,6 @@
     </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\MoveUpCommand.cs">
       <Link>Commands\impl\Default\MoveUpCommand.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\NodeFlagCommand.cs">
-      <Link>Commands\impl\Default\NodeFlagCommand.cs</Link>
     </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\Commands\impl\Default\OpenCommand.cs">
       <Link>Commands\impl\Default\OpenCommand.cs</Link>
@@ -652,6 +658,9 @@
     <Compile Include="..\..\Invert.Core.GraphDesigner\InvertGraphEvent.cs">
       <Link>InvertGraphEvent.cs</Link>
     </Compile>
+    <Compile Include="..\..\Invert.Core.GraphDesigner\JsonExtensions.cs">
+      <Link>Data\JsonExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\Platform\api\ICommandUI.cs">
       <Link>Platform\api\ICommandUI.cs</Link>
     </Compile>
@@ -768,12 +777,6 @@
     </Compile>
     <Compile Include="..\..\Invert.Core.GraphDesigner\ViewModels\ViewModelExtensions.cs">
       <Link>ViewModels\ViewModelExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Invert.JSON\IJsonSerializable.cs">
-      <Link>Data\IJsonSerializable.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Invert.JSON\SimpleJSON.cs">
-      <Link>Data\SimpleJSON.cs</Link>
     </Compile>
     <Compile Include="Class1.cs" />
     <Compile Include="Compatability.cs" />

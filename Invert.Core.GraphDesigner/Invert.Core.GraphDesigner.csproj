@@ -45,11 +45,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BenchMarking.cs" />
     <Compile Include="CodeTemplates\api\ITemplate.cs" />
     <Compile Include="CodeTemplates\api\ITemplateClass.cs" />
     <Compile Include="CodeTemplates\impl\TemplateContext.cs" />
     <Compile Include="CodeTemplates\impl\TemplateMember.cs" />
     <Compile Include="Code\api\IClassTemplate.cs" />
+    <Compile Include="Code\impl\TemplateAttribute.cs" />
     <Compile Include="Commands\impl\EditorCommandGeneric.cs" />
     <Compile Include="ConnectionHandler.cs" />
     <Compile Include="Data\api\IClassTypeNode.cs" />
@@ -57,6 +59,8 @@
     <Compile Include="Data\api\NodeColor.cs" />
     <Compile Include="Data\impl\BaseClassReference.cs" />
     <Compile Include="DesignerWindow.cs" />
+    <Compile Include="DocumentationDefaultProvider.cs" />
+    <Compile Include="DocumentationPage.cs" />
     <Compile Include="Drawers\impl\DiagramDrawer.cs" />
     <Compile Include="Drawers\api\IDrawer.cs" />
     <Compile Include="Drawers\api\INodeDrawer.cs" />
@@ -79,7 +83,10 @@
     <Compile Include="FilterExtensions.cs" />
     <Compile Include="DefaultGraphSettings.cs" />
     <Compile Include="GraphService.cs" />
+    <Compile Include="HelpCommand.cs" />
+    <Compile Include="IDocumentationProvider.cs" />
     <Compile Include="JsonExtensions.cs" />
+    <Compile Include="NodeHelpCommand.cs" />
     <Compile Include="Platform\api\IGraphWindow.cs" />
     <Compile Include="InvertGraphEvent.cs" />
     <Compile Include="Platform\api\IWindowManager.cs" />

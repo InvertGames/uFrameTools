@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using DiagramDesigner.Controls;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.IOC;
 using UnityEngine;
 
 namespace DiagramDesigner.Platform
@@ -44,7 +45,7 @@ namespace DiagramDesigner.Platform
 
         }
 
-        public override void Initialize(uFrameContainer container)
+        public override void Initialize(UFrameContainer container)
         {
             container.RegisterInstance<IStyleProvider>(new DesignerStyles());
             //// Where the generated code files are placed
@@ -54,7 +55,7 @@ namespace DiagramDesigner.Platform
 
         }
 
-        public override void Loaded(uFrameContainer container)
+        public override void Loaded(UFrameContainer container)
         {
 
         }

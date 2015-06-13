@@ -8,6 +8,7 @@ using Invert.uFrame.Editor.ElementDesigner;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.IOC;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -39,9 +40,9 @@ namespace Invert.uFrame.Editor
         private static IUFrameTypeProvider _uFrameTypes;
        
         private static Type[] _codeGenerators;
-        
 
-        public static uFrameContainer Container
+
+        public static UFrameContainer Container
         {
             get
             {

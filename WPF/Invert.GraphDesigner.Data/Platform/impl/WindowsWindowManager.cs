@@ -17,6 +17,11 @@ namespace DiagramDesigner.Platform
             
         }
 
+        public void ShowHelpWindow(string helpProviderName, Type graphItemType)
+        {
+            
+        }
+
         public void TypeInputWindow(Action<GraphTypeInfo> action)
         {
             

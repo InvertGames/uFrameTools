@@ -1,3 +1,5 @@
+using Invert.IOC;
+
 namespace uFrameTestPlugin {
     using System;
     using System.Collections;
@@ -9,7 +11,7 @@ namespace uFrameTestPlugin {
     
     public class TestingPlugin : TestingPluginBase {
         
-        public override void Initialize(Invert.Core.uFrameContainer container) {
+        public override void Initialize(UFrameContainer container) {
             base.Initialize(container);
         }
     }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Invert.IOC;
+
 
 namespace Invert.Core.GraphDesigner {
 

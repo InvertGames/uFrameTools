@@ -67,6 +67,8 @@
     <Compile Include="Data\TemplateMethodReference.cs" />
     <Compile Include="Data\TemplatePropertyReference.cs" />
     <Compile Include="Data\TemplateReference.cs" />
+    <Compile Include="DocumentationPageTemplate.cs" />
+    <Compile Include="DocumentationTemplate.cs" />
     <Compile Include="Generators\ShellChildItemTemplate.cs" />
     <Compile Include="Generators\ShellChildTemplate.cs" />
     <Compile Include="Generators\ShellContextCommandTemplate.cs" />

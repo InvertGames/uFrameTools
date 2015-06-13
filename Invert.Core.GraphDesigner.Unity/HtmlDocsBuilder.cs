@@ -43,7 +43,7 @@ namespace Invert.Core.GraphDesigner.Unity
         }
         public void OutputTOC(DocumentationPage page, StringBuilder builder, int indent = 1)
         {
-
+            if (!page.ShowInNavigation) return;
             builder.AppendFormat("<div class='page-toc page-{0}'>", page.Name.Replace(" ", "").ToLower());
             PageLink(page, builder);
             builder.AppendFormat("<div class='page-toc-margin' style='margin-left: {0}px'>", indent * 10);
@@ -56,30 +56,52 @@ namespace Invert.Core.GraphDesigner.Unity
             builder.AppendLine("</div>");
 
         }
+
         public override string ToString()
+        {
+            return ToString(false, true);
+        }
+
+        public  string ToString(bool includeHeaders, bool includeStylesheets)
         {
 
             var finalOutput = new StringBuilder();
-            finalOutput.AppendLine("<html>");
-            finalOutput.AppendLine("<head>");
+            if (includeHeaders)
+            {
+                finalOutput.AppendLine("<html>");
+                finalOutput.AppendLine("<head>");    
+            }
 
-            if (this.StyleSheet != null)
-                finalOutput.AppendLine(string.Format("<link rel='stylesheet' type='text/css' href='{0}.css'>", this.StyleSheet));
-            finalOutput.AppendLine("<link rel=\"stylesheet\" href=\"http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css\">")
-            ;
-            finalOutput.AppendLine(
-                "<script src=\"http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js\"></script>");
-            finalOutput.AppendLine("<script>hljs.initHighlightingOnLoad();</script>");
+            if (includeStylesheets)
+            {
+                if (this.StyleSheet != null)
+                    finalOutput.AppendLine(string.Format("<link rel='stylesheet' type='text/css' href='{0}.css'>", this.StyleSheet));
+                finalOutput.AppendLine("<link rel=\"stylesheet\" href=\"http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css\">")
+                ;
+                finalOutput.AppendLine(
+                    "<script src=\"http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js\"></script>");
+                finalOutput.AppendLine("<script>hljs.initHighlightingOnLoad();</script>");
+                finalOutput.AppendLine(string.Format("<script src=\"https://code.jquery.com/jquery-2.1.4.min.js\"></script>", this.StyleSheet));
+                //finalOutput.Append("<script>$(function() { $('.page').hide(); });</script>");
+            }
 
 
 
-            finalOutput.AppendLine(string.Format("<script src=\"https://code.jquery.com/jquery-2.1.4.min.js\"></script>", this.StyleSheet));
-            //finalOutput.Append("<script>$(function() { $('.page').hide(); });</script>");
-            finalOutput.AppendLine("</head>");
-            finalOutput.AppendLine("<body>");
+
+            if (includeHeaders)
+            {
+                finalOutput.AppendLine("</head>");
+                finalOutput.AppendLine("<body>");
+            }
+          
             finalOutput.Append(Output.ToString());
-            finalOutput.AppendLine("</body>");
-            finalOutput.AppendLine("</html>");
+            if (includeHeaders)
+            {
+                finalOutput.AppendLine("</body>");
+                finalOutput.AppendLine("</html>");
+                
+            }
+          
             return finalOutput.ToString();
         }
 
@@ -330,7 +352,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             Output.Append("<pre><code class='csharp'>");
 
-            Output.Append(code);
+            Output.Append(code.Replace("<", "&lt;").Replace(">", "&gt;"));
 
             Output.Append("</code></pre>");
         }
@@ -402,12 +424,21 @@ namespace Invert.Core.GraphDesigner.Unity
                 }
             }
         }
+        public Func<DocumentationPage,string> PageLinkHandler { get; set; }
 
         private void PageLink(DocumentationPage page, StringBuilder builder)
         {
+            if (PageLinkHandler != null)
+            {
+                builder.Append(PageLinkHandler(page));
+            }
+            else
+            {
+                builder.AppendFormat("<a href='{0}.html' target='content-frame'>{1}</a>",
+                    page.Name.Replace(" ", ""), page.Name).AppendLine();    
+            }
             //onclick=\"$('.page').hide(); $('#page-{0}').show();\"
-            builder.AppendFormat("<a href='{0}.html' target='content-frame'>{1}</a>",
-                page.Name.Replace(" ", ""), page.Name).AppendLine();
+            
         }
     }
 }

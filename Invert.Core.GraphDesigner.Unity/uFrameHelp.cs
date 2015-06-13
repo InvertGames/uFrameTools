@@ -235,6 +235,12 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             if (folder != null)
             {
                 var tocDocs = new HtmlDocsBuilder(Pages, "toc", "Screenshots");
+#if DEBUG
+                tocDocs.PageLinkHandler = page =>
+                {
+                    return string.Format("<a href=\"/docs/mvvm/{0}.html\">{1}</a>", page.Name.Replace(" ", ""), page.Name);
+                };
+#endif
                 tocDocs.Output.AppendFormat("<div class='toc'>");
                 foreach (var page in Pages.OrderBy(p=>p.Order))
                 {

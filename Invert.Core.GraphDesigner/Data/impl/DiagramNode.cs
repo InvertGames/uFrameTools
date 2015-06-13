@@ -22,7 +22,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (Project == null)
                     yield break;
-                foreach (var connectionData in Project.Connections)
+                foreach (var connectionData in Graph.Connections)
                 {
                     if (connectionData.InputIdentifier == this.Identifier)
                     {
@@ -39,7 +39,7 @@ namespace Invert.Core.GraphDesigner
                
                 if (Project == null)
                     yield break;
-                foreach (var connectionData in Project.Connections)
+                foreach (var connectionData in Graph.Connections)
                 {
                     if (connectionData.OutputIdentifier == this.Identifier)
                     {
@@ -144,7 +144,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (Flags.ContainsKey(flag))
                 {
-                    return Flags[flag];
+                    return true;
                 }
                 else
                 {
@@ -153,18 +153,19 @@ namespace Invert.Core.GraphDesigner
             }
             set
             {
+                if (value == false)
+                {
+                    Flags.Remove(flag);
+                    return;
+                }
                 if (Flags.ContainsKey(flag))
                 {
-                    if (value == false)
-                    {
-                        Flags.Remove(flag);
-                        return;
-                    }
+               
                     Flags[flag] = true;
                 }
                 else
                 {
-                    Flags.Add(flag, value);
+                    Flags.Add(flag, true);
                 }
             }
         }

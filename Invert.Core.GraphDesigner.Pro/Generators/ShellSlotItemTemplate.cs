@@ -2,11 +2,11 @@ using System.CodeDom;
 using System.IO;
 using Invert.Core.GraphDesigner;
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}")]
 public class ShellSlotItemTemplate : GenericSlot, IClassTemplate<IShellSlotType>
 {
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleInputs
     {
         get
@@ -15,7 +15,7 @@ public class ShellSlotItemTemplate : GenericSlot, IClassTemplate<IShellSlotType>
             return base.AllowMultipleInputs;
         }
     }
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleOutputs
     {
         get

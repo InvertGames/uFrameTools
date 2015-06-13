@@ -11,6 +11,7 @@ using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Core.GraphDesigner.Unity;
 using Invert.Core.GraphDesigner.Unity.Refactoring;
+using Invert.IOC;
 using Invert.uFrame;
 using Invert.uFrame.Editor;
 using UnityEditor;
@@ -83,19 +84,18 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
                     ShowArrow = true,
                     OnShowOptions = () =>
                     {
-                        var removeFile = InvertGraphEditor.Platform.MessageBox("Confirm Delete",
-                            "Would you like to remove the file as well?", "Yes",
-                            "No");
+                        //var removeFile = InvertGraphEditor.Platform.MessageBox("Confirm Delete",
+                        //    "Would you like to remove the file as well?", "Yes",
+                        //    "No");
                   
 
 
                         var items = Target.Diagrams.ToList();
-                       
-                        
                         var so = new SerializedObject(target);
                         so.Update();
                         var property = serializedObject.FindProperty("_diagrams");
-                        property.ClearArray();
+                        property.ClearArray();      
+                        items.RemoveAt(index1);
                         property.arraySize = items.Count;
                         for (int i = 0; i < items.Count; i++)
                         {
@@ -103,13 +103,14 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
                             property.GetArrayElementAtIndex(i).objectReferenceValue = item;
                         }
 
-                        if (removeFile)
-                        {
-                            AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(items[index1]));
-                        }
-                        Target.Diagrams.Remove(items[index1]);
-                        items.RemoveAt(index1);
+                        //if (removeFile)
+                        //{
+                        //    AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(items[index1]));
+                        //}
+                        //Target.Diagrams.Remove(items[index1]);
+                  
                         so.ApplyModifiedProperties();
+                        EditorUtility.SetDirty(target);
                         var project = InvertApplication.Container.Resolve<ProjectService>();
                         project.RefreshProjects();
                     }

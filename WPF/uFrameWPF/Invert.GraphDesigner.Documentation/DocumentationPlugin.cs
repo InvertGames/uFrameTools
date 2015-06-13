@@ -2,6 +2,7 @@
 using System.IO;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.IOC;
 using Xipton.Razor;
 using Xipton.Razor.Core;
 
@@ -25,7 +26,7 @@ namespace Invert.GraphDesigner.Documentation
         }
 
         public RazorMachine Machine { get; set; }
-        public override void Initialize(uFrameContainer container)
+        public override void Initialize(UFrameContainer container)
         {
             Machine = new RazorMachine();
             TemplatePath = @"D:\Invert\uFrameGit\uFrameTools\WPF\uFrameWPF\Invert.GraphDesigner.Documentation\Templates\";

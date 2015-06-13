@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.IOC;
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}Node")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}Node")]
 public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNode>
 {
     public TemplateContext<ShellNodeTypeNode> Ctx { get; set; }
@@ -41,7 +42,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
 
     }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleInputs
     {
         get
@@ -51,7 +52,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         }
     }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleOutputs
     {
         get
@@ -61,7 +62,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         }
     }
 
-    [TemplateProperty("Possible{0}", AutoFillType.NameOnly)]
+    [GenerateProperty("Possible{0}")]
     public virtual IEnumerable<GenericReferenceItem> PossibleReferenceItems
     {
         get
@@ -74,7 +75,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         }
     }
 
-    [TemplateProperty("{0}", AutoFillType.NameOnly)]
+    [GenerateProperty("{0}")]
     public virtual IEnumerable<GenericReferenceItem> SectionItems
     {
         get
@@ -93,7 +94,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
             return null;
         }
     }
-    [TemplateProperty("{0}", AutoFillType.NameOnly)]
+    [GenerateProperty("{0}")]
     public virtual IEnumerable<GenericReferenceItem> ReferenceSectionItems
     {
         get
@@ -128,7 +129,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         get { return null; }
     }
 
-    //[TemplateProperty("{0}", AutoFillType.NameOnly, Location = MemberGeneratorLocation.Both)]
+    //[TemplateProperty("{0}", AutoFillType.NameOnly, Location = TemplateLocation.Both)]
     //public virtual IEnumerable<GenericReferenceItem> CustomSelectorItems
     //{
     //    get
@@ -139,7 +140,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
     //    }
     //}
 
-    [TemplateProperty("{0}InputSlot", AutoFillType.NameOnly)]
+    [GenerateProperty("{0}InputSlot")]
     public virtual GenericReferenceItem InputSlot
     {
         get
@@ -162,7 +163,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
 
     }
 
-    [TemplateProperty("{0}OutputSlot", AutoFillType.NameOnlyWithBackingField)]
+    [GenerateProperty("{0}OutputSlot")]
     public virtual GenericReferenceItem OutputSlot
     {
         get
@@ -182,7 +183,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
 
 }
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}NodeViewModel", AutoInherit = false)]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}NodeViewModel", AutoInherit = false)]
 public class ShellNodeTypeViewModelTemplate : GenericNodeViewModel<GenericNode>, IClassTemplate<ShellNodeTypeNode>
 {
     public string OutputPath
@@ -225,7 +226,7 @@ public class ShellNodeTypeViewModelTemplate : GenericNodeViewModel<GenericNode>,
     {
     }
 
-    [TemplateConstructor(MemberGeneratorLocation.Both, "graphItemObject", "diagramViewModel")]
+    [GenerateConstructor(TemplateLocation.Both, "graphItemObject", "diagramViewModel")]
     public void ViewModelConstructor(GenericNode graphItemObject, DiagramViewModel diagramViewModel)
     {
         Ctx.CurrentConstructor.Parameters[0].Type = Ctx.Data.ClassName.ToCodeReference();
@@ -233,7 +234,7 @@ public class ShellNodeTypeViewModelTemplate : GenericNodeViewModel<GenericNode>,
     }
 
 }
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}NodeDrawer")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}NodeDrawer")]
 public class ShellNodeTypeDrawerTemplate : GenericNodeDrawer<GenericNode, GenericNodeViewModel<GenericNode>>, IClassTemplate<ShellNodeTypeNode>
 {
     public string OutputPath
@@ -266,7 +267,7 @@ public class ShellNodeTypeDrawerTemplate : GenericNodeDrawer<GenericNode, Generi
     {
     }
 
-    [TemplateConstructor(MemberGeneratorLocation.Both, "viewModel")]
+    [GenerateConstructor(TemplateLocation.Both, "viewModel")]
     public void DrawerConstructor(GenericNodeViewModel<GenericNode> viewModel)
     {
         Ctx.CurrentConstructor.Parameters[0].Type = (Ctx.Data.Name + "NodeViewModel").ToCodeReference();
@@ -275,7 +276,7 @@ public class ShellNodeTypeDrawerTemplate : GenericNodeDrawer<GenericNode, Generi
 
 }
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}NodeViewModel", AutoInherit = false)]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}NodeViewModel", AutoInherit = false)]
 public class ShellNodeConfigViewModelTemplate : GenericNodeViewModel<GenericNode>, IClassTemplate<ShellNodeConfig>
 {
     public string OutputPath
@@ -318,7 +319,7 @@ public class ShellNodeConfigViewModelTemplate : GenericNodeViewModel<GenericNode
     {
     }
 
-    [TemplateConstructor(MemberGeneratorLocation.Both, "graphItemObject", "diagramViewModel")]
+    [GenerateConstructor(TemplateLocation.Both, "graphItemObject", "diagramViewModel"),Inside(TemplateLocation.Both)]
     public void ViewModelConstructor(GenericNode graphItemObject, DiagramViewModel diagramViewModel)
     {
         Ctx.CurrentConstructor.Parameters[0].Type = Ctx.Data.ClassName.ToCodeReference();
@@ -326,7 +327,7 @@ public class ShellNodeConfigViewModelTemplate : GenericNodeViewModel<GenericNode
     }
 
 }
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}NodeDrawer")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}NodeDrawer")]
 public class ShellNodeConfigDrawerTemplate : GenericNodeDrawer<GenericNode, GenericNodeViewModel<GenericNode>>, IClassTemplate<ShellNodeConfig>
 {
     public string OutputPath
@@ -359,7 +360,7 @@ public class ShellNodeConfigDrawerTemplate : GenericNodeDrawer<GenericNode, Gene
     {
     }
 
-    [TemplateConstructor(MemberGeneratorLocation.Both, "viewModel")]
+    [GenerateConstructor(TemplateLocation.Both, "viewModel"),Inside(TemplateLocation.Both)]
     public void DrawerConstructor(GenericNodeViewModel<GenericNode> viewModel)
     {
         Ctx.CurrentConstructor.Parameters[0].Type = (Ctx.Data.Name + "NodeViewModel").ToCodeReference();
@@ -368,7 +369,7 @@ public class ShellNodeConfigDrawerTemplate : GenericNodeDrawer<GenericNode, Gene
 
 }
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}Node")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}Node",AutoInherit = true)]
 public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConfig>
 {
     public TemplateContext<ShellNodeConfig> Ctx { get; set; }
@@ -420,7 +421,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         }
 
     }
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public virtual string ClassName
     {
         get
@@ -430,7 +431,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         }
     }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleInputs
     {
         get
@@ -440,7 +441,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         }
     }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleOutputs
     {
         get
@@ -450,7 +451,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         }
     }
 
-    [TemplateProperty("Possible{0}", AutoFillType.NameOnly)]
+    [GenerateProperty("Possible{0}")]
     public virtual IEnumerable<GenericReferenceItem> PossibleReferenceItems
     {
         get
@@ -463,7 +464,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         }
     }
 
-    [TemplateProperty("{0}", AutoFillType.NameOnly)]
+    [GenerateProperty("{0}")]
     public virtual IEnumerable<GenericReferenceItem> SectionItems
     {
         get
@@ -484,7 +485,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         }
     }
 
-    [TemplateProperty("{0}", AutoFillType.NameOnly)]
+    [GenerateProperty("{0}")]
     public virtual IEnumerable<GenericReferenceItem> ReferenceSectionItems
     {
         get
@@ -520,7 +521,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         get { return null; }
     }
 
-    [TemplateProperty("{0}InputSlot", AutoFillType.NameOnly)]
+    [GenerateProperty("{0}InputSlot")]
     public virtual GenericReferenceItem InputSlot
     {
         get
@@ -548,7 +549,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
 
     }
 
-    [TemplateProperty("{0}OutputSlot", AutoFillType.NameOnly)]
+    [GenerateProperty("{0}OutputSlot")]
     public virtual GenericReferenceItem OutputSlot
     {
         get
@@ -575,7 +576,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
 
 }
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}Reference")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}Reference")]
 public class ShellNodeConfigReferenceSectionTemplate : GenericReferenceItem<IDiagramNodeItem>,
     IClassTemplate<ShellNodeConfigSection>
 {
@@ -615,7 +616,7 @@ public class ShellNodeConfigReferenceSectionTemplate : GenericReferenceItem<IDia
 
     public TemplateContext<ShellNodeConfigSection> Ctx { get; set; }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleInputs
     {
         get
@@ -625,7 +626,7 @@ public class ShellNodeConfigReferenceSectionTemplate : GenericReferenceItem<IDia
         }
     }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleOutputs
     {
         get
@@ -635,7 +636,7 @@ public class ShellNodeConfigReferenceSectionTemplate : GenericReferenceItem<IDia
         }
     }
 }
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}ChildItem")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}ChildItem")]
 public class ShellNodeConfigChildItemTemplate : GenericNodeChildItem,
     IClassTemplate<ShellNodeConfigSection>
 {
@@ -676,7 +677,7 @@ public class ShellNodeConfigChildItemTemplate : GenericNodeChildItem,
 
     public TemplateContext<ShellNodeConfigSection> Ctx { get; set; }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleInputs
     {
         get
@@ -686,7 +687,7 @@ public class ShellNodeConfigChildItemTemplate : GenericNodeChildItem,
         }
     }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleOutputs
     {
         get
@@ -698,7 +699,7 @@ public class ShellNodeConfigChildItemTemplate : GenericNodeChildItem,
 }
 
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}Graph")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}Graph")]
 public class ShellNodeAsGraphTemplate : GenericGraphData<GenericNode>, IClassTemplate<ShellNodeConfig>
 {
     public string OutputPath
@@ -723,7 +724,7 @@ public class ShellNodeAsGraphTemplate : GenericGraphData<GenericNode>, IClassTem
     public TemplateContext<ShellNodeConfig> Ctx { get; set; }
 }
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}")]
 public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode>
 {
     #region Template Setup
@@ -746,7 +747,7 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");
     }
 
-    [TemplateMethod("Get{0}SelectionCommand", MemberGeneratorLocation.Both, true)]
+    [GenerateMethod("Get{0}SelectionCommand", TemplateLocation.Both, true)]
     public virtual Invert.Core.GraphDesigner.SelectItemTypeCommand GetSelectionCommand()
     {
         Ctx._("return new SelectItemTypeCommand() {{ IncludePrimitives = true, AllowNone = false }}");
@@ -765,7 +766,7 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         }
     }
 
-    [TemplateProperty("{0}", AutoFillType.NameAndTypeWithBackingField)]
+    [GenerateProperty("{0}"),WithField]
     public NodeConfig<GenericNode> NodeConfigProperty
     {
         get
@@ -780,8 +781,8 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         }
     }
 
-    [TemplateMethod(MemberGeneratorLocation.Both, true)]
-    public override void Initialize(uFrameContainer container)
+    [GenerateMethod(TemplateLocation.Both, true)]
+    public override void Initialize(UFrameContainer container)
     {
         if (!Ctx.IsDesignerFile) return;
         Ctx.CurrentMethodAttribute.CallBase = false;
@@ -924,7 +925,7 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
 
 }
 
-[TemplateClass(MemberGeneratorLocation.Both, ClassNameFormat = "{0}")]
+[TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}")]
 public class ShellNodeConfigTemplateTemplate : IClassTemplate<ShellTemplateConfigNode>
 {
 
@@ -933,7 +934,7 @@ public class ShellNodeConfigTemplateTemplate : IClassTemplate<ShellTemplateConfi
         get { return Path2.Combine("Editor", "Templates"); }
     }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public virtual string OutputPathProperty
     {
         get
@@ -949,7 +950,7 @@ public class ShellNodeConfigTemplateTemplate : IClassTemplate<ShellTemplateConfi
         get { return true; }
     }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile)]
+    [GenerateProperty(TemplateLocation.DesignerFile)]
     public virtual bool CanGenerateProperty
     {
         get
@@ -974,14 +975,14 @@ public class ShellNodeConfigTemplateTemplate : IClassTemplate<ShellTemplateConfi
             Ctx.CurrentDecleration.CustomAttributes.Add(new CodeAttributeDeclaration(
                 new CodeTypeReference(typeof(TemplateClass)),
                 //new CodeAttributeArgument("OutputPath", new CodePrimitiveExpression(Ctx.Data.OutputPath)),
-                new CodeAttributeArgument("Location", new CodeSnippetExpression(string.Format("MemberGeneratorLocation.{0}", Ctx.Data.Files))),
+                new CodeAttributeArgument("Location", new CodeSnippetExpression(string.Format("TemplateLocation.{0}", Ctx.Data.Files))),
                 new CodeAttributeArgument("AutoInherit", new CodePrimitiveExpression(Ctx.Data.AutoInherit)),
                 new CodeAttributeArgument("ClassNameFormat", new CodePrimitiveExpression(Ctx.Data.ClassNameFormat))
                 ));
         }
     }
 
-    [TemplateMethod(MemberGeneratorLocation.Both)]
+    [GenerateMethod(TemplateLocation.Both)]
     public virtual void TemplateSetupMethod()
     {
         Ctx.CurrentMethod.Name = "TemplateSetup";
@@ -1000,7 +1001,7 @@ public class ShellNodeConfigTemplateTemplate : IClassTemplate<ShellTemplateConfi
 
     public TemplateContext<ShellTemplateConfigNode> Ctx { get; set; }
 
-    [TemplateProperty(MemberGeneratorLocation.DesignerFile, AutoFillType.NameAndTypeWithBackingField)]
+    [GenerateProperty("{0}"),WithField]
     public TemplateContext<GenericNode> CtxProperty
     {
         get

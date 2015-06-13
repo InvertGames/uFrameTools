@@ -129,7 +129,7 @@ public class ElementDrawer : DiagramNodeDrawer<ElementNodeViewModel>
 
     public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
     {
-        base.Refresh(platform, position);
+        base.Refresh(platform, position, hardRefresh);
 
         //_isMultiInstance = NodeViewModel.IsMultiInstance;
         _maxNameWidth = MaxNameWidth(EditorStyles.label);

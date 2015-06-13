@@ -275,7 +275,7 @@ public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeView
 
     public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
     {
-        base.Refresh(platform, position);
+        base.Refresh(platform, position, hardRefresh);
         _cachedRelatedType = NodeViewModel.RelatedTypeName;
 
         _typeWidth = ElementDesignerStyles.Tag1.CalcSize(new GUIContent(_cachedRelatedType)).x;

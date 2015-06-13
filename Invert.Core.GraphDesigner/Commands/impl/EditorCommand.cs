@@ -4,13 +4,7 @@ using System.Linq;
 
 namespace Invert.Core.GraphDesigner
 {
-    public abstract class EditorCommand : 
-#if !UNITY_DLL
-      // System.Windows.Input.RoutedCommand,
-        System.Windows.Input.ICommand,
-#endif
-
- IEditorCommand
+    public abstract class EditorCommand :  IEditorCommand
     {
         private List<IEditorCommand> _hooks;
         protected string _title;
@@ -21,13 +15,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         public abstract Type For { get; }
-#if !UNITY_DLL
-        bool System.Windows.Input.ICommand.CanExecute(object parameter)
-        {
-            return true;
-            return CanPerform(parameter) == null;
-        }
-#endif
+
         public virtual void Execute(ICommandHandler handler)
         {
 //#if UNITY_DLL

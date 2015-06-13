@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Gwen.Control;
 using Invert.Core.GraphDesigner;
 using Invert.GraphDesigner.Standalone;
+using Invert.Platform.Gwen;
 
 namespace Gwen.Sample.OpenTK
 {

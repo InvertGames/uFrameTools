@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Invert.IOC;
+
 
 namespace Invert.Core.GraphDesigner
 {
