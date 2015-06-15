@@ -65,6 +65,12 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="uFrameGraphControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uFrameGraphControl.Designer.cs">
+      <DependentUpon>uFrameGraphControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="WindowsAssetManager.cs" />
     <Compile Include="WindowsContextMenu.cs" />
   </ItemGroup>
@@ -96,6 +102,11 @@
       <Project>{59157885-42EE-4324-8649-2737C0C0226F}</Project>
       <Name>Invert.GraphDesigner.WPF</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="uFrameGraphControl.resx">
+      <DependentUpon>uFrameGraphControl.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

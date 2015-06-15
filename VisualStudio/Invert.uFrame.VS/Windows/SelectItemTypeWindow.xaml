@@ -5,12 +5,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windowViewModels="clr-namespace:Invert.GraphDesigner.WPF;assembly=Invert.GraphDesigner.WPF"
-        xmlns:Controls="clr-namespace:Invert.GraphDesigner.WPF.Controls;assembly=Invert.GraphDesigner.WPF.Controls" x:Class="Invert.uFrame.VS.Windows.SelectItemTypeWindow"
+     x:Class="Invert.uFrame.VS.Windows.SelectItemTypeWindow"
         mc:Ignorable="d"
         Title="Select Item Type" Height="359.727" Width="352.534">
     <Grid >
 
-        <Controls:SelectItemTypeControl DataContext="{Binding }"/>
+        <!--<Controls:SelectItemTypeControl DataContext="{Binding }"/>-->
 
     </Grid>
 </ui:DialogWindow>

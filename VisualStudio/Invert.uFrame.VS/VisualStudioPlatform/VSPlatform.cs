@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.IOC;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -9,6 +10,18 @@ using UnityEngine;
 
 namespace Invert.uFrame.VS
 {
+    public abstract class VSPlugin : DiagramPlugin
+    {
+        public IServiceProvider ServiceProvider
+        {
+            get { return EditorFactory.VSServiceProvider; }
+        }
+        public override void Initialize(UFrameContainer container)
+        {
+            //ListenFor<IPlatformOperations>();
+        }
+    }
+
     public class VSPlatform : IPlatformOperations
     {
         public IServiceProvider ServiceProvider

@@ -1,8 +1,12 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Gwen;
 using Gwen.Control;
 using Gwen.Control.Layout;
+using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 
 namespace Invert.Platform.Gwen
@@ -38,9 +42,9 @@ namespace Invert.Platform.Gwen
            
             scrollControl = new ScrollControl(this);
             scrollControl.Dock = Pos.Fill;
-            _graphWindowControl = new GraphWindowControl(scrollControl.InnerPanel);
+            GraphWindowControl = new GraphWindowControl(scrollControl.InnerPanel);
             scrollControl.SetInnerSize(5000,5000);
-            _graphWindowControl.ScrollContainer = scrollControl;
+            GraphWindowControl.ScrollContainer = scrollControl;
             // m_TextOutput = new Control.ListBox(BottomDock);
             //m_Button = BottomDock.TabControl.AddPage("Output", m_TextOutput);
             //BottomDock.Height = 200;
@@ -132,6 +136,37 @@ namespace Invert.Platform.Gwen
             // m_StatusBar.SendToBack();
 
         }
-     
+
+        public GraphWindowControl GraphWindowControl
+        {
+            get { return _graphWindowControl; }
+            set { _graphWindowControl = value; }
+        }
+        public string Filename { get; set; }
+        public void OpenGraph(string filename)
+        {
+            Filename = filename;
+            //IsDirty = false;
+            //InvertGraphEditor.CurrentProject = new SingleFileProjectRepository(filename);
+            LoadFile();
+        }
+        public IProjectRepository Project { get; set; }
+        public IGraphData Graph { get; set; }
+
+        public void LoadFile()
+        {
+            var service = InvertGraphEditor.Container.Resolve<ProjectService>();
+            Project = service.Projects.First(x => x.Graphs.Any(p => p.Path == Filename));
+
+            Graph = Project.Graphs.FirstOrDefault(p => p.Path == Filename);
+            if (Graph != null)
+            {
+                Graph.DeserializeFromJson(JSON.Parse(File.ReadAllText(Filename)));
+                GraphWindowControl.DesignerWindow.LoadDiagram(Graph);
+            }
+      
+        }
+
+        public DiagramViewModel GraphViewModel { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.IOC;
 
 namespace Invert.uFrame.VS
 {
@@ -23,9 +24,10 @@ namespace Invert.uFrame.VS
 
             }
         }
-        public VisualStudioPlugin()
+        static VisualStudioPlugin()
         {
             InvertGraphEditor.Prefs = new WindowsPrefs();
+            InvertGraphEditor.Platform = new VSPlatform();
         }
 
 
@@ -38,9 +40,9 @@ namespace Invert.uFrame.VS
         //        CurrentProjects.FirstOrDefault(p=>p.)
         //    }
         //} 
-        public override void Initialize(uFrameContainer container)
+        public override void Initialize(UFrameContainer container)
         {
-            InvertGraphEditor.Platform = new VSPlatform();
+    
             container.Register<IAssetManager,VisualStudioAssetManager>();
             container.RegisterInstance<IWindowManager>(new VSWindows());
 

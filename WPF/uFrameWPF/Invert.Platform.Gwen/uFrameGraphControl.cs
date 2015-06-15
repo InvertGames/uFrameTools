@@ -9,25 +9,25 @@ using System.Drawing;
 using System.Windows.Forms;
 using Gwen.Control;
 using Gwen.Input;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.GraphDesigner.Standalone;
 using Invert.Platform.Gwen;
 using OpenTK.Graphics;
 using KeyPressEventArgs = System.Windows.Forms.KeyPressEventArgs;
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
-
 namespace Invert.GraphDesigner.Standalone
 {
-    public partial class Form1 : Form
+    public partial class uFrameGraphControl : UserControl
     {
-        private Gwen.Input.OpenTK input;
+         private Gwen.Input.OpenTK input;
         private Gwen.Renderer.OpenTK renderer;
         private Gwen.Skin.Base skin;
         private Gwen.Control.Canvas canvas;
-        private GraphApplication test;
+        private GraphApplication _theGraphApplication;
 
         public OpenTK.GLControl GLControl;
-        public Form1()
+        public uFrameGraphControl()
         {
             this.GLControl = new OpenTK.GLControl(new GraphicsMode(ColorFormat.Empty, 24, 0, 8));
             this.GLControl.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(83)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
@@ -80,6 +80,15 @@ namespace Invert.GraphDesigner.Standalone
         }
 
         public Point LastLocation { get; set; }
+
+        public GraphApplication TheGraphApplication
+        {
+            get { return _theGraphApplication; }
+            set { _theGraphApplication = value; }
+        }
+
+        public bool IsDirty { get; set; }
+        public string Filename { get; set; }
 
         private void Mouse_ButtonUp(object sender, MouseEventArgs e)
         {
@@ -281,7 +290,12 @@ namespace Invert.GraphDesigner.Standalone
             canvas.SetSize(GLControl.Width, GLControl.Height);
             canvas.ShouldDrawBackground = true;
             canvas.BackgroundColor = Color.FromArgb(255, 75, 75, 75);
-            test = new GraphApplication(canvas);
+            TheGraphApplication = new GraphApplication(canvas);
+            if (Filename != null)
+            {
+                TheGraphApplication.Filename = Filename;
+                TheGraphApplication.LoadFile();
+            }
             GLControl.Invalidate();
             GLControl_Resize(sender,e);
         }
@@ -326,16 +340,24 @@ namespace Invert.GraphDesigner.Standalone
 
         }
 
-        public void Destroy()
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Destroy();
+        }
+
+        public  void Destroy()
         {
             canvas.Dispose();
             skin.Dispose();
             renderer.Dispose();
         }
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+
+        public void Save()
         {
-          
             
+            var projectService = InvertApplication.Container.Resolve<ProjectService>();
+            projectService.CurrentProject.Save();
+      
         }
     }
 }
