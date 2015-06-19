@@ -50,4 +50,9 @@ namespace Invert.uFrame.VS
 
 
     }
+
+    public class VisualStudioProjectService : VSPlugin
+    {
+        
+    }
 }
