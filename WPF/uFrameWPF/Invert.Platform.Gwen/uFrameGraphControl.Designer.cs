@@ -1,4 +1,4 @@
-﻿namespace Invert.GraphDesigner.Standalone
+﻿namespace Invert.Platform.Gwen
 {
     partial class uFrameGraphControl
     {

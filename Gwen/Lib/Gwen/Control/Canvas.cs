@@ -193,7 +193,7 @@ namespace Gwen.Control
                 m_DisposeQueue.Add(control);
                 RemoveChild(control, false);
             }
-#if DEBUG
+#if DEBUG_S
             else
                 throw new InvalidOperationException("Control deleted twice");
 #endif

@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using System.Drawing;
 using Gwen;
+using Gwen.Control.Property;
 using Gwen.Skin.Texturing;
 using Invert.Core.GraphDesigner;
+using Color = Gwen.Control.Property.Color;
 
 namespace Invert.Platform.Gwen
 {
@@ -36,13 +39,20 @@ namespace Invert.Platform.Gwen
                 return null;
             var style = new GwenStyle();
             style.Font = skin.DefaultFont;
+            style.Font.Size = 12;
             // style.Font = new Font(skin.Renderer, "Motorwerk", 12);
             switch (name)
             {
+                case InvertStyles.HeaderStyle:
+                case InvertStyles.ViewModelHeaderStyle:
+                case InvertStyles.ItemTextEditingStyle:
+                    style.FontColor = System.Drawing.Color.LightGray;
+                    
+                    return style;
                 case InvertStyles.NodeBackground:
                     style.Bordered = new Bordered(_Texture, 84, 156, 194, 166, new Margin(16, 20, 16, 18))
                     {
-
+                        
                     };
                     return style;
                 case InvertStyles.NodeHeader1:
@@ -105,6 +115,10 @@ namespace Invert.Platform.Gwen
                     return style;
                 case InvertStyles.Tag1:
                     style.Bordered = new Bordered(_Texture, 229, 115, 33, 21, new Margin(9, 12, 9, 0));
+                    style.FontColor = System.Drawing.Color.White;
+                  
+                    style.Font.Size = 8;
+                    
                     return style;
                 case InvertStyles.Toolbar:
                     style.Bordered = new Bordered(_Texture, 690, 497, 30, 24, new Margin(0, 0, 0, 0));

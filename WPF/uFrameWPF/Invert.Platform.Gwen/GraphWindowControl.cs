@@ -173,7 +173,7 @@ namespace Invert.Platform.Gwen
             InvertGraphEditor.PlatformDrawer.BeginRender(null, DesignerWindow.MouseEvent);
             DesignerWindow.DrawToolbar = false;
             DesignerWindow.Draw(this, ScrollContainer.Width, ScrollContainer.Height, ScrollPosition, 1f);
-            DrawLabel(new Rect(400f,400f,100f,100f),skin.Renderer.ClipRegion.Width + ": " + skin.Renderer.ClipRegion.X,CachedStyles.ClearItemStyle );
+            //DrawLabel(new Rect(400f,400f,100f,100f),skin.Renderer.ClipRegion.Width + ": " + skin.Renderer.ClipRegion.X,CachedStyles.ClearItemStyle );
             InvertGraphEditor.PlatformDrawer.EndRender();
             //
             ////

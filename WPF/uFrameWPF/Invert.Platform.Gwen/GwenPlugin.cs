@@ -10,12 +10,13 @@ namespace Invert.Platform.Gwen
         static GwenPlugin()
         {
             InvertGraphEditor.Prefs = new WindowsPrefs();
+            InvertApplication.CachedAssemblies.Add(typeof(GwenPlugin).Assembly);
         }
 
         public override void Initialize(UFrameContainer container)
         {
             container.RegisterInstance<IStyleProvider>(new GwenStyleProvider());
-            container.RegisterInstance<IAssetManager>(new WindowsAssetManager());
+           
             container.RegisterInstance<IGraphEditorSettings>(new DefaultGraphSettings());
             container.Register<ContextMenuUI, WindowsContextMenu>();
         }

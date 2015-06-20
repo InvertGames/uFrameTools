@@ -11,19 +11,18 @@ using Gwen.Control;
 using Gwen.Input;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.GraphDesigner.Standalone;
 using Invert.Platform.Gwen;
 using OpenTK.Graphics;
 using KeyPressEventArgs = System.Windows.Forms.KeyPressEventArgs;
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
-namespace Invert.GraphDesigner.Standalone
+namespace Invert.Platform.Gwen
 {
     public partial class uFrameGraphControl : UserControl
     {
-         private Gwen.Input.OpenTK input;
-        private Gwen.Renderer.OpenTK renderer;
-        private Gwen.Skin.Base skin;
-        private Gwen.Control.Canvas canvas;
+         private global::Gwen.Input.OpenTK input;
+        private global::Gwen.Renderer.OpenTK renderer;
+        private global::Gwen.Skin.Base skin;
+        private global::Gwen.Control.Canvas canvas;
         private GraphApplication _theGraphApplication;
 
         public OpenTK.GLControl GLControl;
@@ -130,7 +129,7 @@ namespace Invert.GraphDesigner.Standalone
                 m_Canvas.Input_Character(ch);
             }
             */
-            Gwen.Key iKey = TranslateKeyCode(e.KeyCode);
+            global::Gwen.Key iKey = TranslateKeyCode(e.KeyCode);
 
             canvas.Input_Key(iKey, false);
             GLControl.Invalidate();
@@ -212,7 +211,7 @@ namespace Invert.GraphDesigner.Standalone
                 m_Canvas.Input_Character(ch);
             }
             */
-            Gwen.Key iKey = TranslateKeyCode(e.KeyCode);
+            global::Gwen.Key iKey = TranslateKeyCode(e.KeyCode);
 
             canvas.Input_Key(iKey, true); 
             GLControl.Invalidate();
@@ -223,28 +222,28 @@ namespace Invert.GraphDesigner.Standalone
         /// </summary>
         /// <param name="key">OpenTK key code.</param>
         /// <returns>GWEN key code.</returns>
-        private Gwen.Key TranslateKeyCode(Keys key)
+        private global::Gwen.Key TranslateKeyCode(Keys key)
         {
             switch (key)
             {
-                case Keys.Back: return Gwen.Key.Backspace;
-                case Keys.Enter: return Gwen.Key.Return;
-                case Keys.Escape: return Gwen.Key.Escape;
-                case Keys.Tab: return Gwen.Key.Tab;
-                case Keys.Space: return Gwen.Key.Space;
-                case Keys.Up: return Gwen.Key.Up;
-                case Keys.Down: return Gwen.Key.Down;
-                case Keys.Left: return Gwen.Key.Left;
-                case Keys.Right: return Gwen.Key.Right;
-                case Keys.Home: return Gwen.Key.Home;
-                case Keys.End: return Gwen.Key.End;
-                case Keys.Delete: return Gwen.Key.Delete;
+                case Keys.Back: return global::Gwen.Key.Backspace;
+                case Keys.Enter: return global::Gwen.Key.Return;
+                case Keys.Escape: return global::Gwen.Key.Escape;
+                case Keys.Tab: return global::Gwen.Key.Tab;
+                case Keys.Space: return global::Gwen.Key.Space;
+                case Keys.Up: return global::Gwen.Key.Up;
+                case Keys.Down: return global::Gwen.Key.Down;
+                case Keys.Left: return global::Gwen.Key.Left;
+                case Keys.Right: return global::Gwen.Key.Right;
+                case Keys.Home: return global::Gwen.Key.Home;
+                case Keys.End: return global::Gwen.Key.End;
+                case Keys.Delete: return global::Gwen.Key.Delete;
                 //case Keys.LControl:
                 //    this.m_AltGr = true;
                 //    return Key.Control;
-                case Keys.Alt: return Gwen.Key.Alt;
-                case Keys.Shift: return Gwen.Key.Shift;
-                case Keys.Control: return Gwen.Key.Control;
+                case Keys.Alt: return global::Gwen.Key.Alt;
+                case Keys.Shift: return global::Gwen.Key.Shift;
+                case Keys.Control: return global::Gwen.Key.Control;
                 //case global::OpenTK.Input.Key.RAlt:
                 //    if (this.m_AltGr)
                 //    {
@@ -254,7 +253,7 @@ namespace Invert.GraphDesigner.Standalone
                 //case global::OpenTK.Input.Key.RShift: return Key.Shift;
 
             }
-            return Gwen.Key.Invalid;
+            return global::Gwen.Key.Invalid;
         }
 
         bool loaded = false;
@@ -278,13 +277,13 @@ namespace Invert.GraphDesigner.Standalone
         {
             loaded = true;
 
-            renderer = new Gwen.Renderer.OpenTK();
-            skin = new Gwen.Skin.TexturedBase(renderer, "DefaultSkin.png");
+            renderer = new global::Gwen.Renderer.OpenTK();
+            skin = new global::Gwen.Skin.TexturedBase(renderer, "DefaultSkin.png");
             //skin = new Gwen.Skin.Simple(renderer);
             //skin.DefaultFont = new Font(renderer, "Courier", 10);
             canvas = new Canvas(skin);
 
-            input = new Gwen.Input.OpenTK(this);
+            input = new global::Gwen.Input.OpenTK(this);
             input.Initialize(canvas);
 
             canvas.SetSize(GLControl.Width, GLControl.Height);

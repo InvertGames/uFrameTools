@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleGwenGame.cs" />
+    <Compile Include="StandalonePlugin.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gwen\Lib\Gwen.Renderer.OpenTK\Gwen.Renderer.OpenTK.csproj">

@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.GraphDesigner.Standalone;
 using Invert.IOC;
 using Invert.Json;
 using Microsoft.Samples.VisualStudio.IDE.EditorWithToolbox;
@@ -16,6 +15,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using UserControl = System.Windows.Controls.UserControl;
+using Invert.Platform.Gwen;
 
 namespace Invert.uFrame.VS
 {
@@ -36,6 +36,7 @@ namespace Invert.uFrame.VS
             {
                 Dock = DockStyle.Fill
             };
+            
            // this.Diagram.SelectionChanged = ShowSelection; TODO
 
         }
@@ -170,7 +171,9 @@ namespace Invert.uFrame.VS
 
         public void Save()
         {
-            Project.Save();
+            GraphControl.Save();
+
+            //Project.Save();
             IsDirty = false;
         }
     }

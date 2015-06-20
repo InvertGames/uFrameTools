@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+
+-->
+
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="uFrame.InvertGameStudios.B8BA92FE-2BE2-4EC3-A913-1A2EC327775A" Version="1.11" Language="en-US" Publisher="Invert Game Studios LLC" />
+    <DisplayName>uFrame</DisplayName>
+    <Description xml:space="preserve">uFrame is a powerful Graphing tool that allows you to visually design applications based on the standard practices of various architecture frameworks such as MVC, MVVM, MVCVM.</Description>
+    <MoreInfo>http://invertgamestudios.com</MoreInfo>
+    <Icon>Resources\Package.ico</Icon>
+    <PreviewImage>Example.EditorWithToolbox.jpg</PreviewImage>
+  </Metadata>
+  <Installation InstalledByMsi="false">
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Premium" />
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.VSWinExpress" />
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Ultimate" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
+    <Dependency Id="Microsoft.VisualStudio.MPF.12.0" DisplayName="Visual Studio MPF 12.0" d:Source="Installed" Version="12.0" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="File" Path="ItemTemplates" d:TargetPath="ItemTemplates\uFramePlugin.zip" />
+  </Assets>
+</PackageManifest>

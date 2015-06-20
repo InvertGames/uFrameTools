@@ -500,7 +500,7 @@ namespace Invert.Core.GraphDesigner
 #if UNITY_DLL
                     SystemPath = Path.Combine(Application.dataPath, @group.Key.Substring(7)).Replace("\\", "/"),
 #else
-                    SystemPath = Path.Combine(systemPath,@group.Key),
+                    SystemPath = @group.Key,
 #endif
                     Generators = @group.ToArray()
                 };

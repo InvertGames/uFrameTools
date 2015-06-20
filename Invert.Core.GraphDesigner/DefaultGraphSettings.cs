@@ -32,9 +32,9 @@ namespace Invert.Core.GraphDesigner
 
         public DefaultGraphSettings()
         {
-            BackgroundColor = new Color(0.13f, 0.13f, 0.13f);
-            GridLinesColor = new Color(0.1f, 0.1f, 0.1f);
-            GridLinesColorSecondary = new Color(0.08f, 0.08f, 0.08f);
+            BackgroundColor = new Color(0.176f, 0.176f, 0.176f);
+            GridLinesColor = new Color(0.153f, 0.153f, 0.153f);
+            GridLinesColorSecondary = new Color(0.075f, 0.075f, 0.075f);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.uFrame.VS", "..\..\VisualStudio\Invert.uFrame.VS\Invert.uFrame.VS.csproj", "{A96C6F84-A591-4AA4-92AD-F1FA4955C835}"
 EndProject
@@ -34,6 +34,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gwen.UnitTest", "..\..\Gwen\Lib\Gwen.UnitTest\Gwen.UnitTest.csproj", "{1E28C643-0671-4EDF-ADEE-B75D33BAE5AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.Platform.Gwen", "Invert.Platform.Gwen\Invert.Platform.Gwen.csproj", "{5BB15AA7-5F56-4096-B728-D26FC712F3CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.uFrame.VisualStudio", "Invert.uFrame.VisualStudio\Invert.uFrame.VisualStudio.csproj", "{5AD6920E-73D4-490F-8309-28C7375608A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{5BB15AA7-5F56-4096-B728-D26FC712F3CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BB15AA7-5F56-4096-B728-D26FC712F3CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BB15AA7-5F56-4096-B728-D26FC712F3CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AD6920E-73D4-490F-8309-28C7375608A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AD6920E-73D4-490F-8309-28C7375608A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AD6920E-73D4-490F-8309-28C7375608A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AD6920E-73D4-490F-8309-28C7375608A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
