@@ -37,6 +37,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.Platform.Gwen", "Inv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.uFrame.VisualStudio", "Invert.uFrame.VisualStudio\Invert.uFrame.VisualStudio.csproj", "{5AD6920E-73D4-490F-8309-28C7375608A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uFrameProject.ProjectType", "uFrameProject\uFrameProject.ProjectType\uFrameProject.ProjectType.csproj", "{5C9C8431-4034-4A0D-B621-5BB1D46335E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uFrameProject.ProjectTemplate", "uFrameProject\uFrameProject.ProjectTemplate\uFrameProject.ProjectTemplate.csproj", "{3FE53528-E903-4E8D-B293-1CFB56CA0CB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +115,14 @@ Global
 		{5AD6920E-73D4-490F-8309-28C7375608A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AD6920E-73D4-490F-8309-28C7375608A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AD6920E-73D4-490F-8309-28C7375608A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C9C8431-4034-4A0D-B621-5BB1D46335E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C9C8431-4034-4A0D-B621-5BB1D46335E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C9C8431-4034-4A0D-B621-5BB1D46335E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C9C8431-4034-4A0D-B621-5BB1D46335E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FE53528-E903-4E8D-B293-1CFB56CA0CB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FE53528-E903-4E8D-B293-1CFB56CA0CB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FE53528-E903-4E8D-B293-1CFB56CA0CB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FE53528-E903-4E8D-B293-1CFB56CA0CB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

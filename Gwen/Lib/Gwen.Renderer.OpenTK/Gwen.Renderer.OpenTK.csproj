@@ -95,7 +95,10 @@
       <Name>Gwen</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Analyzer Include="..\..\..\WPF\uFrameWPF\packages\Microsoft.VisualStudio.ProjectSystem.Analyzers.14.0.50617-pre\tools\net451\Microsoft.VisualStudio.ProjectSystem.Analyzers.dll" />
+    <Analyzer Include="..\..\..\WPF\uFrameWPF\packages\Microsoft.VisualStudio.Threading.Analyzers.14.0.50522-pre\tools\net45\Microsoft.VisualStudio.Threading.Analyzers.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\Binaries\" /Y /Q</PostBuildEvent>

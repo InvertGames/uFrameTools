@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="uFrameProject.ProjectType..ca9c33a1-ea7c-449f-b84d-fb53693219cc" Version="1.0" Language="en-US" Publisher="uFrameProject.ProjectType" />
+    <DisplayName>uFrame Project VSIX</DisplayName>
+    <Description xml:space="preserve">A template for creating a uFrame Project project.</Description>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="14.0" />
+  </Installation>
+  <Dependencies>
+    <!--<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.6" />-->
+    <!--<Dependency d:Source="Installed" Id="B73A99D8-FCAA-4197-9122-F8ABA095A72F" DisplayName="Visual Studio Common Project System v14" Version="[11.2,14.0)" />-->
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="uFrameProject.ProjectType" Path="|uFrameProject.ProjectType|"/>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="uFrameProject.ProjectType" Path="|uFrameProject.ProjectType;PkgdefProjectOutputGroup|" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="uFrameProject.ProjectTemplate" d:TargetPath="|uFrameProject.ProjectTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+  </Assets>
+</PackageManifest>

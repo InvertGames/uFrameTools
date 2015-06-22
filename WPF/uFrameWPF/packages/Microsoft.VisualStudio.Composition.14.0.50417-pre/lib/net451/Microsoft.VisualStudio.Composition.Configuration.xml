@@ -1,0 +1,373 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.VisualStudio.Composition.Configuration</name>
+    </assembly>
+    <members>
+        <member name="P:Microsoft.VisualStudio.Composition.AttributedPartDiscovery.IsNonPublicSupported">
+            <summary>
+            Gets or sets a value indicating whether non-public types and members will be explored.
+            </summary>
+            <remarks>
+            The Microsoft.Composition NuGet package ignores non-publics.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.AttributedPartDiscovery.PublicVsNonPublicFlags">
+            <summary>
+            Gets the flags that select just public members or public and non-public as appropriate.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.AttributedPartDiscovery.GetImportConstraints(System.Reflection.ICustomAttributeProvider)">
+            <summary>
+            Creates a set of import constraints for an import site.
+            </summary>
+            <param name="importSite">The importing member or parameter.</param>
+            <returns>A set of import constraints.</returns>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.CodeGenExportProviderBase.assemblyNames">
+            <summary>
+            An array initialized by the generated code derived class that contains the value of 
+            AssemblyName.FullName for each assembly that must be reflected into.
+            </summary>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.CodeGenExportProviderBase.assemblyCodeBasePaths">
+            <summary>
+            An array initialized by the generated code derived class that contains the value of 
+            AssemblyName.CodeBasePath for each assembly that must be reflected into.
+            </summary>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.CodeGenExportProviderBase.cachedManifests">
+            <summary>
+            An array of manifest modules required for access by reflection.
+            </summary>
+            <remarks>
+            This field is initialized to an array of appropriate size by the derived code-gen'd class.
+            Its elements are individually lazily initialized.
+            </remarks>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.CodeGenExportProviderBase.typeRefs">
+            <summary>
+            An array initialized by the generated code derived class that contains the value of
+            TypeRef's used within the generated code.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.CodeGenExportProviderBase.GetMetadataValueForType(Microsoft.VisualStudio.Composition.Reflection.TypeRef)">
+            <summary>
+            Gets a value that will be translated to System.Type when the metadata value is pulled on by the client.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.CodeGenExportProviderBase.GetMetadataValueForTypeArray(System.Collections.Generic.IReadOnlyList{Microsoft.VisualStudio.Composition.Reflection.TypeRef})">
+            <summary>
+            Gets a value that will be translated to System.Type[] when the metadata value is pulled on by the client.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.CodeGenExportProviderBase.GetAssemblyManifest(System.Int32)">
+            <summary>
+            Gets the manifest module for an assembly.
+            </summary>
+            <param name="assemblyId">The index into the cached manifest array.</param>
+            <returns>The manifest module.</returns>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.CompiledComposition.AssemblyName">
+            <summary>
+            Gets or sets the assembly name to use when writing out the compiled assembly.
+            </summary>
+            <remarks>
+            This is <em>not</em> the path to the assembly. The assembly is written to the stream provided to the <see cref="M:Microsoft.VisualStudio.Composition.CompiledComposition.SaveAsync(Microsoft.VisualStudio.Composition.CompositionConfiguration,System.IO.Stream,System.Threading.CancellationToken)"/> method.
+            Rather, the value of this property should be set to match the leaf filename of the stream to which the assembly is written (without the .dll extension).
+            </remarks>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.ExportMetadataViewInterfaceEmitProxy.WithMetadataViewEmitProxySupport(Microsoft.VisualStudio.Composition.ComposableCatalog)">
+            <summary>
+            Adds support for queries to <see cref="M:Microsoft.VisualStudio.Composition.ExportProvider.GetExports``2"/> where
+            <c>TMetadata</c> is an interface.
+            </summary>
+            <param name="catalog">The catalog from which constructed ExportProviders may have this support added.</param>
+            <returns>The catalog with the additional support.</returns>
+        </member>
+        <member name="T:Microsoft.VisualStudio.Composition.ConfigurationStrings">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.AssemblyNameMustBeSetFirst">
+            <summary>
+              Looks up a localized string similar to AssemblyName must be set first..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.CannotBeEmpty">
+            <summary>
+              Looks up a localized string similar to Cannot be empty..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.CollectionMustBePublicAndPublicCtorWhenUsingImportingCtor">
+            <summary>
+              Looks up a localized string similar to Collection must be public with a public constructor when used with an [ImportingConstructor]..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.CompilerErrorsOccurred">
+            <summary>
+              Looks up a localized string similar to Compilation errors occurred..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.CustomImportSourceNotSupported">
+            <summary>
+              Looks up a localized string similar to Custom import sources are not yet supported..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.ExportsOnMembersNotAllowedWhenDeclaringTypeGeneric">
+            <summary>
+              Looks up a localized string similar to Exports on members not allowed when the declaring type is generic..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.FailedToGenerateEmbeddableTypes">
+            <summary>
+              Looks up a localized string similar to Failed to generate embeddable types..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.ImportConstraintTypeNotSupported">
+            <summary>
+              Looks up a localized string similar to The import constraint type {0} is not supported..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.IsExpectedOnlyOnImportsOfExportFactoryOfT">
+            <summary>
+              Looks up a localized string similar to {0} is expected only on imports of ExportFactory&lt;T&gt;..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.IsExportFactoryExpectedTrue">
+            <summary>
+              Looks up a localized string similar to IsExportFactory is expected to be true..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.MemberContainsBothImportAndImportMany">
+            <summary>
+              Looks up a localized string similar to Member &quot;{0}&quot; contains both ImportAttribute and ImportManyAttribute..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.NoImportingConstructorFound">
+            <summary>
+              Looks up a localized string similar to No importing constructor found..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.NoMemberToSatisfy">
+            <summary>
+              Looks up a localized string similar to No member to satisfy..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.OnImportsSatisfiedTakeNoParameters">
+            <summary>
+              Looks up a localized string similar to OnImportsSatisfied method should take no parameters..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.OnlyOneOnImportsSatisfiedMethodIsSupported">
+            <summary>
+              Looks up a localized string similar to Only one OnImportsSatisfied method is supported..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.OnlySupportedOnWriteOperations">
+            <summary>
+              Looks up a localized string similar to Only supported on write operations..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.ReadableStreamRequired">
+            <summary>
+              Looks up a localized string similar to Readable stream required..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.TypeMustDefineMemberInfoOrDerivedType">
+            <summary>
+              Looks up a localized string similar to Type must be the one that defines memberInfo or a derived type..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.UnexpectedConstraintType">
+            <summary>
+              Looks up a localized string similar to Unexpected constraint type: {0}..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.UnsupportedFormat">
+            <summary>
+              Looks up a localized string similar to Unsupported format: {0}..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.WritableStreamRequired">
+            <summary>
+              Looks up a localized string similar to Writable stream required..
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.ConfigurationStrings.WrongType">
+            <summary>
+              Looks up a localized string similar to Wrong type..
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SerializationContextBase.TryPrepareSerializeReusableObject(System.Object)">
+            <summary>
+            Prepares the object for referential sharing in the serialization stream.
+            </summary>
+            <param name="value">The value that may be serialized more than once.</param>
+            <returns><c>true</c> if the object should be serialized; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SerializationContextBase.TryPrepareDeserializeReusableObject``1(System.UInt32@,``0@)">
+            <summary>
+            Gets an object that has already been deserialized, if available.
+            </summary>
+            <param name="id">Receives the ID of the object.</param>
+            <param name="value">Receives the value of the object, if available.</param>
+            <returns><c>true</c> if the caller should deserialize the object; <c>false</c> if the object is in <paramref name="value"/>.</returns>
+        </member>
+        <member name="T:Microsoft.VisualStudio.Composition.SerializationContextBase.SmartInterningEqualityComparer">
+            <summary>
+            An equality comparer that provides a bit better recognition of objects for better interning.
+            </summary>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.extraMembers">
+            <summary>
+            Additional members of the generated ExportProvider-derived type to emit.
+            </summary>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.reflectionLoadedAssemblies">
+            <summary>
+            The list of assemblies that need to be referenced by the generated code.
+            </summary>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.reflectionLoadedTypes">
+            <summary>
+            The list of types that need to be referenced by the generated code.
+            </summary>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.classSymbols">
+            <summary>
+            A collection of symbols defined at the level of the generated class.
+            </summary>
+            <remarks>
+            This is useful to ensure that any generated symbol is unique.
+            </remarks>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.localSymbols">
+            <summary>
+            A set of local variable names that have already been used in the currently generating part factory method.
+            </summary>
+        </member>
+        <member name="F:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.reservedSymbols">
+            <summary>
+            A lookup table of arbitrary objects to the symbols that have been reserved for them.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.RelevantAssemblies">
+            <summary>
+            Gets the relevant assemblies that must be referenced when compiling the generated code.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.RelevantEmbeddedTypes">
+            <summary>
+            Gets the relevant embedded types that must be discoverable when compiling the generated code.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.GetMemberInfoSyntax(System.Reflection.MemberInfo,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,System.Boolean)">
+            <summary>
+            Gets syntax that will reconstruct the MemberInfo for a given member.
+            </summary>
+            <param name="member">A field or method. If a property, either the getter or the setter will be retrieved.</param>
+            <param name="thisExportProvider">The expression to use when referring to "this" export provider instance.</param>
+            <param name="favorPropertySetter"><c>true</c> to create syntax to reconstruct the property setter method; <c>false</c> to reconstruct the getter method.</param>
+            <returns>The reconstruction syntax.</returns>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.GetObjectArrayArgument(Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax[])">
+            <summary>
+            Creates a <c>new object[] { arg1, arg2 }</c> style syntax for a list of arguments.
+            </summary>
+            <param name="arguments">The list of arguments to format as an object array.</param>
+            <returns>The object[] creation syntax.</returns>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.CreateFuncOfType(Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,Microsoft.CodeAnalysis.CSharp.Syntax.TypeSyntax)">
+            <summary>
+            Returns a Func{T} expression given a Func{object} expression
+            when T is non-public.
+            </summary>
+            <param name="funcOfObject">The Func{object} expression.</param>
+            <param name="returnTypeSyntax">The syntax that produces T as a type (not a type expression). T must be public.</param>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.CreateFuncOfType(Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax)">
+            <summary>
+            Returns a Func{T} expression given a Func{object} expression
+            when T is non-public.
+            </summary>
+            <param name="funcOfObject">The Func{object} expression.</param>
+            <param name="typeExpressionSyntax">The expression that describes the T in Func{T}.</param>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.GetTypeExpression(System.Type,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,System.Boolean,System.Boolean)">
+            <summary>
+            Gets a C# expression that evaluates to a System.Type instance for the specified type.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.CreateLazyConstruction(System.Type,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,System.Type,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax)">
+            <summary>
+            Creates an expression that creates a <see cref="T:System.Lazy`2"/> instance.
+            </summary>
+            <param name="valueType">The type for T.</param>
+            <param name="valueFactory">The value factory, including the lambda when applicable.</param>
+            <param name="metadataType">The type for TMetadata.</param>
+            <param name="metadata">The metadata.</param>
+            <param name="thisExportProvider">The expression to use when referring to "this" export provider instance.</param>
+            <returns>The object creation expression.</returns>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.GetManifestModuleSyntax(System.Reflection.Assembly,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax)">
+            <summary>
+            Gets the expression syntax for the manifest module of the given assembly.
+            </summary>
+            <param name="assembly">The assembly for which the manifest module is required by the generated code.</param>
+            <param name="thisExportProvider">The expression to refer to "this" CompiledExportProvider.</param>
+            <returns>The expression syntax.</returns>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.SyntaxCodeGeneration.GetPartInstanceFactory(Microsoft.VisualStudio.Composition.ComposablePartDefinition,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,System.Boolean,System.Collections.Generic.IReadOnlyList{System.Type},Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax)">
+            <summary>
+            Creates an expression that evaluates to a <see cref="T:System.Func`1"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.NetFxAdapters.AsExportProvider(Microsoft.VisualStudio.Composition.ExportProvider)">
+            <summary>
+            Creates an instance of a <see cref="T:System.ComponentModel.Composition.Hosting.ExportProvider"/>
+            for purposes of compatibility with the version of MEF found in the .NET Framework.
+            </summary>
+            <param name="exportProvider">The <see cref="T:Microsoft.VisualStudio.Composition.ExportProvider"/> to wrap.</param>
+            <returns>A MEF "v1" shim.</returns>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.NetFxAdapters.WithCompositionService(Microsoft.VisualStudio.Composition.ComposableCatalog)">
+            <summary>
+            Creates a catalog that exports an instance of <see cref="T:System.ComponentModel.Composition.ICompositionService"/>.
+            </summary>
+            <param name="catalog">The catalog to add the export to.</param>
+            <returns>A catalog that includes <see cref="T:System.ComponentModel.Composition.ICompositionService"/>.</returns>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.NetFxAdapters.WithDesktopSupport(Microsoft.VisualStudio.Composition.ComposableCatalog)">
+            <summary>
+            Adds parts that allow MEF to work on .NET Framework platforms.
+            </summary>
+            <param name="catalog">The catalog to add desktop support to.</param>
+            <returns>The catalog that includes desktop support.</returns>
+        </member>
+        <member name="M:Microsoft.VisualStudio.Composition.NetFxAdapters.MefV1ExportProvider.GetExportFactoryProductImportDefinitionIfApplicable(System.ComponentModel.Composition.Primitives.ImportDefinition)">
+            <summary>
+            Extracts the ImportDefinition for the T in an ExportFactory{T} import, if applicable.
+            </summary>
+            <param name="definition">The ImportDefinition which may be an ExportFactory.</param>
+            <returns>The import definition that describes the created part, or <c>null</c> if the import definition isn't an ExportFactory.</returns>
+        </member>
+        <member name="T:Microsoft.VisualStudio.Composition.NetFxAdapters.AssemblyLoadCodeBasePathLoader">
+            <summary>
+            An assembly loader that includes the code base path so we can load assemblies by path when necessary.
+            </summary>
+        </member>
+    </members>
+</doc>
