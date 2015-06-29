@@ -356,10 +356,17 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
                 CustomDrawerType = property.Value.CustomDrawerType,
                 InspectorType = property.Value.InspectorType,
                 Type = property1.PropertyType,
+                
                 Name = property1.Name,
                 Getter = () => property1.GetValue(SelectedItem, null),
-                Setter = v => property1.SetValue(SelectedItem, v, null)
+                Setter = v =>
+                {
+                    property1.SetValue(SelectedItem, v, null);
+                    
+                    
+                }
             };
+            
             var drawer = InvertGraphEditor.Container.CreateDrawer(propertyViewModel) as PropertyFieldDrawer;
       
             SelectedItemDrawers.Add(drawer);

@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.Attributes", "..\..\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.Core.Tests", "Invert.Core.Tests\Invert.Core.Tests.csproj", "{752A0744-7BEF-4CF9-86DF-A8DCFFAB641B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invert.GraphDesigner.Documentation", "Invert.GraphDesigner.Documentation\Invert.GraphDesigner.Documentation.csproj", "{BF4392BF-A832-4D3E-B6BE-0026F6C9A653}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocTemplates", "DocTemplates\DocTemplates.csproj", "{AF0F6A70-AA2E-4AAA-883D-AF6678581ED8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uFrameTestPlugin", "uFrameTestPlugin\uFrameTestPlugin.csproj", "{69C5FFB4-CC58-47D8-8CA2-54D1875DDA3E}"
@@ -75,10 +73,6 @@ Global
 		{752A0744-7BEF-4CF9-86DF-A8DCFFAB641B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{752A0744-7BEF-4CF9-86DF-A8DCFFAB641B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{752A0744-7BEF-4CF9-86DF-A8DCFFAB641B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF4392BF-A832-4D3E-B6BE-0026F6C9A653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF4392BF-A832-4D3E-B6BE-0026F6C9A653}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF4392BF-A832-4D3E-B6BE-0026F6C9A653}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF4392BF-A832-4D3E-B6BE-0026F6C9A653}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF0F6A70-AA2E-4AAA-883D-AF6678581ED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AF0F6A70-AA2E-4AAA-883D-AF6678581ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF0F6A70-AA2E-4AAA-883D-AF6678581ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -17,6 +17,7 @@ namespace Invert.Core.GraphDesigner
         private IDrawer _nodeDrawerAtMouse;
         private SelectionRectHandler _selectionRectHandler;
         private IDrawer[] _cachedChildren = new IDrawer[] { };
+        private Dictionary<IDiagramFilter, Vector2> _cachedPaths;
 
 
         public static float Scale
@@ -76,11 +77,52 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public void DrawBreadcrumbs(IPlatformDrawer platform,  float y)
+        {
+            var rect = new Rect(0, y, Bounds.width, 40f);
+            var color = new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.8f, InvertGraphEditor.Settings.BackgroundColor.g * 0.8f, InvertGraphEditor.Settings.BackgroundColor.b * 0.8f, 1f);
+
+            platform.DrawRect(rect, color);
+            var lineRect = new Rect(rect);
+            lineRect.height = 2;
+            lineRect.y = y + 38f;
+            platform.DrawRect(lineRect, new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.6f, InvertGraphEditor.Settings.BackgroundColor.g * 0.6f, InvertGraphEditor.Settings.BackgroundColor.b * 0.6f, 1f));
+            var x = 15f;
+            var first = true;
+            foreach (var item in _cachedPaths)
+            {
+                var item1 = item;
+                platform.DoButton(new Rect(x, rect.y + 20 - (item.Value.y / 2), item.Value.x, item.Value.y), first ? item.Key.Name : "< " + item.Key.Name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle,
+                    () =>
+                    {
+                        Debug.Log(item1.Key);
+                        InvertGraphEditor.ExecuteCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
+                        {
+                            //DiagramViewModel.NavigateTo(item1.Key.Identifier);
+                            DiagramViewModel.GraphData.PopToFilter(item1.Key);
+                        }));
+
+                    });
+                x += item.Value.x + 15;
+                first = false;
+            }
+        }
 
         public override void Draw(IPlatformDrawer platform, float scale)
         {
 
+            
 
+
+        
+            //var x = rect.x + 10;
+
+            //foreach (var item in DiagramDrawer.DiagramViewModel.GraphData.GetFilterPath())
+            //{
+            //    var item1 = item;
+            //    var size = drawer.CalculateSize(item.Name, CachedStyles.GraphTitleLabel);
+            //    x += size.x + 10;
+            //}
             // Make sure they've upgraded to the latest json format
 #if UNITY_DLL
             if (UpgradeOldProject()) return;
@@ -219,6 +261,7 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var item in DrawersAtMouse.OrderByDescending(p => p.ZOrder))
             {
+               // if (!item.Enabled) continue;
                 action(item);
                 if (e.NoBubble)
                 {
@@ -365,7 +408,7 @@ namespace Invert.Core.GraphDesigner
             item = DrawersAtMouse.OfType<ItemDrawer>().FirstOrDefault();
             if (item != null)
             {
-                
+                if (item.Enabled)
                 ShowItemContextMenu(item);
                 return;
             }
@@ -389,6 +432,17 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform, position, hardRefresh);
             // Eventually it will all be viewmodels
             if (DiagramViewModel == null) return;
+            Dictionary<IDiagramFilter, Vector2> dictionary = new Dictionary<IDiagramFilter, Vector2>();
+            var first = true;
+            foreach (var filter in new [] {DiagramViewModel.GraphData.RootFilter}.Concat(this.DiagramViewModel.GraphData.GetFilterPath()).Reverse())
+            {
+                var name = first ? filter.Name : "< " + filter.Name;
+                dictionary.Add(filter, platform.CalculateSize(name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle));
+                first = false;
+            }
+                
+            _cachedPaths = dictionary;
+
             Children.Clear();
             DiagramViewModel.Load();
             Children.Add(SelectionRectHandler);

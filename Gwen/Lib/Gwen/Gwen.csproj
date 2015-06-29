@@ -46,7 +46,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Gwen.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>Gwen.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -178,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Gwen.pfx" />
+    <None Include="Gwen.snk" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="readme.txt" />

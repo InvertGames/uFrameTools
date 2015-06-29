@@ -87,6 +87,7 @@
     <Compile Include="IDocumentationProvider.cs" />
     <Compile Include="JsonExtensions.cs" />
     <Compile Include="NodeHelpCommand.cs" />
+    <Compile Include="Platform\api\Class1.cs" />
     <Compile Include="Platform\api\IGraphWindow.cs" />
     <Compile Include="InvertGraphEvent.cs" />
     <Compile Include="Platform\api\IWindowManager.cs" />
@@ -126,7 +127,7 @@
     <Compile Include="Commands\impl\ElementsDiagramToolbarCommand.cs" />
     <Compile Include="Commands\impl\HookCommand.cs" />
     <Compile Include="Commands\api\IEditorCommand.cs" />
-    <Compile Include="Commands\impl\Toolbar\PopToFilterCommand.cs" />
+    <Compile Include="Commands\impl\Toolbar\BreadCrumbsCommand.cs" />
     <Compile Include="Platform\api\IPlatformDrawer.cs" />
     <Compile Include="Platform\api\IPlatformPreferences.cs" />
     <Compile Include="_TODO\PrintPlugins.cs" />
@@ -245,10 +246,6 @@
     <Compile Include="Data\impl\ProjectUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectExtensions.cs" />
-    <Compile Include="Refactoring\ChangeParameterTypeRefactor.cs" />
-    <Compile Include="Refactoring\RefactorContext.cs" />
-    <Compile Include="Refactoring\Refactorer.cs" />
-    <Compile Include="Refactoring\RenameRefactorer.cs" />
     <Compile Include="Data\api\IGraphEditorSettings.cs" />
     <Compile Include="_TODO\SimpleType\ClassCollectionData.cs" />
     <Compile Include="_TODO\SimpleType\ClassCollectionItemViewModel.cs" />

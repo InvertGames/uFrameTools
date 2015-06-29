@@ -10,18 +10,6 @@ namespace Invert.Core.GraphDesigner
 
     public class NodeConfig<TNode> : NodeConfigBase where TNode : GenericNode, IConnectable
     {
-        public NodeConfig<TNode> AddRefactoring(Func<TNode, bool> condition, Func<TNode, Refactorer> refactorer)
-        {
-            this.Refactorers.Add(node =>
-            {
-                if (condition(node as TNode))
-                {
-                    return refactorer(node as TNode);
-                }
-                return null;
-            });
-            return this;
-        }
 
         public NodeConfig<TNode> Validator(Func<TNode, bool> validate, string message, ValidatorType validatorType = ValidatorType.Warning)
         {

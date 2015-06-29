@@ -2,7 +2,6 @@ using System.CodeDom;
 using Invert.Core.GraphDesigner;
 using Invert.Json;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.Refactoring;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -159,10 +158,6 @@ public class ViewModelCollectionData : DiagramNodeItem, IBindableTypedItem
         }
     }
 
-    public override RenameRefactorer CreateRenameRefactorer()
-    {
-        return new RenameCollectionRefactorer(this);
-    }
 
     public override void Remove(IDiagramNode diagramNode)
     {

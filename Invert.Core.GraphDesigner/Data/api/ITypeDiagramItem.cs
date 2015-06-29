@@ -11,7 +11,7 @@ namespace Invert.Core.GraphDesigner
         void RemoveType();
     }
 
-    public interface IBindableTypedItem : IRefactorable, ITypedItem
+    public interface IBindableTypedItem :  ITypedItem
     {
         bool AllowEmptyRelatedType { get;  }
         string FieldName { get; }

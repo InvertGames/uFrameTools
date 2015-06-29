@@ -39,6 +39,11 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public virtual bool Enabled
+        {
+            get { return true; }
+        }
+
         private bool _isSelected = false;
         private List<ConnectorViewModel> _connectors;
         private ModelCollection<GraphItemViewModel> _contentItems;

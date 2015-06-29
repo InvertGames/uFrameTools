@@ -298,11 +298,6 @@ namespace Invert.Core.GraphDesigner
     
     }
 
-    public interface IRefactorable
-    {
-        IEnumerable<Refactorer> Refactorings { get;  }
-        void RefactorApplied();
-    }
 
     public interface IDocumentationBuilder
     {

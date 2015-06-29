@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using Invert.Core.GraphDesigner;
 using Invert.Json;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
 [Serializable]
@@ -46,11 +45,6 @@ public class ViewModelPropertyData : BindableTypedNodeItem
     public override string Label
     {
         get { return RelatedTypeName + ": " + Name; }
-    }
-
-    public override RenameRefactorer CreateRenameRefactorer()
-    {
-        return new RenamePropertyRefactorer(this);
     }
 
     public bool IsRealTimeProperty

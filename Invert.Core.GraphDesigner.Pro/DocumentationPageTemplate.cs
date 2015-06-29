@@ -27,7 +27,7 @@ public class DocumentationPageTemplate : DocumentationPage, IClassTemplate<IDocu
         {
             className += "Base";
         }
-        Ctx.CurrentDecleration.Name = className;
+        Ctx.CurrentDeclaration.Name = className;
 
 
         if (Ctx.IsDesignerFile)
@@ -45,7 +45,7 @@ public class DocumentationPageTemplate : DocumentationPage, IClassTemplate<IDocu
 
         if (Ctx.IsDesignerFile || this.Ctx.Data.Node.Graph.RootFilter == Ctx.Data)
         {
-            Ctx.CurrentDecleration.TypeAttributes |= TypeAttributes.Abstract;
+            Ctx.CurrentDeclaration.TypeAttributes |= TypeAttributes.Abstract;
             //Ctx.CurrentDecleration.Attributes = MemberAttributes.Abstract | MemberAttributes.Public;
         }
         
@@ -103,7 +103,7 @@ public class DocumentationPageTemplate : DocumentationPage, IClassTemplate<IDocu
     {
         get
         {
-            if (Ctx.CurrentDecleration.TypeAttributes == TypeAttributes.Abstract)
+            if (Ctx.CurrentDeclaration.TypeAttributes == TypeAttributes.Abstract)
             {
                 Ctx._("return base.Name");
             }

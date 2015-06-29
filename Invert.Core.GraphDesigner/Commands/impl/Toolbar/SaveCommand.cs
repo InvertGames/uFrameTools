@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -59,27 +61,37 @@ namespace Invert.Core.GraphDesigner
                
             }
 
-            InvertGraphEditor.Platform.SaveAssets();
-            InvertGraphEditor.Platform.Progress(0, "Refactoring");
+            InvertApplication.SignalEvent<ITaskHandler>(_=>{_.BeginTask(Generate(diagram));});
+           
+          
+        }
 
-            InvertApplication.SignalEvent<ICompileEvents>(_=>_.PreCompile(diagram.CurrentRepository, diagram.GraphData));
+        public IEnumerator Generate(DiagramViewModel diagram)
+        {
+            InvertGraphEditor.Platform.SaveAssets();
+           // InvertGraphEditor.Platform.Progress(0, "Refactoring");
+            yield return
+                new TaskProgress(0f, "Refactoring");
+            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PreCompile(diagram.CurrentRepository, diagram.GraphData));
 
             // Go ahead and process any code refactors
             //ProcessRefactorings(diagram);
             //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
             //var generatorSettings = InvertGraphEditor.CurrentProject.GeneratorSettings;
             var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, diagram.CurrentRepository).ToArray();
-            var length = 100f/(fileGenerators.Length +1);
-           // Debug.Log(fileGenerators.Length);
+            var length = 100f / (fileGenerators.Length + 1);
+            // Debug.Log(fileGenerators.Length);
             var index = 0;
+            //var exportedFiles = new List<string>();
             foreach (var codeFileGenerator in fileGenerators)
             {
                 index++;
-                 InvertGraphEditor.Platform.Progress(length*index,"Generating " + System.IO.Path.GetFileName(codeFileGenerator.AssetPath));
+                yield return new TaskProgress(length * index, "Generating " + System.IO.Path.GetFileName(codeFileGenerator.AssetPath));
+                //InvertGraphEditor.Platform.Progress(length * index, "Generating " + System.IO.Path.GetFileName(codeFileGenerator.AssetPath));
                 // Grab the information for the file
                 var fileInfo = new FileInfo(codeFileGenerator.SystemPath);
-                    //Debug.Log(codeFileGenerator.SystemPath + ": " + fileInfo.Exists);
-                
+                //Debug.Log(codeFileGenerator.SystemPath + ": " + fileInfo.Exists);
+
                 // Make sure we are allowed to generate the file
                 if (!codeFileGenerator.CanGenerate(fileInfo))
                 {
@@ -88,7 +100,7 @@ namespace Invert.Core.GraphDesigner
                     InvertApplication.SignalEvent<ICompileEvents>(_ => _.FileSkipped(fileGenerator));
                     continue;
                 }
-                 
+
                 // Get the path to the directory
                 var directory = System.IO.Path.GetDirectoryName(fileInfo.FullName);
                 // Create it if it doesn't exist
@@ -96,30 +108,48 @@ namespace Invert.Core.GraphDesigner
                 {
                     Directory.CreateDirectory(directory);
                 }
-                try {
-                   // uFrameEditor.Log(string.Format("Writing file with {0} with filename {1}", codeFileGenerator.GetType().Name, codeFileGenerator.Filename));
-                // Write the file
-                File.WriteAllText(fileInfo.FullName, codeFileGenerator.ToString());
-                    } catch(Exception ex)
+                try
+                {
+                    //exportedFiles.Add(fileInfo.FullName.ToLower().Replace("\\", "/"));
+                    //Debug.Log(string.Format("export file : {0}", fileInfo.FullName.ToLower().Replace("\\", "/")));
+                    // uFrameEditor.Log(string.Format("Writing file with {0} with filename {1}", codeFileGenerator.GetType().Name, codeFileGenerator.Filename));
+                    // Write the file
+                    File.WriteAllText(fileInfo.FullName, codeFileGenerator.ToString());
+                }
+                catch (Exception ex)
                 {
                     InvertApplication.LogException(ex);
                     InvertApplication.Log("Coudln't create file " + fileInfo.FullName);
                 }
                 CodeFileGenerator generator = codeFileGenerator;
-                InvertApplication.SignalEvent<ICompileEvents>(_=>_.FileGenerated(generator));
+
+                InvertApplication.SignalEvent<ICompileEvents>(_ => _.FileGenerated(generator));
             }
-            
+
             foreach (var allDiagramItem in diagram.GraphData.NodeItems)
             {
                 allDiagramItem.IsNewNode = false;
             }
-            //RefactorApplied(diagram.DiagramData);
-         
+            ////RefactorApplied(diagram.DiagramData);
+            //// Clean up any files that aren't needed anymore
+            //var path = System.IO.Path.GetDirectoryName(System.IO.Path.Combine(Application.dataPath, diagram.GraphData.Path.Substring(7)).Replace("\\", "/"));
+
+
+            //var files =
+            //    Directory.GetFiles(path, "*.designer.cs", SearchOption.AllDirectories).Select(p => p.ToLower().Replace("\\", "/")).ToArray();
+            //foreach (
+            //    var item in files)
+            //{
+            //    if (exportedFiles.Contains(item)) continue;
+            //    System.IO.File.Delete(item);
+
+            //}
             InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(diagram.CurrentRepository, diagram.GraphData));
 
-            
 
-         
+            yield return
+                new TaskProgress(100f, "Complete");
+
 
             var projectService = InvertApplication.Container.Resolve<ProjectService>();
 
@@ -127,19 +157,17 @@ namespace Invert.Core.GraphDesigner
             {
                 graph.ChangeData.Clear();
             }
-//#if UNITY_DLL
-//            UnityEditor.AssetDatabase.SaveAssets();
-//#endif
+            //#if UNITY_DLL
+            //            UnityEditor.AssetDatabase.SaveAssets();
+            //#endif
             //InvertGraphEditor.Platform.Progress(101f, "Done");
             diagram.Save();
-        
+
 #if UNITY_DLL
             //UnityEditor.AssetDatabase.SaveAssets();
             InvertGraphEditor.Platform.RefreshAssets();
             UnityEditor.EditorUtility.ClearProgressBar();
 #endif
-           
-          
         }
 
         /// <summary>
@@ -165,12 +193,12 @@ namespace Invert.Core.GraphDesigner
         public void RefactorApplied(IGraphData data)
         {
             data.RefactorCount = 0;
-            var refactorables = data.NodeItems.OfType<IRefactorable>()
-                .Concat(data.NodeItems.SelectMany(p => p.DisplayedItems).OfType<IRefactorable>());
-            foreach (var refactorable in refactorables)
-            {
-                refactorable.RefactorApplied();
-            }
+            //var refactorables = data.NodeItems.OfType<IRefactorable>()
+            //    .Concat(data.NodeItems.SelectMany(p => p.DisplayedItems).OfType<IRefactorable>());
+            //foreach (var refactorable in refactorables)
+            //{
+            //    refactorable.RefactorApplied();
+            //}
         }
     }
 

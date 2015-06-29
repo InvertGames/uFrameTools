@@ -79,15 +79,6 @@ namespace Invert.Core.GraphDesigner
         //    return t.NodeItems.OfType<EnumData>();
         //}
 
-        public static List<Refactorer> GetRefactorings(this INodeRepository data)
-        {
-            return
-                data.NodeItems.OfType<IRefactorable>()
-                    .SelectMany(p => p.Refactorings)
-                    .Concat(
-                        data.NodeItems.SelectMany(p => p.DisplayedItems).OfType<IRefactorable>().SelectMany(p => p.Refactorings))
-                    .ToList();
-        }
 
         public static void Prepare(this IGraphData designerData)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -67,6 +68,28 @@ namespace Invert.Core
     {
         void SystemResetting();
         void SystemRestarted();
+    }
+
+    public interface ITaskHandler
+    {
+         void BeginTask(IEnumerator task);
+    }
+    public class TaskProgress
+    {
+        public TaskProgress(string message, float percentage)
+        {
+            Message = message;
+            Percentage = percentage;
+        }
+
+        public TaskProgress(float percentage, string message)
+        {
+            Percentage = percentage;
+            Message = message;
+        }
+
+        public string Message { get; set; }
+        public float Percentage { get; set; }
     }
     public static class InvertApplication
     {
@@ -432,6 +455,14 @@ namespace Invert.Core
         public static void LogError(string format)
         {
             Logger.Log(format);
+        }
+
+        public static void LogIfNull(object obj, string s)
+        {
+            if (obj == null)
+            {
+                LogError(string.Format("{0} is NULL!!", s ?? "YUP it "));
+            }
         }
     }
 

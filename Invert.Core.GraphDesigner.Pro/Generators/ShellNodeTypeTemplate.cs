@@ -25,8 +25,8 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");
         if (Ctx.Data.Inheritable && Ctx.IsDesignerFile)
         {
-            Ctx.CurrentDecleration.BaseTypes.Clear();
-            Ctx.CurrentDecleration.BaseTypes.Add(typeof(GenericInheritableNode));
+            Ctx.CurrentDeclaration.BaseTypes.Clear();
+            Ctx.CurrentDeclaration.BaseTypes.Add(typeof(GenericInheritableNode));
         }
         Ctx.AddIterator("PossibleReferenceItems", _ => _.Sections.Where(p => p.SourceItem is ShellNodeTypeReferenceSection));
         Ctx.AddIterator("ReferenceSectionItems", _ => _.Sections.Where(p => p.SourceItem is ShellNodeTypeReferenceSection));
@@ -37,7 +37,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         //Ctx.AddIterator("CustomSelectorItems", _ => _.CustomSelectors);
         foreach (var item in Ctx.Data.IncludedInSections)
         {
-            Ctx.CurrentDecleration.BaseTypes.Add(item.ReferenceClassName);
+            Ctx.CurrentDeclaration.BaseTypes.Add(item.ReferenceClassName);
         }
 
     }
@@ -147,7 +147,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         {
 
             var item = Ctx.ItemAs<ShellNodeInputsSlot>();
-            var field = Ctx.CurrentDecleration._private_(item.SourceItem.ClassName, "_" + item.Name);
+            var field = Ctx.CurrentDeclaration._private_(item.SourceItem.ClassName, "_" + item.Name);
 
             Ctx.SetType(item.SourceItem.ClassName);
             Ctx.AddAttribute(typeof(InputSlot))
@@ -399,12 +399,12 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         Ctx.Namespace.Types.Add(i);
         if (Ctx.Data.Inheritable && Ctx.IsDesignerFile)
         {
-            Ctx.CurrentDecleration.BaseTypes.Clear();
-            Ctx.CurrentDecleration.BaseTypes.Add(typeof(GenericInheritableNode));
+            Ctx.CurrentDeclaration.BaseTypes.Clear();
+            Ctx.CurrentDeclaration.BaseTypes.Add(typeof(GenericInheritableNode));
         }
         if (Ctx.IsDesignerFile && Ctx.Data.IsClass)
         {
-            Ctx.CurrentDecleration.BaseTypes.Add(typeof(IClassTypeNode));
+            Ctx.CurrentDeclaration.BaseTypes.Add(typeof(IClassTypeNode));
         }
 
         Ctx.AddIterator("PossibleReferenceItems", _ => _.Sections.Where(p => p.SectionType == ShellNodeConfigSectionType.ReferenceItems));
@@ -417,7 +417,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         //Ctx.AddIterator("CustomSelectorItems", _ => _.CustomSelectors);
         foreach (var item in Ctx.Data.IncludedInSections)
         {
-            Ctx.CurrentDecleration.BaseTypes.Add(item.ReferenceClassName);
+            Ctx.CurrentDeclaration.BaseTypes.Add(item.ReferenceClassName);
         }
 
     }
@@ -528,7 +528,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         {
 
             var item = Ctx.ItemAs<ShellNodeConfigInput>();
-            var field = Ctx.CurrentDecleration._private_(item.ClassName, "_" + item.Name.Clean());
+            var field = Ctx.CurrentDeclaration._private_(item.ClassName, "_" + item.Name.Clean());
 
             Ctx.SetType(item.ClassName);
             var attribute = Ctx.AddAttribute(typeof(InputSlot))
@@ -555,7 +555,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         get
         {
             var item = Ctx.ItemAs<ShellNodeConfigOutput>();
-            var field = Ctx.CurrentDecleration._private_(item.ClassName, "_" + item.Name.Clean());
+            var field = Ctx.CurrentDeclaration._private_(item.ClassName, "_" + item.Name.Clean());
             Ctx.SetType(item.ClassName);
             var attribute = Ctx.AddAttribute(typeof(OutputSlot))
                 .AddArgument(new CodePrimitiveExpression(item.Name))
@@ -969,10 +969,10 @@ public class ShellNodeConfigTemplateTemplate : IClassTemplate<ShellTemplateConfi
         //Ctx.CurrentDecleration.Name = Ctx.Data.Name;
         if (Ctx.IsDesignerFile)
         {
-            Ctx.CurrentDecleration.BaseTypes.Clear();
-            Ctx.CurrentDecleration.BaseTypes.Add(string.Format("IClassTemplate<{0}>", Ctx.Data.NodeConfig.ClassName));
+            Ctx.CurrentDeclaration.BaseTypes.Clear();
+            Ctx.CurrentDeclaration.BaseTypes.Add(string.Format("IClassTemplate<{0}>", Ctx.Data.NodeConfig.ClassName));
 
-            Ctx.CurrentDecleration.CustomAttributes.Add(new CodeAttributeDeclaration(
+            Ctx.CurrentDeclaration.CustomAttributes.Add(new CodeAttributeDeclaration(
                 new CodeTypeReference(typeof(TemplateClass)),
                 //new CodeAttributeArgument("OutputPath", new CodePrimitiveExpression(Ctx.Data.OutputPath)),
                 new CodeAttributeArgument("Location", new CodeSnippetExpression(string.Format("TemplateLocation.{0}", Ctx.Data.Files))),

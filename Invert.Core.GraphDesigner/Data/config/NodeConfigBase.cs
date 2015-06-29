@@ -208,7 +208,7 @@ namespace Invert.Core.GraphDesigner
 
 
 
-        private List<Func<GenericNode, Refactorer>> _refactorers;
+
         private List<string> _tags;
         private Type _nodeType;
         private Dictionary<PropertyInfo, Slot> _slots;
@@ -244,12 +244,6 @@ namespace Invert.Core.GraphDesigner
         {
             get { return GraphItemConfigurations.OfType<NodeInputConfig>().Where(p => p.IsOutput); }
 
-        }
-
-        public List<Func<GenericNode, Refactorer>> Refactorers
-        {
-            get { return _refactorers ?? new List<Func<GenericNode, Refactorer>>(); }
-            set { _refactorers = value; }
         }
 
 

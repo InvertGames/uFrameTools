@@ -44,12 +44,13 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             try
             {
-                if (progress > 100f)
-                {
-                    EditorUtility.ClearProgressBar();
-                    return;
-                }
-                EditorUtility.DisplayProgressBar("Generating", message, progress/1f);
+                InvertApplication.SignalEvent<ITaskProgressHandler>(_=>_.Progress(progress, message));
+                //if (progress > 100f)
+                //{
+                //    EditorUtility.ClearProgressBar();
+                //    return;
+                //}
+                //EditorUtility.DisplayProgressBar("Generating", message, progress/1f);
             }
             catch (Exception ex)
             {
@@ -72,6 +73,12 @@ namespace Invert.Core.GraphDesigner.Unity
         }
     }
 
+    public interface ITaskProgressHandler
+    {
+        void Progress(float progress, string message);
+    }
+
+   
     public class UnityPlatformPreferences : IPlatformPreferences
     {
         public bool GetBool(string name, bool def)
@@ -230,6 +237,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
             foreach (var editorCommand in RightCommands.OrderBy(p => p.Order))
             {
+         
                 DoCommand(editorCommand);
             }
             GUILayout.EndHorizontal();
@@ -450,20 +458,24 @@ namespace Invert.Core.GraphDesigner.Unity
 
                 foreach (var tab in designerWindow.Designer.Tabs.ToArray())
                 {
+                  
                     var isCurrent = designerWindow.CurrentProject != null && designerWindow.CurrentProject.CurrentGraph != null && tab.GraphIdentifier == designerWindow.CurrentProject.CurrentGraph.Identifier;
                     if (GUILayout.Button(tab.GraphName,
                         isCurrent
                             ? ElementDesignerStyles.TabStyle
                             : ElementDesignerStyles.TabInActiveStyle,GUILayout.MinWidth(150)))
                     {
+                        var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
+                   
                         if (Event.current.button == 1)
                         {
-                           var isLastGraph = designerWindow.CurrentProject.OpenGraphs.Count() <= 1;
+                         
+                           var isLastGraph = projectService.CurrentProject.OpenGraphs.Count() <= 1;
 
                            if (!isLastGraph)
                             {
-                                designerWindow.CurrentProject.CloseGraph(tab);
-                                var lastGraph = designerWindow.CurrentProject.OpenGraphs.LastOrDefault();
+                                projectService.CurrentProject.CloseGraph(tab);
+                                var lastGraph = projectService.CurrentProject.OpenGraphs.LastOrDefault();
                                 if (isCurrent && lastGraph != null)
                                 {
                                     var graph = designerWindow.CurrentProject.Graphs.FirstOrDefault(p => p.Identifier == lastGraph.GraphIdentifier);
@@ -474,7 +486,7 @@ namespace Invert.Core.GraphDesigner.Unity
                         }
                         else
                         {
-                            designerWindow.SwitchDiagram(designerWindow.CurrentProject.Graphs.FirstOrDefault(p => p.Identifier == tab.GraphIdentifier));    
+                            designerWindow.SwitchDiagram(projectService.CurrentProject.Graphs.FirstOrDefault(p => p.Identifier == tab.GraphIdentifier));    
                         }
                         
                     }
@@ -488,7 +500,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void BeginRender(object sender, MouseEvent mouseEvent)
         {
-
+            DiagramDrawer.IsEditingField = false;
         }
 
         public void DrawColumns(Rect rect, params Action<Rect>[] columns)
@@ -605,6 +617,11 @@ namespace Invert.Core.GraphDesigner.Unity
                     if (EditorGUI.EndChangeCheck())
                     {
                         d.Setter(d.CachedValue);
+                        
+                    }
+                    if (Event.current.isKey && Event.current.keyCode == KeyCode.Return)
+                    {
+                        InvertGraphEditor.ExecuteCommand(new SimpleEditorCommand<DiagramViewModel>(_=>{}));
                     }
                 }
                 else if (d.InspectorType == InspectorType.TypeSelection)
@@ -892,5 +909,6 @@ namespace Invert.Core.GraphDesigner.Unity
             return ElementDesignerStyles.NodeHeader1;
         }
     }
+
 
 }

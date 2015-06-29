@@ -5,7 +5,6 @@ using System.Text;
 
 namespace Invert.Core
 {
-    public class Class1
-    {
-    }
+ 
+    
 }

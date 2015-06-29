@@ -11,6 +11,11 @@ namespace Invert.Core.GraphDesigner
             set { base.IsNewLine = value; }
         }
 
+        public override bool Enabled
+        {
+            get { return NodeViewModel.Enabled; }
+        }
+
         public bool AllowConnections { get; set; }
         public override ConnectorViewModel InputConnector
         {
@@ -34,7 +39,7 @@ namespace Invert.Core.GraphDesigner
 
         public override Vector2 Position { get; set; }
         public override string Name { get; set; }
-        public ViewModel NodeViewModel { get; set; }
+        public GraphItemViewModel NodeViewModel { get; set; }
         public IEditorCommand AddCommand { get; set; }
         public NodeConfigBase NodeConfig { get; set; }
         public NodeConfigSectionBase SectionConfig { get; set; }

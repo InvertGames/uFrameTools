@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Core.GraphDesigner.Pro;
 using Invert.IOC;
 using UnityEngine;
 
@@ -47,6 +48,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 return _designerViewModel;
             }
+            set { _designerViewModel = value; }
         }
 
         private void SelectDiagram()
@@ -196,19 +198,6 @@ namespace Invert.Core.GraphDesigner
             set { ProjectService.CurrentProject = value; }
         }
 
-        //public override void Initialize(uFrameContainer container)
-        //{
-
-        //}
-
-        //public override void Loaded(uFrameContainer container)
-        //{
-        //    base.Loaded(container);
-        //    //ProjectService = container.Resolve<ProjectService>();
-        //    //InvertApplication.ListenFor<IProjectEvents>(this);
-
-        //}
-
         public ProjectService ProjectService
         {
             get { return _projectService ?? (_projectService = InvertGraphEditor.Container.Resolve<ProjectService>()); }
@@ -234,6 +223,8 @@ namespace Invert.Core.GraphDesigner
 
         public void Draw(IPlatformDrawer drawer, float width, float height, Vector2 scrollPosition, float scale)
         {
+        
+            GraphDesigner.DiagramDrawer.IsEditingField = false;
             if (drawer == null) return;
             Rect diagramRect = new Rect();
 
@@ -241,20 +232,30 @@ namespace Invert.Core.GraphDesigner
             {
                 var toolbarTopRect = new Rect(0, 0, width, 18);
                 var tabsRect = new Rect(0, toolbarTopRect.height, width, 31);
+                var breadCrumbsRect = new Rect(0, tabsRect.y + tabsRect.height, width, 40);
+           
 
-                diagramRect = new Rect(0f, tabsRect.y + tabsRect.height, width - 3,
-                    height - ((toolbarTopRect.height * 2)) - tabsRect.height - 20);
+                diagramRect = new Rect(0f, breadCrumbsRect.y + breadCrumbsRect.height, width - 3,
+                    height - ((toolbarTopRect.height * 2)) - breadCrumbsRect.height - 20 - 32);
                 var toolbarBottomRect = new Rect(0f, diagramRect.y + diagramRect.height, width - 3,
                     toolbarTopRect.height);
 
                 drawer.DrawStretchBox(toolbarTopRect, CachedStyles.Toolbar, 0f);
                 drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Left);
-                drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Right);
+                //drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Right);
                 drawer.DoTabs(tabsRect, this); DiagramRect = diagramRect;
+                if (DiagramDrawer != null)
+                {
+                    DiagramDrawer.DrawBreadcrumbs(drawer, breadCrumbsRect.y);
+                }
+
                 DiagramRect = diagramRect;
+                
+             
+                drawer.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
                 DrawDiagram(drawer, scrollPosition, scale, diagramRect);
                 drawer.DoToolbar(toolbarBottomRect, this, ToolbarPosition.BottomLeft);
-                drawer.DoToolbar(toolbarBottomRect, this, ToolbarPosition.BottomRight);
+                //drawer.DoToolbar(toolbarBottomRect, this, ToolbarPosition.BottomRight);
 
             }
             else
@@ -288,6 +289,7 @@ namespace Invert.Core.GraphDesigner
 
             if (DiagramDrawer != null && DiagramViewModel != null && InvertGraphEditor.Settings.UseGrid)
             {
+
                 var softColor = InvertGraphEditor.Settings.GridLinesColor;
                 var hardColor = InvertGraphEditor.Settings.GridLinesColorSecondary;
                 var x = -scrollPosition.x;
@@ -308,7 +310,7 @@ namespace Invert.Core.GraphDesigner
                             new[]
                             {
                                 new Vector2(x, diagramRect.y),
-                                new Vector2(x, diagramRect.x + diagramRect.height + scrollPosition.y + 50)
+                                new Vector2(x, diagramRect.x + diagramRect.height + scrollPosition.y + 85)
                             }, color);
                     }
 
@@ -342,8 +344,12 @@ namespace Invert.Core.GraphDesigner
             }
             if (DiagramDrawer != null)
             {
+              
+           
                 ParentHandler.BeforeDrawGraph(DiagramRect);
                 InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.BeforeDrawGraph(DiagramRect));
+                DiagramDrawer.Bounds = new Rect(0f,0f,diagramRect.width,diagramRect.height);
+             
                 DiagramDrawer.Draw(drawer, 1f);
                 ParentHandler.ProcessInput();
                 InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.ProcessInput());
@@ -354,7 +360,6 @@ namespace Invert.Core.GraphDesigner
         }
 
         public Rect DiagramRect { get; set; }
-
 
         public DiagramViewModel DiagramViewModel
         {
@@ -376,14 +381,18 @@ namespace Invert.Core.GraphDesigner
 
         public void SwitchDiagram(IGraphData data)
         {
-
-            Designer.OpenTab(data);
-            LoadDiagram(CurrentProject.CurrentGraph);
+            
+            if (data != null)
+            {
+                Designer.OpenTab(data);
+                LoadDiagram(CurrentProject.CurrentGraph);
+            }
+           
         }
         public void RefreshContent()
         {
-           
-
+            
+            LoadDiagram(CurrentProject.CurrentGraph);
             if (DiagramDrawer != null)
             {
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);

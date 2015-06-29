@@ -5,7 +5,6 @@ using System.Linq;
 using Invert.Core.GraphDesigner;
 using Invert.Json;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.Refactoring;
 using UnityEngine;
 
 [Serializable]
@@ -186,11 +185,6 @@ public class ViewModelCommandData : DiagramNodeItem, IBindableTypedItem
     {
         get { return _transitionName; }
         set { _transitionName = value; }
-    }
-
-    public override RenameRefactorer CreateRenameRefactorer()
-    {
-        return new RenameCommandRefactorer(this);
     }
 
     public override void Remove(IDiagramNode diagramNode)

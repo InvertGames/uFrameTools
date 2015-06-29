@@ -53,6 +53,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void OptionClicked()
         {
+            if (!this.ItemViewModel.Enabled) return;
             if (TypedItemViewModel.Data.Precompiled) return;
             var commandName = ViewModelObject.DataObject.GetType().Name.Replace("Data", "") + "TypeSelection";
 
@@ -79,6 +80,8 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void OptionRightClicked()
         {
+            if (!this.ItemViewModel.Enabled) return;
+
             var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramNodeItemCommand));
 
             var types = InvertGraphEditor.TypesContainer.ResolveAll<GraphTypeInfo>();

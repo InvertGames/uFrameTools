@@ -227,6 +227,7 @@ namespace Invert.Core.GraphDesigner
 
         public void RefreshProjects()
         {
+            CurrentProject.CurrentGraph = null;
             _currentProject = null;
             LoadProjects();
             InvertApplication.SignalEvent<IProjectEvents>(p => p.ProjectsRefreshed(this));

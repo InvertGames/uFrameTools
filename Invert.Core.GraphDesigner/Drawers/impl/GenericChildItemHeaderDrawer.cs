@@ -34,8 +34,6 @@ namespace Invert.Core.GraphDesigner
         {
             base.Refresh(platform, position, hardRefresh);
             var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 12;
-            //ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name)).x + 20);
-            //HeaderBounds = new Rect(position.x - 2, position.y, width + 6, 25);
             Bounds = new Rect(position.x, position.y, width + 20, 25);
             
         }
@@ -69,8 +67,9 @@ namespace Invert.Core.GraphDesigner
             b.width -= 27;
             platform.DrawLabel(b.Scale(scale), ViewModel.Name, CachedStyles.HeaderStyle);
             
-            if (ViewModel.AddCommand != null)
+            if (ViewModel.AddCommand != null && ViewModel.Enabled)
             {
+
                 platform.DoButton(_AddButtonRect.Scale(scale), string.Empty, CachedStyles.AddButtonStyle, () =>
                 {
                     var vm = this.ViewModel.NodeViewModel as GraphItemViewModel;

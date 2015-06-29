@@ -597,8 +597,8 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
         var texture = GetImage(finalUrl);
         if (texture != null)
         {
-            var rect = GUILayoutUtility.GetRect(texture.width, texture.width, texture.height, texture.height);
-            rect = new Rect(rect.x, rect.y, texture.width, texture.height);
+            var rect = GUILayoutUtility.GetRect(Math.Min(Screen.width, texture.width), Math.Min(Screen.width, texture.width), texture.height, texture.height);
+            rect = new Rect(rect.x, rect.y, Math.Min(Screen.width, texture.width), texture.height);
             return GUI.Button(rect, texture);
         }
         return false;

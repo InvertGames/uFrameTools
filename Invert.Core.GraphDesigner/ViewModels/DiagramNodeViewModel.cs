@@ -66,7 +66,11 @@ namespace Invert.Core.GraphDesigner
                     InspectorType = property.Value.InspectorType,
                     CustomDrawerType = property.Value.CustomDrawerType,
                     Getter = () => property1.GetValue(GraphItem, null),
-                    Setter = (v) => property1.SetValue(GraphItem, v, null)
+                    Setter = (v) =>
+                    {
+                        property1.SetValue(GraphItem, v, null);
+                      
+                    }
                 };
                 ContentItems.Add(vm);
             }
@@ -178,7 +182,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (IsScreenshot)
                 {
-                    return new Vector2(45, 45);
+                    return new Vector2(45f, 45f);
                 }
                 return DiagramViewModel.CurrentRepository.GetItemLocation(GraphItemObject);
                 //return GraphItemObject.Location;
@@ -386,6 +390,12 @@ namespace Invert.Core.GraphDesigner
 
 
         }
+
+        public override bool Enabled
+        {
+            get { return !this.IsExternal; }
+        }
+
 
         public string editText = string.Empty;
         public void Rename(string newText)

@@ -61,7 +61,8 @@ public class uFrameSettingsWindow : EditorWindow
                     ElementDesignerStyles.TabStyle = null;
                     ElementDesignerStyles.ItemTextEditingStyle = null;
                     ElementDesignerStyles.HeaderStyle = null;
-                    
+                    ElementDesignerStyles.GraphTitleLabel = null;
+
                 }
                 s.UseGrid = EditorGUILayout.BeginToggleGroup("Grid", s.UseGrid);
 

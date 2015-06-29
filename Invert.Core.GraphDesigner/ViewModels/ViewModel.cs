@@ -12,7 +12,7 @@ namespace Invert.Core.GraphDesigner
     {
         private object _dataObject;
 
-        public object DataObject
+        public virtual object DataObject
         {
             get { return _dataObject; }
             set

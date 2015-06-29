@@ -13,7 +13,7 @@ namespace Invert.Core.GraphDesigner
     /// The base data class for all diagram nodes.
     /// </summary>
     [Browsable(false)]
-    public abstract class DiagramNode : IDiagramNode, IRefactorable, IDiagramFilter
+    public abstract class DiagramNode : IDiagramNode, IDiagramFilter
     {
         [Browsable(false)]
         public IEnumerable<ConnectionData> Inputs
@@ -126,7 +126,7 @@ namespace Invert.Core.GraphDesigner
 
         private bool _isCollapsed;
 
-        private Vector2 _location;
+        private Vector2 _location = new Vector2(45f,45f);
 
 
         private FilterLocations _locations = new FilterLocations();
@@ -136,7 +136,7 @@ namespace Invert.Core.GraphDesigner
 
         private Rect _position;
 
-        private List<Refactorer> _refactorings;
+
 
         public bool this[string flag]
         {
@@ -169,11 +169,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-        [Browsable(false), Obsolete]
-        public IEnumerable<Refactorer> AllRefactorers
-        {
-            get { return Refactorings.Concat(DisplayedItems.OfType<IRefactorable>().SelectMany(p => p.Refactorings)); }
-        }
+
         [Browsable(false)]
         public FilterCollapsedDictionary CollapsedValues
         {
@@ -481,17 +477,7 @@ namespace Invert.Core.GraphDesigner
                 return Graph.Project;
             }
         }
-        [Browsable(false)]
-        public virtual IEnumerable<Refactorer> Refactorings
-        {
-            get
-            {
-                if (RenameRefactorer != null)
-                    yield return RenameRefactorer;
-            }
-        }
-        [Browsable(false)]
-        public RenameRefactorer RenameRefactorer { get; set; }
+
 
         public string Group
         {
@@ -521,13 +507,6 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void BeginEditing()
         {
-            if (!IsNewNode)
-            {
-                if (RenameRefactorer == null)
-                {
-                    RenameRefactorer = CreateRenameRefactorer();
-                }
-            }
 
             OldName = Name;
             IsEditing = true;
@@ -538,10 +517,6 @@ namespace Invert.Core.GraphDesigner
             BeginEditing();
         }
 
-        public virtual RenameRefactorer CreateRenameRefactorer()
-        {
-            return null;
-        }
 
         public virtual void Deserialize(JSONClass cls)
         {
@@ -595,16 +570,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 
             }
-            if (OldName != Name)
-            {
-                if (RenameRefactorer == null)
-                {
-                    return true;
-                }
 
-                RenameRefactorer.Set(this);
-                //Data.RefactorCount++;
-            }
             return true;
         }
 
@@ -689,7 +655,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void RefactorApplied()
         {
-            RenameRefactorer = null;
+            
         }
 
         public void Remove(IDiagramNode diagramNode)

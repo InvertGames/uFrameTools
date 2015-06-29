@@ -82,14 +82,6 @@
     <Compile Include="uFrame15\OldConnectionStrategies\ComputedPropertyInputsConnectionStrategy.cs" />
     <Compile Include="uFrame15\ModelData\ModelClassNodeDrawer.cs" />
     <Compile Include="uFrame15\ModelData\ModelClassNodeViewModel.cs" />
-    <Compile Include="uFrame15\Refactoring\RenameCollectionRefactorer.cs" />
-    <Compile Include="uFrame15\Refactoring\RenameCommandRefactorer.cs" />
-    <Compile Include="uFrame15\Refactoring\RenameElementRefactorer.cs" />
-    <Compile Include="uFrame15\Refactoring\RenameIdentifierRefactorer.cs" />
-    <Compile Include="uFrame15\Refactoring\RenamePropertyRefactorer.cs" />
-    <Compile Include="uFrame15\Refactoring\RenameSceneManagerRefactorer.cs" />
-    <Compile Include="uFrame15\Refactoring\RenameViewComponentRefactorer.cs" />
-    <Compile Include="uFrame15\Refactoring\RenameViewRefactorer.cs" />
     <Compile Include="uFrame15\OldConnectionStrategies\ElementStateMachineConnectionStrategy.cs" />
     <Compile Include="uFrame15\uFrameData\BindableTypedNodeItem.cs" />
     <Compile Include="DefaultKeyBindings.cs" />

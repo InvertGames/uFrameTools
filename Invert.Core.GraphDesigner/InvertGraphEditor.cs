@@ -318,13 +318,13 @@ namespace Invert.Core.GraphDesigner
 
                         if (generator.DiagramItemType.IsAssignableFrom(diagram.GetType()))
                         {
-                            var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, diagram);
+                            var codeGenerators = generator.GetGenerators(settings, null, project, diagram);
                             foreach (var codeGenerator in codeGenerators)
                             {
                                 // TODO Had to remove this?
                                 //if (!codeGenerator.IsEnabled(project)) continue;
 
-                                codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
+                                codeGenerator.AssetPath = diagram.Project.SystemDirectory;
                                 codeGenerator.Settings = settings;
                                 if (codeGenerator.ObjectData == null)
                                     codeGenerator.ObjectData = diagram;
@@ -340,12 +340,12 @@ namespace Invert.Core.GraphDesigner
                     {
                         if (diagram.Precompiled) continue;
                         if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
-                        var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, diagram);
+                        var codeGenerators = generator.GetGenerators(settings, null, project, diagram);
                         foreach (var codeGenerator in codeGenerators)
                         {
                             // TODO had to remove this?
                             //if (!codeGenerator.IsEnabled(project)) continue;
-                            codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
+                            codeGenerator.AssetPath = diagram.Project.SystemDirectory;
                             codeGenerator.Settings = settings;
                             if (codeGenerator.ObjectData == null)
                                 codeGenerator.ObjectData = project;
@@ -460,12 +460,12 @@ namespace Invert.Core.GraphDesigner
                 foreach (var item in items)
                 {
                     if (item.Precompiled) continue;
-                    var codeGenerators = generator.GetGenerators(settings, diagram.CodePathStrategy, project, item);
+                    var codeGenerators = generator.GetGenerators(settings, null, project, item);
                     foreach (var codeGenerator in codeGenerators)
                     {
                         // TODO had to remove this?
                         //if (!codeGenerator.IsEnabled(project)) continue;
-                        codeGenerator.AssetPath = diagram.CodePathStrategy.AssetPath;
+                        codeGenerator.AssetPath = diagram.Project.SystemDirectory;
                         codeGenerator.Settings = settings;
                         if (codeGenerator.ObjectData == null)
                             codeGenerator.ObjectData = item;
@@ -491,7 +491,7 @@ namespace Invert.Core.GraphDesigner
         public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings, INodeRepository project, bool includeDisabled = false, string systemPath = null)
         {
             var codeGenerators = GetAllCodeGenerators(settings, project, includeDisabled).ToArray();
-            var groups = codeGenerators.GroupBy(p => p.FullPathName).Distinct();
+            var groups = codeGenerators.GroupBy(p => Path.Combine(project.AssetDirectory, p.Filename)).Distinct();
             foreach (var @group in groups)
             {
                 var generator = new CodeFileGenerator(project.Namespace)
@@ -499,8 +499,7 @@ namespace Invert.Core.GraphDesigner
                     AssetPath = @group.Key.Replace("\\", "/"),
 #if UNITY_DLL
                     SystemPath = Path.Combine(Application.dataPath, @group.Key.Substring(7)).Replace("\\", "/"),
-#else
-                    SystemPath = @group.Key,
+                    //SystemPath = @group.Key,
 #endif
                     Generators = @group.ToArray()
                 };
@@ -776,7 +775,7 @@ namespace Invert.Core.GraphDesigner
                     {
                         foreach (var templateType in template.Value)
                         {
-                            foreach (var t in CreateTemplateGenerators(pathStrategy, graphItem, templateType))
+                            foreach (var t in CreateTemplateGenerators( graphItem, templateType))
                             {
                                 yield return t;
                             }
@@ -787,7 +786,7 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        private IEnumerable<OutputGenerator> CreateTemplateGenerators(ICodePathStrategy pathStrategy, IDiagramNodeItem graphItem, Type templateType)
+        private IEnumerable<OutputGenerator> CreateTemplateGenerators( IDiagramNodeItem graphItem, Type templateType)
         {
             var templateClassType = templateType.GetGenericArguments()[1];
             var templateAttribute = templateClassType.GetCustomAttributes(typeof(TemplateClass), true)
@@ -798,14 +797,14 @@ namespace Invert.Core.GraphDesigner
                 InvertApplication.Log(string.Format("ClassTemplate attribute not found on {0} ", templateClassType.Name));
                 yield break;
             }
-
+            InvertApplication.LogIfNull(graphItem.Graph,"Graph");
            // var outputFolderName = templateAttribute.OutputFolderName ?? templateType.Name;
             if (templateAttribute.Location == TemplateLocation.DesignerFile || templateAttribute.Location == TemplateLocation.Both)
             {
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;
                 template.IsDesignerFile = true;
-                template.AssetPath = pathStrategy.AssetPath;
+                template.AssetPath = graphItem.Graph.Project.SystemDirectory;
 
                 //if (templateAttribute.IsEditorExtension)
                 //{
@@ -828,7 +827,7 @@ namespace Invert.Core.GraphDesigner
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;
                 template.IsDesignerFile = false;
-                template.AssetPath = pathStrategy.AssetPath;
+                template.AssetPath = graphItem.Graph.Project.SystemDirectory;
 
                 //var className = string.Format(templateAttribute.ClassNameFormat, graphItem.Name);
                 //var typeItem = graphItem as IClassTypeNode;

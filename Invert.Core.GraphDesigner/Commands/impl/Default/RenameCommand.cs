@@ -26,8 +26,11 @@ namespace Invert.Core.GraphDesigner
 
         public override string CanPerform(DiagramNodeViewModel node)
         {
-            if (node == null) return "Invalid argument";
+            var selected = node.DataObject as IDiagramNode;
+            if (selected == null) return "Invalid argument";
             if (!node.IsLocal) return "Can't rename a node when its not local.";
+            if (selected.Graph.Identifier != InvertGraphEditor.CurrentDiagramViewModel.GraphData.Identifier)
+                return "Must be local to rename.";
             return null;
         }
 

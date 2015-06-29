@@ -7,7 +7,7 @@ using Object = System.Object;
 
 namespace Invert.Core.GraphDesigner
 {
-  
+
     public interface IProjectRepository : INodeRepository
     {
         IGraphData CurrentGraph { get; set; }
@@ -41,14 +41,48 @@ namespace Invert.Core.GraphDesigner
         : IProjectRepository
 #endif
     {
+#if UNITY_DLL
+        public string AssetPath
+        {
+            get
+            {
+                return UnityEditor.AssetDatabase.GetAssetPath(this);
+            }
+        }
+
+        public string AssetDirectory
+        {
+            get { return System.IO.Path.GetDirectoryName(AssetPath); }
+        }
+        public string SystemPath
+        {
+            get { return Path.Combine(Application.dataPath, AssetPath.Substring(7)).Replace("\\", "/").ToLower(); }
+            set
+            {
+
+            }
+        }
+#else
+        public string SystemPath
+        {
+            get;set;
+        }
+#endif
+        public string SystemDirectory
+        {
+            get
+            { 
+                return Path.GetDirectoryName(SystemPath);
+            }
+        }
         protected IGraphData _currentGraph;
         protected IDiagramNode[] _nodeItems;
-  
+
         private static readonly List<IGraphData> _precompiledGraphs = new List<IGraphData>();
         private List<OpenGraph> _openTabs = new List<OpenGraph>();
         private Dictionary<string, bool> _settingsBag;
         private List<IGraphData> _includedGraphs;
-        
+
         protected IGraphItem[] _allGraphItems;
 
         public IEnumerable<IGraphData> PrecompiledGraphs
@@ -103,7 +137,7 @@ namespace Invert.Core.GraphDesigner
             //}
             get
             {
-                if (_allGraphItems != null) 
+                if (_allGraphItems != null)
                     return _allGraphItems;
                 else
                     return _allGraphItems = (Graphs.Where(
@@ -126,7 +160,7 @@ namespace Invert.Core.GraphDesigner
                     {
                         yield return node;
                     }
-                   
+
                 }
             }
         }
@@ -265,7 +299,7 @@ namespace Invert.Core.GraphDesigner
             item.NodeItemAdded(item);
             item.Node.NodeItemAdded(item);
 
-            node.PersistedItems = node.PersistedItems.Where(p=>!p.Precompiled).Concat(new[] { item });
+            node.PersistedItems = node.PersistedItems.Where(p => !p.Precompiled).Concat(new[] { item });
 
             foreach (var nodeItem in NodeItems)
             {
@@ -282,7 +316,7 @@ namespace Invert.Core.GraphDesigner
         /// <param name="data"></param>
         public virtual void AddNode(IDiagramNode data)
         {
-            
+
             data.Graph = CurrentGraph;
             foreach (var item in NodeItems)
             {
@@ -310,7 +344,7 @@ namespace Invert.Core.GraphDesigner
                     continue;
                 }
                 graph.Project = this;
-            } 
+            }
             foreach (var graph in removeList)
             {
                 RemoveGraph(graph);
@@ -354,9 +388,9 @@ namespace Invert.Core.GraphDesigner
             else
             {
                 graph.RootFilter = graph.CreateDefaultFilter();
-                
+
             }
-     
+
             // Send the signal to any listeners that a new a graph has been created
             InvertApplication.SignalEvent<IGraphEvents>(p => p.GraphCreated(this, graph));
             // Add this graph to the project and do any loading necessary
@@ -366,6 +400,13 @@ namespace Invert.Core.GraphDesigner
             graph.SetProject(this);
             // Go ahead and save this project
             Save();
+            var node = graph.RootFilter as IDiagramNode;
+            if (node != null)
+            {
+                graph.RootFilter.Locations[node] = new Vector2(50f, 50f);
+                //graph.RootFilter.Locations
+                // SetItemLocation(node,new Vector2(50f,50f));
+            }
             // Return the newly created graph
             return graph;
         }
@@ -419,7 +460,7 @@ namespace Invert.Core.GraphDesigner
         public virtual void MarkDirty(INodeRepository data)
         {
             InvalidateCache();
-            
+
         }
 
         public void Document(IDocumentationBuilder docs)
@@ -456,7 +497,7 @@ namespace Invert.Core.GraphDesigner
             foreach (var node in NodeItems.ToArray())
             {
                 node.NodeItemRemoved(nodeItem);
-                
+
                 foreach (var item in node.PersistedItems.ToArray())
                 {
                     item.NodeItemRemoved(nodeItem);
@@ -501,7 +542,7 @@ namespace Invert.Core.GraphDesigner
                     removeList.Add(graph);
                     continue;
                 }
-                    
+
                 graph.Save();
             }
             foreach (var item in removeList)
@@ -512,7 +553,7 @@ namespace Invert.Core.GraphDesigner
 
         protected virtual void RemoveGraph(IGraphData item)
         {
-            
+
         }
 
         public abstract void SaveDiagram(INodeRepository data);
@@ -539,10 +580,10 @@ namespace Invert.Core.GraphDesigner
         {
             return this[key] = value;
         }
-        
+
         public void TrackChange(IChangeData data)
         {
-            InvertApplication.SignalEvent<IChangeTrackingEvents>(_=>_.ChangeOccured(data));
+            InvertApplication.SignalEvent<IChangeTrackingEvents>(_ => _.ChangeOccured(data));
         }
 
         public IEnumerable<ErrorInfo> Validate()
@@ -562,15 +603,7 @@ namespace Invert.Core.GraphDesigner
         /// <param name="graphData"></param>
         protected virtual void AddGraph(IGraphData graphData)
         {
-          
-            if (graphData.CodePathStrategy == null)
-            {
-                graphData.CodePathStrategy = new DefaultCodePathStrategy()
-                {
-                    Data = graphData,
 
-                };
-            }
             InvalidateCache();
         }
     }
@@ -614,7 +647,7 @@ namespace Invert.Core.GraphDesigner
         public TemporaryProjectRepository(IEnumerable<IGraphData> graphs)
         {
             Graphs = graphs;
-            
+
         }
 
         public TemporaryProjectRepository(IGraphData currentGraph, IEnumerable<IGraphData> graphs)
@@ -626,7 +659,7 @@ namespace Invert.Core.GraphDesigner
         public TemporaryProjectRepository(IGraphData currentGraph)
         {
             CurrentGraph = currentGraph;
-            Graphs = new[] {currentGraph};
+            Graphs = new[] { currentGraph };
             CurrentGraph.SetProject(this);
         }
 
@@ -642,20 +675,20 @@ namespace Invert.Core.GraphDesigner
 
         public override void RecordUndo(INodeRepository data, string title)
         {
-            
+
         }
 
         public override void Refresh()
         {
-           
+
         }
 
         public override void SaveDiagram(INodeRepository data)
         {
-          
+
         }
 
-        
+
 
     }
 }

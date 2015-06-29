@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner.UnitySpecific;
@@ -21,82 +22,188 @@ namespace Invert.Core.GraphDesigner.Unity
             var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
             var currentProject = projectService.CurrentProject as ProjectRepository;
 
-            List<string> allIds = new List<string>();
-            string[] legitimateIds = currentProject.AllGraphItems.Select(p => p.Identifier).ToArray();
+            Debug.Log("Asset Directory  : " + currentProject.AssetDirectory);
+            Debug.Log("Asset Path       : " + currentProject.AssetPath);
+            Debug.Log("System Directory : " + currentProject.SystemDirectory);
+            Debug.Log("System Path      : " + currentProject.SystemPath);
 
-            foreach (var d in currentProject.Diagrams.OfType<UnityGraphData>())
-            {
-                allIds.AddRange(d.PositionData.Positions.Keys);
-            }
-            foreach (var d in currentProject.AllGraphItems.OfType<IDiagramFilter>())
-            {
-                allIds.AddRange(d.CollapsedValues.Keys);
-                allIds.AddRange(d.Locations.Keys);
-            }
+            Debug.Log("Asset Directory  : " + currentProject.CurrentGraph.AssetDirectory);
+            Debug.Log("Asset Path       : " + currentProject.CurrentGraph.AssetPath);
+            Debug.Log("System Directory : " + currentProject.CurrentGraph.SystemDirectory);
+            Debug.Log("System Path      : " + currentProject.CurrentGraph.SystemPath);
 
-            var tempAllIds = allIds.ToArray();
-            foreach (var item in tempAllIds)
+            var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, currentProject);
+            foreach (var fileGenerator in fileGenerators)
             {
-                {
-                    if (legitimateIds.Contains(item))
-                    {
-                        allIds.Remove(item);
-                    }
-                }
+                Debug.Log(string.Format("FG SystemPath: {0}", fileGenerator.SystemPath));
+                Debug.Log(string.Format("FG Asset Path: {0}", fileGenerator.AssetPath));
             }
-            Debug.Log(string.Format("There are {0} bad ids", allIds.Count));
-            foreach (var d in currentProject.Diagrams.OfType<UnityGraphData>())
-            {
-                foreach (var item in allIds)
-                {
-                    d.PositionData.Positions.Remove(item);
-                }
+            return;
+            //var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
+            //var currentProject = projectService.CurrentProject as ProjectRepository;
+
+            //List<string> allIds = new List<string>();
+            //string[] legitimateIds = currentProject.AllGraphItems.Select(p => p.Identifier).ToArray();
+
+            //foreach (var d in currentProject.Diagrams.OfType<UnityGraphData>())
+            //{
+            //    allIds.AddRange(d.PositionData.Positions.Keys);
+            //}
+            //foreach (var d in currentProject.AllGraphItems.OfType<IDiagramFilter>())
+            //{
+            //    allIds.AddRange(d.CollapsedValues.Keys);
+            //    allIds.AddRange(d.Locations.Keys);
+            //}
+
+            //var tempAllIds = allIds.ToArray();
+            //foreach (var item in tempAllIds)
+            //{
+            //    {
+            //        if (legitimateIds.Contains(item))
+            //        {
+            //            allIds.Remove(item);
+            //        }
+            //    }
+            //}
+            //Debug.Log(string.Format("There are {0} bad ids", allIds.Count));
+            //foreach (var d in currentProject.Diagrams.OfType<UnityGraphData>())
+            //{
+            //    foreach (var item in allIds)
+            //    {
+            //        d.PositionData.Positions.Remove(item);
+            //    }
               
 
-            }
-            foreach (var d in currentProject.AllGraphItems.OfType<IDiagramFilter>())
-            {
-                d.CollapsedValues.Keys.Clear();
-                d.CollapsedValues.Values.Clear();
-                //foreach (var item in allIds)
-                //{
-                //    try
-                //    {
-                //        d.CollapsedValues.Remove(item);
+            //}
+            //foreach (var d in currentProject.AllGraphItems.OfType<IDiagramFilter>())
+            //{
+            //    d.CollapsedValues.Keys.Clear();
+            //    d.CollapsedValues.Values.Clear();
+            //    //foreach (var item in allIds)
+            //    //{
+            //    //    try
+            //    //    {
+            //    //        d.CollapsedValues.Remove(item);
 
-                //    }
-                //    catch (Exception ex)
-                //    {
+            //    //    }
+            //    //    catch (Exception ex)
+            //    //    {
                         
-                //    }
+            //    //    }
                     
-                //}
-                foreach (var item in allIds)
-                {
-                    try
-                    {
-                        d.Locations.Remove(item);
+            //    //}
+            //    foreach (var item in allIds)
+            //    {
+            //        try
+            //        {
+            //            d.Locations.Remove(item);
                         
-                    }
-                    catch (Exception ex)
-                    {
+            //        }
+            //        catch (Exception ex)
+            //        {
 
-                    }
+            //        }
                  
-                }
+            //    }
                
-            }
-            foreach (var d in currentProject.Diagrams.OfType<UnityGraphData>())
-            {
-                EditorUtility.SetDirty(d);
+            //}
+            //foreach (var d in currentProject.Diagrams.OfType<UnityGraphData>())
+            //{
+            //    EditorUtility.SetDirty(d);
 
 
-            }
-            AssetDatabase.SaveAssets();
+            //}
+            //AssetDatabase.SaveAssets();
 
         }
     }
-    public class UnityPlatformPlugin : DiagramPlugin, INodeItemEvents, IProjectEvents
+
+    public class CompilationProgress : DiagramPlugin, IDesignerWindowEvents, ITaskProgressHandler
+    {
+        
+        public override void Initialize(UFrameContainer container)
+        {
+            ListenFor<IDesignerWindowEvents>();
+            ListenFor<ITaskProgressHandler>();
+            
+        }
+
+        public void ProcessInput()
+        {
+           
+        }
+
+        public void BeforeDrawGraph(Rect diagramRect)
+        {
+            
+        }
+
+        public void AfterDrawGraph(Rect diagramRect)
+        {
+            if (Percentage > 1.0f)
+            {
+                Percentage = 1.0f;
+            }
+            if (Percentage > 0.0f && Percentage < 1.0f)
+            {
+                var drawer = InvertGraphEditor.PlatformDrawer;
+                var width = 400f;
+                var height = 75f;
+                var boxRect = new Rect((diagramRect.width/2f) - (width/2f), (diagramRect.height/2f) - (height/2f), width,
+                    height);
+                var progressRect = new Rect(boxRect);
+                progressRect.y += (boxRect.height - 35f);
+
+                progressRect.height = 7f;
+                progressRect.width = boxRect.width*0.8f;
+                progressRect.x = (diagramRect.width/2f) - (progressRect.width/2f);
+
+                var progressFill = new Rect(progressRect);
+                progressFill.width = (progressRect.width/100f)*(Percentage*100f);
+                progressFill.x += 1;
+                progressFill.y += 1;
+                progressFill.height -= 2f;
+
+                drawer.DrawRect(diagramRect, new Color(0.1f, 0.1f, 0.1f, 0.8f));
+                drawer.DoButton(new Rect(0f, 0f, Screen.width, Screen.height), " ", CachedStyles.ClearItemStyle,
+                    () => { });
+              //  drawer.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 12f);
+                drawer.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 12f);
+                //drawer.DrawStretchBox(boxRect,CachedStyles.NodeBackground,12f);
+                boxRect.x += 15f;
+                boxRect.y += 15f;
+                boxRect.width -= 30f;
+                drawer.DrawLabel(boxRect, string.Format("{0}", Message), CachedStyles.ViewModelHeaderStyle,
+                    DrawingAlignment.MiddleCenter);
+                drawer.DrawRect(progressRect, Color.black);
+                drawer.DrawRect(progressFill, Color.blue);
+            }
+            //}
+            //else
+            //{
+            //    Percentage = 0f;
+            //}
+           
+
+        }
+
+        public void DrawComplete()
+        {
+            
+        }
+        public string Message { get; set; }
+        public float Percentage { get; set; }
+
+        public void Progress(float progress, string message)
+        {
+            Message = message;
+            Percentage = progress / 100f;
+           
+        }
+
+ 
+    }
+    public class UnityPlatformPlugin : DiagramPlugin, INodeItemEvents, IProjectEvents, IAssetDeleted, ITaskHandler
     {
         public override decimal LoadPriority
         {
@@ -107,7 +214,10 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             get { return true; }
         }
-
+        public void BeginTask(IEnumerator task)
+        {
+            ElementsDesigner.Instance.Task = task;
+        }
         static UnityPlatformPlugin()
         {
             InvertApplication.CachedAssemblies.Add(typeof(Vector3).Assembly);
@@ -119,10 +229,14 @@ namespace Invert.Core.GraphDesigner.Unity
         public override bool Enabled { get { return true; } set { } }
         public override void Initialize(UFrameContainer container)
         {
+            ListenFor<ITaskHandler>();
+            ListenFor<IAssetDeleted>();
             EditorUtility.ClearProgressBar();
             Undo.undoRedoPerformed = delegate
             {
-                container.Resolve<ProjectService>().RefreshProjects();
+                var ps = container.Resolve<ProjectService>();
+           
+                ps.RefreshProjects();
                 InvertGraphEditor.DesignerWindow.RefreshContent();
             };
             container.RegisterInstance<IPlatformDrawer>(InvertGraphEditor.PlatformDrawer);
@@ -131,7 +245,7 @@ namespace Invert.Core.GraphDesigner.Unity
             container.RegisterToolbarCommand<GenerateDocsCommand>();
             container.RegisterToolbarCommand<DocsModeCommand>();
 #endif
-            container.RegisterInstance<IToolbarCommand>(new Test(), "Test");
+           // container.RegisterInstance<IToolbarCommand>(new Test(), "Test");
             container.RegisterToolbarCommand<ExportDiagramCommand>();
 
             container.RegisterInstance<IAssetManager>(new UnityAssetManager());
@@ -224,6 +338,44 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void ProjectsRefreshed(ProjectService service)
         {
+
+        }
+
+        public void AssetDeleted(string filename)
+        {
+
+            if (!filename.ToLower().EndsWith(".asset")) return;
+            var ps = InvertApplication.Container.Resolve<ProjectService>();
+            var graphs = ps.Projects.SelectMany(p => p.Graphs.Select(x => x.Identifier));
+
+            foreach (var project in ps.Projects)
+            {
+                var close = project.OpenGraphs.Where(p=>!graphs.Contains(p.GraphIdentifier)).ToArray();
+                foreach (var item in close)
+                {
+                    project.CloseGraph(item);
+                }
+                
+            }
+
+            //var ps = InvertApplication.Container.Resolve<ProjectService>();
+            //foreach (var project in ps.Projects)
+            //{
+            //    foreach (var g in project.Graphs)
+            //        Debug.Log(g.Path);
+            //    var graph = project.Graphs.FirstOrDefault(p => p.Path == filename);
+            //    if (graph == null)
+            //    {
+                    
+            //        continue;
+            //    }
+            //    InvertApplication.Log("Graph found.");
+            //    var openGraph = project.OpenGraphs.First(p => p.GraphIdentifier == graph.Identifier);
+            //    if (openGraph != null)
+            //    {
+            //        project.CloseGraph(openGraph);
+            //    }
+            //}
 
         }
     }

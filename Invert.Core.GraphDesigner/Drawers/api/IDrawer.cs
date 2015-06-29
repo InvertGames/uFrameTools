@@ -16,6 +16,7 @@ namespace Invert.Core.GraphDesigner
     {
         GraphItemViewModel ViewModelObject { get; }
         Rect Bounds { get; set; }
+        bool Enabled { get; set; }
         bool IsSelected { get; set; }
         bool Dirty { get; set; }
         string ShouldFocus { get; set; }

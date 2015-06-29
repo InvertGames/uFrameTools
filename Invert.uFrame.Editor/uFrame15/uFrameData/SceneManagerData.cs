@@ -1,7 +1,6 @@
 using Invert.Core.GraphDesigner;
 using Invert.Json;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.Refactoring;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,7 +113,6 @@ public class SceneManagerData : DiagramNode
 
     public string NameAsSettingsField { get { return string.Format("_{0}Settings", Name); } }
 
-    public RenameSceneManagerRefactorer RenameRefactor { get; set; }
 
     public SubSystemData SubSystem
     {
@@ -139,18 +137,9 @@ public class SceneManagerData : DiagramNode
     public override void BeginEditing()
     {
         base.BeginEditing();
-        if (RenameRefactor == null)
-        {
-            RenameRefactor = new RenameSceneManagerRefactorer(this);
-        }
+
     }
 
-
-
-    public override RenameRefactorer CreateRenameRefactorer()
-    {
-        return new RenameSceneManagerRefactorer(this);
-    }
 
     public override bool EndEditing()
     {

@@ -99,7 +99,7 @@ namespace Invert.Core.GraphDesigner
             context.Generator = this;
             context.DataObject = Data;
             context.Namespace = Namespace;
-            context.CurrentDecleration = Decleration;
+            context.CurrentDeclaration = Decleration;
             context.IsDesignerFile = IsDesignerFile;
             context.ItemFilter = ItemFilter;
             return context;
@@ -264,6 +264,16 @@ namespace Invert.Core.GraphDesigner
             // Initialize the template
             TemplateContext.Iterators.Clear();
             TemplateClass.TemplateSetup();
+
+            foreach (
+                var item in
+                    TemplateClass.GetType()
+                        .GetCustomAttributes(typeof (TemplateAttribute), true)
+                        .OfType<TemplateAttribute>().OrderBy(p=>p.Priority))
+            {
+                item.Modify(TemplateClass,null,TemplateContext);
+            }
+
             var initializeMethods = TemplateClass.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public).Where(p=>p.IsDefined(typeof(TemplateSetup),true)).ToArray();
             foreach (var item in initializeMethods)
             {
@@ -370,7 +380,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (CurrentConstructor == null)
                 {
-                    CurrentDecleration.CustomAttributes.Add(attribute);
+                    CurrentDeclaration.CustomAttributes.Add(attribute);
                 }
                 else
                 {
@@ -542,7 +552,7 @@ namespace Invert.Core.GraphDesigner
                     {
                         attribute.Modify(instance,templateProperty.Key,this);
                     }
-                    CurrentDecleration.Members.Add(domObject);
+                    CurrentDeclaration.Members.Add(domObject);
                     yield return domObject;
                     InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.PropertyAdded(instance, this, domObject));
                 }
@@ -558,7 +568,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     attribute.Modify(instance, templateProperty.Key, this);
                 }
-                CurrentDecleration.Members.Add(domObject);
+                CurrentDeclaration.Members.Add(domObject);
                 yield return domObject;
                 InvertApplication.SignalEvent<ICodeTemplateEvents>(_=>_.PropertyAdded(instance, this, domObject));
                 Item = null;
@@ -691,7 +701,7 @@ namespace Invert.Core.GraphDesigner
 
             info.Invoke(instance, args.ToArray());
             PopStatements();
-            CurrentDecleration.Members.Add(dom);
+            CurrentDeclaration.Members.Add(dom);
             InvertApplication.SignalEvent<ICodeTemplateEvents>(_ => _.ConstructorAdded(instance, this, dom));
             return dom;
         }
@@ -758,7 +768,7 @@ namespace Invert.Core.GraphDesigner
                 args.Add(GetDefault(arg.ParameterType));
             }
 
-            CurrentDecleration.Members.Add(dom);
+            CurrentDeclaration.Members.Add(dom);
 
             var result = info.Invoke(instance, args.ToArray());
             var a = result as IEnumerable;
@@ -927,7 +937,7 @@ namespace Invert.Core.GraphDesigner
             get { return CurrentAttribute as GenerateConstructor; }
         }
         public GenerateMember CurrentAttribute { get; set; }
-        public CodeTypeDeclaration CurrentDecleration { get; set; }
+        public CodeTypeDeclaration CurrentDeclaration { get; set; }
         public CodeNamespace Namespace { get; set; }
         public void TryAddNamespace(string ns)
         {
@@ -960,7 +970,7 @@ namespace Invert.Core.GraphDesigner
         {
             if (CurrentStatements == null)
             {
-                CurrentDecleration.Members.Add(new CodeSnippetTypeMember(string.Format(formatString, args)));
+                CurrentDeclaration.Members.Add(new CodeSnippetTypeMember(string.Format(formatString, args)));
                 return;
             }
             CurrentStatements._(formatString, args);
@@ -976,17 +986,17 @@ namespace Invert.Core.GraphDesigner
 
         public void AddInterface(object type, params object[] args)
         {
-            CurrentDecleration.BaseTypes.Add(type.ToCodeReference(args));
+            CurrentDeclaration.BaseTypes.Add(type.ToCodeReference(args));
         }
         public void SetBaseType(object type, params object[] args)
         {
-            CurrentDecleration.BaseTypes.Clear();
-            CurrentDecleration.BaseTypes.Add(type.ToCodeReference(args));
+            CurrentDeclaration.BaseTypes.Clear();
+            CurrentDeclaration.BaseTypes.Add(type.ToCodeReference(args));
         }
         public void SetBaseTypeArgument(object type, params object[] args)
         {
-            CurrentDecleration.BaseTypes[0].TypeArguments.Clear();
-            CurrentDecleration.BaseTypes[0].TypeArguments.Add(type.ToCodeReference(args));
+            CurrentDeclaration.BaseTypes[0].TypeArguments.Clear();
+            CurrentDeclaration.BaseTypes[0].TypeArguments.Add(type.ToCodeReference(args));
         }
         public void SetTypeArgument(object type, params object[] args)
         {

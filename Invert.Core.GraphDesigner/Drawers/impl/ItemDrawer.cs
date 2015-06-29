@@ -95,6 +95,7 @@ namespace Invert.Core.GraphDesigner
         public override void OnMouseDown(MouseEvent mouseEvent)
         {
             base.OnMouseDown(mouseEvent);
+            if (!this.Enabled) return;
             if (mouseEvent.MouseButton != 0)
             {
                 if (!ViewModelObject.IsSelected)
@@ -111,6 +112,7 @@ namespace Invert.Core.GraphDesigner
         public override void OnMouseDoubleClick(MouseEvent mouseEvent)
         {
             base.OnMouseDoubleClick(mouseEvent);
+            if (!this.Enabled) return;
             mouseEvent.NoBubble = true;
         }
 
@@ -223,13 +225,14 @@ namespace Invert.Core.GraphDesigner
 
         protected void DrawName(Rect rect, IPlatformDrawer platform, float scale,DrawingAlignment alignment = DrawingAlignment.MiddleCenter)
         {
-           
-            if (ItemViewModel.IsEditing && ItemViewModel.IsEditable)
+   
+            if (ItemViewModel.IsEditing && ItemViewModel.IsEditable && this.ItemViewModel.Enabled)
             {
                 platform.DrawTextbox(ItemViewModel.NodeItem.Identifier, rect.Scale(scale), CachedName,
                     CachedStyles.ItemTextEditingStyle,
                     (s, finished) =>
                     {
+                       
                         CachedName = s;
                         ItemViewModel.Rename(s);
                         //CachedName = ItemViewModel.Name;

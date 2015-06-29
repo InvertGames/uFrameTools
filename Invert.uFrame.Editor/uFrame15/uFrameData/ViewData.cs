@@ -5,7 +5,6 @@ using Invert.Core.GraphDesigner;
 using Invert.Json;
 using Invert.uFrame.Code.Bindings;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.Refactoring;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,20 +145,7 @@ public class ViewData : DiagramNode, ISubSystemType
             }
         }
     }
-    public override IEnumerable<Refactorer> Refactorings
-    {
-        get
-        {
-            if (RenameRefactorer != null)
-            {
-                yield return RenameRefactorer;
-            }
-            if (NewBindings.Any())
-            {
-                yield return BindingInsertMethodRefactorer;
-            }
-        }
-    }
+
 
     public string ForElementIdentifier
     {
@@ -190,23 +176,7 @@ public class ViewData : DiagramNode, ISubSystemType
     //    set { _newBindings = value; }
     //}
 
-    public InsertMethodRefactorer BindingInsertMethodRefactorer
-    {
-        get
-        {
-            var sb = new StringBuilder();
-            foreach (var addedGenerator in NewBindings.Select(p => p.Generator))
-            {
-                addedGenerator.CallBase = false;
-                sb.AppendLine(addedGenerator.ToString());
-            }
-            return new InsertMethodRefactorer()
-            {
-                InsertText = sb.ToString(),
-                ClassName = Name
-            };
-        }
-    }
+
 
     public List<ViewBindingData> Bindings
     {
@@ -316,10 +286,6 @@ public class ViewData : DiagramNode, ISubSystemType
     [Obsolete] // Still used for upgrading old versions
     public string ForAssemblyQualifiedName { get; set; }
 
-    public override RenameRefactorer CreateRenameRefactorer()
-    {
-        return new RenameViewRefactorer(this);
-    }
 
     public override void Deserialize(JSONClass cls)
     {

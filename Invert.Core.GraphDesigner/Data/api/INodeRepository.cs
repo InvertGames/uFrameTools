@@ -5,6 +5,13 @@ namespace Invert.Core.GraphDesigner
 {
     public interface INodeRepository 
     {
+#if UNITY_DLL
+        string AssetPath { get; }
+        string AssetDirectory { get; }
+
+#endif
+        string SystemDirectory { get; }
+        string SystemPath { get; set; }
         // Basic Information
         string Name { get; set; }
         IEnumerable<IDiagramNode> NodeItems { get; }

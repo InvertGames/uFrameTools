@@ -50,7 +50,13 @@ namespace Invert.Core.GraphDesigner
         { 
             NodeViewModel = nodeViewModel;
         }
-        
+
+
+        public override bool Enabled
+        {
+            get { return this.NodeViewModel.Enabled; }
+        }
+
         public DiagramNodeViewModel NodeViewModel { get; set; }
         public IDiagramNodeItem NodeItem
         {

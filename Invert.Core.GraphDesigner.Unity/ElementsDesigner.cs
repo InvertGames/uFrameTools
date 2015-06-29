@@ -2,6 +2,7 @@ using System.ComponentModel;
 using Invert.Common;
 using Invert.Core.GraphDesigner;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -45,7 +46,11 @@ namespace Invert.Core.GraphDesigner.Unity
             window.wantsMouseMove = true;
             InvertGraphEditor.DesignerWindow = window.DesignerWindow;
             window.Show();
+            window.Repaint();
+            Instance = window;
         }
+
+        public static ElementsDesigner Instance { get; set; }
 
 
         public DesignerWindow DesignerWindow
@@ -192,20 +197,22 @@ namespace Invert.Core.GraphDesigner.Unity
                 // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));
             }
 
-            var evt = LastEvent;
+            var evt = Event.current;
             if (evt != null && evt.isKey && evt.type == EventType.KeyUp && DiagramDrawer != null)
             {
-               
+          
                 if (DiagramViewModel != null &&
                     (DiagramViewModel.SelectedNode == null || !DiagramViewModel.SelectedNode.IsEditing))
                 {
+                
                     if (DiagramViewModel.SelectedNodeItem == null)
                     {
-
+                     
                         if (DiagramDrawer.HandleKeyEvent(evt, mouse.ModifierKeyStates))
                         {
+                            
                             evt.Use();
-                            mouse.ModifierKeyStates = null;
+                            mouse.ModifierKeyStates = new ModifierKeyState();
                         }
                     }
                     
@@ -236,22 +243,19 @@ namespace Invert.Core.GraphDesigner.Unity
             InvertGraphEditor.DesignerWindow = this.DesignerWindow;
             if (InvertGraphEditor.Container != null)
             {
-                var width = Screen.width;
-                var height = Screen.height;
-                var toolbarTopRect = new Rect(0, 0, width, 18);
-                var tabsRect = new Rect(0, toolbarTopRect.height, width, 31);
+                //var width = Screen.width;
+                //var height = Screen.height;
+                //var toolbarTopRect = new Rect(0, 0, width, 18);
+                //var tabsRect = new Rect(0, toolbarTopRect.height, width, 31);
 
-                var diagramRect = new Rect(0f, tabsRect.y + tabsRect.height, width - 3, height - ((toolbarTopRect.height * 2)) - tabsRect.height - 20);
-                var toolbarBottomRect = new Rect(0f, diagramRect.y + diagramRect.height, width - 3, toolbarTopRect.height);
+                //var diagramRect = new Rect(0f, tabsRect.y + tabsRect.height, width - 3, height - ((toolbarTopRect.height * 2)) - tabsRect.height - 20);
+                //var toolbarBottomRect = new Rect(0f, diagramRect.y + diagramRect.height, width - 3, toolbarTopRect.height);
 
-                EditorGUI.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
-                DesignerWindow.Draw(InvertGraphEditor.PlatformDrawer, Screen.width, Screen.height, _scrollPosition, 1f);
+                //EditorGUI.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
+                DesignerWindow.Draw(InvertGraphEditor.PlatformDrawer, Screen.width + 1, Screen.height, _scrollPosition, 1f);
             }
   
-            if (EditorApplication.isCompiling)
-            {
-                InfoBox("Compiling.. Please Wait!");
-            }
+           
             if (DiagramViewModel != null)
             {
                 var refactors = DiagramViewModel.RefactorCount;
@@ -275,12 +279,49 @@ namespace Invert.Core.GraphDesigner.Unity
 
         private int fpsCount = 0;
         private DesignerWindow _designerWindow;
-
+        public IEnumerator Task { get; set; }
+       
         public void Update()
         {
+            Instance = this;
+            if (Task != null)
+            {
+                if (!Task.MoveNext())
+                {
+                    Task = null;
+                    Repaint();
+                }
+                else
+                {
+
+                    var current = Task.Current as TaskProgress;
+                    if (current != null)
+                    {
+                        InvertGraphEditor.Platform.Progress(current.Percentage, current.Message);
+                    }
+                    Debug.Log("Updating");
+                    Repaint();
+
+                }
+                return;
+            }
+            else
+            {
+             
+                
+            }
+         
 
             if (fpsCount > 15 || (DesignerWindow.MouseEvent != null && DesignerWindow.MouseEvent.IsMouseDown))
             {
+                if (EditorApplication.isCompiling)
+                {
+                    InvertGraphEditor.Platform.Progress(99f, "Waiting on compiler...");
+                }
+                else
+                {
+                    InvertGraphEditor.Platform.Progress(0f, string.Empty);
+                }
                 fpsCount = 0;
                 Repaint();
 

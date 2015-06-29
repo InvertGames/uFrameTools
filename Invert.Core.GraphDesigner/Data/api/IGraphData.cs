@@ -18,14 +18,17 @@ namespace Invert.Core.GraphDesigner
 
         // Filters
         IDiagramFilter RootFilter { get; set; }
-        ICodePathStrategy CodePathStrategy { get; set; }
+
         bool Errors { get; set; }
         Exception Error { get; set; }
-        string Path { get; set; }
+
+
+
         IProjectRepository Project { get; set; }
         bool Precompiled { get; set; }
         bool DocumentationMode { get; set; }
- 
+        string Directory { get;  }
+
 
         //IEnumerable<ConnectionData> Connections { get; }
         void AddConnection(IConnectable output, IConnectable input);

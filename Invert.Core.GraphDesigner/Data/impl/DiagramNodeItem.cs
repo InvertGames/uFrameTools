@@ -123,7 +123,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     private string _name = string.Empty;
 
 
-    private RenameRefactorer _renameRefactorer;
+
 
     private string _oldName;
 
@@ -202,30 +202,14 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         set { _position = value; }
     }
 
-    public IEnumerable<Refactorer> Refactorings
-    {
-        get { yield break; }
-    }
 
-    public RenameRefactorer RenameRefactorer
-    {
-        get { return _renameRefactorer; }
-        set { _renameRefactorer = value; }
-    }
 
     public virtual void BeginEditing()
     {
-        if (RenameRefactorer == null)
-        {
-            RenameRefactorer = CreateRenameRefactorer();
-        }
+
         OldName = Name;
     }
 
-    public virtual RenameRefactorer CreateRenameRefactorer()
-    {
-        return null;
-    }
 
     public virtual void EndEditing()
     {
@@ -236,7 +220,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
 
     public void RefactorApplied()
     {
-        RenameRefactorer = null;
+      
     }
 
     public abstract void Remove(IDiagramNode diagramNode);

@@ -31,8 +31,6 @@ public class UnityWindowManager : IWindowManager
             {
                 action((TItem)item);
             });
-
-
         }, allowNone);
     }
 

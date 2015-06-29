@@ -1,8 +1,10 @@
 using System;
 using System.CodeDom;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using UnityEditor;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -23,9 +25,88 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+
+
+    [AttributeUsage(AttributeTargets.Class,AllowMultiple = true)]
+    public class RequiresNamespace : TemplateAttribute
+    {
+        public override int Priority
+        {
+            get { return -3; }
+        }
+
+        public RequiresNamespace(string ns)
+        {
+            Namespace = ns;
+        }
+
+        public string Namespace { get; set; }
+        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            base.Modify(templateInstance, info, ctx);
+            ctx.TryAddNamespace(Namespace);
+        }
+    }
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    public class NamespacesFromItems : TemplateAttribute
+    {
+        public override int Priority
+        {
+            get { return -3; }
+        }
+
+  
+
+        public string Namespace { get; set; }
+        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            base.Modify(templateInstance, info, ctx);
+            foreach (var property in ((IDiagramNode) ctx.DataObject).PersistedItems.OfType<ITypedItem>())
+            {
+                var type = InvertApplication.FindTypeByName(property.RelatedTypeName);
+                if (type == null) continue;
+
+                ctx.TryAddNamespace(type.Namespace);
+            }
+        }
+    }
+    /// <summary>
+    /// This is only required when for some reason you can't create a template using the actual base class you want
+    /// </summary>
+    public class ForceBaseType : TemplateAttribute
+    {
+        public ForceBaseType(Type type)
+        {
+            Type = type;
+        }
+
+        public ForceBaseType(string type)
+        {
+            StringType = type;
+        }
+
+        public Type Type { get; set; }
+        public string StringType { get; set; }
+
+
+        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            base.Modify(templateInstance, info, ctx);
+            if (ctx.IsDesignerFile)
+            {
+                if (Type != null)
+                    ctx.SetBaseType(Type);
+                else
+                {
+                    ctx.SetBaseType(StringType);
+                }
+            }
+        }
+    }
+
     public class ForEach : TemplateAttribute
     {
-        public virtual int Priority
+        public override int Priority
         {
             get { return -1; }
         }
@@ -89,6 +170,34 @@ namespace Invert.Core.GraphDesigner
             }
         }
     }
+    
+    public class IfNot : TemplateAttribute
+    {
+        public override int Priority
+        {
+            get { return -2; }
+        }
+
+        public string ConditionMemberName { get; set; }
+
+        public IfNot(string conditionMemberName)
+        {
+            ConditionMemberName = conditionMemberName;
+        }
+
+        public override bool CanGenerate(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            try
+            {
+                var condition = (bool)ctx.GetTemplateProperty(templateInstance, ConditionMemberName);
+                return !condition;
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new TemplateException(string.Format("Condition {0} is not a valid condition, make sure it is of type boolean.", ConditionMemberName), ex);
+            }
+        }
+    }
 
     [Flags]
     public enum TemplateLocation
@@ -97,6 +206,60 @@ namespace Invert.Core.GraphDesigner
         EditableFile = 1,
         Both = 2
     }
+
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
+    public class AsOverride : TemplateAttribute
+    {
+        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            base.Modify(templateInstance, info, ctx);
+            if (ctx.CurrentMember != null)
+            {
+                ctx.CurrentMember.Attributes |= MemberAttributes.Override;
+            }
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
+    public class AsVirtual : TemplateAttribute
+    {
+        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            base.Modify(templateInstance, info, ctx);
+            if (ctx.CurrentMember != null)
+            {
+                ctx.CurrentMember.Attributes -= MemberAttributes.Final;
+            }
+        }
+    }
+    [AttributeUsage(AttributeTargets.Class)]
+    public class AsStatic : TemplateAttribute
+    {
+        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            base.Modify(templateInstance, info, ctx);
+            if (ctx.CurrentMember != null)
+            {
+                ctx.CurrentMember.Attributes |= MemberAttributes.Static;
+            }
+            else
+            {
+                ctx.CurrentDeclaration.Attributes |= MemberAttributes.Static;
+            }
+            
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public class AsPartial : TemplateAttribute
+    {
+        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            base.Modify(templateInstance, info, ctx);
+            ctx.CurrentDeclaration.IsPartial = true;
+        }
+    }
+
 
     public class Inside : TemplateAttribute
     {
@@ -421,12 +584,30 @@ namespace Invert.Core.GraphDesigner
         public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
         {
             base.Modify(templateInstance, info, ctx);
-            var field = ctx.CurrentDecleration._private_(ctx.CurrentProperty.Type, "_{0}", ctx.CurrentProperty.Name.Clean());
+            var field = ctx.CurrentDeclaration._private_(ctx.CurrentProperty.Type, "_{0}", ctx.CurrentProperty.Name.Clean());
             ctx.CurrentProperty.GetStatements._("return {0}", field.Name);
             ctx.CurrentProperty.SetStatements._("{0} = value", field.Name);
         }
     }
 
+    public class WithAttributes : TemplateAttribute
+    {
+        public WithAttributes(params Type[] attributes)
+        {
+            Attributes = attributes;
+        }
+
+        public Type[] Attributes { get; set; }
+        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            base.Modify(templateInstance, info, ctx);
+            foreach (var attribute in Attributes)
+            {
+                ctx.CurrentMember.CustomAttributes.Add(
+                    new CodeAttributeDeclaration(new CodeTypeReference(typeof (Attribute))));
+            }
+        }
+    }
     [AttributeUsage(AttributeTargets.Property)]
     public class WithLazyField : WithField
     {

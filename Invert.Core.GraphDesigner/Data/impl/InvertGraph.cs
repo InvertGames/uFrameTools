@@ -157,13 +157,24 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         get { return _settings; }
         set { _settings = value; }
     }
+    
 #if UNITY_DLL
-    public string Path { get; set; }
+
+    public string SystemPath
+    {
+        get { return Path.Combine(Application.dataPath ,AssetPath.Substring(7)).Replace("\\","/").ToLower(); }
+        set
+        {
+            
+        }
+    }
+
+
 
     public string Name { get; set; }
 
 #else
-    public string Path
+    public string SystemPath
     {
         get { return GraphFileInfo.FullName; }
         set
@@ -190,7 +201,13 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         }
     }
 #endif
-
+    public string SystemDirectory
+    {
+        get
+        {
+            return Path.GetDirectoryName(SystemPath);
+        }
+    }
     public string Version { get; set; }
     public int RefactorCount { get; set; }
 
@@ -217,10 +234,12 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         {
             if (_rootFilter != null)
             {
+                
                 return _rootFilter;
             }
 
             RootFilter = CreateDefaultFilter();
+         
             return _rootFilter;
         }
         set
@@ -284,6 +303,25 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
     }
 
     public Exception Error { get; set; }
+#if UNITY_DLL
+    public string AssetPath
+    {
+        get
+        {
+            var proj = Project as DefaultProjectRepository;
+
+            var graph = proj.Graphs.FirstOrDefault(p => p.Identifier == this.Identifier);
+            return UnityEditor.AssetDatabase.GetAssetPath(graph as ScriptableObject);
+        }
+    }
+
+    public string AssetDirectory
+    {
+        get { return System.IO.Path.GetDirectoryName(AssetPath); }
+    }
+
+    
+#endif
 
 
     public List<ConnectionData> ConnectedItems
@@ -424,6 +462,10 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
     }
 
 
+    public string Directory
+    {
+        get { return System.IO.Path.GetDirectoryName(SystemPath); }
+    }
 
     public void AddConnection(IConnectable output, IConnectable input)
     {
@@ -622,7 +664,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
 
     public void Deserialize(string jsonData)
     {
-
+        
         if (jsonData == null)
         {
             return;

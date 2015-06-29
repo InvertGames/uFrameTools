@@ -272,12 +272,23 @@ namespace Invert.Core.GraphDesigner
                             continue; // Filenames aren't the same
                         //InvertApplication.Log(string.Format("Moving {0} to {1}", beforeFilename, afterFilename));
                         if (File.Exists(beforeFilename))
-                        File.Move(beforeFilename, afterFilename);
+                        {
+                            var dir = System.IO.Path.GetDirectoryName(afterFilename);
+                            if (!Directory.Exists(dir))
+                            {
+                                Directory.CreateDirectory(dir);
+                            }
+                            File.Move(beforeFilename, afterFilename);
+                        }
+                        
                         var beforeMetaFilename = beforeFilename + ".meta";
                         var afterMetaFilename = afterFilename + ".meta";
 
                         if (File.Exists(beforeMetaFilename))
-                        File.Move(beforeMetaFilename, afterMetaFilename);
+                        {
+                            File.Move(beforeMetaFilename, afterMetaFilename);
+                        }
+                        
                     }
                 }
             }
@@ -299,6 +310,8 @@ namespace Invert.Core.GraphDesigner
         public override string CanPerform(DiagramNode node)
         {
             if (node == null) return "Invalid input";
+            if (node.Graph.Identifier == InvertGraphEditor.CurrentDiagramViewModel.GraphData.Identifier)
+                return "The node already exist in this graph.";
             //if (node == node.Graph.RootFilter)
             //    return "This node is the main part of a diagram and can't be removed.";
             //if (node.Graph != InvertGraphEditor.DesignerWindow.DiagramViewModel.DiagramData) 

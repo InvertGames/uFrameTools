@@ -1,6 +1,5 @@
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Code.Bindings;
-using Invert.uFrame.Editor.Refactoring;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -46,19 +45,9 @@ namespace Invert.uFrame.Editor.ViewModels
             }
         }
 
-        public string GetViewPreview()
-        {
-            var refactorContext = new RefactorContext(GraphItem.BindingInsertMethodRefactorer);
-            var pathStrategy = GraphItem.GetPathStrategy();
-            var viewFilePath = System.IO.Path.Combine(pathStrategy.AssetPath, pathStrategy.GetEditableFilePath(GraphItem)).Replace("\\", "/");
-            return refactorContext.RefactorFile(viewFilePath, false);
-        }
 
-        public string Preview
-        {
-            get { return _preview ?? (_preview = GetViewPreview()); }
-            set { _preview = value; }
-        }
+
+
 
         public ViewBindingData AddNewBinding(IBindingGenerator lastSelected)
         {
@@ -73,7 +62,7 @@ namespace Invert.uFrame.Editor.ViewModels
 
             GraphItem.Bindings.Add(binding);
 
-            Preview = null;
+            //Preview = null;
             _bindings = null;
             return binding;
         }
@@ -116,7 +105,7 @@ namespace Invert.uFrame.Editor.ViewModels
                 }
             });
 
-            Preview = null;
+            //Preview = null;
             _bindings = null;
         }
 

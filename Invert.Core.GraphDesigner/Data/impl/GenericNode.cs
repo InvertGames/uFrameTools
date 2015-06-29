@@ -278,21 +278,6 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        [Browsable(false)]
-        public override IEnumerable<Refactorer> Refactorings
-        {
-            get
-            {
-                foreach (var refactorer in Config.Refactorers)
-                {
-                    var r = refactorer(this);
-                    if (r != null)
-                    {
-                        yield return r;
-                    }
-                }
-            }
-        }
 
         [Browsable(false)]
         public override IEnumerable<IDiagramNodeItem> DisplayedItems

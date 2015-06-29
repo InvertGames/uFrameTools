@@ -121,11 +121,11 @@ namespace Invert.Core.GraphDesigner
                 
             }
         }
-
+        public const string CSHARP_TOKENS = @"@?[_\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}][\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Cf}]*|\{|\}";
         private LineViewModel ParseLine(string line)
         {
             var lineViewModel = new LineViewModel(this);
-            var matchList = Regex.Matches(line, RefactorContext.CSHARP_TOKENS + @"|.|\s+",RegexOptions.None);
+            var matchList = Regex.Matches(line, CSHARP_TOKENS + @"|.|\s+",RegexOptions.None);
             foreach (Match match in matchList)
             {
                 var token = new TokenViewModel(lineViewModel, match.Value, Color.gray);

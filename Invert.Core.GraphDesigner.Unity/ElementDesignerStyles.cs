@@ -1723,12 +1723,17 @@ namespace Invert.Common
             {
                 return _graphTitleLabel ?? (_graphTitleLabel = new GUIStyle()
                 {
-                    normal = new GUIStyleState() { textColor = new Color(1f, 0.396f, 0.173f) },
-                    fontSize = 24,
+                    normal = new GUIStyleState()
+                    {
+                        //textColor = new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.3f, InvertGraphEditor.Settings.BackgroundColor.g * 0.3f, InvertGraphEditor.Settings.BackgroundColor.b * 0.3f, 1f)
+                        textColor = InvertGraphEditor.Settings.TabTextColor
+                    },
+                    fontSize = 20,
                     fontStyle = FontStyle.Bold,
                     wordWrap = true
                 });
             }
+            set { _graphTitleLabel = null; }
 
         }
 

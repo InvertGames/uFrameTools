@@ -141,6 +141,7 @@ namespace Invert.Core.GraphDesigner
 
         void IDrawer.OnMouseDown(MouseEvent mouseEvent)
         {
+            
             OnMouseDown(mouseEvent);
         }
 
@@ -266,7 +267,7 @@ namespace Invert.Core.GraphDesigner
             {
 
                 var rect = new Rect((Bounds.x + (Bounds.width / 2f)) - 21f,
-                    Bounds.y + Bounds.height, 42f, 18f);
+                    Bounds.y + Bounds.height - 1f, 42f, 18f);
                 var style = ViewModel.IsCollapsed
                     ? CachedStyles.NodeExpand
                     : CachedStyles.NodeCollapse;
@@ -311,7 +312,7 @@ namespace Invert.Core.GraphDesigner
                     platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter2, 20);
                 }
             }
-            if (ViewModel.IsExternal)
+            if (!ViewModel.Enabled)
             {
                 platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter5, 20);
             }

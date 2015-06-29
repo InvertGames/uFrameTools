@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class DeleteCommand : EditorCommand<DiagramViewModel>, IDiagramNodeCommand,IKeyBindable
+    public class DeleteCommand : EditorCommand<DiagramNodeViewModel>, IDiagramNodeCommand,IKeyBindable
     {
         public override string Group
         {
@@ -16,26 +16,39 @@ namespace Invert.Core.GraphDesigner
             get { return 3; }
         }
 
-        public override void Perform(DiagramViewModel node)
+        public override bool CanProcessMultiple
+        {
+            get { return false; }
+        }
+
+        public override void Execute(ICommandHandler handler)
+        {
+            base.Execute(handler);
+
+        }
+
+        public override void Perform(DiagramNodeViewModel node)
         {
 
             if (node == null) return;
-            var selected = node.SelectedNode;
+            var selected = node.DataObject as IDiagramNode;
 
-            var pathStrategy = node.GraphData.CodePathStrategy;
+           // var pathStrategy = selected.Graph.Directory;
 
-            var generators = selected.CodeGenerators.Where(p => !p.AlwaysRegenerate).ToArray();
+            //InvertApplication.LogIfNull(pathStrategy,"Path Strategy");
+
+            var generators = node.CodeGenerators.ToArray();
 
             var customFiles = generators.Select(p=>p.Filename).ToArray();
-            var customFileFullPaths = generators.Select(p=>System.IO.Path.Combine(pathStrategy.AssetPath, p.Filename)).Where(File.Exists).ToArray();
-            var customMetaFiles = generators.Select(p=>System.IO.Path.Combine(pathStrategy.AssetPath, p.Filename) + ".meta").Where(File.Exists).ToArray();
+            var customFileFullPaths = generators.Select(p => System.IO.Path.Combine(selected.Project.SystemDirectory, p.Filename)).Where(File.Exists).ToArray();
+            var customMetaFiles = generators.Select(p => System.IO.Path.Combine(selected.Project.SystemDirectory, p.Filename) + ".meta").Where(File.Exists).ToArray();
 
-            if (selected.IsFilter)
+            if (node.IsFilter)
             {
-                
-                if (selected.HasFilterItems)
+
+                if (node.HasFilterItems)
                 {
-                    var list = selected.ContainedItems.Select(p => string.Format("{0} node inside '{1}'graph", p.Name,p.Graph.Name)).ToArray();
+                    var list = node.ContainedItems.Select(p => string.Format("{0} node inside '{1}'graph", p.Name, p.Graph.Name)).ToArray();
                     InvertGraphEditor.Platform.MessageBox("Delete sub items first.",
                         "There are items defined inside this item please hide or delete them before removing this item." + Environment.NewLine + string.Join(Environment.NewLine,list), "OK");
                     return;
@@ -45,7 +58,7 @@ namespace Invert.Core.GraphDesigner
             {
                 InvertGraphEditor.ExecuteCommand(_ =>
                 {
-                    node.CurrentRepository.RemoveNode(selected.GraphItemObject);
+                    selected.Project.RemoveNode(selected);
                 });
 
                 if (customFileFullPaths.Length > 0)
@@ -64,22 +77,26 @@ namespace Invert.Core.GraphDesigner
                             {
                                 File.Delete(metaFile);
                             }
-                            var saveCommand = InvertGraphEditor.Container.Resolve<IToolbarCommand>("SaveCommand");
+                            //var saveCommand = InvertGraphEditor.Container.Resolve<IToolbarCommand>("SaveCommand");
                             //Execute the save command
-                            InvertGraphEditor.ExecuteCommand(saveCommand);
+                            InvertGraphEditor.ExecuteCommand(new SaveCommand());
                         });
                     }
                 }
             }
         }
 
-        public override string CanPerform(DiagramViewModel diagram)
+
+        public override string CanPerform(DiagramNodeViewModel node)
         {
-            if (diagram.SelectedNode.IsCurrentFilter) 
+            var selected = node.DataObject as IDiagramNode;
+            if (node.IsCurrentFilter) 
                 return "Can't delete while inside of the node.";
-            if (diagram.SelectedNode == null) 
+            if (selected == null) 
                 return "Select something first.";
-            if (!diagram.SelectedNode.IsLocal) 
+            if (!node.IsLocal) 
+                return "Must be local to delete. Use hide instead.";
+            if (selected.Graph.Identifier != InvertGraphEditor.CurrentDiagramViewModel.GraphData.Identifier)
                 return "Must be local to delete. Use hide instead.";
             return null;
         }

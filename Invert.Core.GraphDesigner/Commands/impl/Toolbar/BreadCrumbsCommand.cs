@@ -6,7 +6,7 @@ using Invert.IOC;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class PopToFilterCommand : ElementsDiagramToolbarCommand, IDynamicOptionsCommand
+    public class BreadCrumbsCommand : ElementsDiagramToolbarCommand, IDynamicOptionsCommand
     {
 
         public override void Perform(DiagramViewModel node)
@@ -87,16 +87,14 @@ namespace Invert.Core.GraphDesigner
                 IProjectRepository project1 = project;
                 var command = new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
-                    projectService.CurrentProject = project1;      
-              
+                    projectService.CurrentProject = project1;
+
+                    node.Designer = null;
+                    node.SwitchDiagram(project1.CurrentGraph);
+
                 }, project.Name);
 
                 contextMenu.AddCommand(command);
-                //menu.AddItem(new GUIContent(project.Name), project1 == CurrentProject, () =>
-                //{
-                //    CurrentProject = project1;
-                //    LoadDiagram(CurrentProject.CurrentGraph);
-                //});
             }
 
             contextMenu.AddSeparator("");

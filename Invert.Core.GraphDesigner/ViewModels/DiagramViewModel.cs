@@ -10,11 +10,22 @@ namespace Invert.Core.GraphDesigner
     {
         private ModelCollection<TabViewModel> _tabs;
         private IToolbarCommand[] _allCommands;
+        private ProjectService _projectService;
 
         protected override void DataObjectChanged()
         {
             base.DataObjectChanged();
             //Tabs = Data.OpenGraphs;
+        }
+
+        public ProjectService ProjectService
+        {
+            get { return _projectService ?? (_projectService = InvertGraphEditor.Container.Resolve<GraphDesigner.ProjectService>()); }
+        }
+        public override object DataObject
+        {
+            get { return ProjectService.CurrentProject; }
+            set { base.DataObject = value; }
         }
 
         public TabViewModel CurrentTab { get; set; }
@@ -23,6 +34,8 @@ namespace Invert.Core.GraphDesigner
         {
             get { return Data.OpenGraphs; }
         }
+
+
 
         public void OpenTab(IGraphData graphData, string[] path = null)
         {
@@ -687,22 +700,7 @@ namespace Invert.Core.GraphDesigner
                     yield return nodeItem.DataObject;
 
                 }
-                //foreach (var nodeItem in SelectedNodeItems)
-                //{
-                //    yield return nodeItem;
-                //    yield return nodeItem.DataObject;
-                //}
-                //foreach (var node in SelectedGraphItems.OfType<DiagramNodeViewModel>())
-                //{
-                //    yield return node;
-                //    yield return node.DataObject;
-                //}
-                //foreach (var item in GraphItems)
-                //{
-                //    if (!item.IsMouseOver && !item.IsSelected) continue;
-                //    yield return item;
-                //    yield return item.DataObject;
-                //}
+             
             }
         }
 
@@ -724,6 +722,13 @@ namespace Invert.Core.GraphDesigner
         public void NavigateTo(string identifier)
         {
             var graphItem = CurrentRepository.AllGraphItems.OfType<IDiagramNodeItem>().FirstOrDefault(p => p.Identifier == identifier);
+            if (graphItem == null) return;
+            var node = graphItem.Node;
+            NavigateTo(node);
+        }
+        public void NavigateByName(string name)
+        {
+            var graphItem = CurrentRepository.AllGraphItems.OfType<IDiagramNodeItem>().FirstOrDefault(p => p.Name == name);
             if (graphItem == null) return;
             var node = graphItem.Node;
             NavigateTo(node);

@@ -104,11 +104,11 @@ public class EnumNodeGenerator : IClassTemplate<EnumNode>
 
     public void TemplateSetup()
     {
-        Ctx.CurrentDecleration.IsEnum = true;
-        Ctx.CurrentDecleration.BaseTypes.Clear();
+        Ctx.CurrentDeclaration.IsEnum = true;
+        Ctx.CurrentDeclaration.BaseTypes.Clear();
         foreach (var item in Ctx.Data.Items)
         {
-            this.Ctx.CurrentDecleration.Members.Add(new CodeMemberField(this.Ctx.CurrentDecleration.Name, item.Name));
+            this.Ctx.CurrentDeclaration.Members.Add(new CodeMemberField(this.Ctx.CurrentDeclaration.Name, item.Name));
         }
     }
 

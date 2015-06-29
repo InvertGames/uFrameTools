@@ -29,7 +29,7 @@ namespace Invert.uFrame.Editor
 
             container.RegisterInstance<IDiagramNodeCommand>(new SelectViewBaseElement(), "SelectView");
             //container.RegisterInstance<IDiagramNodeCommand>(new MarkIsTemplateCommand(), "MarkAsTemplate");
-            container.RegisterToolbarCommand<PrintPlugins>();
+            //container.RegisterToolbarCommand<PrintPlugins>();
             // Graph Diagrams
             //container.Register<IGraphData, ElementsGraph>("Graph");
             //container.Register<IGraphData, ExternalSubsystemGraph>("External Subsystem Graph");
@@ -73,7 +73,7 @@ namespace Invert.uFrame.Editor
             container.RegisterChildGraphItem<ViewPropertyData, ElementViewPropertyItemViewModel, ItemDrawer>();
             container.RegisterChildGraphItem<ViewBindingData, ViewBindingItemViewModel, ItemDrawer>();
             container.RegisterFilterNode<ElementData, ViewData>();
-            container.RegisterInstance(new AddBindingCommand());
+         //   container.RegisterInstance(new AddBindingCommand());
             //container.RegisterInstance<IConnectionStrategy>(new TwoWayPropertyConnectionStrategy(), "TwoWayPropertyConnectionStrategy");
             //container.RegisterInstance<IConnectionStrategy>(new ViewInheritanceConnectionStrategy(), "ViewInheritanceConnectionStrategy");
 

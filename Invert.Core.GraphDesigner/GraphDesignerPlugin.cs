@@ -94,7 +94,7 @@ namespace Invert.Core.GraphDesigner
             // Toolbar commands
             container.RegisterInstance<IToolbarCommand>(new SelectProjectCommand(), "SelectProjectCommand");
             container.RegisterInstance<IToolbarCommand>(new SelectDiagramCommand(), "SelectDiagramCommand");
-            container.RegisterInstance<IToolbarCommand>(new PopToFilterCommand(), "PopToFilterCommand");
+          //  container.RegisterInstance<IToolbarCommand>(new BreadCrumbsCommand(), "PopToFilterCommand");
             container.RegisterInstance<IToolbarCommand>(new SaveCommand(), "SaveCommand");
 #if UNITY_DLL
             container.RegisterToolbarCommand<HelpCommand>();

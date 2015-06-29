@@ -33,29 +33,11 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
 
     }
 
-    [NonSerialized]
-    private ICodePathStrategy _codePathStrategy;
+  
     [NonSerialized]
     private IGraphData _graph;
 
-    public ICodePathStrategy CodePathStrategy
-    {
-        get
-        {
-            if (_codePathStrategy != null) return _codePathStrategy;
 
-            _codePathStrategy =
-                InvertGraphEditor.Container.Resolve<ICodePathStrategy>("Default");
-
-            _codePathStrategy.Data = this;
-            //var path = InvertGraphEditor.Platform.GetAssetPath(this);
-
-            _codePathStrategy.AssetPath = Directory;
-
-            return _codePathStrategy;
-        }
-        set { _codePathStrategy = value; }
-    }
 
     public bool Errors
     {
@@ -69,19 +51,34 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         set { Graph.Error = value; }
     }
 
-    public string Path
+    public string AssetPath
+    {
+        get { return Graph.AssetPath; }
+    }
+
+    public string AssetDirectory
+    {
+        get { return Graph.AssetDirectory; }
+    }
+
+    public string SystemDirectory
+    {
+        get { return Graph.SystemDirectory; }
+    }
+
+    public string SystemPath
     {
         get
         {
-            return AssetDatabase.GetAssetPath(this);
+            return Graph.SystemPath;
             //return InvertGraphEditor.Platform.GetAssetPath(this);
         }
-        set { Graph.Path = value; }
+        set { Graph.SystemPath = value; }
     }
 
     public string Directory
     {
-        get { return System.IO.Path.GetDirectoryName(Path); }
+        get { return System.IO.Path.GetDirectoryName(SystemPath); }
 
     }
 
@@ -309,9 +306,6 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
             {
                 Graph.DeserializeFromJson(json);
                 Graph.Name = this.name;
-                Graph.Path = Application.dataPath + Path.Substring(7);
-
-                Graph.CodePathStrategy = this.CodePathStrategy;
                 //Graph.Deserialize(_jsonData);
 
                 Graph.CleanUpDuplicates();

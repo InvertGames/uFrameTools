@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using Invert.Core;
+using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -48,5 +49,28 @@ public class UFramePluginProcessor : AssetPostprocessor
             }
 
         //}
+    }
+}
+public class UFrameAssetProcessor : AssetPostprocessor
+{
+
+    private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+    {
+        foreach (var str in importedAssets)
+        {
+            var str1 = str;
+            InvertApplication.SignalEvent<IAssetImported>(_=>_.AssetImported(str1));
+        }
+        foreach (var str in deletedAssets)
+        {
+            var str1 = str;
+            InvertApplication.SignalEvent<IAssetDeleted>(_ => _.AssetDeleted(str1));
+        }
+
+        for (var i = 0; i < movedAssets.Length; i++)
+        {
+            var i1 = i;
+            InvertApplication.SignalEvent<IAssetMoved>(_ => _.AssetMoved(movedAssets[i1], movedFromAssetPaths[i1]));
+        }
     }
 }

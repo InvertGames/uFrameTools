@@ -106,7 +106,7 @@ namespace Invert.uFrame.Editor.Upgrading
             graphData.Version = InvertGraphEditor.CURRENT_VERSION_NUMBER.ToString();
             AssetDatabase.SaveAssets();
 
-            var assetPath = graphData.CodePathStrategy.AssetPath;
+            var assetPath = graphData.Project.SystemDirectory;
             var dir = new DirectoryInfo(assetPath);
             var newDirectory = dir.CreateSubdirectory("_DesignerFiles");
             foreach (var file in dir.GetFiles(".designer.cs"))

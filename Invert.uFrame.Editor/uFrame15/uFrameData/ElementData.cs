@@ -2,7 +2,6 @@ using System.CodeDom;
 using Invert.Core.GraphDesigner;
 using Invert.Json;
 using Invert.uFrame.Editor;
-using Invert.uFrame.Editor.Refactoring;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -299,10 +298,6 @@ public class ElementData : ElementDataBase, IDesignerType
         }
     }
 
-    public override RenameRefactorer CreateRenameRefactorer()
-    {
-        return new RenameElementRefactorer(this);
-    }
 
     public override void Deserialize(JSONClass cls)
     {

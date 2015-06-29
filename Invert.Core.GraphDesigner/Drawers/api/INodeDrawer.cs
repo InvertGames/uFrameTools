@@ -40,6 +40,12 @@ namespace Invert.Core.GraphDesigner
 
         public virtual Rect Bounds { get; set; }
 
+        public bool Enabled
+        {
+            get { return this.ViewModelObject.Enabled; }
+            set {  }
+        }
+
         public virtual bool IsSelected
         {
             get { return ViewModelObject.IsSelected; }

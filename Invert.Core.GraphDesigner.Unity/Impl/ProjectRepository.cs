@@ -118,10 +118,12 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         else
         {
             diagram.RootFilter = diagram.CreateDefaultFilter();
+         
 
         }
         // Set the current version of the data to the current version of the grapheditor version
         diagram.Version = InvertGraphEditor.CURRENT_VERSION_NUMBER.ToString();
+        diagram.Graph.SystemPath = Application.dataPath + AssetDatabase.GetAssetPath(this).Substring(7);
         // Add the graph to this list of graphs
         AddGraph(diagram);
         // Set the project for the diagram
@@ -133,6 +135,13 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         AssetDatabase.SaveAssets();
         // Refresh the project
         Refresh();
+        var node = diagram.RootFilter as IDiagramNode;
+        if (node != null)
+        {
+            node.Position = new Rect(50f,50f,100f,100f);
+            diagram.RootFilter.Locations[node] = new Vector2(50f, 50f);            
+            SetItemLocation(node, new Vector2(50f, 50f));
+        }
         // Return the created UnityGraphData
         return diagram;
     }
@@ -144,6 +153,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
     protected override void AddGraph(IGraphData graphData)
     {
         base.AddGraph(graphData);
+        
         Diagrams.Add(graphData as ScriptableObject);
     }
 

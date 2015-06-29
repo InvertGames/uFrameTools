@@ -359,8 +359,12 @@ namespace Invert.Core.GraphDesigner
             }
             
             ContentItems.Add(header);
-
-            ApplyInputConfiguration(inputConfig, header.DataObject as IGraphItem,header.InputConnector, true);
+            var g = header.DataObject as IGraphItem;
+            if (g != null)
+            {
+                header.Name = g.Title;
+            }
+            ApplyInputConfiguration(inputConfig, g,header.InputConnector, true);
 
             header.InputConnector.Configuration = inputConfig;
         }
