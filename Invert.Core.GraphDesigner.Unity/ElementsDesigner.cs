@@ -252,6 +252,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 //var toolbarBottomRect = new Rect(0f, diagramRect.y + diagramRect.height, width - 3, toolbarTopRect.height);
 
                 //EditorGUI.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
+                
                 DesignerWindow.Draw(InvertGraphEditor.PlatformDrawer, Screen.width + 1, Screen.height, _scrollPosition, 1f);
             }
   

@@ -82,7 +82,7 @@ namespace Invert.Core.GraphDesigner
         {
             if (!this.ItemViewModel.Enabled) return;
 
-            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(typeof(IDiagramNodeItemCommand));
+            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, typeof(IDiagramNodeItemCommand));
 
             var types = InvertGraphEditor.TypesContainer.ResolveAll<GraphTypeInfo>();
             foreach (var type in types)

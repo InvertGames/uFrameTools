@@ -211,7 +211,7 @@ namespace Invert.Core.GraphDesigner
             }
             return (TCommandUI)ui;
         }
-        public static TCommandUI CreateCommandUI<TCommandUI>(params Type[] contextTypes) where TCommandUI : class,ICommandUI
+        public static TCommandUI CreateCommandUI<TCommandUI>(bool canExecuteOnly = true, params Type[] contextTypes) where TCommandUI : class,ICommandUI
         {
             var ui = Container.Resolve<TCommandUI>() as ICommandUI;
             ui.Handler = DesignerWindow;
@@ -221,9 +221,13 @@ namespace Invert.Core.GraphDesigner
 
                 foreach (var command in commands)
                 {
-                    if (command.CanExecute(DesignerWindow) == null)
+                    if (canExecuteOnly && command.CanExecute(DesignerWindow) == null)
                     {
                        
+                        ui.AddCommand(command);
+                    }
+                    else if (!canExecuteOnly)
+                    {
                         ui.AddCommand(command);
                     }
 

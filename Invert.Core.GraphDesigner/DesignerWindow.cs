@@ -210,7 +210,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (_toolbar != null) return _toolbar;
 
-                return _toolbar = InvertGraphEditor.CreateCommandUI<ToolbarUI>(typeof(IToolbarCommand));
+                return _toolbar = InvertGraphEditor.CreateCommandUI<ToolbarUI>(false, typeof(IToolbarCommand));
             }
             set { _toolbar = value; }
         }
@@ -235,9 +235,9 @@ namespace Invert.Core.GraphDesigner
                 var breadCrumbsRect = new Rect(0, tabsRect.y + tabsRect.height, width, 40);
            
 
-                diagramRect = new Rect(0f, breadCrumbsRect.y + breadCrumbsRect.height, width - 3,
+                diagramRect = new Rect(0f, breadCrumbsRect.y + breadCrumbsRect.height, width,
                     height - ((toolbarTopRect.height * 2)) - breadCrumbsRect.height - 20 - 32);
-                var toolbarBottomRect = new Rect(0f, diagramRect.y + diagramRect.height, width - 3,
+                var toolbarBottomRect = new Rect(0f, diagramRect.y + diagramRect.height, width,
                     toolbarTopRect.height);
 
                 drawer.DrawStretchBox(toolbarTopRect, CachedStyles.Toolbar, 0f);

@@ -293,7 +293,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
                 if (command is IParentCommand)
                 {
-                    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(command.GetType());
+                    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, command.GetType());
                     contextUI.Flatten = true;
                     contextUI.Go();
                 }
@@ -432,6 +432,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DoToolbar(Rect toolbarTopRect, DesignerWindow designerWindow, ToolbarPosition position)
         {
+          
             GUILayout.BeginArea(toolbarTopRect);
             if (toolbarTopRect.y > 20)
             {
