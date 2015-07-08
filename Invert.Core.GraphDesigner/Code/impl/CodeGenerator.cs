@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.IO;
 using System.Linq;
 
+
 namespace Invert.Core.GraphDesigner
 {
     public abstract class OutputGenerator
@@ -17,16 +18,26 @@ namespace Invert.Core.GraphDesigner
 
         public object ObjectData { get; set; }
         public GeneratorSettings Settings { get; set; }
-        public string AssetPath { get; set; }
+        public string AssetDirectory { get; set; }
+        
+#if UNITY_DLL
+        public string UnityPath
+        {
+            get
+            {
+                return FullPathName.Replace(UnityEngine.Application.dataPath.ToLower().Replace("\\", "/"),"");
+            }
+        }
+#endif
 
         public string FullPathName
         {
-            get { return Path.Combine(AssetPath, Filename).Replace("\\", "/"); }
+            get { return Path.Combine(AssetDirectory, Filename).Replace("\\", "/"); }
         }
 
         public string RelativeFullPathName
         {
-            get { return Path.Combine(AssetPath, Filename).Replace("\\", "/").Substring(7); }
+            get { return Path.Combine(AssetDirectory, Filename).Replace("\\", "/").Substring(7); }
         }
 
         public virtual void Initialize(CodeFileGenerator codeFileGenerator)

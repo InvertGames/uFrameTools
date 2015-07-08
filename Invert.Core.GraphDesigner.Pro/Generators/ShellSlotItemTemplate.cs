@@ -5,6 +5,16 @@ using Invert.Core.GraphDesigner;
 [TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}")]
 public class ShellSlotItemTemplate : GenericSlot, IClassTemplate<IShellSlotType>
 {
+    [GenerateProperty]
+    public override string Name
+    {
+        get
+        {
+            Ctx._("return \"{0}\"",Ctx.Data.Name);
+            return null;
+        }
+        set {  }
+    }
 
     [GenerateProperty(TemplateLocation.DesignerFile)]
     public override bool AllowMultipleInputs

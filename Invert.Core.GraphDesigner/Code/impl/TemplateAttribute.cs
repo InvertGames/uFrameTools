@@ -207,6 +207,42 @@ namespace Invert.Core.GraphDesigner
         Both = 2
     }
 
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Class)]
+    public class AsAbstract : TemplateAttribute
+    {
+        private TemplateLocation _location = TemplateLocation.DesignerFile;
+
+        public TemplateLocation Location
+        {
+            get { return _location; }
+            set { _location = value; }
+        }
+
+        public AsAbstract()
+        {
+        }
+
+        public AsAbstract(TemplateLocation location)
+        {
+            _location = location;
+        }
+
+        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        {
+            base.Modify(templateInstance, info, ctx);
+            if (ctx.IsDesignerFile && _location != (TemplateLocation.Both | TemplateLocation.DesignerFile)) return;
+            if (!ctx.IsDesignerFile && _location != (TemplateLocation.Both | TemplateLocation.EditableFile)) return;
+            if (ctx.CurrentMember != null)
+            {
+                ctx.CurrentMember.Attributes |= MemberAttributes.Abstract;
+            }
+            else
+            {
+                ctx.CurrentDeclaration.Attributes |= MemberAttributes.Abstract;
+            }
+        }
+    }
+
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
     public class AsOverride : TemplateAttribute
     {
@@ -553,6 +589,12 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+    public class WithName : WithNameFormat
+    {
+        public WithName() : base("{0}")
+        {
+        }
+    }
     public class WithNameFormat : TemplateAttribute
     {
         public override int Priority
@@ -576,18 +618,62 @@ namespace Invert.Core.GraphDesigner
     [AttributeUsage(AttributeTargets.Property)]
     public class WithField : TemplateAttribute
     {
+        private readonly Type[] _customAttributes;
+
         public override int Priority
         {
-            get { return 1; }
+            get { return 2; }
         }
 
-        public override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
+        public WithField()
+        {
+        }
+
+
+        public WithField(string defaultExpression)
+        {
+            DefaultExpression = defaultExpression;
+        }
+
+        public WithField(Type fieldType, params Type[] customAttributes)
+        {
+            _customAttributes = customAttributes;
+            FieldType = fieldType;
+        }
+
+        public Type FieldType { get; set; }
+        public string DefaultExpression { get; set; }
+        
+        public sealed override void Modify(object templateInstance, MemberInfo info, TemplateContext ctx)
         {
             base.Modify(templateInstance, info, ctx);
-            var field = ctx.CurrentDeclaration._private_(ctx.CurrentProperty.Type, "_{0}", ctx.CurrentProperty.Name.Clean());
-            ctx.CurrentProperty.GetStatements._("return {0}", field.Name);
-            ctx.CurrentProperty.SetStatements._("{0} = value", field.Name);
+            CreateField(ctx);
+            Apply(ctx);
         }
+
+        protected virtual void Apply(TemplateContext ctx)
+        {
+            ctx.CurrentProperty.GetStatements._("return {0}", Field.Name);
+            ctx.CurrentProperty.SetStatements._("{0} = value", Field.Name);
+            if (DefaultExpression != null)
+                Field.InitExpression = new CodeSnippetExpression(DefaultExpression);
+        }
+
+        private void CreateField(TemplateContext ctx)
+        {
+            if (FieldType != null)
+            {
+                Field = ctx.CurrentDeclaration._private_(ctx.ProcessType(FieldType), "_{0}", ctx.CurrentProperty.Name.Clean());
+            }
+            else
+            {
+                Field = ctx.CurrentDeclaration._private_(ctx.CurrentProperty.Type, "_{0}", ctx.CurrentProperty.Name.Clean());
+            }
+            if (_customAttributes != null)
+            Field.CustomAttributes.AddRange(_customAttributes.Select(p=>new CodeAttributeDeclaration(new CodeTypeReference(p))).ToArray());
+        }
+
+        public CodeMemberField Field { get; set; }
     }
 
     public class WithAttributes : TemplateAttribute
@@ -611,11 +697,29 @@ namespace Invert.Core.GraphDesigner
     [AttributeUsage(AttributeTargets.Property)]
     public class WithLazyField : WithField
     {
-        
+        public WithLazyField()
+        {
+        }
+
+        public WithLazyField(Type fieldType, bool readOnly = false) : base(fieldType)
+        {
+            ReadOnly = readOnly;
+        }
+        public bool ReadOnly { get; set; }
+        protected override void Apply(TemplateContext ctx)
+        {
+            //base.Apply(ctx);
+            ctx.CurrentProperty.GetStatements._if("{0} == null", Field.Name).TrueStatements
+                .Add(new CodeAssignStatement(new CodeSnippetExpression(string.Format("{0}", Field.Name)), new CodeObjectCreateExpression(Field.Type)) );
+            ctx.CurrentProperty.GetStatements._("return {0}", Field.Name);
+            if (!ReadOnly)
+            ctx.CurrentProperty.SetStatements._("{0} = value", Field.Name);
+          
+        }
     }
 
     [AttributeUsage(AttributeTargets.Property)]
-    public class WithObservable : TemplateAttribute
+    public class WithObservable : WithField
     {
         public WithObservable(Action selector)
         {
@@ -633,7 +737,34 @@ namespace Invert.Core.GraphDesigner
             Format = format;
         }
 
-        
+        protected override void Apply(TemplateContext ctx)
+        {
+            base.Apply(ctx);
+            
+
+        }
+        //public IObservable<_ITEMTYPE_> _Name_Observable
+        //{
+        //    get
+        //    {
+        //        // return _MaxNavigatorsObservable ?? (_MaxNavigatorsObservable = new Subject<int>());
+        //    }
+        //}
+        //public virtual Int32 MaxNavigators
+        //{
+        //    get
+        //    {
+        //        return _MaxNavigators;
+        //    }
+        //    set
+        //    {
+        //        _MaxNavigators = value;
+        //        if (_MaxNavigatorsObservable != null)
+        //        {
+        //            _MaxNavigatorsObservable.OnNext(value);
+        //        }
+        //    }
+        //}
     }
 
 }

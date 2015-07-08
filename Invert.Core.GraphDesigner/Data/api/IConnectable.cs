@@ -27,6 +27,7 @@ namespace Invert.Core.GraphDesigner
 
     public static class ConnectableExtensions
     {
+
         public static IEnumerable<ITypedItem> References(this IClassTypeNode node)
         {
            return node.Node.Graph.Project.AllGraphItems.OfType<ITypedItem>().Where(p => p.RelatedType == node.Identifier);

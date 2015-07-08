@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Invert.Core.GraphDesigner
@@ -19,9 +20,10 @@ namespace Invert.Core.GraphDesigner
             var generator = SelectedOption.Value as OutputGenerator;
             if (generator == null) return;
            // var pathStrategy = node.GraphItemObject.Graph.CodePathStrategy;
-            var filePath = generator.FullPathName;
+
+
             //var filename = repository.GetControllerCustomFilename(this.Name);
-            InvertGraphEditor.Platform.OpenScriptFile(filePath);
+            InvertGraphEditor.Platform.OpenScriptFile("Assets" + generator.UnityPath);
           
         }
 

@@ -378,6 +378,7 @@
   <ItemGroup />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y
+del $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\$(TargetName).pdb /Q /F
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

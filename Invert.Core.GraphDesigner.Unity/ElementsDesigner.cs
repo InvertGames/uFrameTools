@@ -299,7 +299,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     {
                         InvertGraphEditor.Platform.Progress(current.Percentage, current.Message);
                     }
-                    Debug.Log("Updating");
+                 
                     Repaint();
 
                 }
@@ -312,14 +312,16 @@ namespace Invert.Core.GraphDesigner.Unity
             }
          
 
-            if (fpsCount > 15 || (DesignerWindow.MouseEvent != null && DesignerWindow.MouseEvent.IsMouseDown))
+            if (fpsCount > 15 || (DesignerWindow != null && DesignerWindow.MouseEvent != null && DesignerWindow.MouseEvent.IsMouseDown))
             {
                 if (EditorApplication.isCompiling)
                 {
+                    if (InvertGraphEditor.Platform != null)
                     InvertGraphEditor.Platform.Progress(99f, "Waiting on compiler...");
                 }
                 else
                 {
+                    if (InvertGraphEditor.Platform != null)
                     InvertGraphEditor.Platform.Progress(0f, string.Empty);
                 }
                 fpsCount = 0;

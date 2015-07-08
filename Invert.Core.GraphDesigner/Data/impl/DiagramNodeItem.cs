@@ -133,7 +133,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
 
     public virtual string Highlighter { get { return null; } }
     [InspectorProperty]
-    public string Identifier
+    public virtual string Identifier
     {
         get
         {

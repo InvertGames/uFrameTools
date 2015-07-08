@@ -95,7 +95,6 @@ namespace Invert.Core.GraphDesigner
                 platform.DoButton(new Rect(x, rect.y + 20 - (item.Value.y / 2), item.Value.x, item.Value.y), first ? item.Key.Name : "< " + item.Key.Name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle,
                     () =>
                     {
-                        Debug.Log(item1.Key);
                         InvertGraphEditor.ExecuteCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
                         {
                             //DiagramViewModel.NavigateTo(item1.Key.Identifier);

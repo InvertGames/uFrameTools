@@ -324,7 +324,7 @@ namespace Invert.Core.GraphDesigner
                                 // TODO Had to remove this?
                                 //if (!codeGenerator.IsEnabled(project)) continue;
 
-                                codeGenerator.AssetPath = diagram.Project.SystemDirectory;
+                                codeGenerator.AssetDirectory = diagram.Project.SystemDirectory;
                                 codeGenerator.Settings = settings;
                                 if (codeGenerator.ObjectData == null)
                                     codeGenerator.ObjectData = diagram;
@@ -345,7 +345,7 @@ namespace Invert.Core.GraphDesigner
                         {
                             // TODO had to remove this?
                             //if (!codeGenerator.IsEnabled(project)) continue;
-                            codeGenerator.AssetPath = diagram.Project.SystemDirectory;
+                            codeGenerator.AssetDirectory = diagram.Project.SystemDirectory;
                             codeGenerator.Settings = settings;
                             if (codeGenerator.ObjectData == null)
                                 codeGenerator.ObjectData = project;
@@ -465,7 +465,7 @@ namespace Invert.Core.GraphDesigner
                     {
                         // TODO had to remove this?
                         //if (!codeGenerator.IsEnabled(project)) continue;
-                        codeGenerator.AssetPath = diagram.Project.SystemDirectory;
+                        codeGenerator.AssetDirectory = diagram.Project.SystemDirectory;
                         codeGenerator.Settings = settings;
                         if (codeGenerator.ObjectData == null)
                             codeGenerator.ObjectData = item;
@@ -804,7 +804,7 @@ namespace Invert.Core.GraphDesigner
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;
                 template.IsDesignerFile = true;
-                template.AssetPath = graphItem.Graph.Project.SystemDirectory;
+                template.AssetDirectory = graphItem.Graph.Project.SystemDirectory;
 
                 //if (templateAttribute.IsEditorExtension)
                 //{
@@ -827,7 +827,7 @@ namespace Invert.Core.GraphDesigner
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;
                 template.IsDesignerFile = false;
-                template.AssetPath = graphItem.Graph.Project.SystemDirectory;
+                template.AssetDirectory = graphItem.Graph.Project.SystemDirectory;
 
                 //var className = string.Format(templateAttribute.ClassNameFormat, graphItem.Name);
                 //var typeItem = graphItem as IClassTypeNode;

@@ -231,6 +231,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             ListenFor<ITaskHandler>();
             ListenFor<IAssetDeleted>();
+            ListenFor<INodeItemEvents>();
             EditorUtility.ClearProgressBar();
             Undo.undoRedoPerformed = delegate
             {
@@ -303,7 +304,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 if (graph != null)
                 {
                     graph.name = newName;
-
+                    
                     AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(graph), newName);
                     AssetDatabase.SaveAssets();
                     var openGraph = n.Graph.Project.OpenGraphs.FirstOrDefault(p => p.GraphIdentifier == n.Graph.Identifier);

@@ -514,7 +514,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     var filePath = fileGenerator.FullPathName;
                     //var filename = repository.GetControllerCustomFilename(this.Name);
-                    InvertGraphEditor.Platform.OpenScriptFile(filePath);
+                    InvertGraphEditor.Platform.OpenScriptFile("Assets" + fileGenerator.UnityPath);
 
                 }
             });
@@ -527,8 +527,8 @@ namespace Invert.Core.GraphDesigner
                 var fileGenerator = this.CodeGenerators.OfType<CodeGenerator>().LastOrDefault(p => !p.IsDesignerFile);
                 if (fileGenerator != null)
                 {
-                    var filePath = fileGenerator.FullPathName;
-                    InvertGraphEditor.Platform.OpenScriptFile(filePath);
+                 
+                    InvertGraphEditor.Platform.OpenScriptFile("Assets" + fileGenerator.UnityPath);
 
                 }
             });

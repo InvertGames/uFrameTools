@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Invert.Core.GraphDesigner
 {
     public class ItemViewModel<TData> : ItemViewModel
-        where TData : IDiagramNodeItem
+        where TData : IItem
     {
         public ItemViewModel(DiagramNodeViewModel nodeViewModel)
             : base(nodeViewModel)
@@ -26,7 +26,7 @@ namespace Invert.Core.GraphDesigner
 
         public override string Label
         {
-            get { return Data.Label; }
+            get { return Data.Title; }
         }
     }
 

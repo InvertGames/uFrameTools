@@ -263,7 +263,7 @@ namespace Invert.Core.GraphDesigner
             //    platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 20);
 
             //}
-            if (ViewModel.AllowCollapsing)
+            if (ViewModel.AllowCollapsing && ShowHeader)
             {
 
                 var rect = new Rect((Bounds.x + (Bounds.width / 2f)) - 21f,
@@ -479,22 +479,28 @@ namespace Invert.Core.GraphDesigner
             get { return InvertGraphEditor.Container.Resolve<IEditorCommand>("RemoveNodeItem"); }
         }
 
+        public virtual bool ShowHeader
+        {
+            get { return true; }
+        }
+
         public virtual void RefreshContent()
         {
             var drawers = new List<IDrawer>();
-            drawers.Add(new HeaderDrawer()
+            if (ShowHeader)
             {
-                BackgroundStyle = HeaderStyle,
-                TextStyle = CachedStyles.ViewModelHeaderStyle,
-                ViewModelObject = ViewModelObject,
-                Padding = HeaderPadding,
-                ParentDrawer = this
-            });
+                drawers.Add(new HeaderDrawer()
+                {
+                    BackgroundStyle = HeaderStyle,
+                    TextStyle = CachedStyles.ViewModelHeaderStyle,
+                    ViewModelObject = ViewModelObject,
+                    Padding = HeaderPadding,
+                    ParentDrawer = this
+                });
+            }
             if (!ViewModel.IsCollapsed)
             {
-          
                 GetContentDrawers(drawers);
-              
             }
             Children = drawers;
         }
