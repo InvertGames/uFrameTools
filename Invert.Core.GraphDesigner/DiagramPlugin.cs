@@ -138,11 +138,11 @@ namespace Invert.Core.GraphDesigner
                 
                     if (!String.IsNullOrEmpty(LastLoadedProject))
                     {
-                        CurrentProject = this.Projects.FirstOrDefault(p => p.Name == LastLoadedProject);
+                        CurrentProject = this.Projects.FirstOrDefault(p =>p != null && !p.Equals(null) && p.Name == LastLoadedProject);
                     }
                     if (_currentProject == null || _currentProject.Equals(null))
                     {
-                        CurrentProject = this.Projects.FirstOrDefault();
+                        CurrentProject = this.Projects.FirstOrDefault(p => p != null && !p.Equals(null));
                     }
                 }
                 return _currentProject;
@@ -227,7 +227,8 @@ namespace Invert.Core.GraphDesigner
 
         public void RefreshProjects()
         {
-            CurrentProject.CurrentGraph = null;
+            if (CurrentProject != null)
+                CurrentProject.CurrentGraph = null;
             _currentProject = null;
             LoadProjects();
             InvertApplication.SignalEvent<IProjectEvents>(p => p.ProjectsRefreshed(this));

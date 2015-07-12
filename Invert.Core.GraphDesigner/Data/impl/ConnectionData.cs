@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Invert.Core.GraphDesigner;
 using Invert.Json;
 
@@ -29,6 +30,7 @@ public class ConnectionData : IJsonObject
         get { return _inputIdentifier; }
         set { _inputIdentifier = value; }
     }
+   
 
     public IGraphData Graph { get; set; }
     public IConnectable Output { get; set; }
@@ -56,4 +58,9 @@ public class ConnectionData : IJsonObject
             OutputIdentifier = cls["OutputIdentifier"].Value;
         }
     }
+}
+
+public interface IConnectionDataProvider
+{
+    IEnumerable<ConnectionData> Connections { get; }
 }

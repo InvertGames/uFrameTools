@@ -16,7 +16,7 @@ namespace Invert.Core.GraphDesigner
             get { return false; }
         }
 
-        private BaseClassReference _baseReference;
+
         [Browsable(false)]
         public virtual GenericInheritableNode BaseNode
         {

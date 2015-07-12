@@ -583,7 +583,7 @@ namespace Invert.Core.GraphDesigner
         public static NodeConfig<TType> Inheritable<TType>(this NodeConfig<TType> config, string label = "Base") where TType : GenericInheritableNode
         {
 
-            config.Container.RegisterConnectable<TType, BaseClassReference>();
+            //config.Container.RegisterConnectable<TType, BaseClassReference>();
             //config.Input<TType, BaseClassReference>(n =>
             //{
             //    var inheritable = n.Node as GenericInheritableNode;

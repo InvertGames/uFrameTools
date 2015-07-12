@@ -22,6 +22,10 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public string Identifier
+        {
+            get { return ((IGraphItem) DataObject).Identifier; }
+        }
         protected virtual void DataObjectChanged()
         {
             

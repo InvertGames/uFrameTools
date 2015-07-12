@@ -187,10 +187,14 @@ namespace Invert.Core.GraphDesigner
                 }
 
 
-                return Math.Max(150f, maxLengthItem.x + 40);
+                return Math.Max(MinWidth, maxLengthItem.x + 40);
             }
         }
 
+        public virtual float MinWidth
+        {
+            get { return 150f; }
+        }
         public float ItemHeight
         {
             get { return 20; }
@@ -492,7 +496,7 @@ namespace Invert.Core.GraphDesigner
                 drawers.Add(new HeaderDrawer()
                 {
                     BackgroundStyle = HeaderStyle,
-                    TextStyle = CachedStyles.ViewModelHeaderStyle,
+                    TextStyle = HeaderTextStyle,
                     ViewModelObject = ViewModelObject,
                     Padding = HeaderPadding,
                     ParentDrawer = this
@@ -505,6 +509,10 @@ namespace Invert.Core.GraphDesigner
             Children = drawers;
         }
 
+        public virtual object HeaderTextStyle
+        {
+            get { return CachedStyles.ViewModelHeaderStyle; }
+        }
         public virtual float HeaderPadding
         {
             get { return 5; }

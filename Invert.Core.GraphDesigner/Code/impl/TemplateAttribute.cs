@@ -63,7 +63,7 @@ namespace Invert.Core.GraphDesigner
             base.Modify(templateInstance, info, ctx);
             foreach (var property in ((IDiagramNode) ctx.DataObject).PersistedItems.OfType<ITypedItem>())
             {
-                var type = InvertApplication.FindTypeByName(property.RelatedTypeName);
+                var type = InvertApplication.FindTypeByNameExternal(property.RelatedTypeName);
                 if (type == null) continue;
 
                 ctx.TryAddNamespace(type.Namespace);

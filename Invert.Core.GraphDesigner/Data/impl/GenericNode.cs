@@ -102,21 +102,21 @@ namespace Invert.Core.GraphDesigner
         }
 
     }
-    public class InheritanceSlot<TFor> : GenericSlot
-    {
-        [Browsable(false)]
-        public TFor Item
-        {
-            get { return Inputs.Select(p => p.Output).OfType<TFor>().FirstOrDefault(); }
-        }
+    //public class InheritanceSlot<TFor> : GenericSlot
+    //{
+    //    [Browsable(false)]
+    //    public TFor Item
+    //    {
+    //        get { return Inputs.Select(p => p.Output).OfType<TFor>().FirstOrDefault(); }
+    //    }
 
-        public override bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
-        {
+    //    public override bool Validate(IDiagramNodeItem a, IDiagramNodeItem b)
+    //    {
            
-            var result = a is TFor && b is BaseClassReference && b.Node != a.Node && b.Node.GetType() == a.GetType();
-            return result;
-        }
-    }
+    //        var result = a is TFor && b is BaseClassReference && b.Node != a.Node && b.Node.GetType() == a.GetType();
+    //        return result;
+    //    }
+    //}
     public class ReferenceSection<TReference> : GenericReferenceItem<TReference> where TReference : class
     {
         

@@ -7,6 +7,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Invert.IOC;
 using UnityEngine;
 #if !UNITY_DLL
@@ -214,11 +215,16 @@ namespace Invert.Core.GraphDesigner
         public static TCommandUI CreateCommandUI<TCommandUI>(bool canExecuteOnly = true, params Type[] contextTypes) where TCommandUI : class,ICommandUI
         {
             var ui = Container.Resolve<TCommandUI>() as ICommandUI;
+
             ui.Handler = DesignerWindow;
+
+
+
             foreach (var contextType in contextTypes)
             {
-                var commands = Container.ResolveAll(contextType).Cast<IEditorCommand>().ToArray();
-
+                var commands = new List<IEditorCommand>(Container.ResolveAll(contextType).Cast<IEditorCommand>());
+                var type = contextType;
+                InvertApplication.SignalEvent<IContextMenuQuery>(_ => _.QueryCommands(ui, commands, type));
                 foreach (var command in commands)
                 {
                     if (canExecuteOnly && command.CanExecute(DesignerWindow) == null)
@@ -858,5 +864,10 @@ namespace Invert.Core.GraphDesigner
 
             }
         }
+    }
+
+    public interface IContextMenuQuery
+    {
+        void QueryCommands(ICommandUI ui, List<IEditorCommand> command, Type contextType);
     }
 }

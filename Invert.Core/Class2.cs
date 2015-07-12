@@ -249,7 +249,30 @@ namespace Invert.Core
             }
             return null;
         }
+        public static Type FindTypeByNameExternal(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
 
+            foreach (var assembly in CachedAssemblies)
+            {
+                if (!assembly.FullName.StartsWith("Invert")) continue;
+                try
+                {
+                    foreach (var item in assembly.GetTypes())
+                    {
+                        if (item.Namespace != null && item.Namespace.StartsWith("Invert")) continue;
+                        if (item.Name == name)
+                            return item;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    continue;
+                }
+
+            }
+            return null;
+        }
         public static ICorePlugin[] Plugins
         {
             get

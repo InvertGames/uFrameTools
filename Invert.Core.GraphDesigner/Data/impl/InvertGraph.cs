@@ -119,7 +119,23 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
 
     public IEnumerable<ConnectionData> Connections
     {
-        get { return ConnectedItems; }
+        get
+        {
+            var connectionProvider = CurrentFilter as IConnectionDataProvider;
+
+            if (connectionProvider != null)
+            {
+                foreach (var item in connectionProvider.Connections)
+                {
+                    yield return item;
+                }
+            }
+            foreach (var item in ConnectedItems)
+            {
+                yield return item;
+            }
+            
+        }
     }
 
     public FilterPositionData PositionData
@@ -487,6 +503,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         output.OnConnectedToInput(input);
         input.OnConnectedFromOutput(output);
         ConnectedItems.Add(connection);
+        
         if (Project != null)
         {
             Project.MarkDirty(this);
@@ -566,6 +583,12 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
             item.Input = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.InputIdentifier) as IConnectable;
             item.Output = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.OutputIdentifier) as IConnectable;
         }
+        foreach (var item in ChangeData)
+        {
+            item.Item = AllGraphItems.OfType<IDiagramNodeItem>().FirstOrDefault(p => p.Identifier == item.ItemIdentifier);
+        }
+        ChangeData.RemoveAll(p => p.Item == null);
+
         //foreach (var item in ConnectedItems)
         //{
         //    if (item.Output == null)
@@ -574,7 +597,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         //    }
         //    if (item.Input == null)
         //    {
-        //        InvertApplication.Log(string.Format("Input Identifier {0} couldn't be found on a connection in graph {1}", item.OutputIdentifier, item.Graph.Name));
+        //        InvertApplication.Log(string.Format("Input Identifier {0} couldn't be found on a connection in graph {1}", item.InputIdentifier, item.Graph.Name));
         //    }
         //}
         ConnectedItems.RemoveAll(p => p.Output == null || p.Input == null);
@@ -744,11 +767,7 @@ public class InvertGraph : IGraphData, IItem, IJsonTypeResolver
         {
             ChangeData.Clear();
             ChangeData.AddRange(jsonNode["Changes"].AsArray.DeserializeObjectArray<IChangeData>());
-            foreach (var item in ChangeData)
-            {
-                item.Item = AllGraphItems.OfType<IDiagramNodeItem>().FirstOrDefault(p => p.Identifier == item.ItemIdentifier);
-            }
-            ChangeData.RemoveAll(p => p.Item == null);
+         
         }
         foreach (var item in NodeItems)
         {

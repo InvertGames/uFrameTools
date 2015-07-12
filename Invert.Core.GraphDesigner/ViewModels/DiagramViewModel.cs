@@ -405,8 +405,8 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var connection in CurrentRepository.Connections)
             {
-                var startConnector = connectors.FirstOrDefault(p => p.DataObject == connection.Output && p.Direction == ConnectorDirection.Output);
-                var endConnector = connectors.FirstOrDefault(p => p.DataObject == connection.Input && p.Direction == ConnectorDirection.Input);
+                var startConnector = connectors.FirstOrDefault(p => p.Identifier == connection.OutputIdentifier && p.Direction == ConnectorDirection.Output);
+                var endConnector = connectors.FirstOrDefault(p => p.Identifier == connection.InputIdentifier && p.Direction == ConnectorDirection.Input);
 
 
                 if (startConnector == null || endConnector == null) continue;
@@ -415,6 +415,7 @@ namespace Invert.Core.GraphDesigner
 
                 startConnector.HasConnections = true;
                 endConnector.HasConnections = true;
+                var connection1 = connection;
                 GraphItems.Add(new ConnectionViewModel(this)
                 {
                     ConnectorA = endConnector,
@@ -422,7 +423,7 @@ namespace Invert.Core.GraphDesigner
                     Color = vm != null ? GetColor(vm) : Color.white,
                     Remove = (a) =>
                     {
-                        GraphData.RemoveConnection(connection.Output, connection.Input);
+                        GraphData.RemoveConnection(connection1.Output, connection1.Input);
                     }
                 });
             }

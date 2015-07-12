@@ -61,7 +61,11 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
-            platform.DrawNodeHeader(Bounds, BackgroundStyle, NodeViewModel.IsCollapsed, scale);
+            if (BackgroundStyle != null)
+            {
+                platform.DrawNodeHeader(Bounds, BackgroundStyle, NodeViewModel.IsCollapsed, scale);
+            }
+            
 
             // The bounds for the main text
 #if UNITY_DLL

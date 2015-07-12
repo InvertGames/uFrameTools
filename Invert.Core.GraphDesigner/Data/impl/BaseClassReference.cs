@@ -1,4 +1,4 @@
 namespace Invert.Core.GraphDesigner
 {
-    public class BaseClassReference : InheritanceSlot<GenericInheritableNode> { }
+    //public class BaseClassReference : InheritanceSlot<GenericInheritableNode> { }
 }
