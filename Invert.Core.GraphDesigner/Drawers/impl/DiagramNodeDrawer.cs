@@ -251,7 +251,7 @@ namespace Invert.Core.GraphDesigner
             var width = platform.CalculateSize(_cachedTag, CachedStyles.Tag1).x;
             var labelRect =
                 new Rect((Bounds.x + (Bounds.width / 2)) - (width / 2), Bounds.y - (16f), width, 15f).Scale(Scale);
-
+            if (!string.IsNullOrEmpty(_cachedTag))
             platform.DrawLabel(labelRect, _cachedTag, CachedStyles.Tag1, DrawingAlignment.MiddleCenter);
 
 #if UNITY_DLL || USE_IMAGES
