@@ -106,9 +106,16 @@ namespace Invert.Core
         private static Dictionary<Type, IEventManager> _eventManagers;
 
         public static List<Assembly> CachedAssemblies { get; set; }
+        
+        public static List<Assembly> TypeAssemblies { get; set; }
+
         static InvertApplication()
         {
             CachedAssemblies = new List<Assembly>
+            {
+                typeof (int).Assembly, typeof (List<>).Assembly
+            };
+            TypeAssemblies = new List<Assembly>
             {
                 typeof (int).Assembly, typeof (List<>).Assembly
             };
@@ -253,14 +260,12 @@ namespace Invert.Core
         {
             if (string.IsNullOrEmpty(name)) return null;
 
-            foreach (var assembly in CachedAssemblies)
+            foreach (var assembly in TypeAssemblies)
             {
-                if (!assembly.FullName.StartsWith("Invert")) continue;
                 try
                 {
                     foreach (var item in assembly.GetTypes())
                     {
-                        if (item.Namespace != null && item.Namespace.StartsWith("Invert")) continue;
                         if (item.Name == name)
                             return item;
                     }

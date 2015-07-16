@@ -141,6 +141,26 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
                 }
             }
         }
+        if (GUIHelpers.DoToolbarEx("Missing Nodes"))
+        {
+            foreach (var item in Target.NodeItems.OfType<MissingNodeData>())
+            {
+                if (GUIHelpers.DoTriggerButton(new UFStyle()
+                {
+                    Label = item.Name,
+                    Enabled = true,
+                    BackgroundStyle = ElementDesignerStyles.EventButtonStyleSmall,
+                    TextAnchor = TextAnchor.MiddleRight,
+                    IconStyle = ElementDesignerStyles.BreakpointButtonStyle,
+                    //IconStyle = UBStyles.RemoveButtonStyle,
+                    ShowArrow = true
+                }))
+                {
+                    item.Graph.RemoveNode(item);
+                   
+                }
+            }
+        }
         if (GUIHelpers.DoToolbarEx("Changes"))
         {
             foreach (var graph in Target.Graphs)

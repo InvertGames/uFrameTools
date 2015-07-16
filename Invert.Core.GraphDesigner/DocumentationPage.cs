@@ -206,6 +206,10 @@ namespace Invert.Core.GraphDesigner
                 {
                     return "Project hasn't been created yet.";
                 }
+                if (currentProject.Name == "DefaultProject")
+                {
+                    return "Project hasn't been created yet.";
+                }
                 return null;
             })
             {
