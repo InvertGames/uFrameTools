@@ -405,7 +405,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             {
 
                 var item1 = item;
-                if (GUIHelpers.DoToolbarEx(item.Name, null, null, null, () => { ShowPage(item1); }))
+                if (GUIHelpers.DoToolbarEx(item.Name, null, null, null, () => { ShowPage(item1); },true,Color.white))
                 {
 
                     EditorGUILayout.BeginHorizontal();
