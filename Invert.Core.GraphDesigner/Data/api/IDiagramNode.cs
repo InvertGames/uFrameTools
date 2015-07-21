@@ -329,7 +329,7 @@ namespace Invert.Core.GraphDesigner
         bool ShowTutorialStep(ITutorialStep step, Action<IDocumentationBuilder> stepContent = null);
         void BeginTutorial(string walkthrough);
         InteractiveTutorial EndTutorial();
-        void ImageByUrl(string empty);
+        void ImageByUrl(string empty, string description = null);
         void CodeSnippet(string code);
         void ToggleContentByNode<TNode>(string name);
         void ToggleContentByPage<TPage>(string name);        

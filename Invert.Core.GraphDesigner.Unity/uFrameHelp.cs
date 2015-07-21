@@ -106,8 +106,9 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     public static void ShowWindow()
     {
         var window = GetWindow<uFrameHelp>();
+        window.minSize = new Vector2(1100,806);
         window.title = "uFrame Help";
-        window.minSize = new Vector2(400, 500);
+    //   window.minSize = new Vector2(400, 500);
         window.ShowUtility();
     }
 
@@ -129,7 +130,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
         var window = GetWindow<uFrameHelp>();
         window.title = "uFrame Help";
-        window.minSize = new Vector2(400, 500);
+        window.minSize = new Vector2(1100, 806);
 
         if (page != null)
             window.ShowPage(page);
@@ -167,7 +168,6 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 {
                     provider.GetPages(_pages);
                 }
-
             }
             return _pages;
         }
@@ -283,13 +283,26 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
         EditorGUILayout.BeginVertical();
         if (CurrentPage != null)
         {
-
+            GUILayout.BeginVertical(new GUIStyle()
+            {
+                padding = new RectOffset(0,20,10,50),
+                alignment = TextAnchor.MiddleCenter
+            });
             CurrentPage.GetContent(this);
+
+            if(CurrentPage.ChildPages.Any()) Title2("Pages:");
+            foreach (var pages in CurrentPage.ChildPages.OrderBy(x=>x.Order))
+            {
+                LinkToPage(pages);
+            }
+
             if (false)
                 foreach (var childPage in CurrentPage.ChildPages)
                 {
                     childPage.PageContent(this);
                 }
+            GUILayout.EndVertical();
+            
         }
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndHorizontal();
@@ -336,12 +349,13 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 _item4 = new GUIStyle
                 {
                     normal = { background = ElementDesignerStyles.GetSkinTexture("Item4"), textColor = Color.white },
+                    active = { background = ElementDesignerStyles.GetSkinTexture("EventButton"), textColor = Color.white},
                     stretchHeight = true,
                     stretchWidth = true,
-                    fontSize = Mathf.RoundToInt(10f),
+                    fontSize = 12,
                     fixedHeight = 20f,
                     alignment = TextAnchor.MiddleLeft
-                };
+                }.WithFont("Verdana",12);
 
             return _item4;
         }
@@ -366,10 +380,19 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             }
             if (item.ChildPages.Count(p => p.ShowInNavigation) == 0)
             {
+//                if (GUILayout.Button(item.Name, Item4))
+//                {
+//                    this.ShowPage(item);
+//                }
+
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(indent * 15f);
                 if (GUILayout.Button(item.Name, Item4))
                 {
                     this.ShowPage(item);
                 }
+                EditorGUILayout.EndHorizontal();
+
                 //if (GUIHelpers.DoTriggerButton(new UFStyle(item.Name, ElementDesignerStyles.Item4)
                 //{
                 //    TextAnchor = TextAnchor.MiddleLeft
@@ -386,6 +409,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 {
 
                     EditorGUILayout.BeginHorizontal();
+
                     GUILayout.Space(indent * 15f);
                     //if (GUIHelpers.DoTriggerButton(new UFStyle(item.Name,ElementDesignerStyles.EventButtonStyleSmall,ElementDesignerStyles.TriggerInActiveButtonStyle)))
                     //{
@@ -471,6 +495,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     public void Paragraph(string text, params object[] args)
     {
         GUILayout.Space(5f);
+        text = "    "+text;
         if (args == null || args.Length == 0)
         {
             GUILayout.Label(text, ParagraphStyle);
@@ -497,7 +522,9 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                     normal = new GUIStyleState() { textColor = new Color(0.3f, 0.3f, 0.4f) },
                     fontSize = 12,
                     fontStyle = FontStyle.Bold,
-                    wordWrap = true
+                    wordWrap = true,
+                    margin = new RectOffset(0,0,10,10)
+                    
                 });
         }
 
@@ -516,17 +543,17 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
         }
 
     }
+
     public static GUIStyle ParagraphStyle
     {
         get
         {
             return _paragraphStyle ?? (_paragraphStyle = new GUIStyle()
             {
-                normal = new GUIStyleState() { textColor = new Color(0.2f, 0.2f, 0.2f) }
-                ,
-                fontSize = 12,
-                wordWrap = true
-            });
+                normal = new GUIStyleState() { textColor = new Color(0.2f, 0.2f, 0.2f) },
+                wordWrap = true,
+                margin = new RectOffset(8,8,4,4)
+            }).WithFont("Verdana",14);
         }
 
     }
@@ -541,7 +568,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     public void Title(string text, params object[] args)
     {
         GUILayout.Space(10f);
-        TitleStyle.fontSize = 20;
+        TitleStyle.WithFont("Verdana", 24);
         GUILayout.Label(text, TitleStyle);
         GUILayout.Space(10f);
     }
@@ -549,26 +576,97 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     public void Title2(string text, params object[] args)
     {
         GUILayout.Space(8f);
-        TitleStyle.fontSize = 16;
+        TitleStyle.WithFont("Verdana", 16);
         GUILayout.Label(text, TitleStyle);
     }
 
     public void Title3(string text, params object[] args)
     {
         GUILayout.Space(5f);
-        TitleStyle.fontSize = 14;
+        TitleStyle.WithFont("Verdana", 14);
         GUILayout.Label(text, TitleStyle);
 
     }
 
     public void Note(string text, params object[] args)
     {
-        EditorGUILayout.HelpBox(text, MessageType.Info);
+//        EditorGUILayout.LabelField(GUIContent.none, new GUIContent(text,ElementDesignerStyles.GetSkinTexture("Icon")), EditorStyles.helpBox );
+
+            EditorGUILayout.LabelField(new GUIContent(text,ElementDesignerStyles.GetSkinTexture("NoteIcon")), NoteStyle);
+    //    EditorGUILayout.HelpBox(text, MessageType.Info);
     }
+
+
+    private GUIStyle _noteStyle;
+
+    public GUIStyle NoteStyle
+    {
+        get
+        {
+            var textColor = new Color(0.2f,0.2f,0.2f);
+            return _noteStyle ?? (_noteStyle = new GUIStyle()
+            {
+                wordWrap = true,
+                stretchWidth = true,
+                alignment = TextAnchor.UpperLeft,
+                border = new RectOffset(5,5,5,5),
+                margin = new RectOffset(20,55,20,0),
+                padding = new RectOffset(13,15,15,15),
+            
+                imagePosition = ImagePosition.ImageLeft,
+                stretchHeight = false,
+            }).WithFont("Verdana",12).WithAllStates("InfoBackground",textColor);
+        }
+    }   
+    
+    private GUIStyle _imageStyle;
+
+    public GUIStyle ImageStyle
+    {
+        get
+        {
+            var textColor = new Color(0.2f,0.2f,0.2f);
+            return _imageStyle ?? (_imageStyle = new GUIStyle()
+            {
+                wordWrap = true,
+                stretchWidth = true,
+                alignment = TextAnchor.LowerCenter,
+                border = new RectOffset(5,5,5,5),
+                margin = new RectOffset(0,0,20,0),
+                padding = new RectOffset(5,5,5,5),
+                imagePosition = ImagePosition.ImageAbove,
+                stretchHeight = false,
+            }).WithFont("Verdana",12).WithAllStates("",textColor);
+        }
+    }
+
+    private GUIStyle _linkStyle;
+
+    public GUIStyle LinkStyle
+    {
+        get
+        {
+            var textColor = new Color(0.2f,0.2f,0.2f);
+            return _linkStyle ?? (_linkStyle = new GUIStyle()
+            {
+                wordWrap = true,
+                stretchWidth = true,
+                alignment = TextAnchor.UpperLeft,
+                border = new RectOffset(5,5,5,5),
+                margin = new RectOffset(20,55,20,0),
+                padding = new RectOffset(5,5,5,5),
+            
+                imagePosition = ImagePosition.ImageLeft,
+                stretchHeight = false,
+            }).WithFont("Verdana", 12).WithAllStates("InfoBackground", textColor);
+        }
+    }
+
+   
+
 
     public void TemplateLink()
     {
-
     }
 
     public void Literal(string text, params object[] args)
@@ -591,15 +689,22 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
     }
 
-    public bool DrawImage(string url, params object[] args)
+    public bool DrawImage(string url, string description, params object[] args)
     {
         var finalUrl = string.Format(url, args);
         var texture = GetImage(finalUrl);
+
+        if (string.IsNullOrEmpty(description)) description = finalUrl;
+
+
+        
+
         if (texture != null)
         {
-            var rect = GUILayoutUtility.GetRect(Math.Min(Screen.width, texture.width), Math.Min(Screen.width, texture.width), texture.height, texture.height);
-            rect = new Rect(rect.x, rect.y, Math.Min(Screen.width, texture.width), texture.height);
-            return GUI.Button(rect, texture);
+//            var rect = GUILayoutUtility.GetRect(Math.Min(Screen.width, texture.width), Math.Min(Screen.width, texture.width), texture.height, texture.height);
+//            rect = new Rect(rect.x, rect.y, Math.Min(Screen.width, texture.width), texture.height);
+//            return GUI.Button(rect, texture);
+            GUILayout.Label(new GUIContent(description, texture), ImageStyle);
         }
         return false;
 
@@ -630,7 +735,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             // If we don't have any make sure its null
             FilterToMembers = members != null && members.Length > 0 ? members : null
         };
-        var name = "Example " + data.Name;
+        var name = "Example of " + data.Name;
         if (members != null)
         {
             name += string.Join(", ", members);
@@ -640,29 +745,80 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             name += ".designer";
         }
         name += ".cs";
-        if (GUIHelpers.DoToolbarEx(name, null, null, null, null, false, Color.black))
+//        
+
+        var areaCode = string.Format("{0}_{1}", typeof(TTemplate).Name, typeof(TData).Name);
+        if (ExpandableArea(areaCode, name, false))
         {
             var codeFileGenerator = new CodeFileGenerator
             {
                 Generators = new OutputGenerator[] { template },
                 RemoveComments = true
             };
-            EditorGUILayout.TextArea(codeFileGenerator.ToString());
+            EditorGUILayout.TextArea(codeFileGenerator.ToString(),GistCodeSnippetStyle);
         }
+        
+        //if (GUIHelpers.DoToolbarEx(name, null, null, null, null, false, Color.black))
+//        {
+//            var codeFileGenerator = new CodeFileGenerator
+//            {
+//                Generators = new OutputGenerator[] { template },
+//                RemoveComments = true
+//            };
+//            EditorGUILayout.TextArea(codeFileGenerator.ToString());
+//        }
 
 
     }
 
+
+    public static GUIStyle ExpandedArea
+    {
+        get
+        {
+            return _expandedArea ?? (_expandedArea = new GUIStyle
+            {
+                normal =
+                {
+                    background = ElementDesignerStyles.GetSkinTexture("CommandExpanded"),
+                    textColor = !EditorGUIUtility.isProSkin
+                        ? new Color(0.2f, 0.2f, 0.2f)
+                        : new Color(0.7f, 0.7f, 0.7f)
+                },
+                //active = { background = CommandBarClosedStyle.normal.background },
+                fixedHeight = 28,
+                border = new RectOffset(3, 3, 3, 3),
+
+                stretchHeight = true,
+
+                //padding = new RectOffset(5, 5, 5, 0)
+            });}
+        set { _expandedArea = value; }
+    }
+
+
     public void ShowGist(string id, string filename, string userId = "micahosborne")
     {
+
         GUILayout.Space(10f);
 
-        //https://gist.githubusercontent.com/micahosborne/5e04f3cbbd28094edaf5/raw/
-        if (GUIHelpers.DoToolbarEx("Gist: " + filename, null, null, null, null, false, Color.black))
+        if (ExpandableArea("Gist: " + filename,
+            "Gist: " + filename))
         {
+            var content = GetContent(string.Format("https://gist.githubusercontent.com/{1}/{0}/raw", id, userId));
             EditorGUILayout.TextArea(
-                GetContent(string.Format("https://gist.githubusercontent.com/{1}/{0}/raw", id, userId)));
+                content,
+                GistCodeSnippetStyle);
         }
+
+//        GUILayout.Space(10f);
+//
+//        //https://gist.githubusercontent.com/micahosborne/5e04f3cbbd28094edaf5/raw/
+//        if (GUIHelpers.DoToolbarEx("Gist: " + filename, null, null, null, null, false, Color.black, CodeSnippetStyle, CodeSnippetStyle))
+//        {
+//            EditorGUILayout.TextArea(
+//                GetContent(string.Format("https://gist.githubusercontent.com/{1}/{0}/raw", id, userId)),CodeSnippetStyle);
+//        }
 
     }
     /// <summary>
@@ -675,8 +831,6 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     {
 
         CurrentTutorial.Steps.Add(step);
-
-
 
         if (CurrentTutorial.LastStepCompleted)
         {
@@ -754,9 +908,8 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
                     fixedHeight = 40,
                     border = new RectOffset(3, 3, 3, 3),
-                    fontSize = 16,
                     padding = new RectOffset(25, 0, 5, 5)
-                };
+                }.WithFont("Verdana",16);
 
             return _eventButtonStyleSmall;
         }
@@ -772,10 +925,9 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                     stretchHeight = true,
                     stretchWidth = true,
                     fixedHeight = 30f,
-                    fontSize = Mathf.RoundToInt(12f),
                     alignment = TextAnchor.MiddleLeft,
                     padding = new RectOffset(10, 0, 0, 0)
-                };
+                }.WithFont("Verdana", 12);
 
             return _item2;
         }
@@ -789,11 +941,11 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 {
                     normal = { background = ElementDesignerStyles.GetSkinTexture("Item5"), textColor = new Color(0.8f, 0.8f, 0.8f) },
                     stretchHeight = false,
-                    fontSize = Mathf.RoundToInt(12f),
+                    //fontSize = Mathf.RoundToInt(12f),
                     alignment = TextAnchor.MiddleLeft,
                     fixedHeight = 30f,
                     padding = new RectOffset(10, 0, 0, 0)
-                };
+                }.WithFont("Verdana", 12);
 
             return _item5;
         }
@@ -810,11 +962,11 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                     stretchHeight = true,
                     stretchWidth = true,
                     fixedHeight = 40f,
-                    fontStyle = FontStyle.Bold,
-                    fontSize = Mathf.RoundToInt(14f),
+//                    fontStyle = FontStyle.Bold,
+//                    fontSize = Mathf.RoundToInt(14f),
                     alignment = TextAnchor.MiddleLeft,
                     padding = new RectOffset(10, 0, 0, 0)
-                };
+                }.WithFont("Verdana",14);
 
             return _item1;
         }
@@ -826,20 +978,63 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
         set { EditorPrefs.SetBool("UF_SHOWALLSTEPS", value); }
     }
 
+
+    public GUIStyle ToggleAreaOnStyle
+    {
+        get { return ExpandableAreaHeaderCollapsed; }
+    }
+
+
+    private GUIStyle _showAllStepsToggleStyle;
+
+    public GUIStyle ShowAllStepsToggleStyle
+    {
+        get { return _showAllStepsToggleStyle ?? (_showAllStepsToggleStyle = new GUIStyle(ExpandableAreaHeaderCollapsed)
+        {
+            margin = new RectOffset(15,15,15,15)
+        }); }
+    }
+
     public InteractiveTutorial EndTutorial()
     {
-        ShowAllSteps = GUILayout.Toggle(ShowAllSteps, "Show All Steps");
+
+
+        GenericToggle("UF_SHOWALLSTEPS", "Show/Hide all steps of the tutorial", false, ShowAllStepsToggleStyle, ShowAllStepsToggleStyle,
+            ElementDesignerStyles.GetSkinTexture("EyeToggleOn"), ElementDesignerStyles.GetSkinTexture("EyeToggleOff"));
+
+        //ShowAllSteps = GUILayout.Toggle(ShowAllSteps, "Show All Steps");
+        
+        
+        
         var index = 1;
         bool lastStepComplete = true;
+
+        GUILayout.BeginVertical(TutorialPageStepsContentStyle);
         foreach (var step in CurrentTutorial.Steps)
         {
 
             var lbl = string.Format(" Step {1}: {2} {0}", step.IsComplete == null ? "COMPLETE" : string.Empty, index,
                 step.Name);
 
-            GUILayout.Button(lbl, step.IsComplete == null ? Item2 : lastStepComplete ? Item1 : Item5);
-            if (ShowAllSteps)
-                Break();
+            Texture skinTexture = null;
+
+            if (step.IsComplete == null)
+            {
+                skinTexture = ElementDesignerStyles.GetSkinTexture("StepCompleteIcon");
+            }
+            else if (lastStepComplete)
+            {
+                skinTexture = ElementDesignerStyles.GetSkinTexture("CurrentStepIcon");
+            }
+            else
+            {
+                skinTexture = ElementDesignerStyles.GetSkinTexture("StepLockedIcon");
+            }
+
+
+            GUILayout.Label(new GUIContent(lbl,skinTexture), step.IsComplete == null ? TutorialStepCompleteHeaderStyle : lastStepComplete ? TutorialStepCurrentHeaderStyle : TutorialStepLockedHeaderStyle);
+//            if (ShowAllSteps)
+//                Break();
             //GUIHelpers.DoTriggerButton(
             //    new UFStyle(lbl, step.IsComplete == null ? Item2 : lastStepComplete ? Item1 : Item5, null,
             //    step.IsComplete == null ? ElementDesignerStyles.TriggerActiveButtonStyle : ElementDesignerStyles.TriggerInActiveButtonStyle)
@@ -847,15 +1042,16 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             //       Enabled = true
             //    });
 
-
             if (step.IsComplete != null && lastStepComplete)
             {
+                GUILayout.BeginVertical(TutorialStepContentStyle);
+                
+                
                 Title2("Step Trouble Shooting");
                 TutorialActionStyle.fontSize = 12;
                 TutorialActionStyle.normal.textColor = Color.red;
 
                 GUILayout.Label(step.IsComplete, TutorialActionStyle);
-
 
 
                 if (step.StepContent != null)
@@ -867,22 +1063,33 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 }
 
 
+                
+
                 CurrentTutorial.LastStepCompleted = step.IsComplete == null;
+                GUILayout.EndVertical();
 
             }
             else
             {
+
                 if (ShowAllSteps)
                 {
                     if (step.StepContent != null)
                     {
+                        GUILayout.BeginVertical(TutorialStepContentStyle);
+
                         step.StepContent(this);
+                        GUILayout.EndVertical();
                     }
                 }
             }
             lastStepComplete = step.IsComplete == null;
             index++; if (ShowAllSteps) Break();
+
         }
+        GUILayout.EndVertical();
+
+
         //EditorGUILayout.BeginHorizontal();
 
         //EditorGUILayout.BeginVertical();
@@ -904,14 +1111,118 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
         return CurrentTutorial;
     }
 
-    public void ImageByUrl(string empty)
+    public GUIStyle TutorialPageStepsContentStyle
     {
-        DrawImage(empty);
+        get
+        {
+            return _tutorialPageStepsContentStyle ?? (_tutorialPageStepsContentStyle = new GUIStyle(NoteStyle)
+            {
+                padding = new RectOffset(1,1,1,1),
+                margin = new RectOffset(),
+
+            }).WithAllStates("TutorialStepsBackground", new Color(0.2f,0.2f,0.2f));
+        }
+    }
+
+    public GUIStyle _tutorialStepCompleteHeaderStyle;
+    public GUIStyle _tutorialStepCurrentHeaderStyle;
+    public GUIStyle _tutorialStepLockedHeaderStyle;
+
+    public GUIStyle TutorialStepCurrentHeaderStyle
+    {
+        get
+        {
+            return _tutorialStepCurrentHeaderStyle ??
+                   (_tutorialStepCurrentHeaderStyle = new GUIStyle(TutorialStepCompleteHeaderStyle)
+                   {
+                   }).WithAllStates("StepCurrentTitleBackground", new Color(1f, 1f, 1f));
+        }
+    }
+    public GUIStyle TutorialStepLockedHeaderStyle
+    {
+        get
+        {
+            return _tutorialStepLockedHeaderStyle ??
+                   (_tutorialStepLockedHeaderStyle = new GUIStyle(TutorialStepCompleteHeaderStyle)
+                   {
+                   }).WithAllStates("StepLockedTitleBackground", new Color(1f, 1f, 1f));
+        }
+    }
+
+    public GUIStyle TutorialStepCompleteHeaderStyle
+    {
+        get
+        {
+            return _tutorialStepCompleteHeaderStyle ?? (_tutorialStepCompleteHeaderStyle = new GUIStyle(NoteStyle)
+            {
+                padding = new RectOffset(10,3,3,3),
+                margin = new RectOffset(),
+                wordWrap = true,
+                alignment = TextAnchor.MiddleLeft,
+                imagePosition = ImagePosition.ImageLeft
+            }).WithFont("Verdana",14)
+            .WithAllStates("StepCompleteTitleBackground", new Color(1f,1f,1f));
+        }
+    }   
+    
+    public GUIStyle TutorialStepContentStyle
+    {
+        get
+        {
+            return _tutorialStepContentStyle ?? (_tutorialStepContentStyle = new GUIStyle()
+            {
+                padding = new RectOffset(14,14,14,14),
+                margin = new RectOffset(),
+            }).WithAllStates("", new Color(0.2f,0.2f,0.2f));
+        }
+    }
+
+    public void ImageByUrl(string empty, string description = null)
+    {
+            
+        DrawImage(empty,description);
     }
 
     public void CodeSnippet(string code)
     {
-        GUILayout.TextArea(code);
+        GUILayout.TextArea(code,CodeSnippetStyle);
+    }
+
+    public static GUIStyle CodeSnippetStyle
+    {
+        get
+        {
+            Color textColor = new Color(0.2f, 0.2f, 0.2f);
+            return _codeSnippetStyle ?? (_codeSnippetStyle = new GUIStyle()
+        {
+            border = new RectOffset(5, 5, 5, 5),
+            margin = new RectOffset(20, 55, 20, 0),
+            padding = new RectOffset(13, 15, 15, 15),
+            alignment = TextAnchor.MiddleLeft,
+            wordWrap = true
+        }).WithFont("Consolas", 12)
+        .WithAllStates("InfoBackground",textColor);
+        }
+        set { _codeSnippetStyle = value; }
+    }    
+    
+    public static GUIStyle GistCodeSnippetStyle
+    {
+        get
+        {
+            Color textColor = new Color(0.2f, 0.2f, 0.2f);
+            return _gistCodeSnippetStyle ?? (_gistCodeSnippetStyle = new GUIStyle()
+            {
+                border = new RectOffset(5, 5, 5, 5),
+                margin = new RectOffset(20, 55, 0, 0),
+                padding = new RectOffset(13, 15, 15, 15),
+                alignment = TextAnchor.MiddleLeft,
+                wordWrap = true,
+                stretchHeight = false
+            }).WithFont("Consolas", 12)
+        .WithAllStates("InfoBackground_TopLeftFill",textColor);
+        }
+        set { _gistCodeSnippetStyle = value; }
     }
 
     public void ToggleContentByNode<TNode>(string name)
@@ -949,10 +1260,15 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     public void LinkToPage<TPage>()
     {
         var page = FindPage(Pages, p => p is TPage);
-        if (GUILayout.Button(page.Name, GUILayout.MaxWidth(200)))
+        LinkToPage(page);
+    }
+    
+    
+    public void LinkToPage(DocumentationPage page)
+    {
+        if (GUILayout.Button(new GUIContent("Link: " + page.Name,ElementDesignerStyles.GetSkinTexture("LinkIcon")), LinkStyle))
         {
             ShowPage(page);
-
         }
     }
 
@@ -964,11 +1280,11 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
             var t1 = t;
             var page = FindPage(Pages, p => p.GetType() == t1);
             if (page == null) continue;
-            if (GUILayout.Button(page.Name))
-            {
-                ShowPage(page);
-
-            }
+            LinkToPage(page);
+//            if (GUILayout.Button(page.Name))
+//            {
+//                ShowPage(page);
+//            }
         }
     }
 
@@ -1007,10 +1323,19 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     private Action disposer;
     private static GUIStyle _eventButtonStyleSmall;
     private Action disposer2;
+    private GUIStyle _expandableAreaHeaderExpandedStyle;
     private static GUIStyle _item2;
     private static GUIStyle _item5;
     private static GUIStyle _item1;
     private static GUIStyle _item4;
+    private static GUIStyle _codeSnippetStyle;
+    private static GUIStyle _expandedArea;
+    private GUIStyle _expandableAreaHeaderCollapsedStyle;
+    private GUIStyle _toggleAreaOnStyle;
+    private static GUIStyle _gistCodeSnippetStyle;
+    private GUIStyle _toggleAreaOffStyle;
+    private GUIStyle _tutorialPageStepsContentStyle;
+    private GUIStyle _tutorialStepContentStyle;
 
     public void OnDestory()
     {
@@ -1039,4 +1364,115 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     {
         this.Repaint();
     }
+
+
+    public bool ExpandableArea(string areaCode,string text, bool defaultOn =false)
+    {
+        if (!EditorPrefs.HasKey(areaCode))
+        {
+            EditorPrefs.SetBool(areaCode, defaultOn);
+        }
+
+
+
+        EditorPrefs.SetBool(
+            areaCode,
+            GUILayout.Toggle(EditorPrefs.GetBool(areaCode),
+                new GUIContent(text, EditorPrefs.GetBool(areaCode) ? AreaExpandedHandleTexture : AreaCollapsedHandleTexture),
+                EditorPrefs.GetBool(areaCode) ? ExpandableAreaHeaderExpanded : ExpandableAreaHeaderCollapsed));
+        return EditorPrefs.GetBool(areaCode);
+    }
+
+    public bool GenericToggle(string settingCode,string text, bool defaultOn =false, GUIStyle onStyle = null, GUIStyle offStyle =null, Texture onTexture = null, Texture offTexture = null)
+    {
+        if (!EditorPrefs.HasKey(settingCode))
+        {
+            EditorPrefs.SetBool(settingCode, defaultOn);
+        }
+
+        EditorPrefs.SetBool(
+            settingCode,
+            GUILayout.Toggle(EditorPrefs.GetBool(settingCode),
+                new GUIContent(text, EditorPrefs.GetBool(settingCode) ? onTexture : offTexture),
+                EditorPrefs.GetBool(settingCode) ? onStyle : offStyle));
+        return EditorPrefs.GetBool(settingCode);
+    }
+
+    public Texture2D AreaExpandedHandleTexture
+    {
+        get { return ElementDesignerStyles.GetSkinTexture("CollapseAreaIcon"); } 
+    }
+
+    public Texture2D AreaCollapsedHandleTexture
+    {
+        get { return ElementDesignerStyles.GetSkinTexture("ExpandAreaIcon"); }
+    }
+
+    public GUIStyle ExpandableAreaHeaderCollapsed
+    {
+        get
+        {
+            Color textColor = new Color(0.2f,0.2f,0.2f);
+            return _expandableAreaHeaderCollapsedStyle ?? (_expandableAreaHeaderCollapsedStyle = new GUIStyle()
+        {
+            wordWrap = true,
+            stretchWidth = true,
+            alignment = TextAnchor.UpperLeft,
+            border = new RectOffset(5, 5, 5, 5),
+            margin = new RectOffset(20, 55, 10, 0),
+            padding = new RectOffset(5, 5, 5, 5),
+            imagePosition = ImagePosition.ImageLeft,
+            stretchHeight = false,
+        }).WithAllStates("InfoBackground",textColor)
+        .WithFont("Verdana",12);
+        }
+        set { _expandableAreaHeaderCollapsedStyle = value; }
+    }   
+    
+    public GUIStyle ExpandableAreaHeaderExpanded
+    {
+        get
+        {
+            Color textColor = new Color(0.2f,0.2f,0.2f);
+            return _expandableAreaHeaderExpandedStyle ?? (_expandableAreaHeaderExpandedStyle = new GUIStyle()
+        {
+            wordWrap = true,
+            stretchWidth = true,
+            alignment = TextAnchor.UpperLeft,
+            border = new RectOffset(5, 5, 5, 5),
+            margin = new RectOffset(20, 55, 10, 0),
+            padding = new RectOffset(5, 5, 5, 5),
+            imagePosition = ImagePosition.ImageLeft,
+            stretchHeight = false,
+        }).WithAllStates("InfoBackground_BottomCutFill",textColor)
+         .WithFont("Verdana", 12);
+        }
+        set { _expandableAreaHeaderExpandedStyle = value; }
+    }
+}
+
+public static class uFrameHelpStyles
+{
+
+    private static Dictionary<string, Font> FontsCache = new Dictionary<string, Font>();
+
+    public static GUIStyle WithAllStates(this GUIStyle style, string textureName, Color textColor)
+    {
+        var state = new GUIStyleState() { background = !string.IsNullOrEmpty(textureName) ? ElementDesignerStyles.GetSkinTexture(textureName) : null, textColor = textColor };
+        style.normal = style.active = style.hover = style.focused = style.onNormal = style.onActive = style.onHover = style.onFocused = state;
+        return style;
+    }
+
+    public static GUIStyle WithFont(this GUIStyle style, string fontName, int fontSize)
+    {
+        var key = fontName + fontSize;
+        if (!FontsCache.ContainsKey(key))
+        {
+            FontsCache.Add(key,Font.CreateDynamicFontFromOSFont(fontName,fontSize));
+        }
+        style.fontSize = fontSize;
+        style.font = FontsCache[key];
+        return style;
+    }
+
 }

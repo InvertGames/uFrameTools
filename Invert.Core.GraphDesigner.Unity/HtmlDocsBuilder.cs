@@ -343,7 +343,7 @@ namespace Invert.Core.GraphDesigner.Unity
             return CurrentTutorial;
         }
 
-        public void ImageByUrl(string empty)
+        public void ImageByUrl(string empty, string description = null)
         {
             Output.AppendFormat("<div class='img-container'><img src='{0}' /></div>", empty);
         }
