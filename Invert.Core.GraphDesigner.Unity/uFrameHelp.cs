@@ -1465,13 +1465,21 @@ public static class uFrameHelpStyles
 
     public static GUIStyle WithFont(this GUIStyle style, string fontName, int fontSize)
     {
-        var key = fontName + fontSize;
-        if (!FontsCache.ContainsKey(key))
+//        var key = fontName + fontSize;
+//        if (!FontsCache.ContainsKey(key))
+//        {
+//            FontsCache.Add(key,Font.CreateDynamicFontFromOSFont(fontName,fontSize));
+//        }
+//        style.font = FontsCache[key];
+
+
+        if (!FontsCache.ContainsKey(fontName))
         {
-            FontsCache.Add(key,Font.CreateDynamicFontFromOSFont(fontName,fontSize));
+            FontsCache.Add(fontName,Resources.Load<Font>("fonts/"+fontName));
         }
+
+        style.font = FontsCache[fontName];
         style.fontSize = fontSize;
-        style.font = FontsCache[key];
         return style;
     }
 
