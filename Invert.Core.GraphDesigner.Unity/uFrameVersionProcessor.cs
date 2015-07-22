@@ -1,6 +1,7 @@
 using Invert.Core.GraphDesigner;
 using Invert.uFrame.Editor;
 using UnityEditor;
+using UnityEngine;
 
 public class uFrameVersionProcessor : AssetPostprocessor
 {
@@ -20,7 +21,7 @@ public class uFrameVersionProcessor : AssetPostprocessor
     private static void ShowChangeLog()
     {
         EditorApplication.delayCall -= ShowChangeLog;
-        uFrameHelp.ShowPage("Change Log");
-      
+        EditorApplication.ExecuteMenuItem("uFrame/Welcome Screen");
+        
     }
 }

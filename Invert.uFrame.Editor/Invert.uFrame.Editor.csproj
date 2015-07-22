@@ -175,7 +175,6 @@
     <Compile Include="Windows\uFrameComponentSearchWindow.cs" />
     <Compile Include="Windows\ElementExplorerWindow.cs" />
     <Compile Include="uFrame15\IAssemblyNameProvider.cs" />
-    <Compile Include="uFrameVersionProcessor.cs" />
     <None Include="documentation.dxp" />
     <None Include="PluginGraph1.ufgraph">
       <Generator>UFrameFileGenerator</Generator>
