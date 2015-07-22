@@ -74,6 +74,7 @@
     <Compile Include="UFrameSettings.cs" />
     <Compile Include="uFrameSettingsWindow.cs" />
     <Compile Include="uFrameStartDialog.cs" />
+    <Compile Include="uFrameVersionProcessor.cs" />
     <Compile Include="UFStyle.cs" />
     <Compile Include="UnityAssetManager.cs" />
     <Compile Include="UnityPlatformPlugin.cs" />

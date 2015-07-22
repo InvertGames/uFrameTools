@@ -17,8 +17,8 @@ namespace Invert.Core.GraphDesigner
 {
     public static class InvertGraphEditor
     {
-        public const string CURRENT_VERSION = "1.501";
-        public const double CURRENT_VERSION_NUMBER = 1.501;
+        public const string CURRENT_VERSION = "1.601";
+        public const double CURRENT_VERSION_NUMBER = 1.601;
         public const bool REQUIRE_UPGRADE = true;
 
 
