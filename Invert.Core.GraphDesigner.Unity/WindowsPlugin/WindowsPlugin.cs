@@ -1,16 +1,13 @@
 ﻿using System;
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Invert.Common;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.Core.GraphDesigner.Unity;
 using Invert.IOC;
 using Invert.Windows;
 using Invert.Windows.Unity;
 using UnityEditor;
+using UnityEngine;
 
 public class WindowsPlugin : DiagramPlugin, IWindowsEvents {
 
@@ -18,7 +15,7 @@ public class WindowsPlugin : DiagramPlugin, IWindowsEvents {
     public static List<IWindowDrawer> _windowDrawers; 
     public override void Initialize(UFrameContainer container)
     {
-        ListenFor<IWindowsEvents>();
+        
     }
 
     public static Rect GetPosition(EditorWindow window)
@@ -45,11 +42,30 @@ public class WindowsPlugin : DiagramPlugin, IWindowsEvents {
         set { _windowDrawers = value; }
     }
 
+    public void ShowWindow(string factoryId, string title, IWindow viewModel, Vector2 position, Vector2 size)
+    {
+        var window = GetWindowFor(factoryId, viewModel);
+        window.title = title;
+        window.ShowAsDropDown(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 1f, 1f), new Vector2(300f,500f));
+        window.maxSize = new Vector2(300f, 500f);
+        window.minSize = new Vector2(300f, 500f);
+        window.Focus();
+        window.Repaint();
+    }
+
     public void WindowRequestCloseWithArea(Area drawer)
     {
         WindowDrawers.Where(d => d.Drawers.Contains(drawer)).ToList().ForEach(d =>
         {
             (d as EditorWindow).Close();
+        });
+    }
+
+    public void WindowRefresh(Area drawer)
+    {
+        WindowDrawers.Where(d => d.Drawers.Contains(drawer)).ToList().ForEach(d =>
+        {
+            (d as EditorWindow).Repaint();
         });
     }
 
@@ -115,54 +131,5 @@ public class WindowsPlugin : DiagramPlugin, IWindowsEvents {
         BindDrawerToWindow(drawer, factory);
     }
 
-}
-
-public interface IWindowFactory
-{
-    IWindow GetDefaultViewModelObject(string persistedData);
-    Type ViewModelType { get; }
-    string Identifier { get; set; }
-    bool ShowInLauncher { get; set; }
-    bool Multiple { get; set; }
-    string LauncherTitle { get; set; }
-    void SetAreasFor(IWindowDrawer drawer);
-}
-
-public interface IWindowFactory<TWindow> : IWindowFactory
-{
-    
-}
-public interface IWindowsEvents
-{
-    void WindowRequestCloseWithArea(Area drawer);
-    void WindowRequestCloseWithViewModel(IWindow windowViewModel);
-}
-
-public interface IWindow
-{
-    string Identifier { get; set; }
-}
-
-public class KeyboardDispatcher : Area<IKeyHandler>
-{
-    public override void Draw(IKeyHandler data)
-    {
-        if (Event.current.type == EventType.KeyDown)
-        {
-            data.KeyPressed(Event.current.keyCode, Event.current.alt);
-            EditorWindow.focusedWindow.Repaint();
-        }
-        if (Event.current.type == EventType.KeyUp)
-        {
-            data.KeyReleased(Event.current.keyCode, Event.current.alt);
-            EditorWindow.focusedWindow.Repaint();
-        }
-    }
-}
-
-public interface IKeyHandler
-{
-    void KeyPressed(KeyCode code, bool withAlt);
-    void KeyReleased(KeyCode code, bool withAlt);
 }
 

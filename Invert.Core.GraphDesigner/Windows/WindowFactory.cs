@@ -1,13 +1,13 @@
 using System;
-using System.Collections.Generic;
-using Invert.Core;
 using Invert.IOC;
-using Invert.Windows;
-using Invert.Windows.Unity;
 using UnityEngine;
 
 namespace Invert.Windows
 {
+    public interface IWindowFactory<TWindow> : IWindowFactory
+    {
+
+    }
     public class WindowFactory<TWindow> : IWindowFactory<TWindow> where TWindow : class, IWindow 
     {
 
@@ -58,14 +58,14 @@ namespace Invert.Windows
         {
             drawerContainer.Drawers.Clear();
 
-            if (drawerContainer.ViewModel is IKeyHandler)
-            {
-                drawerContainer.Drawers.Add(new KeyboardDispatcher()
-                {
-                    DataSelector = () => drawerContainer.ViewModel as IKeyHandler,
-                    Layout = new AreaLayout(0, 0, 0, 0)
-                });
-            }
+            //if (drawerContainer.ViewModel is IKeyHandler)
+            //{
+            //    drawerContainer.Drawers.Add(new KeyboardDispatcher()
+            //    {
+            //        DataSelector = () => drawerContainer.ViewModel as IKeyHandler,
+            //        Layout = new AreaLayout(0, 0, 0, 0)
+            //    });
+            //}
 
             if(OnSetAreasForWindowDrawer != null)
                 OnSetAreasForWindowDrawer(drawerContainer);

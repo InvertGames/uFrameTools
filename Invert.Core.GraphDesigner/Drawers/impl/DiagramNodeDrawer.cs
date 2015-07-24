@@ -470,6 +470,8 @@ namespace Invert.Core.GraphDesigner
         public override void OnMouseDoubleClick(MouseEvent mouseEvent)
         {
             base.OnMouseDoubleClick(mouseEvent);
+            
+
         }
 
         public override void OnMouseMove(MouseEvent e)
@@ -642,6 +644,7 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+    
     //public class BulletPointDrawer : Drawer<BulletPointViewModel>
     //{
 

@@ -10,7 +10,7 @@ using KeyCode = System.Windows.Forms.Keys;
 #endif
 namespace Invert.Core.GraphDesigner
 {
-    public class GraphDesignerPlugin : DiagramPlugin, IPrefabNodeProvider, ICommandEvents, IConnectionEvents
+    public class GraphDesignerPlugin : DiagramPlugin, IPrefabNodeProvider, ICommandEvents, IConnectionEvents, IQuickAccessEvents
     {
         public override decimal LoadPriority
         {
@@ -208,6 +208,69 @@ namespace Invert.Core.GraphDesigner
                 }
             }
             #endif
+        }
+
+        public void CreateConnectionMenu(ConnectionHandler viewModel, DiagramViewModel diagramViewModel, MouseEvent mouseEvent)
+        {
+            
+        }
+
+        public void QuickAccessItemsEvents(QuickAccessContext context, List<IEnumerable<QuickAccessItem>> items)
+        {
+            items.Add(QueryPossibleConnections(context));
+        }
+
+        private static IEnumerable<QuickAccessItem> QueryPossibleConnections(QuickAccessContext context)
+        {
+            var connectionHandler = context.Data as ConnectionHandler;
+            var diagramViewModel = connectionHandler.DiagramViewModel;
+
+            var currentGraph = InvertApplication.Container.Resolve<ProjectService>().CurrentProject.CurrentGraph;
+            var allowedFilterNodes = FilterExtensions.AllowedFilterNodes[currentGraph.CurrentFilter.GetType()];
+            foreach (var item in allowedFilterNodes)
+            {
+                if (item.IsInterface) continue;
+                if (item.IsAbstract) continue;
+
+                var node = Activator.CreateInstance(item) as IDiagramNode;
+                node.Graph = currentGraph;
+                var vm = InvertGraphEditor.Container.GetNodeViewModel(node, diagramViewModel) as DiagramNodeViewModel;
+
+
+                if (vm == null) continue;
+                vm.IsCollapsed = false;
+                var connectors = new List<ConnectorViewModel>();
+                vm.GetConnectors(connectors);
+
+                var config = InvertGraphEditor.Container.Resolve<NodeConfigBase>(item.Name);
+                var name = config == null ? item.Name : config.Name;
+                foreach (var connector in connectors)
+                {
+                    foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
+                    {
+                        var connection = strategy.Connect(diagramViewModel, connectionHandler.StartConnector, connector);
+                        if (connection == null) continue;
+                        var node1 = node;
+                        var message = string.Format("Create {0}", name);
+                        if (!string.IsNullOrEmpty(connector.Name))
+                        {
+                            message += string.Format(" and connect to {0}", connector.Name);
+                        }
+                        var value = new KeyValuePair<IDiagramNode, ConnectionViewModel>(node1, connection);
+
+
+                        var qaItem = new QuickAccessItem("Connect", message, message, _ =>
+                        {
+                            diagramViewModel.AddNode(value.Key, context.MouseData.MouseUpPosition);
+                            connection.Apply(value.Value as ConnectionViewModel);
+                            value.Key.IsSelected = true;
+                            value.Key.IsEditing = true;
+                            value.Key.Name = "";
+                        });
+                        yield return qaItem;
+                    }
+                }
+            }
         }
     }
 }

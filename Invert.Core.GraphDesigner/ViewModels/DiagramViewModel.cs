@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Invert.Windows;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -737,15 +738,16 @@ namespace Invert.Core.GraphDesigner
 
         public void ShowQuickAdd()
         {
-            var mousePosition = LastMouseEvent.MouseDownPosition;
-            var items = InvertApplication.Plugins.OfType<IPrefabNodeProvider>().SelectMany(p => p.PrefabNodes(CurrentRepository)).ToArray();
+            
+            //var mousePosition = LastMouseEvent.MouseDownPosition;
+            //var items = InvertApplication.Plugins.OfType<IPrefabNodeProvider>().SelectMany(p => p.PrefabNodes(CurrentRepository)).ToArray();
 
-            InvertGraphEditor.WindowManager.InitItemWindow(items, _ =>
-            {
-                _.Diagram = this;
-                _.MousePosition = mousePosition;
-                _.Action(_);
-            });
+            //InvertGraphEditor.WindowManager.InitItemWindow(items, _ =>
+            //{
+            //    _.Diagram = this;
+            //    _.MousePosition = mousePosition;
+            //    _.Action(_);
+            //});
         }
 
         public void ShowContainerDebug()

@@ -46,48 +46,40 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="CompilingWindow.cs" />
+    <Compile Include="WindowsPlugin\CompilingWindow.cs" />
     <Compile Include="DiagramSettingsCommand.cs" />
     <Compile Include="ElementDesignerStyles.cs" />
-    <Compile Include="ElementDiagramSettingsWindow.cs" />
-    <Compile Include="ElementItemTypesWindow.cs" />
+    <Compile Include="WindowsPlugin\ElementDiagramSettingsWindow.cs" />
+    <Compile Include="WindowsPlugin\ElementItemTypesWindow.cs" />
     <Compile Include="ElementsDesigner.cs" />
-    <Compile Include="GUIHelpers.cs" />
-    <Compile Include="HtmlDocsBuilder.cs" />
-    <Compile Include="Impl\ProjectRepository.cs" />
-    <Compile Include="Impl\UnityPlatform.cs" />
-    <Compile Include="ImportTypeListWindow.cs" />
-    <Compile Include="ItemSelectionWindow.cs" />
-    <Compile Include="MarketPlace.cs" />
-    <Compile Include="ProjectRepositoryInspector.cs" />
+    <Compile Include="Platform\GUIHelpers.cs" />
+    <Compile Include="Platform\HtmlDocsBuilder.cs" />
+    <Compile Include="Platform\ProjectRepository.cs" />
+    <Compile Include="Platform\UnityPlatform.cs" />
+    <Compile Include="WindowsPlugin\ImportTypeListWindow.cs" />
+    <Compile Include="WindowsPlugin\ItemSelectionWindow.cs" />
+    <Compile Include="WindowsPlugin\MarketPlace.cs" />
+    <Compile Include="Platform\ProjectRepositoryInspector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuickAccess\QuickAccessWindowPlugin.cs" />
     <Compile Include="QuickAccess\QuickAccessWindowSearchPanel.cs" />
-    <Compile Include="QuickAccess\QuickAccessWindowViewModel.cs" />
-    <Compile Include="QuickLaunchWindow.cs" />
     <Compile Include="Refactoring\ChangeRefactorer.cs" />
     <Compile Include="Refactoring\FileEditor.cs" />
     <Compile Include="Refactoring\uFrameRefactoring.cs" />
-    <Compile Include="SearchableScrollWindow.cs" />
-    <Compile Include="SelectedCodePreview.cs" />
-    <Compile Include="SyntaxDrawer.cs" />
-    <Compile Include="uFrameHelp.cs" />
-    <Compile Include="uFrameMenu.cs" />
-    <Compile Include="UFrameSettings.cs" />
-    <Compile Include="uFrameSettingsWindow.cs" />
-    <Compile Include="uFrameStartDialog.cs" />
-    <Compile Include="uFrameVersionProcessor.cs" />
-    <Compile Include="UFStyle.cs" />
-    <Compile Include="UnityAssetManager.cs" />
-    <Compile Include="UnityPlatformPlugin.cs" />
-    <Compile Include="UnityWindowManager.cs" />
-    <Compile Include="WindowsPlugin\Area.cs" />
-    <Compile Include="WindowsPlugin\AreaLayout.cs" />
+    <Compile Include="WindowsPlugin\SearchableScrollWindow.cs" />
+    <Compile Include="WindowsPlugin\SelectedCodePreview.cs" />
+    <Compile Include="Platform\SyntaxDrawer.cs" />
+    <Compile Include="WindowsPlugin\uFrameHelp.cs" />
+    <Compile Include="Platform\uFrameMenu.cs" />
+    <Compile Include="Platform\UFrameSettings.cs" />
+    <Compile Include="WindowsPlugin\uFrameSettingsWindow.cs" />
+    <Compile Include="Platform\uFrameVersionProcessor.cs" />
+    <Compile Include="Platform\UFStyle.cs" />
+    <Compile Include="Platform\UnityAssetManager.cs" />
+    <Compile Include="Platform\UnityPlatformPlugin.cs" />
+    <Compile Include="WindowsPlugin\UnityWindowManager.cs" />
     <Compile Include="WindowsPlugin\LauncherWindowViewModel.cs" />
     <Compile Include="WindowsPlugin\SmartWindow.cs" />
-    <Compile Include="WindowsPlugin\WindowFactory.cs" />
-    <Compile Include="WindowsPlugin\WindowsContainerExtensions.cs" />
+    <Compile Include="UnityWindows.cs" />
     <Compile Include="WindowsPlugin\WindowSelectionPanel.cs" />
     <Compile Include="WindowsPlugin\WindowsPlugin.cs" />
   </ItemGroup>
@@ -121,10 +113,7 @@
       <Name>Invert.ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Impl\Drawers\" />
-    <Folder Include="Kernel\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Assets\uFrameComplete\bin\Editor\Shell\ /Y

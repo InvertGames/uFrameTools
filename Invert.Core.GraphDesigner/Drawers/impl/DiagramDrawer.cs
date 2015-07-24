@@ -197,12 +197,14 @@ namespace Invert.Core.GraphDesigner
 #endif
         public override void OnMouseDoubleClick(MouseEvent mouseEvent)
         {
+           
             DiagramViewModel.LastMouseEvent = mouseEvent;
             if (DrawersAtMouse == null)
             {
 
                 DrawersAtMouse = GetDrawersAtPosition(this, mouseEvent.MousePosition).ToArray();
             }
+            base.OnMouseDoubleClick(mouseEvent);
             if (DrawersAtMouse.Length < 1)
             {
                 if (mouseEvent.ModifierKeyStates.Alt)
@@ -216,10 +218,20 @@ namespace Invert.Core.GraphDesigner
 
                 return;
             }
-            if (!BubbleEvent(d => d.OnMouseDoubleClick(mouseEvent), mouseEvent)) return;
+            if (!BubbleEvent(d => d.OnMouseDoubleClick(mouseEvent), mouseEvent))
+            {
+
+                return;
+            }
+            else
+            {
+               
+            }
             DiagramViewModel.Navigate();
             Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
             Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
+     
+
         }
 
         public override void OnMouseEnter(MouseEvent e)

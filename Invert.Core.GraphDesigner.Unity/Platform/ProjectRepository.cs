@@ -1,18 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using Invert.Common;
-using Invert.Common.UI;
-using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.uFrame;
-using Invert.uFrame.Editor;
 using UnityEditor;
 using UnityEngine;
-using Object = System.Object;
-
+using Object = UnityEngine.Object;
 
 [Serializable]
 public class ProjectRepository : DefaultProjectRepository, IProjectRepository, ISerializationCallbackReceiver
@@ -69,8 +61,8 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
                 }
             }
         }
-        if (data is UnityEngine.Object)
-           EditorUtility.SetDirty((UnityEngine.Object) data);
+        if (data is Object)
+           EditorUtility.SetDirty((Object) data);
     }
 
     protected string[] _diagramNames;
@@ -225,11 +217,11 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         get
         {
             if (Diagrams == null) return null;
-            if (_currentGraph == null || object.ReferenceEquals(_currentGraph, null))
+            if (_currentGraph == null || ReferenceEquals(_currentGraph, null))
             {
                 if (!String.IsNullOrEmpty(LastLoadedDiagram))
                 {
-                    CurrentGraph = Enumerable.FirstOrDefault<ScriptableObject>(Diagrams, p => p != null && !object.ReferenceEquals(p, null) && p.name == LastLoadedDiagram) as IGraphData;
+                    CurrentGraph = Enumerable.FirstOrDefault<ScriptableObject>(Diagrams, p => p != null && !ReferenceEquals(p, null) && p.name == LastLoadedDiagram) as IGraphData;
                 }
                 if (_currentGraph == null)
                 {
@@ -328,7 +320,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
     {
         if (data != null)
         {
-            EditorUtility.SetDirty(data as UnityEngine.Object);
+            EditorUtility.SetDirty(data as Object);
         }
         AssetDatabase.SaveAssets();
     }
@@ -336,7 +328,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
     public override void RecordUndo(INodeRepository data, string title)
     {
         if (data != null)
-            Undo.RecordObject(data as UnityEngine.Object, title);
+            Undo.RecordObject(data as Object, title);
 
     }
 

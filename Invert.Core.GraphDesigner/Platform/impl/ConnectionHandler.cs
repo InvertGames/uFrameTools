@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Windows;
 //using UnityEditor;
 using UnityEngine;
 
@@ -138,11 +139,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                //#if UNITY_DLL
-                //                if (InvertGraphEditor.Settings.ShowGraphDebug)
-                //                    GUI.Label(new Rect(e.MousePosition.x, e.MousePosition.y, 200, 50),
-                //                        endViewModel.ConnectorForType.Name, ElementDesignerStyles.HeaderStyle);
-                //#endif
+
                 foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
                 {
                     //try and connect them
@@ -182,64 +179,77 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                var allowedFilterNodes = FilterExtensions.AllowedFilterNodes[this.DiagramViewModel.CurrentRepository.CurrentFilter.GetType()];
-                var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>();
-
-                //var genericMenu = new UnityEditor.GenericMenu();
-                //genericMenu.AddItem(new GUIContent("Cancel"),false,()=>{} );
-                //genericMenu.AddSeparator(string.Empty);
-                foreach (var item in allowedFilterNodes)
+                var mouseData = e;
+                InvertApplication.SignalEvent<IWindowsEvents>(_ =>
                 {
-                    if (item.IsInterface) continue;
-                    if (item.IsAbstract) continue;
-
-                    var node = Activator.CreateInstance(item) as IDiagramNode;
-                    node.Graph = this.DiagramViewModel.GraphData;
-                    var vm = InvertGraphEditor.Container.GetNodeViewModel(node, this.DiagramViewModel) as DiagramNodeViewModel;
-                    
-                    
-                    if (vm == null) continue;
-                    vm.IsCollapsed = false;
-                    var connectors = new List<ConnectorViewModel>();
-                    vm.GetConnectors(connectors);
-
-                    var config = InvertGraphEditor.Container.Resolve<NodeConfigBase>(item.Name);
-                    var name = config == null ? item.Name : config.Name;
-                    foreach (var connector in connectors)
-                    {
-                        foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
+                    _.ShowWindow(
+                        "ConnectionWindowFactory",
+                        "Create Connection",
+                        new QuickAccessWindowViewModel(new QuickAccessContext()
                         {
-                            var connection = strategy.Connect(this.DiagramViewModel, StartConnector, connector);
-                            if (connection == null) continue;
-                            var node1 = node;
-                            var message = string.Format("Create {0}", name);
-                            if (!string.IsNullOrEmpty(connector.Name))
-                            {
-                                message += string.Format(" and connect to {0}", connector.Name);
-                            }
-                            var value = new KeyValuePair<IDiagramNode, ConnectionViewModel>(node1, connection);
-                            menu.AddCommand(
-                             new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel n)
-                             {
+                            ContextType = typeof(IConnectionQuickAccessContext),
+                            MouseData = mouseData,
+                            Data = this
+                        }),
+                        e.MousePosition,
+                        new Vector2(225f, 300f)
+                        );
+                });
+
+                //var allowedFilterNodes = FilterExtensions.AllowedFilterNodes[this.DiagramViewModel.CurrentRepository.CurrentFilter.GetType()];
+                //var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>();
+                //foreach (var item in allowedFilterNodes)
+                //{
+                //    if (item.IsInterface) continue;
+                //    if (item.IsAbstract) continue;
+
+                //    var node = Activator.CreateInstance(item) as IDiagramNode;
+                //    node.Graph = this.DiagramViewModel.GraphData;
+                //    var vm = InvertGraphEditor.Container.GetNodeViewModel(node, this.DiagramViewModel) as DiagramNodeViewModel;
+                    
+                    
+                //    if (vm == null) continue;
+                //    vm.IsCollapsed = false;
+                //    var connectors = new List<ConnectorViewModel>();
+                //    vm.GetConnectors(connectors);
+
+                //    var config = InvertGraphEditor.Container.Resolve<NodeConfigBase>(item.Name);
+                //    var name = config == null ? item.Name : config.Name;
+                //    foreach (var connector in connectors)
+                //    {
+                //        foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
+                //        {
+                //            var connection = strategy.Connect(this.DiagramViewModel, StartConnector, connector);
+                //            if (connection == null) continue;
+                //            var node1 = node;
+                //            var message = string.Format("Create {0}", name);
+                //            if (!string.IsNullOrEmpty(connector.Name))
+                //            {
+                //                message += string.Format(" and connect to {0}", connector.Name);
+                //            }
+                //            var value = new KeyValuePair<IDiagramNode, ConnectionViewModel>(node1, connection);
+                //            menu.AddCommand(
+                //             new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel n)
+                //             {
                                  
 
-                                 //UnityEditor.EditorWindow.FocusWindowIfItsOpen(typeof (ElementsDesigner));
+                //                 //UnityEditor.EditorWindow.FocusWindowIfItsOpen(typeof (ElementsDesigner));
 
-                                 InvertGraphEditor.ExecuteCommand(_ =>
-                                 {
-                                     this.DiagramViewModel.AddNode(value.Key,e.MouseUpPosition);
-                                     connection.Apply(value.Value as ConnectionViewModel);
-                                     value.Key.IsSelected = true;
-                                     value.Key.IsEditing = true;
-                                     value.Key.Name = "";
-                                 });
-                             },message));
-                        }
+                //                 InvertGraphEditor.ExecuteCommand(_ =>
+                //                 {
+                //                     this.DiagramViewModel.AddNode(value.Key,e.MouseUpPosition);
+                //                     connection.Apply(value.Value as ConnectionViewModel);
+                //                     value.Key.IsSelected = true;
+                //                     value.Key.IsEditing = true;
+                //                     value.Key.Name = "";
+                //                 });
+                //             },message));
+                //        }
 
-                    }
+                //    }
 
-                }
-                menu.Go();
+                //}
+                //menu.Go();
 
             }
 
@@ -252,5 +262,10 @@ namespace Invert.Core.GraphDesigner
             e.Cancel();
         }
 
+    }
+    
+    public interface ICreateConnectionMenuEvent
+    {
+        void CreateConnectionMenu(ConnectionHandler viewModel, DiagramViewModel diagramViewModel, MouseEvent mouseEvent);
     }
 }

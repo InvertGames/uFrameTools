@@ -30,9 +30,9 @@ namespace Invert.Core
 
     public interface IEventManager
     {
-        
+        Action AddListener(object listener);
     }
-    public class EventManager<T> : IEventManager
+    public class EventManager<T> : IEventManager where T : class
     {
         private List<T> _listeners;
 
@@ -61,6 +61,11 @@ namespace Invert.Core
         private void Unsubscribe(T listener)
         {
             Listeners.Remove(listener);
+        }
+
+        public Action AddListener(object listener)
+        {
+            return Subscribe(listener as T);
         }
     }
 
@@ -307,6 +312,11 @@ namespace Invert.Core
                 if (pluginInstance == null) continue;
                 container.RegisterInstance(pluginInstance, diagramPlugin.Name, false);
                 container.RegisterInstance(pluginInstance.GetType(), pluginInstance);
+                
+                foreach (var item in diagramPlugin.GetInterfaces())
+                {
+                    ListenFor(item, pluginInstance);
+                }
             }
 
             container.InjectAll();
@@ -314,7 +324,12 @@ namespace Invert.Core
             foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority).Where(p=>!p.Ignore))
             {
                 if (diagramPlugin.Enabled)
+                {
+
+              
                     diagramPlugin.Initialize(Container);
+                }
+                    
             }
 
             foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority).Where(p => !p.Ignore))
@@ -335,13 +350,26 @@ namespace Invert.Core
             get { return _eventManagers ?? (_eventManagers = new Dictionary<Type, IEventManager>()); }
             set { _eventManagers = value; }
         }
-
+        public static Action ListenFor(Type eventInterface, object listenerObject)
+        {
+            var listener = listenerObject;
+    
+            IEventManager manager;
+            if (!EventManagers.TryGetValue(eventInterface, out manager))
+            {
+                EventManagers.Add(eventInterface, manager = (IEventManager) Activator.CreateInstance(typeof(EventManager<>).MakeGenericType(eventInterface)));
+            }
+            var m = manager as IEventManager;
+            
+            
+            return m.AddListener(listener);
+        }
         /// <summary>
         /// Subscribes to a series of related events defined by an interface.
         /// </summary>
         /// <typeparam name="TEvents">The interface type the describes the events.</typeparam>
         /// <param name="listener">The listener that implements the event interface TEvents.</param>
-        public static Action ListenFor<TEvents>(TEvents listener)
+        public static Action ListenFor<TEvents>(TEvents listener) where TEvents : class
         {
             IEventManager manager;
             if (!EventManagers.TryGetValue(typeof (TEvents), out manager))
@@ -379,7 +407,7 @@ namespace Invert.Core
         /// Signals and event to all listeners
         /// </summary>
         /// <typeparam name="TEvents">The lambda that invokes the action.</typeparam>
-        public static void SignalEvent<TEvents>(Action<TEvents> action)
+        public static void SignalEvent<TEvents>(Action<TEvents> action) where TEvents : class
         {
             IEventManager manager;
             if (!EventManagers.TryGetValue(typeof(TEvents), out manager))

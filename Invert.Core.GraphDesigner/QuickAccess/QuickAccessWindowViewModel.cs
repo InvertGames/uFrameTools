@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-using Invert.Core.GraphDesigner.Unity;
-using UnityEngine;
+using Invert.Windows;
 
 public class QuickAccessWindowViewModel : IWindow
 {
@@ -15,7 +13,7 @@ public class QuickAccessWindowViewModel : IWindow
         _context = context;
         UpdateSearch();
     }
-
+    public int SelectedIndex { get; set; }
     private List<QuickAccessItem> _quickLaunchItems;
     private string _searchText = "";
     public string Identifier { get; set; }
@@ -39,12 +37,16 @@ public class QuickAccessWindowViewModel : IWindow
             {
                 QuickLaunchItems.Add(item);
             }
-            if (QuickLaunchItems.Count >= 10)
-            {
-                break;
-            }
+            //if (QuickLaunchItems.Count >= 10)
+            //{
+            //    break;
+            //}
         }
+        GroupedLaunchItems = QuickLaunchItems.GroupBy(p => p.Group).ToArray();
+
     }
+
+    public IGrouping<string, QuickAccessItem>[] GroupedLaunchItems { get; set; }
 
     public List<QuickAccessItem> QuickLaunchItems
     {
@@ -52,10 +54,47 @@ public class QuickAccessWindowViewModel : IWindow
         set { _quickLaunchItems = value; }
     }
 
+    
+
     public void ItemSelected(QuickAccessItem item)
     {
-        item.Action();
+        InvertGraphEditor.ExecuteCommand(_ =>
+        {
+            QuickLaunchItems[SelectedIndex].Action(QuickLaunchItems[SelectedIndex].Item);
+        });
         InvertApplication.SignalEvent<IWindowsEvents>(i=>i.WindowRequestCloseWithViewModel(this));
     }
 
+
+    public void Execute()
+    {
+        InvertGraphEditor.ExecuteCommand(_ =>
+        {
+            QuickLaunchItems[SelectedIndex].Action(QuickLaunchItems[SelectedIndex].Item);
+        });
+        InvertApplication.SignalEvent<IWindowsEvents>(i => i.WindowRequestCloseWithViewModel(this));
+    }
+
+    public void MoveUp()
+    {
+        if (SelectedIndex <= 0)
+            SelectedIndex = QuickLaunchItems.Count -1;
+        else
+            SelectedIndex--;
+    }
+
+    public void MoveDown()
+    {
+        SelectedIndex = (SelectedIndex+1) % QuickLaunchItems.Count;
+    }
+
+    public void Execute(QuickAccessItem item)
+    {
+        var x = item.Item;
+        InvertGraphEditor.ExecuteCommand(_ =>
+        {
+            item.Action(x);
+        });
+        InvertApplication.SignalEvent<IWindowsEvents>(i => i.WindowRequestCloseWithViewModel(this));
+    }
 }

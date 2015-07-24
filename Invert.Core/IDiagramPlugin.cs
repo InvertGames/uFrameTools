@@ -50,7 +50,11 @@ namespace Invert.Core
         }
 
         public virtual decimal LoadPriority { get { return 1; } }
-        public abstract void Initialize(UFrameContainer container);
+
+        public virtual void Initialize(UFrameContainer container)
+        {
+            
+        }
         public abstract void Loaded(UFrameContainer container);
     }
 
