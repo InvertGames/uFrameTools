@@ -197,7 +197,7 @@ namespace Invert.Core.GraphDesigner
                 value.Bold = true;
 
             }
-            value.Color = Color.white;
+            value.Color = Color.black;
         }
 
         public LinkedList<LineViewModel> Lines
