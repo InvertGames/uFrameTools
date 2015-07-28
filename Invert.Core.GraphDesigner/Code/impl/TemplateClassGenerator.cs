@@ -55,8 +55,14 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 var template = new TTemplateType { Ctx = new TemplateContext<TData>(TemplateType) { DataObject = Data,IsDesignerFile = IsDesignerFile} };
+                var customFilenameTemplate = template as ITemplateCustomFilename;
+                if (customFilenameTemplate != null)
+                {
+                    return customFilenameTemplate.Filename;
+                }
                 if (IsDesignerFile)
                 {
+                    
                     return template.OutputPath + ".designer.cs";
                 }
 
@@ -360,6 +366,10 @@ namespace Invert.Core.GraphDesigner
         public CodeTypeMember MemberOutput { get; set; }
     }
 
+    public interface ITemplateCustomFilename
+    {
+        string Filename { get; }
+    }
     public class TemplateContext<TData> : TemplateContext
     {
         private Dictionary<string, Func<TData, IEnumerable>> _iterators;

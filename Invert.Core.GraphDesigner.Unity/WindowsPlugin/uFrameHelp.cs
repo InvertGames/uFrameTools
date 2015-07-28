@@ -106,7 +106,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     public static void ShowWindow()
     {
         var window = GetWindow<uFrameHelp>();
-        window.minSize = new Vector2(1100,806);
+        window.minSize = new Vector2(800,500);
         window.title = "uFrame Help";
     //   window.minSize = new Vector2(400, 500);
         window.ShowUtility();

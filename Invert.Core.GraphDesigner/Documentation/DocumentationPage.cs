@@ -197,34 +197,38 @@ namespace Invert.Core.GraphDesigner
             return currentGraph;
         }
 
-        public IProjectRepository DoCreateNewProjectStep(IDocumentationBuilder builder, Action<IDocumentationBuilder> stepContent = null)
+        public IProjectRepository DoCreateNewProjectStep(IDocumentationBuilder builder,string projectName, Action<IDocumentationBuilder> stepContent = null)
         {
             var currentProject = ProjectService.CurrentProject;
-            builder.ShowTutorialStep(new TutorialStep("Create A Project", () =>
+            builder.ShowTutorialStep(new TutorialStep("Create A Project And Open Graph Designer", () =>
             {
+            
                 if (currentProject == null || object.ReferenceEquals(currentProject, null))
                 {
                     return "Project hasn't been created yet.";
                 }
-                if (currentProject.Name == "DefaultProject")
+                if (currentProject.Name != projectName)
                 {
-                    return "Project hasn't been created yet.";
+                    return string.Format("Project Name is incorrect make sure the name is \"{0}\"", projectName);
                 }
                 return null;
             })
             {
                 StepContent = _ =>
                 {
+                   
                     if (stepContent != null)
                     {
                         stepContent(_);
                     }
+                    
                     _.Paragraph("You need to create a new project to begin this journey.");
                     _.Paragraph("Navigate to the project window and create an empty folder.");
                     _.Paragraph("From here right click on the folder and choose uFrame->New Project");
                     _.Paragraph("This will create a new project repository for you.  " +
                                 "The project repository will hold references to all of your graphs.");
-                    
+                    _.Break();
+                    _.Paragraph("If you haven't already, open the graph designer by clicking on Window->uFrame Designer in the Unity menu.");
                 },
             });
             return currentProject;
