@@ -1,0 +1,484 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{19F5281A-4B8D-4C68-86D2-16467058ABBA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Invert.uFrame.ECS</RootNamespace>
+    <AssemblyName>Invert.uFrame.ECS</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEditor">
+      <HintPath>..\..\Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\Library\UnityAssemblies\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ChildItems.designer.cs">
+      <Link>ChildItems.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ChildItems\BranchesChildItem.cs">
+      <Link>BranchesChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ChildItems\CollectionsChildItem.cs">
+      <Link>CollectionsChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ChildItems\InputsChildItem.cs">
+      <Link>InputsChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ChildItems\OutputsChildItem.cs">
+      <Link>OutputsChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ChildItems\PropertiesChildItem.cs">
+      <Link>PropertiesChildItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Documentation.designer.cs">
+      <Link>Documentation.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers.designer.cs">
+      <Link>Drawers.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ActionLibraryNodeDrawer.cs">
+      <Link>ActionLibraryNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ActionNodeDrawer.cs">
+      <Link>ActionNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\BoolNodeDrawer.cs">
+      <Link>BoolNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ColorNodeDrawer.cs">
+      <Link>ColorNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentGroupNodeDrawer.cs">
+      <Link>ComponentGroupNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentNodeDrawer.cs">
+      <Link>ComponentNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentsNodeDrawer.cs">
+      <Link>ComponentsNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ContextNodeDrawer.cs">
+      <Link>ContextNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\CustomActionNodeDrawer.cs">
+      <Link>CustomActionNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\EntityNodeDrawer.cs">
+      <Link>EntityNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\EventNodeDrawer.cs">
+      <Link>EventNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\FloatNodeDrawer.cs">
+      <Link>FloatNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\HandlerNodeDrawer.cs">
+      <Link>HandlerNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\IntNodeDrawer.cs">
+      <Link>IntNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ItemTypesNodeDrawer.cs">
+      <Link>ItemTypesNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\LibraryNodeDrawer.cs">
+      <Link>LibraryNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\LiteralNodeDrawer.cs">
+      <Link>LiteralNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ModuleNodeDrawer.cs">
+      <Link>ModuleNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\PublishNodeDrawer.cs">
+      <Link>PublishNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\SequenceItemNodeDrawer.cs">
+      <Link>SequenceItemNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\SetVariableNodeDrawer.cs">
+      <Link>SetVariableNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\StartTimerNodeDrawer.cs">
+      <Link>StartTimerNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\StopTimerNodeDrawer.cs">
+      <Link>StopTimerNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\StringLiteralNodeDrawer.cs">
+      <Link>StringLiteralNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\StringNodeDrawer.cs">
+      <Link>StringNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\SystemNodeDrawer.cs">
+      <Link>SystemNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\TimerNodeDrawer.cs">
+      <Link>TimerNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\UserMethodNodeDrawer.cs">
+      <Link>UserMethodNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\VariableNodeDrawer.cs">
+      <Link>VariableNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\VariableReferenceNodeDrawer.cs">
+      <Link>VariableReferenceNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\Vector2NodeDrawer.cs">
+      <Link>Vector2NodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\Vector3NodeDrawer.cs">
+      <Link>Vector3NodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs.designer.cs">
+      <Link>Graphs.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\ActionLibraryGraph.cs">
+      <Link>ActionLibraryGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\ComponentsGraph.cs">
+      <Link>ComponentsGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\LibraryGraph.cs">
+      <Link>LibraryGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\ModuleGraph.cs">
+      <Link>ModuleGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\SystemGraph.cs">
+      <Link>SystemGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes.designer.cs">
+      <Link>Nodes.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ActionLibraryNode.cs">
+      <Link>ActionLibraryNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ActionNode.cs">
+      <Link>ActionNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\BoolNode.cs">
+      <Link>BoolNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ColorNode.cs">
+      <Link>ColorNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentGroupNode.cs">
+      <Link>ComponentGroupNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentNode.cs">
+      <Link>ComponentNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentsNode.cs">
+      <Link>ComponentsNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ContextNode.cs">
+      <Link>ContextNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\CustomActionNode.cs">
+      <Link>CustomActionNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\EntityNode.cs">
+      <Link>EntityNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\EventNode.cs">
+      <Link>EventNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\FloatNode.cs">
+      <Link>FloatNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\HandlerNode.cs">
+      <Link>HandlerNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\HanlderNode.cs">
+      <Link>HanlderNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\IntNode.cs">
+      <Link>IntNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ItemTypesNode.cs">
+      <Link>ItemTypesNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\LibraryNode.cs">
+      <Link>LibraryNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\LiteralNode.cs">
+      <Link>LiteralNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ModuleNode.cs">
+      <Link>ModuleNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\PublishNode.cs">
+      <Link>PublishNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\SequenceItemNode.cs">
+      <Link>SequenceItemNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\SetVariableNode.cs">
+      <Link>SetVariableNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\StartTimerNode.cs">
+      <Link>StartTimerNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\StopTimerNode.cs">
+      <Link>StopTimerNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\StringLiteralNode.cs">
+      <Link>StringLiteralNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\StringNode.cs">
+      <Link>StringNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\SystemNode.cs">
+      <Link>SystemNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\TimerNode.cs">
+      <Link>TimerNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\UserMethodNode.cs">
+      <Link>UserMethodNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\VariableNode.cs">
+      <Link>VariableNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\VariableReferenceNode.cs">
+      <Link>VariableReferenceNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\Vector2Node.cs">
+      <Link>Vector2Node.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\Vector3Node.cs">
+      <Link>Vector3Node.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Plugins.designer.cs">
+      <Link>Plugins.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Plugins\uFrameECS.cs">
+      <Link>Plugins\uFrameECS.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections.designer.cs">
+      <Link>Sections.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\ComponentsReference.cs">
+      <Link>ComponentsReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\EventsReference.cs">
+      <Link>EventsReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\MappingsReference.cs">
+      <Link>MappingsReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\SelectReference.cs">
+      <Link>SelectReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\SignalsReference.cs">
+      <Link>SignalsReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots.designer.cs">
+      <Link>Slots.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Component.cs">
+      <Link>Component.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Each.cs">
+      <Link>Each.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Event.cs">
+      <Link>Event.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Filter.cs">
+      <Link>Filter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\FilterBy.cs">
+      <Link>FilterBy.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Timer.cs">
+      <Link>Timer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Value.cs">
+      <Link>Value.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Variable.cs">
+      <Link>Variable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\VariableInput.cs">
+      <Link>VariableInput.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\VariableOutput.cs">
+      <Link>VariableOutput.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Variables.cs">
+      <Link>Variables.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels.designer.cs">
+      <Link>ViewModels.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ActionLibraryNodeViewModel.cs">
+      <Link>ActionLibraryNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ActionNodeViewModel.cs">
+      <Link>ActionNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\BoolNodeViewModel.cs">
+      <Link>BoolNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ColorNodeViewModel.cs">
+      <Link>ColorNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentGroupNodeViewModel.cs">
+      <Link>ComponentGroupNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentNodeViewModel.cs">
+      <Link>ComponentNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentsNodeViewModel.cs">
+      <Link>ComponentsNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ContextNodeViewModel.cs">
+      <Link>ContextNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\CustomActionNodeViewModel.cs">
+      <Link>CustomActionNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\EntityNodeViewModel.cs">
+      <Link>EntityNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\EventNodeViewModel.cs">
+      <Link>EventNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\FloatNodeViewModel.cs">
+      <Link>FloatNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\HandlerNodeViewModel.cs">
+      <Link>HandlerNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\IntNodeViewModel.cs">
+      <Link>IntNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ItemTypesNodeViewModel.cs">
+      <Link>ItemTypesNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\LibraryNodeViewModel.cs">
+      <Link>LibraryNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\LiteralNodeViewModel.cs">
+      <Link>LiteralNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ModuleNodeViewModel.cs">
+      <Link>ModuleNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\PublishNodeViewModel.cs">
+      <Link>PublishNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\SequenceItemNodeViewModel.cs">
+      <Link>SequenceItemNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\SetVariableNodeViewModel.cs">
+      <Link>SetVariableNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\StartTimerNodeViewModel.cs">
+      <Link>StartTimerNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\StopTimerNodeViewModel.cs">
+      <Link>StopTimerNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\StringLiteralNodeViewModel.cs">
+      <Link>StringLiteralNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\StringNodeViewModel.cs">
+      <Link>StringNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\SystemNodeViewModel.cs">
+      <Link>SystemNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\TimerNodeViewModel.cs">
+      <Link>TimerNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\UserMethodNodeViewModel.cs">
+      <Link>UserMethodNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\VariableNodeViewModel.cs">
+      <Link>VariableNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\VariableReferenceNodeViewModel.cs">
+      <Link>VariableReferenceNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\Vector2NodeViewModel.cs">
+      <Link>Vector2NodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\Vector3NodeViewModel.cs">
+      <Link>Vector3NodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Invert.Attributes\Invert.Attributes.csproj">
+      <Project>{572e3d0c-06d5-4894-a128-a2032684a0b6}</Project>
+      <Name>Invert.Attributes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.Core.GraphDesigner.Unity\Invert.Core.GraphDesigner.Unity.csproj">
+      <Project>{fd550f66-cd89-4027-bf9a-7454fccafefd}</Project>
+      <Name>Invert.Core.GraphDesigner.Unity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.Core.GraphDesigner\Invert.Core.GraphDesigner.csproj">
+      <Project>{06e581d4-daf3-4404-9426-e3be6478bc48}</Project>
+      <Name>Invert.Core.GraphDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.Core\Invert.Core.csproj">
+      <Project>{cfcc5f2c-7a2f-4fd1-90d8-52420b7eb337}</Project>
+      <Name>Invert.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.JSON\Invert.JSON.csproj">
+      <Project>{51e51ae2-77c1-498f-9b88-c2eed1e3aeed}</Project>
+      <Name>Invert.JSON</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.MVVM\Invert.MVVM.csproj">
+      <Project>{CB024A98-EE90-4497-8AF3-2C574D665A8A}</Project>
+      <Name>Invert.MVVM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -14,6 +14,10 @@ public class QuickAccessWindowPlugin : DiagramPlugin, IQuickAccessEvents
     {
         get { return 20; }
     }
+    public override bool Required
+    {
+        get { return true; }
+    }
 
     public override void Initialize(UFrameContainer container)
     {

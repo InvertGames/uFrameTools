@@ -4,6 +4,10 @@ using Invert.Windows;
 
 public class UnityWindows : DiagramPlugin
 {
+    public override bool Required
+    {
+        get { return true; }
+    }
     public override void Initialize(UFrameContainer container)
     {
         base.Initialize(container);

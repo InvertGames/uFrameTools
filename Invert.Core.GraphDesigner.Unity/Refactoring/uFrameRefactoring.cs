@@ -19,6 +19,10 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
     }
     public class uFrameRefactoring : DiagramPlugin, ICompileEvents, INodeItemEvents, IRefactoringEvents
     {
+        //public override bool Required
+        //{
+        //    get { return true; }
+        //}
         public override void Initialize(UFrameContainer container)
         {
             ListenFor<INodeItemEvents>();

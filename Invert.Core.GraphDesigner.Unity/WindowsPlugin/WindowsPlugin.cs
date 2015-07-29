@@ -10,7 +10,10 @@ using UnityEditor;
 using UnityEngine;
 
 public class WindowsPlugin : DiagramPlugin, IWindowsEvents {
-
+    public override bool Required
+    {
+        get { return true; }
+    }
     private static List<IWindowFactory> _laucherWindows;
     public static List<IWindowDrawer> _windowDrawers; 
     public override void Initialize(UFrameContainer container)
