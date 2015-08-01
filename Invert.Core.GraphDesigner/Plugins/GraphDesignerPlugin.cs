@@ -223,6 +223,7 @@ namespace Invert.Core.GraphDesigner
         private static IEnumerable<QuickAccessItem> QueryPossibleConnections(QuickAccessContext context)
         {
             var connectionHandler = context.Data as ConnectionHandler;
+            if (connectionHandler == null) yield break;
             var diagramViewModel = connectionHandler.DiagramViewModel;
 
             var currentGraph = InvertApplication.Container.Resolve<ProjectService>().CurrentProject.CurrentGraph;
