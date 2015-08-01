@@ -26,6 +26,10 @@ namespace Invert.Core.GraphDesigner
     }
     public class BenchMarking : DiagramPlugin, IPluginInspector, IBenchmarkEvents
     {
+        public override bool Required
+        {
+            get { return true; }
+        }
         private List<BenchMark> _benchmarks = new List<BenchMark>();
 
         public List<BenchMark> Benchmarks

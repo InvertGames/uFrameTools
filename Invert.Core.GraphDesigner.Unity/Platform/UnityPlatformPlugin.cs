@@ -121,7 +121,11 @@ namespace Invert.Core.GraphDesigner.Unity
 
     public class CompilationProgress : DiagramPlugin, IDesignerWindowEvents, ITaskProgressHandler
     {
-        
+        public override bool Required
+        {
+            get { return true; }
+        }
+
         public override void Initialize(UFrameContainer container)
         {
             ListenFor<IDesignerWindowEvents>();

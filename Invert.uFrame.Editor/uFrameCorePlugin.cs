@@ -135,25 +135,7 @@ namespace Invert.uFrame.Editor
             container.Register<ICodePathStrategy, DefaultCodePathStrategy>("Default");
             container.Register<ICodePathStrategy, SubSystemPathStrategy>("By Subsystem");
 
-
-            container.Register<DesignerGeneratorFactory, ElementDataGeneratorFactory>("ElementData");
-            container.Register<DesignerGeneratorFactory, EnumDataGeneratorFactory>("EnumData");
-            container.Register<DesignerGeneratorFactory, ViewDataGeneratorFactory>("ViewData");
-            container.Register<DesignerGeneratorFactory, ViewComponentDataGeneratorFactory>("ViewComponentData");
-            container.Register<DesignerGeneratorFactory, SceneManagerDataGeneratorFactory>("SceneManagerData");
-            
-
-#if DEBUG
-            container.Register<DesignerGeneratorFactory, ModelClassNodeCodeFactory>("ModelClassNodeData");
-#endif
-
-            container.Register<IBindingGenerator, StandardPropertyBindingGenerator>("StandardPropertyBindingGenerator");
-            container.Register<IBindingGenerator, ComputedPropertyBindingGenerator>("ComputedPropertyBindingGenerator");
-            container.Register<IBindingGenerator, ViewCollectionBindingGenerator>("ViewCollectionBindingGenerator");
-            container.Register<IBindingGenerator, DefaultCollectionBindingGenerator>("DefaultCollectionBindingGenerator");
-            //container.Register<IBindingGenerator, InstantiateViewPropertyBindingGenerator>("InstantiateViewPropertyBindingGenerator");
-            container.Register<IBindingGenerator, CommandExecutedBindingGenerator>("CommandExecutedBindingGenerator");
-            container.Register<IBindingGenerator, StateMachinePropertyBindingGenerator>("StateMachinePropertyBindingGenerator");
+           
 
             container.Register<DesignerGeneratorFactory, StateMachineCodeFactory>("StateMachineCodeFactory");
             container.Register<DesignerGeneratorFactory, StateMachineStateCodeFactory>("StateMachineStateCodeFactory");
