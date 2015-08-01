@@ -39,6 +39,11 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
         {
             return texture;
         }
+        else
+        {
+            return ElementDesignerStyles.GetSkinTexture("LoadingImage");
+        }
+
         return ElementDesignerStyles.ArrowDownTexture;
     }
     public string GetContent(string url)
@@ -59,12 +64,19 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
     public void DownloadImage(string url)
     {
         var ww = new WWW(url);
-        while (!ww.isDone)
-        {
 
-        }
-        ImageCache[url] = ww.texture;
-        Repaint();
+        EditorApplication.CallbackFunction callbackFunction= null;
+        callbackFunction= () =>
+        {
+            if (ww.isDone)
+            {
+                EditorApplication.update -= callbackFunction;
+                ImageCache[url] = ww.texture;
+                Repaint();
+            }
+        };
+        EditorApplication.update += callbackFunction;
+        
     }
     public void DownloadString(string url)
     {
@@ -617,6 +629,26 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 stretchHeight = false,
             }).WithFont("Verdana",12).WithAllStates("InfoBackground",textColor);
         }
+    }       
+    
+    public GUIStyle TroubleShootingStyle
+    {
+        get
+        {
+            var textColor = new Color(0.2f,0.2f,0.2f);
+            return _noteStyle ?? (_noteStyle = new GUIStyle()
+            {
+                wordWrap = true,
+                stretchWidth = true,
+                alignment = TextAnchor.UpperLeft,
+                border = new RectOffset(5,5,5,5),
+                margin = new RectOffset(20,55,20,0),
+                padding = new RectOffset(13,15,15,15),
+            
+                imagePosition = ImagePosition.ImageLeft,
+                stretchHeight = false,
+            }).WithFont("Verdana", 12).WithAllStates("TroubleShootingBackground", textColor);
+        }
     }   
     
     private GUIStyle _imageStyle;
@@ -1051,8 +1083,8 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
                 TutorialActionStyle.fontSize = 12;
                 TutorialActionStyle.normal.textColor = Color.red;
 
-                GUILayout.Label(step.IsComplete, TutorialActionStyle);
-
+                //GUILayout.Label(step.IsComplete, TutorialActionStyle);
+                EditorGUILayout.LabelField(new GUIContent(step.IsComplete, ElementDesignerStyles.GetSkinTexture("TroubleShootingIcon")), TroubleShootingStyle);
 
                 if (step.StepContent != null)
                 {
