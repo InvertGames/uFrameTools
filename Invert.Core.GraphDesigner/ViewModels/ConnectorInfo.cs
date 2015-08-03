@@ -56,19 +56,10 @@ namespace Invert.Core.GraphDesigner
             {
                 foreach (var input in InputsWith<TTarget>())
                 {
-                    //if (strategy.Filter != null)
-                    //{
-                    //    if (!strategy.Filter((TSource) output.DataObject, (TTarget) input.DataObject))
-                    //    {
-                    //        continue;
-                    //    }
-                    //}
+
                     var tempId = output.DataObject.GetHashCode().ToString() + input.DataObject.GetHashCode();
                     if (alreadyConnected.Contains(tempId)) continue;
-                    //if (output.ConnectorForType != null && input.ConnectorForType != null)
-                    //{
-                    //    if (input.ConnectorForType.IsAssignableFrom(output.ConnectorForType))
-                    //    {
+
                     if (strategy.IsConnected(CurrentRepository, (TSource)output.DataObject, (TTarget)input.DataObject))
                     {
                         yield return new ConnectionViewModel(DiagramViewModel)
@@ -82,25 +73,7 @@ namespace Invert.Core.GraphDesigner
                         };
                         alreadyConnected.Add(tempId);
                     }
-                    //    }
 
-                    //}
-                    //else
-                    //{
-                    //    if (strategy.IsConnected((TSource)output.DataObject, (TTarget)input.DataObject))
-                    //    {
-                    //        yield return new ConnectionViewModel(DiagramViewModel)
-                    //        {
-                    //            IsStateLink = strategy.IsStateLink,
-                    //            Color = strategy.ConnectionColor,
-                    //            ConnectorA = output,
-                    //            ConnectorB = input,
-                    //            Remove = strategy.Remove,
-                    //            Apply = strategy.Apply
-                    //        };
-                    //        alreadyConnected.Add(tempId);
-                    //    }
-                    //}
 
                 }
             }
