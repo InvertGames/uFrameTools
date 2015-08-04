@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 public class ShellGeneratorTypeNode : GenericNode
 {
@@ -90,7 +91,7 @@ public class ShellGeneratorTypeNode : GenericNode
     }
     public IEnumerable<TemplatePropertyReference> Overrides
     {
-        get { return ChildItems.OfType<TemplatePropertyReference>(); }
+        get { return PersistedItems.OfType<TemplatePropertyReference>(); }
     }
 
     public MemberInfo[] TemplateMembers
@@ -108,19 +109,19 @@ public class ShellGeneratorTypeNode : GenericNode
 
     public IEnumerable<TemplatePropertyReference> TemplateProperties
     {
-        get { return ChildItems.OfType<TemplatePropertyReference>(); }
+        get { return PersistedItems.OfType<TemplatePropertyReference>(); }
     }
     public IEnumerable<TemplateMethodReference> TemplateMethods
     {
-        get { return ChildItems.OfType<TemplateMethodReference>(); }
+        get { return PersistedItems.OfType<TemplateMethodReference>(); }
     }
     public IEnumerable<TemplateEventReference> TemplateEvents
     {
-        get { return ChildItems.OfType<TemplateEventReference>(); }
+        get { return PersistedItems.OfType<TemplateEventReference>(); }
     }
     public IEnumerable<TemplateFieldReference> TemplateFields
     {
-        get { return ChildItems.OfType<TemplateFieldReference>(); }
+        get { return PersistedItems.OfType<TemplateFieldReference>(); }
     }
   
 }

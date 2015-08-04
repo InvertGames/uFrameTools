@@ -32,36 +32,35 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public static IEnumerable<IDiagramNode> GetContainingNodes(this IDiagramFilter filter, INodeRepository repository)
+        public static IEnumerable<IDiagramNode> GetContainingNodes(this IDiagramFilter filter)
         {
-
-            return repository.NodeItems.Where(node => node != filter && repository.PositionData.HasPosition(filter, node));
+            return filter.FilterNodes();
         }
 
-        public static IEnumerable<IDiagramNode> GetParentNodes(this IDiagramNode node)
-        {
-            foreach (var item in node.Project.PositionData.Positions)
-            {
-                if (item.Value.Keys.Contains(node.Identifier))
-                {
-                    yield return node.Project.NodeItems.FirstOrDefault(p => p.Identifier == item.Key);
-                }
-            }
-        }
-        public static IEnumerable<IDiagramNode> GetContainingNodesResursive(this IDiagramFilter filter, INodeRepository repository)
-        {
-            foreach (var item in filter.GetContainingNodes(repository))
-            {
-                yield return item;
-                if (item is IDiagramFilter)
-                {
-                    var result = GetContainingNodesResursive(item as IDiagramFilter, repository);
-                    foreach (var subItem in result)
-                        yield return subItem;
+        //public static IEnumerable<IDiagramNode> GetParentNodes(this IDiagramNode node)
+        //{
+        //    foreach (var item in node.Project.PositionData.Positions)
+        //    {
+        //        if (item.Value.Keys.Contains(node.Identifier))
+        //        {
+        //            yield return node.Project.NodeItems.FirstOrDefault(p => p.Identifier == item.Key);
+        //        }
+        //    }
+        //}
+        //public static IEnumerable<IDiagramNode> GetContainingNodesResursive(this IDiagramFilter filter, INodeRepository repository)
+        //{
+        //    foreach (var item in filter.GetContainingNodes(repository))
+        //    {
+        //        yield return item;
+        //        if (item is IDiagramFilter)
+        //        {
+        //            var result = GetContainingNodesResursive(item as IDiagramFilter, repository);
+        //            foreach (var subItem in result)
+        //                yield return subItem;
 
-                }
-            }
-        }
+        //        }
+        //    }
+        //}
         public static bool IsAllowed(this IDiagramFilter filter, object item, Type t)
         {
 

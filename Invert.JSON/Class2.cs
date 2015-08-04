@@ -71,11 +71,17 @@ namespace Invert.Json
             var properties = type.GetProperties();
             foreach (var propertyInfo in properties)
             {
-                if (jsonClass[propertyInfo.Name] != null)
+                if (propertyInfo.IsDefined(typeof(JsonProperty), true) || propertyInfo.Name == "Identifier")
                 {
-                    var deserializedObject = DeserializeObject(propertyInfo.PropertyType, jsonClass[propertyInfo.Name]);
-                    propertyInfo.SetValue(poco, deserializedObject, null);
+                    if (jsonClass[propertyInfo.Name] != null)
+                    {
+                        var deserializedObject = DeserializeObject(propertyInfo.PropertyType, jsonClass[propertyInfo.Name]);
+                        propertyInfo.SetValue(poco, deserializedObject, null);
+                    }
+                  
+
                 }
+              
             }
 
             return poco;
@@ -92,6 +98,12 @@ namespace Invert.Json
             if (objectType == typeof(Guid))
             {
                 return new JSONData(target.ToString());
+            }   
+            //primitive detection
+            var node = SerializePrimitive(target);
+            if (node != null)
+            {
+                return node;
             }
 
             if (typeof(IList).IsAssignableFrom(objectType)) // collection detected
@@ -109,13 +121,9 @@ namespace Invert.Json
                 return jsonArray;
             }
 
-            //primitive detection
+         
 
-            var node = SerializePrimitive(target);
-            if (node != null)
-            {
-                return node;
-            }
+    
 
             //enum detection
 
@@ -132,8 +140,16 @@ namespace Invert.Json
             var properties = target.GetType().GetProperties();
             foreach (var propertyInfo in properties)
             {
+                if (propertyInfo.IsDefined(typeof (JsonProperty), true) || propertyInfo.Name == "Identifier")
+                {
+                    var value = propertyInfo.GetValue(target, null);
+                    if (value != null)
+                    {
+                        result.Add(propertyInfo.Name, SerializeObject(value));
+                    }
+                    
+                }
                 
-                result.Add(propertyInfo.Name, SerializeObject(propertyInfo.GetValue(target, null)));
             }
 
             return result;
@@ -154,6 +170,11 @@ namespace Invert.Json
             return node;
         }
 
+
+    }
+    [AttributeUsage(AttributeTargets.Property)]
+    public class JsonProperty : Attribute
+    {
 
     }
 

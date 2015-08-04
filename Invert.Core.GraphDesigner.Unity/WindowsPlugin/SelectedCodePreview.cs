@@ -91,9 +91,8 @@ public class SelectedCodePreview : EditorWindow
         //Issues = SelectedNode.Issues.Any(p => p.Siverity == ValidatorType.Error);
         //if (Issues) return;
         var item = SelectedNode == null ? null : SelectedNode.DataObject;
-
-        fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,
-            InvertGraphEditor.DesignerWindow.DiagramViewModel.CurrentRepository, true).ToArray();
+        // TODO 2.0: Fix selected code preview file generaters invoker
+        fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,null, true).ToArray();
 
         foreach (var fileGenerator in fileGenerators)
         {
@@ -148,7 +147,7 @@ public class DocumentationWindow : EditorWindow
         //window.drawer = window.DiagramDrawer();
         window.ShowPopup();
         var repository = InvertGraphEditor.DesignerWindow.DiagramViewModel.CurrentRepository;
-        window._screenshots = repository.AllGraphItems.OfType<DiagramNode>().ToList();
+        window._screenshots = repository.AllOf<DiagramNode>().ToList();
         window._capturing = true;
         window._exitOnComplete = true;
         window.NextScreenshot();
@@ -160,7 +159,7 @@ public class DocumentationWindow : EditorWindow
             if (GUILayout.Button("Generate Documentation"))
             {
                 var repository = InvertGraphEditor.DesignerWindow.DiagramViewModel.CurrentRepository;
-                _screenshots = repository.AllGraphItems.OfType<DiagramNode>().ToList();
+                _screenshots = repository.AllOf<DiagramNode>().ToList();
                 _capturing = true;
                 NextScreenshot();
             }
@@ -227,7 +226,7 @@ public class DocumentationWindow : EditorWindow
     {
         var window = InvertGraphEditor.DesignerWindow as ElementsDesigner;
 
-        var diagramViewModel = new DiagramViewModel(node.Graph, window.DiagramViewModel.CurrentRepository);
+        var diagramViewModel = new DiagramViewModel(node.Graph);
         diagramViewModel.NavigateTo(node.Identifier);
 
 
@@ -242,7 +241,7 @@ public class DocumentationWindow : EditorWindow
             return null;
         this.position = new Rect(this.position.x, this.position.y, screenshotVM.Bounds.width + 20f, screenshotVM.Bounds.height + 20f);
         var position = screenshotVM.Position - new Vector2(10f,10f);
-        Debug.Log(diagramViewModel.CurrentRepository.CurrentFilter.Name + " " + position.x + ": " + position.y);
+        Debug.Log(diagramViewModel.GraphData.CurrentFilter.Name + " " + position.x + ": " + position.y);
         foreach (var item in drawer.Children.OrderBy(p => p.ZOrder))
         {
            

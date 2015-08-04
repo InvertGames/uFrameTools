@@ -45,24 +45,24 @@ public class FilterState : IJsonObject {
 
     public void Reload(IGraphData graphData)
     {
-        
-        if (_persistedFilterStack.Count < 1) return;
-        if (_persistedFilterStack.Count != (FilterStack.Count))
-        {
-            foreach (var filterName in _persistedFilterStack)
-            {
-                var filter = graphData.Project.GetFilters().FirstOrDefault(p => p.Identifier == filterName);
-                if (filter == null)
-                {
-                    _persistedFilterStack.Clear();
-                    FilterStack.Clear();
-                    break;
-                }
+        // TODO 2.0: Filter Stacks?
+        //if (_persistedFilterStack.Count < 1) return;
+        //if (_persistedFilterStack.Count != (FilterStack.Count))
+        //{
+        //    foreach (var filterName in _persistedFilterStack)
+        //    {
+        //        var filter = graphData.Repository.GetFilters().FirstOrDefault(p => p.Identifier == filterName);
+        //        if (filter == null)
+        //        {
+        //            _persistedFilterStack.Clear();
+        //            FilterStack.Clear();
+        //            break;
+        //        }
                 
-                //FilterStack.Push(filter);
-                graphData.PushFilter(filter);
-            }
-        }
+        //        //FilterStack.Push(filter);
+        //        graphData.PushFilter(filter);
+        //    }
+        //}
     }
 
     public void Serialize(JSONClass cls)

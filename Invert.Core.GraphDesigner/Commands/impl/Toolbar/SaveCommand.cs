@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Invert.Core.GraphDesigner.Two;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -43,7 +44,15 @@ namespace Invert.Core.GraphDesigner
        
         public override void Perform(DiagramViewModel diagram)
         {
-            var issues = diagram.CurrentRepository.Validate().ToArray();
+            var service = InvertApplication.Container.Resolve<WorkspaceService>();
+            var issuesList = new List<ErrorInfo>();
+            foreach (var graph in service.CurrentWorkspace.Graphs)
+            {
+                issuesList.AddRange(graph.Validate());
+            }
+            
+         
+            var issues = issuesList.ToArray();
             if (issues.Any())
             {
                 foreach (var item in issues)
@@ -72,13 +81,11 @@ namespace Invert.Core.GraphDesigner
            // InvertGraphEditor.Platform.Progress(0, "Refactoring");
             yield return
                 new TaskProgress(0f, "Refactoring");
-            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PreCompile(diagram.CurrentRepository, diagram.GraphData));
+            // TODO 2.0 Need to figure out code generation strategies shouldn't be null
+            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PreCompile(null,null));
 
-            // Go ahead and process any code refactors
-            //ProcessRefactorings(diagram);
-            //var codeGenerators = uFrameEditor.GetAllCodeGenerators(item.Data).ToArray();
-            //var generatorSettings = InvertGraphEditor.CurrentProject.GeneratorSettings;
-            var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, diagram.CurrentRepository).ToArray();
+            // TODO 2.0 Need to figure out code generation strategies
+            var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, null).ToArray();
             var length = 100f / (fileGenerators.Length + 1);
             // Debug.Log(fileGenerators.Length);
             var index = 0;
@@ -144,16 +151,18 @@ namespace Invert.Core.GraphDesigner
             //    System.IO.File.Delete(item);
 
             //}
-            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(diagram.CurrentRepository, diagram.GraphData));
+
+            // TODO 2.0 Need to figure out code generation strategies these shouldn't be null
+            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(null,null));
 
 
             yield return
                 new TaskProgress(100f, "Complete");
 
 
-            var projectService = InvertApplication.Container.Resolve<ProjectService>();
+            var projectService = InvertApplication.Container.Resolve<WorkspaceService>();
 
-            foreach (var graph in projectService.CurrentProject.Graphs)
+            foreach (var graph in projectService.CurrentWorkspace.Graphs)
             {
                 graph.ChangeData.Clear();
             }

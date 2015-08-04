@@ -1,5 +1,6 @@
 using System.CodeDom;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 public class ShellNodeTypeSection : ShellNode, IShellNode
 {

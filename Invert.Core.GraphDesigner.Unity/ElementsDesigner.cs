@@ -120,11 +120,12 @@ namespace Invert.Core.GraphDesigner.Unity
                 }
                 if (IsFocused)
                 {
-                    if (DesignerWindow.CurrentProject != null)
-                    {
-                        Selection.activeObject = DesignerWindow.CurrentProject as UnityEngine.Object;
-                        EditorUtility.SetDirty(Selection.activeObject);
-                    }
+                    // TODO 2.0: Not sure what all this was for but double check it
+                    //if (DesignerWindow.Workspace != null)
+                    //{
+                    //    Selection.activeObject = DesignerWindow.Workspace as UnityEngine.Object;
+                    //    EditorUtility.SetDirty(Selection.activeObject);
+                    //}
                 }
                 LastMouseDownEvent = e;
             }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Text;
+using Invert.Core.GraphDesigner.Two;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -22,11 +23,11 @@ namespace Invert.Core.GraphDesigner
         {
             yield break;
         }
-        private static ProjectService _projectService;
-        public static ProjectService ProjectService
+        private static WorkspaceService _workspaceService;
+        public static WorkspaceService WorkspaceService
         {
-            get { return _projectService ?? (_projectService = InvertApplication.Container.Resolve<ProjectService>()); }
-            set { _projectService = value; }
+            get { return _workspaceService ?? (_workspaceService = InvertApplication.Container.Resolve<WorkspaceService>()); }
+            set { _workspaceService = value; }
         }
 
         private List<DocumentationPage> _childPages;
@@ -82,13 +83,13 @@ namespace Invert.Core.GraphDesigner
         {
             
             T existing = null;
-            if (ProjectService.CurrentProject == null || ProjectService.CurrentProject.CurrentGraph == null)
+            if (WorkspaceService.CurrentWorkspace == null || WorkspaceService.CurrentWorkspace.CurrentGraph == null)
             {
 
             }
             else
             {
-                existing = ProjectService.CurrentProject.NodeItems.OfType<T>().FirstOrDefault(p => p.Name == requiredName);
+                existing = WorkspaceService.Repository.All<T>().FirstOrDefault(p => p.Name == requiredName);
             }
             
             builder.ShowTutorialStep(new TutorialStep(string.Format("Create a '{0}' node with the name '{1}'", InvertApplication.Container.GetNodeConfig<T>().Name, requiredName), () =>
@@ -97,7 +98,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     if (requiredFilter != null)
                     {
-                        if (ProjectService.CurrentProject.CurrentFilter != requiredFilter)
+                        if (WorkspaceService.CurrentWorkspace.CurrentGraph.CurrentFilter != requiredFilter)
                         {
                             return string.Format("Double-click on the '{0}' Node.", requiredFilter.Name);
                         }
@@ -119,7 +120,7 @@ namespace Invert.Core.GraphDesigner
 
                     if (requiredFilter != null)
                     {
-                        if (ProjectService.CurrentProject.CurrentFilter != requiredFilter)
+                        if (WorkspaceService.CurrentWorkspace.CurrentGraph.CurrentFilter != requiredFilter)
                         {
                             _.Paragraph("First of all you need to get into {0} node.", requiredFilter.Name);
                             
@@ -226,9 +227,9 @@ namespace Invert.Core.GraphDesigner
         public TGraphType DoGraphStep<TGraphType>(IDocumentationBuilder builder, string name = null, Action<IDocumentationBuilder> stepContent = null) where TGraphType : class,IGraphData
         {
             var currentGraph =
-                (ProjectService.CurrentProject == null || object.ReferenceEquals(ProjectService.CurrentProject, null))
-                || (ProjectService.CurrentProject.CurrentGraph == null || object.ReferenceEquals(ProjectService.CurrentProject.CurrentGraph, null))
-                    ? null : (ProjectService.CurrentProject.Graphs.OfType<UnityGraphData>().Select(p=>p.Graph).OfType<TGraphType>().FirstOrDefault()) as TGraphType;
+                (WorkspaceService.CurrentWorkspace == null)
+                || (WorkspaceService.CurrentWorkspace.CurrentGraph == null)
+                    ? null : (WorkspaceService.CurrentWorkspace.Graphs.OfType<UnityGraphData>().Select(p => p.Graph).OfType<TGraphType>().FirstOrDefault()) as TGraphType;
 
             builder.ShowTutorialStep(new TutorialStep(string.Format("Create a new {0} Graph with the name '{1}'", typeof(TGraphType).Name.Replace("Graph",""),name ?? "ANYTHING"), () =>
             {
@@ -279,13 +280,13 @@ namespace Invert.Core.GraphDesigner
             return currentGraph;
         }
 
-        public IProjectRepository DoCreateNewProjectStep(IDocumentationBuilder builder,string projectName, Action<IDocumentationBuilder> stepContent = null)
+        public Workspace DoCreateNewProjectStep(IDocumentationBuilder builder,string projectName, Action<IDocumentationBuilder> stepContent = null)
         {
-            var currentProject = ProjectService.CurrentProject;
+            var currentProject = WorkspaceService.CurrentWorkspace;
             builder.ShowTutorialStep(new TutorialStep("Create a project and open it in Graph Designer", () =>
             {
             
-                if (currentProject == null || object.ReferenceEquals(currentProject, null))
+                if (currentProject == null)
                 {
                     return "Project hasn't been created yet.";
                 }
@@ -374,7 +375,7 @@ namespace Invert.Core.GraphDesigner
             builder.ShowTutorialStep( new TutorialStep(string.Format("Create a connection from {0} to {1}.", outputName, inputName), () =>
             {
                 var existing = output == null || input == null ? null :
-                    ProjectService.CurrentProject.Connections.FirstOrDefault(p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
+                    WorkspaceService.Repository.All<ConnectionData>().FirstOrDefault(p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
                 if (existing == null)
                 {
                     var typedItem = output as ITypedItem;

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using Invert.Data;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -29,61 +30,59 @@ namespace Invert.Core.GraphDesigner
 
         public override void Perform(DiagramNodeViewModel node)
         {
-
-            if (node == null) return;
-            var selected = node.DataObject as IDiagramNode;
-
+            InvertApplication.Container.Resolve<IRepository>()
+                .Remove(node.GraphItemObject);
            // var pathStrategy = selected.Graph.Directory;
 
             //InvertApplication.LogIfNull(pathStrategy,"Path Strategy");
+            // TODO 2.0 IMPORTANT: Delete Command project paths
+            //var generators = node.CodeGenerators.ToArray();
 
-            var generators = node.CodeGenerators.ToArray();
+            //var customFiles = generators.Select(p=>p.Filename).ToArray();
+            //var customFileFullPaths = generators.Select(p => System.IO.Path.Combine(selected.Project.SystemDirectory, p.Filename)).Where(File.Exists).ToArray();
+            //var customMetaFiles = generators.Select(p => System.IO.Path.Combine(selected.Project.SystemDirectory, p.Filename) + ".meta").Where(File.Exists).ToArray();
 
-            var customFiles = generators.Select(p=>p.Filename).ToArray();
-            var customFileFullPaths = generators.Select(p => System.IO.Path.Combine(selected.Project.SystemDirectory, p.Filename)).Where(File.Exists).ToArray();
-            var customMetaFiles = generators.Select(p => System.IO.Path.Combine(selected.Project.SystemDirectory, p.Filename) + ".meta").Where(File.Exists).ToArray();
+            //if (node.IsFilter)
+            //{
 
-            if (node.IsFilter)
-            {
+            //    if (node.HasFilterItems)
+            //    {
+            //        var list = node.ContainedItems.Select(p => string.Format("{0} node inside '{1}'graph", p.Name, p.Graph.Name)).ToArray();
+            //        InvertGraphEditor.Platform.MessageBox("Delete sub items first.",
+            //            "There are items defined inside this item please hide or delete them before removing this item." + Environment.NewLine + string.Join(Environment.NewLine,list), "OK");
+            //        return;
+            //    }
+            //}
+            //if (InvertGraphEditor.Platform.MessageBox("Confirm", "Are you sure you want to delete this?", "Yes", "No"))
+            //{
+            //    InvertGraphEditor.ExecuteCommand(_ =>
+            //    {
+            //        selected.Project.RemoveNode(selected);
+            //    });
 
-                if (node.HasFilterItems)
-                {
-                    var list = node.ContainedItems.Select(p => string.Format("{0} node inside '{1}'graph", p.Name, p.Graph.Name)).ToArray();
-                    InvertGraphEditor.Platform.MessageBox("Delete sub items first.",
-                        "There are items defined inside this item please hide or delete them before removing this item." + Environment.NewLine + string.Join(Environment.NewLine,list), "OK");
-                    return;
-                }
-            }
-            if (InvertGraphEditor.Platform.MessageBox("Confirm", "Are you sure you want to delete this?", "Yes", "No"))
-            {
-                InvertGraphEditor.ExecuteCommand(_ =>
-                {
-                    selected.Project.RemoveNode(selected);
-                });
-
-                if (customFileFullPaths.Length > 0)
-                {
-                    if (InvertGraphEditor.Platform.MessageBox("Confirm",
-                        "You have files associated with this. Delete them too?" + Environment.NewLine +
-                        string.Join(Environment.NewLine, customFiles), "Yes Delete Them", "Don't Delete them"))
-                    {
-                        InvertGraphEditor.ExecuteCommand(_ =>
-                        {
-                            foreach (var customFileFullPath in customFileFullPaths)
-                            {
-                                File.Delete(customFileFullPath);
-                            }
-                            foreach (var metaFile in customMetaFiles)
-                            {
-                                File.Delete(metaFile);
-                            }
-                            //var saveCommand = InvertGraphEditor.Container.Resolve<IToolbarCommand>("SaveCommand");
-                            //Execute the save command
-                            InvertGraphEditor.ExecuteCommand(new SaveCommand());
-                        });
-                    }
-                }
-            }
+            //    if (customFileFullPaths.Length > 0)
+            //    {
+            //        if (InvertGraphEditor.Platform.MessageBox("Confirm",
+            //            "You have files associated with this. Delete them too?" + Environment.NewLine +
+            //            string.Join(Environment.NewLine, customFiles), "Yes Delete Them", "Don't Delete them"))
+            //        {
+            //            InvertGraphEditor.ExecuteCommand(_ =>
+            //            {
+            //                foreach (var customFileFullPath in customFileFullPaths)
+            //                {
+            //                    File.Delete(customFileFullPath);
+            //                }
+            //                foreach (var metaFile in customMetaFiles)
+            //                {
+            //                    File.Delete(metaFile);
+            //                }
+            //                //var saveCommand = InvertGraphEditor.Container.Resolve<IToolbarCommand>("SaveCommand");
+            //                //Execute the save command
+            //                InvertGraphEditor.ExecuteCommand(new SaveCommand());
+            //            });
+            //        }
+            //    }
+            //}
         }
 
 
@@ -94,10 +93,10 @@ namespace Invert.Core.GraphDesigner
                 return "Can't delete while inside of the node.";
             if (selected == null) 
                 return "Select something first.";
-            if (!node.IsLocal) 
-                return "Must be local to delete. Use hide instead.";
-            if (selected.Graph.Identifier != InvertGraphEditor.CurrentDiagramViewModel.GraphData.Identifier)
-                return "Must be local to delete. Use hide instead.";
+            //if (!node.IsLocal) 
+            //    return "Must be local to delete. Use hide instead.";
+            //if (selected.Graph.Identifier != InvertGraphEditor.CurrentDiagramViewModel.GraphData.Identifier)
+            //    return "Must be local to delete. Use hide instead.";
             return null;
         }
     }

@@ -43,7 +43,7 @@ namespace Invert.Core.GraphDesigner
         public IEnumerable<UFContextMenuItem> GetOptions(object item)
         {
             var viewModel = item as DiagramViewModel;
-            var filterType = viewModel.CurrentRepository.CurrentFilter.GetType();
+            var filterType = viewModel.GraphData.CurrentFilter.GetType();
             if (!FilterExtensions.AllowedFilterNodes.ContainsKey(filterType))
             {
                 InvertApplication.Log(string.Format("The filter type {0} was not find. Make sure the filter is registered, or it has sub nodes for it.", filterType.Name));
@@ -124,7 +124,8 @@ namespace Invert.Core.GraphDesigner
         {
             var viewModel = item as DiagramNodeViewModel;
             if (viewModel == null) yield break;
-            var diagrams = viewModel.GraphItemObject.Project.Graphs;
+
+            var diagrams = viewModel.GraphItemObject.Repository.AllOf<IGraphData>();
 
             foreach (var diagram in diagrams)
             {
@@ -240,60 +241,60 @@ namespace Invert.Core.GraphDesigner
 
         public override void Perform(DiagramNode node)
         {
-            var sourceDiagram = node.Graph;
-            var targetDiagram = InvertGraphEditor.DesignerWindow.DiagramViewModel.GraphData;
-            if (targetDiagram == null) return;
-            var editableFilesBefore = InvertGraphEditor.GetAllFileGenerators(null, node.Project, false).Where(p=>p.Generators.Any(x=>!x.AlwaysRegenerate)).ToArray();
+            // TODO 2.0 Rewrite pull from
+            //var sourceDiagram = node.Graph;
+            //var targetDiagram = InvertGraphEditor.DesignerWindow.DiagramViewModel.GraphData;
+            //if (targetDiagram == null) return;
+            //var editableFilesBefore = InvertGraphEditor.GetAllFileGenerators(null, node.Project, false).Where(p=>p.Generators.Any(x=>!x.AlwaysRegenerate)).ToArray();
             
-            Process(node, sourceDiagram, targetDiagram);
+            //Process(node, sourceDiagram, targetDiagram);
 
-            var editableFilesAfter = InvertGraphEditor.GetAllFileGenerators(null, node.Project, false).Where(p => p.Generators.Any(x => !x.AlwaysRegenerate)).ToArray();
-            //if (editableFilesBefore.Any(p => File.Exists(System.IO.Path.Combine(p.AssetPath, p.Filename))))
+            //var editableFilesAfter = InvertGraphEditor.GetAllFileGenerators(null, node.Project, false).Where(p => p.Generators.Any(x => !x.AlwaysRegenerate)).ToArray();
+            ////if (editableFilesBefore.Any(p => File.Exists(System.IO.Path.Combine(p.AssetPath, p.Filename))))
+            ////{
+            ////    InvertGraphEditor.Platform.MessageBox("Move Files",
+            ////        "Pulling this item causes some output paths to change. I'm going to move them now.", "OK");
+            ////}
+            //foreach (var beforeFile in editableFilesBefore)
             //{
-            //    InvertGraphEditor.Platform.MessageBox("Move Files",
-            //        "Pulling this item causes some output paths to change. I'm going to move them now.", "OK");
-            //}
-            foreach (var beforeFile in editableFilesBefore)
-            {
-                var before = beforeFile.Generators.FirstOrDefault();
-                if (before == null) continue;
-                foreach (var afterFile in editableFilesAfter)
-                {
-                    var after = afterFile.Generators.FirstOrDefault();
-                    if (after == null) continue;
+            //    var before = beforeFile.Generators.FirstOrDefault();
+            //    if (before == null) continue;
+            //    foreach (var afterFile in editableFilesAfter)
+            //    {
+            //        var after = afterFile.Generators.FirstOrDefault();
+            //        if (after == null) continue;
 
-                    if (before.ObjectData == after.ObjectData)
-                    {
+            //        if (before.ObjectData == after.ObjectData)
+            //        {
                       
-                        var beforeFilename = beforeFile.SystemPath;
-                        var afterFilename = afterFile.SystemPath;
-                        if (beforeFilename == afterFilename) continue; // No change in path
-                        if (System.IO.Path.GetFileName(beforeFilename) != System.IO.Path.GetFileName(afterFilename))
-                            continue; // Filenames aren't the same
-                        //InvertApplication.Log(string.Format("Moving {0} to {1}", beforeFilename, afterFilename));
-                        if (File.Exists(beforeFilename))
-                        {
-                            var dir = System.IO.Path.GetDirectoryName(afterFilename);
-                            if (!Directory.Exists(dir))
-                            {
-                                Directory.CreateDirectory(dir);
-                            }
-                            File.Move(beforeFilename, afterFilename);
-                        }
+            //            var beforeFilename = beforeFile.SystemPath;
+            //            var afterFilename = afterFile.SystemPath;
+            //            if (beforeFilename == afterFilename) continue; // No change in path
+            //            if (System.IO.Path.GetFileName(beforeFilename) != System.IO.Path.GetFileName(afterFilename))
+            //                continue; // Filenames aren't the same
+            //            //InvertApplication.Log(string.Format("Moving {0} to {1}", beforeFilename, afterFilename));
+            //            if (File.Exists(beforeFilename))
+            //            {
+            //                var dir = System.IO.Path.GetDirectoryName(afterFilename);
+            //                if (!Directory.Exists(dir))
+            //                {
+            //                    Directory.CreateDirectory(dir);
+            //                }
+            //                File.Move(beforeFilename, afterFilename);
+            //            }
                         
-                        var beforeMetaFilename = beforeFilename + ".meta";
-                        var afterMetaFilename = afterFilename + ".meta";
+            //            var beforeMetaFilename = beforeFilename + ".meta";
+            //            var afterMetaFilename = afterFilename + ".meta";
 
-                        if (File.Exists(beforeMetaFilename))
-                        {
-                            File.Move(beforeMetaFilename, afterMetaFilename);
-                        }
+            //            if (File.Exists(beforeMetaFilename))
+            //            {
+            //                File.Move(beforeMetaFilename, afterMetaFilename);
+            //            }
                         
-                    }
-                }
-            }
-            sourceDiagram.Project.MarkDirty(sourceDiagram);
-            sourceDiagram.Project.MarkDirty(targetDiagram);
+            //        }
+            //    }
+            //}
+           
 #if UNITY_DLL
        
             UnityEditor.AssetDatabase.Refresh();

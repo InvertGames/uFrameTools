@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 public interface IShellSlotType : IShellNodeConfigItem
 {
@@ -26,12 +27,12 @@ public class ShellSlotTypeNode : ShellNode, IReferenceNode
     [ReferenceSection("Acceptable Types",SectionVisibility.Always, false)]
     public IEnumerable<ShellAcceptableReferenceType> AcceptableTypes
     {
-        get { return ChildItems.OfType<ShellAcceptableReferenceType>(); }
+        get { return PersistedItems.OfType<ShellAcceptableReferenceType>(); }
     }
 
     public IEnumerable<IShellNode> PossibleAcceptableTypes
     {
-        get { return Project.AllGraphItems.OfType<IShellNode>(); }
+        get { return Repository.AllOf<IShellNode>(); }
     }
 
     public IShellNode ReferenceType
@@ -43,7 +44,7 @@ public class ShellSlotTypeNode : ShellNode, IReferenceNode
     {
         get
         {
-            return Project.AllGraphItems.OfType<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
+            return Repository.AllOf<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
         }
     }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 
 public class ShellNodeTypeReferenceSection : ShellNodeTypeSection,IReferenceNode, IShellConnectable
@@ -38,23 +39,23 @@ public class ShellNodeTypeReferenceSection : ShellNodeTypeSection,IReferenceNode
     [ReferenceSection("Acceptable Types", SectionVisibility.Always, false)]
     public IEnumerable<ShellAcceptableReferenceType> AcceptableTypes
     {
-        get { return ChildItems.OfType<ShellAcceptableReferenceType>(); }
+        get { return PersistedItems.OfType<ShellAcceptableReferenceType>(); }
     }
     public IEnumerable<IShellNode> PossibleAcceptableTypes
     {
-        get { return Project.NodeItems.OfType<IShellNode>(); }
+        get { return Repository.AllOf<IShellNode>(); }
     }
 
 
     [ReferenceSection("Connectable To", SectionVisibility.Always, false)]
     public IEnumerable<ShellConnectableReferenceType> ConnectableTo
     {
-        get { return ChildItems.OfType<ShellConnectableReferenceType>(); }
+        get { return PersistedItems.OfType<ShellConnectableReferenceType>(); }
     }
 
     public IEnumerable<IShellNode> PossibleConnectableTo
     {
-        get { return Project.NodeItems.OfType<IShellNode>(); }
+        get { return Repository.AllOf<IShellNode>(); }
     }
 
 
@@ -63,7 +64,7 @@ public class ShellNodeTypeReferenceSection : ShellNodeTypeSection,IReferenceNode
     {
         get
         {
-            return Project.NodeItems.OfType<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
+            return Repository.AllOf<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
         }
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using Invert.Core.GraphDesigner.Two;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -180,24 +181,11 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (IsScreenshot)
-                {
-                    return new Vector2(45f, 45f);
-                }
-                return DiagramViewModel.CurrentRepository.GetItemLocation(GraphItemObject);
-                //return GraphItemObject.Location;
+                return DiagramViewModel.FilterItems[GraphItemObject.Identifier].Position;
             }
             set
             {
-                if (IsScreenshot)
-                {
-                    //GraphItemObject.DefaultLocation = value;
-                }
-                else
-                {
-                    DiagramViewModel.CurrentRepository.SetItemLocation(GraphItemObject, value);
-                }
-
+                DiagramViewModel.FilterItems[GraphItemObject.Identifier].Position = value;
             }
         }
 
@@ -268,13 +256,13 @@ namespace Invert.Core.GraphDesigner
             {
                 if (ShowHelp) return false;
                 if (AllowCollapsing)
-                    return GraphItemObject.IsCollapsed;
+                    return DiagramViewModel.FilterItems[GraphItemObject.Identifier].Collapsed;
                 return true;
 
             }
             set
             {
-                GraphItemObject.IsCollapsed = value;
+                DiagramViewModel.FilterItems[GraphItemObject.Identifier].Collapsed = value;
                 OnPropertyChanged("IsCollapsed");
                 IsDirty = true;
             }
@@ -300,7 +288,7 @@ namespace Invert.Core.GraphDesigner
             base.DataObjectChanged();
             ContentItems.Clear();
 
-            IsLocal = DiagramViewModel == null || DiagramViewModel.CurrentRepository.NodeItems.Contains(GraphItemObject);
+            //IsLocal = DiagramViewModel == null || DiagramViewModel.CurrentRepository.NodeItems.Contains(GraphItemObject);
             CreateContent();
             if (GraphItemObject.IsEditing)
             {
@@ -353,11 +341,6 @@ namespace Invert.Core.GraphDesigner
         }
 
 
-
-        public string InfoLabel
-        {
-            get { return GraphItemObject.InfoLabel; }
-        }
 
         public string Label
         {
@@ -424,7 +407,7 @@ namespace Invert.Core.GraphDesigner
 
         public bool IsFilter
         {
-            get { return InvertGraphEditor.IsFilter(GraphItemObject.GetType()) && IsLocal; }
+            get { return InvertGraphEditor.IsFilter(GraphItemObject.GetType()); }
         }
 
         public IEnumerable<OutputGenerator> CodeGenerators
@@ -444,7 +427,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     return false;
                 }
-                return filter.GetContainingNodesInProject(GraphItemObject.Project).Any(p => p != GraphItemObject);
+                return filter.FilterItems().Any();
             }
         }
         public IEnumerable<IDiagramNode> ContainedItems
@@ -456,7 +439,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     yield break;
                 }
-                foreach (var item in filter.GetContainingNodesInProject(GraphItemObject.Project))
+                foreach (var item in filter.FilterNodes())
                 {
                     yield return item;
                 }
@@ -500,7 +483,7 @@ namespace Invert.Core.GraphDesigner
 
         public void Hide()
         {
-            DiagramViewModel.CurrentRepository.HideNode(GraphItemObject.Identifier);
+            DiagramViewModel.GraphData.CurrentFilter.HideInFilter(GraphItemObject);
             InvertApplication.SignalEvent<INodeItemEvents>(_ => _.Hidden(GraphItemObject));
         }
 

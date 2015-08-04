@@ -4,68 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
 
-public class EnumData : DiagramNode,IDesignerType, IViewPropertyType
-{
-    private List<EnumItem> _enumItems = new List<EnumItem>();
-
-    public List<EnumItem> EnumItems
-    {
-        get { return _enumItems; }
-        set { _enumItems = value; }
-    }
-
-    public override IEnumerable<IDiagramNodeItem> PersistedItems
-    {
-        get { return EnumItems.Cast<IDiagramNodeItem>(); }
-        set { EnumItems = value.OfType<EnumItem>().ToList(); }
-    }
-
-    public override void NodeItemRemoved(IDiagramNodeItem item)
-    {
-        EnumItems.Remove(item as EnumItem);
-    }
-
-    public override void MoveItemDown(IDiagramNodeItem nodeItem)
-    {
-        base.MoveItemDown(nodeItem);
-        EnumItems.Move(EnumItems.IndexOf(nodeItem as EnumItem),false);
-    }
-    public override void MoveItemUp(IDiagramNodeItem nodeItem)
-    {
-        base.MoveItemDown(nodeItem);
-        EnumItems.Move(EnumItems.IndexOf(nodeItem as EnumItem), true);
-    }
-    public override bool EndEditing()
-    {
-        if (!base.EndEditing()) return false;
-        return true;
-    }
-
-    public override void RemoveFromDiagram()
-    {
-        base.RemoveFromDiagram();
-
-        Project.RemoveNode(this);
-    }
-
-    //public Type CompiledType
-    //{
-    //    get { return Type.GetType(AssemblyQualifiedName); }
-    //}
-
-    public override string InfoLabel
-    {
-        get { return null; }
-    }
-
-    public override string Label { get { return Name; }}
-
-    public override IEnumerable<IDiagramNodeItem> DisplayedItems
-    {
-        get { return EnumItems.Cast<IDiagramNodeItem>(); }
-    }
-
-}
 
 public class EnumNode : GenericNode , IClassTypeNode
 {
@@ -78,7 +16,7 @@ public class EnumNode : GenericNode , IClassTypeNode
     public IEnumerable<EnumChildItem> Items {
         get
         {
-            return ChildItems.OfType<EnumChildItem>();
+            return PersistedItems.OfType<EnumChildItem>();
         }
     }
 

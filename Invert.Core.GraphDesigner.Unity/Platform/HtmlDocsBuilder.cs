@@ -275,7 +275,6 @@ namespace Invert.Core.GraphDesigner.Unity
             var tempProject = ScriptableObject.CreateInstance<TemporaryProjectRepository>();
             tempProject.CurrentGraph = data.Node.Graph;
             tempProject.Graphs = new[] { data.Node.Graph };
-            tempProject.CurrentGraph.SetProject(tempProject);
 
             var template = new TemplateClassGenerator<TData, TTemplate>()
             {

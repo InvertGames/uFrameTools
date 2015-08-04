@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Invert.Common;
+using Invert.Core.GraphDesigner.Two;
 using UnityEditor;
 using UnityEngine;
 
@@ -460,34 +461,34 @@ namespace Invert.Core.GraphDesigner.Unity
                 foreach (var tab in designerWindow.Designer.Tabs.ToArray())
                 {
                   
-                    var isCurrent = designerWindow.CurrentProject != null && designerWindow.CurrentProject.CurrentGraph != null && tab.GraphIdentifier == designerWindow.CurrentProject.CurrentGraph.Identifier;
-                    if (GUILayout.Button(tab.GraphName,
+                    var isCurrent = designerWindow.Workspace != null && designerWindow.Workspace.CurrentGraph != null && tab.Identifier == designerWindow.Workspace.CurrentGraph.Identifier;
+                    if (GUILayout.Button(tab.Name,
                         isCurrent
                             ? ElementDesignerStyles.TabStyle
                             : ElementDesignerStyles.TabInActiveStyle,GUILayout.MinWidth(150)))
                     {
-                        var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
+                        var projectService = InvertGraphEditor.Container.Resolve<WorkspaceService>();
                    
                         if (Event.current.button == 1)
                         {
                          
-                           var isLastGraph = projectService.CurrentProject.OpenGraphs.Count() <= 1;
+                           var isLastGraph = projectService.CurrentWorkspace.Graphs.Count() <= 1;
 
                            if (!isLastGraph)
                             {
-                                projectService.CurrentProject.CloseGraph(tab);
-                                var lastGraph = projectService.CurrentProject.OpenGraphs.LastOrDefault();
+                                var tab1 = tab;
+                                projectService.Repository.RemoveAll<WorkspaceGraph>(p=>p.WorkspaceId == projectService.CurrentWorkspace.Identifier && p.GraphId == tab1.Identifier);
+                                var lastGraph = projectService.CurrentWorkspace.Graphs.LastOrDefault();
                                 if (isCurrent && lastGraph != null)
                                 {
-                                    var graph = designerWindow.CurrentProject.Graphs.FirstOrDefault(p => p.Identifier == lastGraph.GraphIdentifier);
-                                    designerWindow.SwitchDiagram(graph);
+                                    designerWindow.SwitchDiagram(lastGraph);
                                 }
                             
                             }
                         }
                         else
                         {
-                            designerWindow.SwitchDiagram(projectService.CurrentProject.Graphs.FirstOrDefault(p => p.Identifier == tab.GraphIdentifier));    
+                            designerWindow.SwitchDiagram(projectService.CurrentWorkspace.Graphs.FirstOrDefault(p => p.Identifier == tab.Identifier));    
                         }
                         
                     }
@@ -594,12 +595,13 @@ namespace Invert.Core.GraphDesigner.Unity
                 {
                     var type = d.Type;
                     //var nodeItem = d.ViewModel.NodeViewModel.DataObject as IDiagramNodeItem;
-                    var items = InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.AllGraphItems.Where(p => type.IsAssignableFrom(p.GetType()));
-                    InvertGraphEditor.WindowManager.InitItemWindow(items, (i) =>
-                    {
+                    // TODO 2.0 Genericize GetAny to pass "Type"
+                    //var items = InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository..Where(p => type.IsAssignableFrom(p.GetType()));
+                    //InvertGraphEditor.WindowManager.InitItemWindow(items, (i) =>
+                    //{
 
-                        d.Setter(i);
-                    },true);
+                    //    d.Setter(i);
+                    //},true);
 
                 }
                 //GUILayout.EndHorizontal();

@@ -111,8 +111,8 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
                   
                         so.ApplyModifiedProperties();
                         EditorUtility.SetDirty(target);
-                        var project = InvertApplication.Container.Resolve<ProjectService>();
-                        project.RefreshProjects();
+                        //var project = InvertApplication.Container.Resolve<WorkspaceService>();
+                        //project.RefreshProjects();
                     }
                 })
                 ;
@@ -463,8 +463,8 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
     public IGraphItem SelectedItem { get; set; }
     private void ImportDiagram()
     {
-        var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
-        var projectAssets = projectService.Projects.SelectMany(p => p.Graphs);
+        var projectService = InvertGraphEditor.Container.Resolve<WorkspaceService>();
+        var projectAssets = projectService.Workspaces.SelectMany(p => p.Graphs);
         var assets = InvertGraphEditor.AssetManager.GetAssets(typeof(ScriptableObject)).OfType<IGraphData>().Where(p => !projectAssets.Contains(p)).ToArray();
 
 

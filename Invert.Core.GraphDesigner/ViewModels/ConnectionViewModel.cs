@@ -9,7 +9,7 @@ namespace Invert.Core.GraphDesigner
         private Color _color;
         public ConnectorViewModel ConnectorA { get; set; }
         public ConnectorViewModel ConnectorB { get; set; }
-        public DiagramViewModel DiagramViewModel { get; set;}
+        
 
         public virtual bool IsStateLink { get; set; }
 

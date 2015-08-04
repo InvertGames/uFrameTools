@@ -71,18 +71,7 @@ namespace Invert.Core.GraphDesigner
             
 #if UNITY_DLL        
             typeContainer.RegisterInstance(new GraphTypeInfo() { Type = typeof(Quaternion), Group = "", Label = "Quaternion", IsPrimitive = true }, "Quaternion");
-            container.Register<DesignerGeneratorFactory, Invert.uFrame.CodeGen.ClassNodeGenerators.SimpleClassNodeCodeFactory>("ClassNodeData");
-            
-            // Enums
-            container.RegisterGraphItem<EnumData, EnumNodeViewModel>();
-            container.RegisterChildGraphItem<EnumItem, EnumItemViewModel>();
-            //container.RegisterInstance(new AddEnumItemCommand());
-
-            // Class Nodes
-            container.RegisterGraphItem<ClassPropertyData, ClassPropertyItemViewModel>();
-            container.RegisterGraphItem<ClassCollectionData, ClassCollectionItemViewModel>();
-            container.RegisterGraphItem<ClassNodeData, ClassNodeViewModel>();
-            
+            //container.Register<DesignerGeneratorFactory, Invert.uFrame.CodeGen.ClassNodeGenerators.SimpleClassNodeCodeFactory>("ClassNodeData");  
 
 #endif
             // Register the container itself
@@ -161,11 +150,12 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerable<QuickAddItem> PrefabNodes(INodeRepository nodeRepository)
         {
-            return nodeRepository.GetImportableItems(nodeRepository.CurrentFilter).OfType<DiagramNode>().Select(p=>new QuickAddItem("Show Item",p.Name,
-                _ =>
-                {
-                    nodeRepository.SetItemLocation(p, _.MousePosition);
-                }));
+            yield break;
+            //return nodeRepository.GetImportableItems(nodeRepository.CurrentFilter).OfType<DiagramNode>().Select(p=>new QuickAddItem("Show Item",p.Name,
+            //    _ =>
+            //    {
+            //        nodeRepository.SetItemLocation(p, _.MousePosition);
+            //    }));
         }
 
         public void CommandExecuting(ICommandHandler handler, IEditorCommand command, object o)
@@ -179,8 +169,8 @@ namespace Invert.Core.GraphDesigner
             var item = o as IDiagramNodeItem;
             if (item != null)
             {
-                var projectService = InvertApplication.Container.Resolve<ProjectService>();
-                foreach (var graph in projectService.CurrentProject.Graphs)
+                var projectService = InvertApplication.Container.Resolve<WorkspaceService>();
+                foreach (var graph in projectService.CurrentWorkspace.Graphs)
                 {
                     if (graph.Identifier == item.Node.Graph.Identifier)
                     {
@@ -198,16 +188,16 @@ namespace Invert.Core.GraphDesigner
 
         public void ConnectionApplied(IGraphData g, IConnectable output, IConnectable input)
         {
-            #if UNITY_DLL
-            var projectService = InvertApplication.Container.Resolve<ProjectService>();
-            foreach (var graph in projectService.CurrentProject.Graphs)
-            {
-                if (graph.Identifier == g.Identifier)
-                {
-                    UnityEditor.EditorUtility.SetDirty(graph as UnityEngine.Object);
-                }
-            }
-            #endif
+            //#if UNITY_DLL
+            //var projectService = InvertApplication.Container.Resolve<WorkspaceService>();
+            //foreach (var graph in projectService.CurrentWorkspace.Graphs)
+            //{
+            //    if (graph.Identifier == g.Identifier)
+            //    {
+            //        UnityEditor.EditorUtility.SetDirty(graph as UnityEngine.Object);
+            //    }
+            //}
+            //#endif
         }
 
         public void CreateConnectionMenu(ConnectionHandler viewModel, DiagramViewModel diagramViewModel, MouseEvent mouseEvent)
@@ -226,7 +216,7 @@ namespace Invert.Core.GraphDesigner
             if (connectionHandler == null) yield break;
             var diagramViewModel = connectionHandler.DiagramViewModel;
 
-            var currentGraph = InvertApplication.Container.Resolve<ProjectService>().CurrentProject.CurrentGraph;
+            var currentGraph = InvertApplication.Container.Resolve<WorkspaceService>().CurrentWorkspace.CurrentGraph;
             var allowedFilterNodes = FilterExtensions.AllowedFilterNodes[currentGraph.CurrentFilter.GetType()];
             foreach (var item in allowedFilterNodes)
             {
@@ -234,7 +224,9 @@ namespace Invert.Core.GraphDesigner
                 if (item.IsAbstract) continue;
 
                 var node = Activator.CreateInstance(item) as IDiagramNode;
-                node.Graph = currentGraph;
+                node.Repository = diagramViewModel.CurrentRepository;
+                node.GraphId = currentGraph.Identifier;
+
                 var vm = InvertGraphEditor.Container.GetNodeViewModel(node, diagramViewModel) as DiagramNodeViewModel;
 
 

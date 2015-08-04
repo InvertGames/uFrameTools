@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Invert.Data;
 using Invert.Json;
 using UnityEngine;
 
@@ -131,11 +132,6 @@ namespace Invert.Core.GraphDesigner
            return a != b;
         }
     }
-    [AttributeUsage(AttributeTargets.Property)]
-    public class JsonProperty : GeneratorProperty
-    {
-
-    }
 
     public class GeneratorProperty : Attribute
     {
@@ -186,38 +182,35 @@ namespace Invert.Core.GraphDesigner
         GraphItems
     }
     [Browsable(false)]
-    public class GenericNode : DiagramNode, IConnectable
+    public partial class GenericNode : DiagramNode, IConnectable
     {
         public override void MoveItemDown(IDiagramNodeItem nodeItem)
         {
             base.MoveItemDown(nodeItem);
-            var items = ChildItems.Where(p => p.GetType() == nodeItem.GetType()).ToList();
-            ChildItems.RemoveAll(p => items.Contains(p));
+            // TODO 2.0 ORDERING
+            //var items = ChildItems.Where(p => p.GetType() == nodeItem.GetType()).ToList();
+            //ChildItems.RemoveAll(p => items.Contains(p));
 
-            items.Move(items.IndexOf(nodeItem),false);
-            ChildItems.AddRange(items);
+            //items.Move(items.IndexOf(nodeItem),false);
+            //ChildItems.AddRange(items);
 
         }
 
         public override void MoveItemUp(IDiagramNodeItem nodeItem)
         {
             base.MoveItemUp(nodeItem);
-            var items = ChildItems.Where(p => p.GetType() == nodeItem.GetType()).ToList();
-            ChildItems.RemoveAll(p => items.Contains(p));
+            // TODO 2.0 Children re-ordering
+            //var items = ChildItems.Where(p => p.GetType() == nodeItem.GetType()).ToList();
+            //ChildItems.RemoveAll(p => items.Contains(p));
 
-            items.Move(items.IndexOf(nodeItem), true);
-            ChildItems.AddRange(items);
+            //items.Move(items.IndexOf(nodeItem), true);
+            //ChildItems.AddRange(items);
 
         }
 
-        private List<IDiagramNodeItem> _childItems = new List<IDiagramNodeItem>();
+
         private List<string> _connectedGraphItemIds = new List<string>();
-        [Browsable(false)]
-        public List<IDiagramNodeItem> ChildItems
-        {
-            get { return _childItems; }
-            set { _childItems = value; }
-        }
+
         [Browsable(false)]
         public NodeConfigBase Config
         {
@@ -233,7 +226,7 @@ namespace Invert.Core.GraphDesigner
         }
         
 
-        [GeneratorProperty]
+        [GeneratorProperty, JsonProperty]
         public override string Name
         {
             get { return base.Name; }
@@ -264,29 +257,7 @@ namespace Invert.Core.GraphDesigner
         //        }
         //    }
         //}
-        [Browsable(false)]
-        public override IEnumerable<IDiagramNodeItem> PersistedItems
-        {
-            get { return ChildItems; }
-            set
-            {
-                ChildItems = value.ToList();
-                foreach (var item in ChildItems)
-                {
-                    item.Node = this;
-                }
-            }
-        }
 
-
-        [Browsable(false)]
-        public override IEnumerable<IDiagramNodeItem> DisplayedItems
-        {
-            get
-            {
-                return ChildItems;
-            }
-        }
         [Browsable(false)]
         public override string Label
         {
@@ -297,7 +268,7 @@ namespace Invert.Core.GraphDesigner
 
         public void AddReferenceItem(IGraphItem item, NodeConfigSectionBase mirrorSection)
         {
-            AddReferenceItem(ChildItems.Where(p => p.GetType() == mirrorSection.ReferenceType).Cast<GenericReferenceItem>().ToArray(), item, mirrorSection);
+            AddReferenceItem(PersistedItems.Where(p => p.GetType() == mirrorSection.ReferenceType).Cast<GenericReferenceItem>().ToArray(), item, mirrorSection);
         }
 
         public override void Deserialize(JSONClass cls)
@@ -368,12 +339,12 @@ namespace Invert.Core.GraphDesigner
 
         public GenericSlot GetConnectionReference(Type inputType)
         {
-            var item = ChildItems.FirstOrDefault(p => inputType.IsAssignableFrom(p.GetType()));
+            var item = PersistedItems.FirstOrDefault(p => inputType.IsAssignableFrom(p.GetType()));
             if (item == null)
             {
                 var input = Activator.CreateInstance(inputType) as GenericSlot;
+                Repository.Add(input);
                 input.Node = this;
-                ChildItems.Add(input);
                 return input;
             }
 
@@ -411,11 +382,11 @@ namespace Invert.Core.GraphDesigner
         public override void NodeItemRemoved(IDiagramNodeItem diagramNodeItem)
         {
             base.NodeItemRemoved(diagramNodeItem);
+            // TODO 2.0
             //UpdateReferences();
-            ChildItems.RemoveAll(
-                p =>
-                    p.Identifier == diagramNodeItem.Identifier ||
-                    (p is GenericReferenceItem && ((GenericReferenceItem)p).SourceIdentifier == diagramNodeItem.Identifier));
+            //Repository.RemoveAll<GenericReferenceItem>(
+            //    p =>
+            //        p.Identifier == diagramNodeItem.Identifier || p.SourceIdentifier == diagramNodeItem.Identifier));
         }
         [Browsable(false)]
         public override bool IsValid
@@ -479,36 +450,38 @@ namespace Invert.Core.GraphDesigner
 
         private void UpdateReferences()
         {
-            foreach (var mirrorSection in Config.Sections.Where(p => p.ReferenceType != null && !p.AllowAdding))
-            {
-                NodeConfigSectionBase section = mirrorSection;
-                var mirrorItems = ChildItems.Where(p => p.GetType() == section.ReferenceType).Cast<GenericReferenceItem>().ToArray();
-                var newItems = mirrorSection.GenericSelector(this).ToArray();
-                var newItemIds = newItems.Select(p => p.Identifier);
+            // TODO 2.0: Reference Handling
+            //foreach (var mirrorSection in Config.Sections.Where(p => p.ReferenceType != null && !p.AllowAdding))
+            //{
+            //    NodeConfigSectionBase section = mirrorSection;
+            //    var mirrorItems = ChildItems.Where(p => p.GetType() == section.ReferenceType).Cast<GenericReferenceItem>().ToArray();
+            //    var newItems = mirrorSection.GenericSelector(this).ToArray();
+            //    var newItemIds = newItems.Select(p => p.Identifier);
 
-                foreach (var item in newItems)
-                {
-                    if (ChildItems.OfType<GenericReferenceItem>().Any(p => p.SourceIdentifier == item.Identifier)) continue;
-                    AddReferenceItem(mirrorItems, item, mirrorSection);
-                }
-                var items = ChildItems.Where(p => p.GetType() == section.SourceType && p is GenericReferenceItem && !newItemIds.Contains(((GenericReferenceItem)p).SourceIdentifier)).ToArray();
-                foreach (var item in items)
-                {
-                    Node.Project.RemoveItem(item);
-                }
-            }
+            //    foreach (var item in newItems)
+            //    {
+            //        if (PersistedItems.OfType<GenericReferenceItem>().Any(p => p.SourceIdentifier == item.Identifier)) continue;
+            //        AddReferenceItem(mirrorItems, item, mirrorSection);
+            //    }
+            //    var items = ChildItems.Where(p => p.GetType() == section.SourceType && p is GenericReferenceItem && !newItemIds.Contains(((GenericReferenceItem)p).SourceIdentifier)).ToArray();
+            //    foreach (var item in items)
+            //    {
+            //        Node.Project.RemoveItem(item);
+            //    }
+            //}
         }
 
         internal void AddReferenceItem(GenericReferenceItem[] mirrorItems, IGraphItem item, NodeConfigSectionBase mirrorSection)
         {
+            
             var current = mirrorItems.FirstOrDefault(p => p.SourceIdentifier == item.Identifier);
             if (current != null && !mirrorSection.AllowDuplicates) return;
 
             var newMirror = Activator.CreateInstance(mirrorSection.SourceType) as GenericReferenceItem;
             newMirror.SourceIdentifier = item.Identifier;
             newMirror.Node = this;
-
-            Node.Project.AddItem(newMirror);
+            Node.Repository.Add(newMirror);
+            //Node.Project.AddItem(newMirror);
         }
         [Browsable(false)]
         public override IEnumerable<IGraphItem> GraphItems
@@ -620,7 +593,7 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    public class GenericReferenceItem : GenericSlot, ITypedItem
+    public class GenericReferenceItem : GenericSlot, ITypedItem, IDataRecordRemoved
     {
         private string _sourceIdentifier;
         [Browsable(false)]
@@ -645,7 +618,7 @@ namespace Invert.Core.GraphDesigner
             }
             set { base.Name = value; }
         }
-
+        [JsonProperty]
         public string SourceIdentifier
         {
             get { return _sourceIdentifier; }
@@ -656,21 +629,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (Node == null)
-                {
-                    
-                    return null;
-                }
-                else if (Node.Graph == null)
-                {
-                    
-                    return null;
-                }
-                else if (Node.Project == null)
-                {
-                    return null;
-                }
-                return Node.Project.AllGraphItems.FirstOrDefault(p => p.Identifier == SourceIdentifier) as IDiagramNodeItem;
+                return Repository.GetById<IDiagramNodeItem>(SourceIdentifier);
             }
         }
 
@@ -719,7 +678,15 @@ namespace Invert.Core.GraphDesigner
 
         public void RemoveType()
         {
-            this.Node.Graph.Project.RemoveItem(this); 
+            Repository.Remove(this);
+        }
+
+        public void RecordRemoved(IDataRecord record)
+        {
+            if (record.Identifier == this.SourceIdentifier)
+            {
+                Repository.Remove(this);
+            }
         }
     }
 

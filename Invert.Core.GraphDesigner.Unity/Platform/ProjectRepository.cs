@@ -104,7 +104,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
             var nodeItem = defaultFilter as IDiagramNode;
             if (nodeItem != null)
             {
-                nodeItem.Graph = diagram;
+                nodeItem.GraphId = diagram.Identifier;
             }
         }
         else
@@ -118,8 +118,6 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         diagram.Graph.SystemPath = Application.dataPath + AssetDatabase.GetAssetPath(this).Substring(7);
         // Add the graph to this list of graphs
         AddGraph(diagram);
-        // Set the project for the diagram
-        diagram.SetProject(this);
         // Mark the graph as dirty for unity to serialize them
         EditorUtility.SetDirty(diagram);
         EditorUtility.SetDirty(this);
@@ -127,13 +125,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
         AssetDatabase.SaveAssets();
         // Refresh the project
         Refresh();
-        var node = diagram.RootFilter as IDiagramNode;
-        if (node != null)
-        {
-            node.Position = new Rect(50f,50f,100f,100f);
-            diagram.RootFilter.Locations[node] = new Vector2(50f, 50f);            
-            SetItemLocation(node, new Vector2(50f, 50f));
-        }
+
         // Return the created UnityGraphData
         return diagram;
     }

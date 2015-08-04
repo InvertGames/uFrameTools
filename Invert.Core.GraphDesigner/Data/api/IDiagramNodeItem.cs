@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Invert.Data;
 using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
@@ -11,7 +12,7 @@ namespace Invert.Core.GraphDesigner
     {
         
     }
-    public interface IDiagramNodeItem : ISelectable, IJsonObject, IItem, IConnectable
+    public interface IDiagramNodeItem : ISelectable, IJsonObject, IItem, IConnectable, IDataRecord
     {
         bool Precompiled { get; set; }
         string Name { get; set; }
@@ -31,6 +32,8 @@ namespace Invert.Core.GraphDesigner
 
         FlagsDictionary Flags { get; set; }
         string Namespace { get; }
+        string NodeId { get; set; }
+
 
         //void Remove(IDiagramNode diagramNode);
         void Rename(IDiagramNode data, string name);

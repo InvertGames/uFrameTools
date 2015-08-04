@@ -85,7 +85,7 @@ namespace Invert.Core.GraphDesigner
             }
             if (PrimitiveOnly) yield break;
 
-            foreach (var item in diagramData.CurrentRepository.NodeItems.OfType<IClassTypeNode>())
+            foreach (var item in diagramData.CurrentRepository.AllOf<IClassTypeNode>())
             {
                 yield return new GraphTypeInfo() { Name = item.Identifier, Group = "", Label = item.Name };
             }

@@ -356,7 +356,7 @@ namespace Invert.Core.GraphDesigner
                 var selectorConfig = generatorConfig as NodeChildGeneratorConfig<TNode>;
                 if (selectorConfig == null)
                     InvertApplication.Log("SelectorCOnfig == null");
-                var items = selectorConfig.Selector == null ? data.ChildItems.Cast<IGraphItem>() : selectorConfig.Selector(data);
+                var items = selectorConfig.Selector == null ? data.PersistedItems.Cast<IGraphItem>() : selectorConfig.Selector(data);
                 foreach (var item in items)
                 {
                     if (!item.IsValid) continue;

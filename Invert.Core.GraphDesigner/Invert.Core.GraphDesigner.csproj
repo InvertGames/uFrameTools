@@ -45,6 +45,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="2.0\Class1.cs" />
+    <Compile Include="2.0\Workspaces\WorkspaceService.cs" />
+    <Compile Include="Data\impl\ScaffoldGraph.cs" />
     <Compile Include="Windows\Area.cs" />
     <Compile Include="Windows\AreaLayout.cs" />
     <Compile Include="Plugins\BenchMarking.cs" />
@@ -81,7 +84,6 @@
     <Compile Include="Drawers\impl\DiagramDrawer.cs" />
     <Compile Include="Drawers\api\IDrawer.cs" />
     <Compile Include="Drawers\api\INodeDrawer.cs" />
-    <Compile Include="Drawers\impl\ClassNodeDrawer.cs" />
     <Compile Include="Drawers\impl\ConnectionDrawer.cs" />
     <Compile Include="Drawers\impl\ConnectorDrawer.cs" />
     <Compile Include="Drawers\impl\DiagramEnumDrawer.cs" />
@@ -127,7 +129,6 @@
     <Compile Include="_TODO\Data\UnityGraphData.cs" />
     <Compile Include="Platform\api\IPlatformOperations.cs" />
     <Compile Include="Code\impl\CodeDomHelper.cs" />
-    <Compile Include="Code\impl\ClassNodeCodeFactory.cs" />
     <Compile Include="Code\impl\CodeFileGenerator.cs" />
     <Compile Include="Code\impl\CodeGenerator.cs" />
     <Compile Include="Code\impl\DesignerGeneratorFactory.cs" />
@@ -277,9 +278,7 @@
     <Compile Include="Data\api\IGraphEditorSettings.cs" />
     <Compile Include="_TODO\SimpleType\ClassCollectionData.cs" />
     <Compile Include="_TODO\SimpleType\ClassCollectionItemViewModel.cs" />
-    <Compile Include="_TODO\SimpleType\ClassNodeData.cs" />
     <Compile Include="_TODO\SimpleType\ClassNodeInheritanceConnectionStrategy.cs" />
-    <Compile Include="_TODO\SimpleType\ClassNodeViewModel.cs" />
     <Compile Include="_TODO\SimpleType\ClassPropertyData.cs" />
     <Compile Include="_TODO\SimpleType\ClassPropertyItemViewModel.cs" />
     <Compile Include="Input\impl\DiagramInputHander.cs" />
@@ -318,6 +317,10 @@
       <Project>{cfcc5f2c-7a2f-4fd1-90d8-52420b7eb337}</Project>
       <Name>Invert.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Invert.Data\Invert.Data.csproj">
+      <Project>{19144efb-0f8b-4979-8c64-c9b92bbef769}</Project>
+      <Name>Invert.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Invert.JSON\Invert.JSON.csproj">
       <Project>{51e51ae2-77c1-498f-9b88-c2eed1e3aeed}</Project>
       <Name>Invert.JSON</Name>
@@ -326,6 +329,12 @@
       <Project>{cb024a98-ee90-4497-8af3-2c574d665a8a}</Project>
       <Name>Invert.MVVM</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="2.0\Graphs\" />
+    <Folder Include="2.0\Items\" />
+    <Folder Include="2.0\Nodes\" />
+    <Folder Include="2.0\Slots\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

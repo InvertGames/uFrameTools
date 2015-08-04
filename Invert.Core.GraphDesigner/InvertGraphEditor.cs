@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Invert.Data;
 using Invert.IOC;
 using UnityEngine;
 #if !UNITY_DLL
@@ -289,7 +290,8 @@ namespace Invert.Core.GraphDesigner
             var objs = handler.ContextObjects.ToArray();
             if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
             {
-                DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.GraphData, command.Name);
+                // TODO 2.0 Record Undo
+                //DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.GraphData, command.Name);
             }
            
             command.Execute(handler);
@@ -299,77 +301,79 @@ namespace Invert.Core.GraphDesigner
             {
                 DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.GraphData);
             }
-                
+                Container.Resolve<IRepository>().Commit();
             //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
         }
 
         public static IEnumerable<OutputGenerator> GetAllCodeGenerators(GeneratorSettings settings, INodeRepository project, bool includeDisabled = false)
         {
+            yield break;
+            // TODO 2.0 Important: figure out the code generators
             // Grab all the code generators
-            var diagramItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
-            var proj = project as IProjectRepository;
-            var diagrams = new[] { project as IGraphData };
-            if (proj != null)
-            {
-                diagrams = proj.Graphs.ToArray();
-            }
+            //var diagramItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
+            //var proj = project as IProjectRepository;
+            //var diagrams = new[] { project as IGraphData };
+            //if (proj != null)
+            //{
+            //    diagrams = proj.Graphs.ToArray();
+            //}
 
-            foreach (var diagramItemGenerator in diagramItemGenerators)
-            {
-                DesignerGeneratorFactory generator = diagramItemGenerator;
-                // If its a generator for the entire diagram
+            //foreach (var diagramItemGenerator in diagramItemGenerators)
+            //{
+            //    DesignerGeneratorFactory generator = diagramItemGenerator;
+            //    // If its a generator for the entire diagram
 
-                if (typeof(IGraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
-                {
-                    foreach (var diagram in diagrams)
-                    {
-                        if (diagram.Precompiled) continue;
-                        if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
+            //    if (typeof(IGraphData).IsAssignableFrom(generator.DiagramItemType) && project != null)
+            //    {
+            //        foreach (var diagram in diagrams)
+            //        {
+            //            if (diagram.Precompiled) continue;
+            //            if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
 
-                        if (generator.DiagramItemType.IsAssignableFrom(diagram.GetType()))
-                        {
-                            var codeGenerators = generator.GetGenerators(settings, null, project, diagram);
-                            foreach (var codeGenerator in codeGenerators)
-                            {
-                                // TODO Had to remove this?
-                                //if (!codeGenerator.IsEnabled(project)) continue;
+            //            if (generator.DiagramItemType.IsAssignableFrom(diagram.GetType()))
+            //            {
+            //                var codeGenerators = generator.GetGenerators(settings, null, project, diagram);
+            //                foreach (var codeGenerator in codeGenerators)
+            //                {
+            //                    // TODO Had to remove this?
+            //                    //if (!codeGenerator.IsEnabled(project)) continue;
 
-                                codeGenerator.AssetDirectory = diagram.Project.SystemDirectory;
-                                codeGenerator.Settings = settings;
-                                if (codeGenerator.ObjectData == null)
-                                    codeGenerator.ObjectData = diagram;
-                                codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
-                                yield return codeGenerator;
-                            }
-                        }
-                    }
-                }
-                else if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
-                {
-                    foreach (var diagram in diagrams)
-                    {
-                        if (diagram.Precompiled) continue;
-                        if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
-                        var codeGenerators = generator.GetGenerators(settings, null, project, diagram);
-                        foreach (var codeGenerator in codeGenerators)
-                        {
-                            // TODO had to remove this?
-                            //if (!codeGenerator.IsEnabled(project)) continue;
-                            codeGenerator.AssetDirectory = diagram.Project.SystemDirectory;
-                            codeGenerator.Settings = settings;
-                            if (codeGenerator.ObjectData == null)
-                                codeGenerator.ObjectData = project;
-                            codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
-                            yield return codeGenerator;
-                        }
-                    }
-                }
-                // If its a generator for a specific node type
-                else
-                {
-                    foreach (var codeGenerator1 in GetCodeGeneratorsForNodes(settings, project, generator, diagramItemGenerator, includeDisabled)) yield return codeGenerator1;
-                }
-            }
+            //                    codeGenerator.AssetDirectory = diagram.Project.SystemDirectory;
+            //                    codeGenerator.Settings = settings;
+            //                    if (codeGenerator.ObjectData == null)
+            //                        codeGenerator.ObjectData = diagram;
+            //                    codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
+            //                    yield return codeGenerator;
+            //                }
+            //            }
+            //        }
+            //    }
+            //    else if (typeof(INodeRepository).IsAssignableFrom(generator.DiagramItemType))
+            //    {
+            //        foreach (var diagram in diagrams)
+            //        {
+            //            if (diagram.Precompiled) continue;
+            //            if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
+            //            var codeGenerators = generator.GetGenerators(settings, null, project, diagram);
+            //            foreach (var codeGenerator in codeGenerators)
+            //            {
+            //                // TODO had to remove this?
+            //                //if (!codeGenerator.IsEnabled(project)) continue;
+            //                codeGenerator.AssetDirectory = diagram.Project.SystemDirectory;
+            //                codeGenerator.Settings = settings;
+            //                if (codeGenerator.ObjectData == null)
+            //                    codeGenerator.ObjectData = project;
+            //                codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
+            //                yield return codeGenerator;
+            //            }
+            //        }
+            //    }
+            //    // If its a generator for a specific node type
+            //    else
+            //    {
+            //        foreach (var codeGenerator1 in GetCodeGeneratorsForNodes(settings, project, generator, diagramItemGenerator, includeDisabled)) yield return codeGenerator1;
+            //    }
+            //}
         }
 
         /// <summary>
@@ -379,7 +383,9 @@ namespace Invert.Core.GraphDesigner
         /// <returns></returns>
         public static IEnumerable<OutputGenerator> GetCodeGeneratorsForNode(this IDiagramNodeItem node)
         {
-            return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node);
+            // TODO 2.0: Code Generators
+            yield break;
+            //return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node);
         }
 
         /// <summary>
@@ -389,7 +395,9 @@ namespace Invert.Core.GraphDesigner
         /// <returns></returns>
         public static IEnumerable<OutputGenerator> GetAllEditableFilesForNode(this IDiagramNodeItem node)
         {
-            return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && !p.AlwaysRegenerate);
+            // TODO 2.0: Code Generators
+            yield break;
+            //return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && !p.AlwaysRegenerate);
         }
 
         /// <summary>
@@ -438,7 +446,10 @@ namespace Invert.Core.GraphDesigner
         /// <returns></returns>
         public static IEnumerable<OutputGenerator> GetAllDesignerFilesForNode(this IDiagramNodeItem node)
         {
-            return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && p.AlwaysRegenerate);
+            // TODO 2.0: Code Generators
+            yield break;
+
+            //return GetAllCodeGenerators(null, node.Node.Project).Where(p => p.ObjectData == node && p.AlwaysRegenerate);
         }
 
         /// <summary>
@@ -453,37 +464,39 @@ namespace Invert.Core.GraphDesigner
         private static IEnumerable<OutputGenerator> GetCodeGeneratorsForNodes(GeneratorSettings settings, INodeRepository project,
             DesignerGeneratorFactory generator, DesignerGeneratorFactory diagramItemGenerator, bool includeDisabled = false)
         {
-            var proj = project as IProjectRepository;
-            var diagrams = new[] { project as IGraphData };
-            if (proj != null)
-            {
-                diagrams = proj.Graphs.ToArray();
-            }
+            yield break;
+            // TODO 2.0 IMPORANT: Figure out code generators
+            //var proj = project as IProjectRepository;
+            //var diagrams = new[] { project as IGraphData };
+            //if (proj != null)
+            //{
+            //    diagrams = proj.Graphs.ToArray();
+            //}
 
 
-            foreach (var diagram in diagrams)
-            {
-                if (diagram.Precompiled) continue;
-                if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
-                var items = diagram.AllGraphItems.OfType<IDiagramNodeItem>().Where(p => p.GetType() == generator.DiagramItemType);
+            //foreach (var diagram in diagrams)
+            //{
+            //    if (diagram.Precompiled) continue;
+            //    if (diagram.Settings.CodeGenDisabled && !includeDisabled) continue;
+            //    var items = diagram.AllGraphItems.OfType<IDiagramNodeItem>().Where(p => p.GetType() == generator.DiagramItemType);
 
-                foreach (var item in items)
-                {
-                    if (item.Precompiled) continue;
-                    var codeGenerators = generator.GetGenerators(settings, null, project, item);
-                    foreach (var codeGenerator in codeGenerators)
-                    {
-                        // TODO had to remove this?
-                        //if (!codeGenerator.IsEnabled(project)) continue;
-                        codeGenerator.AssetDirectory = diagram.Project.SystemDirectory;
-                        codeGenerator.Settings = settings;
-                        if (codeGenerator.ObjectData == null)
-                            codeGenerator.ObjectData = item;
-                        codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
-                        yield return codeGenerator;
-                    }
-                }
-            }
+            //    foreach (var item in items)
+            //    {
+            //        if (item.Precompiled) continue;
+            //        var codeGenerators = generator.GetGenerators(settings, null, project, item);
+            //        foreach (var codeGenerator in codeGenerators)
+            //        {
+            //            // TODO had to remove this?
+            //            //if (!codeGenerator.IsEnabled(project)) continue;
+            //            codeGenerator.AssetDirectory = diagram.Project.SystemDirectory;
+            //            codeGenerator.Settings = settings;
+            //            if (codeGenerator.ObjectData == null)
+            //                codeGenerator.ObjectData = item;
+            //            codeGenerator.GeneratorFor = diagramItemGenerator.DiagramItemType;
+            //            yield return codeGenerator;
+            //        }
+            //    }
+            //}
         }
 
         //public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(GeneratorSettings settings)
@@ -727,10 +740,6 @@ namespace Invert.Core.GraphDesigner
             return drawer;
         }
 
-        public static void ListenToProjectEvents(this IUFrameContainer container, IProjectEvents events)
-        {
-            container.RegisterInstance<IProjectEvents>(events, events.GetType().Name);
-        }
 
         public static GraphItemViewModel CreateViewModel(this IUFrameContainer container, object data)
         {
@@ -808,23 +817,16 @@ namespace Invert.Core.GraphDesigner
                 yield break;
             }
             InvertApplication.LogIfNull(graphItem.Graph,"Graph");
-           // var outputFolderName = templateAttribute.OutputFolderName ?? templateType.Name;
+       
             if (templateAttribute.Location == TemplateLocation.DesignerFile || templateAttribute.Location == TemplateLocation.Both)
             {
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;
                 template.IsDesignerFile = true;
-                template.AssetDirectory = graphItem.Graph.Project.SystemDirectory;
+                // TODO figure out directory stuff
+                //template.AssetDirectory = graphItem.Graph.Project.SystemDirectory;
 
-                //if (templateAttribute.IsEditorExtension)
-                //{
-                //    template.Filename = Path.Combine(Path.Combine("_DesignerFiles", "Editor"),
-                //        outputFolderName + ".designer.cs");
-                //}
-                //else
-                //{
-                //    template.Filename = Path.Combine("_DesignerFiles", template. + ".designer.cs");
-                //}
+              
                 if (template.IsValid())
                 {
                     yield return template;
@@ -837,26 +839,9 @@ namespace Invert.Core.GraphDesigner
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;
                 template.IsDesignerFile = false;
-                template.AssetDirectory = graphItem.Graph.Project.SystemDirectory;
+                // TODO figure out directory stuff
+                //template.AssetDirectory = graphItem.Graph.Project.SystemDirectory;
 
-                //var className = string.Format(templateAttribute.ClassNameFormat, graphItem.Name);
-                //var typeItem = graphItem as IClassTypeNode;
-                //if (typeItem != null)
-                //{
-                //    className = typeItem.ClassName;
-                //}
-
-                //if (templateAttribute.IsEditorExtension)
-                //{
-                //    template.Filename = Path.Combine("Editor", Path.Combine(outputFolderName, className +".cs"));
-
-                //}
-                //else
-                //{
-                //    template.Filename = Path.Combine(outputFolderName,
-                //        className + ".cs");
-
-                //}
                 if (template.IsValid())
                 {
                     yield return template;

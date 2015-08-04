@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Invert.Data;
 using Invert.Json;
 using UnityEngine;
 
@@ -132,6 +133,8 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     public abstract string FullLabel { get; }
 
     public virtual string Highlighter { get { return null; } }
+    public IRepository Repository { get; set; }
+
     [InspectorProperty]
     public virtual string Identifier
     {
@@ -143,7 +146,18 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     }
 
     public virtual bool IsSelectable { get { return true; } }
-    public DiagramNode Node  { get; set; }
+
+    [NodeProperty,JsonProperty]
+    public string NodeId { get; set; }
+
+    public DiagramNode Node
+    {
+        get { return Repository.GetById<DiagramNode>(NodeId); }
+        set
+        {
+            if (value != null) NodeId = value.Identifier;
+        }
+    }
 
     public bool IsSelected
     {
@@ -168,7 +182,8 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     }
 
     public bool Precompiled { get; set; }
-
+    
+    [JsonProperty]
     public virtual string Name
     {
         get { return _name; }
@@ -181,8 +196,9 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
             {
                 _name = value;
             }
-            if (Node != null)
-            Node.TrackChange(new NameChange(this,oldName, _name));
+            // TODO 2.0 Change Tracking
+            //if (!string.IsNullOrEmpty(NodeId))
+            //Node.TrackChange(new NameChange(this,oldName, _name));
         }
     }
 
@@ -190,6 +206,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     {
         get { return true; }
     }
+
     public string OldName
     {
         get { return _oldName; }
@@ -290,7 +307,6 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         docs.Title3(Name);
     }
 
-    
     public IGraphData Graph
     {
         get { return this.Node.Graph; }
@@ -300,11 +316,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     {
         get
         {
-            if (Node == null)
-            {
-                throw new Exception("NODE IS NULL");
-            }
-            foreach (var connectionData in Node.Graph.Connections)
+            foreach (var connectionData in Repository.All<ConnectionData>())
             {
                 if (connectionData.InputIdentifier == this.Identifier)
                 {
@@ -318,18 +330,10 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     {
         get
         {
-            //if (Node == null) yield break;
-            //if (Node.Project == null) yield break;
-            if (Node == null)
-            {
-                throw new Exception("NODE IS NULL");
-            }
-            if (Node.Project == null) yield break;
-            foreach (var connectionData in Node.Graph.Connections)
+            foreach (var connectionData in Repository.All<ConnectionData>())
             {
                 if (connectionData.OutputIdentifier == this.Identifier)
                 {
-
                     yield return connectionData;
                 }
             }

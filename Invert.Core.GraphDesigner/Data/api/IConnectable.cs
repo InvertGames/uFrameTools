@@ -5,6 +5,7 @@ namespace Invert.Core.GraphDesigner
 {
     public interface IConnectable : IGraphItem
     {
+       
         IGraphData Graph { get; }
         IEnumerable<ConnectionData> Inputs { get; }
         IEnumerable<ConnectionData> Outputs { get; }
@@ -30,15 +31,15 @@ namespace Invert.Core.GraphDesigner
 
         public static IEnumerable<ITypedItem> References(this IClassTypeNode node)
         {
-           return node.Node.Graph.Project.AllGraphItems.OfType<ITypedItem>().Where(p => p.RelatedType == node.Identifier);
+           return node.Node.Repository.AllOf<ITypedItem>().Where(p => p.RelatedType == node.Identifier);
         }
         public static IEnumerable<TType> ReferencesOf<TType>(this IClassTypeNode node)
         {
-            return node.Node.Graph.Project.AllGraphItems.OfType<ITypedItem>().Where(p => p.RelatedType == node.Identifier).OfType<TType>();
+            return node.Node.Repository.AllOf<ITypedItem>().Where(p => p.RelatedType == node.Identifier).OfType<TType>();
         }
         public static TType ReferenceOf<TType>(this IClassTypeNode node) where TType : ITypedItem
         {
-            return node.Node.Graph.Project.AllGraphItems.OfType<ITypedItem>().OfType<TType>().FirstOrDefault(p => p.RelatedType == node.Identifier);
+            return node.Node.Repository.AllOf<ITypedItem>().OfType<TType>().FirstOrDefault(p => p.RelatedType == node.Identifier);
         }
         public static IEnumerable<TType> InputsFrom<TType>(this IConnectable connectable)
             where TType : IGraphItem

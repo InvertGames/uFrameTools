@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Data;
 using Invert.Json;
 using Invert.uFrame.Editor;
 using UnityEditor;
@@ -82,15 +83,13 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
 
     }
 
+    public IDiagramFilter[] FilterStack { get; set; }
+
     public IEnumerable<IGraphItem> AllGraphItems
     {
         get { return Graph.AllGraphItems; }
     }
 
-    public IEnumerable<ConnectionData> Connections
-    {
-        get { return Graph.Connections; }
-    }
 
     public FilterPositionData PositionData
     {
@@ -150,6 +149,26 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         Graph.TrackChange(data);
     }
 
+    public void PushFilter(IDiagramFilter filter)
+    {
+        
+    }
+
+    public void PopToFilter(IDiagramFilter filter1)
+    {
+      
+    }
+
+    public void PopToFilterById(string filterId)
+    {
+  
+    }
+
+    public void PopFilter()
+    {
+        
+    }
+
     public IDiagramFilter CurrentFilter
     {
         get { return Graph.CurrentFilter; }
@@ -160,6 +179,8 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         get { return Graph.ChangeData; }
         set { Graph.ChangeData = value; }
     }
+
+    public IRepository Repository { get; set; }
 
     public string Identifier
     {
@@ -214,11 +235,6 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         get { return Graph.NodeItems; }
     }
 
-    public FilterState FilterState
-    {
-        set { Graph.FilterState = value; }
-        get { return Graph.FilterState; }
-    }
 
     public virtual IDiagramFilter RootFilter
     {
@@ -248,7 +264,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
 
     public List<ErrorInfo> Validate()
     {
-        return Graph.Validate();
+        return null;
     }
 
     public void Initialize()
@@ -325,11 +341,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
 
     }
 
-    public IProjectRepository Project
-    {
-        get { return Graph.Project; }
-        set { Graph.Project = value; }
-    }
+
 
     public bool Precompiled
     {
@@ -337,16 +349,6 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         set { Graph.Precompiled = value; }
     }
 
-    public bool DocumentationMode
-    {
-        get { return Graph.DocumentationMode; }
-        set { Graph.DocumentationMode = value; }
-    }
-
-    public void Document(IDocumentationBuilder docs)
-    {
-        Graph.Document(docs);
-    }
 
 
     public void AddConnection(IConnectable output, IConnectable input)
@@ -389,12 +391,6 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         get { return this.name; }
     }
 
-
-
-    public void SetProject(IProjectRepository project)
-    {
-        Graph.SetProject(project);
-    }
 
     public void DeserializeFromJson(JSONNode graphData)
     {

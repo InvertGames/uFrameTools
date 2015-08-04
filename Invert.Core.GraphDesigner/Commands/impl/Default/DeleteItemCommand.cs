@@ -1,3 +1,4 @@
+using Invert.Data;
 using Invert.uFrame.Editor.ViewModels;
 
 namespace Invert.Core.GraphDesigner
@@ -14,8 +15,8 @@ namespace Invert.Core.GraphDesigner
             InvertApplication.Log("Deleting Item");
             if (node == null) return;
           
-            var project = node.Node.Graph.Project;
-            project.RemoveItem(node);
+            var project = node.Node.Repository;
+            project.Remove(node);
      
         }
 

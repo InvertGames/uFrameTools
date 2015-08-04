@@ -3,24 +3,24 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class DiagramEnumDrawer : DiagramNodeDrawer<EnumNodeViewModel>
-    {
-        private SectionHeaderDrawer _itemsHeader;
+    //public class DiagramEnumDrawer : DiagramNodeDrawer<EnumNodeViewModel>
+    //{
+    //    private SectionHeaderDrawer _itemsHeader;
 
-        protected override object HeaderStyle
-        {
-            get { return CachedStyles.NodeHeader8; }
-        }
+    //    protected override object HeaderStyle
+    //    {
+    //        get { return CachedStyles.NodeHeader8; }
+    //    }
 
-        public DiagramEnumDrawer()
-        {
-        }
+    //    public DiagramEnumDrawer()
+    //    {
+    //    }
 
-        public DiagramEnumDrawer(EnumNodeViewModel viewModel)
+    //    public DiagramEnumDrawer(EnumNodeViewModel viewModel)
 
-        {
-            ViewModel = viewModel;
-        }
+    //    {
+    //        ViewModel = viewModel;
+    //    }
 
-    }
+    //}
 }

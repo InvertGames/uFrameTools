@@ -1,13 +1,13 @@
+using Invert.Data;
+
 namespace Invert.Core.GraphDesigner
 {
-    public interface IDiagramFilter
+    public interface IDiagramFilter : IDataRecord
     {
-        string Identifier { get; }
+        //string Identifier { get; }
         bool ImportedOnly { get; }
         bool IsExplorerCollapsed { get; set; }
 
-        FilterLocations Locations { get; set; }
-        FilterCollapsedDictionary CollapsedValues { get; set; }
         string Name { get; set; }
         bool UseStraightLines { get; }
 

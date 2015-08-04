@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Invert.Core.GraphDesigner.Two;
 using Invert.Core.GraphDesigner.UnitySpecific;
+using Invert.Data;
 using Invert.IOC;
 using Invert.Windows;
 using UnityEditor;
@@ -20,25 +23,25 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public override void Perform(DiagramViewModel node)
         {
-            var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
-            var currentProject = projectService.CurrentProject as ProjectRepository;
+            var projectService = InvertGraphEditor.Container.Resolve<WorkspaceService>();
+            var currentProject = projectService.CurrentWorkspace as Workspace;
+            // TODO 2.0 Asset Paths
+            //Debug.Log("Asset Directory  : " + currentProject.AssetDirectory);
+            //Debug.Log("Asset Path       : " + currentProject.AssetPath);
+            //Debug.Log("System Directory : " + currentProject.SystemDirectory);
+            //Debug.Log("System Path      : " + currentProject.SystemPath);
 
-            Debug.Log("Asset Directory  : " + currentProject.AssetDirectory);
-            Debug.Log("Asset Path       : " + currentProject.AssetPath);
-            Debug.Log("System Directory : " + currentProject.SystemDirectory);
-            Debug.Log("System Path      : " + currentProject.SystemPath);
+            //Debug.Log("Asset Directory  : " + currentProject.CurrentGraph.AssetDirectory);
+            //Debug.Log("Asset Path       : " + currentProject.CurrentGraph.AssetPath);
+            //Debug.Log("System Directory : " + currentProject.CurrentGraph.SystemDirectory);
+            //Debug.Log("System Path      : " + currentProject.CurrentGraph.SystemPath);
 
-            Debug.Log("Asset Directory  : " + currentProject.CurrentGraph.AssetDirectory);
-            Debug.Log("Asset Path       : " + currentProject.CurrentGraph.AssetPath);
-            Debug.Log("System Directory : " + currentProject.CurrentGraph.SystemDirectory);
-            Debug.Log("System Path      : " + currentProject.CurrentGraph.SystemPath);
-
-            var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, currentProject);
-            foreach (var fileGenerator in fileGenerators)
-            {
-                Debug.Log(string.Format("FG SystemPath: {0}", fileGenerator.SystemPath));
-                Debug.Log(string.Format("FG Asset Path: {0}", fileGenerator.AssetPath));
-            }
+            //var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, currentProject);
+            //foreach (var fileGenerator in fileGenerators)
+            //{
+            //    Debug.Log(string.Format("FG SystemPath: {0}", fileGenerator.SystemPath));
+            //    Debug.Log(string.Format("FG Asset Path: {0}", fileGenerator.AssetPath));
+            //}
             return;
             //var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
             //var currentProject = projectService.CurrentProject as ProjectRepository;
@@ -208,7 +211,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
  
     }
-    public class UnityPlatformPlugin : DiagramPlugin, INodeItemEvents, IProjectEvents, IAssetDeleted, ITaskHandler
+    public class UnityPlatformPlugin : DiagramPlugin, INodeItemEvents, IAssetDeleted, ITaskHandler, IWorkspaceChanged
     {
         public override decimal LoadPriority
         {
@@ -235,14 +238,17 @@ namespace Invert.Core.GraphDesigner.Unity
         public override bool Enabled { get { return true; } set { } }
         public override void Initialize(UFrameContainer container)
         {
-            EditorUtility.ClearProgressBar();
-            Undo.undoRedoPerformed = delegate
-            {
-                var ps = container.Resolve<ProjectService>();
            
-                ps.RefreshProjects();
-                InvertGraphEditor.DesignerWindow.RefreshContent();
-            };
+
+            EditorUtility.ClearProgressBar();
+            // TODO 2.0: Obviously fix undo
+            //Undo.undoRedoPerformed = delegate
+            //{
+            //    var ps = container.Resolve<WorkspaceService>();
+           
+            //    ps.RefreshProjects();
+            //    InvertGraphEditor.DesignerWindow.RefreshContent();
+            //};
             container.RegisterInstance<IPlatformDrawer>(InvertGraphEditor.PlatformDrawer);
             container.RegisterInstance<IStyleProvider>(new UnityStyleProvider());
 #if DOCS
@@ -254,12 +260,12 @@ namespace Invert.Core.GraphDesigner.Unity
 
             container.RegisterInstance<IAssetManager>(new UnityAssetManager());
 
-            // Default Graph Item Drawers
-            container.RegisterDrawer<EnumNodeViewModel, DiagramEnumDrawer>();
-            container.RegisterDrawer<EnumItemViewModel, EnumItemDrawer>();
-            container.RegisterDrawer<ClassPropertyItemViewModel, TypedItemDrawer>();
-            container.RegisterDrawer<ClassCollectionItemViewModel, TypedItemDrawer>();
-            container.RegisterDrawer<ClassNodeViewModel, ClassNodeDrawer>();
+            //// Default Graph Item Drawers
+            //container.RegisterDrawer<EnumNodeViewModel, DiagramEnumDrawer>();
+            //container.RegisterDrawer<EnumItemViewModel, EnumItemDrawer>();
+            //container.RegisterDrawer<ClassPropertyItemViewModel, TypedItemDrawer>();
+            //container.RegisterDrawer<ClassCollectionItemViewModel, TypedItemDrawer>();
+            //container.RegisterDrawer<ClassNodeViewModel, ClassNodeDrawer>();
 
             // Command Drawers
             container.Register<ToolbarUI, UnityToolbar>();
@@ -291,89 +297,37 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void Renamed(IDiagramNodeItem node, string previousName, string newName)
         {
-            var n = node as DiagramNode;
-            if (n == null) return;
+            //var n = node as DiagramNode;
+            //if (n == null) return;
 
-            if (n == n.Graph.RootFilter)
-            {
-                var graph = n.Graph.Project.Graphs.FirstOrDefault(p => p.Identifier == n.Graph.Identifier) as Object;
-                if (graph != null)
-                {
-                    graph.name = newName;
+            //if (n == n.Graph.RootFilter)
+            //{
+            //    var graph = n.Graph.Project.Graphs.FirstOrDefault(p => p.Identifier == n.Graph.Identifier) as Object;
+            //    if (graph != null)
+            //    {
+            //        graph.name = newName;
                     
-                    AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(graph), newName);
-                    AssetDatabase.SaveAssets();
-                    var openGraph = n.Graph.Project.OpenGraphs.FirstOrDefault(p => p.GraphIdentifier == n.Graph.Identifier);
-                    if (openGraph != null)
-                        openGraph.GraphName = newName;
-                }
-            }
+            //        AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(graph), newName);
+            //        AssetDatabase.SaveAssets();
+            //        var openGraph = n.Graph.Project.OpenGraphs.FirstOrDefault(p => p.GraphIdentifier == n.Graph.Identifier);
+            //        if (openGraph != null)
+            //            openGraph.GraphName = newName;
+            //    }
+            //}
         }
 
-        public void ProjectLoaded(IProjectRepository project)
-        {
-
-        }
-
-        public void ProjectUnloaded(IProjectRepository project)
-        {
-
-        }
-
-        public void ProjectRemoved(IProjectRepository project)
-        {
-
-        }
-
-        public void ProjectChanged(IProjectRepository project)
-        {
-            if (InvertGraphEditor.DesignerWindow != null)
-            {
-                InvertGraphEditor.DesignerWindow.ProjectChanged(project);
-            }
-        }
-
-        public void ProjectsRefreshed(ProjectService service)
-        {
-
-        }
 
         public void AssetDeleted(string filename)
         {
+            // TODO 2.0 This is no longer valid
+        }
 
-            if (!filename.ToLower().EndsWith(".asset")) return;
-            var ps = InvertApplication.Container.Resolve<ProjectService>();
-            var graphs = ps.Projects.SelectMany(p => p.Graphs.Select(x => x.Identifier));
-
-            foreach (var project in ps.Projects)
+        public void WorkspaceChanged(Workspace workspace)
+        {
+            if (InvertGraphEditor.DesignerWindow != null)
             {
-                var close = project.OpenGraphs.Where(p=>!graphs.Contains(p.GraphIdentifier)).ToArray();
-                foreach (var item in close)
-                {
-                    project.CloseGraph(item);
-                }
-                
+                InvertGraphEditor.DesignerWindow.ProjectChanged(workspace);
             }
-
-            //var ps = InvertApplication.Container.Resolve<ProjectService>();
-            //foreach (var project in ps.Projects)
-            //{
-            //    foreach (var g in project.Graphs)
-            //        Debug.Log(g.Path);
-            //    var graph = project.Graphs.FirstOrDefault(p => p.Path == filename);
-            //    if (graph == null)
-            //    {
-                    
-            //        continue;
-            //    }
-            //    InvertApplication.Log("Graph found.");
-            //    var openGraph = project.OpenGraphs.First(p => p.GraphIdentifier == graph.Identifier);
-            //    if (openGraph != null)
-            //    {
-            //        project.CloseGraph(openGraph);
-            //    }
-            //}
-
         }
     }
 
@@ -412,58 +366,7 @@ namespace Invert.Core.GraphDesigner.Unity
             get { return ToolbarPosition.BottomRight; }
         }
     }
-    public class GenerateDocsCommand : ToolbarCommand<DiagramViewModel>
-    {
-        public override void Perform(DiagramViewModel node)
-        {
-            DocumentationWindow.ShowWindowAndGenerate();
-            //var htmlOutput = new HtmlDocsBuilder();
-            //htmlOutput.ScreenshotsRelativePath = "Screenshots";
-            //htmlOutput.StyleSheet = "styles";
-            //node.DiagramData.Document(htmlOutput);
 
-            //File.WriteAllText(Path2.Combine("Documentation", "index.html"), htmlOutput.ToString());
-
-        }
-
-        public override string CanPerform(DiagramViewModel node)
-        {
-            if (!node.GraphData.DocumentationMode) return "You must be in documentation mode first";
-            return null;
-        }
-        public override string Name
-        {
-            get { return "Generate Docs"; }
-        }
-
-        public override ToolbarPosition Position
-        {
-            get { return ToolbarPosition.BottomRight; }
-        }
-    }
-
-    public class DocsModeCommand : ToolbarCommand<DiagramViewModel>
-    {
-        public override string Name
-        {
-            get { return "Documentation Mode"; }
-        }
-
-        public override ToolbarPosition Position
-        {
-            get { return ToolbarPosition.BottomRight; }
-        }
-
-        public override void Perform(DiagramViewModel node)
-        {
-            node.GraphData.DocumentationMode = !node.GraphData.DocumentationMode;
-        }
-
-        public override string CanPerform(DiagramViewModel node)
-        {
-            return null;
-        }
-    }
 
     
 

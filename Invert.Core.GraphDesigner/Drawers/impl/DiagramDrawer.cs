@@ -89,6 +89,7 @@ namespace Invert.Core.GraphDesigner
             platform.DrawRect(lineRect, new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.6f, InvertGraphEditor.Settings.BackgroundColor.g * 0.6f, InvertGraphEditor.Settings.BackgroundColor.b * 0.6f, 1f));
             var x = 15f;
             var first = true;
+            if (_cachedPaths != null)
             foreach (var item in _cachedPaths)
             {
                 var item1 = item;
@@ -99,6 +100,7 @@ namespace Invert.Core.GraphDesigner
                         {
                             //DiagramViewModel.NavigateTo(item1.Key.Identifier);
                             DiagramViewModel.GraphData.PopToFilter(item1.Key);
+
                         }));
 
                     });

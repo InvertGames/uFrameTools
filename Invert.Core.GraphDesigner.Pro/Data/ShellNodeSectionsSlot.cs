@@ -1,4 +1,5 @@
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 public class ShellNodeSectionsSlot : GenericReferenceItem<ShellNodeTypeSection>, IShellNodeItem
 {
@@ -16,7 +17,7 @@ public class ShellNodeSectionsSlot : GenericReferenceItem<ShellNodeTypeSection>,
         base.NodeRemoved(nodeData);
         if (SourceItem == nodeData)
         {
-            this.Node.Project.RemoveItem(this);
+            Repository.Remove(this);
         }
     }
 }

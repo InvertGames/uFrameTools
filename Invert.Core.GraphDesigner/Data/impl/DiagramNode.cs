@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 
 using System.Text.RegularExpressions;
+using Invert.Data;
 using Invert.Json;
 using UnityEngine;
 namespace Invert.Core.GraphDesigner
@@ -15,14 +16,12 @@ namespace Invert.Core.GraphDesigner
     [Browsable(false)]
     public abstract class DiagramNode : IDiagramNode, IDiagramFilter
     {
-        [Browsable(false)]
+
         public IEnumerable<ConnectionData> Inputs
         {
             get
             {
-                if (Project == null)
-                    yield break;
-                foreach (var connectionData in Graph.Connections)
+                foreach (var connectionData in Repository.All<ConnectionData>())
                 {
                     if (connectionData.InputIdentifier == this.Identifier)
                     {
@@ -31,19 +30,16 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-        [Browsable(false)]
+
         public IEnumerable<ConnectionData> Outputs
         {
             get
             {
-               
-                if (Project == null)
-                    yield break;
-                foreach (var connectionData in Graph.Connections)
+
+                foreach (var connectionData in Repository.All<ConnectionData>())
                 {
                     if (connectionData.OutputIdentifier == this.Identifier)
                     {
-
                         yield return connectionData;
                     }
                 }
@@ -72,7 +68,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void OnConnectionApplied(IConnectable output, IConnectable input)
         {
-            
+
         }
 
         public virtual bool CanOutputTo(IConnectable input)
@@ -95,22 +91,22 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void OnOutputConnectionRemoved(IConnectable input)
         {
-            
+
         }
 
         public virtual void OnInputConnectionRemoved(IConnectable output)
         {
-          
+
         }
 
         public virtual void OnConnectedToInput(IConnectable input)
         {
-          
+
         }
 
         public virtual void OnConnectedFromOutput(IConnectable output)
         {
-           
+
         }
 
         private FilterCollapsedDictionary _collapsedValues = new FilterCollapsedDictionary();
@@ -126,7 +122,7 @@ namespace Invert.Core.GraphDesigner
 
         private bool _isCollapsed;
 
-        private Vector2 _location = new Vector2(45f,45f);
+        private Vector2 _location = new Vector2(45f, 45f);
 
 
         private FilterLocations _locations = new FilterLocations();
@@ -160,7 +156,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 if (Flags.ContainsKey(flag))
                 {
-               
+
                     Flags[flag] = true;
                 }
                 else
@@ -207,7 +203,7 @@ namespace Invert.Core.GraphDesigner
             {
                 child.Validate(errors);
             }
-            
+
         }
 
         public IGraphItem Copy()
@@ -226,7 +222,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                yield break;
+                return Repository.AllOf<IDiagramNodeItem>().Where(p => p.NodeId == this.Identifier);
             }
             set
             {
@@ -258,27 +254,29 @@ namespace Invert.Core.GraphDesigner
             get { return _location; }
         }
 
+        [JsonProperty]
+        public string GraphId { get; set; }
+
         /// <summary>
         /// Gets the diagram file that this node belongs to
         /// </summary>
-        [Browsable(false)]
+
         public virtual IGraphData Graph
-        {
-            get;set;
-        }
-        [Browsable(false)]
-        public bool Dirty { get; set; }
-        [Browsable(false)]
-        public IDiagramFilter Filter
         {
             get
             {
-                if (Project == null) return null;
-                if (Project.CurrentFilter == this)
-                    return this;
-                return Project.CurrentFilter;
+                if (string.IsNullOrEmpty(GraphId)) return null;
+                return Repository.GetById<IGraphData>(GraphId);
+            }
+            set
+            {
+                if (value != null) GraphId = value.Identifier;
             }
         }
+
+        public bool Dirty { get; set; }
+
+
         [Browsable(false)]
         public FlagsDictionary Flags
         {
@@ -305,6 +303,9 @@ namespace Invert.Core.GraphDesigner
         [Browsable(false)]
         public string Highlighter { get { return null; } }
 
+        public IRepository Repository { get; set; }
+
+        [JsonProperty]
         public virtual string Identifier
         {
             get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; }
@@ -325,25 +326,7 @@ namespace Invert.Core.GraphDesigner
                 return null;
             }
         }
-        [Browsable(false)]
-        public virtual bool IsCollapsed
-        {
-            get
-            {
-                if (Filter != null)
-                {
-                    return _isCollapsed = Filter.CollapsedValues[this];
-                }
-                return _isCollapsed;
-            }
-            set
-            {
-                _isCollapsed = value;
-                if (Filter != null)
-                Filter.CollapsedValues[this] = value;
-                Dirty = true;
-            }
-        }
+
         [Browsable(false)]
         public bool IsEditing { get; set; }
 
@@ -351,7 +334,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return Project.NodeItems.All(p => p.Identifier != Identifier);
+                return Repository.AllOf<IDiagramNode>().All(p => p.Identifier != Identifier);
             }
         }
         [Browsable(false), JsonProperty]
@@ -367,31 +350,6 @@ namespace Invert.Core.GraphDesigner
         }
 
         public abstract string Label { get; }
-        [Browsable(false)]
-        public Vector2 Location
-        {
-            get
-            {
-                return Filter.Locations[this];
-            }
-            set
-            {
-                _location = value;
-
-                if (_location.x < 0)
-                    _location.x = 0;
-                if (_location.y < 0)
-                    _location.y = 0;
-                Filter.Locations[this] = _location;
-                Dirty = true;
-            }
-        }
-        [Browsable(false)]
-        public FilterLocations Locations
-        {
-            get { return _locations; }
-            set { _locations = value; }
-        }
 
         public bool Precompiled
         {
@@ -399,15 +357,15 @@ namespace Invert.Core.GraphDesigner
             set;
         }
 
-        [Browsable(true),InspectorProperty]
+        [JsonProperty, InspectorProperty]
         public virtual string Name
         {
             get
             {
-                if (this.Graph != null && this.Graph.RootFilter == this)
-                {
-                    return this.Graph.Name;
-                }
+                //if (this.Graph != null && this.Graph.RootFilter == this)
+                //{
+                //    return this.Graph.Name;
+                //}
                 return _name;
             }
             set
@@ -415,13 +373,17 @@ namespace Invert.Core.GraphDesigner
                 var previous = _name;
                 if (value == null) return;
                 _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
-                Node.TrackChange(new NameChange(this, previous, _name));
-                if (this.Graph != null && this.Graph.RootFilter == this)
+                if (Graph != null)
                 {
-                    this.Graph.Name = _name;
+                    TrackChange(new NameChange(this, previous, _name));
+                    if (this.Graph != null && this.Graph.RootFilter == this)
+                    {
+                        this.Graph.Name = _name;
+                    }
                 }
                 
-              
+
+
                 Dirty = true;
             }
         }
@@ -438,6 +400,19 @@ namespace Invert.Core.GraphDesigner
                 return Graph.Namespace;
             }
         }
+
+        public string NodeId
+        {
+            get
+            {
+                return this.Identifier;
+            }
+            set
+            {
+                throw new Exception("Can't set node id on node. Property NodeId ");
+            }
+        }
+
         [Browsable(false)]
         public virtual DiagramNode Node
         {
@@ -465,18 +440,7 @@ namespace Invert.Core.GraphDesigner
             set { _position = value; }
         }
 
-        /// <summary>
-        /// The project this node belongs to
-        /// </summary>
-        [Browsable(false)]
-        public virtual IProjectRepository Project
-        {
-            get
-            {
 
-                return Graph.Project;
-            }
-        }
 
 
         public string Group
@@ -492,7 +456,7 @@ namespace Invert.Core.GraphDesigner
         public void TrackChange(IChangeData data)
         {
             if (Graph != null)
-            Graph.TrackChange(data);
+                Graph.TrackChange(data);
         }
 
         [Browsable(false)]
@@ -525,10 +489,6 @@ namespace Invert.Core.GraphDesigner
             _identifier = cls["Identifier"].Value;
             PersistedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>();
 
-            if (cls["Locations"] != null)
-            {
-                Locations.Deserialize(cls["Locations"].AsObject);
-            }
             if (cls["CollapsedValues"] != null)
             {
                 CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject);
@@ -553,24 +513,20 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-        
+
         public bool EnsureUniqueNames { get; set; }
         public virtual bool EndEditing()
         {
             IsEditing = false;
-            if (Project != null)
+            // TODO 2.0: Double check
+            if (EnsureUniqueNames)
             {
-                if (EnsureUniqueNames)
+                if (Graph.NodeItems.Count(p => p.Name == Name) > 1)
                 {
-                    if (Graph.NodeItems.Count(p => p.Name == Name) > 1)
-                    {
-                        Name = OldName;
-                        return false;
-                    }    
+                    Name = OldName;
+                    return false;
                 }
-                
             }
-
             return true;
         }
 
@@ -604,7 +560,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void NodeAdded(IDiagramNode data)
         {
-        
+
         }
 
         public virtual void NodeItemAdded(IDiagramNodeItem data)
@@ -631,7 +587,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void MoveItemUp(IDiagramNodeItem nodeItem)
         {
-            
+
         }
 
         public virtual void NodeRemoved(IDiagramNode nodeData)
@@ -648,19 +604,19 @@ namespace Invert.Core.GraphDesigner
 
         void IDiagramNodeItem.NodeItemRemoved(IDiagramNodeItem nodeItem)
         {
-            
+
             NodeItemRemoved(nodeItem);
-        
+
         }
 
         public virtual void RefactorApplied()
         {
-            
+
         }
 
         public void Remove(IDiagramNode diagramNode)
         {
-            Project.PositionData.Remove(Project.CurrentFilter, diagramNode.Identifier);
+            Repository.Remove(diagramNode);
         }
 
         public virtual void RemoveFromDiagram()
@@ -686,10 +642,9 @@ namespace Invert.Core.GraphDesigner
         public virtual void Serialize(JSONClass cls)
         {
             cls.Add("Name", new JSONData(_name));
-            cls.Add("IsCollapsed", new JSONData(_isCollapsed));
             cls.Add("Identifier", new JSONData(_identifier));
 
-            cls.AddObjectArray("Items", PersistedItems.Where(p=>!p.Precompiled));
+            cls.AddObjectArray("Items", PersistedItems.Where(p => !p.Precompiled));
 
             //cls.Add("Locations", Locations.Serialize());
             cls.Add("CollapsedValues", CollapsedValues.Serialize());
@@ -701,7 +656,7 @@ namespace Invert.Core.GraphDesigner
 
         public void RemoveItem(IDiagramNodeItem item)
         {
-            
+
         }
         [Browsable(false)]
         public virtual string RelatedType
@@ -721,7 +676,7 @@ namespace Invert.Core.GraphDesigner
 
         public void RemoveType()
         {
-            
+
         }
 
         [Browsable(false)]
@@ -737,7 +692,7 @@ namespace Invert.Core.GraphDesigner
             return new CodeTypeReference(this.Name);
         }
 
-        
+
 
         public virtual void Document(IDocumentationBuilder docs)
         {

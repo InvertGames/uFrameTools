@@ -69,7 +69,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
         {
             var referenceName = Ctx.ItemAs<ShellNodeSectionsSlot>().SourceItem.ReferenceClassName;
             Ctx.SetTypeArgument(referenceName);
-            Ctx._("return this.Project.AllGraphItems.OfType<{0}>()", referenceName);
+            Ctx._("return this.Repository.AllOf<{0}>()", referenceName);
             //Ctx.AddAttribute(typeof (ReferenceSection), Ctx.Item.Name);
             return null;
         }
@@ -90,7 +90,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
                 .Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Order)))
                 ;
 
-            Ctx._("return ChildItems.OfType<{0}>()", section.ReferenceType.ClassName);
+            Ctx._("return PersistedItems.OfType<{0}>()", section.ReferenceType.ClassName);
             return null;
         }
     }
@@ -113,7 +113,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
                 .AddArgument("HasPredefinedOptions", new CodePrimitiveExpression(referenceSection.HasPredefinedOptions))
                 ;
 
-            Ctx._("return ChildItems.OfType<{0}>()", referenceSection.ClassName);
+            Ctx._("return PersistedItems.OfType<{0}>()", referenceSection.ClassName);
             return null;
         }
     }
@@ -458,7 +458,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         {
             var referenceName = Ctx.ItemAs<ShellNodeConfigSection>().ReferenceClassName;
             Ctx.SetTypeArgument(typeof(IItem));
-            Ctx._("return this.Project.AllGraphItems.OfType<{0}>().Cast<IItem>()", referenceName);
+            Ctx._("return this.Repository.AllOf<{0}>().Cast<IItem>()", referenceName);
             //Ctx.AddAttribute(typeof (ReferenceSection), Ctx.Item.Name);
             return null;
         }
@@ -480,7 +480,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
             attribute.Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Row)));
             attribute.Arguments.Add(new CodeAttributeArgument("IsNewRow", new CodePrimitiveExpression(item.IsNewRow)));
 
-            Ctx._("return ChildItems.OfType<{0}>()", item.ClassName);
+            Ctx._("return PersistedItems.OfType<{0}>()", item.ClassName);
             return null;
         }
     }
@@ -505,7 +505,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
                 .AddArgument("IsNewRow", new CodePrimitiveExpression(referenceSection.IsNewRow))
                 ;
 
-            Ctx._("return ChildItems.OfType<{0}>()", referenceSection.ClassName);
+            Ctx._("return PersistedItems.OfType<{0}>()", referenceSection.ClassName);
             return null;
         }
     }
@@ -788,7 +788,7 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         Ctx.CurrentMethodAttribute.CallBase = false;
         var method = Ctx.CurrentMethod;
 
-        foreach (var plugin in Ctx.Data.Project.NodeItems.OfType<ShellPluginNode>())
+        foreach (var plugin in Ctx.Data.Repository.AllOf<ShellPluginNode>())
         {
             //foreach (var item in Ctx.Data.Project.NodeItems.OfType<ShellNodeConfig>().Where(p => p.IsGraphType))
             //{
@@ -802,7 +802,7 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
 
 
         //}
-        foreach (var itemType in Ctx.Data.Project.AllGraphItems.OfType<ShellNodeConfigSection>().Where(p => p.IsValid && p.SectionType == ShellNodeConfigSectionType.ChildItems || p.SectionType == ShellNodeConfigSectionType.ReferenceItems))
+        foreach (var itemType in Ctx.Data.Repository.AllOf<ShellNodeConfigSection>().Where(p => p.IsValid && p.SectionType == ShellNodeConfigSectionType.ChildItems || p.SectionType == ShellNodeConfigSectionType.ReferenceItems))
         {
 
             if (itemType.IsTyped)
@@ -839,13 +839,13 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         }
 
         //var graphTypes = Ctx.Data.Graph.NodeItems.OfType<ShellNodeConfig>().Where(p => p.IsValid && p.IsGraphType).ToArray();
-        foreach (var nodeType in Ctx.Data.Project.NodeItems.OfType<ShellNodeConfig>().Where(p => p.IsValid))
+        foreach (var nodeType in Ctx.Data.Repository.AllOf<ShellNodeConfig>().Where(p => p.IsValid))
         {
             InitializeNodeType(method, nodeType);
 
         }
 
-        foreach (var item in Ctx.Data.Project.AllGraphItems.OfType<IShellNodeConfigItem>())
+        foreach (var item in Ctx.Data.Repository.AllOf<IShellNodeConfigItem>())
         {
             var connectableTo = item.OutputsTo<IShellNodeConfigItem>();
             foreach (var c in connectableTo)
@@ -855,34 +855,13 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         }
 
 
-        foreach (var item in Ctx.Data.Project.AllGraphItems.OfType<IShellNodeConfigItem>())
+        foreach (var item in Ctx.Data.Repository.AllOf<IShellNodeConfigItem>())
         {
             foreach (var template in item.OutputsTo<ShellTemplateConfigNode>())
             {
                 method.Statements.Add(new CodeSnippetExpression(string.Format("RegisteredTemplateGeneratorsFactory.RegisterTemplate<{0},{1}>()", item.ClassName, template.Name)));
             }
         }
-        //foreach (var nodeType in Ctx.Data.Graph.NodeItems.OfType<IShellConnectable>().Where(p => p.IsValid))
-        //{
-        //    foreach (var item in nodeType.ConnectableTo)
-        //    {
-        //        method._("container.Connectable<{0},{1}>()", nodeType.ClassName, item.SourceItem.ClassName);
-        //    }
-
-        //}
-        //foreach (var nodeType in Ctx.Data.Graph.NodeItems.OfType<IReferenceNode>().Where(p => p.IsValid))
-        //{
-
-
-        //    if (nodeType.Flags.ContainsKey("Output") && nodeType.Flags["Output"])
-        //    {
-        //        method._("container.Connectable<{0},{1}>()", nodeType.ClassName, nodeType.ReferenceClassName);
-        //    }
-        //    else
-        //    {
-        //        method._("container.Connectable<{0},{1}>()", nodeType.ReferenceClassName, nodeType.ClassName);
-        //    }
-        //}
     }
 
     private static void InitializeNodeType(CodeMemberMethod method, ShellNodeConfig nodeType)

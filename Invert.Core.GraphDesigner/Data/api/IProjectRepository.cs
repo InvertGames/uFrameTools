@@ -7,7 +7,7 @@ using Object = System.Object;
 
 namespace Invert.Core.GraphDesigner
 {
-
+    [Obsolete]
     public interface IProjectRepository : INodeRepository
     {
         IGraphData CurrentGraph { get; set; }
@@ -33,7 +33,7 @@ namespace Invert.Core.GraphDesigner
         void TrackChange(IChangeData data);
     }
 
-
+    [Obsolete]
     public abstract class DefaultProjectRepository
 #if UNITY_DLL
  : ScriptableObject, IProjectRepository
@@ -161,24 +161,6 @@ namespace Invert.Core.GraphDesigner
                         yield return node;
                     }
 
-                }
-            }
-        }
-
-        /// <summary>
-        /// All of the connections that belong to this project.  Simply combines the connections from each graph.
-        /// </summary>
-        public IEnumerable<ConnectionData> Connections
-        {
-            get
-            {
-                foreach (var diagram in Graphs)
-                {
-                    if (diagram == null || Object.Equals(diagram, null)) continue;
-                    foreach (var item in diagram.Connections)
-                    {
-                        yield return item;
-                    }
                 }
             }
         }
@@ -317,7 +299,7 @@ namespace Invert.Core.GraphDesigner
         public virtual void AddNode(IDiagramNode data)
         {
 
-            data.Graph = CurrentGraph;
+            data.GraphId = CurrentGraph.Identifier;
             foreach (var item in NodeItems)
             {
                 data.NodeAdded(data);
@@ -331,6 +313,8 @@ namespace Invert.Core.GraphDesigner
             InvalidateCache();
         }
 
+        
+        [Obsolete]
         protected void InvalidateCache()
         {
             _nodeItems = null;
@@ -343,18 +327,15 @@ namespace Invert.Core.GraphDesigner
                     removeList.Add(graph);
                     continue;
                 }
-                graph.Project = this;
+                //graph.Project = this;
             }
             foreach (var graph in removeList)
             {
                 RemoveGraph(graph);
-            }
-            foreach (var graph in Graphs)
-            {
-                _nodeItems = null;
-                _allGraphItems = null;
-                graph.SetProject(this);
-            }
+            } 
+            _nodeItems = null;
+            _allGraphItems = null;
+        
         }
 
         /// <summary>
@@ -400,13 +381,7 @@ namespace Invert.Core.GraphDesigner
             graph.SetProject(this);
             // Go ahead and save this project
             Save();
-            var node = graph.RootFilter as IDiagramNode;
-            if (node != null)
-            {
-                graph.RootFilter.Locations[node] = new Vector2(50f, 50f);
-                //graph.RootFilter.Locations
-                // SetItemLocation(node,new Vector2(50f,50f));
-            }
+
             // Return the newly created graph
             return graph;
         }
@@ -463,13 +438,7 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        public void Document(IDocumentationBuilder docs)
-        {
-            foreach (var graph in Graphs)
-            {
-                graph.Document(docs);
-            }
-        }
+
 
         /// <summary>
         /// Records an undo operation, this may be moved to a more reasonable place in the future.
@@ -609,6 +578,7 @@ namespace Invert.Core.GraphDesigner
     }
 
     [Serializable]
+    [Obsolete]
     public class OpenGraph
     {
         [SerializeField]
@@ -642,6 +612,7 @@ namespace Invert.Core.GraphDesigner
     /// <summary>
     /// A temporary project repository for manual build processes.
     /// </summary>
+    [Obsolete]
     public class TemporaryProjectRepository : DefaultProjectRepository
     {
         public TemporaryProjectRepository(IEnumerable<IGraphData> graphs)
@@ -660,7 +631,7 @@ namespace Invert.Core.GraphDesigner
         {
             CurrentGraph = currentGraph;
             Graphs = new[] { currentGraph };
-            CurrentGraph.SetProject(this);
+        
         }
 
         public TemporaryProjectRepository()

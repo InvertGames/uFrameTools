@@ -1,4 +1,5 @@
 using System;
+using Invert.Data;
 using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
@@ -13,6 +14,8 @@ namespace Invert.Core.GraphDesigner
 
         private string _identifier;
 
+        public IRepository Repository { get; set; }
+
         public string Identifier
         {
             get
@@ -23,7 +26,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 return _identifier;
             }
-            private set { _identifier = value; }
+            set { _identifier = value; }
         }
 
         public virtual bool ImportedOnly

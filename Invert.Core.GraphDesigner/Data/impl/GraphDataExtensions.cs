@@ -1,40 +1,61 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Core.GraphDesigner.Two;
+using Invert.Data;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
     public static class GraphDataExtensions
     {
-
-        public static IEnumerable<IDiagramNode> GetImportableItems(this INodeRepository t, IDiagramFilter filter)
+        public static void ShowInFilter(this IDiagramFilter filter, IDiagramNode node, Vector2 position, bool collapsed = false)
         {
+            filter.Repository.Add(new FilterItem()
+            {
+                FilterId = filter.Identifier,
+                NodeId = node.Identifier,
+                Position = position,
+                Collapsed = collapsed
+            });
+            var filterNode = filter as IDiagramNode;
+            if (filterNode != null)
+            {
+                filterNode.NodeAddedInFilter(node);
+            }
+        }
+        public static void HideInFilter(this IDiagramFilter filter, IDiagramNode node)
+        {
+            filter.Repository.RemoveAll<FilterItem>(p => p.FilterId == filter.Identifier && p.NodeId == node.Identifier);
+        }
+        public static IEnumerable<IDiagramNode> GetImportableItems(this IDiagramFilter filter)
+        {
+            if (filter == null)
+                throw new ArgumentNullException("filter");
+            var items = filter.FilterNodes().Select(p=>p.Identifier).ToArray();
+
             return
-                t.GetAllowedDiagramItems(filter)
-                    .Where(p => !t.PositionData.HasPosition(t.CurrentFilter, p))
+                filter.GetAllowedDiagramItems()
+                    .Where(p => !items.Contains(p.Identifier))
                     .ToArray();
         }
 
-        public static IEnumerable<IDiagramNode> GetAllowedDiagramItems(this INodeRepository t, IDiagramFilter filter)
+        public static IEnumerable<IDiagramNode> GetAllowedDiagramItems(this IDiagramFilter filter)
         {
-            return t.NodeItems.Where(p => filter.IsAllowed(p, p.GetType()));
-        }
 
-        public static IEnumerable<IDiagramNode> GetDiagramItems(this IProjectRepository t, IDiagramFilter filter)
-        {
-            return filter.FilterItems(t);
+            return filter.Repository.AllOf<IDiagramNode>().Where(p => filter.IsAllowed(p, p.GetType()));
         }
-
-        //public static IEnumerable<ElementDataBase> GetElements(this IElementDesignerData t)
-        //{
-        //    return t.GetDiagramItems().OfType<ElementDataBase>();
-        //}
 
         public static IDiagramFilter Container(this IDiagramNode node)
         {
-            var container = node.Project.NodeItems.OfType<IDiagramFilter>()
-                .FirstOrDefault(p => p.GetContainingNodes(node.Project).Contains(node));
-            return container;
+            foreach (var item in node.Repository.All<FilterItem>())
+            {
+                if (item.NodeId == node.Identifier)
+                {
+                    return item.Filter;
+                }
+            }
+            return null;
         }
 
 
@@ -64,7 +85,7 @@ namespace Invert.Core.GraphDesigner
         }
         public static IEnumerable<IDiagramFilter> GetFilterPath(this IGraphData t)
         {
-            return t.FilterState.FilterStack.Reverse();
+            return t.FilterStack.Reverse();
         }
 
         public static IEnumerable<IDiagramFilter> GetFilters(this INodeRepository t)
@@ -86,10 +107,10 @@ namespace Invert.Core.GraphDesigner
             designerData.Initialize();
         }
 
-        public static IEnumerable<IDiagramNode> FilterItems(this IGraphData designerData, INodeRepository repository)
-        {
-            return designerData.CurrentFilter.FilterItems(repository);
-        }
+        //public static IEnumerable<IDiagramNode> FilterItems(this IGraphData designerData, INodeRepository repository)
+        //{
+        //    return designerData.CurrentFilter.FilterItems(repository);
+        //}
 
         public static void FilterLeave(this INodeRepository data)
         {
@@ -107,20 +128,6 @@ namespace Invert.Core.GraphDesigner
             //UpdateLinks();
         }
 
-        public static void CleanUpFilters(this INodeRepository designerData)
-        {
-            var diagramItems = designerData.NodeItems.Select(p => p.Identifier);
-
-            foreach (var diagramFilter in designerData.GetFilters())
-            {
-                var removeKeys = diagramFilter.Locations.Keys.Where(p => !diagramItems.Contains(p)).ToArray();
-                foreach (var removeKey in removeKeys)
-                {
-                    diagramFilter.Locations.Remove(removeKey);
-                }
-            }
-            //UpdateLinks();
-        }
 
         public static string GetUniqueName(this INodeRepository designerData, string name)
         {
@@ -135,94 +142,84 @@ namespace Invert.Core.GraphDesigner
             return tempName;
         }
 
-        public static IEnumerable<IDiagramNode> FilterItems(this IDiagramFilter filter, INodeRepository repo)
+        public static IEnumerable<IDiagramNode> FilterNodes(this IDiagramFilter filter)
         {
-
-            foreach (var item in repo.NodeItems)
+            //var filterNode = filter as IDiagramNode;
+            //if (filterNode != null)
+            //{
+            //    yield return filterNode;
+            //}
+            foreach (var item in filter.Repository.All<FilterItem>().Where(p=>p.FilterId == filter.Identifier))
             {
-                if (item == null) continue;
+                var node = item.Node;
+                if (node == null)
+                {
+
+                    throw new Exception(string.Format("Filter item node is null {0}", item.NodeId));
+                    continue;
+                }
+                //if (item == null) continue;
+                yield return node;
+            }
+        }
+        public static IEnumerable<FilterItem> FilterItems(this IDiagramFilter filter)
+        {
+            var found = false;
+            foreach (FilterItem p in filter.Repository.All<FilterItem>())
+            {
+                if (p.FilterId == filter.Identifier && p.NodeId == filter.Identifier)
+                {
+                    found = true;
+                }
+                if (p.FilterId == filter.Identifier) yield return p;
                 
-                if (filter.IsAllowed(item, item.GetType()))
-                {
-                    if (filter.ImportedOnly && filter != item)
-                    {
-                        if (repo.PositionData.HasPosition(filter, item))
-                        {
-                            yield return item;
-
-                        }
-                    }
-                    else
-                    {
-                        yield return item;
-                    }
-                }
             }
-        }
-
-        public static void PopFilter(this IGraphData designerData, List<string> filterStack)
-        {
-            if (designerData.FilterState.FilterStack.Count < 1) return;
-            designerData.FilterLeave();
-            //filterStack.Remove(designerData.FilterStack.Peek().Name);
-
-            designerData.FilterState.FilterPoped(designerData.FilterState.FilterStack.Pop());
-            designerData.ApplyFilter();
-        }
-
-        public static void PopToFilter(this IGraphData designerData, IDiagramFilter filter1)
-        {
-            while (designerData.CurrentFilter != filter1)
+            if (!found && filter is IDiagramNode)
             {
-                designerData.PopFilter(null);
+                var filterItem = filter.Repository.Create<FilterItem>();
+                filterItem.FilterId = filter.Identifier;
+                filterItem.NodeId = filter.Identifier;
+                yield return filterItem;
             }
         }
 
-        public static void PopToFilter(this IGraphData designerData, string filterName)
-        {
-            while (designerData.CurrentFilter.Identifier != filterName)
-            {
-                designerData.PopFilter(null);
-            }
-        }
-
-        public static void PushFilter(this IGraphData designerData, IDiagramFilter filter)
-        {
-            var node = filter as IDiagramNode;
+        //public static void PushFilter(this IGraphData designerData, IDiagramFilter filter)
+        //{
+        //    var node = filter as IDiagramNode;
             
-            var position = node == null ? Vector2.zero : designerData.GetItemLocation(node);
+        //    var position = node == null ? Vector2.zero : designerData.GetItemLocation(node);
 
-            designerData.FilterLeave();
-            designerData.FilterState.FilterStack.Push(filter);
-            designerData.FilterState.FilterPushed(filter);
+        //    designerData.FilterLeave();
+        //    designerData.FilterState.FilterStack.Push(filter);
+        //    designerData.FilterState.FilterPushed(filter);
             
-            designerData.ApplyFilter();
-            if (!designerData.PositionData.HasPosition(filter, node))
-            {
-                designerData.SetItemLocation(node,position);
-            }
+        //    designerData.ApplyFilter();
+        //    if (!designerData.PositionData.HasPosition(filter, node))
+        //    {
+        //        designerData.SetItemLocation(node,position);
+        //    }
             
-        }
+        //}
 
 
 
-        public static void ReloadFilterStack(this IGraphData designerData, List<string> filterStack)
-        {
-            if (filterStack.Count != (designerData.FilterState.FilterStack.Count))
-            {
-                foreach (var filterName in filterStack)
-                {
-                    var filter = designerData.GetFilters().FirstOrDefault(p => p.Name == filterName);
-                    if (filter == null)
-                    {
-                        filterStack.Clear();
-                        designerData.FilterState.FilterStack.Clear();
-                        break;
-                    }
-                    designerData.PushFilter(filter);
-                }
-            }
-        }
+        //public static void ReloadFilterStack(this IGraphData designerData, List<string> filterStack)
+        //{
+        //    if (filterStack.Count != (designerData.FilterState.FilterStack.Count))
+        //    {
+        //        foreach (var filterName in filterStack)
+        //        {
+        //            var filter = designerData.GetFilters().FirstOrDefault(p => p.Name == filterName);
+        //            if (filter == null)
+        //            {
+        //                filterStack.Clear();
+        //                designerData.FilterState.FilterStack.Clear();
+        //                break;
+        //            }
+        //            designerData.PushFilter(filter);
+        //        }
+        //    }
+        //}
 
         public static void UpdateLinks(this INodeRepository designerData)
         {
@@ -272,10 +269,11 @@ namespace Invert.Core.GraphDesigner
         //        }
         //    }
         //}
-        public static IEnumerable<IDiagramNode> FilterItems(this IProjectRepository designerData, IDiagramFilter filter)
-        {
-            return filter.FilterItems(designerData);
-        }
+
+        //public static IEnumerable<IDiagramNode> FilterItems(this IDiagramFilter filter)
+        //{
+        //    return filter.FilterItems();
+        //}
 
 
         //public static ElementDataBase[] GetAssociatedElements(this INodeRepository designerData, ElementData data)
@@ -290,11 +288,8 @@ namespace Invert.Core.GraphDesigner
             {
                 return gt.RelatedTypeNode as IDiagramNode;
             }
-            if (item.Node.Project == null)
-            {
-                return item.Node.Graph.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
-            }
-            return item.Node.Project.NodeItems.FirstOrDefault(p => p.Identifier == item.RelatedType);
+            
+            return item.Repository.GetById<IDiagramNode>(item.RelatedType);
         }
 
         //public static IEnumerable<IDiagramFilter> GetFilters(this IElementDesignerData designerData, IDiagramFilter filter)

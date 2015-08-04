@@ -1,4 +1,5 @@
 using System.CodeDom;
+using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
 {

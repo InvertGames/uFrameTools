@@ -1,4 +1,5 @@
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 public class ShellNodeOutputsSlot : GenericReferenceItem<ShellSlotTypeNode>, IShellNodeItem
 {

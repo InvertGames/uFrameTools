@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.Core.GraphDesigner.Two;
 using Invert.uFrame.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -79,7 +80,7 @@ public class uFrameMenu : AssetPostprocessor
     private static void Refresh()
     {
         //InvertGraphEditor.Projects = null;
-        var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
-        projectService.RefreshProjects();
+        //var projectService = InvertGraphEditor.Container.Resolve<WorkspaceService>();
+        //projectService.RefreshProjects();
     }
 }

@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Invert.Core.GraphDesigner;
+using Invert.Data;
 using Invert.Json;
 
-public class ConnectionData : IJsonObject
+public class ConnectionData : IJsonObject,IDataRecord, IDataRecordRemoved
 {
 
     private string _outputIdentifier;
@@ -19,22 +21,31 @@ public class ConnectionData : IJsonObject
     {
     }
 
+    [JsonProperty]
     public string OutputIdentifier
     {
         get { return _outputIdentifier; }
         set { _outputIdentifier = value; }
     }
 
+    [JsonProperty]
     public string InputIdentifier
     {
         get { return _inputIdentifier; }
         set { _inputIdentifier = value; }
     }
    
-
     public IGraphData Graph { get; set; }
-    public IConnectable Output { get; set; }
-    public IConnectable Input { get; set; }
+
+    public IConnectable Output
+    {
+        get { return Repository.GetById<IConnectable>(OutputIdentifier); }
+    }
+
+    public IConnectable Input
+    {
+        get { return Repository.GetById<IConnectable>(InputIdentifier); }
+    }
 
     public void Remove()
     {
@@ -58,8 +69,17 @@ public class ConnectionData : IJsonObject
             OutputIdentifier = cls["OutputIdentifier"].Value;
         }
     }
+
+    public IRepository Repository { get; set; }
+    public string Identifier { get; set; }
+    public void RecordRemoved(IDataRecord record)
+    {
+        if (record.Identifier == OutputIdentifier || record.Identifier == InputIdentifier)
+            Repository.Remove(this);
+    }
 }
 
+[Obsolete]
 public interface IConnectionDataProvider
 {
     IEnumerable<ConnectionData> Connections { get; }

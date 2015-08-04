@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Invert.Data;
 using Invert.uFrame.Editor.ViewModels;
 using UnityEngine;
 
@@ -41,11 +42,9 @@ namespace Invert.Core.GraphDesigner
         //    //foreach (var item in info.DiagramData.Connections.Cont)
         //}
 
-        public virtual bool IsConnected(INodeRepository currentRepository, TOutputData output, TInputData input)
+        public virtual bool IsConnected(IRepository currentRepository, TOutputData output, TInputData input)
         {
-            
-            return
-               currentRepository.Connections.Any(
+            return currentRepository.All<ConnectionData>().Any(
                    p => p.OutputIdentifier == output.Identifier && p.InputIdentifier == input.Identifier);
         }
         protected override void ApplyConnection(IGraphData graph, IConnectable output, IConnectable input)
@@ -157,6 +156,7 @@ namespace Invert.Core.GraphDesigner
         {
             graph.RemoveConnection(output, input);
         }
+
         public virtual void Remove(ConnectionViewModel connectionViewModel)
         {
             var output = connectionViewModel.ConnectorA.DataObject as IConnectable;

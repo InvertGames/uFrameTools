@@ -6,11 +6,11 @@ namespace Invert.Core.GraphDesigner
 {
     public class DocumentationDefaultProvider : IDocumentationProvider
     {
-        private ProjectService _projectService;
+        private WorkspaceService _projectService;
 
-        public ProjectService ProjectService
+        public WorkspaceService WorkspaceService
         {
-            get { return _projectService ?? (_projectService = InvertApplication.Container.Resolve<ProjectService>()); }
+            get { return _projectService ?? (_projectService = InvertApplication.Container.Resolve<WorkspaceService>()); }
             set { _projectService = value; }
         }
 

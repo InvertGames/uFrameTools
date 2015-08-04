@@ -43,7 +43,7 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerable<IDiagramNodeItem> ChildItemsWithInherited
         {
-            get { return BaseNodesWithThis.SelectMany(p => p.ChildItems); }
+            get { return BaseNodesWithThis.SelectMany(p => p.PersistedItems); }
         }
 
         [Browsable(false)]
@@ -65,7 +65,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                var derived = Project.NodeItems.OfType<GenericInheritableNode>().Where(p => p.BaseNode == this);
+                var derived = Repository.AllOf<GenericInheritableNode>().Where(p => p.BaseNode == this);
                 foreach (var derivedItem in derived)
                 {
                     yield return derivedItem;

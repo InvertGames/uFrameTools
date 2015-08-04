@@ -1,50 +1,50 @@
-using System.Collections.Generic;
-using Invert.Core.GraphDesigner;
-using Invert.uFrame.Editor.ViewModels;
+//using System.Collections.Generic;
+//using Invert.Core.GraphDesigner;
+//using Invert.uFrame.Editor.ViewModels;
 
-namespace Invert.Core.GraphDesigner
-{
-    public class EnumNodeViewModel : DiagramNodeViewModel<EnumData>
-    {
-        public EnumNodeViewModel(EnumData data, DiagramViewModel diagramViewModel)
-            : base(data, diagramViewModel)
-        {
+//namespace Invert.Core.GraphDesigner
+//{
+//    public class EnumNodeViewModel : DiagramNodeViewModel<EnumData>
+//    {
+//        public EnumNodeViewModel(EnumData data, DiagramViewModel diagramViewModel)
+//            : base(data, diagramViewModel)
+//        {
 
-        }
+//        }
 
-        protected override void CreateContent()
-        {
-            ContentItems.Add(new SectionHeaderViewModel()
-            {
-                Name = "Items",
-                AddCommand = new SimpleEditorCommand<EnumNodeViewModel>(_=>_.AddNew())
-            });
-            base.CreateContent();
+//        protected override void CreateContent()
+//        {
+//            ContentItems.Add(new SectionHeaderViewModel()
+//            {
+//                Name = "Items",
+//                AddCommand = new SimpleEditorCommand<EnumNodeViewModel>(_=>_.AddNew())
+//            });
+//            base.CreateContent();
 
-        }
+//        }
 
-        public override ConnectorViewModel OutputConnector
-        {
-            get { return null; }
-        }
+//        public override ConnectorViewModel OutputConnector
+//        {
+//            get { return null; }
+//        }
 
-        public override bool AllowCollapsing
-        {
-            get { return true; }
-        }
+//        public override bool AllowCollapsing
+//        {
+//            get { return true; }
+//        }
 
-        public IEnumerable<EnumItem> EnumItems
-        {
-            get { return GraphItem.EnumItems; }
-        }
+//        public IEnumerable<EnumItem> EnumItems
+//        {
+//            get { return GraphItem.EnumItems; }
+//        }
 
-        public void AddNew()
-        {
-            GraphItem.Project.AddItem(new EnumItem()
-            {
-                Node = GraphItem,
-                Name = GraphItem.Project.GetUniqueName("Item")
-            });
-        }
-    }
-}
+//        public void AddNew()
+//        {
+//            GraphItem.Project.AddItem(new EnumItem()
+//            {
+//                Node = GraphItem,
+//                Name = GraphItem.Project.GetUniqueName("Item")
+//            });
+//        }
+//    }
+//}

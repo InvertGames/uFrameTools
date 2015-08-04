@@ -24,16 +24,16 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
         get { return string.Format("{0}Changed", Name); }
     }
 
+    [JsonProperty]
     public string RelatedType
     {
         get { return _type; }
         set
         {
-            if (this.Node.Graph != null && this.Node.Project 
-                 != null)
-            this.Node.TrackChange(new TypeChange(this, _type, RelatedTypeName));
-            _type = value;
             
+            if (!string.IsNullOrEmpty(NodeId))
+                this.Node.TrackChange(new TypeChange(this, _type, RelatedTypeName));
+            _type = value;
         }
     }
 
@@ -65,18 +65,11 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
     {
         get
         {
-            if (Node == null)
-            {
-                throw new Exception("NODE IS NULL");
-            }
-            else if (Node.Project == null)
-            {
-                throw new Exception("PROJECT IS NULL");
-            }
+
             var result =  this.OutputTo<IClassTypeNode>();
             if (result == null)
             {
-                return this.Node.Project.NodeItems.FirstOrDefault(p => p.Identifier == RelatedType) as IClassTypeNode;
+                return this.Repository.AllOf<IClassTypeNode>().FirstOrDefault(p => p.Identifier == RelatedType) as IClassTypeNode;
             }
             return result;
         }
@@ -113,26 +106,7 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
         this.RelatedType = typeof(string).Name;
     }
 
-    public CodeTypeReference GetFieldType()
-    {
-        var relatedNode = this.RelatedNode();
-        if (relatedNode != null)
-        {
-            return relatedNode.GetFieldType(this);
-        }
-        var t = new CodeTypeReference(RelatedTypeName);
-        return t;
-    }
 
-    public CodeTypeReference GetPropertyType()
-    {
-        var relatedNode = this.RelatedNode();
-        if (relatedNode != null)
-        {
-            return relatedNode.GetPropertyType(this);
-        }
-        return new CodeTypeReference(RelatedTypeName);
-    }
 
     public IDiagramNode TypeNode()
     {

@@ -33,7 +33,7 @@ public class DocumentationTemplate : DocumentationDefaultProvider, IClassTemplat
     //            .TrueStatements);
 
     //        Ctx._("{0} = new DocumentationPage(\"{1}\", Document{1}Node, typeof({2})))", field.Name, item.Name, item.ClassName);
-    //        foreach (var nodeItem in item.ChildItems.OfType<ShellNodeConfigItem>())
+    //        foreach (var nodeItem in item.PersistedItems.OfType<ShellNodeConfigItem>())
     //        {
     //            Ctx._("{0}.ChildItems.Add({1})", field.Name, nodeItem.Node.Name + nodeItem.Name.Clean() + "Page");
     //        }

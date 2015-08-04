@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Invert.IOC;
+using Invert.Json;
 
 
 namespace Invert.Core.GraphDesigner
@@ -175,7 +176,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     sectionConfig.GenericSelector = (node) =>
                     {
-                        return node.Project.AllGraphItems.Where(p => referenceSection.ReferenceType.IsAssignableFrom(p.GetType()));
+                        return node.Repository.AllOf<IGraphItem>().Where(p => referenceSection.ReferenceType.IsAssignableFrom(p.GetType()));
                     };
 
                 }

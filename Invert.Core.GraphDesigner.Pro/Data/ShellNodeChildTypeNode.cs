@@ -8,7 +8,7 @@ public class ShellNodeChildTypeNode : GenericNode
     {
         get
         {
-            return Project.NodeItems.OfType<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
+            return Repository.AllOf<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
         }
     }
 

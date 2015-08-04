@@ -50,13 +50,33 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="RepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Invert.Core.GraphDesigner\Invert.Core.GraphDesigner.csproj">
+      <Project>{06E581D4-DAF3-4404-9426-E3BE6478BC48}</Project>
+      <Name>Invert.Core.GraphDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Invert.Core\Invert.Core.csproj">
+      <Project>{CFCC5F2C-7A2F-4FD1-90D8-52420B7EB337}</Project>
+      <Name>Invert.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Invert.Data\Invert.Data.csproj">
       <Project>{19144EFB-0F8B-4979-8C64-C9B92BBEF769}</Project>
       <Name>Invert.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Invert.JSON\Invert.JSON.csproj">
+      <Project>{51E51AE2-77C1-498F-9B88-C2EED1E3AEED}</Project>
+      <Name>Invert.JSON</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Invert.uFrame.ECS\Invert.uFrame.ECS.csproj">
+      <Project>{19f5281a-4b8d-4c68-86d2-16467058abba}</Project>
+      <Name>Invert.uFrame.ECS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Invert.uFrame.MVVM\Invert.uFrame.MVVM.csproj">
+      <Project>{2156eb05-0408-4cb8-aae9-46025848fab8}</Project>
+      <Name>Invert.uFrame.MVVM</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 public class ShellSectionNode : ShellNodeTypeSection, IShellConnectable
 {
@@ -53,12 +54,12 @@ public class ShellSectionNode : ShellNodeTypeSection, IShellConnectable
     [ReferenceSection("Connectable To", SectionVisibility.Always, false)]
     public IEnumerable<ShellConnectableReferenceType> ConnectableTo
     {
-        get { return ChildItems.OfType<ShellConnectableReferenceType>(); }
+        get { return PersistedItems.OfType<ShellConnectableReferenceType>(); }
     }
 
     public IEnumerable<IShellNode> PossibleConnectableTo
     {
-        get { return Project.NodeItems.OfType<IShellNode>(); }
+        get { return this.Repository.AllOf<IShellNode>(); }
     }
 
 }

@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\uFrameDatabase.cs" />
     <Compile Include="WindowsPlugin\CompilingWindow.cs" />
     <Compile Include="DiagramSettingsCommand.cs" />
     <Compile Include="ElementDesignerStyles.cs" />
@@ -95,6 +96,10 @@
     <ProjectReference Include="..\Invert.Core\Invert.Core.csproj">
       <Project>{CFCC5F2C-7A2F-4FD1-90D8-52420B7EB337}</Project>
       <Name>Invert.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Invert.Data\Invert.Data.csproj">
+      <Project>{19144EFB-0F8B-4979-8C64-C9B92BBEF769}</Project>
+      <Name>Invert.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Invert.JSON\Invert.JSON.csproj">
       <Project>{51e51ae2-77c1-498f-9b88-c2eed1e3aeed}</Project>

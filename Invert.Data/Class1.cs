@@ -8,36 +8,75 @@ namespace Invert.Data
 {
     public interface IRepository
     {
-        void Save(IDataRecord obj);
+        void Add(IDataRecord obj);
         TObjectType Create<TObjectType>() where TObjectType : class,IDataRecord, new();
         TObjectType GetSingle<TObjectType>(string identifier) where TObjectType : class,IDataRecord, new();
-        IEnumerable<TObjectType> GetAll<TObjectType>() where TObjectType : class,IDataRecord, new();
+        TObjectType GetById<TObjectType>(string identifier);
+        IEnumerable<TObjectType> All<TObjectType>() where TObjectType : class,IDataRecord;
         void Commit();
+
+        IEnumerable<TObjectType> AllOf<TObjectType>() where TObjectType : IDataRecord;
+        void RemoveAll<TObjectType>();
+        void Remove(IDataRecord record);
+        void Reset();
+        void RemoveAll<TObjectType>(Predicate<TObjectType> expression) where TObjectType : class;
+        void MarkDirty(IDataRecord graphData);
+
+        string GetUniqueName(string s);
+        void Signal<TEventType>(Action<TEventType> perform);
     }
 
     public interface IDataRecord
     {
         IRepository Repository { get; set; }
-        string Id { get; set; }
+        string Identifier { get; set; }
     }
 
+    public interface IDataRecordInserted
+    {
+        void RecordInserted(IDataRecord record);
+    }
+
+    public interface IDataRecordRemoved
+    {
+        void RecordRemoved(IDataRecord record);
+    }
+    
     public interface IDataRecordManager
     {
         void Initialize(IRepository repository);
         Type For { get; }
         IDataRecord GetSingle(string identifier);
         IEnumerable<IDataRecord> GetAll();
-        void Save(IDataRecord o);
+        void Add(IDataRecord o);
         void Commit();
+        void Remove(IDataRecord item);
     }
 
     public interface ITypeRepositoryFactory
     {
         IDataRecordManager CreateRepository(IRepository typeDatabase, Type type);
+        IEnumerable<IDataRecordManager> CreateAllManagers(IRepository repository);
     }
 
     public class TypeDatabase : IRepository
     {
+
+        public void Signal<TEventType>(Action<TEventType> perform)
+        {
+            foreach (var item in Repositories)
+            {
+                if (typeof (TEventType).IsAssignableFrom(item.Key))
+                {
+                    foreach (var record in item.Value.GetAll().OfType<TEventType>())
+                    {
+                        var record1 = record;
+                        perform(record1);
+                    }
+                }
+            }
+        }
+
         private Dictionary<Type, IDataRecordManager> _repositories;
 
         public Dictionary<Type, IDataRecordManager> Repositories
@@ -51,23 +90,22 @@ namespace Invert.Data
         public TypeDatabase(ITypeRepositoryFactory factory)
         {
             Factory = factory;
+            Repositories = factory.CreateAllManagers(this)
+                .ToDictionary(k => k.For, v => v);
         }
 
-        public void Save(IDataRecord obj)
+        public void Add(IDataRecord obj)
         {
             var repo = GetRepositoryFor(obj.GetType());
-            repo.Save(obj);
+            repo.Add(obj);
+            MarkDirty(obj);
         }
 
         public TObjectType Create<TObjectType>() where TObjectType : class, IDataRecord, new()
         {
-            var obj= new TObjectType()
-            {
-                Repository = this,
-                Id = Guid.NewGuid().ToString()
-            };
+            var obj = new TObjectType();
             var repo = GetRepositoryFor(typeof (TObjectType));
-            repo.Save(obj);
+            repo.Add(obj);
             return obj;
         }
 
@@ -75,6 +113,20 @@ namespace Invert.Data
         {
             var repo = GetRepositoryFor(typeof(TObjectType));
             return repo.GetSingle(identifier) as TObjectType;
+        }
+
+        public TObjectType GetById<TObjectType>(string identifier)
+        {
+            foreach (var item in Repositories)
+            {
+                if (typeof (TObjectType).IsAssignableFrom(item.Key))
+                {
+                    var result= (TObjectType)item.Value.GetSingle(identifier);
+                    if (result != null)
+                        return result;
+                }
+            }
+            return default(TObjectType);
         }
 
         public IDataRecordManager GetRepositoryFor(Type type)
@@ -88,13 +140,13 @@ namespace Invert.Data
             return repo;
         }
 
-        public IEnumerable<TObjectType> GetAll<TObjectType>() where TObjectType : class, IDataRecord, new()
+        public IEnumerable<TObjectType> All<TObjectType>() where TObjectType : class, IDataRecord
         {
             var repo = GetRepositoryFor(typeof(TObjectType));
             return repo.GetAll().Cast<TObjectType>();
         }
 
-        public IEnumerable<TObjectType> GetAny<TObjectType>() where TObjectType : class, IDataRecord, new()
+        public IEnumerable<TObjectType> AllOf<TObjectType>() where TObjectType : IDataRecord
         {
             foreach (var repo in Repositories)
             {
@@ -102,7 +154,7 @@ namespace Invert.Data
                 {
                     foreach (var item in repo.Value.GetAll())
                     {
-                        yield return item as TObjectType;
+                        yield return (TObjectType)item;
                     }
                 }
             }
@@ -114,11 +166,91 @@ namespace Invert.Data
                 item.Value.Commit();
             }
         }
+
+        public void RemoveAll<TObjectType>()
+        {
+            var repo = GetRepositoryFor(typeof(TObjectType));
+            foreach (var item in repo.GetAll())
+            {
+                repo.Remove(item);
+            }
+        }
+        public void RemoveAll<TObjectType>(Predicate<TObjectType> expression) where TObjectType : class
+        {
+            var repo = GetRepositoryFor(typeof(TObjectType));
+            foreach (var item in repo.GetAll().Where(x=>expression(x as TObjectType)))
+            {
+                repo.Remove(item);
+            }
+        }
+
+        public void MarkDirty(IDataRecord graphData)
+        {
+            
+        }
+
+        public string GetUniqueName(string s)
+        {
+            // TODO 2.0 ??? Unique Names
+            return s;
+
+        }
+
+        public void Remove(IDataRecord record)
+        {
+            var repo = GetRepositoryFor(record.GetType());
+            repo.Remove(record);
+        }
+
+        public void Reset()
+        {
+            Repositories.Clear();
+        }
     }
 
     public class JsonRepositoryFactory : ITypeRepositoryFactory
     {
+        private DirectoryInfo _directory;
         public string RootPath { get; set; }
+
+        public DirectoryInfo Directory
+        {
+            get { return _directory ?? (_directory = new DirectoryInfo(RootPath)); }
+            set { _directory = value; }
+        }
+        public JsonRepositoryFactory(string rootPath)
+        {
+            RootPath = rootPath;
+            if (!Directory.Exists)
+            {
+                Directory.Create();
+            }
+        }
+
+        public IEnumerable<IDataRecordManager> CreateAllManagers(IRepository repository)
+        {
+            foreach (var item in Directory.GetDirectories())
+            {
+                var fullname = item.Name;
+                Type type = null;
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+             
+                    type = assembly.GetType(fullname);
+                    if (type != null)
+                    {
+                     
+                        break;
+                    }
+                }
+                if (type == null)
+                {
+                    throw new Exception(string.Format("Database didn't load entirely, {0} type not found",fullname));
+                    continue;
+                }
+                yield return CreateRepository(repository,type);
+            }
+        }
 
         public IDataRecordManager CreateRepository(IRepository repository, Type type)
         {
@@ -131,13 +263,14 @@ namespace Invert.Data
         public IRepository Repository { get; set; }
         private Dictionary<string, IDataRecord> _cached;
         private DirectoryInfo _directoryInfo;
+        private HashSet<string> _removed;
 
         public string RootPath { get; set; }
 
         public void Initialize(IRepository repository)
         {
             Repository = repository;
-            LoadRecordsIntoCache();
+          
         }
 
         public Type For { get; set; }
@@ -179,40 +312,83 @@ namespace Invert.Data
             if (record != null)
             {
                 record.Repository = this.Repository;
-                Cached.Add(record.Id, record);
+                Cached.Add(record.Identifier, record);
             }
         }
 
         public IDataRecord GetSingle(string identifier)
         {
+            if (Cached.Count < 1)
+            {
+                LoadRecordsIntoCache();
+            }
+            if (!Cached.ContainsKey(identifier))
+            {
+   
+                return null;
+            }
             return Cached[identifier];
         }
 
         public IEnumerable<IDataRecord> GetAll()
         {
-            return Cached.Values;
+            if (Cached.Count < 1)
+            {
+                LoadRecordsIntoCache();
+            }
+            return Cached.Values.Where(p=>!Removed.Contains(p.Identifier));
         }
 
-        public void Save(IDataRecord o)
+        public void Add(IDataRecord o)
         {
-            o.Repository = this.Repository;
-            if (!Cached.ContainsKey(o.Id))
+            if (string.IsNullOrEmpty(o.Identifier))
             {
-                Cached.Add(o.Id, o);
+                o.Identifier = Guid.NewGuid().ToString();
+            }
+            o.Repository = this.Repository;
+            if (!Cached.ContainsKey(o.Identifier))
+            {
+                Cached.Add(o.Identifier, o);
+                Repository.Signal<IDataRecordInserted>(_=>_.RecordInserted(o));
             }
         }
 
         public void Commit()
         {
+            if (!DirectoryInfo.Exists)
+            {
+                DirectoryInfo.Create();
+            }
             foreach (var item in Cached)
             {
-                var json = JsonExtensions.SerializeObject(item.Value);
-                File.WriteAllText(Path.Combine(RecordsPath, item.Key + ".json"), json.ToString());
+                var filename = Path.Combine(RecordsPath, item.Key + ".json");
+                if (Removed.Contains(item.Key))
+                {
+                    File.Delete(filename);
+                }
+                else
+                {
+                    var json = JsonExtensions.SerializeObject(item.Value);
+                    File.WriteAllText(filename, json.ToString());
+                }
             }
         }
+
+        public void Remove(IDataRecord item)
+        {
+            Removed.Add(item.Identifier);
+            Repository.Signal<IDataRecordRemoved>(_ => _.RecordRemoved(item));
+        }
+
+        public HashSet<string> Removed
+        {
+            get { return _removed ?? (_removed = new HashSet<string>()); }
+            set { _removed = value; }
+        }
+
         public Dictionary<string, IDataRecord> Cached
         {
-            get { return _cached ?? (_cached = new Dictionary<string, IDataRecord>()); }
+            get { return _cached ?? (_cached = new Dictionary<string, IDataRecord>(StringComparer.OrdinalIgnoreCase)); }
             set { _cached = value; }
         }
     }

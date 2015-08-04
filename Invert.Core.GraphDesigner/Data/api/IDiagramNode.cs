@@ -217,14 +217,6 @@ namespace Invert.Core.GraphDesigner
 
         void TrackChange(IChangeData data);
         string SubTitle { get; }
-        /// <summary>
-        /// The label that sits above the node providing additional insight.
-        /// </summary>
-        string InfoLabel { get; }
-        /// <summary>
-        /// Is this node collapsed or expanded
-        /// </summary>
-        bool IsCollapsed { get; set; }
 
         /// <summary>
         /// Any child list items of the node
@@ -247,17 +239,8 @@ namespace Invert.Core.GraphDesigner
         /// </summary>
         void RemoveFromDiagram();
 
-        /// <summary>
-        /// The current element data displaying this node
-        /// </summary>
-        IProjectRepository Project { get; 
-            //set; 
-        }
 
-        /// <summary>
-        /// The current filter
-        /// </summary>
-        IDiagramFilter Filter { get; }
+
         /// <summary>
         /// The name that was used when the last save occured.
         /// </summary>
@@ -277,8 +260,8 @@ namespace Invert.Core.GraphDesigner
         /// The location that is used when entering a new filter or sub-diagram.
         /// </summary>
         Vector2 DefaultLocation { get; }
-
-        IGraphData Graph { get; set; }
+        string GraphId { get; set; }
+   
         string FullName { get; set; }
 
 
@@ -292,10 +275,6 @@ namespace Invert.Core.GraphDesigner
         /// <returns>Could it successfully rename the node.</returns>
         bool EndEditing();
 
-
-        //void NodeRemoved(IDiagramNode enumData);
-        CodeTypeReference GetPropertyType(ITypedItem itemData);
-        CodeTypeReference GetFieldType(ITypedItem itemData);
         void NodeAddedInFilter(IDiagramNode newNodeData);
     
     }

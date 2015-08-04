@@ -16,7 +16,7 @@ namespace Invert.Core.GraphDesigner
         string Name { get; set; }
         IEnumerable<IDiagramNode> NodeItems { get; }
         IEnumerable<IGraphItem> AllGraphItems { get; }
-        IEnumerable<ConnectionData> Connections { get; }
+        //IEnumerable<ConnectionData> Connections { get; }
 
         // Settings
         ElementDiagramSettings Settings { get; }
@@ -29,7 +29,7 @@ namespace Invert.Core.GraphDesigner
         void RemoveItem(IDiagramNodeItem nodeItem);
         void AddItem(IDiagramNodeItem item);
 
-        void Save();  void Document(IDocumentationBuilder docs);
+        void Save(); 
         void RecordUndo(INodeRepository data, string title);
         void MarkDirty(INodeRepository data);
         void SetItemLocation(IDiagramNode node, Vector2 position);

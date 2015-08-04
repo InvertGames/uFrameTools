@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
-
+using Invert.Data;
 using Invert.IOC;
 using Invert.Windows;
 using UnityEditor;
@@ -45,11 +45,6 @@ public class QuickAccessWindowPlugin : DiagramPlugin, IQuickAccessEvents
     public void SelectionChanged(GraphItemViewModel selected)
     {
         Debug.Log("Item selected: "+selected.GetType().Name);
-    }
-
-    public INodeRepository CurrentProjectRepository
-    {
-        get { return CurrentDiagramViewModel.CurrentRepository; }
     }
 
     public DiagramViewModel CurrentDiagramViewModel

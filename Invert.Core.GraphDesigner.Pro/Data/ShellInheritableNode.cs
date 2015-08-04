@@ -1,5 +1,6 @@
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 
 public class ShellInheritableNode : GenericInheritableNode, IShellNode
 {
@@ -16,7 +17,11 @@ public class ShellInheritableNode : GenericInheritableNode, IShellNode
     [InspectorProperty(InspectorType.GraphItems)]
     public override GenericInheritableNode BaseNode
     {
-        get { return this.Project.NodeItems.FirstOrDefault(p => p.Identifier == BaseIdentifier) as GenericInheritableNode; }
+        get
+        {
+            return Repository.GetById<GenericInheritableNode>(BaseIdentifier);
+            //return this.Project.NodeItems.FirstOrDefault(p => p.Identifier == BaseIdentifier) as GenericInheritableNode;
+        }
         set
         {
             if (value != null)

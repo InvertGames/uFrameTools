@@ -139,7 +139,7 @@ namespace Invert.Core.GraphDesigner
 
         private void AddSection(NodeConfigSectionBase section)
         {
-            if (DiagramViewModel != null && DiagramViewModel.CurrentRepository.CurrentFilter.IsAllowed(null, section.SourceType)) return;
+            //if (DiagramViewModel != null && DiagramViewModel.CurrentRepository.CurrentFilter.IsAllowed(null, section.SourceType)) return;
             var section1 = section as NodeConfigSectionBase;
             if (!IsVisible(section.Visibility)) return;
 
@@ -216,7 +216,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
-                foreach (var item in GraphItem.ChildItems)
+                foreach (var item in GraphItem.PersistedItems)
                 {
                     if (section.SourceType.IsAssignableFrom(item.GetType()))
                     {
@@ -260,7 +260,7 @@ namespace Invert.Core.GraphDesigner
                         section1.GenericSelector(GraphItem).ToArray()
                             .Where(
                                 p =>
-                                    !GraphItem.ChildItems.OfType<GenericReferenceItem>()
+                                    !GraphItem.PersistedItems.OfType<GenericReferenceItem>()
                                         .Select(x => x.SourceIdentifier)
                                         .Contains(p.Identifier)),
                         (selected) => { GraphItem.AddReferenceItem(selected, section1); });
@@ -274,17 +274,16 @@ namespace Invert.Core.GraphDesigner
                         (selected) =>
                         {
                             var item = selected as GenericNodeChildItem;
+                            DiagramViewModel.CurrentRepository.Add(item);
                             item.Node = vm.GraphItemObject as DiagramNode;
 
                             if (section1.OnAdd != null)
                                 section1.OnAdd(item);
                             else
                             {
-                                item.Name = item.Node.Project.GetUniqueName(section1.Name);
+                                item.Name = item.Repository.GetUniqueName(section1.Name);
                             }
 
-                            var node = vm as GenericNodeViewModel<TData>;
-                            node.GraphItem.Project.AddItem(item);
                             item.IsEditing = true;
                             OnAdd(section1, item);
                         });
@@ -292,10 +291,9 @@ namespace Invert.Core.GraphDesigner
                 else
                 {
                     var item = Activator.CreateInstance(section1.SourceType) as GenericNodeChildItem;
+                    DiagramViewModel.CurrentRepository.Add(item);
                     item.Node = vm.GraphItemObject as DiagramNode;
-                    item.Name = item.Node.Project.GetUniqueName(section1.Name);
-                    var node = vm as GenericNodeViewModel<TData>;
-                    node.GraphItem.Project.AddItem(item);
+                    item.Name = item.Repository.GetUniqueName(section1.Name);
                     item.IsEditing = true;
                     OnAdd(section1, item);
                 }
@@ -389,9 +387,9 @@ namespace Invert.Core.GraphDesigner
             if (section == SectionVisibility.WhenNodeIsFilter)
             {
                 
-                return DiagramViewModel.CurrentRepository.CurrentFilter == GraphItem;
+                return DiagramViewModel.GraphData.CurrentFilter == GraphItem;
             }
-            return DiagramViewModel.CurrentRepository.CurrentFilter != GraphItem;
+            return DiagramViewModel.GraphData.CurrentFilter != GraphItem;
         }
 
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.Core.GraphDesigner.Two;
 using Invert.IOC;
 
 namespace Invert.Core.GraphDesigner
@@ -12,7 +13,7 @@ namespace Invert.Core.GraphDesigner
         public override void Perform(DiagramViewModel node)
         {
             node.NothingSelected();
-            node.GraphData.PopToFilter((string)SelectedOption.Value);
+            node.GraphData.PopToFilterById((string)SelectedOption.Value);
         }
 
         public IEnumerable<UFContextMenuItem> GetOptions(object arg)
@@ -53,11 +54,11 @@ namespace Invert.Core.GraphDesigner
     {
       
 
-        public ProjectService ProjectService
+        public WorkspaceService ProjectService
         {
             get
             {
-                return  InvertGraphEditor.Container.Resolve<ProjectService>();
+                return InvertGraphEditor.Container.Resolve<WorkspaceService>();
             }
         }
         public override string Name
@@ -66,28 +67,28 @@ namespace Invert.Core.GraphDesigner
             {
                 var ps = ProjectService;
                 if (ps == null) return "Project: [None]";
-                if (ps.CurrentProject != null && !object.ReferenceEquals(ps.CurrentProject, null))
+                if (ps.CurrentWorkspace != null)
                 {
-                    return "Project: " + ps.CurrentProject.Name;
+                    return "Workspace: " + ps.CurrentWorkspace.Name;
                 }
-                return "Project: [None]";
+                return "Workspace: [None]";
             }
         }
 
         public override void Perform(DesignerWindow node)
         {
-            var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
-            var projects = projectService.Projects;
+            var projectService = InvertGraphEditor.Container.Resolve<WorkspaceService>();
+            var projects = projectService.Workspaces;
             var contextMenu = InvertApplication.Container.Resolve<ContextMenuUI>();
             contextMenu.Handler = node;
             //var menu = new GenericMenu();
             foreach (var project in projects)
             {
                 
-                IProjectRepository project1 = project;
+                Workspace project1 = project;
                 var command = new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
-                    projectService.CurrentProject = project1;
+                    projectService.CurrentWorkspace = project1;
 
                     node.Designer = null;
                     node.SwitchDiagram(project1.CurrentGraph);
@@ -95,13 +96,14 @@ namespace Invert.Core.GraphDesigner
                 }, project.Name);
 
                 contextMenu.AddCommand(command);
+           
             }
-
-            contextMenu.AddSeparator("");
+            contextMenu.AddSeparator(string.Empty);
             contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
             {
-                projectService.RefreshProjects();
-            }, "Force Refresh"));
+                InvertApplication.SignalEvent<ICreateWorkspace>(x => x.CreateWorkspace("WorkspaceA"));
+            }, "New Workspace"));
+     
             contextMenu.Go();
         }
         public override string CanPerform(DesignerWindow node)
@@ -118,11 +120,11 @@ namespace Invert.Core.GraphDesigner
     public class SelectDiagramCommand : ToolbarCommand<DesignerWindow>, IDropDownCommand
     {
      
-        public ProjectService ProjectService
+        public WorkspaceService ProjectService
         {
             get
             {
-                return InvertGraphEditor.Container.Resolve<ProjectService>();
+                return InvertGraphEditor.Container.Resolve<WorkspaceService>();
             }
         }
 
@@ -131,28 +133,28 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 var ps = ProjectService;
-                if (ps == null || ps.CurrentProject == null || ps.CurrentProject.Equals(null) || ps.CurrentProject.CurrentGraph == null || ps.CurrentProject.CurrentGraph.Equals(null))
+                if (ps == null || ps.CurrentWorkspace == null || ps.CurrentWorkspace.CurrentGraph == null)
                 {
                     return "Graph: [None]";
                 }
 
-                return string.Format("Graph: {0}", ps.CurrentProject.CurrentGraph.Name);
+                return string.Format("Graph: {0}", ps.CurrentWorkspace.CurrentGraph.Name);
             }
         }
 
         public override void Perform(DesignerWindow node)
         {
-            var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
+            var projectService = InvertGraphEditor.Container.Resolve<WorkspaceService>();
             var contextMenu = InvertApplication.Container.Resolve<ContextMenuUI>();
             contextMenu.Handler = node;
-            foreach (var item in projectService.CurrentProject.Graphs.OrderBy(p=>p.Name))
+            foreach (var item in projectService.CurrentWorkspace.Graphs.OrderBy(p=>p.Name))
             {
                 IGraphData item1 = item;
 
                 var simpleEditorCommand = new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
-                    projectService.CurrentProject.CurrentGraph = item1;
-                    
+                    projectService.CurrentWorkspace.CurrentGraph = item1;
+                    //InvertApplication.SignalEvent<IOpenWorkspace>(_=>_.OpenWorkspace(item1));
                     node.SwitchDiagram(item1);
                 }, item.Name, "Switch");
              
@@ -165,21 +167,21 @@ namespace Invert.Core.GraphDesigner
                 TypeMapping type = graphType;
                 contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
-                    var diagram = projectService.CurrentProject.CreateNewDiagram(type.To);
+                    var diagram = projectService.CurrentWorkspace.CreateGraph(type.To);
                     node.SwitchDiagram(diagram);
                 }, "Create " + type.To.Name,"Create"));
             }
-            contextMenu.AddSeparator("");
-            contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
-            {
-                projectService.CurrentProject.Refresh();
-            }, "Force Refresh", "Refresh"));
+            //contextMenu.AddSeparator("");
+            //contextMenu.AddCommand(new SimpleEditorCommand<DesignerWindow>(_ =>
+            //{
+            //    projectService.CurrentProject.Refresh();
+            //}, "Force Refresh", "Refresh"));
             contextMenu.Go();
         }
 
         public override string CanPerform(DesignerWindow node)
         {
-            if (node.CurrentProject == null)
+            if (node.Workspace == null)
                 return "No project selected.";
 
             return null;

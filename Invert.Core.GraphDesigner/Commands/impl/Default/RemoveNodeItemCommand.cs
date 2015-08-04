@@ -19,7 +19,7 @@ namespace Invert.Core.GraphDesigner
         {
             var diagramNodeItem = arg.SelectedNodeItem as ItemViewModel;
             if (diagramNodeItem != null)
-                arg.CurrentRepository.RemoveItem(diagramNodeItem.NodeItem);
+                arg.CurrentRepository.Remove(diagramNodeItem.NodeItem);
         }
 
         public override string CanPerform(DiagramViewModel node)

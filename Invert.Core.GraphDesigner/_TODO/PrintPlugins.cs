@@ -16,10 +16,10 @@ namespace Invert.Core.GraphDesigner
 
         public override void Perform(DiagramViewModel node)
         {
-            foreach (var item in node.CurrentRepository.NodeItems)
-            {
-                Debug.Log(item.Name);
-            }
+            //foreach (var item in node.CurrentRepository.NodeItems)
+            //{
+            //    Debug.Log(item.Name);
+            //}
            
             Type T = typeof(GUIUtility);
             PropertyInfo systemCopyBufferProperty = T.GetProperty("systemCopyBuffer", BindingFlags.Static | BindingFlags.NonPublic);

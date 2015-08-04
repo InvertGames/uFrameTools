@@ -758,7 +758,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
         var tempProject = CreateInstance<TemporaryProjectRepository>();
         tempProject.CurrentGraph = data.Node.Graph;
         tempProject.Graphs = new[] { data.Node.Graph };
-        tempProject.CurrentGraph.SetProject(tempProject);
+
 
         var template = new TemplateClassGenerator<TData, TTemplate>()
         {

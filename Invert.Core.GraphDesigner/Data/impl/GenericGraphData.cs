@@ -1,4 +1,5 @@
 using Invert.Core.GraphDesigner;
+using Invert.Core.GraphDesigner.Two;
 
 public class GenericGraphData<T> : InvertGraph where T : IDiagramFilter, new()
 {
@@ -9,9 +10,15 @@ public class GenericGraphData<T> : InvertGraph where T : IDiagramFilter, new()
 
     public override IDiagramFilter CreateDefaultFilter()
     {
-        return new T()
+        var filterItem = new T()
         {
-            Name = Name,
+            
         };
+        Repository.Add(filterItem);
+        var item = Repository.Create<FilterItem>();
+        item.NodeId = filterItem.Identifier;
+        item.FilterId = filterItem.Identifier;
+        Repository.Commit();
+        return filterItem;
     }
 }

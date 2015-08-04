@@ -14,7 +14,8 @@ namespace Invert.Core.GraphDesigner
 
         public override void Perform(DiagramNode node)
         {
-            InvertGraphEditor.WindowManager.ShowHelpWindow(node.Project.CurrentGraph.RootFilter.GetType().Name, node.GetType());
+            // TODO 2.0 This was confusing
+            //InvertGraphEditor.WindowManager.ShowHelpWindow(node.Project.CurrentGraph.RootFilter.GetType().Name, node.GetType());
         }
 
         public override string CanPerform(DiagramNode node)

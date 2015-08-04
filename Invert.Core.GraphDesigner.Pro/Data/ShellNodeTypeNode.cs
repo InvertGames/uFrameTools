@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Invert.Common;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Json;
 using UnityEngine;
 
 
@@ -96,19 +97,19 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     [ReferenceSection("Sections", SectionVisibility.WhenNodeIsFilter, false)]
     public IEnumerable<ShellNodeSectionsSlot> Sections
     {
-        get { return ChildItems.OfType<ShellNodeSectionsSlot>(); }
+        get { return PersistedItems.OfType<ShellNodeSectionsSlot>(); }
     }
     [Browsable(false)]
     public IEnumerable<ShellNodeTypeSection> PossibleSections
     {
-        get { return Project.NodeItems.OfType<ShellNodeTypeSection>(); }
+        get { return this.Repository.AllOf<ShellNodeTypeSection>(); }
     }
     [Browsable(false)]
     public IEnumerable<IReferenceNode> IncludedInSections
     {
         get
         {
-            return Project.NodeItems.OfType<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
+            return this.Repository.AllOf<IReferenceNode>().Where(p => p.AcceptableTypes.Any(x => x.SourceItem == this));
         }
     }
     [Browsable(false)]
@@ -122,7 +123,7 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     {
         get
         {
-            return ChildItems.OfType<ShellNodeInputsSlot>();
+            return PersistedItems.OfType<ShellNodeInputsSlot>();
         }
     }
     [Browsable(false)]
@@ -131,18 +132,18 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     {
         get
         {
-            return ChildItems.OfType<ShellNodeOutputsSlot>();
+            return PersistedItems.OfType<ShellNodeOutputsSlot>();
         }
     }
     [Browsable(false)]
     public IEnumerable<ShellSlotTypeNode> PossibleInputSlots
     {
-        get { return Project.NodeItems.OfType<ShellSlotTypeNode>().Where(p => !p.IsOutput); }
+        get { return this.Repository.AllOf<ShellSlotTypeNode>().Where(p => !p.IsOutput); }
     }
     [Browsable(false)]
     public IEnumerable<ShellSlotTypeNode> PossibleOutputSlots
     {
-        get { return Project.NodeItems.OfType<ShellSlotTypeNode>().Where(p => p.IsOutput); }
+        get { return this.Repository.AllOf<ShellSlotTypeNode>().Where(p => p.IsOutput); }
     }
 
     //[Section("Custom Selectors", SectionVisibility.WhenNodeIsFilter)]
@@ -151,7 +152,7 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     {
         get
         {
-            return ChildItems.OfType<ShellPropertySelectorItem>();
+            return PersistedItems.OfType<ShellPropertySelectorItem>();
         }
     }
 
@@ -163,13 +164,13 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
     [ReferenceSection("Connectable To", SectionVisibility.WhenNodeIsFilter, false)]
     public IEnumerable<ShellConnectableReferenceType> ConnectableTo
     {
-        get { return ChildItems.OfType<ShellConnectableReferenceType>(); }
+        get { return PersistedItems.OfType<ShellConnectableReferenceType>(); }
     }
 
     [Browsable(false)]
     public IEnumerable<IShellNode> PossibleConnectableTo
     {
-        get { return Project.NodeItems.OfType<IShellNode>(); }
+        get { return this.Repository.AllOf<IShellNode>(); }
     }
 
 }
@@ -201,7 +202,6 @@ public class ShellTemplateConfigNode : GenericNode
         get { return _autoInherit; }
         set { _autoInherit = value; }
     }
-    
 }
 
 public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocumentable
@@ -286,19 +286,19 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
 
     public IEnumerable<ShellNodeConfigSection> Sections
     {
-        get { return ChildItems.OfType<ShellNodeConfigSection>().Concat(ChildItems.OfType<ShellNodeConfigSectionPointer>().Select(p => p.SourceItem)); }
+        get { return PersistedItems.OfType<ShellNodeConfigSection>().Concat(PersistedItems.OfType<ShellNodeConfigSectionPointer>().Select(p => p.SourceItem)); }
         set { }
     }
 
     public IEnumerable<ShellNodeConfigInput> InputSlots
     {
-        get { return ChildItems.OfType<ShellNodeConfigInput>().Concat(ChildItems.OfType<ShellNodeConfigInputPointer>().Select(p => p.SourceItem)); }
+        get { return PersistedItems.OfType<ShellNodeConfigInput>().Concat(PersistedItems.OfType<ShellNodeConfigInputPointer>().Select(p => p.SourceItem)); }
         set { }
     }
 
     public IEnumerable<ShellNodeConfigOutput> OutputSlots
     {
-        get { return ChildItems.OfType<ShellNodeConfigOutput>().Concat(ChildItems.OfType<ShellNodeConfigOutputPointer>().Select(p => p.SourceItem)); }
+        get { return PersistedItems.OfType<ShellNodeConfigOutput>().Concat(PersistedItems.OfType<ShellNodeConfigOutputPointer>().Select(p => p.SourceItem)); }
         set { }
     }
 
@@ -325,7 +325,7 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
 
     public IEnumerable<ShellNodeConfig> SubNodes
     {
-        get { return this.GetContainingNodes(Project).OfType<ShellNodeConfig>(); }
+        get { return this.GetContainingNodes().OfType<ShellNodeConfig>(); }
     }
 }
 
@@ -343,7 +343,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
 
     public override bool IsCollapsed
     {
-        get { return GraphItem.ChildItems.Count == 0; }
+        get { return !GraphItem.PersistedItems.Any(); }
         set { base.IsCollapsed = value; }
     }
 
@@ -451,17 +451,17 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
 
     public void AddSectionItem()
     {
-        DiagramViewModel.CurrentRepository.AddItem(new ShellNodeConfigSection()
+        DiagramViewModel.CurrentRepository.Add(new ShellNodeConfigSection()
         {
             Node = GraphItem,
             Name = "New Section",
-         IsNewRow = true,
+            IsNewRow = true,
         });
     }
 
     public void AddInputItem()
     {
-        DiagramViewModel.CurrentRepository.AddItem(new ShellNodeConfigInput()
+        DiagramViewModel.CurrentRepository.Add(new ShellNodeConfigInput()
         {
             Node = GraphItem,
             Name = "New Input",
@@ -472,7 +472,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
 
     public void AddOutputItem()
     {
-        DiagramViewModel.CurrentRepository.AddItem(new ShellNodeConfigOutput()
+        DiagramViewModel.CurrentRepository.Add(new ShellNodeConfigOutput()
         {
             Node = GraphItem,
             Name = "New Output",
@@ -483,12 +483,12 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
 
     public void RemoveSelected()
     {
-        DiagramViewModel.CurrentRepository.RemoveItem(ContentItems.First(p => p.IsSelected).DataObject as IDiagramNodeItem);
+        DiagramViewModel.CurrentRepository.Remove(ContentItems.First(p => p.IsSelected).DataObject as IDiagramNodeItem);
     }
 
     public void AddSectionPointer(ShellNodeConfigSection item)
     {
-        DiagramViewModel.CurrentRepository.AddItem(new ShellNodeConfigSectionPointer()
+        DiagramViewModel.CurrentRepository.Add(new ShellNodeConfigSectionPointer()
         {
             Node = GraphItem,
             SourceIdentifier = item.Identifier
@@ -497,7 +497,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
     }
     public void AddInputPointer(ShellNodeConfigInput item)
     {
-        DiagramViewModel.CurrentRepository.AddItem(new ShellNodeConfigInputPointer()
+        DiagramViewModel.CurrentRepository.Add(new ShellNodeConfigInputPointer()
         {
             Node = GraphItem,
             SourceIdentifier = item.Identifier
@@ -505,7 +505,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
     }
     public void AddOutputPointer(ShellNodeConfigOutput item)
     {
-        DiagramViewModel.CurrentRepository.AddItem(new ShellNodeConfigOutputPointer()
+        DiagramViewModel.CurrentRepository.Add(new ShellNodeConfigOutputPointer()
         {
             Node = GraphItem,
             SourceIdentifier = item.Identifier
@@ -864,7 +864,7 @@ public class ShellNodeConfigDrawer : DiagramNodeDrawer<ShellNodeConfigViewModel>
             () => { InvertGraphEditor.ExecuteCommand(_ => { addItem(); }); });
         ctxMenu.AddSeparator("");
         var nodeConfigSection =
-            NodeViewModel.DiagramViewModel.CurrentRepository.AllGraphItems.OfType<TItem>();
+            NodeViewModel.DiagramViewModel.CurrentRepository.AllOf<TItem>();
         foreach (var item in nodeConfigSection)
         {
             ctxMenu.AddItem(new GUIContent(item.Name), false,

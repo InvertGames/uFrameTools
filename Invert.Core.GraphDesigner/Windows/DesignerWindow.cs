@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core.GraphDesigner.Pro;
+using Invert.Core.GraphDesigner.Two;
 using Invert.IOC;
 using UnityEngine;
 
@@ -37,13 +38,13 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (CurrentProject == null)
+                if (Workspace == null)
                     return null;
                 if (_designerViewModel == null)
                 {
                     _designerViewModel = new DesignerViewModel()
                     {
-                        Data = CurrentProject
+                        Data = Workspace
                     };
                 }
                 return _designerViewModel;
@@ -55,14 +56,14 @@ namespace Invert.Core.GraphDesigner
         {
             var contextMenu = InvertApplication.Container.Resolve<ContextMenuUI>();
 
-            foreach (var item in CurrentProject.Graphs)
+            foreach (var item in Workspace.Graphs)
             {
                 IGraphData item1 = item;
 
                 contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
                 {
-                    CurrentProject.CurrentGraph = item1;
-                    LoadDiagram(CurrentProject.CurrentGraph);
+                    Workspace.CurrentGraph = item1;
+                    LoadDiagram(Workspace.CurrentGraph);
                 }, item.Name));
 
             }
@@ -72,33 +73,33 @@ namespace Invert.Core.GraphDesigner
                 TypeMapping type = graphType;
                 contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
                 {
-                    var diagram = CurrentProject.CreateNewDiagram(type.To);
+                    var diagram = Workspace.CreateGraph(type.To);
                     DiagramDrawer = null;
                     SwitchDiagram(diagram);
                 }, "Create " + type.To.Name));
             }
-            contextMenu.AddSeparator("");
-            contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
-            {
-                CurrentProject.Refresh();
-            }, "Force Refresh"));
+            //contextMenu.AddSeparator("");
+            //contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
+            //{
+            //    Workspace.Refresh();
+            //}, "Force Refresh"));
             contextMenu.Go();
         }
 
         private void SelectProject()
         {
-            var projectService = InvertGraphEditor.Container.Resolve<ProjectService>();
-            var projects = projectService.Projects;
+            var projectService = InvertGraphEditor.Container.Resolve<WorkspaceService>();
+            var projects = projectService.Workspaces;
             var contextMenu = InvertApplication.Container.Resolve<ContextMenuUI>();
 
             //var menu = new GenericMenu();
             foreach (var project in projects)
             {
-                IProjectRepository project1 = project;
+                var project1 = project;
                 var command = new SimpleEditorCommand<DiagramViewModel>(_ =>
                 {
-                    CurrentProject = project1;
-                    LoadDiagram(CurrentProject.CurrentGraph);
+                    Workspace = project1;
+                    LoadDiagram(Workspace.CurrentGraph);
                 }, project.Name);
 
                 contextMenu.AddCommand(command);
@@ -109,11 +110,11 @@ namespace Invert.Core.GraphDesigner
                 //});
             }
 
-            contextMenu.AddSeparator("");
-            contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
-            {
-                projectService.RefreshProjects();
-            }, "Force Refresh"));
+            //contextMenu.AddSeparator("");
+            //contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
+            //{
+            //    projectService.RefreshProjects();
+            //}, "Force Refresh"));
             contextMenu.Go();
 
         }
@@ -126,11 +127,7 @@ namespace Invert.Core.GraphDesigner
             {
                 ModifierKeyStates = new ModifierKeyState();
                 MouseEvent = null;
-                CurrentProject.CurrentGraph.SetProject(CurrentProject);
-
-                //SerializedGraph = new SerializedObject(diagram as UnityEngine.Object);
-                //Diagram = uFrameEditor.Container.Resolve<ElementsDiagram>();
-                DiagramDrawer = new DiagramDrawer(new DiagramViewModel(diagram, CurrentProject));
+                DiagramDrawer = new DiagramDrawer(new DiagramViewModel(diagram));
                
                 MouseEvent = new MouseEvent(ModifierKeyStates, DiagramDrawer);
                 DiagramDrawer.Dirty = true;
@@ -161,7 +158,7 @@ namespace Invert.Core.GraphDesigner
         private ICommandUI _toolbar;
         private DesignerViewModel _designerViewModel;
         private bool _drawToolbar = true;
-        private ProjectService _projectService;
+        private WorkspaceService _workspaceService;
 
         public MouseEvent MouseEvent
         {
@@ -171,12 +168,12 @@ namespace Invert.Core.GraphDesigner
 
         public DiagramDrawer DiagramDrawer { get; set; }
 
-        public void ProjectChanged(IProjectRepository project)
+        public void ProjectChanged(Workspace project)
         {
             
             _designerViewModel = null;
             
-            _projectService = null;
+            _workspaceService = null;
             
             DiagramDrawer = null;
 
@@ -192,16 +189,16 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        public IProjectRepository CurrentProject
+        public Workspace Workspace
         {
-            get { return ProjectService.CurrentProject; }
-            set { ProjectService.CurrentProject = value; }
+            get { return WorkspaceService.CurrentWorkspace; }
+            set { InvertApplication.SignalEvent<IOpenWorkspace>(_=>_.OpenWorkspace(value)); }
         }
 
-        public ProjectService ProjectService
+        public WorkspaceService WorkspaceService
         {
-            get { return _projectService ?? (_projectService = InvertGraphEditor.Container.Resolve<ProjectService>()); }
-            set { _projectService = value; }
+            get { return _workspaceService ?? (_workspaceService = InvertGraphEditor.Container.Resolve<WorkspaceService>()); }
+            set { _workspaceService = value; }
         }
 
         public ICommandUI Toolbar
@@ -277,11 +274,11 @@ namespace Invert.Core.GraphDesigner
         {
             if (DiagramDrawer == null)
             {
-                if (CurrentProject != null)
+                if (Workspace != null)
                 {
-                    if (CurrentProject.CurrentGraph != null)
+                    if (Workspace.CurrentGraph != null)
                     {
-                        LoadDiagram(CurrentProject.CurrentGraph);
+                        LoadDiagram(Workspace.CurrentGraph);
                     }
                 }
             }
@@ -385,14 +382,14 @@ namespace Invert.Core.GraphDesigner
             if (data != null)
             {
                 Designer.OpenTab(data);
-                LoadDiagram(CurrentProject.CurrentGraph);
+                LoadDiagram(Workspace.CurrentGraph);
             }
            
         }
         public void RefreshContent()
         {
             
-            LoadDiagram(CurrentProject.CurrentGraph);
+            LoadDiagram(Workspace.CurrentGraph);
             if (DiagramDrawer != null)
             {
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
@@ -419,11 +416,11 @@ namespace Invert.Core.GraphDesigner
             {
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
             }
-            if (CurrentProject != null)
+            if (Workspace != null)
             {
-                if (CurrentProject.CurrentGraph != null)
+                if (Workspace.CurrentGraph != null)
                 {
-                    CurrentProject.Save();
+                    Workspace.Save();
                 }
             }
 

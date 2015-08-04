@@ -34,7 +34,7 @@ namespace Invert.Core.GraphDesigner {
                     NodeType = typeof(TNode),
                 };
                 container.RegisterInstance<NodeConfigBase>(nodeConfig, typeof(TNode).Name);
-                //nodeConfig.Section(string.Empty, _ => _.ChildItems.OfType<GenericConnectionReference>(), false);
+                //nodeConfig.Section(string.Empty, _ => _.PersistedItems.OfType<GenericConnectionReference>(), false);
                 return nodeConfig;
             }
             return config;
