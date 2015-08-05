@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
-    public class uFrameDatabase : ScriptableObject
+    public class GraphConfiguration : ScriptableObject, IGraphConfiguration
     {
         [SerializeField]
         private bool _isCurrent;
@@ -20,7 +20,9 @@ namespace Invert.Core.GraphDesigner.Unity
         private string _databaseName = "uFrameDB";
 
         [SerializeField]
-        private string _codePath;
+        private string _codePath = "Code";
+        [SerializeField]
+        private string _ns;
 
         public string DatabaseName
         {
@@ -44,6 +46,17 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             get { return Path.Combine(Application.dataPath.Replace("Assets/",string.Empty).Replace("Assets\\",string.Empty).Replace("Assets", string.Empty), "uFrameDB"); }
         }
+
+        public string CodeOutputSystemPath
+        {
+            get { return Path.Combine(Application.dataPath, CodePath); }
+        }
+
+        public string Namespace
+        {
+            get { return _ns; }
+            set { _ns = value; }
+        }
     }
 
     public class Save : ElementsDiagramToolbarCommand
@@ -57,8 +70,8 @@ namespace Invert.Core.GraphDesigner.Unity
     }
     public class UnityDatabases : DiagramPlugin
     {
-        private static uFrameDatabase _currentDatabase;
-        public static uFrameDatabase[] Databases { get; set; }
+        private static GraphConfiguration _currentDatabase;
+        public static GraphConfiguration[] Databases { get; set; }
         [MenuItem("[u]Frame/PrintDB", false, 2)]
         public static void PrintDB()
         {
@@ -78,7 +91,7 @@ namespace Invert.Core.GraphDesigner.Unity
         [MenuItem("Assets/[u]Frame/New Database", false, 2)]
         public static void NewUFrameProject()
         {
-            var database = CreateAsset<uFrameDatabase>();
+            var database = CreateAsset<GraphConfiguration>();
             
             foreach (var item in Databases)
             {
@@ -103,11 +116,18 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             base.Initialize(container);
             container.RegisterToolbarCommand<Save>();
-            Databases = GetAssetsOfType<uFrameDatabase>(".asset");
+            Databases = GetAssetsOfType<GraphConfiguration>(".asset");
+            foreach (var database in Databases)
+            {
+                container.RegisterInstance<IGraphConfiguration>(database,database.DatabaseName);
+            }
             if (CurrentDatabase != null)
             {
                 container.RegisterInstance<IRepository>(
                     new TypeDatabase(new JsonRepositoryFactory(CurrentDatabase.FullPath)));
+                container.RegisterInstance<IGraphConfiguration>(CurrentDatabase);
+                
+
             }
             else
             {
@@ -141,7 +161,7 @@ namespace Invert.Core.GraphDesigner.Unity
             return asset;
         }
 
-        public static uFrameDatabase CurrentDatabase
+        public static GraphConfiguration CurrentDatabase
         {
             get { return Databases.FirstOrDefault(p=>p.IsCurrent) ?? Databases.FirstOrDefault(); }
             set

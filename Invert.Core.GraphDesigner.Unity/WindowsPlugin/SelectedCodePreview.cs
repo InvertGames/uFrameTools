@@ -5,8 +5,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Invert.Common.UI;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Core.GraphDesigner.Unity;
+using Invert.Data;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -91,8 +93,8 @@ public class SelectedCodePreview : EditorWindow
         //Issues = SelectedNode.Issues.Any(p => p.Siverity == ValidatorType.Error);
         //if (Issues) return;
         var item = SelectedNode == null ? null : SelectedNode.DataObject;
-        // TODO 2.0: Fix selected code preview file generaters invoker
-        fileGenerators = InvertGraphEditor.GetAllFileGenerators(null,null, true).ToArray();
+        
+        fileGenerators = InvertGraphEditor.GetAllFileGenerators(InvertApplication.Container.Resolve<IGraphConfiguration>(), new [] {item as IDataRecord}, true).ToArray();
 
         foreach (var fileGenerator in fileGenerators)
         {

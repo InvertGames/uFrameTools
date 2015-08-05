@@ -78,7 +78,7 @@ namespace Invert.Core.GraphDesigner
         public override void Loaded(UFrameContainer container)
         {
             base.Loaded(container);
-            if (CurrentWorkspace == null)
+            if (CurrentWorkspace == null && InvertGraphEditor.Prefs != null)
             {
                 CurrentWorkspace = Workspaces.FirstOrDefault(p => p.Identifier == InvertGraphEditor.Prefs.GetString("LastLoadedWorkspace", string.Empty));
             }

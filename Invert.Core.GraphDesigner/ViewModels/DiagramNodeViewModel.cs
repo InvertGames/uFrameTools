@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Invert.Core.GraphDesigner;
+using Invert.Data;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -421,7 +422,8 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return DiagramViewModel.CodeGenerators.Where(p => p.ObjectData == DataObject);
+                return InvertGraphEditor.GetAllCodeGenerators(InvertGraphEditor.Container.Resolve<IGraphConfiguration>(),
+                    new IDataRecord[] {GraphItemObject});
             }
         }
 

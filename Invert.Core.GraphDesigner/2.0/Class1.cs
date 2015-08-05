@@ -184,8 +184,8 @@ namespace Invert.Core.GraphDesigner
 
         public void RecordRemoved(IDataRecord record)
         {
-            //if (NodeId == record.Identifier || FilterId == record.Identifier)
-            //    Repository.Remove(this);
+            if (NodeId == record.Identifier || FilterId == record.Identifier)
+                Repository.Remove(this);
             
         }
     }

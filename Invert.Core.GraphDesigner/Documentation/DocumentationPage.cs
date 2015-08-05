@@ -348,7 +348,7 @@ namespace Invert.Core.GraphDesigner
         }
         public string EnsureCodeInEditableFile(DiagramNode elementNode, string filenameSearchText, string codeSearchText)
         {
-            var firstOrDefault = elementNode.GetCodeGeneratorsForNode()
+            var firstOrDefault = elementNode.GetCodeGeneratorsForNode(InvertApplication.Container.Resolve<IGraphConfiguration>())
                 .FirstOrDefault(p => !p.AlwaysRegenerate && (p.Filename.Contains(filenameSearchText) || p.Filename == filenameSearchText));
             if (firstOrDefault == null || !File.Exists(firstOrDefault.FullPathName) || !File.ReadAllText(firstOrDefault.FullPathName).Contains(codeSearchText))
             {

@@ -480,9 +480,10 @@ namespace Invert.Core.GraphDesigner
             if (current != null && !mirrorSection.AllowDuplicates) return;
 
             var newMirror = Activator.CreateInstance(mirrorSection.SourceType) as GenericReferenceItem;
+            Node.Repository.Add(newMirror);
             newMirror.SourceIdentifier = item.Identifier;
             newMirror.Node = this;
-            Node.Repository.Add(newMirror);
+     
             //Node.Project.AddItem(newMirror);
         }
         [Browsable(false)]

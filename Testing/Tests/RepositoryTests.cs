@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Data;
+using Invert.IOC;
 using Invert.Json;
 using Invert.uFrame.ECS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,6 +21,14 @@ namespace Tests
         {
             get { return _db ?? (_db = new TypeDatabase(new JsonRepositoryFactory("TestDatabase2"))); }
             set { _db = value; }
+        }
+
+        [TestInitialize]
+        public void Init()
+        {
+            
+            InvertApplication.CachedAssemblies.Add(typeof(RepositoryTests).Assembly);
+            TestRemove();
         }
         [TestMethod]
         public void TestBulkInsert()
@@ -103,30 +113,7 @@ namespace Tests
             TestRemove();
         }
 
-        [TestMethod]
-        public void TestFilterItems()
-        {
-            var t = typeof (ModuleGraph);
-            Db = new TypeDatabase(new JsonRepositoryFactory(@"D:\Invert\uFrameGit\uFrameDB"));
-            foreach (var item in Db.AllOf<InvertGraph>())
-            {
-                Console.WriteLine(item.Name);
-                Console.WriteLine(item.RootFilterId);
-            }
-            //foreach (var item in Db.AllOf<IDiagramFilter>())
-            //{
-            //    Console.WriteLine(item.Name);
-            //    foreach (var child in item.FilterItems())
-            //    {
-            //        Console.WriteLine(child.Identifier);
-            //        Assert.IsNotNull(child.Node);
-            //    }
-            //}
-       
-
-
-
-        }
+    
         [TestMethod]
         public void TestRemove()
         {
@@ -145,6 +132,47 @@ namespace Tests
 
     }
 
+    [TemplateClass(TemplateLocation.DesignerFile)]
+    //[ForceBaseType(typeof(EcsComponent)), AsPartial]
+    [RequiresNamespace("uFrame.ECS")]
+    [RequiresNamespace("UnityEngine")]
+    public partial class ComponentTemplate : IClassTemplate<ComponentNode>, ITemplateCustomFilename
+    {
+        public string Filename
+        {
+            get
+            {
+                return Path2.Combine("Library", Ctx.Data.Graph.Name, "Components", Ctx.Data.Name + ".cs");
+            }
+        }
+        // Not used now
+        public string OutputPath
+        {
+            get { return Path2.Combine("Extensions", Ctx.Data.Graph.Name, "Components"); }
+        }
+
+        public bool CanGenerate
+        {
+            get { return true; }
+        }
+
+        public void TemplateSetup()
+        {
+
+        }
+
+        public TemplateContext<ComponentNode> Ctx { get; set; }
+    }
+
+    public class PluginTest : DiagramPlugin
+    {
+        public override void Initialize(UFrameContainer container)
+        {
+            base.Initialize(container);
+            container.RegisterInstance<IRepository>(new TypeDatabase(new JsonRepositoryFactory(@"D:\Invert\uFrameGit\uFrameDB")));
+            RegisteredTemplateGeneratorsFactory.RegisterTemplate<ComponentNode, ComponentTemplate>();
+        }
+    }
     public class BaseTest : IDataRecord
     {
         public IRepository Repository { get; set; }

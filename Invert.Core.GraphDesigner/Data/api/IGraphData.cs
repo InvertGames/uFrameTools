@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Invert.Data;
 using Invert.Json;
 
@@ -44,5 +45,23 @@ namespace Invert.Core.GraphDesigner
         void PopToFilter(IDiagramFilter filter1);
         void PopToFilterById( string filterId);
         void PopFilter();
+    }
+
+    public interface IGraphConfiguration
+    {
+        string CodeOutputSystemPath { get;  }
+        string Namespace { get; set; }
+    }
+
+    public class GraphConfiguration : IGraphConfiguration
+    {
+        public GraphConfiguration(string codeOutputSystemPath, string ns)
+        {
+            CodeOutputSystemPath = codeOutputSystemPath;
+            Namespace = ns;
+        }
+
+        public string CodeOutputSystemPath { get; set; }
+        public string Namespace { get; set; }
     }
 }

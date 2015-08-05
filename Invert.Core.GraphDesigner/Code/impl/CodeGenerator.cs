@@ -17,7 +17,7 @@ namespace Invert.Core.GraphDesigner
         public virtual Type GeneratorFor { get; set; }
 
         public object ObjectData { get; set; }
-        public GeneratorSettings Settings { get; set; }
+       
         public string AssetDirectory { get; set; }
         
 #if UNITY_DLL

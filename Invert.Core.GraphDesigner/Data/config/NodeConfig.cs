@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Invert.Data;
 using Invert.IOC;
 
 namespace Invert.Core.GraphDesigner
@@ -131,11 +132,12 @@ namespace Invert.Core.GraphDesigner
 
         public NodeConfig<TNode> AddDesignerGenerator<TCodeGenerator>(string designerFile, bool isEditorExtension = false) where TCodeGenerator : CodeGenerator, new()
         {
+            throw new Exception("AddDesignerGenerator is not implemented right now.");
             AddGenerator(args =>
                 new TCodeGenerator()
                 {
                     ObjectData = args.Data,
-                    Filename = args.PathStrategy.GetDesignerFilePath(designerFile),
+                    //Filename = args.PathStrategy.GetDesignerFilePath(designerFile),
                     IsDesignerFile = true
                 });
             return this;
@@ -491,17 +493,12 @@ namespace Invert.Core.GraphDesigner
         {
             public TNode Data { get; set; }
 
-            public ICodePathStrategy PathStrategy { get; set; }
-
-            public INodeRepository Repository { get; set; }
-
-            public GeneratorSettings Settings { get; set; }
         }
 
 
         public class CodeGeneratorFactory : DesignerGeneratorFactory<TNode>
         {
-            public override IEnumerable<OutputGenerator> CreateGenerators(GeneratorSettings settings, ICodePathStrategy pathStrategy, INodeRepository diagramData, TNode item)
+            public override IEnumerable<OutputGenerator> CreateGenerators(IGraphConfiguration graphConfig, TNode item)
             {
                 if (item.Precompiled) yield break;
                 if (!item.IsValid) yield break;
@@ -511,10 +508,8 @@ namespace Invert.Core.GraphDesigner
 
                 var generatorArgs = new ConfigCodeGeneratorSettings()
                 {
-                    Settings = settings,
-                    PathStrategy = pathStrategy,
                     Data = item,
-                    Repository = diagramData
+                    
                 };
                 foreach (var outputGenerator in config.OutputGenerators)
                 {

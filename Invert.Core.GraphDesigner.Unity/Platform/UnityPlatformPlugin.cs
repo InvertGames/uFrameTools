@@ -339,18 +339,19 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public override void Perform(DiagramViewModel node)
         {
-            var graph = node.GraphData as INodeRepository;
-            var files = InvertGraphEditor.GetAllFileGenerators(null, graph, false).Select(p => p.AssetPath).ToList();
-            files.Add(AssetDatabase.GetAssetPath(graph as Object));
+            // TODO 2.0 Rewrite Export Diagram
+            //var graph = node.GraphData as INodeRepository;
+            //var files = InvertGraphEditor.GetAllFileGenerators(null, node.GraphData.Repository, false).Select(p => p.AssetPath).ToList();
+            //files.Add();
 
-            var path = EditorUtility.SaveFilePanelInProject("Export Graph Unity Package",
-                                graph.Name + ".unitypackage",
-                                "unitypackage",
-                                "Please enter a file name to export to.");
-            if (path.Length != 0)
-            {
-                AssetDatabase.ExportPackage(files.Distinct().ToArray(), path, ExportPackageOptions.Default | ExportPackageOptions.Interactive);
-            }
+            //var path = EditorUtility.SaveFilePanelInProject("Export Graph Unity Package",
+            //                    graph.Name + ".unitypackage",
+            //                    "unitypackage",
+            //                    "Please enter a file name to export to.");
+            //if (path.Length != 0)
+            //{
+            //    AssetDatabase.ExportPackage(files.Distinct().ToArray(), path, ExportPackageOptions.Default | ExportPackageOptions.Interactive);
+            //}
 
 
         }

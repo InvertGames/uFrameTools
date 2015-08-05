@@ -36,6 +36,7 @@ namespace Invert.Core.GraphDesigner
         {
             var diagramItem = item as DiagramNodeViewModel;
             if (diagramItem == null) yield break;
+            
             var generators = diagramItem.CodeGenerators.ToArray();
 
             foreach (var codeGenerator in generators.Where(p=>!p.AlwaysRegenerate))

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Invert.Data;
 using Invert.ICSharpCode.NRefactory.CSharp;
 using Invert.ICSharpCode.NRefactory.CSharp.Expressions;
 using Invert.ICSharpCode.NRefactory.Editor;
@@ -30,87 +31,90 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             ListenFor<IRefactoringEvents>();
         }
 
-        public void PreCompile(INodeRepository repository, IGraphData diagramData)
+        public void PreCompile(IGraphConfiguration configuration, IDataRecord[] compilingRecords)
         {
-
+            Config = configuration;
         }
+
+        public IGraphConfiguration Config { get; set; }
 
         public void FileGenerated(CodeFileGenerator generator)
         {
 
         }
 
-        public void PostCompile(INodeRepository repository, IGraphData diagramData)
+        public void PostCompile(IGraphConfiguration configuration, IDataRecord[] compilingRecords)
         {
-            var project = repository as IProjectRepository;
-            if (project == null) return;
-            var changes = project.Graphs.SelectMany(p => p.ChangeData).ToArray();
-            var refactors = new List<IRefactorer>();
+            // TODO 2.0: IMPORTANT REFACTORING/ChangeTracking
+            //var project = repository as IRepository;
+            //if (project == null) return;
+            //var changes = project.Graphs.SelectMany(p => p.ChangeData).ToArray();
+            //var refactors = new List<IRefactorer>();
 
-            // Send out an event to decorate the refactorings
-            foreach (var change in changes)
-            {
-                var change1 = change;
-                InvertApplication.SignalEvent<IRefactoringEvents>(_ => _.ProcessRefactors(change1, refactors));
-            }
+            //// Send out an event to decorate the refactorings
+            //foreach (var change in changes)
+            //{
+            //    var change1 = change;
+            //    InvertApplication.SignalEvent<IRefactoringEvents>(_ => _.ProcessRefactors(change1, refactors));
+            //}
 
-            // Grab all the editable files
-            var files = InvertGraphEditor.GetAllFileGenerators(null, repository)
-                .Where(p => p.Generators.All(x => !x.AlwaysRegenerate)).ToArray();
+            //// Grab all the editable files
+            //var files = InvertGraphEditor.GetAllFileGenerators(null, repository)
+            //    .Where(p => p.Generators.All(x => !x.AlwaysRegenerate)).ToArray();
 
-            foreach (var file in files)
-            {
-                if (!File.Exists(file.SystemPath)) continue;
-                //InvertApplication.Log(string.Format("Refactoring {0}", file.SystemPath));
+            //foreach (var file in files)
+            //{
+            //    if (!File.Exists(file.SystemPath)) continue;
+            //    //InvertApplication.Log(string.Format("Refactoring {0}", file.SystemPath));
 
-                var fileText = File.ReadAllText(file.SystemPath);
-                CSharpParser parser = new CSharpParser();
-                SyntaxTree tree = null;
+            //    var fileText = File.ReadAllText(file.SystemPath);
+            //    CSharpParser parser = new CSharpParser();
+            //    SyntaxTree tree = null;
                 
-                var document = new StringBuilderDocument(fileText);
-                var formattingOptions = FormattingOptionsFactory.CreateAllman();
-                var o = new TextEditorOptions() {TabsToSpaces = true};
-                var script = new DocumentScript(document, formattingOptions, o);
-                try
-                {
+            //    var document = new StringBuilderDocument(fileText);
+            //    var formattingOptions = FormattingOptionsFactory.CreateAllman();
+            //    var o = new TextEditorOptions() {TabsToSpaces = true};
+            //    var script = new DocumentScript(document, formattingOptions, o);
+            //    try
+            //    {
           
 
-                    tree = parser.Parse(document,"filename.cs");
-                    if (parser.HasErrors)
-                    {
-                        InvertApplication.Log(string.Format("Couldn't parse file for refactoring because: {0}", string.Join(Environment.NewLine, parser.Errors.Select(p=>p.Message).ToArray())));
-                        continue;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    InvertApplication.LogError(string.Format("Couldn't parse file for refactoring because: {0}", ex.Message));
-                    continue;
-                }
-                if (tree == null)
-                {
+            //        tree = parser.Parse(document,"filename.cs");
+            //        if (parser.HasErrors)
+            //        {
+            //            InvertApplication.Log(string.Format("Couldn't parse file for refactoring because: {0}", string.Join(Environment.NewLine, parser.Errors.Select(p=>p.Message).ToArray())));
+            //            continue;
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        InvertApplication.LogError(string.Format("Couldn't parse file for refactoring because: {0}", ex.Message));
+            //        continue;
+            //    }
+            //    if (tree == null)
+            //    {
             
-                    continue;
-                }
+            //        continue;
+            //    }
                 
-                foreach (var refactor in refactors)
-                {
-                    refactor.Script = script;
-                    tree.AcceptVisitor(refactor);
-                }
-                try
-                {
+            //    foreach (var refactor in refactors)
+            //    {
+            //        refactor.Script = script;
+            //        tree.AcceptVisitor(refactor);
+            //    }
+            //    try
+            //    {
                 
             
-                }
-                catch (Exception ex)
-                {
-                    InvertApplication.LogError(string.Format("Couldn't refactor file because {0}", ex.Message));
-                    continue;
-                }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        InvertApplication.LogError(string.Format("Couldn't refactor file because {0}", ex.Message));
+            //        continue;
+            //    }
 
-                File.WriteAllText(file.SystemPath, document.Text);
-            }
+            //    File.WriteAllText(file.SystemPath, document.Text);
+            //}
 
         }
 
@@ -135,7 +139,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
 
             // Grab all the generated files
-            var generators = graphNode.GetAllEditableFilesForNode().ToArray();
+            var generators = graphNode.GetAllEditableFilesForNode(InvertGraphEditor.Container.Resolve<IGraphConfiguration>()).ToArray();
 
             var hasChanges = false;
             foreach (var item in generators)
@@ -175,7 +179,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
             var changeData = change as NameChange;
             if (changeData != null)
             {
-                var templates = change.Item.GetTemplates().ToArray();
+                var templates = change.Item.GetTemplates(Config).ToArray();
                 var classRefactorable = templates.OfType<IClassRefactorable>().SelectMany(p => p.ClassNameFormats).ToArray();
                 foreach (var format in classRefactorable.Distinct())
                 {
@@ -207,7 +211,7 @@ namespace Invert.Core.GraphDesigner.Unity.Refactoring
 
             if (addChange != null && !isNodeAdded)
             {
-                var members = change.Item.Node.GetEditableOutputMembers(_ => _.Identifier == change.ItemIdentifier && _ != change.Item.Node)
+                var members = change.Item.Node.GetEditableOutputMembers(Config,_ => _.Identifier == change.ItemIdentifier && _ != change.Item.Node)
                     .Where(p => p != null && p.MemberAttribute != null && (p.MemberAttribute.Location == TemplateLocation.EditableFile || p.MemberAttribute.Location == TemplateLocation.Both))
                     .ToArray();
 

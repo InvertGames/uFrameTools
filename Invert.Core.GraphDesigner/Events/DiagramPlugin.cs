@@ -15,7 +15,11 @@ namespace Invert.Core.GraphDesigner
         }
         public override bool Enabled
         {
-            get { return InvertGraphEditor.Prefs.GetBool("UFRAME_PLUGIN_" + this.GetType().Name, EnabledByDefault); }
+            get
+            {
+                if (InvertGraphEditor.Prefs == null) return true; // Testability
+                return InvertGraphEditor.Prefs.GetBool("UFRAME_PLUGIN_" + this.GetType().Name, EnabledByDefault);
+            }
             set { InvertGraphEditor.Prefs.SetBool("UFRAME_PLUGIN_" + this.GetType().Name, value); }
         }
 

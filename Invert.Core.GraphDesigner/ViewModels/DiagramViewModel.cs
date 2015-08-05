@@ -210,15 +210,15 @@ namespace Invert.Core.GraphDesigner
             get { return DataObject as IGraphData; }
         }
 
-        public IEnumerable<OutputGenerator> CodeGenerators
-        {
-            get
-            {
-                // TODO 2.0 Need to figure out code generation strategies
-                return InvertGraphEditor.GetAllCodeGenerators(null,
-                    null);
-            }
-        }
+        //public IEnumerable<OutputGenerator> CodeGenerators
+        //{
+        //    get
+        //    {
+        //      
+        //        return InvertGraphEditor.GetAllCodeGenerators(
+        //            InvertApplication.Container.Resolve<IGraphConfiguration>(), GraphData.Repository.Allof);
+        //    }
+        //}
 
         protected override void DataObjectChanged()
         {

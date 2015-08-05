@@ -4,7 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Invert.Core.GraphDesigner;
+using Invert.Data;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -18,23 +20,27 @@ namespace Invert.Core.GraphDesigner
         /// <summary>
         /// When the "Save & Compile" button is clicked. This is called first
         /// </summary>
-        /// <param name="repository">The repository we are compiling.</param>
-        /// <param name="diagramData">The diagram that is currently open</param>
-        void PreCompile(INodeRepository repository, IGraphData diagramData);
-        /// <summary>
-        /// When a file is generated, this method is called.
-        /// </summary>
-        /// <param name="generator"></param>
-        void FileGenerated(CodeFileGenerator generator);
+
+        void PreCompile(IGraphConfiguration configuration, IDataRecord[] compilingRecords);
+
+
         /// <summary>
         /// When saving & compiling is complete.
         /// </summary>
-        /// <param name="repository">The repository that compiled.</param>
-        /// <param name="diagramData">The current graph that was open when compiling.</param>
-        void PostCompile(INodeRepository repository, IGraphData diagramData);
+        void PostCompile(IGraphConfiguration configuration, IDataRecord[] compilingRecords);
 
+        /// <summary>
+        /// When a file is generated, this method is called.
+        /// </summary>
+        void FileGenerated(CodeFileGenerator generator);
         void FileSkipped(CodeFileGenerator codeFileGenerator);
     }
+
+    public interface IOnCompilerError
+    {
+        void Error(ErrorInfo info);
+    }
+
     public class SaveCommand : ElementsDiagramToolbarCommand
     {
         public override string Title
@@ -44,65 +50,60 @@ namespace Invert.Core.GraphDesigner
        
         public override void Perform(DiagramViewModel diagram)
         {
-            var service = InvertApplication.Container.Resolve<WorkspaceService>();
-            var issuesList = new List<ErrorInfo>();
-            foreach (var graph in service.CurrentWorkspace.Graphs)
-            {
-                issuesList.AddRange(graph.Validate());
-            }
+            //var service = InvertApplication.Container.Resolve<WorkspaceService>();
+            //var issuesList = new List<ErrorInfo>();
+            //foreach (var graph in service.CurrentWorkspace.Graphs)
+            //{
+            //    issuesList.AddRange(graph.Validate());
+            //}
             
          
-            var issues = issuesList.ToArray();
-            if (issues.Any())
-            {
-                foreach (var item in issues)
-                {
-                    if (item.Siverity == ValidatorType.Error)
-                    {
-                        InvertApplication.LogError(item.Message);
-                    }
-                }
-                if (InvertGraphEditor.Platform.MessageBox("Issues", "Please fix all issues before compiling.", "Ok",
-                    "Do it anyways"))
-                {
-                    return;
-                }
-               
-            }
+            //var issues = issuesList.ToArray();
+            //if (issues.Any())
+            //{
+            //    foreach (var item in issues)
+            //    {
+            //        var item1 = item;
+            //        InvertApplication.SignalEvent<IOnCompilerError>(_=>_.Error(item1));
+            //    }
+            //}
+            //else
+            //{
 
-            InvertApplication.SignalEvent<ITaskHandler>(_=>{_.BeginTask(Generate(diagram));});
+                InvertApplication.SignalEvent<ITaskHandler>(_ => { _.BeginTask(Generate()); });
+           // }
+
            
           
         }
 
-        public IEnumerator Generate(DiagramViewModel diagram)
+        public IEnumerator Generate()
         {
-            InvertGraphEditor.Platform.SaveAssets();
-           // InvertGraphEditor.Platform.Progress(0, "Refactoring");
+            
+
+            var repository = InvertGraphEditor.Container.Resolve<IRepository>();
+            repository.Commit();
+            var config = InvertGraphEditor.Container.Resolve<IGraphConfiguration>();
+            var items = repository.AllOf<IDataRecord>().ToArray();
+            
             yield return
                 new TaskProgress(0f, "Refactoring");
-            // TODO 2.0 Need to figure out code generation strategies shouldn't be null
-            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PreCompile(null,null));
-
-            // TODO 2.0 Need to figure out code generation strategies
-            var fileGenerators = InvertGraphEditor.GetAllFileGenerators(null, null).ToArray();
+            
+            // Grab all the file generators
+            var fileGenerators = InvertGraphEditor.GetAllFileGenerators(config, items).ToArray();
             var length = 100f / (fileGenerators.Length + 1);
-            // Debug.Log(fileGenerators.Length);
+            
             var index = 0;
-            //var exportedFiles = new List<string>();
+            
             foreach (var codeFileGenerator in fileGenerators)
             {
                 index++;
                 yield return new TaskProgress(length * index, "Generating " + System.IO.Path.GetFileName(codeFileGenerator.AssetPath));
-                //InvertGraphEditor.Platform.Progress(length * index, "Generating " + System.IO.Path.GetFileName(codeFileGenerator.AssetPath));
                 // Grab the information for the file
                 var fileInfo = new FileInfo(codeFileGenerator.SystemPath);
-                //Debug.Log(codeFileGenerator.SystemPath + ": " + fileInfo.Exists);
-
                 // Make sure we are allowed to generate the file
                 if (!codeFileGenerator.CanGenerate(fileInfo))
                 {
-                    //Debug.Log("Can't generate " + fileInfo.FullName);
                     var fileGenerator = codeFileGenerator;
                     InvertApplication.SignalEvent<ICompileEvents>(_ => _.FileSkipped(fileGenerator));
                     continue;
@@ -117,9 +118,6 @@ namespace Invert.Core.GraphDesigner
                 }
                 try
                 {
-                    //exportedFiles.Add(fileInfo.FullName.ToLower().Replace("\\", "/"));
-                    //Debug.Log(string.Format("export file : {0}", fileInfo.FullName.ToLower().Replace("\\", "/")));
-                    // uFrameEditor.Log(string.Format("Writing file with {0} with filename {1}", codeFileGenerator.GetType().Name, codeFileGenerator.Filename));
                     // Write the file
                     File.WriteAllText(fileInfo.FullName, codeFileGenerator.ToString());
                 }
@@ -129,53 +127,17 @@ namespace Invert.Core.GraphDesigner
                     InvertApplication.Log("Coudln't create file " + fileInfo.FullName);
                 }
                 CodeFileGenerator generator = codeFileGenerator;
-
                 InvertApplication.SignalEvent<ICompileEvents>(_ => _.FileGenerated(generator));
             }
-
-            foreach (var allDiagramItem in diagram.GraphData.NodeItems)
-            {
-                allDiagramItem.IsNewNode = false;
-            }
-            ////RefactorApplied(diagram.DiagramData);
-            //// Clean up any files that aren't needed anymore
-            //var path = System.IO.Path.GetDirectoryName(System.IO.Path.Combine(Application.dataPath, diagram.GraphData.Path.Substring(7)).Replace("\\", "/"));
-
-
-            //var files =
-            //    Directory.GetFiles(path, "*.designer.cs", SearchOption.AllDirectories).Select(p => p.ToLower().Replace("\\", "/")).ToArray();
-            //foreach (
-            //    var item in files)
-            //{
-            //    if (exportedFiles.Contains(item)) continue;
-            //    System.IO.File.Delete(item);
-
-            //}
-
-            // TODO 2.0 Need to figure out code generation strategies these shouldn't be null
-            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(null,null));
-
+            InvertApplication.SignalEvent<ICompileEvents>(_ => _.PostCompile(config,items));
 
             yield return
                 new TaskProgress(100f, "Complete");
 
-
-            var projectService = InvertApplication.Container.Resolve<WorkspaceService>();
-
-            foreach (var graph in projectService.CurrentWorkspace.Graphs)
-            {
-                graph.ChangeData.Clear();
-            }
-            //#if UNITY_DLL
-            //            UnityEditor.AssetDatabase.SaveAssets();
-            //#endif
-            //InvertGraphEditor.Platform.Progress(101f, "Done");
-            diagram.Save();
-
 #if UNITY_DLL
-            //UnityEditor.AssetDatabase.SaveAssets();
+            repository.Commit();
+            if (InvertGraphEditor.Platform != null) // Testability
             InvertGraphEditor.Platform.RefreshAssets();
-            UnityEditor.EditorUtility.ClearProgressBar();
 #endif
         }
 
