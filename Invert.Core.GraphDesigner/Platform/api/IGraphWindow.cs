@@ -1,4 +1,4 @@
-using Invert.Core.GraphDesigner.Two;
+using Invert.Core.GraphDesigner;
 
 namespace Invert.Core.GraphDesigner
 {

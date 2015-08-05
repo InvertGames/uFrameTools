@@ -230,7 +230,9 @@ namespace Invert.Core.GraphDesigner
         public override string Name
         {
             get { return base.Name; }
-            set { base.Name = value; }
+            set { base.Name = value;
+                Changed = true;
+            }
         }
         //public List<string> ConnectedGraphItemIds
         //{
@@ -616,13 +618,17 @@ namespace Invert.Core.GraphDesigner
                 }
                 return SourceItemObject.Name;
             }
-            set { base.Name = value; }
+            set { base.Name = value;
+                Changed = true;
+            }
         }
         [JsonProperty]
         public string SourceIdentifier
         {
             get { return _sourceIdentifier; }
-            set { _sourceIdentifier = value; }
+            set { _sourceIdentifier = value;
+                Changed = true;
+            }
         }
         [Browsable(false)]
         public virtual IDiagramNodeItem SourceItemObject

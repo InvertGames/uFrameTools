@@ -4,80 +4,95 @@ using Invert.Core.GraphDesigner;
 using Invert.Data;
 using Invert.Json;
 
-public class ConnectionData : IJsonObject,IDataRecord, IDataRecordRemoved
+namespace Invert.Core.GraphDesigner
 {
-
-    private string _outputIdentifier;
-
-    private string _inputIdentifier;
-
-    public ConnectionData(string outputIdentifier, string inputIdentifier)
+    public class ConnectionData : IJsonObject, IDataRecord, IDataRecordRemoved
     {
-        OutputIdentifier = outputIdentifier;
-        InputIdentifier = inputIdentifier;
-    }
 
-    public ConnectionData()
-    {
-    }
+        private string _outputIdentifier;
 
-    [JsonProperty]
-    public string OutputIdentifier
-    {
-        get { return _outputIdentifier; }
-        set { _outputIdentifier = value; }
-    }
+        private string _inputIdentifier;
 
-    [JsonProperty]
-    public string InputIdentifier
-    {
-        get { return _inputIdentifier; }
-        set { _inputIdentifier = value; }
-    }
-   
-    public IGraphData Graph { get; set; }
-
-    public IConnectable Output
-    {
-        get { return Repository.GetById<IConnectable>(OutputIdentifier); }
-    }
-
-    public IConnectable Input
-    {
-        get { return Repository.GetById<IConnectable>(InputIdentifier); }
-    }
-
-    public void Remove()
-    {
-        Graph.RemoveConnection(Output,Input);
-    }
-
-    public void Serialize(JSONClass cls)
-    {
-        cls.Add("OutputIdentifier", OutputIdentifier ?? string.Empty);
-        cls.Add("InputIdentifier", InputIdentifier ?? string.Empty);
-    }
-
-    public void Deserialize(JSONClass cls)
-    {
-        if (cls["InputIdentifier"] != null)
+        public ConnectionData(string outputIdentifier, string inputIdentifier)
         {
-            InputIdentifier = cls["InputIdentifier"].Value;
+            OutputIdentifier = outputIdentifier;
+            InputIdentifier = inputIdentifier;
         }
-        if (cls["OutputIdentifier"] != null)
-        {
-            OutputIdentifier = cls["OutputIdentifier"].Value;
-        }
-    }
 
-    public IRepository Repository { get; set; }
-    public string Identifier { get; set; }
-    public void RecordRemoved(IDataRecord record)
-    {
-        if (record.Identifier == OutputIdentifier || record.Identifier == InputIdentifier)
-            Repository.Remove(this);
-    }
+        public ConnectionData()
+        {
+        }
+
+        [JsonProperty]
+        public string OutputIdentifier
+        {
+            get { return _outputIdentifier; }
+            set
+            {
+                _outputIdentifier = value;
+                Changed = true;
+            }
+        }
+
+        [JsonProperty]
+        public string InputIdentifier
+        {
+            get { return _inputIdentifier; }
+            set
+            {
+                _inputIdentifier = value;
+                Changed = true;
+            }
+        }
+
+        public IGraphData Graph { get; set; }
+
+        public IConnectable Output
+        {
+            get { return Repository.GetById<IConnectable>(OutputIdentifier); }
+        }
+
+        public IConnectable Input
+        {
+            get { return Repository.GetById<IConnectable>(InputIdentifier); }
+        }
+
+        public void Remove()
+        {
+            Graph.RemoveConnection(Output, Input);
+        }
+
+        public void Serialize(JSONClass cls)
+        {
+            cls.Add("OutputIdentifier", OutputIdentifier ?? string.Empty);
+            cls.Add("InputIdentifier", InputIdentifier ?? string.Empty);
+        }
+
+        public void Deserialize(JSONClass cls)
+        {
+            if (cls["InputIdentifier"] != null)
+            {
+                InputIdentifier = cls["InputIdentifier"].Value;
+            }
+            if (cls["OutputIdentifier"] != null)
+            {
+                OutputIdentifier = cls["OutputIdentifier"].Value;
+            }
+        }
+
+        public IRepository Repository { get; set; }
+        public string Identifier { get; set; }
+
+        public bool Changed { get; set; }
+
+        public void RecordRemoved(IDataRecord record)
+        {
+            if (record.Identifier == OutputIdentifier || record.Identifier == InputIdentifier)
+                Repository.Remove(this);
+        }
+    }    
 }
+
 
 [Obsolete]
 public interface IConnectionDataProvider

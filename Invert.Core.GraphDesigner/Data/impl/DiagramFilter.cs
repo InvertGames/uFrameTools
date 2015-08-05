@@ -29,6 +29,8 @@ namespace Invert.Core.GraphDesigner
             set { _identifier = value; }
         }
 
+        public bool Changed { get; set; }
+
         public virtual bool ImportedOnly
         {
             get { return false; }

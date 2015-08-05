@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Invert.Core.GraphDesigner;
-using Invert.Core.GraphDesigner.Two;
 using Invert.Data;
 using Invert.Json;
 using Invert.uFrame.ECS;
@@ -108,19 +107,23 @@ namespace Tests
         public void TestFilterItems()
         {
             var t = typeof (ModuleGraph);
-            Db = new TypeDatabase(new JsonRepositoryFactory(@"D:\Invert\uFrameGit\Assets\uFrameDB"));
-            foreach (var item in Db.AllOf<IDiagramNode>())
+            Db = new TypeDatabase(new JsonRepositoryFactory(@"D:\Invert\uFrameGit\uFrameDB"));
+            foreach (var item in Db.AllOf<InvertGraph>())
             {
                 Console.WriteLine(item.Name);
-                Console.WriteLine(item.Identifier);
+                Console.WriteLine(item.RootFilterId);
             }
-            var componentNode = Db.GetById<IDiagramNode>("2b545d2a-2876-4b18-a5f1-fde4a6c36078");
-            Assert.IsNotNull(componentNode);
-            foreach (var item in Db.All<FilterItem>())
-            {
-                item.Repository = Db;
-                Assert.IsNotNull(item.Node, item.NodeId);
-            }
+            //foreach (var item in Db.AllOf<IDiagramFilter>())
+            //{
+            //    Console.WriteLine(item.Name);
+            //    foreach (var child in item.FilterItems())
+            //    {
+            //        Console.WriteLine(child.Identifier);
+            //        Assert.IsNotNull(child.Node);
+            //    }
+            //}
+       
+
 
 
         }
@@ -147,6 +150,8 @@ namespace Tests
         public IRepository Repository { get; set; }
         [JsonProperty]
         public string Identifier { get; set; }
+
+        public bool Changed { get; set; }
     }
 
     public class DerivedTest : BaseTest

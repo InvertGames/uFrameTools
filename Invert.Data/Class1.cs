@@ -30,6 +30,7 @@ namespace Invert.Data
     {
         IRepository Repository { get; set; }
         string Identifier { get; set; }
+        bool Changed { get; set; }
     }
 
     public interface IDataRecordInserted
@@ -294,8 +295,11 @@ namespace Invert.Data
             set { _directoryInfo = value; }
         }
 
+        private bool _loadedCached;
         private void LoadRecordsIntoCache()
         {
+            if (_loadedCached) return;
+
             if (!DirectoryInfo.Exists)
             {
                 DirectoryInfo.Create();
@@ -304,24 +308,27 @@ namespace Invert.Data
             {
                 LoadRecord(file);
             }
+            _loadedCached = true;
         }
 
         private void LoadRecord(FileInfo file)
         {
+            if (Cached.ContainsKey(Path.GetFileNameWithoutExtension(file.Name))) return;
             var record = JsonExtensions.DeserializeObject(For, JSON.Parse(File.ReadAllText(file.FullName))) as IDataRecord;
             if (record != null)
             {
                 record.Repository = this.Repository;
+                
                 Cached.Add(record.Identifier, record);
+                record.Changed = false;
             }
         }
 
         public IDataRecord GetSingle(string identifier)
         {
-            if (Cached.Count < 1)
-            {
+ 
                 LoadRecordsIntoCache();
-            }
+    
             if (!Cached.ContainsKey(identifier))
             {
    
@@ -332,15 +339,15 @@ namespace Invert.Data
 
         public IEnumerable<IDataRecord> GetAll()
         {
-            if (Cached.Count < 1)
-            {
+    
                 LoadRecordsIntoCache();
-            }
+        
             return Cached.Values.Where(p=>!Removed.Contains(p.Identifier));
         }
 
         public void Add(IDataRecord o)
         {
+            o.Changed = true;
             if (string.IsNullOrEmpty(o.Identifier))
             {
                 o.Identifier = Guid.NewGuid().ToString();
@@ -368,8 +375,12 @@ namespace Invert.Data
                 }
                 else
                 {
-                    var json = JsonExtensions.SerializeObject(item.Value);
-                    File.WriteAllText(filename, json.ToString());
+                    if (item.Value.Changed)
+                    {
+                        var json = JsonExtensions.SerializeObject(item.Value);
+                        File.WriteAllText(filename, json.ToString());
+                    }
+                    item.Value.Changed = false;
                 }
             }
         }

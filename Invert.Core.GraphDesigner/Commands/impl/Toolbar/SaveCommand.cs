@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Invert.Core.GraphDesigner.Two;
+using Invert.Core.GraphDesigner;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner

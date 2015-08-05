@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Invert.Core.GraphDesigner;
-using Invert.Core.GraphDesigner.Two;
+using Invert.Core.GraphDesigner;
 using Invert.IOC;
 
 namespace Invert.Core.GraphDesigner
@@ -88,7 +88,7 @@ namespace Invert.Core.GraphDesigner
                 Workspace project1 = project;
                 var command = new SimpleEditorCommand<DesignerWindow>(_ =>
                 {
-                    projectService.CurrentWorkspace = project1;
+                    projectService.OpenWorkspace(project1);
 
                     node.Designer = null;
                     node.SwitchDiagram(project1.CurrentGraph);

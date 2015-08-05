@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using Invert.Core.GraphDesigner.Two;
+using Invert.Core.GraphDesigner;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -181,6 +181,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                if (!DiagramViewModel.FilterItems.ContainsKey(GraphItemObject.Identifier)) return new Vector2(45,45);
                 return DiagramViewModel.FilterItems[GraphItemObject.Identifier].Position;
             }
             set
@@ -254,14 +255,20 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (ShowHelp) return false;
+
+
                 if (AllowCollapsing)
+                {
+                    if (!DiagramViewModel.FilterItems.ContainsKey(GraphItemObject.Identifier)) return false;
                     return DiagramViewModel.FilterItems[GraphItemObject.Identifier].Collapsed;
+                }
+                    
                 return true;
 
             }
             set
             {
+                if (!DiagramViewModel.FilterItems.ContainsKey(GraphItemObject.Identifier)) return;
                 DiagramViewModel.FilterItems[GraphItemObject.Identifier].Collapsed = value;
                 OnPropertyChanged("IsCollapsed");
                 IsDirty = true;

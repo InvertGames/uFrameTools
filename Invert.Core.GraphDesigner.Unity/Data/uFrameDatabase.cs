@@ -42,7 +42,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public string FullPath
         {
-            get { return Path.Combine(Application.dataPath, "uFrameDB"); }
+            get { return Path.Combine(Application.dataPath.Replace("Assets/",string.Empty).Replace("Assets\\",string.Empty).Replace("Assets", string.Empty), "uFrameDB"); }
         }
     }
 

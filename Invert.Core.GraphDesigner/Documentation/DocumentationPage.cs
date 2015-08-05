@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Text;
-using Invert.Core.GraphDesigner.Two;
 
 namespace Invert.Core.GraphDesigner
 {

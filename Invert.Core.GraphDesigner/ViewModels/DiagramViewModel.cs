@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Invert.Core.GraphDesigner.Two;
+using Invert.Core.GraphDesigner;
 using Invert.Data;
 using Invert.Windows;
 using UnityEngine;
@@ -48,9 +48,6 @@ namespace Invert.Core.GraphDesigner
             get { return _allCommands ?? (_allCommands = InvertGraphEditor.Container.ResolveAll<IToolbarCommand>().ToArray()); }
             set { _allCommands = value; }
         }
-
-
-
     }
 
     public class TabViewModel : ViewModel

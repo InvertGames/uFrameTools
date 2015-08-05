@@ -129,6 +129,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     private string _oldName;
 
     private Rect _position;
+    private string _nodeId;
 
     public abstract string FullLabel { get; }
 
@@ -145,10 +146,18 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         set { _identifier = value; }
     }
 
+    public bool Changed { get; set; }
+
     public virtual bool IsSelectable { get { return true; } }
 
-    [NodeProperty,JsonProperty]
-    public string NodeId { get; set; }
+    [NodeProperty, JsonProperty]
+    public string NodeId
+    {
+        get { return _nodeId; }
+        set { _nodeId = value;
+            Changed = true;
+        }
+    }
 
     public DiagramNode Node
     {
@@ -196,6 +205,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
             {
                 _name = value;
             }
+            Changed = true;
             // TODO 2.0 Change Tracking
             //if (!string.IsNullOrEmpty(NodeId))
             //Node.TrackChange(new NameChange(this,oldName, _name));

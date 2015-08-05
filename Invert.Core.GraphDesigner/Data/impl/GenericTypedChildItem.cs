@@ -3,9 +3,10 @@ using System.CodeDom;
 using System.Linq;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Data;
 using Invert.Json;
 
-public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, ISerializeablePropertyData
+public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, ISerializeablePropertyData, IDataRecordRemoved
 {
     protected string _type = string.Empty;
 
@@ -34,6 +35,7 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
             if (!string.IsNullOrEmpty(NodeId))
                 this.Node.TrackChange(new TypeChange(this, _type, RelatedTypeName));
             _type = value;
+            Changed = true;
         }
     }
 
@@ -142,4 +144,11 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
 
     }
 
+    public void RecordRemoved(IDataRecord record)
+    {
+        if (RelatedType == record.Identifier)
+        {
+            RemoveType();
+        }
+    }
 }

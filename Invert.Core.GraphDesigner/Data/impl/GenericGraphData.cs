@@ -1,5 +1,5 @@
 using Invert.Core.GraphDesigner;
-using Invert.Core.GraphDesigner.Two;
+using Invert.Core.GraphDesigner;
 
 public class GenericGraphData<T> : InvertGraph where T : IDiagramFilter, new()
 {

@@ -9,9 +9,8 @@ namespace Invert.Core.GraphDesigner
         public override void Perform(DiagramViewModel node)
         {
             var diagramItem = SelectedOption.Value as IDiagramNode;
-            // TODO FIND A WAY TO GET MOUSE POSITION OF CURRENT WINDOW
-            node.GraphData.PositionData[node.GraphData.CurrentFilter, diagramItem] =
-               node.LastMouseEvent.MouseDownPosition;
+            
+            node.GraphData.CurrentFilter.ShowInFilter(diagramItem,node.LastMouseEvent.MouseDownPosition);
         }
 
         public override string CanPerform(DiagramViewModel node)

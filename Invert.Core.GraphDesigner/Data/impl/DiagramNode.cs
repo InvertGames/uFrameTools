@@ -131,7 +131,7 @@ namespace Invert.Core.GraphDesigner
         private string _name;
 
         private Rect _position;
-
+        private string _graphId;
 
 
         public bool this[string flag]
@@ -255,12 +255,17 @@ namespace Invert.Core.GraphDesigner
         }
 
         [JsonProperty]
-        public string GraphId { get; set; }
+        public string GraphId
+        {
+            get { return _graphId; }
+            set { _graphId = value;
+                Changed = true;
+            }
+        }
 
         /// <summary>
         /// Gets the diagram file that this node belongs to
         /// </summary>
-
         public virtual IGraphData Graph
         {
             get
@@ -298,27 +303,30 @@ namespace Invert.Core.GraphDesigner
             set { throw new NotImplementedException(); }
         }
 
-        [Browsable(false)]
+  
         public Rect HeaderPosition { get; set; }
-        [Browsable(false)]
+
         public string Highlighter { get { return null; } }
 
         public IRepository Repository { get; set; }
 
-        [JsonProperty]
+ 
         public virtual string Identifier
         {
             get { return string.IsNullOrEmpty(_identifier) ? (_identifier = Guid.NewGuid().ToString()) : _identifier; }
             set { _identifier = value; }
         }
-        [Browsable(false)]
+
+        public bool Changed { get; set; }
+
+     
         public virtual bool ImportedOnly
         {
             get { return true; }
         }
-        [Browsable(false)]
+
         public bool IsExplorerCollapsed { get; set; }
-        [Browsable(false)]
+
         public virtual string InfoLabel
         {
             get
@@ -327,7 +335,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        [Browsable(false)]
+  
         public bool IsEditing { get; set; }
 
         public bool IsExternal
@@ -337,13 +345,13 @@ namespace Invert.Core.GraphDesigner
                 return Repository.AllOf<IDiagramNode>().All(p => p.Identifier != Identifier);
             }
         }
-        [Browsable(false), JsonProperty]
+
         public bool IsNewNode { get; set; }
-        [Browsable(false)]
+
         public bool IsSelectable { get { return true; } }
-        [Browsable(false)]
+
         public bool IsSelected { get; set; }
-        [Browsable(false)]
+    
         public virtual IEnumerable<IDiagramNodeItem> DisplayedItems
         {
             get { return PersistedItems; }
@@ -373,6 +381,7 @@ namespace Invert.Core.GraphDesigner
                 var previous = _name;
                 if (value == null) return;
                 _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
+                Changed = true;
                 if (Graph != null)
                 {
                     TrackChange(new NameChange(this, previous, _name));
@@ -424,13 +433,13 @@ namespace Invert.Core.GraphDesigner
             {
             }
         }
-        [Browsable(false)]
+
         public virtual string OldName
         {
             get;
             set;
         }
-        [Browsable(false)]
+
         public Rect Position
         {
             get
@@ -658,7 +667,7 @@ namespace Invert.Core.GraphDesigner
         {
 
         }
-        [Browsable(false)]
+        
         public virtual string RelatedType
         {
             get { return this.Identifier; }
@@ -667,7 +676,7 @@ namespace Invert.Core.GraphDesigner
 
             }
         }
-        [Browsable(false)]
+        
         public virtual string RelatedTypeName
         {
             get { return this.Name; }
@@ -679,7 +688,6 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        [Browsable(false)]
         public string AssemblyQualifiedName { get; set; }
 
         public CodeTypeReference GetFieldType()

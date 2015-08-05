@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Invert.Core.GraphDesigner.Two;
+using Invert.Core.GraphDesigner;
 using Invert.Data;
 using Invert.IOC;
 
@@ -75,6 +75,14 @@ namespace Invert.Core.GraphDesigner
         }
 
         public Workspace CurrentWorkspace { get; set; }
+        public override void Loaded(UFrameContainer container)
+        {
+            base.Loaded(container);
+            if (CurrentWorkspace == null)
+            {
+                CurrentWorkspace = Workspaces.FirstOrDefault(p => p.Identifier == InvertGraphEditor.Prefs.GetString("LastLoadedWorkspace", string.Empty));
+            }
+        }
 
         public void OpenWorkspace(string name)
         {
@@ -85,6 +93,7 @@ namespace Invert.Core.GraphDesigner
         {
             if (workspace == CurrentWorkspace) return;
             CurrentWorkspace = workspace;
+            InvertGraphEditor.Prefs.SetString("LastLoadedWorkspace", workspace.Identifier);
             InvertApplication.SignalEvent<IWorkspaceChanged>(_ => _.WorkspaceChanged(CurrentWorkspace));
         }
     }

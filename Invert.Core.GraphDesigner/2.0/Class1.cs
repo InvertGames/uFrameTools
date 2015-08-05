@@ -5,20 +5,37 @@ using Invert.Data;
 using Invert.Json;
 using UnityEngine;
 
-namespace Invert.Core.GraphDesigner.Two
+namespace Invert.Core.GraphDesigner
 {
     public class Workspace : IDataRecord
     {
+        private string _name;
+        private string _currentGraphId;
+
         [JsonProperty]
         public string Identifier { get; set; }
 
+        public bool Changed { get; set; }
+
         [JsonProperty]
-        public string Name { get; set; }
+        public string Name
+        {
+            get { return _name; }
+            set { _name = value;
+                Changed = true;
+            }
+        }
 
         public IRepository Repository { get; set; }
 
         [JsonProperty]
-        public string CurrentGraphId { get; set; }
+        public string CurrentGraphId
+        {
+            get { return _currentGraphId; }
+            set { _currentGraphId = value;
+                Changed = true;
+            }
+        }
 
         public IGraphData CurrentGraph
         {
@@ -64,35 +81,82 @@ namespace Invert.Core.GraphDesigner.Two
         }
     }
 
-    public class WorkspaceGraph : IDataRecord
+    public class WorkspaceGraph : IDataRecord, IDataRecordRemoved
     {
-        [JsonProperty]
-        public string GraphId { get; set; }
+        private string _workspaceId;
+        private string _graphId;
 
         [JsonProperty]
-        public string WorkspaceId { get; set; }
+        public string GraphId
+        {
+            get { return _graphId; }
+            set { _graphId = value;
+                Changed = true;
+            }
+        }
+
+        [JsonProperty]
+        public string WorkspaceId
+        {
+            get { return _workspaceId; }
+            set { _workspaceId = value;
+                Changed = true;
+            }
+        }
 
         public IRepository Repository { get; set; }
 
         [JsonProperty]
         public string Identifier { get; set; }
+
+        public bool Changed { get; set; }
+        public void RecordRemoved(IDataRecord record)
+        {
+            if (record.Identifier == GraphId || record.Identifier == WorkspaceId)
+                Repository.Remove(this);
+            
+        }
     }
 
     public class FilterItem : IDataRecord , IDataRecordRemoved
     {
+        private bool _collapsed;
+        private string _nodeId;
+        private string _filterId;
+        private Vector2 _position;
         public IRepository Repository { get; set; }
 
         [JsonProperty]
         public string Identifier { get; set; }
 
-        [JsonProperty]
-        public bool Collapsed { get; set; }
-        
-        [JsonProperty]
-        public string NodeId { get; set; }
+        public bool Changed { get; set; }
 
         [JsonProperty]
-        public string FilterId { get; set; }
+        public bool Collapsed
+        {
+            get { return _collapsed; }
+            set { _collapsed = value;
+                Changed = true;
+            }
+        }
+
+        [JsonProperty]
+        public string NodeId
+        {
+            get { return _nodeId; }
+            set { _nodeId = value;
+                Changed = true;
+            }
+        }
+
+        [JsonProperty]
+        public string FilterId
+        {
+            get { return _filterId; }
+            set { _filterId = value;
+                Changed = true;
+            }
+        }
 
         public IDiagramNode Node
         {
@@ -110,24 +174,21 @@ namespace Invert.Core.GraphDesigner.Two
         }
 
         [JsonProperty]
-        public Vector2 Position { get; set; }
+        public Vector2 Position
+        {
+            get { return _position; }
+            set { _position = value;
+                Changed = true;
+            }
+        }
 
         public void RecordRemoved(IDataRecord record)
         {
-            if (NodeId == record.Identifier)
-                Repository.Remove(this);
-            if (FilterId == record.Identifier)
-                Repository.Remove(this);
+            //if (NodeId == record.Identifier || FilterId == record.Identifier)
+            //    Repository.Remove(this);
+            
         }
     }
 
-    public class Connection : IDataRecord
-    {
-        public IRepository Repository { get; set; }
-        public string Identifier { get; set; }
-        [JsonProperty]
-        public string SourceId { get; set; }
-        [JsonProperty]
-        public string TargetId { get; set; }
-    }
+
 }

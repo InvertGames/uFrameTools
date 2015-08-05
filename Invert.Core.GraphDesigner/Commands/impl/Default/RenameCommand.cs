@@ -28,9 +28,9 @@ namespace Invert.Core.GraphDesigner
         {
             var selected = node.DataObject as IDiagramNode;
             if (selected == null) return "Invalid argument";
-            if (!node.IsLocal) return "Can't rename a node when its not local.";
-            if (selected.Graph.Identifier != InvertGraphEditor.CurrentDiagramViewModel.GraphData.Identifier)
-                return "Must be local to rename.";
+            //if (node.IsExternal) return "Can't rename a node when its not local.";
+            //if (selected.Graph.Identifier != InvertGraphEditor.CurrentDiagramViewModel.GraphData.Identifier)
+              //  return "Must be local to rename.";
             return null;
         }
 

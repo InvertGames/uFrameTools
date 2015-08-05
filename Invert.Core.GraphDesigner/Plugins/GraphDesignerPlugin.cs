@@ -165,20 +165,7 @@ namespace Invert.Core.GraphDesigner
 
         public void CommandExecuted(ICommandHandler handler, IEditorCommand command, object o)
         {
-#if UNITY_DLL
-            var item = o as IDiagramNodeItem;
-            if (item != null)
-            {
-                var projectService = InvertApplication.Container.Resolve<WorkspaceService>();
-                foreach (var graph in projectService.CurrentWorkspace.Graphs)
-                {
-                    if (graph.Identifier == item.Node.Graph.Identifier)
-                    {
-                        UnityEditor.EditorUtility.SetDirty(graph as UnityEngine.Object);
-                    }
-                }
-            }
-#endif
+
         }
 
         public void ConnectionApplying(IGraphData graph, IConnectable output, IConnectable input)

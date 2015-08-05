@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Invert.Common;
-using Invert.Core.GraphDesigner.Two;
 using UnityEditor;
 using UnityEngine;
 
@@ -457,10 +456,12 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 GUILayout.BeginArea(tabsRect);
                 GUILayout.BeginHorizontal();
-
+                
                 foreach (var tab in designerWindow.Designer.Tabs.ToArray())
                 {
-                  
+                    if (tab == null) continue;
+                    if (tab.Name == null)
+                        continue;
                     var isCurrent = designerWindow.Workspace != null && designerWindow.Workspace.CurrentGraph != null && tab.Identifier == designerWindow.Workspace.CurrentGraph.Identifier;
                     if (GUILayout.Button(tab.Name,
                         isCurrent

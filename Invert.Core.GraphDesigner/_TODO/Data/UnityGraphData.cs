@@ -188,6 +188,8 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         get { return Graph.Identifier; }
     }
 
+    public bool Changed { get; set; }
+
     public ElementDiagramSettings Settings
     {
         //set { Graph.Settings = value; }
