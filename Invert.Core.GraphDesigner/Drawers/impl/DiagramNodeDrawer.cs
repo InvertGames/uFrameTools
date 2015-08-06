@@ -59,6 +59,15 @@ namespace Invert.Core.GraphDesigner
 
         }
 
+        protected override void DrawBeforeBackground(IPlatformDrawer platform, Rect boxRect)
+        {
+            base.DrawBeforeBackground(platform, boxRect);
+            if (NodeViewModel.IsFilter && !NodeViewModel.IsCurrentFilter)
+            {
+                platform.DrawStretchBox(boxRect.Add(new Rect(6, 6, -2, -1)), CachedStyles.NodeBackgroundBorderless, 18);
+            }
+        }
+
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
@@ -260,6 +269,11 @@ namespace Invert.Core.GraphDesigner
                  var adjustedBounds = Bounds; //new Rect(Bounds.x - 9, Bounds.y + 1, Bounds.width + 19, Bounds.height + 9);
 #endif
             var boxRect = adjustedBounds.Scale(Scale);
+
+            DrawBeforeBackground(platform,boxRect);
+
+            
+            
             platform.DrawStretchBox(boxRect, CachedStyles.NodeBackground, 18);
 
             //if (ViewModel.IsSelected || ViewModel.IsMouseOver)
@@ -342,6 +356,11 @@ namespace Invert.Core.GraphDesigner
                 }
             }
 
+        }
+
+        protected virtual void DrawBeforeBackground(IPlatformDrawer platform, Rect boxRect)
+        {
+            
         }
 
         protected virtual void DrawChildren(IPlatformDrawer platform, float scale)

@@ -838,7 +838,9 @@ namespace Invert.Core.GraphDesigner.Unity
                 case InvertStyles.Tag1:
                     return ElementDesignerStyles.Tag1;
                 case InvertStyles.NodeBackground:
-                    return ElementDesignerStyles.NodeBackground;
+                    return ElementDesignerStyles.NodeBackground;           
+                case InvertStyles.NodeBackgroundBorderless:
+                    return ElementDesignerStyles.NodeBackgroundBorderless;
                 case InvertStyles.NodeExpand:
                     return ElementDesignerStyles.NodeExpand;
                 case InvertStyles.NodeCollapse:

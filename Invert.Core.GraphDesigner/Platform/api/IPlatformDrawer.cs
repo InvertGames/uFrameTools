@@ -244,6 +244,7 @@ namespace Invert.Core.GraphDesigner
         private static INodeStyleSchema _nodeStyleSchemaNormal;
         private static INodeStyleSchema _nodeStyleSchemaMinimalistic;
         private static INodeStyleSchema _nodeStyleSchemaBold;
+        private static object _nodeBackgroundBorderless;
 
         public static object Item1
         {
@@ -276,6 +277,10 @@ namespace Invert.Core.GraphDesigner
         public static object NodeBackground
         {
             get { return _nodeBackground ?? (_nodeBackground = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.NodeBackground)); }
+        }       
+        public static object NodeBackgroundBorderless
+        {
+            get { return _nodeBackgroundBorderless ?? (_nodeBackgroundBorderless = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.NodeBackgroundBorderless)); }
         }
         public static object NodeExpand
         {
@@ -515,7 +520,8 @@ namespace Invert.Core.GraphDesigner
         Toolbar,
         ToolbarButton,
         ToolbarButtonDown,
-        GraphTitleLabel
+        GraphTitleLabel,
+        NodeBackgroundBorderless
     }
 
  

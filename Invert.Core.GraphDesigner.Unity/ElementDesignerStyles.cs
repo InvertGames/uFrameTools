@@ -117,6 +117,7 @@ namespace Invert.Common
         private static INodeStyleSchema _baseNormalStyleSchema;
         private static INodeStyleSchema _nodeStyleSchemaMinimalistic;
         private static INodeStyleSchema _nodeStyleSchemaBold;
+        private static GUIStyle _nodeBackgroundBorderless;
 
         public static GUIStyle AddButtonStyle
         {
@@ -1170,6 +1171,29 @@ namespace Invert.Common
                 };
 
                 return _nodeBackground;
+            }
+        }
+        
+        public static GUIStyle NodeBackgroundBorderless
+        {
+            get
+            {
+                //if (_diagramBox1 == null)
+                _nodeBackgroundBorderless = new GUIStyle
+                {
+                    normal = { background = GetSkinTexture("Box12Borderless"), textColor = new Color(0.82f, 0.82f, 0.82f) },
+                    
+                    stretchHeight = true,
+                    stretchWidth = true,
+                    
+                    //border = new RectOffset(20,20,20,20)
+                     border = new RectOffset(44, 50, 20, 34),
+                    //padding = new RectOffset(9,1,19,9)
+                   
+                    //padding = new RectOffset(7, 7, 7, 7)
+                };
+
+                return _nodeBackgroundBorderless;
             }
         }
 

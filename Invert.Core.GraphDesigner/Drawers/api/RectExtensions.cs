@@ -28,6 +28,10 @@ namespace Invert.Core.GraphDesigner
                 Mathf.RoundToInt(r.top*scale), Mathf.RoundToInt(r.bottom*scale));
         }
 
+        public static Rect Add(this Rect source, Rect add)
+        {
+            return new Rect(source.x + add.x, source.y + add.y, source.width + add.width, source.height + add.height);
+        }
         public static GUIStyle Scale(this GUIStyle style, float scale)
         {
             var s = new GUIStyle(style);
