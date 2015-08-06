@@ -347,6 +347,7 @@ namespace Invert.Core.GraphDesigner
             header.DataObject = inputConfig.IsAlias ? DataObject : inputConfig.GetDataObject(nodeToUse);
             header.InputConnectorType = inputConfig.SourceType;
             header.IsInput = true;
+            
             if (inputConfig.AttributeInfo != null)
             {
                 header.IsNewLine = inputConfig.AttributeInfo.IsNewRow;
