@@ -317,6 +317,8 @@ namespace Invert.Core.GraphDesigner.Unity
         }
 
         // TODO I HATE the vector3 conversion
+   
+
         public void DrawPolyLine(Vector2[] lines, Color color)
         {
             Handles.color = color;
@@ -338,12 +340,32 @@ namespace Invert.Core.GraphDesigner.Unity
             return style.CalcSize(new GUIContent(text));
         }
 
+        public Vector2 CalculateImageSize(string imageName)
+        {
+            var image = ElementDesignerStyles.GetSkinTexture(imageName);
+            if (image != null)
+            {
+                return new Vector2(image.width, image.height);
+            }
+            return Vector2.zero;
+        }
+
+
         public void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
         {
             var s = (GUIStyle)style;
             s.alignment = ((TextAnchor)(int)alignment);
-
             GUI.Label(rect, label, s);
+        }
+
+        public void DrawLabelWithIcon(Rect rect, string label, string iconName, object style,
+      DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
+        {
+            var s = (GUIStyle)style;
+            s.alignment = ((TextAnchor)(int)alignment);
+            //GUI.Label(rect, label, s);
+            GUI.Label(rect, new GUIContent(label,ElementDesignerStyles.GetSkinTexture(iconName)), s);
+
         }
 
         public void DrawStretchBox(Rect scale, object nodeBackground, float offset)
@@ -387,9 +409,13 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawImage(Rect bounds, string texture, bool b)
         {
-            GUI.DrawTexture(bounds, Styles.Image(texture), ScaleMode.ScaleToFit, true);
+            DrawImage(bounds, Styles.Image(texture), b);
         }
 
+        public void DrawImage(Rect bounds, object texture, bool b)
+        {
+            GUI.DrawTexture(bounds, texture as Texture2D, ScaleMode.ScaleToFit, true);
+        }
 
         public void DrawPropertyField(PropertyFieldViewModel fieldViewModel, float scale)
         {
@@ -411,28 +437,31 @@ namespace Invert.Core.GraphDesigner.Unity
             EditorGUI.DrawRect(boundsRect,color);
         }
 
-        public void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale)
+
+        public void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale, object image)
         {
+            if(image != null) (backgroundStyle as GUIStyle).ForAllStates(image as Texture2D);
+
             Rect adjustedBounds;
             if (isCollapsed)
             {
-                adjustedBounds = new Rect(boxRect.x - 9, boxRect.y + 1, boxRect.width + 19, boxRect.height + 9);
+                //adjustedBounds = new Rect(boxRect.x - 9, boxRect.y + 1, boxRect.width + 19, boxRect.height + 9);
+                adjustedBounds = new Rect(boxRect.x, boxRect.y, boxRect.width, (boxRect.height)*scale);
                 DrawStretchBox(adjustedBounds, backgroundStyle, 20 * scale);
             }
             else
             {
-                adjustedBounds = new Rect(boxRect.x - 9, boxRect.y + 1, boxRect.width + 19, 27 * scale);
+                //adjustedBounds = new Rect(boxRect.x - 9, boxRect.y + 1, boxRect.width + 19, boxRect.height-6 * scale);
+                adjustedBounds = new Rect(boxRect.x, boxRect.y, boxRect.width, (boxRect.height)*scale);
                 DrawStretchBox(adjustedBounds,
                      backgroundStyle,
-                     new Rect(Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(27 * scale), 0)
+                     new Rect(Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(35 * scale), Mathf.RoundToInt(22 * scale))
                 );
             }
-  
         }
 
         public void DoToolbar(Rect toolbarTopRect, DesignerWindow designerWindow, ToolbarPosition position)
         {
-          
             GUILayout.BeginArea(toolbarTopRect);
             if (toolbarTopRect.y > 20)
             {
@@ -780,7 +809,9 @@ namespace Invert.Core.GraphDesigner.Unity
         }
         public object GetImage(string name)
         {
-            return Textures[name];
+            if (Textures.ContainsKey(name))
+                return Textures[name];
+            return ElementDesignerStyles.GetSkinTexture(name);
         }
 
         public object GetStyle(InvertStyles name)
@@ -872,7 +903,68 @@ namespace Invert.Core.GraphDesigner.Unity
                 case InvertStyles.GraphTitleLabel:
                     return ElementDesignerStyles.GraphTitleLabel;
             }
+
+
             return ElementDesignerStyles.ClearItemStyle;
+        }
+
+
+        private static Dictionary<string, Font> Fonts = new Dictionary<string, Font>();
+
+        public object GetFont(string fontName)
+        {
+            if (string.IsNullOrEmpty(fontName)) return null;
+            if (!Fonts.ContainsKey(fontName))
+            {
+                Fonts.Add(fontName, Resources.Load<Font>("fonts/" + fontName));
+            }
+            return Fonts[fontName];
+        }
+
+        internal struct IconTintItem
+        {
+            public string Name { get; set; }
+            public Color Tint { get; set; }
+        }
+
+        private Dictionary<IconTintItem, object> IconCache = new Dictionary<IconTintItem, object>();
+
+        public object GetIcon(string name, Color tint)
+        {
+            return null;
+        }
+
+        public INodeStyleSchema GetNodeStyleSchema(NodeStyle name)
+        {
+            switch (name)
+            {
+                case NodeStyle.Minimalistic:
+                    return ElementDesignerStyles.NodeStyleSchemaMinimalistic;
+                    break;
+                case NodeStyle.Bold:
+                    return ElementDesignerStyles.NodeStyleSchemaBold;
+                    break;
+                case NodeStyle.Normal:
+                    return ElementDesignerStyles.NodeStyleSchemaNormal;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("name", name, null);
+            }
+        }
+
+        public IConnectorStyleSchema GetConnectorStyleSchema(ConnectorStyle name)
+        {
+            switch (name)
+            {
+                case ConnectorStyle.Triangle:
+                    return ElementDesignerStyles.ConnectorStyleSchemaTriangle;
+                    break;
+                case ConnectorStyle.Circle:
+                    return ElementDesignerStyles.ConnectorStyleSchemaCircle;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("name", name, null);
+            }
         }
 
         public object GetNodeHeaderStyle(NodeColor color)

@@ -500,7 +500,7 @@ namespace Invert.Core.GraphDesigner
                     BackgroundStyle = HeaderStyle,
                     TextStyle = HeaderTextStyle,
                     ViewModelObject = ViewModelObject,
-                    Padding = HeaderPadding,
+                    StyleSchema = ViewModel.StyleSchema,
                     ParentDrawer = this
                 });
             }
@@ -515,9 +515,9 @@ namespace Invert.Core.GraphDesigner
         {
             get { return CachedStyles.ViewModelHeaderStyle; }
         }
-        public virtual float HeaderPadding
+        public virtual Vector2 HeaderPadding
         {
-            get { return 5; }
+            get { return new Vector2(10, 6); }
         }
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -13,14 +14,10 @@ namespace Invert.Core.GraphDesigner
         MiddleLeft,
         MiddleCenter,
         MiddleRight,
-
         BottomLeft,
         BottomCenter,
-
         BottomRight
     }
-
-
 
     public interface IPlatformDrawer
     {
@@ -28,6 +25,8 @@ namespace Invert.Core.GraphDesigner
 
         //void DrawConnector(float scale, ConnectorViewModel viewModel);
         Vector2 CalculateSize(string text, object tag1);
+       
+        Vector2 CalculateImageSize(string imageName);
 
         void DoButton(Rect scale, string label, object style, Action action, Action rightClick = null);
 
@@ -38,9 +37,10 @@ namespace Invert.Core.GraphDesigner
         void DrawColumns(Rect rect, params Action<Rect>[] columns);
 
         void DrawImage(Rect bounds, string texture, bool b);
+        void DrawImage(Rect bounds, object texture, bool b);
 
         void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft);
-
+        
         void DrawPolyLine(Vector2[] lines, Color color);
 
         void DrawPropertyField(PropertyFieldViewModel propertyFieldDrawer, float scale);
@@ -53,7 +53,7 @@ namespace Invert.Core.GraphDesigner
 
         void DrawWarning(Rect rect, string key);
 
-        void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale);
+        void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale, object image);
 
         void DoToolbar(Rect toolbarTopRect, DesignerWindow designerWindow, ToolbarPosition position);
 
@@ -62,16 +62,23 @@ namespace Invert.Core.GraphDesigner
         void EndRender();
         //Rect GetRect(object style);
         void DrawRect(Rect boundsRect, Color color);
+        
     }
-
-
-
 
     public interface IStyleProvider
     {
         object GetImage(string name);
-
         object GetStyle(InvertStyles name);
+        object GetFont(string fontName);
+
+        INodeStyleSchema GetNodeStyleSchema(NodeStyle name);
+        IConnectorStyleSchema GetConnectorStyleSchema(ConnectorStyle name);
+    }
+
+    public enum ConnectorStyle
+    {
+        Triangle,
+        Circle
     }
 
     public interface IImmediateControlsDrawer<TControl> : IPlatformDrawer
@@ -82,6 +89,7 @@ namespace Invert.Core.GraphDesigner
         void RemoveControlFromCanvas(TControl control);
         void SetControlPosition(TControl control, float x, float y, float width, float height);
     }
+
     public static class PlatformDrawerExtensions
     {
         //public static void DoVertical(float startX, float startY, float width, float itemHeight, params Action<Rect>[] rows)
@@ -186,6 +194,7 @@ namespace Invert.Core.GraphDesigner
             return (TControlType)control;
         }
     }
+
     public static class CachedStyles
     {
         private static object _boxHighlighter5;
@@ -230,6 +239,11 @@ namespace Invert.Core.GraphDesigner
         private static object _toolbarButton;
         private static object _toolbarButtonDrop;
         private static object _graphTitleLabel;
+        private static IConnectorStyleSchema _connectorStyleSchemaTriangle;
+        private static IConnectorStyleSchema _connectorStyleSchemaCircle;
+        private static INodeStyleSchema _nodeStyleSchemaNormal;
+        private static INodeStyleSchema _nodeStyleSchemaMinimalistic;
+        private static INodeStyleSchema _nodeStyleSchemaBold;
 
         public static object Item1
         {
@@ -400,9 +414,62 @@ namespace Invert.Core.GraphDesigner
         public static object ToolbarButtonDrop
         {
             get { return _toolbarButtonDrop ?? (_toolbarButtonDrop = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.ToolbarButtonDown)); }
+        }        
+        public static object HeaderTitleStyle
+        {
+            get { return _toolbarButtonDrop ?? (_toolbarButtonDrop = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.HeaderTitleStyle)); }
+        }
+        public static object HeaderSubTitleStyle
+        {
+            get { return _toolbarButtonDrop ?? (_toolbarButtonDrop = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.HeaderSubTitleStyle)); }
         }
 
+        
+
+
+        public static IConnectorStyleSchema ConnectorStyleSchemaTriangle
+        {
+            get { return _connectorStyleSchemaTriangle ?? (_connectorStyleSchemaTriangle = InvertGraphEditor.StyleProvider.GetConnectorStyleSchema(ConnectorStyle.Triangle)); }
+        }
+
+        public static IConnectorStyleSchema ConnectorStyleSchemaCircle
+        {
+            get { return _connectorStyleSchemaCircle ?? (_connectorStyleSchemaCircle = InvertGraphEditor.StyleProvider.GetConnectorStyleSchema(ConnectorStyle.Circle)); }
+        }
+
+        public static INodeStyleSchema NodeStyleSchemaNormal
+        {
+            get { return _nodeStyleSchemaNormal ?? (_nodeStyleSchemaNormal = InvertGraphEditor.StyleProvider.GetNodeStyleSchema(NodeStyle.Normal)); }
+            set { _nodeStyleSchemaNormal = value; }
+        }
+
+        public static INodeStyleSchema NodeStyleSchemaMinimalistic
+        {
+            get { return _nodeStyleSchemaMinimalistic ?? (_nodeStyleSchemaMinimalistic = InvertGraphEditor.StyleProvider.GetNodeStyleSchema(NodeStyle.Minimalistic)); }
+            set { _nodeStyleSchemaMinimalistic = value; }
+        }
+
+        public static INodeStyleSchema NodeStyleSchemaBold
+        {
+            get { return _nodeStyleSchemaBold ?? (_nodeStyleSchemaBold = InvertGraphEditor.StyleProvider.GetNodeStyleSchema(NodeStyle.Bold)); }
+            set { _nodeStyleSchemaBold = value; }
+        }
     }
+
+    public interface IDebugWindowEvents
+    {
+        void RegisterInspectedItem(object item, string name, bool includeReflectiveInspector = false);
+        void QuickInspect(object data, string name, Vector2 mousePosition);
+        void Watch(object data, string name, Vector2 mousePosition);
+    }
+
+    public enum NodeStyle
+    {
+        Minimalistic,
+        Bold,
+        Normal
+    }
+
     public enum InvertStyles
     {
         DefaultLabel,
@@ -441,6 +508,8 @@ namespace Invert.Core.GraphDesigner
         ClearItemStyle,
         DefaultLabelLarge,
         HeaderStyle,
+        HeaderTitleStyle,
+        HeaderSubTitleStyle,
         AddButtonStyle,
         ItemTextEditingStyle,
         Toolbar,
@@ -448,4 +517,6 @@ namespace Invert.Core.GraphDesigner
         ToolbarButtonDown,
         GraphTitleLabel
     }
+
+ 
 }

@@ -45,6 +45,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Schemas\api\IConnectorStyleSchema.cs" />
+    <Compile Include="Schemas\api\INodeStyleSchema.cs" />
+    <Compile Include="Schemas\impl\ConnectorStyleSchema.cs" />
+    <Compile Include="Schemas\impl\NodeStyleSchema.cs" />
     <Compile Include="Windows\Area.cs" />
     <Compile Include="Windows\AreaLayout.cs" />
     <Compile Include="Plugins\BenchMarking.cs" />

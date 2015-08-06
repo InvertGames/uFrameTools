@@ -9,6 +9,8 @@ namespace Invert.Core.GraphDesigner
     public class GenericNodeViewModel<TData> : DiagramNodeViewModel<TData> where TData : GenericNode
     {
         protected NodeConfigBase _nodeConfig;
+
+
         protected override ConnectorViewModel CreateInputConnector()
         {
             var connector = base.CreateInputConnector();
@@ -45,8 +47,11 @@ namespace Invert.Core.GraphDesigner
                 {
                     yield return "->" + GraphItem.Graph.Name;
                 }
-                yield return NodeConfig.Name;
 
+                if (!StyleSchema.ShowSubtitle)
+                {
+                    yield return NodeConfig.Name;
+                }
                 foreach (var item in GraphItem.Flags)
                 {
                     if (item.Key.StartsWith("_")) continue;
@@ -60,11 +65,16 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public override string SubTitle
+        {
+            get { return NodeConfig.Name; }
+        }
+
         public override IEnumerable<ErrorInfo> Issues
         {
             get { return GraphItem.Validate(); }
         }
-
+        
         public override NodeColor Color
         {
             get
@@ -100,12 +110,12 @@ namespace Invert.Core.GraphDesigner
             AddPropertyFields();
             CreateContentByConfiguration(NodeConfig.GraphItemConfigurations, GraphItem);
 
-          
-           
-            
-
         }
-        
+
+
+
+ 
+
         protected void CreateContentByConfiguration(IEnumerable<GraphItemConfiguration> graphItemConfigurations, GenericNode node = null)
         {
             foreach (var item in graphItemConfigurations.OrderBy(p => p.OrderIndex))

@@ -2,6 +2,8 @@ using Invert.Common.UI;
 using System;
 using System.Reflection;
 using Invert.Core.GraphDesigner;
+using Invert.Core.GraphDesigner.Unity.Schemas;
+using Mono.CSharp;
 using UnityEditor;
 using UnityEngine;
 
@@ -107,6 +109,14 @@ namespace Invert.Common
         private static Texture2D _arrowRightTexture2;
         private static Texture2D _diagramCircleConnector;
         private static GUIStyle _graphTitleLabel;
+        private static GUIStyle _headerTitleStyle;
+        private static INodeStyleSchema _baseNodeStyleSchema;
+        private static INodeStyleSchema _viewNodeStyleSchema;
+        private static IConnectorStyleSchema _connectorStyleSchemaTriangle;
+        private static IConnectorStyleSchema _connectorStyleSchemaCircle;
+        private static INodeStyleSchema _baseNormalStyleSchema;
+        private static INodeStyleSchema _nodeStyleSchemaMinimalistic;
+        private static INodeStyleSchema _nodeStyleSchemaBold;
 
         public static GUIStyle AddButtonStyle
         {
@@ -1737,6 +1747,122 @@ namespace Invert.Common
 
         }
 
+        public static IConnectorStyleSchema ConnectorStyleSchemaTriangle
+        {
+            get { return _connectorStyleSchemaTriangle ?? (_connectorStyleSchemaTriangle = new UnityConnectorStyleSchema()
+                .WithDefaultIcons()
+               ); }
+        }   
+        
+        public static IConnectorStyleSchema ConnectorStyleSchemaCircle
+        {
+            get
+            {
+                return _connectorStyleSchemaCircle ?? (_connectorStyleSchemaCircle = new UnityConnectorStyleSchema()
+                .WithInputIcons("ConnectorCircleEmpty", "ConnectorCircleFilled")
+                .WithOutputIcons("ConnectorCircleEmpty", "ConnectorCircleFilled")
+                .WithTwoWayIcons("ConnectorCircleEmpty", "ConnectorCircleFilled")
+                ); }
+        }
+
+        public class UnityConnectorStyleSchema : ConnectorStyleSchema
+        {
+            protected override object ConstructTexture(ConnectorSide side, ConnectorDirection direction, bool connected, Color tint = default(Color))
+            {
+
+                string iconBase = null;
+
+                if (direction == ConnectorDirection.Input && connected) iconBase = _filledInputIconCode;
+                if (direction == ConnectorDirection.Input && !connected) iconBase = _emptyInputIconCode;
+                if (direction == ConnectorDirection.Output && connected) iconBase = _filledOutputIconCode;
+                if (direction == ConnectorDirection.Output && !connected) iconBase = _emptyOutputIconCode;
+                if (direction == ConnectorDirection.TwoWay && connected) iconBase = _emptyTwoWayIconCode;
+                if (direction == ConnectorDirection.TwoWay && !connected) iconBase = _filledTwoWayIconCode;
+
+                var baseTexture = GetSkinTexture(iconBase);
+
+                if (tint != default(Color))
+                {
+                    baseTexture = baseTexture.Tint(tint);
+                }
+
+                switch (side)
+                {
+                    default:
+                        return baseTexture;
+                }
+
+                return null;
+            }
+        }
+
+       
+
+        
+
+        public static INodeStyleSchema BaseNodeStyleSchema
+        {
+            get
+            {
+                return _baseNodeStyleSchema ?? (_baseNodeStyleSchema = new UnityNodeStyleSchema()
+                    .WithTitle(true)
+                    .WithTitleFont(null, 12, new Color32(0xff, 0xff, 0xff, 0xff), FontStyle.Bold)
+                    .WithSubTitleFont(null, 10, new Color32(0xf8, 0xf8, 0xf8, 0xff), FontStyle.Normal)
+                    .WithHeaderPadding(new RectOffset(10,5,6,5))
+                    .RecomputeStyles());
+            }
+        }
+
+        public static INodeStyleSchema NodeStyleSchemaNormal
+        {
+            get
+            {
+                return _baseNormalStyleSchema ??
+                       (_baseNormalStyleSchema = BaseNodeStyleSchema.Clone()
+                       .WithTitle(true)
+                       .WithIcon(true)
+                       .WithSubTitle(true)
+                       .WithTitleFont(null, 12, null, null)
+                       .WithSubTitleFont(null, 10, null, null)
+                       .RecomputeStyles());
+            }
+        }
+
+        public static INodeStyleSchema NodeStyleSchemaMinimalistic
+        {
+            get
+            {
+                return _nodeStyleSchemaMinimalistic ??
+                       (_nodeStyleSchemaMinimalistic = BaseNodeStyleSchema.Clone()
+                           .WithTitle(true)
+                           .WithIcon(true)
+                           .WithSubTitle(false)
+                           .WithHeaderPadding(new RectOffset(10, 5, 9, 9))
+                           .WithTitleFont(null, 11, null, FontStyle.Bold)
+                           .RecomputeStyles());
+            }
+        }
+
+        public static INodeStyleSchema NodeStyleSchemaBold
+        {
+            get
+            {
+                if (_nodeStyleSchemaBold == null)
+                {
+                    _nodeStyleSchemaBold = BaseNodeStyleSchema.Clone()
+                    .WithTitle(true)
+                    .WithIcon(true)
+                    .WithSubTitle(true)
+                    .WithHeaderPadding(new RectOffset(10, 5, 8, 8))
+                    .WithTitleFont(null, 20, null, FontStyle.Bold)
+                    .WithSubTitleFont(null, 15, null, FontStyle.Normal)
+                    .RecomputeStyles();
+                }
+
+                return _nodeStyleSchemaBold;
+            }
+        }
+
         public static GUIStyle CreateHeader(string texture, Color color)
         {
             return new GUIStyle
@@ -1771,7 +1897,7 @@ namespace Invert.Common
 
         public static void DrawExpandableBox(Rect rect, GUIStyle style, string text, RectOffset offset)
         {
-            style.border = offset;
+         //   style.border = offset;
 
             GUI.Box(rect, text, style);
         }
@@ -1892,4 +2018,185 @@ namespace Invert.Common
             return result;
         }//testclosest
     }
+
+    public static class TexturesExtensions
+    {
+
+        public static Texture2D CutTextureBottomBorder(this Texture2D texture, int cutSize)
+        {
+            var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
+            var pixels = texture.GetPixels32();
+            var markerRow = cutSize;
+
+            Color32[] newPixels = new Color32[texture.width * texture.height];
+
+            for (var row = 0; row < texture.height; row++)
+            {
+                for (int pix = 0; pix < texture.width; pix++)
+                {
+                    if (row > markerRow)
+                    {
+                        newPixels[row * texture.width + pix] = pixels[row * texture.width + pix];
+                    }
+                    else
+                    {
+                        newPixels[row * texture.width + pix] = pixels[markerRow * texture.width + pix];
+                    }
+                }
+            }
+
+            newTexture.SetPixels32(newPixels);
+            newTexture.Apply();
+
+            return newTexture;
+        }
+
+        public static Texture2D Tint(this Texture2D texture, Color color)
+        {
+            var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
+            var pixels = texture.GetPixels();
+
+            Color[] newPixels = new Color[texture.width * texture.height];
+
+            for (var row = 0; row < texture.height; row++)
+            {
+                for (int pix = 0; pix < texture.width; pix++)
+                {
+                    var pixel = pixels[row * texture.width + pix];
+                    var r = 1f - pixel.r;
+                    var g = 1f - pixel.g;
+                    var b = 1f - pixel.b;
+                    var a = 1f - pixel.a;
+                    var newPixel = new Color(color.r - r, color.g - g, color.b - b, color.a - a);
+                    newPixels[row * texture.width + pix] = newPixel;
+                }
+            }
+
+            newTexture.SetPixels(newPixels);
+            newTexture.Apply();
+
+            return newTexture;
+        }
+
+
+
+        public static Texture2D Rotate90(this Texture2D texture)
+        {
+            var newTexture = new Texture2D(texture.height, texture.width, TextureFormat.RGBA32, false, true);
+            var pixels = texture.GetPixels();
+
+            Color[] newPixels = new Color[texture.width * texture.height];
+
+
+            for (var row = 0; row < texture.height; row++)
+            {
+                for (var pix = 0; pix < texture.width; pix++)
+                {
+                    var pixel = pixels[row * texture.width + pix];
+                    newPixels[(pix*texture.height) + row] = pixel;
+                }
+            }
+
+
+            newTexture.SetPixels(newPixels);
+            newTexture.Apply();
+
+            return newTexture;
+        }
+        
+
+        public static Texture2D Rotate90CW(this Texture2D texture)
+        {
+            var newTexture = new Texture2D(texture.height, texture.width, TextureFormat.RGBA32, false, true);
+            var pixels = texture.GetPixels();
+
+            Color[] newPixels = new Color[texture.width * texture.height];
+
+
+            for (var row = 0; row < texture.height; row++)
+            {
+                for (var pix = 0; pix < texture.width; pix++)
+                {
+                    var pixel = pixels[row * texture.width + pix];
+                    newPixels[(pix*texture.height) + row] = pixel;
+                }
+            }
+
+
+            newTexture.SetPixels(newPixels);
+            newTexture.Apply();
+
+            return newTexture;
+        }
+        
+        public static Texture2D Rotate180(this Texture2D texture)
+        {
+            var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
+            var pixels = texture.GetPixels();
+
+            Color[] newPixels = new Color[texture.width * texture.height];
+
+            for (var row = 0; row < texture.height; row++)
+            {
+                for (var pix = 0; pix < texture.width; pix++)
+                {
+                    var pixel = pixels[row * texture.width + pix];
+                    newPixels[((texture.height-row-1) * texture.width) + (texture.width - 1 - pix)] = pixel;
+                }
+            }
+
+
+            newTexture.SetPixels(newPixels);
+            newTexture.Apply();
+
+            return newTexture;
+        }
+        
+        public static Texture2D Gradient(this Texture2D texture, Color colorSource, Color colorDestination)
+        {
+            var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
+            var pixels = texture.GetPixels();
+
+            var progress = 0f;
+
+            Color[] newPixels = new Color[texture.width * texture.height];
+
+            for (var row = 0; row < texture.height; row++)
+            {
+                progress = (float)row / texture.height;
+                Color color = Color.Lerp(colorSource, colorDestination, progress);
+                for (int pix = 0; pix < texture.width; pix++)
+                {
+
+                    var pixel = pixels[row * texture.width + pix];
+
+                    if (pixel.a == 0)
+                    {
+                        newPixels[row * texture.width + pix] = pixel; 
+                    }
+                    else
+                    {
+                        var r = 1f - pixel.r;
+                        var g = 1f - pixel.g;
+                        var b = 1f - pixel.b;
+                        var a = 1f - pixel.a;
+                        var newPixel = new Color(color.r - r, color.g - g, color.b - b, color.a - a);
+                        newPixels[row * texture.width + pix] = newPixel; 
+                    }
+       
+                }
+            }
+
+            newTexture.SetPixels(newPixels);
+            newTexture.Apply();
+
+            return newTexture;
+        }
+
+
+    }
+
 }
+
+
+

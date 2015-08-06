@@ -196,6 +196,8 @@ namespace Invert.Core.GraphDesigner
                 SourceType = slot.SourceType ?? property.PropertyType.GetGenericParameter(),
                 PropertyInfo = property,
                 AttributeInfo = slot,
+                Tint = slot.Tint,
+                Style = slot.Style
             };
 
             return config;

@@ -6,6 +6,7 @@ namespace Invert.Core.GraphDesigner
 {
     public class ConnectorViewModel : GraphItemViewModel
     {
+        private IConnectorStyleSchema _styleSchema;
 
         public ConnectorViewModel()
         {
@@ -30,6 +31,30 @@ namespace Invert.Core.GraphDesigner
             set { }
         }
 
+        public virtual Color TintColor { get; set; }
+        public virtual ConnectorStyle Style { get; set; }
+
+        public virtual IConnectorStyleSchema StyleSchema
+        {
+            get
+            {
+                if (_styleSchema == null)
+                {
+                    switch (Style)
+                    {
+                        case ConnectorStyle.Triangle:
+                            return CachedStyles.ConnectorStyleSchemaTriangle;
+                        case ConnectorStyle.Circle:
+                            return CachedStyles.ConnectorStyleSchemaCircle;
+                        default:
+                            return CachedStyles.ConnectorStyleSchemaTriangle;
+                    }
+                }
+                return _styleSchema ;
+            }
+            set { _styleSchema = value; }
+        }
+
         public Action<ConnectionViewModel> ApplyConnection { get; set; }
 
         public ConnectorDirection Direction { get; set; }
@@ -40,7 +65,7 @@ namespace Invert.Core.GraphDesigner
 
         public NodeInputConfig Configuration { get; set; }
 
-        public ConnectorSide Side { get; set; }
+        public ConnectorSide Side { get; set; }  
 
         /// <summary>
         /// A percentage value from 0-1f on which to calculate the position

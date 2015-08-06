@@ -6,6 +6,7 @@ namespace Invert.Core.GraphDesigner
 {
     public class ConnectorDrawer : Drawer<ConnectorViewModel>
     {
+
         public override int ZOrder
         {
             get { return 10; }
@@ -25,80 +26,85 @@ namespace Invert.Core.GraphDesigner
             get { return 16; }
         }
 
-        public string Texture
+        public object Texture
         {
             get
             {
-                if (ViewModel.HasConnections || ViewModel.IsMouseOver)
-                {
-                    if (ViewModel.Direction == ConnectorDirection.Input)
-                    {
-                        switch (ViewModel.Side)
-                        {
-                            case ConnectorSide.Left:
-                                return "DiagramArrowRight";
-                                break;
-                            case ConnectorSide.Right:
-                                return "DiagramArrowLeft";
-                                break;
-                            case ConnectorSide.Bottom:
-                                return "DiagramArrowUp";
-                            case ConnectorSide.Top:
-                                return "DiagramArrowDown";
-                        }
-                    }
-                    else
-                    {
-                       // return "DiagramCircleConnector";
-                        switch (ViewModel.Side)
-                        {
-                            case ConnectorSide.Left:
-                                return "DiagramArrowLeft";
-                                break;
-                            case ConnectorSide.Right:
-                                return "DiagramArrowRight";
-                                break;
-                            case ConnectorSide.Bottom:
-                                return "DiagramArrowDown";
-                            case ConnectorSide.Top:
-                                return "DiagramArrowUp";
-                        }
-                    }
-                }
-               
-                if (ViewModel.Direction == ConnectorDirection.Input)
-                {
-                    switch (ViewModel.Side)
-                    {
-                        case ConnectorSide.Left:
-                            return "DiagramArrowRightEmpty";
-                            break;
-                        case ConnectorSide.Right:
-                            return "DiagramArrowLeftEmpty";
-                            break;
-                        case ConnectorSide.Bottom:
-                            return "DiagramArrowUp";
-                        case ConnectorSide.Top:
-                            return "DiagramArrowDown";
-                    }
-                }
-                else
-                {
-                    switch (ViewModel.Side)
-                    {
-                        case ConnectorSide.Left:
-                            return "DiagramArrowLeftEmpty";
-                            break;
-                        case ConnectorSide.Right:
-                            return "DiagramArrowRightEmpty";
-                            break;
-                        case ConnectorSide.Bottom:
-                            return "DiagramArrowDown";
-                        case ConnectorSide.Top:
-                            return "DiagramArrowUp";
-                    }
-                }
-                return "DiagramArrowLeftEmpty";
+
+                return ViewModel.StyleSchema.GetTexture(ViewModel.Side, ViewModel.Direction,
+                    ViewModel.HasConnections || ViewModel.IsMouseOver,ViewModel.TintColor);
+
+//
+//                if (ViewModel.HasConnections || ViewModel.IsMouseOver)
+//                {
+//                    if (ViewModel.Direction == ConnectorDirection.Input)
+//                    {
+//                        switch (ViewModel.Side)
+//                        {
+//                            case ConnectorSide.Left:
+//                                return "DiagramArrowRight";
+//                                break;
+//                            case ConnectorSide.Right:
+//                                return "DiagramArrowLeft";
+//                                break;
+//                            case ConnectorSide.Bottom:
+//                                return "DiagramArrowUp";
+//                            case ConnectorSide.Top:
+//                                return "DiagramArrowDown";
+//                        }
+//                    }
+//                    else
+//                    {
+//                       // return "DiagramCircleConnector";
+//                        switch (ViewModel.Side)
+//                        {
+//                            case ConnectorSide.Left:
+//                                return "DiagramArrowLeft";
+//                                break;
+//                            case ConnectorSide.Right:
+//                                return "DiagramArrowRight";
+//                                break;
+//                            case ConnectorSide.Bottom:
+//                                return "DiagramArrowDown";
+//                            case ConnectorSide.Top:
+//                                return "DiagramArrowUp";
+//                        }
+//                    }
+//                }
+//               
+//                if (ViewModel.Direction == ConnectorDirection.Input)
+//                {
+//                    switch (ViewModel.Side)
+//                    {
+//                        case ConnectorSide.Left:
+//                            return "DiagramArrowRightEmpty";
+//                            break;
+//                        case ConnectorSide.Right:
+//                            return "DiagramArrowLeftEmpty";
+//                            break;
+//                        case ConnectorSide.Bottom:
+//                            return "DiagramArrowUp";
+//                        case ConnectorSide.Top:
+//                            return "DiagramArrowDown";
+//                    }
+//                }
+//                else
+//                {
+//                    switch (ViewModel.Side)
+//                    {
+//                        case ConnectorSide.Left:
+//                            return "DiagramArrowLeftEmpty";
+//                            break;
+//                        case ConnectorSide.Right:
+//                            return "DiagramArrowRightEmpty";
+//                            break;
+//                        case ConnectorSide.Bottom:
+//                            return "DiagramArrowDown";
+//                        case ConnectorSide.Top:
+//                            return "DiagramArrowUp";
+//                    }
+//                }
+              //  return "DiagramArrowLeftEmpty";
             }
         }
 
@@ -273,13 +279,11 @@ namespace Invert.Core.GraphDesigner
             if (ViewModel.Direction == ConnectorDirection.Output && ViewModel.Side == ConnectorSide.Right)
             {
                 Bounds = new Rect(pos.x, pos.y, TextureWidth, TextureHeight);
-
                 //return;
             }
             else
             {
                 Bounds = new Rect(pos.x, pos.y, TextureWidth, TextureHeight);
-
             }
         }
 
