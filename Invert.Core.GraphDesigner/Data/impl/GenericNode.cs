@@ -224,7 +224,11 @@ namespace Invert.Core.GraphDesigner
                 return config;
             }
         }
-        
+
+        public override string SubTitle
+        {
+            get { return Config.Name; }
+        }
 
         [GeneratorProperty, JsonProperty]
         public override string Name

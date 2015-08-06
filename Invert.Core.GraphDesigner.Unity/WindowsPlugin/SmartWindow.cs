@@ -23,6 +23,8 @@ namespace Invert.Windows.Unity
             set { _windowId = value; }
         }
 
+        public bool RepaintOnUpdate { get; set; }
+
         public string PersistedData
         {
             get { return _persistedData; }
@@ -77,6 +79,14 @@ namespace Invert.Windows.Unity
             GUILayout.BeginArea(new Rect(layout.GridOffsetLeft * gridUnitWidth, layout.GridOffsetTop * gridUnitHeight, layout.GridWidth * gridUnitWidth, layout.GridHeight * gridUnitHeight));
             area.Draw();
             GUILayout.EndArea();
+        }
+
+        void Update()
+        {
+            if (RepaintOnUpdate)
+            {
+                Repaint();
+            }
         }
 
         void OnDestroy()

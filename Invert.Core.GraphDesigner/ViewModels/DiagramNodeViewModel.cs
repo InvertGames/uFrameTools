@@ -333,9 +333,12 @@ namespace Invert.Core.GraphDesigner
             get { return GraphItemObject.DisplayedItems; }
         }
 
-        public string SubTitle
+        public virtual string SubTitle
         {
-            get { return GraphItemObject.SubTitle; }
+            get
+            {
+                return GraphItemObject.SubTitle; 
+            }
         }
 
         public override string Name
@@ -348,7 +351,114 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        private INodeStyleSchema _normalStyleSchema;
+        private INodeStyleSchema _minimalisticStyleSchema;
+        private INodeStyleSchema _boldStyleSchema;
 
+        public virtual string HeaderBaseImage
+        {
+            get
+            {
+                return "Header3";  
+            }
+        }
+
+        public virtual INodeStyleSchema NormalStyleSchema
+        {
+            get
+            {
+                return _normalStyleSchema ?? (_normalStyleSchema = CachedStyles.NodeStyleSchemaNormal);
+            }
+            set { _normalStyleSchema = value; }
+        }
+        public virtual INodeStyleSchema MinimalisticStyleSchema
+        {
+            get
+            {
+                return _minimalisticStyleSchema ?? (_minimalisticStyleSchema = CachedStyles.NodeStyleSchemaMinimalistic);
+            }
+            set { _minimalisticStyleSchema = value; }
+        }
+
+        public virtual INodeStyleSchema BoldStyleSchema
+        {
+            get
+            {
+                return _boldStyleSchema ?? (_boldStyleSchema = CachedStyles.NodeStyleSchemaBold);
+            }
+            set { _boldStyleSchema = value; }
+        }
+
+        public virtual INodeStyleSchema StyleSchema
+        {
+            get
+            {
+                if (IsCurrentFilter) return BoldStyleSchema;
+                return NormalStyleSchema;
+            }
+        }
+
+        public virtual string IconName
+        {
+            get { return "CommandIcon"; }
+        }
+
+        public virtual Color IconTint
+        {
+            get { return HeaderColor + new Color(0.2f, 0.2f, 0.2f, -0.1f); }
+        }
+
+        public virtual Color HeaderColor
+        {
+            get
+            {
+                switch (Color)
+                {
+                    case NodeColor.Gray:
+                        return new Color32(104, 105, 109, 255);
+                        break;
+                    case NodeColor.DarkGray:
+                        return new Color32(56, 56, 57, 255);
+                        break;
+                    case NodeColor.Blue:
+                        return new Color32(115 , 110 , 180, 255);
+                        break;
+                    case NodeColor.LightGray:
+                        return new Color32(87, 101, 108, 255);
+                        break;
+                    case NodeColor.Black:
+                        return new Color32(50, 50, 50, 255);
+                        break;
+                    case NodeColor.DarkDarkGray:
+                        return new Color32(51, 56, 58, 255);
+                        break;
+                    case NodeColor.Orange:
+                        return new Color32(235, 126, 21, 255);
+                        break;
+                    case NodeColor.Red:
+                        return new Color32(234, 20, 20, 255);
+                        break;
+                    case NodeColor.Yellow:
+                        return new Color32(134, 134, 18, 255);
+                        break;
+                    case NodeColor.Green:
+                        return new Color32(25, 99, 9, 255);
+                        break;
+                    case NodeColor.Purple:
+                        return new Color32(58, 70, 94, 255);
+                        break;
+                    case NodeColor.Pink:
+                        return new Color32(79, 44, 115, 255);
+                        break;
+                    case NodeColor.YellowGreen:
+                        return new Color32(197, 191, 25, 255);
+                        break;
+                    default:
+                        return default(Color);
+                        break;
+                }
+            }
+        }
 
         public string Label
         {
@@ -389,6 +499,8 @@ namespace Invert.Core.GraphDesigner
 
 
         public string editText = string.Empty;
+        private string _headerBaseImage;
+
         public void Rename(string newText)
         {
 

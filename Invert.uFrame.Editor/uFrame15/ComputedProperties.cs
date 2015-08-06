@@ -254,9 +254,9 @@ public class ComputedPropertyDrawer : DiagramNodeDrawer<ComputedPropertyNodeView
     //    get { return 12; }
     //}
 
-    public override float HeaderPadding
+    public override Vector2 HeaderPadding
     {
-        get { return 6; }
+        get { return new Vector2(1,1); }
     }
 
     public ComputedPropertyDrawer()

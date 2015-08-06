@@ -1495,23 +1495,64 @@ public static class uFrameHelpStyles
         return style;
     }
 
+    public static GUIStyle WithAllStates(this GUIStyle style, Texture2D texture, Color textColor)
+    {
+        var state = new GUIStyleState() { background = texture, textColor = textColor };
+        style.normal = style.active = style.hover = style.focused = style.onNormal = style.onActive = style.onHover = style.onFocused = state;
+        return style;
+    }
+
+    public static GUIStyle WithAllStates(this GUIStyle style, Color textColor)
+    {
+        var state = new GUIStyleState() { textColor = textColor };
+        style.normal = style.active = style.hover = style.focused = style.onNormal = style.onActive = style.onHover = style.onFocused = state;
+        return style;
+    }
+
+    public static GUIStyle ForAllStates(this GUIStyle style, Texture2D texture)
+    {
+        style.normal.background = style.active.background = style.hover.background = style.focused.background = style.onNormal.background
+            = style.onActive.background = style.onHover.background = style.onFocused.background = texture;
+        return style;
+    }
+
+
     public static GUIStyle WithFont(this GUIStyle style, string fontName, int fontSize)
     {
-//        var key = fontName + fontSize;
-//        if (!FontsCache.ContainsKey(key))
-//        {
-//            FontsCache.Add(key,Font.CreateDynamicFontFromOSFont(fontName,fontSize));
-//        }
-//        style.font = FontsCache[key];
+        //        var key = fontName + fontSize;
+        //        if (!FontsCache.ContainsKey(key))
+        //        {
+        //            FontsCache.Add(key,Font.CreateDynamicFontFromOSFont(fontName,fontSize));
+        //        }
+        //        style.font = FontsCache[key];
 
 
         if (!FontsCache.ContainsKey(fontName))
         {
-            FontsCache.Add(fontName,Resources.Load<Font>("fonts/"+fontName));
+            FontsCache.Add(fontName, Resources.Load<Font>("fonts/" + fontName));
         }
 
         style.font = FontsCache[fontName];
         style.fontSize = fontSize;
+        return style;
+    }
+    
+    public static GUIStyle WithFont(this GUIStyle style, string fontName)
+    {
+        //        var key = fontName + fontSize;
+        //        if (!FontsCache.ContainsKey(key))
+        //        {
+        //            FontsCache.Add(key,Font.CreateDynamicFontFromOSFont(fontName,fontSize));
+        //        }
+        //        style.font = FontsCache[key];
+
+
+        if (!FontsCache.ContainsKey(fontName))
+        {
+            FontsCache.Add(fontName, Resources.Load<Font>("fonts/" + fontName));
+        }
+
+        style.font = FontsCache[fontName];
         return style;
     }
 

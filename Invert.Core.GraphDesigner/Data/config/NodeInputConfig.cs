@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -14,6 +15,10 @@ namespace Invert.Core.GraphDesigner
         }
 
         private ConfigProperty<IDiagramNodeItem, string> _name;
+
+        public ConnectorStyle Style { get; set; }
+
+        public Color Tint { get; set; }
 
         public NodeInputConfig NameConfig(ConfigProperty<IDiagramNodeItem, string> name)
         {
@@ -79,6 +84,10 @@ namespace Invert.Core.GraphDesigner
         public Type SourceType { get; set; }
         public bool AllowMultiple { get; set; }
         public SectionVisibility Visibility { get; set; }
+
+        public ConnectorStyle Style { get; set; }
+
+        public Color Tint { get; set; }
 
         public Slot(string name)
         {

@@ -49,9 +49,19 @@ public class WindowsPlugin : DiagramPlugin, IWindowsEvents {
     {
         var window = GetWindowFor(factoryId, viewModel);
         window.title = title;
-        window.ShowAsDropDown(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 1f, 1f), new Vector2(300f,500f));
-        window.maxSize = new Vector2(300f, 500f);
-        window.minSize = new Vector2(300f, 500f);
+        window.ShowAsDropDown(new Rect(position.x, position.y, 1f, 1f), size);
+        window.maxSize = size;
+        window.minSize = size;
+        window.Focus();
+        window.Repaint();
+    }
+
+    public void ShowWindowNormal(string factoryId, string title, Vector2 position, Vector2 size)
+    {
+        var window = GetWindowFor(factoryId);
+        window.title = title;
+        window.Show();
+        window.minSize = size;
         window.Focus();
         window.Repaint();
     }
@@ -80,34 +90,56 @@ public class WindowsPlugin : DiagramPlugin, IWindowsEvents {
         });
     }
 
-    public static SmartWindow GetWindowFor(string factoryId, IWindow viewModel = null, bool createNewIfMultipleAllowed = true)
+    public void ShowWindowPopup<T>(string title, Action<T> configure, Vector2 position, Vector2 size)
     {
 
-        SmartWindow drawer = null;
+        var factory =
+            InvertApplication.Container
+                .ResolveAll<IWindowFactory>()
+                .FirstOrDefault(f => f.ViewModelType == typeof (T));
+        if (factory == null) return;
+        var window = GetWindowFor(factory);
+        configure((T)window.ViewModel);
+        window.title = title;
+        window.ShowAsDropDown(new Rect(position.x, position.y, 1f, 1f), size);
+        window.minSize = size;
+        window.Focus();
+        window.Repaint();
+    }
 
-        var factory = InvertApplication.Container.Resolve<IWindowFactory>(factoryId);
+
+    public static SmartWindow GetWindowFor(IWindowFactory factory, IWindow viewModel = null,
+        bool createNewIfMultipleAllowed = true)
+    {
+        SmartWindow drawer = null;
 
         if (factory.Multiple && createNewIfMultipleAllowed)
         {
-            
+
         }
-        else if(factory.Multiple && !createNewIfMultipleAllowed)
+        else if (factory.Multiple && !createNewIfMultipleAllowed)
         {
-            drawer = GetByFactoryId(factoryId).FirstOrDefault() as SmartWindow;
+            drawer = GetByFactoryId(factory.Identifier).FirstOrDefault() as SmartWindow;
         }
         else if (!factory.Multiple)
         {
-            drawer = GetByFactoryId(factoryId).FirstOrDefault() as SmartWindow;
+            drawer = GetByFactoryId(factory.Identifier).FirstOrDefault() as SmartWindow;
         }
 
         if (drawer == null)
         {
             drawer = ScriptableObject.CreateInstance<SmartWindow>();
-            drawer.WindowFactoryId = factoryId;
+            drawer.WindowFactoryId = factory.Identifier;
             BindDrawerToWindow(drawer, factory, viewModel);
         }
 
         return drawer;
+    }
+
+    public static SmartWindow GetWindowFor(string factoryId, IWindow viewModel = null, bool createNewIfMultipleAllowed = true)
+    {
+        var factory = InvertApplication.Container.Resolve<IWindowFactory>(factoryId);
+        return GetWindowFor(factory, viewModel, createNewIfMultipleAllowed);
     }
 
     public static IEnumerable<IWindowDrawer> GetByFactoryId(string identifier)
@@ -122,6 +154,7 @@ public class WindowsPlugin : DiagramPlugin, IWindowsEvents {
         drawer.PersistedData = null;
         drawer.WindowFactoryId = factory.Identifier;
         drawer.ViewModel = window;
+        drawer.RepaintOnUpdate = factory.RepaintOnUpdate;
         if(!WindowDrawers.Contains(drawer))
             WindowDrawers.Add(drawer);
         factory.SetAreasFor(drawer);
@@ -135,4 +168,3 @@ public class WindowsPlugin : DiagramPlugin, IWindowsEvents {
     }
 
 }
-

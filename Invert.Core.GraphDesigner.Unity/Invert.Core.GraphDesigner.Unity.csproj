@@ -47,7 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\uFrameDatabase.cs" />
-    <Compile Include="ErrorsPlugin.cs" />
+    <Compile Include="ErrorsPlugin.cs" />    <Compile Include="Schemas\UnityConnectorStyleSchema.cs" />
+    <Compile Include="Schemas\UnityNodeStyleSchema.cs" />
     <Compile Include="WindowsPlugin\CompilingWindow.cs" />
     <Compile Include="DiagramSettingsCommand.cs" />
     <Compile Include="ElementDesignerStyles.cs" />
