@@ -425,22 +425,22 @@ namespace Invert.Core.GraphDesigner
                         return new Color32(56, 56, 57, 255);
                         break;
                     case NodeColor.Blue:
-                        return new Color32(170, 109, 57, 255);
+                        return new Color32(115 , 110 , 180, 255);
                         break;
                     case NodeColor.LightGray:
                         return new Color32(87, 101, 108, 255);
                         break;
                     case NodeColor.Black:
-                        return new Color32(0, 0, 0, 255);
+                        return new Color32(50, 50, 50, 255);
                         break;
                     case NodeColor.DarkDarkGray:
                         return new Color32(51, 56, 58, 255);
                         break;
                     case NodeColor.Orange:
-                        return new Color32(147, 54, 7, 255);
+                        return new Color32(235, 126, 21, 255);
                         break;
                     case NodeColor.Red:
-                        return new Color32(134, 134, 18, 255);
+                        return new Color32(234, 20, 20, 255);
                         break;
                     case NodeColor.Yellow:
                         return new Color32(134, 134, 18, 255);
@@ -449,13 +449,13 @@ namespace Invert.Core.GraphDesigner
                         return new Color32(25, 99, 9, 255);
                         break;
                     case NodeColor.Purple:
-                        return new Color32(99, 39, 112, 255);
+                        return new Color32(58, 70, 94, 255);
                         break;
                     case NodeColor.Pink:
                         return new Color32(79, 44, 115, 255);
                         break;
                     case NodeColor.YellowGreen:
-                        return new Color32(77, 101, 8, 255);
+                        return new Color32(197, 191, 25, 255);
                         break;
                     default:
                         return default(Color);
