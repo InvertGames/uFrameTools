@@ -31,7 +31,7 @@ public class QuickAccessWindowPlugin : DiagramPlugin, IQuickAccessEvents
     [MenuItem("uFrame/Quick Access #z")]
     public static void ShowQuickAccess()
     {
-        InvertApplication.SignalEvent<IWindowsEvents>(_ => _.ShowWindow("QuickAccessWindowFactory", "Quick Access",null, new Vector2(200f,200f), new Vector2(150f, 250f)));
+        InvertApplication.SignalEvent<IWindowsEvents>(_ => _.ShowWindow("QuickAccessWindowFactory", "Quick Access", null, new Vector2(Event.current.mousePosition.x, Event.current.mousePosition.y), new Vector2(150f, 250f)));
         
          
     }

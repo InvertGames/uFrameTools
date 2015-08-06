@@ -174,8 +174,8 @@ namespace Invert.Core.GraphDesigner
             ) where T : class, IDiagramNodeItem
         {
             T existing = requiredNode == null ?  (T) null : requiredNode.PersistedItems.OfType<T>().FirstOrDefault(p => p.Name == requiredName);
-            var message = string.Format("Create {0} with the name '{1}'", singularItemTypeName,
-                requiredName);
+            var message = string.Format("Create {0} with the name '{1}' on '{2}' node", singularItemTypeName,
+                requiredName, requiredNodeName);
             if (requiredNode != null)
             {
                 message += string.Format(" on the '{0}' node", requiredNode.Name);
@@ -291,7 +291,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 if (currentProject.Name != projectName)
                 {
-                    return string.Format("Make sure that \"{0}\" project is createde\n" +
+                    return string.Format("Make sure that \"{0}\" project is created\n" +
                                          "Make sure that Graph Designer window is opened and selected project is \"{0}\"", projectName);
                 }
                 return null;

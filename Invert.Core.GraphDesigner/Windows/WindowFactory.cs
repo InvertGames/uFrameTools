@@ -1,4 +1,5 @@
 using System;
+using Invert.Core;
 using Invert.IOC;
 using UnityEngine;
 
@@ -79,6 +80,7 @@ namespace Invert.Windows
                 var typedViewModel = w.ViewModel as TWindow;
                 if (typedViewModel == null) return;
                 var area = (Area<TAreaData>)Activator.CreateInstance(typeof(TArea));
+                InvertApplication.Container.Inject(area);
                 area.DataSelector = () => selector(typedViewModel);
                 area.Layout = layout ?? new AreaLayout(0,0,16,16);
                 w.Drawers.Add(area);
@@ -118,7 +120,15 @@ namespace Invert.Windows
         {
             RestoreFunction = selector;
             return this;
+        }       
+        
+        public WindowFactory<TWindow> WithRepaintOnUpdate(bool repaint)
+        {
+            RepaintOnUpdate = repaint;
+            return this;
         }
+
+        public bool RepaintOnUpdate { get; set; }
 
         public WindowFactory<TWindow> AllowMultiple()
         {
