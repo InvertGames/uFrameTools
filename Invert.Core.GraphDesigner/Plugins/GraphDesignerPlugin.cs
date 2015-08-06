@@ -10,7 +10,35 @@ using KeyCode = System.Windows.Forms.Keys;
 #endif
 namespace Invert.Core.GraphDesigner
 {
-    public class GraphDesignerPlugin : DiagramPlugin, IPrefabNodeProvider, ICommandEvents, IConnectionEvents, IQuickAccessEvents
+    
+    public class DeleteGraphCommand : ElementsDiagramToolbarCommand
+    {
+        public override string Name
+        {
+            get { return "Delete Graph"; }
+        }
+
+        public override ToolbarPosition Position
+        {
+            get { return ToolbarPosition.BottomRight; }
+        }
+
+        public override void Perform(DiagramViewModel node)
+        {
+            if (InvertGraphEditor.Platform.MessageBox("Are you sure?",
+                "Are you sure you want to delete this graph, it will remove all nodes that belong to it?",
+                "Yes Remove Them", "Cancel"))
+            {
+                node.CurrentRepository.Remove(node.GraphData);
+            }
+        }
+    }
+
+    public class GraphDesignerPlugin : DiagramPlugin, 
+        IPrefabNodeProvider, 
+        ICommandEvents, 
+        IConnectionEvents, 
+        IQuickAccessEvents
     {
         public override decimal LoadPriority
         {
@@ -23,8 +51,7 @@ namespace Invert.Core.GraphDesigner
 
         public override void Initialize(UFrameContainer container)
         {
-            ListenFor<ICommandEvents>();
-            ListenFor<IConnectionEvents>();
+            container.RegisterToolbarCommand<DeleteGraphCommand>();
 //#if UNITY_DLL
         
 //            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())

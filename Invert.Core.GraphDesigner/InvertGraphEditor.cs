@@ -468,6 +468,9 @@ namespace Invert.Core.GraphDesigner
         /// <returns></returns>
         public static IEnumerable<CodeFileGenerator> GetAllFileGenerators(IGraphConfiguration config, IDataRecord[] items, bool includeDisabled = false)
         {
+            if (config == null) throw new ArgumentNullException("config");
+            if (items == null) throw new ArgumentNullException("items");
+
             var codeGenerators = GetAllCodeGenerators(config, items, includeDisabled).ToArray();
             var groups = codeGenerators.GroupBy(p => Path.Combine(config.CodeOutputSystemPath, p.Filename)).Distinct();
             foreach (var @group in groups)
@@ -760,6 +763,10 @@ namespace Invert.Core.GraphDesigner
 
         private IEnumerable<OutputGenerator> CreateTemplateGenerators(IGraphConfiguration config, IDataRecord graphItem, Type templateType)
         {
+            if (config == null) throw new ArgumentNullException("config");
+            if (graphItem == null) throw new ArgumentNullException("graphItem");
+            if (templateType == null) throw new ArgumentNullException("templateType");
+
             var templateClassType = templateType.GetGenericArguments()[1];
             var templateAttribute = templateClassType.GetCustomAttributes(typeof(TemplateClass), true)
                 .OfType<TemplateClass>()

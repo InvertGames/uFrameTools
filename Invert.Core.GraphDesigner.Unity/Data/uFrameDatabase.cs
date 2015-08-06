@@ -27,24 +27,28 @@ namespace Invert.Core.GraphDesigner.Unity
         public string DatabaseName
         {
             get { return _databaseName; }
-            set { _databaseName = value; }
+            set { _databaseName = value; EditorUtility.SetDirty(this); }
         }
 
         public string CodePath
         {
             get { return _codePath; }
-            set { _codePath = value; }
+            set { _codePath = value; EditorUtility.SetDirty(this); }
         }
 
         public bool IsCurrent
         {
             get { return _isCurrent; }
-            set { _isCurrent = value; }
+            set
+            {
+                _isCurrent = value;
+                EditorUtility.SetDirty(this);
+            }
         }
 
         public string FullPath
         {
-            get { return Path.Combine(Application.dataPath.Replace("Assets/",string.Empty).Replace("Assets\\",string.Empty).Replace("Assets", string.Empty), "uFrameDB"); }
+            get { return Path.Combine(Application.dataPath.Replace("Assets/",string.Empty).Replace("Assets\\",string.Empty).Replace("Assets", string.Empty), DatabaseName); }
         }
 
         public string CodeOutputSystemPath
@@ -57,6 +61,18 @@ namespace Invert.Core.GraphDesigner.Unity
             get { return _ns; }
             set { _ns = value; }
         }
+
+        public string Title
+        {
+            get { return this.name; }
+        }
+
+        public string Group
+        {
+            get { return "Local"; }
+        }
+
+        public string SearchTag { get; set; }
     }
 
     public class Save : ElementsDiagramToolbarCommand
@@ -117,26 +133,13 @@ namespace Invert.Core.GraphDesigner.Unity
             base.Initialize(container);
             container.RegisterToolbarCommand<Save>();
             Databases = GetAssetsOfType<GraphConfiguration>(".asset");
+
             foreach (var database in Databases)
             {
                 container.RegisterInstance<IGraphConfiguration>(database,database.DatabaseName);
             }
-            if (CurrentDatabase != null)
-            {
-                container.RegisterInstance<IRepository>(
-                    new TypeDatabase(new JsonRepositoryFactory(CurrentDatabase.FullPath)));
-                container.RegisterInstance<IGraphConfiguration>(CurrentDatabase);
-                
-
-            }
-            else
-            {
-                Debug.LogWarning("No uFrame Database found.");
-            }
-            
-            
+        
         }
-
 
         public static ScriptableObject CreateAsset(Type type, string assetPath = null, string assetName = null)
         {
@@ -161,27 +164,9 @@ namespace Invert.Core.GraphDesigner.Unity
             return asset;
         }
 
-        public static GraphConfiguration CurrentDatabase
-        {
-            get { return Databases.FirstOrDefault(p=>p.IsCurrent) ?? Databases.FirstOrDefault(); }
-            set
-            {
-                _currentDatabase = value;
-                foreach (var item in Databases)
-                {
-                    item.IsCurrent = false;
-                }
-                if (_currentDatabase != null)
-                {
-                    _currentDatabase.IsCurrent = true;
-                }
-            }
-        }
-
         /// <summary>
         /// Used to get assets of a certain type and file extension from entire project
         /// </summary>
-        /// <param name="type">The type to retrieve. eg typeof(GameObject).</param>
         /// <param name="fileExtension">The file extention the type uses eg ".prefab".</param>
         /// <returns>An Object array of assets.</returns>
         public static T[] GetAssetsOfType<T>(string fileExtension) where T : UnityEngine.Object
@@ -216,5 +201,8 @@ namespace Invert.Core.GraphDesigner.Unity
 
             return tempObjects.ToArray();
         }
+
+        
+    
     }
 }

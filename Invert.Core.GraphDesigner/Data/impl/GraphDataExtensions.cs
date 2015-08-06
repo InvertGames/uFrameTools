@@ -154,8 +154,8 @@ namespace Invert.Core.GraphDesigner
                 var node = item.Node;
                 if (node == null)
                 {
-
-                    throw new Exception(string.Format("Filter item node is null {0}", item.NodeId));
+                    filter.Repository.Remove(item);
+                    InvertApplication.Log(string.Format("Filter item node is null {0}, Cleaning..", item.NodeId));
                     continue;
                 }
                 //if (item == null) continue;

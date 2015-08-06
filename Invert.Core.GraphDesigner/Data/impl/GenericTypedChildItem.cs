@@ -31,11 +31,8 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
         get { return _type; }
         set
         {
-            
-            if (!string.IsNullOrEmpty(NodeId))
-                this.Node.TrackChange(new TypeChange(this, _type, RelatedTypeName));
+            this.Changed("RelatedType", _type, value);
             _type = value;
-            Changed = true;
         }
     }
 

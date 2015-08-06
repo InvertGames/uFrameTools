@@ -66,7 +66,7 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 var ps = ProjectService;
-                if (ps == null) return "Project: [None]";
+                if (ps == null) return "Workspace: [None]";
                 if (ps.CurrentWorkspace != null)
                 {
                     return "Workspace: " + ps.CurrentWorkspace.Name;

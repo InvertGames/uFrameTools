@@ -286,6 +286,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
 
     public void OnBeforeSerialize()
     {
+        return;
         Graph.Name = this.name;
         var backup = _jsonData;
         try
@@ -307,6 +308,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
     public void OnAfterDeserialize()
     {
         //Debug.Log("Deserialize");
+        return;
         try
         {
             var json = JSON.Parse(_jsonData);

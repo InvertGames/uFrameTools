@@ -47,10 +47,12 @@ namespace Invert.Core.GraphDesigner
         void PopFilter();
     }
 
-    public interface IGraphConfiguration
+    public interface IGraphConfiguration : IItem
     {
         string CodeOutputSystemPath { get;  }
         string Namespace { get; set; }
+        bool IsCurrent { get; set; }
+        string FullPath { get;  }
     }
 
     public class GraphConfiguration : IGraphConfiguration
@@ -59,9 +61,15 @@ namespace Invert.Core.GraphDesigner
         {
             CodeOutputSystemPath = codeOutputSystemPath;
             Namespace = ns;
+            IsCurrent = true;
         }
 
         public string CodeOutputSystemPath { get; set; }
         public string Namespace { get; set; }
+        public bool IsCurrent { get; set; }
+        public string FullPath { get; set; }
+        public string Title { get; set; }
+        public string Group { get;  set; }
+        public string SearchTag { get;  set; }
     }
 }

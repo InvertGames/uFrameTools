@@ -54,9 +54,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 foreach (var item in GraphItem.Flags)
                 {
-                    if (item.Key.StartsWith("_")) continue;
-                    if (item.Value)
-                        yield return item.Key;
+                    yield return item.Name;
                 }
                 foreach (var item in NodeConfig.Tags)
                 {

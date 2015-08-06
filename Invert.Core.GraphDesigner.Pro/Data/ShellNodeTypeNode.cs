@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Invert.Common;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Data;
 using Invert.Json;
 using UnityEngine;
 
@@ -212,6 +213,10 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
     }
 
     private string _nodeLabel;
+    private NodeColor _color;
+    private bool _inheritable;
+    private bool _isClass;
+
     public override void Document(IDocumentationBuilder docs)
     {
         docs.BeginSection(this.Name);
@@ -260,19 +265,76 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
     }
 
     [InspectorProperty, JsonProperty]
-    public NodeColor Color { get; set; }
+    public NodeColor Color
+    {
+        get { return _color; }
+        set
+        {
+            this.Changed("Color", _color, value);
+            _color = value;
+            
+        }
+    }
 
     [InspectorProperty, JsonProperty]
-    public bool Inheritable { get; set; }
+    public bool Inheritable
+    {
+        get { return _inheritable; }
+        set
+        {
+            this.Changed("Inheritable", _inheritable, value);
+            _inheritable = value;
+        }
+    }
 
     [InspectorProperty, JsonProperty]
-    public bool IsClass { get; set; }
+    public bool IsClass
+    {
+        get { return _isClass; }
+        set
+        {
+            this.Changed("IsClass", _isClass, value);
+            _isClass = value;
+        }
+    }
 
-    public int Row { get; set; }
+    private SectionVisibility _visibility;
+    private int _column;
+    private int _row;
 
-    public int Column { get; set; }
+    [InspectorProperty, JsonProperty]
+    public int Row
+    {
+        get { return _row; }
+        set
+        {
+            this.Changed("Row", _row, value);
+            _row = value;
+        }
+    }
 
-    public SectionVisibility Visibility { get; set; }
+    [InspectorProperty, JsonProperty]
+    public int Column
+    {
+        get { return _column; }
+        set
+        {
+            this.Changed("Column", _column, value);
+            _column = value;
+
+        }
+    }
+
+    [InspectorProperty, JsonProperty]
+    public SectionVisibility Visibility
+    {
+        get { return _visibility; }
+        set
+        {
+            this.Changed("Visibility", _visibility, value);
+            _visibility = value;
+        }
+    }
 
     public string ReferenceClassName
     {
@@ -325,7 +387,7 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
 
     public IEnumerable<ShellNodeConfig> SubNodes
     {
-        get { return this.GetContainingNodes().OfType<ShellNodeConfig>(); }
+        get { return this.FilterNodes().OfType<ShellNodeConfig>(); }
     }
 }
 
@@ -540,7 +602,7 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
     [JsonProperty,InspectorProperty(InspectorType.TextArea)]
     public string Comments { get; set; }
 
-    [InspectorProperty]
+    [InspectorProperty,JsonProperty]
     public override string Name
     {
         get { return base.Name; }
@@ -548,6 +610,7 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
     }
 
     private string _typeName;
+    private SectionVisibility _visibility;
 
 
     //[InspectorProperty, JsonProperty]
@@ -571,7 +634,15 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
     }
 
     [InspectorProperty, JsonProperty]
-    public SectionVisibility Visibility { get; set; }
+    public SectionVisibility Visibility
+    {
+        get { return _visibility; }
+        set
+        {
+            this.Changed("Visibility", _visibility, value);
+            _visibility = value;
+        }
+    }
 
     public virtual string ClassName
     {
@@ -618,11 +689,34 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
 public class ShellNodeConfigSection : ShellNodeConfigItem
 {
     private bool _allowAdding;
+    private ShellNodeConfigSectionType _sectionType;
+    private bool _isTyped;
+    private bool _isEditable;
+    private bool _allowDuplicates;
+    private bool _isAutomatic;
+    private bool _hasPredefinedOptions;
 
     [JsonProperty, InspectorProperty]
-    public ShellNodeConfigSectionType SectionType { get; set; }
+    public ShellNodeConfigSectionType SectionType
+    {
+        get { return _sectionType; }
+        set
+        {
+            this.Changed("SectionType", _sectionType, value);
+            _sectionType = value;
+        }
+    }
+
     [InspectorProperty, JsonProperty]
-    public bool IsTyped { get; set; }
+    public bool IsTyped
+    {
+        get { return _isTyped; }
+        set
+        {
+            this.Changed("IsTyped", _isTyped, value);
+            _isTyped = value;
+        }
+    }
 
     [InspectorProperty, JsonProperty]
     public virtual bool AllowAdding
@@ -635,7 +729,11 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
             }
             return _allowAdding;
         }
-        set { _allowAdding = value; }
+        set
+        {
+            this.Changed("AllowAdding", _allowAdding, value);
+            _allowAdding = value;
+        }
     }
 
     public override string ClassName
@@ -652,15 +750,48 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
 
 
     [InspectorProperty, JsonProperty]
-    public bool IsEditable { get; set; }
+    public bool IsEditable
+    {
+        get { return _isEditable; }
+        set
+        {
+            this.Changed("IsEditable", _isEditable, value);
+            _isEditable = value;
+        }
+    }
 
     [InspectorProperty, JsonProperty]
-    public bool AllowDuplicates { get; set; }
+    public bool AllowDuplicates
+    {
+        get { return _allowDuplicates; }
+        set
+        {
+            this.Changed("AllowDuplicates", _allowDuplicates, value);
+            _allowDuplicates = value;
+        }
+    }
 
     [InspectorProperty, JsonProperty]
-    public bool IsAutomatic { get; set; }
+    public bool IsAutomatic
+    {
+        get { return _isAutomatic; }
+        set
+        {
+            this.Changed("IsAutomatic", _isAutomatic, value);
+            _isAutomatic = value;
+        }
+    }
+
     [InspectorProperty, JsonProperty]
-    public bool HasPredefinedOptions { get; set; }
+    public bool HasPredefinedOptions
+    {
+        get { return _hasPredefinedOptions; }
+        set
+        {
+            this.Changed("HasPredefinedOptions", _hasPredefinedOptions, value);
+            _hasPredefinedOptions = value;
+        }
+    }
 }
 
 public enum ShellNodeConfigSectionType
@@ -671,12 +802,42 @@ public enum ShellNodeConfigSectionType
 }
 public class ShellNodeConfigSectionPointer : GenericReferenceItem<ShellNodeConfigSection>, IShellNodeConfigItem
 {
+    private SectionVisibility _visibility;
+    private int _column;
+    private int _row;
+
     [InspectorProperty, JsonProperty]
-    public int Row { get; set; }
+    public int Row
+    {
+        get { return _row; }
+        set
+        {
+            this.Changed("Row", _row, value); 
+            _row = value; }
+    }
+
     [InspectorProperty, JsonProperty]
-    public int Column { get; set; }
+    public int Column
+    {
+        get { return _column; }
+        set
+        {
+            this.Changed("Column", _column, value);
+            _column = value;
+            
+        }
+    }
+
     [InspectorProperty, JsonProperty]
-    public SectionVisibility Visibility { get; set; }
+    public SectionVisibility Visibility
+    {
+        get { return _visibility; }
+        set
+        {
+            this.Changed("Visibility",_visibility,value);
+            _visibility = value;
+        }
+    }
 
     public string ReferenceClassName
     {
@@ -706,12 +867,43 @@ public class ShellNodeConfigSectionPointer : GenericReferenceItem<ShellNodeConfi
 }
 public class ShellNodeConfigInputPointer : GenericReferenceItem<ShellNodeConfigInput>
 {
+    private SectionVisibility _visibility;
+    private int _column;
+    private int _row;
+
     [InspectorProperty, JsonProperty]
-    public int Row { get; set; }
+    public int Row
+    {
+        get { return _row; }
+        set
+        {
+            this.Changed("Row", _row, value);
+            _row = value;
+        }
+    }
+
     [InspectorProperty, JsonProperty]
-    public int Column { get; set; }
+    public int Column
+    {
+        get { return _column; }
+        set
+        {
+            this.Changed("Column", _column, value);
+            _column = value;
+
+        }
+    }
+
     [InspectorProperty, JsonProperty]
-    public SectionVisibility Visibility { get; set; }
+    public SectionVisibility Visibility
+    {
+        get { return _visibility; }
+        set
+        {
+            this.Changed("Visibility", _visibility, value);
+            _visibility = value;
+        }
+    }
     public string ClassName
     {
         get { return this.SourceItem.TypeName; }
@@ -719,12 +911,43 @@ public class ShellNodeConfigInputPointer : GenericReferenceItem<ShellNodeConfigI
 }
 public class ShellNodeConfigOutputPointer : GenericReferenceItem<ShellNodeConfigOutput>
 {
+    private SectionVisibility _visibility;
+    private int _column;
+    private int _row;
+
     [InspectorProperty, JsonProperty]
-    public int Row { get; set; }
+    public int Row
+    {
+        get { return _row; }
+        set
+        {
+            this.Changed("Row", _row, value);
+            _row = value;
+        }
+    }
+
     [InspectorProperty, JsonProperty]
-    public int Column { get; set; }
+    public int Column
+    {
+        get { return _column; }
+        set
+        {
+            this.Changed("Column", _column, value);
+            _column = value;
+
+        }
+    }
+
     [InspectorProperty, JsonProperty]
-    public SectionVisibility Visibility { get; set; }
+    public SectionVisibility Visibility
+    {
+        get { return _visibility; }
+        set
+        {
+            this.Changed("Visibility", _visibility, value);
+            _visibility = value;
+        }
+    }
     public string ClassName
     {
         get { return this.SourceItem.TypeName; }
@@ -732,6 +955,8 @@ public class ShellNodeConfigOutputPointer : GenericReferenceItem<ShellNodeConfig
 }
 public class ShellNodeConfigInput : ShellNodeConfigItem, IShellSlotType
 {
+    private bool _allowMultiple;
+
     public bool IsOutput
     {
         get { return false; }
@@ -742,7 +967,16 @@ public class ShellNodeConfigInput : ShellNodeConfigItem, IShellSlotType
     }
 
     [JsonProperty, InspectorProperty]
-    public bool AllowMultiple { get; set; }
+    public bool AllowMultiple
+    {
+        get { return _allowMultiple; }
+        set
+        {
+            this.Changed("AllowMultiple", _allowMultiple, value);
+            _allowMultiple = value;
+        }
+    }
+
     public override string TypeName
     {
         get
@@ -761,6 +995,8 @@ public class ShellNodeConfigInput : ShellNodeConfigItem, IShellSlotType
 
 public class ShellNodeConfigOutput : ShellNodeConfigItem, IShellSlotType
 {
+    private bool _allowMultiple;
+
     public bool IsOutput
     {
         get { return true; }
@@ -778,9 +1014,16 @@ public class ShellNodeConfigOutput : ShellNodeConfigItem, IShellSlotType
         }
         set { }
     }
-
     [JsonProperty, InspectorProperty]
-    public bool AllowMultiple { get; set; }
+    public bool AllowMultiple
+    {
+        get { return _allowMultiple; }
+        set
+        {
+            this.Changed("AllowMultiple", _allowMultiple, value);
+            _allowMultiple = value;
+        }
+    }
     public override string ClassName
     {
         get { return TypeName; }

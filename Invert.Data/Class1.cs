@@ -24,6 +24,7 @@ namespace Invert.Data
 
         string GetUniqueName(string s);
         void Signal<TEventType>(Action<TEventType> perform);
+        void AddListener<TEventType>(TEventType instance);
     }
 
     public interface IDataRecord
@@ -33,6 +34,22 @@ namespace Invert.Data
         bool Changed { get; set; }
     }
 
+    public static class DataRecordPropertyChangedExtensions
+    {
+        public static void Changed(this IDataRecord record, string propertyName,object previousValue, object nextValue)
+        {
+            record.Changed = true;
+            if (record.Repository != null)
+            {
+                record.Repository.Signal<IDataRecordPropertyChanged>(_ => _.PropertyChanged(record, propertyName, previousValue, nextValue));
+            }
+            
+        }
+    }
+    public interface IDataRecordPropertyChanged
+    {
+        void PropertyChanged(IDataRecord record, string name,object previousValue, object nextValue);
+    }
     public interface IDataRecordInserted
     {
         void RecordInserted(IDataRecord record);
@@ -62,7 +79,20 @@ namespace Invert.Data
 
     public class TypeDatabase : IRepository
     {
+        public Dictionary<Type, List<object>> Listeners
+        {
+            get { return _listeners ?? (_listeners = new Dictionary<Type, List<object>>()); }
+            set { _listeners = value; }
+        }
 
+        public void AddListener<TEventType>(TEventType instance)
+        {
+            if (!Listeners.ContainsKey(typeof (TEventType)))
+            {
+                Listeners.Add(typeof(TEventType), new List<object>());
+            }
+            Listeners[typeof(TEventType)].Add(instance);
+        }
         public void Signal<TEventType>(Action<TEventType> perform)
         {
             foreach (var item in Repositories)
@@ -76,9 +106,18 @@ namespace Invert.Data
                     }
                 }
             }
+            if (Listeners.ContainsKey(typeof (TEventType)))
+            {
+                foreach (var listener in Listeners[typeof (TEventType)])
+                {
+                    var listener1 = listener;
+                    perform((TEventType) listener1);
+                }
+            }
         }
 
         private Dictionary<Type, IDataRecordManager> _repositories;
+        private Dictionary<Type, List<object>> _listeners;
 
         public Dictionary<Type, IDataRecordManager> Repositories
         {
@@ -314,7 +353,7 @@ namespace Invert.Data
         private void LoadRecord(FileInfo file)
         {
             if (Cached.ContainsKey(Path.GetFileNameWithoutExtension(file.Name))) return;
-            var record = JsonExtensions.DeserializeObject(For, JSON.Parse(File.ReadAllText(file.FullName))) as IDataRecord;
+            var record = InvertJsonExtensions.DeserializeObject(For, JSON.Parse(File.ReadAllText(file.FullName))) as IDataRecord;
             if (record != null)
             {
                 record.Repository = this.Repository;
@@ -377,7 +416,7 @@ namespace Invert.Data
                 {
                     if (item.Value.Changed)
                     {
-                        var json = JsonExtensions.SerializeObject(item.Value);
+                        var json = InvertJsonExtensions.SerializeObject(item.Value);
                         File.WriteAllText(filename, json.ToString());
                     }
                     item.Value.Changed = false;

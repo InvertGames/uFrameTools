@@ -260,9 +260,20 @@ namespace Invert.Core.GraphDesigner
             {
                 Debug.Log("Filter null");
             }
-            FilterItems = GraphData.CurrentFilter.FilterItems().ToDictionary(k=>k.NodeId);
+            Dictionary<string, FilterItem> dictionary = new Dictionary<string, FilterItem>();
+            foreach (var item in GraphData.CurrentFilter.FilterItems())
+            {
+                if (dictionary.ContainsKey(item.NodeId))
+                {
+                    item.Repository.Remove(item);
+                    continue;
+                }
+                dictionary.Add(item.NodeId, item);
+            }
+                
+            FilterItems = dictionary;
             
-            CurrentNodes = GraphData.CurrentFilter.FilterNodes().ToArray();
+            CurrentNodes = GraphData.CurrentFilter.FilterNodes().Distinct().ToArray();
 
             foreach (var item in CurrentNodes)
             {
@@ -440,45 +451,52 @@ namespace Invert.Core.GraphDesigner
         }
         public Color GetColor(IGraphItem dataObject)
         {
-            var item = dataObject as IDiagramNodeItem;
-            if (item != null)
+            try
             {
-                var node = item.Node as GenericNode;
-                if (node != null)
+                var item = dataObject as IDiagramNodeItem;
+                if (item != null)
                 {
-                    var color = node.Config.GetColor(node);
-                    switch (color)
+                    var node = item.Node as GenericNode;
+                    if (node != null)
                     {
-                        case NodeColor.Black:
-                            return Color.black;
-                        case NodeColor.Blue:
-                            return new Color(0.25f, 0.25f, 0.65f);
-                        case NodeColor.DarkDarkGray:
-                            return new Color(0.25f, 0.25f, 0.25f);
-                        case NodeColor.DarkGray:
-                            return new Color(0.45f, 0.45f, 0.45f);
-                        case NodeColor.Gray:
-                            return new Color(0.65f, 0.65f, 0.65f);
-                        case NodeColor.Green:
-                            return new Color(0.00f, 1f, 0f);
-                        case NodeColor.LightGray:
-                            return new Color(0.75f, 0.75f, 0.75f);
-                        case NodeColor.Orange:
-                            return new Color(0.059f, 0.98f, 0.314f);
-                        case NodeColor.Pink:
-                            return new Color(0.059f, 0.965f, 0.608f);
-                        case NodeColor.Purple:
-                            return new Color(0.02f, 0.318f, 0.659f);
-                        case NodeColor.Red:
-                            return new Color(1f, 0f, 0f);
-                        case NodeColor.Yellow:
-                            return new Color(1f, 0.8f, 0f);
-                        case NodeColor.YellowGreen:
-                            return new Color(0.604f, 0.804f, 0.196f);
+                        var color = node.Config.GetColor(node);
+                        switch (color)
+                        {
+                            case NodeColor.Black:
+                                return Color.black;
+                            case NodeColor.Blue:
+                                return new Color(0.25f, 0.25f, 0.65f);
+                            case NodeColor.DarkDarkGray:
+                                return new Color(0.25f, 0.25f, 0.25f);
+                            case NodeColor.DarkGray:
+                                return new Color(0.45f, 0.45f, 0.45f);
+                            case NodeColor.Gray:
+                                return new Color(0.65f, 0.65f, 0.65f);
+                            case NodeColor.Green:
+                                return new Color(0.00f, 1f, 0f);
+                            case NodeColor.LightGray:
+                                return new Color(0.75f, 0.75f, 0.75f);
+                            case NodeColor.Orange:
+                                return new Color(0.059f, 0.98f, 0.314f);
+                            case NodeColor.Pink:
+                                return new Color(0.059f, 0.965f, 0.608f);
+                            case NodeColor.Purple:
+                                return new Color(0.02f, 0.318f, 0.659f);
+                            case NodeColor.Red:
+                                return new Color(1f, 0f, 0f);
+                            case NodeColor.Yellow:
+                                return new Color(1f, 0.8f, 0f);
+                            case NodeColor.YellowGreen:
+                                return new Color(0.604f, 0.804f, 0.196f);
+
+                        }
 
                     }
-
                 }
+            }
+            catch (Exception ex)
+            {
+                InvertApplication.LogError(string.Format("Node is null on get color {0} : {1}", dataObject.Label, dataObject.Identifier));
             }
             return Color.white;
         }

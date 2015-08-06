@@ -1,26 +1,31 @@
 using System.Linq;
 using Invert.Core.GraphDesigner;
+using Invert.Data;
 using Invert.Json;
 
 public class ShellInheritableNode : GenericInheritableNode, IShellNode
 {
+    private string _baseIdentifier;
 
-    [InspectorProperty]
-    public bool IsCustom
-    {
-        get { return this["Custom"]; }
-        set { this["Custom"] = value; }
-    }
     [JsonProperty]
-    public string BaseIdentifier { get; set; }
+    public string BaseIdentifier
+    {
+        get { return _baseIdentifier; }
+        set {
+            this.Changed("BaseIdentifier", _baseIdentifier, value);
+            _baseIdentifier = value;
+           
+        }
+    }
 
     [InspectorProperty(InspectorType.GraphItems)]
     public override GenericInheritableNode BaseNode
     {
         get
         {
+            if (string.IsNullOrEmpty(BaseIdentifier) || Repository == null)
+                return null;
             return Repository.GetById<GenericInheritableNode>(BaseIdentifier);
-            //return this.Project.NodeItems.FirstOrDefault(p => p.Identifier == BaseIdentifier) as GenericInheritableNode;
         }
         set
         {

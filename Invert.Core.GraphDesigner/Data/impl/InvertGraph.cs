@@ -259,8 +259,10 @@ namespace Invert.Core.GraphDesigner
         public string RootFilterId
         {
             get { return _rootFilterId; }
-            set { _rootFilterId = value;
-                Changed = true;
+            set {
+                this.Changed("RootFilterId", _rootFilterId, value);
+                _rootFilterId = value;
+            
             }
         }
 
@@ -771,8 +773,9 @@ namespace Invert.Core.GraphDesigner
         public string GraphId
         {
             get { return _graphId; }
-            set { _graphId = value;
-                Changed = true;
+            set {
+                this.Changed("GraphId", _graphId, value);
+                _graphId = value;
             }
         }
 
@@ -780,8 +783,10 @@ namespace Invert.Core.GraphDesigner
         public string FilterId
         {
             get { return _filterId; }
-            set { _filterId = value;
-                Changed = true;
+            set {
+                this.Changed("FilterId", _filterId, value);
+                _filterId = value;
+        
             }
         }
 
@@ -799,8 +804,9 @@ namespace Invert.Core.GraphDesigner
         public int Index
         {
             get { return _index; }
-            set { _index = value;
-                Changed = true;
+            set {
+                this.Changed("Index", _index, value);
+                _index = value;
             }
         }
 

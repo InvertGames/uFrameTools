@@ -234,8 +234,9 @@ namespace Invert.Core.GraphDesigner
         public override string Name
         {
             get { return base.Name; }
-            set { base.Name = value;
-                Changed = true;
+            set { 
+                base.Name = value;
+                
             }
         }
         //public List<string> ConnectedGraphItemIds
@@ -624,14 +625,16 @@ namespace Invert.Core.GraphDesigner
                 return SourceItemObject.Name;
             }
             set { base.Name = value;
-                Changed = true;
+                
             }
         }
         [JsonProperty]
         public string SourceIdentifier
         {
             get { return _sourceIdentifier; }
-            set { _sourceIdentifier = value;
+            set {
+                this.Changed("SourceIdentifier", _sourceIdentifier, value);
+                _sourceIdentifier = value;
                 Changed = true;
             }
         }

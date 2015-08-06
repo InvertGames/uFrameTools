@@ -157,7 +157,7 @@ public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNo
                 .Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Order)))
                 ;
             Ctx._if("{0} == null", field.Name)
-                .TrueStatements._("{0} = new {1}() {{ Node = this }}", field.Name);
+                .TrueStatements._("{0} = new {1}() {{  Repository = Repository, Node = this }}", field.Name);
             return null;
         }
 
@@ -541,7 +541,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
             attribute.Arguments.Add(new CodeAttributeArgument("IsNewRow", new CodePrimitiveExpression(item.IsNewRow)));
 
             Ctx._if("{0} == null", field.Name)
-                .TrueStatements._("{0} = new {1}() {{ Node = this }}", field.Name, item.ClassName);
+                .TrueStatements._("{0} = new {1}() {{ Repository = Repository, Node = this }}", field.Name, item.ClassName);
             Ctx._("return {0}", field.Name);
             return null;
         }
@@ -566,7 +566,7 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
             attribute.Arguments.Add(new CodeAttributeArgument("IsNewRow", new CodePrimitiveExpression(item.IsNewRow)));
 
             Ctx._if("{0} == null", field.Name)
-           .TrueStatements._("{0} = new {1}() {{ Node = this }}", field.Name, item.ClassName);
+           .TrueStatements._("{0} = new {1}() {{ Repository = Repository, Node = this }}", field.Name, item.ClassName);
 
             Ctx._("return {0}", field.Name);
             return null;

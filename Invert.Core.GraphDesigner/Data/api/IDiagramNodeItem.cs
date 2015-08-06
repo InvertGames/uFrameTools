@@ -30,7 +30,6 @@ namespace Invert.Core.GraphDesigner
 
         bool this[string flag] { get; set; }
 
-        FlagsDictionary Flags { get; set; }
         string Namespace { get; }
         string NodeId { get; set; }
 

@@ -7,7 +7,7 @@ using Invert.Data;
 using Invert.Json;
 using UnityEngine;
 
-public abstract class DiagramNodeItem : IDiagramNodeItem
+public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
 {
     public virtual string Title { get { return Name; } }
 
@@ -17,37 +17,6 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     }
 
     public virtual string SearchTag { get { return Name; } }
-    public bool this[string flag]
-    {
-        get
-        {
-            if (Flags.ContainsKey(flag))
-            {
-                return Flags[flag];
-            }
-            else
-            {
-
-                return false;
-            }
-        }
-        set
-        {
-            if (value == false)
-            {
-                Flags.Remove(flag);
-                return;
-            }
-            if (Flags.ContainsKey(flag))
-            {
-                Flags[flag] = true;
-            }
-            else
-            {
-                Flags.Add(flag, true);
-            }
-        }
-    }
 
     string IGraphItem.Label
     {
@@ -68,14 +37,35 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         copy._identifier = null;
         return copy;
     }
-    public FlagsDictionary Flags
+    public IEnumerable<FlagItem> Flags
     {
-        get { return _flags ?? (_flags = new FlagsDictionary()); }
-        set { _flags = value; }
+        get { return Repository.All<FlagItem>().Where(p => p.ParentIdentifier == this.Identifier); }
     }
-    private FlagsDictionary _flags = new FlagsDictionary();
 
-
+    public bool this[string flag]
+    {
+        get { return Flags.Any(p => p.Name == flag); }
+        set
+        {
+            var f = Flags.FirstOrDefault(p => p.Name == flag);
+            if (value == false)
+            {
+                if (f != null)
+                {
+                    Repository.Remove(f);
+                }
+            }
+            else
+            {
+                if (f == null)
+                {
+                    f = Repository.Create<FlagItem>();
+                    f.ParentIdentifier = this.Identifier;
+                    f.Name = flag;
+                }
+            }
+        }
+    }
     public DataBag DataBag
     {
         get { return _dataBag ?? (_dataBag = new DataBag()); }
@@ -85,14 +75,12 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     public bool IsEditing { get; set; }
     private DataBag _dataBag = new DataBag();
 
-
-
     public virtual void Serialize(JSONClass cls)
     {
         cls.Add("Name", new JSONData(_name));
         cls.Add("Identifier", new JSONData(_identifier));
         cls.Add("Precompiled", new JSONData(Precompiled));
-        cls.AddObject("Flags", Flags);
+  
         cls.AddObject("DataBag", DataBag);
     }
 
@@ -103,12 +91,6 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
         if (cls["Precompiled"] != null)
         {
             Precompiled = cls["Precompiled"].AsBool;
-        }
-        if (cls["Flags"] is JSONClass)
-        {
-            var flags = cls["Flags"].AsObject;
-            Flags = new FlagsDictionary();
-            Flags.Deserialize(flags);
         }
         if (cls["DataBag"] is JSONClass)
         {
@@ -154,8 +136,10 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
     public string NodeId
     {
         get { return _nodeId; }
-        set { _nodeId = value;
-            Changed = true;
+        set {
+            this.Changed("NodeId", _nodeId, value);
+            _nodeId = value;
+        
         }
     }
 
@@ -205,7 +189,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
             {
                 _name = value;
             }
-            Changed = true;
+            this.Changed("Name", oldName, value);
             // TODO 2.0 Change Tracking
             //if (!string.IsNullOrEmpty(NodeId))
             //Node.TrackChange(new NameChange(this,oldName, _name));
@@ -408,4 +392,11 @@ public abstract class DiagramNodeItem : IDiagramNodeItem
 
     }
 
+    public virtual void RecordRemoved(IDataRecord record)
+    {
+        if (record.Identifier == NodeId)
+        {
+            Repository.Remove(this);
+        }
+    }
 }

@@ -48,6 +48,7 @@
     <Compile Include="2.0\Class1.cs" />
     <Compile Include="2.0\Workspaces\WorkspaceService.cs" />
     <Compile Include="Data\impl\ScaffoldGraph.cs" />
+    <Compile Include="Plugins\DatabaseService.cs" />
     <Compile Include="Schemas\api\IConnectorStyleSchema.cs" />
     <Compile Include="Schemas\api\INodeStyleSchema.cs" />
     <Compile Include="Schemas\impl\ConnectorStyleSchema.cs" />

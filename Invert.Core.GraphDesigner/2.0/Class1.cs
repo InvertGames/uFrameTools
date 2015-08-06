@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class Workspace : IDataRecord
+    public class Workspace : IDataRecord, IDataRecordRemoved
     {
         private string _name;
         private string _currentGraphId;
@@ -21,8 +21,9 @@ namespace Invert.Core.GraphDesigner
         public string Name
         {
             get { return _name; }
-            set { _name = value;
-                Changed = true;
+            set {
+                this.Changed("Name", _name, value);
+                _name = value;
             }
         }
 
@@ -32,8 +33,10 @@ namespace Invert.Core.GraphDesigner
         public string CurrentGraphId
         {
             get { return _currentGraphId; }
-            set { _currentGraphId = value;
-                Changed = true;
+            set {
+                this.Changed("CurrentGraphId", _currentGraphId, value);
+                _currentGraphId = value;
+                
             }
         }
 
@@ -79,6 +82,12 @@ namespace Invert.Core.GraphDesigner
             Repository.Commit();
             return graph;
         }
+
+        public void RecordRemoved(IDataRecord record)
+        {
+            if (CurrentGraphId == record.Identifier)
+                CurrentGraphId = Graphs.Select(p => p.Identifier).FirstOrDefault();
+        }
     }
 
     public class WorkspaceGraph : IDataRecord, IDataRecordRemoved
@@ -90,8 +99,10 @@ namespace Invert.Core.GraphDesigner
         public string GraphId
         {
             get { return _graphId; }
-            set { _graphId = value;
-                Changed = true;
+            set {
+                this.Changed("GraphId", _graphId, value);
+                _graphId = value;
+
             }
         }
 
@@ -99,8 +110,10 @@ namespace Invert.Core.GraphDesigner
         public string WorkspaceId
         {
             get { return _workspaceId; }
-            set { _workspaceId = value;
-                Changed = true;
+            set {
+                this.Changed("WorkspaceId", _workspaceId, value);
+                _workspaceId = value;
+              
             }
         }
 
@@ -135,8 +148,9 @@ namespace Invert.Core.GraphDesigner
         public bool Collapsed
         {
             get { return _collapsed; }
-            set { _collapsed = value;
-                Changed = true;
+            set { this.Changed("Collapsed", _collapsed, value);
+                _collapsed = value;
+                
             }
         }
 
@@ -144,8 +158,10 @@ namespace Invert.Core.GraphDesigner
         public string NodeId
         {
             get { return _nodeId; }
-            set { _nodeId = value;
-                Changed = true;
+            set {
+                this.Changed("NodeId", _nodeId, value);
+                _nodeId = value;
+           
             }
         }
 
@@ -153,8 +169,9 @@ namespace Invert.Core.GraphDesigner
         public string FilterId
         {
             get { return _filterId; }
-            set { _filterId = value;
-                Changed = true;
+            set {
+                this.Changed("FilterId", _filterId, value);
+                _filterId = value;
             }
         }
 
@@ -177,8 +194,9 @@ namespace Invert.Core.GraphDesigner
         public Vector2 Position
         {
             get { return _position; }
-            set { _position = value;
-                Changed = true;
+            set {
+                this.Changed("Position", _position, value);
+                _position = value;
             }
         }
 

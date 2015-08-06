@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Invert.Json
 {
-    public static class JsonExtensions
+    public static class InvertJsonExtensions
     {
 
 

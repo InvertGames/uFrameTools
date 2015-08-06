@@ -23,7 +23,7 @@ public class ShellGraphTemplate : GenericGraphData<GenericNode>, IClassTemplate<
         if (Ctx.IsDesignerFile)
         {
 #if UNITY_DLL
-            Ctx.SetBaseType("GenericGraphData<{0}>",Ctx.Data.RootNode.ClassName);
+            Ctx.SetBaseType("GenericGraphData<{0}>", Ctx.Data.RootNode.ClassName);
 #else
             Ctx.SetBaseTypeArgument("{0}", Ctx.Data.RootNode.ClassName);
 #endif
@@ -41,7 +41,7 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
 
     public string OutputPath
     {
-        get { return Path2.Combine("Editor","Plugins"); }
+        get { return Path2.Combine("Editor", "Plugins"); }
     }
 
     public bool CanGenerate
@@ -57,7 +57,7 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         Ctx.TryAddNamespace("Invert.Core.GraphDesigner");
     }
 
-    [GenerateMethod("Get{0}SelectionCommand",TemplateLocation.Both, true)]
+    [GenerateMethod("Get{0}SelectionCommand", TemplateLocation.Both, true)]
     public virtual Invert.Core.GraphDesigner.SelectItemTypeCommand GetSelectionCommand()
     {
         Ctx._("return new SelectItemTypeCommand() {{ IncludePrimitives = true, AllowNone = false }}");
@@ -76,8 +76,9 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         }
     }
 
-    [GenerateProperty("{0}"),WithField]
-    public NodeConfig<GenericNode> NodeConfigProperty {
+    [GenerateProperty("{0}"), WithField]
+    public NodeConfig<GenericNode> NodeConfigProperty
+    {
         get
         {
             var item = Ctx.ItemAs<IClassTypeNode>().ClassName;
@@ -86,11 +87,11 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         }
         set
         {
-            
+
         }
     }
 
-    [GenerateMethod(TemplateLocation.Both,true)]
+    [GenerateMethod(TemplateLocation.Both, true)]
     public override void Initialize(UFrameContainer container)
     {
         if (!Ctx.IsDesignerFile) return;
@@ -108,32 +109,23 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
             if (itemType is ShellNodeTypeNode) continue;
             if (itemType is ShellSectionNode) continue;
             if (itemType is ShellGraphTypeNode) continue;
-            if (itemType.Flags.ContainsKey("Typed") && itemType.Flags["Typed"])
+            if (itemType["Typed"])
             {
-                if (itemType.IsCustom)
-                {
-                    method.Statements.Add(
-                        new CodeSnippetExpression(string.Format("container.AddTypeItem<{0},{1}ViewModel,{1}Drawer>()", itemType.ClassName, itemType.Name)));
-                }
-                else
-                {
-                    method.Statements.Add(
-                        new CodeSnippetExpression(string.Format("container.AddTypeItem<{0}>()", itemType.ClassName)));
-                }
-
+                method.Statements.Add(
+                    new CodeSnippetExpression(string.Format("container.AddTypeItem<{0},{1}ViewModel,{1}Drawer>()", itemType.ClassName, itemType.Name)));
             }
             else
             {
-                if (itemType.Flags.ContainsKey("Custom") && itemType.Flags["Custom"])
-                {
-                    method.Statements.Add(
-                    new CodeSnippetExpression(string.Format("container.AddItem<{0}, {1}ViewModel, {1}Drawer>()", itemType.ClassName, itemType.Name)));
-                }
-                else
-                {
+                //if (itemType.Flags.ContainsKey("Custom") && itemType["Custom"])
+                //{
+                //    method.Statements.Add(
+                //    new CodeSnippetExpression(string.Format("container.AddItem<{0}, {1}ViewModel, {1}Drawer>()", itemType.ClassName, itemType.Name)));
+                //}
+                //else
+                //{
                     method.Statements.Add(
                     new CodeSnippetExpression(string.Format("container.AddItem<{0}>()", itemType.ClassName)));
-                }
+                //}
             }
         }
         var graphTypes = Ctx.Data.Graph.NodeItems.OfType<ShellGraphTypeNode>().Where(p => p.IsValid).ToArray();
@@ -152,9 +144,9 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         }
         foreach (var nodeType in Ctx.Data.Graph.NodeItems.OfType<IReferenceNode>().Where(p => p.IsValid))
         {
-            
 
-            if (nodeType.Flags.ContainsKey("Output") && nodeType.Flags["Output"])
+
+            if (nodeType["Output"])
             {
                 method._("container.Connectable<{0},{1}>()", nodeType.ClassName, nodeType.ReferenceClassName);
             }
@@ -177,10 +169,10 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         }
         else
         {
-       
-                method.Statements.Add(
-               new CodeSnippetExpression(string.Format("{1} = container.Add{2}<{0}Node,{0}NodeViewModel,{0}NodeDrawer>(\"{0}\")", nodeType.Name, varName, type)));
-        
+
+            method.Statements.Add(
+           new CodeSnippetExpression(string.Format("{1} = container.Add{2}<{0}Node,{0}NodeViewModel,{0}NodeDrawer>(\"{0}\")", nodeType.Name, varName, type)));
+
         }
 
 
@@ -202,5 +194,5 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         }
 
     }
-    
+
 }

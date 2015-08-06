@@ -10,11 +10,48 @@ using Invert.Json;
 using UnityEngine;
 namespace Invert.Core.GraphDesigner
 {
+    public class FlagItem : IDataRecord, IDataRecordRemoved
+    {
+        private string _parentIdentifier;
+        private string _name;
+        public IRepository Repository { get; set; }
+        public string Identifier { get; set; }
+        public bool Changed { get; set; }
+
+        [JsonProperty]
+        public string ParentIdentifier
+        {
+            get { return _parentIdentifier; }
+            set
+            {
+                this.Changed("ParentIdentifier",_parentIdentifier,value);
+                _parentIdentifier = value;
+            }
+        }
+
+        [JsonProperty]
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                Changed = true;
+            }
+        }
+
+        public void RecordRemoved(IDataRecord record)
+        {
+            if (record.Identifier == ParentIdentifier)
+            {
+                Repository.Remove(this);
+            }
+        }
+    }
     /// <summary>
     /// The base data class for all diagram nodes.
     /// </summary>
-    [Browsable(false)]
-    public abstract class DiagramNode : IDiagramNode, IDiagramFilter
+    public abstract class DiagramNode : IDiagramNode, IDiagramFilter, IDataRecordRemoved
     {
 
         public IEnumerable<ConnectionData> Inputs
@@ -133,45 +170,38 @@ namespace Invert.Core.GraphDesigner
         private Rect _position;
         private string _graphId;
 
+        public IEnumerable<FlagItem> Flags
+        {
+            get { return Repository.All<FlagItem>().Where(p => p.ParentIdentifier == this.Identifier); }
+        }
 
         public bool this[string flag]
         {
-            get
-            {
-                if (Flags.ContainsKey(flag))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+            get { return Flags.Any(p => p.Name == flag); }
             set
             {
+                var f = Flags.FirstOrDefault(p => p.Name == flag);
                 if (value == false)
                 {
-                    Flags.Remove(flag);
-                    return;
-                }
-                if (Flags.ContainsKey(flag))
-                {
-
-                    Flags[flag] = true;
+                    if (f != null)
+                    {
+                        Repository.Remove(f);
+                    }
                 }
                 else
                 {
-                    Flags.Add(flag, true);
+                    if (f == null)
+                    {
+                        f = Repository.Create<FlagItem>();
+                        f.ParentIdentifier = this.Identifier;
+                        f.Name = flag;
+                    }
                 }
             }
         }
 
-        [Browsable(false)]
-        public FilterCollapsedDictionary CollapsedValues
-        {
-            get { return _collapsedValues; }
-            set { _collapsedValues = value; }
-        }
+    
+
 
         [JsonProperty, InspectorProperty(InspectorType.TextArea)]
         public string Comments { get; set; }
@@ -259,7 +289,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _graphId; }
             set { _graphId = value;
-                Changed = true;
+            this.Changed("GraphId", _graphId, value);
             }
         }
 
@@ -278,16 +308,16 @@ namespace Invert.Core.GraphDesigner
                 if (value != null) GraphId = value.Identifier;
             }
         }
-
+        [Obsolete]
         public bool Dirty { get; set; }
 
 
-        [Browsable(false)]
-        public FlagsDictionary Flags
-        {
-            get { return _flags ?? (_flags = new FlagsDictionary()); }
-            set { _flags = value; }
-        }
+        //[Browsable(false)]
+        //public FlagsDictionary Flags
+        //{
+        //    get { return _flags ?? (_flags = new FlagsDictionary()); }
+        //    set { _flags = value; }
+        //}
         [Browsable(false)]
         public string FullLabel { get { return Name; } }
         [Browsable(false)]
@@ -381,19 +411,7 @@ namespace Invert.Core.GraphDesigner
                 var previous = _name;
                 if (value == null) return;
                 _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
-                Changed = true;
-                if (Graph != null)
-                {
-                    TrackChange(new NameChange(this, previous, _name));
-                    if (this.Graph != null && this.Graph.RootFilter == this)
-                    {
-                        this.Graph.Name = _name;
-                    }
-                }
-                
-
-
-                Dirty = true;
+                this.Changed("Name", previous, value);
             }
         }
 
@@ -498,22 +516,8 @@ namespace Invert.Core.GraphDesigner
             _identifier = cls["Identifier"].Value;
             PersistedItems = cls["Items"].AsArray.DeserializeObjectArray<IDiagramNodeItem>();
 
-            if (cls["CollapsedValues"] != null)
-            {
-                CollapsedValues.Deserialize(cls["CollapsedValues"].AsObject);
-            }
-            if (cls["Flags"] is JSONClass)
-            {
-                var flags = cls["Flags"].AsObject;
-                Flags = new FlagsDictionary();
-                Flags.Deserialize(flags);
-            }
-            if (cls["DataBag"] is JSONClass)
-            {
-                var flags = cls["DataBag"].AsObject;
-                DataBag = new DataBag();
-                DataBag.Deserialize(flags);
-            }
+   
+  
             if (PersistedItems != null)
             {
                 foreach (var item in PersistedItems)
@@ -563,7 +567,7 @@ namespace Invert.Core.GraphDesigner
                 });
             }
             DataBag[diagramNodeItem.Identifier] = null;
-            Flags[diagramNodeItem.Identifier] = false;
+            
 
         }
 
@@ -655,10 +659,9 @@ namespace Invert.Core.GraphDesigner
 
             cls.AddObjectArray("Items", PersistedItems.Where(p => !p.Precompiled));
 
-            //cls.Add("Locations", Locations.Serialize());
-            cls.Add("CollapsedValues", CollapsedValues.Serialize());
+   
 
-            cls.AddObject("Flags", Flags);
+            
             cls.AddObject("DataBag", DataBag);
         }
 
@@ -709,6 +712,13 @@ namespace Invert.Core.GraphDesigner
             docs.Paragraph(this.Comments);
             foreach (var item in PersistedItems)
                 item.Document(docs);
+        }
+
+        public virtual void RecordRemoved(IDataRecord record)
+        {
+            if (record.Identifier == GraphId)
+                Repository.Remove(this);
+
         }
     }
 
