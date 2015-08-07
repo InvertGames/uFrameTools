@@ -49,6 +49,8 @@
     <Compile Include="Data\uFrame16Importer.cs" />
     <Compile Include="Data\uFrameDatabase.cs" />
     <Compile Include="ErrorsPlugin.cs" />
+    <Compile Include="InspectorWindow\uFrameInspector.cs" />
+    <Compile Include="InspectorWindow\uFrameInspectorWindow.cs" />
     <Compile Include="Schemas\UnityConnectorStyleSchema.cs" />
     <Compile Include="Schemas\UnityNodeStyleSchema.cs" />
     <Compile Include="WindowsPlugin\CompilingWindow.cs" />
