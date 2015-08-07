@@ -169,6 +169,7 @@ namespace Invert.Core.GraphDesigner
 
         private Rect _position;
         private string _graphId;
+        private bool _isSelected;
 
         public IEnumerable<FlagItem> Flags
         {
@@ -380,8 +381,16 @@ namespace Invert.Core.GraphDesigner
 
         public bool IsSelectable { get { return true; } }
 
-        public bool IsSelected { get; set; }
-    
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                this.Changed("IsSelected", _isSelected, value);
+                _isSelected = value;
+            }
+        }
+
         public virtual IEnumerable<IDiagramNodeItem> DisplayedItems
         {
             get { return PersistedItems; }
