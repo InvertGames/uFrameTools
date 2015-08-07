@@ -123,6 +123,9 @@ namespace Invert.Core.GraphDesigner.Schemas.impl
                 Expanded = expanded
             };
 
+
+            if (ImagePool.ContainsKey(item) && ImagePool[item].Equals(null)) ImagePool.Remove(item);
+
             if (!ImagePool.ContainsKey(item))
             {
                 ImagePool.Add(item, ConstructHeaderImage(expanded, color, iconName));
@@ -138,6 +141,8 @@ namespace Invert.Core.GraphDesigner.Schemas.impl
                 Name = iconName,
                 Color = color,
             };
+
+            if (ImagePool.ContainsKey(item) && ImagePool[item].Equals(null)) ImagePool.Remove(item);
 
             if (!ImagePool.ContainsKey(item))
             {

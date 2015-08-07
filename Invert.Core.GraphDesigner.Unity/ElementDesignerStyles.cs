@@ -2024,7 +2024,19 @@ namespace Invert.Common
         public static Texture2D Tint(this Texture2D texture, Color color)
         {
             var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
-            var pixels = texture.GetPixels();
+            
+            
+            
+            Color[] pixels;
+
+            try
+            {
+                pixels = texture.GetPixels();
+            }
+            catch (Exception ex)
+            {
+                return texture;
+            }
 
             Color[] newPixels = new Color[texture.width * texture.height];
 
@@ -2053,7 +2065,16 @@ namespace Invert.Common
         public static Texture2D Rotate90(this Texture2D texture)
         {
             var newTexture = new Texture2D(texture.height, texture.width, TextureFormat.RGBA32, false, true);
-            var pixels = texture.GetPixels();
+            Color[] pixels;
+
+            try
+            {
+                pixels = texture.GetPixels();
+            }
+            catch (Exception ex)
+            {
+                return texture;
+            }
 
             Color[] newPixels = new Color[texture.width * texture.height];
 
@@ -2078,7 +2099,16 @@ namespace Invert.Common
         public static Texture2D Rotate90CW(this Texture2D texture)
         {
             var newTexture = new Texture2D(texture.height, texture.width, TextureFormat.RGBA32, false, true);
-            var pixels = texture.GetPixels();
+            Color[] pixels;
+
+            try
+            {
+                pixels = texture.GetPixels();
+            }
+            catch (Exception ex)
+            {
+                return texture;
+            }
 
             Color[] newPixels = new Color[texture.width * texture.height];
 
@@ -2102,7 +2132,16 @@ namespace Invert.Common
         public static Texture2D Rotate180(this Texture2D texture)
         {
             var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
-            var pixels = texture.GetPixels();
+            Color[] pixels;
+
+            try
+            {
+                pixels = texture.GetPixels();
+            }
+            catch (Exception ex)
+            {
+                return texture;
+            }
 
             Color[] newPixels = new Color[texture.width * texture.height];
 
@@ -2125,7 +2164,16 @@ namespace Invert.Common
         public static Texture2D Gradient(this Texture2D texture, Color colorSource, Color colorDestination)
         {
             var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
-            var pixels = texture.GetPixels();
+            Color[] pixels;
+
+            try
+            {
+                pixels = texture.GetPixels();
+            }
+            catch (Exception ex)
+            {
+                return texture;
+            }
 
             var progress = 0f;
 
