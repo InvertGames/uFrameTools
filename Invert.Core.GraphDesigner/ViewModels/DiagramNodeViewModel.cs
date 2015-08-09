@@ -669,11 +669,53 @@ namespace Invert.Core.GraphDesigner
 
     }
 
-    public class InspectorViewModel : ViewModel
+    public class InspectorViewModel : GraphItemViewModel
     {
         
-        public List<PropertyFieldViewModel> PropertyFields { get; set; }
+        public override Vector2 Position { get; set; }
+        public override string Name { get; set; }
 
+        protected override void DataObjectChanged()
+        {
+            base.DataObjectChanged();
+            AddPropertyFields();
+            IsDirty = true;
+
+        }
+        public void AddPropertyFields(string headerText = null)
+        {
+            if (DataObject == null) return;
+            ContentItems.Clear();
+            var ps = DataObject.GetPropertiesWithAttribute<InspectorProperty>().ToArray();
+            if (ps.Length < 1) return;
+
+            if (!string.IsNullOrEmpty(headerText))
+                ContentItems.Add(new SectionHeaderViewModel()
+                {
+                    Name = headerText,
+                });
+            var data = DataObject;
+            foreach (var property in ps)
+            {
+                PropertyInfo property1 = property.Key;
+                var vm = new PropertyFieldViewModel()
+                {
+                    Type = property.Key.PropertyType,
+                    Name = property.Key.Name,
+                    InspectorType = property.Value.InspectorType,
+                    CustomDrawerType = property.Value.CustomDrawerType,
+                    Getter = () => property1.GetValue(data, null),
+                    Setter = (v) =>
+                    {
+                  
+                            property1.SetValue(data, v, null);
+
+                    }
+                };
+                ContentItems.Add(vm);
+            }
+            IsDirty = true;
+        }
     }
 
     public class SectionHeaderViewModel : GraphItemViewModel

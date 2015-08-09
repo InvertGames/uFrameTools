@@ -39,7 +39,7 @@ namespace Invert.Data
         public static void Changed(this IDataRecord record, string propertyName,object previousValue, object nextValue)
         {
             record.Changed = true;
-            if (record.Repository != null)
+            if (record.Repository != null && previousValue != nextValue)
             {
                 record.Repository.Signal<IDataRecordPropertyChanged>(_ => _.PropertyChanged(record, propertyName, previousValue, nextValue));
             }

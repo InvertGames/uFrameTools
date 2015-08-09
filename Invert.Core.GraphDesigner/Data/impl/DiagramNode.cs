@@ -386,8 +386,9 @@ namespace Invert.Core.GraphDesigner
             get { return _isSelected; }
             set
             {
-                this.Changed("IsSelected", _isSelected, value);
+                //this.Changed("IsSelected", _isSelected, value);
                 _isSelected = value;
+                this.Changed = true;
             }
         }
 

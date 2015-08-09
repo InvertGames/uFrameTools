@@ -9,60 +9,12 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class DesignerViewModel : ViewModel<Workspace>
-    {
-        private ModelCollection<TabViewModel> _tabs;
-        private IToolbarCommand[] _allCommands;
-        private WorkspaceService _workspaceService;
-
-        protected override void DataObjectChanged()
-        {
-            base.DataObjectChanged();
-            //Tabs = Data.OpenGraphs;
-        }
-
-        public WorkspaceService WorkspaceService
-        {
-            get { return _workspaceService ?? (_workspaceService = InvertGraphEditor.Container.Resolve<WorkspaceService>()); }
-        }
-        public override object DataObject
-        {
-            get { return WorkspaceService.CurrentWorkspace; }
-            set { base.DataObject = value; }
-        }
-
-        public TabViewModel CurrentTab { get; set; }
-
-        public IEnumerable<IGraphData> Tabs
-        {
-            get { return Data.Graphs; }
-        }
-
-        public void OpenTab(IGraphData graphData, string[] path = null)
-        {
-            Data.CurrentGraph = graphData;
-        }
-
-        public IToolbarCommand[] AllCommands
-        {
-            get { return _allCommands ?? (_allCommands = InvertGraphEditor.Container.ResolveAll<IToolbarCommand>().ToArray()); }
-            set { _allCommands = value; }
-        }
-    }
-
-    public class TabViewModel : ViewModel
-    {
-        public string Name { get; set; }
-        public string[] Path { get; set; }
-        public Rect Bounds { get; set; }
-        public IGraphData Graph { get; set; }
-    }
-
     public class DiagramViewModel : Invert.Core.GraphDesigner.ViewModel
     {
         private ModelCollection<GraphItemViewModel> _graphItems = new ModelCollection<GraphItemViewModel>();
         private IEnumerable<IDiagramContextCommand> _diagramContextCommands;
         private ModelCollection<GraphItemViewModel> _inspectorItems = new ModelCollection<GraphItemViewModel>();
+        private InspectorViewModel _inspectorViewModel;
 
         public IEnumerable<ErrorInfo> Issues
         {
@@ -90,8 +42,6 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-
-
                 return Settings.SnapSize * Scale;
             }
         }
@@ -112,7 +62,6 @@ namespace Invert.Core.GraphDesigner
             {
                 foreach (var item in GraphItems)
                 {
-
                     foreach (var child in item.ContentItems)
                     {
                         yield return child;
@@ -148,14 +97,7 @@ namespace Invert.Core.GraphDesigner
                         rect.x = 0;
                     if (rect.y < 0)
                         rect.y = 0;
-                    //if (rect.x < size.x)
-                    //{
-                    //    size.x = rect.x;
-                    //}
-                    //if (rect.y < size.y)
-                    //{
-                    //    size.y = rect.y;
-                    //}
+
                     if (rect.x + rect.width > size.x + size.width)
                     {
                         size.width = rect.x + rect.width;
@@ -224,7 +166,6 @@ namespace Invert.Core.GraphDesigner
         {
             base.DataObjectChanged();
             GraphItems.Clear();
-
         }
 
 
@@ -251,6 +192,7 @@ namespace Invert.Core.GraphDesigner
         public void Load()
         {
             GraphItems.Clear();
+            GraphItems.Add(InspectorViewModel);
             var connectors = new List<ConnectorViewModel>();
             if (GraphData == null)
             {
@@ -298,36 +240,16 @@ namespace Invert.Core.GraphDesigner
                 connectors.AddRange(vm.Connectors);
             }
             RefreshConnectors(connectors);
+            
         }
 
-        public void LoadInspector()
+        public InspectorViewModel InspectorViewModel
         {
-            InspectorItems.Clear();
-
-            //var graphsHeader = new SectionHeaderViewModel()
-            //{
-            //    Name = "Graphs",
-            //    DataObject = DiagramData,
-            //};
-
-            // InspectorItems.Add(graphsHeader);
-            var vms = new List<ViewModel>();
-            foreach (var item in SelectedGraphItems)
+            get { return _inspectorViewModel ?? (_inspectorViewModel = new InspectorViewModel()
             {
-                //var header = new SectionHeaderViewModel()
-                //{
-                //    Name = item.Name,
-                //    DataObject = item
-                //};
-
-                //InspectorItems.Add(header);
-                item.GetInspectorOptions(vms);
-            }
-            foreach (var item in vms.OfType<GraphItemViewModel>())
-            {
-                InspectorItems.Add(item);
-            }
-
+                DiagramViewModel = this
+            }); }
+            set { _inspectorViewModel = value; }
         }
 
         public void RefreshConnectors()
@@ -502,11 +424,6 @@ namespace Invert.Core.GraphDesigner
         }
         public IDiagramNode[] CurrentNodes { get; set; }
 
-        public ModelCollection<GraphItemViewModel> InspectorItems
-        {
-            get { return _inspectorItems; }
-            set { _inspectorItems = value; }
-        }
         public ModelCollection<GraphItemViewModel> GraphItems
         {
             get { return _graphItems; }
@@ -626,6 +543,9 @@ namespace Invert.Core.GraphDesigner
         public void Select(GraphItemViewModel viewModelObject)
         {
             if (viewModelObject == null) return;
+
+            InspectorViewModel.DataObject = viewModelObject.DataObject;
+            InvertApplication.Log("Inspector set to " + InspectorViewModel.DataObject.ToString());
             if (viewModelObject.IsSelected)
             {
                 return;
@@ -761,10 +681,5 @@ namespace Invert.Core.GraphDesigner
 
             });
         }
-    }
-
-    public interface IGraphSelectionEvents
-    {
-        void SelectionChanged(GraphItemViewModel selected);
     }
 }

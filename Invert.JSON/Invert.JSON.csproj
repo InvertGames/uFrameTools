@@ -41,7 +41,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Assets\uFrameComplete\uFrame\Kernel\Serialization\JSON.cs">
+    <Compile Include="..\..\Assets\uFrameComplete\uFrameKernel\Serialization\JSON.cs">
       <Link>JSON.cs</Link>
     </Compile>
     <Compile Include="Class2.cs" />

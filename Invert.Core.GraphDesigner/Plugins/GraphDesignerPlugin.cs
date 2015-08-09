@@ -66,6 +66,7 @@ namespace Invert.Core.GraphDesigner
             container.Register<SectionHeaderDrawer, SectionHeaderDrawer>();
             container.RegisterItemDrawer<GenericItemHeaderViewModel, GenericChildItemHeaderDrawer>();
              
+            container.RegisterDrawer<InspectorViewModel, InspectorDrawer>();
             container.RegisterDrawer<SectionHeaderViewModel, SectionHeaderDrawer>();
             container.RegisterDrawer<ConnectorViewModel, ConnectorDrawer>();
             container.RegisterDrawer<ConnectionViewModel, ConnectionDrawer>();

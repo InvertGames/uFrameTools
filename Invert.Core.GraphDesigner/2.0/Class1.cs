@@ -195,8 +195,9 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _position; }
             set {
-                this.Changed("Position", _position, value);
+               
                 _position = value;
+                Changed = true;
             }
         }
 

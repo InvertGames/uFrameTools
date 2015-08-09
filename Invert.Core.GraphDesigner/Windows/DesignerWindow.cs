@@ -207,7 +207,7 @@ namespace Invert.Core.GraphDesigner
             {
                 if (_toolbar != null) return _toolbar;
 
-                return _toolbar = InvertGraphEditor.CreateCommandUI<ToolbarUI>(false, typeof(IToolbarCommand));
+                return _toolbar = InvertGraphEditor.CreateToolbarUI();
             }
             set { _toolbar = value; }
         }

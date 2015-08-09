@@ -1,4 +1,5 @@
 ﻿using Invert.Core;
+using Invert.Core.GraphDesigner;
 using UnityEditor;
 
 public class uFrameInspectorWindow : EditorWindow {
@@ -8,8 +9,6 @@ public class uFrameInspectorWindow : EditorWindow {
         var window = GetWindow<uFrameInspectorWindow>();
         window.title = "uFrame Inspector";
         Instance = window;
-        // window.minSize = new Vector2(400, 500);
-
         window.Show();
     }
 

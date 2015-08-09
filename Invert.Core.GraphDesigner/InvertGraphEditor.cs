@@ -190,9 +190,9 @@ namespace Invert.Core.GraphDesigner
         }
         public static IUFrameContainer AddItemFlag<TSource>(this IUFrameContainer container, string flag, Color color) where TSource : class, IDiagramNodeItem
         {
-            var command = new GraphItemFlagCommand<TSource>(flag, flag) {Color = color};
+            var command = new GraphItemFlagCommand<TSource>(flag, flag) { Color = color };
 
-            container.RegisterInstance<IDiagramNodeItemCommand>(command,typeof (TSource).Name + flag + "FlagCommand");
+            container.RegisterInstance<IDiagramNodeItemCommand>(command, typeof(TSource).Name + flag + "FlagCommand");
             container.RegisterInstance<IFlagCommand>(command, flag);
             return container;
         }
@@ -209,39 +209,23 @@ namespace Invert.Core.GraphDesigner
             foreach (var action in actions)
             {
                 if (action.CanExecute(DesignerWindow) == null)
-                ui.AddCommand(action);
+                    ui.AddCommand(action);
             }
             return (TCommandUI)ui;
         }
-        public static TCommandUI CreateCommandUI<TCommandUI>(bool canExecuteOnly = true, params Type[] contextTypes) where TCommandUI : class,ICommandUI
+        public static ToolbarUI CreateToolbarUI()
         {
-            var ui = Container.Resolve<TCommandUI>() as ICommandUI;
+            var ui = Container.Resolve<ToolbarUI>();
 
             ui.Handler = DesignerWindow;
 
-
-
-            foreach (var contextType in contextTypes)
+            var commands = Container.ResolveAll<IToolbarCommand>();
+            InvertApplication.SignalEvent<IToolbarQuery>(_=>_.QueryToolbarCommands(ui));
+            foreach (var command in commands)
             {
-                var commands = new List<IEditorCommand>(Container.ResolveAll(contextType).Cast<IEditorCommand>());
-                var type = contextType;
-                InvertApplication.SignalEvent<IContextMenuQuery>(_ => _.QueryCommands(ui, commands, type));
-                foreach (var command in commands)
-                {
-                    if (canExecuteOnly && command.CanExecute(DesignerWindow) == null)
-                    {
-                       
-                        ui.AddCommand(command);
-                    }
-                    else if (!canExecuteOnly)
-                    {
-                        ui.AddCommand(command);
-                    }
-
-                   
-                }
+                ui.AddCommand(command);
             }
-            return (TCommandUI)ui;
+            return ui;
         }
 
 
@@ -284,7 +268,7 @@ namespace Invert.Core.GraphDesigner
             ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action), recordUndo);
         }
 
-  
+
         private static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command, bool recordUndo = true)
         {
             var objs = handler.ContextObjects.ToArray();
@@ -293,7 +277,7 @@ namespace Invert.Core.GraphDesigner
                 // TODO 2.0 Record Undo
                 //DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.GraphData, command.Name);
             }
-           
+
             command.Execute(handler);
 
 
@@ -301,18 +285,18 @@ namespace Invert.Core.GraphDesigner
             {
                 DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.GraphData);
             }
-                Container.Resolve<IRepository>().Commit();
+            Container.Resolve<IRepository>().Commit();
             //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
         }
 
-        public static IEnumerable<OutputGenerator> GetAllCodeGenerators(IGraphConfiguration graphConfiguration,IDataRecord[] items, bool includeDisabled = false)
+        public static IEnumerable<OutputGenerator> GetAllCodeGenerators(IGraphConfiguration graphConfiguration, IDataRecord[] items, bool includeDisabled = false)
         {
-            
+
             // Grab all the code generators
             var graphItemGenerators = Container.ResolveAll<DesignerGeneratorFactory>().ToArray();
 
-         
-            foreach (var outputGenerator in GetAllCodeGeneratorsForItems(graphConfiguration, graphItemGenerators, items)) 
+
+            foreach (var outputGenerator in GetAllCodeGeneratorsForItems(graphConfiguration, graphItemGenerators, items))
                 yield return outputGenerator;
         }
 
@@ -352,8 +336,8 @@ namespace Invert.Core.GraphDesigner
         /// <returns></returns>
         public static IEnumerable<OutputGenerator> GetCodeGeneratorsForNode(this IDataRecord node, IGraphConfiguration config)
         {
-      
-            return GetAllCodeGenerators(null, new []{node}).Where(p => p.ObjectData == node);
+
+            return GetAllCodeGenerators(null, new[] { node }).Where(p => p.ObjectData == node);
         }
 
         /// <summary>
@@ -378,12 +362,12 @@ namespace Invert.Core.GraphDesigner
         /// <returns></returns>
         public static IEnumerable<TemplateMemberResult> GetEditableOutputMembers(this IDiagramNodeItem node, IGraphConfiguration config, Predicate<IDiagramNodeItem> itemFilter = null)
         {
-          
-            foreach (var item in GetAllEditableFilesForNode(node,config).OfType<ITemplateClassGenerator>())
+
+            foreach (var item in GetAllEditableFilesForNode(node, config).OfType<ITemplateClassGenerator>())
             {
                 var gen = new CodeFileGenerator()
                 {
-                    Generators = new[] {item as OutputGenerator},
+                    Generators = new[] { item as OutputGenerator },
                     SystemPath = string.Empty
                 };
                 gen.Namespace = new CodeNamespace();
@@ -397,7 +381,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
         }
-        public static IEnumerable<IClassTemplate> GetTemplates(this IDiagramNodeItem node,IGraphConfiguration config, Predicate<IDiagramNodeItem> itemFilter = null)
+        public static IEnumerable<IClassTemplate> GetTemplates(this IDiagramNodeItem node, IGraphConfiguration config, Predicate<IDiagramNodeItem> itemFilter = null)
         {
 
             foreach (var item in node.GetCodeGeneratorsForNode(config).OfType<ITemplateClassGenerator>())
@@ -412,7 +396,7 @@ namespace Invert.Core.GraphDesigner
         /// <returns></returns>
         public static IEnumerable<OutputGenerator> GetAllDesignerFilesForNode(this IDiagramNodeItem node, IGraphConfiguration config)
         {
-            return GetAllCodeGenerators(config, new IDataRecord[] {node}).Where(p => p.ObjectData == node && p.AlwaysRegenerate);
+            return GetAllCodeGenerators(config, new IDataRecord[] { node }).Where(p => p.ObjectData == node && p.AlwaysRegenerate);
         }
 
         /// <summary>
@@ -683,7 +667,7 @@ namespace Invert.Core.GraphDesigner
         {
             if (_drawers != null)
             {
-                
+
             }
             if (viewModel == null)
             {
@@ -743,21 +727,21 @@ namespace Invert.Core.GraphDesigner
         }
         public override IEnumerable<OutputGenerator> CreateGenerators(IGraphConfiguration graphConfig, IDataRecord item)
         {
-        
-                foreach (var template in RegisteredTemplates)
+
+            foreach (var template in RegisteredTemplates)
+            {
+                if (template.Key.IsAssignableFrom(item.GetType()))
                 {
-                    if (template.Key.IsAssignableFrom(item.GetType()))
+                    foreach (var templateType in template.Value)
                     {
-                        foreach (var templateType in template.Value)
+                        foreach (var t in CreateTemplateGenerators(graphConfig, item, templateType))
                         {
-                            foreach (var t in CreateTemplateGenerators(graphConfig, item, templateType))
-                            {
-                                yield return t;
-                            }
+                            yield return t;
                         }
                     }
                 }
-            
+            }
+
 
         }
 
@@ -776,17 +760,17 @@ namespace Invert.Core.GraphDesigner
                 InvertApplication.Log(string.Format("ClassTemplate attribute not found on {0} ", templateClassType.Name));
                 yield break;
             }
-    
-       
+
+
             if (templateAttribute.Location == TemplateLocation.DesignerFile || templateAttribute.Location == TemplateLocation.Both)
             {
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;
                 template.IsDesignerFile = true;
-        
+
                 //template.AssetDirectory = graphItem.Graph.Project.SystemDirectory;
                 template.AssetDirectory = config.CodeOutputSystemPath;
-              
+
                 if (template.IsValid())
                 {
                     yield return template;
@@ -800,7 +784,7 @@ namespace Invert.Core.GraphDesigner
                 template.ObjectData = graphItem;
                 template.IsDesignerFile = false;
                 template.AssetDirectory = config.CodeOutputSystemPath;
-     
+
 
                 if (template.IsValid())
                 {
@@ -811,8 +795,5 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    public interface IContextMenuQuery
-    {
-        void QueryCommands(ICommandUI ui, List<IEditorCommand> command, Type contextType);
-    }
+
 }

@@ -4,8 +4,14 @@ namespace Invert.Core.GraphDesigner
 {
     public class ContextMenuUI : ICommandUI
     {
+        private List<IEditorCommand> _commands;
         public bool Flatten { get; set; }
-        public List<IEditorCommand> Commands { get; set; }
+
+        public List<IEditorCommand> Commands
+        {
+            get { return _commands ?? (_commands = new List<IEditorCommand>()); }
+            set { _commands = value; }
+        }
 
         public ContextMenuUI()
         {

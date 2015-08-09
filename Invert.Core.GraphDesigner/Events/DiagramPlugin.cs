@@ -1,12 +1,17 @@
-﻿using Invert.IOC;
+﻿using System;
+using Invert.IOC;
 
 namespace Invert.Core.GraphDesigner
 {
     public abstract class DiagramPlugin : CorePlugin, IDiagramPlugin
     {
+        public void Signal<TInterface>(Action<TInterface> invoke) where TInterface : class
+        {
+            InvertApplication.SignalEvent<TInterface>(invoke);
+        }
         public override void Initialize(UFrameContainer container)
         {
-        
+            
         }
 
         public void ListenFor<TEvents>() where TEvents : class
@@ -30,4 +35,5 @@ namespace Invert.Core.GraphDesigner
 
    
     }
+
 }

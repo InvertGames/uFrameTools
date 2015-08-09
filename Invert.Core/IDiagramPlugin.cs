@@ -1,4 +1,5 @@
-﻿using Invert.IOC;
+﻿using System.ComponentModel;
+using Invert.IOC;
 
 namespace Invert.Core
 {
@@ -53,8 +54,11 @@ namespace Invert.Core
 
         public virtual void Initialize(UFrameContainer container)
         {
-            
+            Container = container;
         }
+
+        public UFrameContainer Container { get; set; }
+
         public abstract void Loaded(UFrameContainer container);
     }
 

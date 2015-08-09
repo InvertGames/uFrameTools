@@ -663,6 +663,60 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+    //public class InspectorDrawer : Drawer<DiagramNodeViewModel>
+    //{
+
+    //    public PropertyFieldDrawer[] Drawers { get; set; }
+    //    public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
+    //    {
+    //        base.Refresh(platform, position, hardRefresh);
+    //        InspectorOptions = new List<ViewModel>();
+    //        ViewModel.GetInspectorOptions(InspectorOptions);
+    //        Drawers = InspectorOptions.OfType<PropertyFieldViewModel>().Select(_ => new PropertyFieldDrawer(_)).ToArray();
+            
+    //        var height = 0f;
+    //        var width = 0f;
+    //        foreach (var drawer in Drawers)
+    //        {
+    //            drawer.Refresh(platform, position, hardRefresh);
+    //            height += drawer.Bounds.height;
+    //            if (width < drawer.Bounds.width)
+    //            {
+    //                width = drawer.Bounds.width;
+    //            }
+    //        }
+
+    //        var x = position.x;
+    //        var y = position.y;
+
+    //        this.Bounds = new Rect(x,y,width,height);
+
+
+
+
+    //    }
+
+    //    public List<ViewModel> InspectorOptions { get; set; }
+
+    //    public override void Draw(IPlatformDrawer platform, float scale)
+    //    {
+    //        base.Draw(platform, scale);
+
+    //        foreach (var item in Drawers)
+    //        {
+    //            item.Draw(platform,1f);
+    //        }
+
+    //    }
+
+    //    public InspectorDrawer(GraphItemViewModel viewModelObject) : base(viewModelObject)
+    //    {
+    //    }
+
+    //    public InspectorDrawer(DiagramNodeViewModel viewModelObject) : base(viewModelObject)
+    //    {
+    //    }
+    //}
     
     //public class BulletPointDrawer : Drawer<BulletPointViewModel>
     //{

@@ -13,6 +13,10 @@ namespace Invert.Core.GraphDesigner
 
     }
 
+    public interface ISlotContextCommand
+    {
+        
+    }
     public class SlotDrawer<TViewModel> : Drawer<TViewModel> where TViewModel : GraphItemViewModel
     {
 
@@ -20,6 +24,26 @@ namespace Invert.Core.GraphDesigner
             : base(viewModelObject)
         {
 
+        }
+
+        public override void OnMouseDown(MouseEvent mouseEvent)
+        {
+            base.OnMouseDown(mouseEvent);
+            mouseEvent.NoBubble = true;
+        }
+
+        public override void OnMouseDoubleClick(MouseEvent mouseEvent)
+        {
+            //base.OnMouseDoubleClick(mouseEvent);
+            
+            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, this.ViewModelObject));
+     
+        }
+
+        public override void OnRightClick(MouseEvent mouseEvent)
+        {
+            base.OnRightClick(mouseEvent);
+          
         }
 
         public override Rect Bounds

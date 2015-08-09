@@ -387,10 +387,11 @@ namespace Invert.Core.GraphDesigner
 
         public override void OnRightClick(MouseEvent mouseEvent)
         {
+            DiagramViewModel.LastMouseEvent = mouseEvent;
             BubbleEvent(d => d.OnRightClick(mouseEvent), mouseEvent);
             if (DrawersAtMouse == null)
             {
-                ShowAddNewContextMenu(true);
+                ShowAddNewContextMenu(mouseEvent);
                 return;
 
             }
@@ -398,31 +399,34 @@ namespace Invert.Core.GraphDesigner
             IDrawer item = DrawersAtMouse.OfType<ConnectorDrawer>().FirstOrDefault();
             if (item != null)
             {
-                var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, typeof(IDiagramNodeItemCommand));
+                // TODO 2.0: Recreate connectors context menu
+                InvertApplication.SignalEvent<IShowContextMenu>(_=>_.Show(mouseEvent,item.ViewModelObject));
 
-                var connector = item.ViewModelObject as ConnectorViewModel;
+                //var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(item.ViewModelObject, true, typeof(IDiagramNodeItemCommand));
 
-                var connections =
-                    DiagramViewModel.GraphItems.OfType<ConnectionViewModel>()
-                        .Where(p => p.ConnectorA == connector || p.ConnectorB == connector).ToArray();
+                //var connector = item.ViewModelObject as ConnectorViewModel;
 
-                foreach (var connection in connections)
-                {
-                    ConnectionViewModel connection1 = connection;
-                    menu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel model)
-                    {
-                        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); }, true);
-                    }, "Disconnect: " + connection.Name));
-                }
-                //a.ShowAsContext();
-                menu.Go();
+                //var connections =
+                //    DiagramViewModel.GraphItems.OfType<ConnectionViewModel>()
+                //        .Where(p => p.ConnectorA == connector || p.ConnectorB == connector).ToArray();
+
+                //foreach (var connection in connections)
+                //{
+                //    ConnectionViewModel connection1 = connection;
+                //    menu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel model)
+                //    {
+                //        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); }, true);
+                //    }, "Disconnect: " + connection.Name));
+                //}
+                ////a.ShowAsContext();
+                //menu.Go();
                 return;
             }
             item = DrawersAtMouse.OfType<ItemDrawer>().FirstOrDefault();
             if (item != null)
             {
                 if (item.Enabled)
-                ShowItemContextMenu(item);
+                ShowItemContextMenu(mouseEvent);
                 return;
             }
             item = DrawersAtMouse.OfType<DiagramNodeDrawer>().FirstOrDefault();
@@ -432,12 +436,12 @@ namespace Invert.Core.GraphDesigner
             {
                 if (!item.ViewModelObject.IsSelected)
                 item.ViewModelObject.Select();
-                ShowContextMenu();
+                ShowContextMenu(mouseEvent);
                 return;
             }
 
 
-            ShowAddNewContextMenu(true);
+            ShowAddNewContextMenu(mouseEvent);
         }
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
@@ -468,22 +472,19 @@ namespace Invert.Core.GraphDesigner
             DiagramViewModel.Save();
         }
 
-        public void ShowAddNewContextMenu(bool addAtMousePosition = false)
+        public void ShowAddNewContextMenu(MouseEvent mouseEvent)
         {
-            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, typeof(IDiagramContextCommand));
-            menu.Go();
+            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, ViewModelObject));
         }
 
-        public void ShowContextMenu()
+        public void ShowContextMenu(MouseEvent mouseEvent)
         {
-            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, typeof(IDiagramNodeCommand), DiagramViewModel.SelectedNode.CommandsType);
-            menu.Go();
+            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, DiagramViewModel.SelectedNode));
         }
 
-        public void ShowItemContextMenu(object item)
+        public void ShowItemContextMenu(MouseEvent mouseEvent)
         {
-            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, typeof(IDiagramNodeItemCommand));
-            menu.Go();
+            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, DiagramViewModel.SelectedNodeItems));
         }
 
         protected override void DataContextChanged()
@@ -602,16 +603,13 @@ namespace Invert.Core.GraphDesigner
 #endif
     }
 
-    public class DiagramInspectorDrawer : Drawer
+    public class InspectorDrawer : Drawer<InspectorViewModel>
     {
-        public DiagramViewModel DiagramViewModel
-        {
-            get { return DataContext as DiagramViewModel; }
-        }
+        private float _inspectorWidth = 200f;
 
-        public DiagramInspectorDrawer(DiagramViewModel viewModel)
+        public InspectorDrawer(InspectorViewModel viewModel) : base(viewModel)
         {
-            DataContext = viewModel;
+            
         }
 
         public override void Refresh(IPlatformDrawer platform)
@@ -619,36 +617,53 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform);
         }
 
-        public float InspectorWidth { get; set; }
+        public float InspectorWidth
+        {
+            get { return _inspectorWidth; }
+            set { _inspectorWidth = value; }
+        }
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position, hardRefresh);
-
+            var x = 25f;
+            var starty = 25f;
             this.Children.Clear();
             Children.AddRange(CreateDrawers());
+
             var y = position.y;
+            var height = 0f;
+            var maxWidth = 0f;
             foreach (var child in Children)
             {
-                child.Refresh(platform, new Vector2(position.x, y), hardRefresh);
+                child.Refresh(platform, new Vector2(x + 10, y), hardRefresh);
                 var rect = new Rect(child.Bounds);
                 rect.y = y;
                 child.Bounds = rect;
                 y += child.Bounds.height;
+                height += child.Bounds.height;
+                if (child.Bounds.width > maxWidth)
+                {
+                    maxWidth = child.Bounds.width;
+                }
             }
+
+            this.Bounds = new Rect(x, starty, InspectorWidth, maxWidth + 24);
             foreach (var child in Children)
             {
-                var newRect = new Rect(child.Bounds) { width = InspectorWidth };
+                var newRect = new Rect(child.Bounds) { width = maxWidth };
                 child.Bounds = newRect;
                 child.OnLayout();
             }
-            this.Bounds = new Rect(position.x, position.y, InspectorWidth, y);
+
+       
             //Debug.Log("Bounds at " + position);
         }
 
         private IEnumerable<IDrawer> CreateDrawers()
         {
-            foreach (var item in DiagramViewModel.InspectorItems)
+            InvertApplication.Log("Creating drawers");
+            foreach (var item in ViewModel.ContentItems)
             {
                 var drawer = InvertGraphEditor.Container.CreateDrawer(item);
                 if (drawer == null)
@@ -665,9 +680,21 @@ namespace Invert.Core.GraphDesigner
         public override void Draw(IPlatformDrawer platform, float scale)
         {
             base.Draw(platform, scale);
+
+            if (ViewModel.IsDirty)
+            {
+                Refresh(platform);
+                ViewModel.IsDirty = false;
+            }
+
+            var adjustedBounds = this.Bounds;
+            adjustedBounds.width += 10f;
+            adjustedBounds.x -= 5f;
+            adjustedBounds.y -= 10f;
+            adjustedBounds.height += 20f;
+            platform.DrawStretchBox(adjustedBounds, CachedStyles.NodeBackground, 12f);
             foreach (var child in Children)
             {
-                // UnityEditor.EditorGUI.DrawRect(child.Bounds,Color.blue);
                 child.Draw(platform, scale);
             }
         }

@@ -291,16 +291,16 @@ namespace Invert.Core.GraphDesigner.Unity
             else if (GUILayout.Button(new GUIContent(command.Title), style))
             {
 
-                if (command is IParentCommand)
-                {
-                    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, command.GetType());
-                    contextUI.Flatten = true;
-                    contextUI.Go();
-                }
-                else
-                {
+                //if (command is IParentCommand)
+                //{
+                //    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, command.GetType());
+                //    contextUI.Flatten = true;
+                //    contextUI.Go();
+                //}
+                //else
+                //{
                     InvertGraphEditor.ExecuteCommand(command);
-                }
+                //}
             }
             GUI.enabled = true;
         }
@@ -610,7 +610,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public virtual void DrawInspector(PropertyFieldViewModel d)
         {
-
+            GUI.color = Color.white;
             if (d.InspectorType == InspectorType.GraphItems)
             {
                 var item = d.CachedValue as IGraphItem;

@@ -81,28 +81,29 @@ namespace Invert.Core.GraphDesigner
         public virtual void OptionRightClicked()
         {
             if (!this.ItemViewModel.Enabled) return;
+            // TODO 2.0 Quick Types Right Click menu
+            InvertApplication.SignalEvent<IShowContextMenu>(_=>_.Show(null,this.ViewModelObject));
+            //var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, typeof(IDiagramNodeItemCommand));
 
-            var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, typeof(IDiagramNodeItemCommand));
+            //var types = InvertGraphEditor.TypesContainer.ResolveAll<GraphTypeInfo>();
+            //foreach (var type in types)
+            //{
+            //    var type1 = type;
+            //    menu.AddCommand(new SimpleEditorCommand<GenericTypedChildItem>((_) =>
+            //    {
+            //        _.RelatedType = type1.Name;
+            //    },type1.Label,type1.Group));
+            //}
+            //foreach (var type in InvertGraphEditor.CurrentDiagramViewModel.CurrentNodes)
+            //{
+            //    var type1 = type;
+            //    menu.AddCommand(new SimpleEditorCommand<GenericTypedChildItem>((_) =>
+            //    {
+            //        _.RelatedType = type1.Identifier;
+            //    }, type1.Label, type1.Group)); 
+            //}
 
-            var types = InvertGraphEditor.TypesContainer.ResolveAll<GraphTypeInfo>();
-            foreach (var type in types)
-            {
-                var type1 = type;
-                menu.AddCommand(new SimpleEditorCommand<GenericTypedChildItem>((_) =>
-                {
-                    _.RelatedType = type1.Name;
-                },type1.Label,type1.Group));
-            }
-            foreach (var type in InvertGraphEditor.CurrentDiagramViewModel.CurrentNodes)
-            {
-                var type1 = type;
-                menu.AddCommand(new SimpleEditorCommand<GenericTypedChildItem>((_) =>
-                {
-                    _.RelatedType = type1.Identifier;
-                }, type1.Label, type1.Group)); 
-            }
-
-            menu.Go();
+            //menu.Go();
         }
     }
 }
