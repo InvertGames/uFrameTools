@@ -68,6 +68,11 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
             Draw(PlatformDrawer,1.0f);
         }
 
+        void Update()
+        {
+            Repaint();
+        }
+
         public GraphItemViewModel ViewModelObject
         {
             get { return _viewModelObject; }

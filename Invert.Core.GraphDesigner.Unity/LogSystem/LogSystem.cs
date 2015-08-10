@@ -26,5 +26,13 @@ namespace Invert.Core.GraphDesigner.Unity.LogSystem
             Repository.Add(msg);
             Repository.Commit();       
         }
+
+        public void Log<T>(T message) where T : LogMessage, new()
+        {
+            var msg = Repository.Create<T>();
+            Repository.Add(msg);
+            Repository.Commit();    
+        }
+
     }
 }

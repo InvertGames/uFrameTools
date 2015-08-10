@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace Invert.Data
         void Commit();
 
         IEnumerable<TObjectType> AllOf<TObjectType>() where TObjectType : IDataRecord;
+        IEnumerable AllOf(Type o);
         void RemoveAll<TObjectType>();
         void Remove(IDataRecord record);
         void Reset();
@@ -199,6 +201,25 @@ namespace Invert.Data
                 }
             }
         }
+
+        public IEnumerable AllOf(Type o)
+        {
+
+            if (!typeof (IDataRecord).IsAssignableFrom(o)) yield break;
+
+            foreach (var repo in Repositories)
+            {
+                if (o.IsAssignableFrom(repo.Key))
+                {
+                    foreach (var item in repo.Value.GetAll())
+                    {
+                        yield return item;
+                    }
+                }
+            }
+
+        }
+
         public void Commit()
         {
             foreach (var item in Repositories)

@@ -16,4 +16,7 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
         public IRepository Repository { get; set; }
         public bool Changed { get; set; }
     }
+
+
+
 }

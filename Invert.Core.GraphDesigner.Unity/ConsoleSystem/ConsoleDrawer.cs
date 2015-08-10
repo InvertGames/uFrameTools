@@ -1,4 +1,5 @@
 using System;
+using Invert.Common;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
@@ -14,7 +15,7 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
         {
             base.Draw(platform, scale);
 
-            var messageRect = new Rect(5, 5, 100, 30);
+            var messageRect = new Rect(5, 5, 100, 15);
 
             foreach (var messages in ViewModel.Messages)
             {
@@ -29,7 +30,30 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
                     y = messageRect.y + messageRect.height
                 };
             }
-        
+
+
+            var typeRect = new Rect(250, 5, 150, 24);
+
+            platform.DoButton(typeRect, "All", ElementDesignerStyles.ButtonStyle, () =>
+            {
+                ViewModel.SelectFilterType(null);
+            });
+            foreach (var type in ViewModel.AvailableTypes)
+            {
+
+                typeRect = new Rect(typeRect)
+                {
+                    y = typeRect.y + typeRect.height
+                };
+
+                var type1 = type;
+                platform.DoButton(typeRect, type.Name, ElementDesignerStyles.ButtonStyle, () =>
+                {
+                    ViewModel.SelectFilterType(type1);
+                });
+            }
+
+
         }
     }
 }
