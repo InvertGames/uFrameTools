@@ -156,56 +156,12 @@ namespace Invert.Core.GraphDesigner.Unity
                 var groupCount = 0;
                 foreach (var editorCommand in group.OrderBy(p => p.Order))
                 {
-
-
-                    IEditorCommand command = editorCommand;
-                    var argument = Handler.ContextObjects.FirstOrDefault(p => p != null && command.For.IsAssignableFrom(p.GetType()));
-
-                    var dynamicCommand = command as IDynamicOptionsCommand;
-                    if (dynamicCommand != null)
+                    ICommand command = editorCommand.Command;
+                    genericMenu.AddItem(new GUIContent(editorCommand.Title),false, () =>
                     {
-                        var canPerform = command.CanExecute(Handler);
-                        if (canPerform == null)
-                        {
-                            foreach (var option in dynamicCommand.GetOptions(argument).OrderBy(p => p.Name))
-                            {
-                                groupCount++;
-                                UFContextMenuItem option1 = option;
-                                genericMenu.AddItem(new GUIContent(Flatten ? editorCommand.Title : option.Name),
-                                    option.Checked, () =>
-                                    {
-                                        dynamicCommand.SelectedOption = option1;
-                                        InvertGraphEditor.ExecuteCommand(command);
-                                    });
-                            }
-                        }
-                        else
-                        {
-                            if (command.ShowAsDiabled)
-                                genericMenu.AddDisabledItem(new GUIContent((Flatten ? editorCommand.Title : editorCommand.Path) + " : " + canPerform));
-                        }
-
-                    }
-                    else
-                    {
-                        var canPerform = command.CanExecute(Handler);
-                        if (canPerform != null)
-                        {
-                            if (command.ShowAsDiabled)
-                                genericMenu.AddDisabledItem(new GUIContent((Flatten ? editorCommand.Title : editorCommand.Path) + " : " + canPerform));
-                        }
-                        else
-                        {
-                            groupCount++;
-                            genericMenu.AddItem(new GUIContent(Flatten ? editorCommand.Title : editorCommand.Path), editorCommand.IsChecked(argument), () =>
-                            {
-                                
-                                InvertGraphEditor.ExecuteCommand(command);
-                            });
-                        }
-                    }
-
-
+                        InvertApplication.Execute(command);
+                    } );
+                  
                 }
                 if (group != groups.Last() && groupCount > 0)
                     genericMenu.AddSeparator("");
@@ -266,41 +222,20 @@ namespace Invert.Core.GraphDesigner.Unity
             }
               GUILayout.EndHorizontal();
         }
-        public void DoCommand(IEditorCommand command)
+        public void DoCommand(ToolbarItem command)
         {
 
             var style = EditorStyles.toolbarButton;
-            if (command is IDropDownCommand)
+            if (command.IsDropdown)
             {
                 style = EditorStyles.toolbarDropDown;
             }
-            if (command is IDynamicOptionsCommand)
+         
+                
+                
+            if (GUILayout.Button(new GUIContent(command.Title), style))
             {
-                var obj = Handler.ContextObjects.FirstOrDefault(p => command.For.IsAssignableFrom(p.GetType()));
-               // GUI.enabled = command.CanExecute(Handler) == null;
-                var cmd = command as IDynamicOptionsCommand;
-                foreach (var ufContextMenuItem in cmd.GetOptions(obj))
-                {
-                    if (GUILayout.Button(new GUIContent(ufContextMenuItem.Name), style))
-                    {
-                        cmd.SelectedOption = ufContextMenuItem;
-                        InvertGraphEditor.ExecuteCommand(command);
-                    }
-                }
-            }
-            else if (GUILayout.Button(new GUIContent(command.Title), style))
-            {
-
-                //if (command is IParentCommand)
-                //{
-                //    var contextUI = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(true, command.GetType());
-                //    contextUI.Flatten = true;
-                //    contextUI.Go();
-                //}
-                //else
-                //{
-                    InvertGraphEditor.ExecuteCommand(command);
-                //}
+                InvertApplication.Execute(command.Command);
             }
             GUI.enabled = true;
         }

@@ -270,9 +270,8 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _color; }
         set
         {
-            this.Changed("Color", _color, value);
             _color = value;
-            
+            this.Changed("Color", _color, value);
         }
     }
 
@@ -282,8 +281,8 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _inheritable; }
         set
         {
-            this.Changed("Inheritable", _inheritable, value);
             _inheritable = value;
+            this.Changed("Inheritable", _inheritable, value);
         }
     }
 
@@ -293,8 +292,8 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _isClass; }
         set
         {
-            this.Changed("IsClass", _isClass, value);
             _isClass = value;
+            this.Changed("IsClass", _isClass, value);
         }
     }
 
@@ -308,8 +307,8 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _row; }
         set
         {
-            this.Changed("Row", _row, value);
             _row = value;
+            this.Changed("Row", _row, value);
         }
     }
 
@@ -319,9 +318,8 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _column; }
         set
         {
-            this.Changed("Column", _column, value);
             _column = value;
-
+            this.Changed("Column", _column, value);
         }
     }
 
@@ -331,8 +329,8 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _visibility; }
         set
         {
-            this.Changed("Visibility", _visibility, value);
             _visibility = value;
+            this.Changed("Visibility", _visibility, value);
         }
     }
 
@@ -639,8 +637,8 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
         get { return _visibility; }
         set
         {
-            this.Changed("Visibility", _visibility, value);
             _visibility = value;
+            this.Changed("Visibility", _visibility, value);
         }
     }
 
@@ -702,8 +700,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _sectionType; }
         set
         {
-            this.Changed("SectionType", _sectionType, value);
             _sectionType = value;
+            this.Changed("SectionType", _sectionType, value);
         }
     }
 
@@ -713,8 +711,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _isTyped; }
         set
         {
-            this.Changed("IsTyped", _isTyped, value);
             _isTyped = value;
+            this.Changed("IsTyped", _isTyped, value);
         }
     }
 
@@ -731,8 +729,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         }
         set
         {
-            this.Changed("AllowAdding", _allowAdding, value);
             _allowAdding = value;
+            this.Changed("AllowAdding", _allowAdding, value);
         }
     }
 
@@ -755,8 +753,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _isEditable; }
         set
         {
-            this.Changed("IsEditable", _isEditable, value);
             _isEditable = value;
+            this.Changed("IsEditable", _isEditable, value);
         }
     }
 
@@ -766,8 +764,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _allowDuplicates; }
         set
         {
-            this.Changed("AllowDuplicates", _allowDuplicates, value);
             _allowDuplicates = value;
+            this.Changed("AllowDuplicates", _allowDuplicates, value);
         }
     }
 
@@ -777,8 +775,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _isAutomatic; }
         set
         {
-            this.Changed("IsAutomatic", _isAutomatic, value);
             _isAutomatic = value;
+            this.Changed("IsAutomatic", _isAutomatic, value);
         }
     }
 
@@ -788,8 +786,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _hasPredefinedOptions; }
         set
         {
-            this.Changed("HasPredefinedOptions", _hasPredefinedOptions, value);
             _hasPredefinedOptions = value;
+            this.Changed("HasPredefinedOptions", _hasPredefinedOptions, value);
         }
     }
 }
@@ -812,8 +810,9 @@ public class ShellNodeConfigSectionPointer : GenericReferenceItem<ShellNodeConfi
         get { return _row; }
         set
         {
-            this.Changed("Row", _row, value); 
-            _row = value; }
+            _row = value;
+            this.Changed("Row", _row, value);
+        }
     }
 
     [InspectorProperty, JsonProperty]
@@ -822,9 +821,8 @@ public class ShellNodeConfigSectionPointer : GenericReferenceItem<ShellNodeConfi
         get { return _column; }
         set
         {
-            this.Changed("Column", _column, value);
             _column = value;
-            
+            this.Changed("Column", _column, value);
         }
     }
 
@@ -834,8 +832,8 @@ public class ShellNodeConfigSectionPointer : GenericReferenceItem<ShellNodeConfi
         get { return _visibility; }
         set
         {
-            this.Changed("Visibility",_visibility,value);
             _visibility = value;
+            this.Changed("Visibility",_visibility,value);
         }
     }
 
@@ -877,8 +875,8 @@ public class ShellNodeConfigInputPointer : GenericReferenceItem<ShellNodeConfigI
         get { return _row; }
         set
         {
-            this.Changed("Row", _row, value);
             _row = value;
+            this.Changed("Row", _row, value);
         }
     }
 
@@ -888,9 +886,8 @@ public class ShellNodeConfigInputPointer : GenericReferenceItem<ShellNodeConfigI
         get { return _column; }
         set
         {
-            this.Changed("Column", _column, value);
             _column = value;
-
+            this.Changed("Column", _column, value);
         }
     }
 
@@ -900,8 +897,8 @@ public class ShellNodeConfigInputPointer : GenericReferenceItem<ShellNodeConfigI
         get { return _visibility; }
         set
         {
-            this.Changed("Visibility", _visibility, value);
             _visibility = value;
+            this.Changed("Visibility", _visibility, value);
         }
     }
     public string ClassName
@@ -921,8 +918,8 @@ public class ShellNodeConfigOutputPointer : GenericReferenceItem<ShellNodeConfig
         get { return _row; }
         set
         {
-            this.Changed("Row", _row, value);
             _row = value;
+            this.Changed("Row", _row, value);
         }
     }
 
@@ -932,9 +929,8 @@ public class ShellNodeConfigOutputPointer : GenericReferenceItem<ShellNodeConfig
         get { return _column; }
         set
         {
-            this.Changed("Column", _column, value);
             _column = value;
-
+            this.Changed("Column", _column, value);
         }
     }
 
@@ -944,8 +940,8 @@ public class ShellNodeConfigOutputPointer : GenericReferenceItem<ShellNodeConfig
         get { return _visibility; }
         set
         {
-            this.Changed("Visibility", _visibility, value);
             _visibility = value;
+            this.Changed("Visibility", _visibility, value);
         }
     }
     public string ClassName
@@ -972,8 +968,8 @@ public class ShellNodeConfigInput : ShellNodeConfigItem, IShellSlotType
         get { return _allowMultiple; }
         set
         {
-            this.Changed("AllowMultiple", _allowMultiple, value);
             _allowMultiple = value;
+            this.Changed("AllowMultiple", _allowMultiple, value);
         }
     }
 
@@ -1020,8 +1016,8 @@ public class ShellNodeConfigOutput : ShellNodeConfigItem, IShellSlotType
         get { return _allowMultiple; }
         set
         {
-            this.Changed("AllowMultiple", _allowMultiple, value);
             _allowMultiple = value;
+            this.Changed("AllowMultiple", _allowMultiple, value);
         }
     }
     public override string ClassName

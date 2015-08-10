@@ -47,16 +47,16 @@ namespace Tests
         {
             InvertGraphEditor.Container.RegisterInstance<IGraphConfiguration>(
                 new GraphConfiguration(@"D:\\TestOutputCode", "MyNamespaceTest"));
-            var command = new SaveCommand();
-            var enumerator = command.Generate();
-            while (enumerator.MoveNext())
-            {
-                var progress = enumerator.Current as TaskProgress;
-                if (progress != null)
-                {
-                    Console.WriteLine(progress.Message);
-                }
-            }
+            //var command = new SaveCommand();
+            //var enumerator = command.Generate();
+            //while (enumerator.MoveNext())
+            //{
+            //    var progress = enumerator.Current as TaskProgress;
+            //    if (progress != null)
+            //    {
+            //        Console.WriteLine(progress.Message);
+            //    }
+            //}
         }
     }
 }

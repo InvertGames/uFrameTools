@@ -153,12 +153,14 @@ namespace Invert.Data
 
         public TObjectType GetSingle<TObjectType>(string identifier) where TObjectType : class, IDataRecord, new()
         {
+            if (string.IsNullOrEmpty(identifier)) return default(TObjectType);
             var repo = GetRepositoryFor(typeof(TObjectType));
             return repo.GetSingle(identifier) as TObjectType;
         }
 
         public TObjectType GetById<TObjectType>(string identifier)
         {
+            if (string.IsNullOrEmpty(identifier)) return default(TObjectType);
             foreach (var item in Repositories)
             {
                 if (typeof (TObjectType).IsAssignableFrom(item.Key))

@@ -210,7 +210,8 @@ namespace Invert.Core.GraphDesigner.Unity
 
  
     }
-    public class UnityPlatformPlugin : DiagramPlugin, INodeItemEvents, IAssetDeleted, ITaskHandler, IWorkspaceChanged
+
+    public class UnityPlatformPlugin : DiagramPlugin, IAssetDeleted, ITaskHandler, IWorkspaceChanged
     {
         public override decimal LoadPriority
         {
@@ -259,15 +260,11 @@ namespace Invert.Core.GraphDesigner.Unity
 
             container.RegisterInstance<IAssetManager>(new UnityAssetManager());
 
-            //// Default Graph Item Drawers
-            //container.RegisterDrawer<EnumNodeViewModel, DiagramEnumDrawer>();
-            //container.RegisterDrawer<EnumItemViewModel, EnumItemDrawer>();
-            //container.RegisterDrawer<ClassPropertyItemViewModel, TypedItemDrawer>();
-            //container.RegisterDrawer<ClassCollectionItemViewModel, TypedItemDrawer>();
-            //container.RegisterDrawer<ClassNodeViewModel, ClassNodeDrawer>();
-
             // Command Drawers
-            container.Register<ToolbarUI, UnityToolbar>();
+            container.RegisterInstance<ToolbarUI>(new UnityToolbar()
+            {
+                
+            });
             container.Register<ContextMenuUI, UnityContextMenu>();
 
             container.RegisterInstance<IGraphEditorSettings>(new UFrameSettings());
@@ -284,36 +281,6 @@ namespace Invert.Core.GraphDesigner.Unity
         }
 
 
-        public void Deleted(IDiagramNodeItem node)
-        {
-
-        }
-
-        public void Hidden(IDiagramNodeItem node)
-        {
-
-        }
-
-        public void Renamed(IDiagramNodeItem node, string previousName, string newName)
-        {
-            //var n = node as DiagramNode;
-            //if (n == null) return;
-
-            //if (n == n.Graph.RootFilter)
-            //{
-            //    var graph = n.Graph.Project.Graphs.FirstOrDefault(p => p.Identifier == n.Graph.Identifier) as Object;
-            //    if (graph != null)
-            //    {
-            //        graph.name = newName;
-                    
-            //        AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(graph), newName);
-            //        AssetDatabase.SaveAssets();
-            //        var openGraph = n.Graph.Project.OpenGraphs.FirstOrDefault(p => p.GraphIdentifier == n.Graph.Identifier);
-            //        if (openGraph != null)
-            //            openGraph.GraphName = newName;
-            //    }
-            //}
-        }
 
 
         public void AssetDeleted(string filename)

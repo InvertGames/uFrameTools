@@ -144,32 +144,33 @@ public class uFrameSettingsWindow : EditorWindow
             }
             if (plugin.Enabled)
             {
-                var inspect = plugin as IPluginInspector;
+                // TODO 2.0 Plugin Inspectors?
+                //var inspect = plugin as IPluginInspector;
                 
-                var properties = plugin.GetType().GetPropertiesWithAttribute<InspectorProperty>(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-                var platform = InvertGraphEditor.PlatformDrawer as UnityDrawer;
-                foreach (var property in properties)
-                {
+                //var properties = plugin.GetType().GetPropertiesWithAttribute<InspectorProperty>(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
+                //var platform = InvertGraphEditor.PlatformDrawer as UnityDrawer;
+                //foreach (var property in properties)
+                //{
                
-                    var property1 = property;
-                    platform.DrawInspector(new PropertyFieldViewModel()
-                    {
-                        CachedValue = property.Key.GetValue(null, null),
-                        Getter = () => property1.Key.GetValue(null, null),
-                        Setter = _ =>
-                        {
-                            property1.Key.SetValue(null, _, null);
-                            InvertApplication.Container = null;
-                        },
-                        Name = property.Key.Name,
-                        Type = property.Key.PropertyType
-                    });
+                //    var property1 = property;
+                //    platform.DrawInspector(new PropertyFieldViewModel()
+                //    {
+                //        CachedValue = property.Key.GetValue(null, null),
+                //        Getter = () => property1.Key.GetValue(null, null),
+                //        Setter = _ =>
+                //        {
+                //            property1.Key.SetValue(null, _, null);
+                //            InvertApplication.Container = null;
+                //        },
+                //        Name = property.Key.Name,
+                //        Type = property.Key.PropertyType
+                //    });
                
-                }
-                if (inspect != null)
-                {
-                    inspect.DoInspector();
-                }
+                //}
+                //if (inspect != null)
+                //{
+                //    inspect.DoInspector();
+                //}
             }
 
         }

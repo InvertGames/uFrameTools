@@ -31,6 +31,7 @@ namespace Invert.Core
     public interface IEventManager
     {
         Action AddListener(object listener);
+        void Signal(Action<object> obj);
     }
     public class EventManager<T> : IEventManager where T : class
     {
@@ -42,6 +43,13 @@ namespace Invert.Core
             set { _listeners = value; }
         }
 
+        public void Signal(Action<object> obj)
+        {
+            foreach (var item in Listeners)
+            {
+                obj(item);
+            }
+        }
         public void Signal(Action<T> action)
         {
             foreach (var item in Listeners)
@@ -417,6 +425,25 @@ namespace Invert.Core
             var m = manager as EventManager<TEvents>;
             m.Signal(action);
         }
+
+        public static void Execute<TCommand>(TCommand command) where TCommand : IExecuteCommand<TCommand>, ICommand
+        {
+            SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));
+            SignalEvent<IExecuteCommand<TCommand>>(_ => _.Execute(command));
+            SignalEvent<ICommandExecuted>(_ => _.CommandExecuted(command));
+        }
+        public static void Execute(ICommand command)
+        {
+            SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));
+            var type = typeof (IExecuteCommand<>).MakeGenericType(command.GetType());
+             IEventManager manager;
+            if (!EventManagers.TryGetValue(type, out manager))
+            {
+                EventManagers.Add(type, manager = Activator.CreateInstance(typeof(EventManager<>).MakeGenericType(type)) as IEventManager);
+            }
+            manager.Signal(listener => listener.GetType().GetMethod("Execute",new Type[] {command.GetType()}).Invoke(listener, new object[] { command }));
+            SignalEvent<ICommandExecuted>(_ => _.CommandExecuted(command));
+        }
         public static void Log(string s)
         {
 #if DEBUG
@@ -522,4 +549,13 @@ namespace Invert.Core
         }
     }
 
+    public interface ICommandExecuted
+    {
+        void CommandExecuted(ICommand command);
+    }
+
+    public interface ICommandExecuting
+    {
+        void CommandExecuting(ICommand command);
+    }
 }
