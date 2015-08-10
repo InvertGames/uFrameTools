@@ -46,6 +46,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleSystem\ConsoleViewModel.cs" />
+    <Compile Include="ConsoleSystem\ConsoleDrawer.cs" />
+    <Compile Include="LogSystem\ILogEvents.cs" />
+    <Compile Include="LogSystem\IMessage.cs" />
+    <Compile Include="LogSystem\LogMessage.cs" />
+    <Compile Include="LogSystem\LogSystem.cs" />
+    <Compile Include="LogSystem\MessageType.cs" />
     <Compile Include="Data\uFrame16Importer.cs" />
     <Compile Include="Data\uFrameDatabase.cs" />
     <Compile Include="ErrorsPlugin.cs" />
@@ -89,6 +96,12 @@
     <Compile Include="UnityWindows.cs" />
     <Compile Include="WindowsPlugin\WindowSelectionPanel.cs" />
     <Compile Include="WindowsPlugin\WindowsPlugin.cs" />
+    <Compile Include="ConsoleSystem\Console.cs" />
+    <Compile Include="WindowsSystem\IOpenWindow.cs" />
+    <Compile Include="WindowsSystem\WindowsSystem.cs" />
+    <Compile Include="WindowsSystem\WindowSystemTestPlugin.cs" />
+    <Compile Include="WindowsSystem\WindowType.cs" />
+    <Compile Include="WindowsSystem\WindowViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Invert.Attributes\Invert.Attributes.csproj">
