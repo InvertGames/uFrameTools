@@ -20,9 +20,21 @@ namespace Invert.Core
     {
         
     }
+    public interface IExecuteCommand<in TCommandType> where TCommandType : ICommand
+    {
+        void Execute(TCommandType command);
+    }
+    public interface ICommand
+    {
+        string Title { get; }
+    }
 
     public abstract class CorePlugin : ICorePlugin
     {
+        public void Execute<TCommand>(TCommand command) where TCommand : IExecuteCommand<TCommand>, ICommand
+        {
+            InvertApplication.Execute(command);
+        }
         public virtual string PackageName
         {
             get { return string.Empty; }

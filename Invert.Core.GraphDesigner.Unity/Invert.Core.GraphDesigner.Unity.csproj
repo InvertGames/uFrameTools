@@ -53,6 +53,8 @@
     <Compile Include="InspectorWindow\uFrameInspectorWindow.cs" />
     <Compile Include="Schemas\UnityConnectorStyleSchema.cs" />
     <Compile Include="Schemas\UnityNodeStyleSchema.cs" />
+    <Compile Include="UpgradingSystem\Import16Command.cs" />
+    <Compile Include="UpgradingSystem\UpgradingSystem.cs" />
     <Compile Include="WindowsPlugin\CompilingWindow.cs" />
     <Compile Include="DiagramSettingsCommand.cs" />
     <Compile Include="ElementDesignerStyles.cs" />

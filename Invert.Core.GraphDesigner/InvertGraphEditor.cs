@@ -128,16 +128,7 @@ namespace Invert.Core.GraphDesigner
 
         public static IKeyBinding[] KeyBindings { get; set; }
 
-        //public static IProjectRepository[] Projects
-        //{
-        //    get { return _projects ?? (_projects = AssetManager.GetAssets(typeof(IProjectRepository)).Cast<IProjectRepository>().ToArray()); }
-        //    set { _projects = value; }
-        //}
 
-        //public static IProjectRepository[] GetAllProjects()
-        //{
-
-        //}
         public static IGraphEditorSettings Settings
         {
             get { return _settings ?? (_settings = Container.Resolve<IGraphEditorSettings>()); }
@@ -196,37 +187,37 @@ namespace Invert.Core.GraphDesigner
             container.RegisterInstance<IFlagCommand>(command, flag);
             return container;
         }
-        public static IEnumerable<IEditorCommand> CreateCommandsFor<T>()
-        {
-            var commands = Container.ResolveAll<T>();
+        //public static IEnumerable<IEditorCommand> CreateCommandsFor<T>()
+        //{
+        //    var commands = Container.ResolveAll<T>();
 
-            return Enumerable.Where(Commands, p => typeof(T).IsAssignableFrom(p.For));
-        }
-        public static TCommandUI CreateCommandUIWithCommands<TCommandUI>(params IEditorCommand[] actions) where TCommandUI : class,ICommandUI
-        {
-            var ui = Container.Resolve<TCommandUI>() as ICommandUI;
-            ui.Handler = DesignerWindow;
-            foreach (var action in actions)
-            {
-                if (action.CanExecute(DesignerWindow) == null)
-                    ui.AddCommand(action);
-            }
-            return (TCommandUI)ui;
-        }
-        public static ToolbarUI CreateToolbarUI()
-        {
-            var ui = Container.Resolve<ToolbarUI>();
+        //    return Enumerable.Where(Commands, p => typeof(T).IsAssignableFrom(p.For));
+        //}
+        //public static TCommandUI CreateCommandUIWithCommands<TCommandUI>(params IEditorCommand[] actions) where TCommandUI : class,ICommandUI
+        //{
+        //    var ui = Container.Resolve<TCommandUI>() as ICommandUI;
+        //    ui.Handler = DesignerWindow;
+        //    foreach (var action in actions)
+        //    {
+        //        if (action.CanExecute(DesignerWindow) == null)
+        //            ui.AddCommand(action);
+        //    }
+        //    return (TCommandUI)ui;
+        //}
+        //public static ToolbarUI CreateToolbarUI()
+        //{
+        //    var ui = Container.Resolve<ToolbarUI>();
 
-            ui.Handler = DesignerWindow;
+        //    ui.Handler = DesignerWindow;
 
-            var commands = Container.ResolveAll<IToolbarCommand>();
-            InvertApplication.SignalEvent<IToolbarQuery>(_=>_.QueryToolbarCommands(ui));
-            foreach (var command in commands)
-            {
-                ui.AddCommand(command);
-            }
-            return ui;
-        }
+        //    var commands = Container.ResolveAll<IToolbarCommand>();
+        //    InvertApplication.SignalEvent<IToolbarQuery>(_=>_.QueryToolbarCommands(ui));
+        //    foreach (var command in commands)
+        //    {
+        //        ui.AddCommand(command);
+        //    }
+        //    return ui;
+        //}
 
 
         public static void DesignerPluginLoaded()
