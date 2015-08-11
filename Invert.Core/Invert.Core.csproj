@@ -59,6 +59,7 @@
     <Compile Include="IAssetManager.cs" />
     <Compile Include="IDiagramPlugin.cs" />
     <Compile Include="IItem.cs" />
+    <Compile Include="MultiThreadingSystem\MultiThreadingSystem.cs" />
     <Compile Include="ProjectInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
