@@ -399,27 +399,7 @@ namespace Invert.Core.GraphDesigner
             IDrawer item = DrawersAtMouse.OfType<ConnectorDrawer>().FirstOrDefault();
             if (item != null)
             {
-                // TODO 2.0: Recreate connectors context menu
                 InvertApplication.SignalEvent<IShowContextMenu>(_=>_.Show(mouseEvent,item.ViewModelObject));
-
-                //var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(item.ViewModelObject, true, typeof(IDiagramNodeItemCommand));
-
-                //var connector = item.ViewModelObject as ConnectorViewModel;
-
-                //var connections =
-                //    DiagramViewModel.GraphItems.OfType<ConnectionViewModel>()
-                //        .Where(p => p.ConnectorA == connector || p.ConnectorB == connector).ToArray();
-
-                //foreach (var connection in connections)
-                //{
-                //    ConnectionViewModel connection1 = connection;
-                //    menu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel model)
-                //    {
-                //        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); }, true);
-                //    }, "Disconnect: " + connection.Name));
-                //}
-                ////a.ShowAsContext();
-                //menu.Go();
                 return;
             }
             item = DrawersAtMouse.OfType<ItemDrawer>().FirstOrDefault();
@@ -439,8 +419,6 @@ namespace Invert.Core.GraphDesigner
                 ShowContextMenu(mouseEvent);
                 return;
             }
-
-
             ShowAddNewContextMenu(mouseEvent);
         }
 
@@ -693,11 +671,11 @@ namespace Invert.Core.GraphDesigner
         {
             base.Draw(platform, scale);
 
-            if (ViewModel.IsDirty)
-            {
+            //if (ViewModel.IsDirty)
+            //{
                 Refresh(platform);
-                ViewModel.IsDirty = false;
-            }
+              //  ViewModel.IsDirty = false;
+            //}
             if (ViewModel.Visible)
             {
                 var targetBounds = ViewModel.TargetViewModel.Bounds;
