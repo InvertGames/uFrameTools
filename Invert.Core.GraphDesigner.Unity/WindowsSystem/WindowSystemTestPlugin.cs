@@ -26,11 +26,16 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsSystem
 
         public void QueryContextMenu(ICommandUI ui, object obj)
         {
-            var diagramNode = obj as DiagramNodeViewModel;
-            if (diagramNode != null)
-            {
-                ui.AddCommand(new OpenWinCommand());
-            }
+//            var diagramNode = obj as DiagramNodeViewModel;
+//            if (diagramNode != null)
+//            {
+//                ui.AddCommand(new OpenWinCommand());
+//            }
+        }
+
+        public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
+        {
+          //  throw new NotImplementedException();
         }
     }
 

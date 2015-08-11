@@ -426,12 +426,37 @@ namespace Invert.Core
             m.Signal(action);
         }
 
-        public static void Execute<TCommand>(TCommand command) where TCommand : IExecuteCommand<TCommand>, ICommand
+        public static void Execute<TCommand>(TCommand command) where TCommand : ICommand
         {
+        
             SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));
             SignalEvent<IExecuteCommand<TCommand>>(_ => _.Execute(command));
             SignalEvent<ICommandExecuted>(_ => _.CommandExecuted(command));
+        
         }
+
+        public static BackgroundTask ExecuteInBackground<TCommand>(TCommand command)
+            where TCommand : ICommand
+        {
+
+            var cmd = new BackgroundTaskCommand()
+                {
+                    Action = () =>
+                    {
+                        SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));
+                        SignalEvent<IExecuteCommand<TCommand>>(_ => _.Execute(command));
+                        SignalEvent<ICommandExecuted>(_ => _.CommandExecuted(command));
+                    }
+                };
+
+            SignalEvent<IExecuteCommand<BackgroundTaskCommand>>(m=>
+            {
+                m.Execute(cmd);
+            });
+
+            return cmd.Task;
+        } 
+
         public static void Execute(ICommand command)
         {
             SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));

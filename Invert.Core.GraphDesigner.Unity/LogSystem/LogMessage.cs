@@ -18,5 +18,4 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
     }
 
 
-
 }

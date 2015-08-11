@@ -45,6 +45,7 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
             }
         }
 
+
         [MenuItem("uFrame Dev/Console")]
         public static void ShowConsole()
         {
@@ -52,5 +53,7 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
         }
 
     }
+
+
 
 }
