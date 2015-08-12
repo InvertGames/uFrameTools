@@ -36,28 +36,36 @@ namespace Invert.Core.GraphDesigner
                     Command = new DeleteCommand() { Item = diagramNode.GraphItemObject as Invert.Data.IDataRecord }
                 });
             }
+            InvertApplication.Log(obj.GetType().Name);
             var diagram = obj as DiagramViewModel;
             if (diagram != null)
             {
-                InvertApplication.Log("YUP YUP YUP");
+                
                 var filter = diagram.GraphData.CurrentFilter;
                 foreach (var nodeType in FilterExtensions.AllowedFilterNodes[filter.GetType()])
                 {
                     if (nodeType.IsAbstract) continue;
-                    ui.AddCommand(new ContextMenuItem()
+                    var config = Container.GetNodeConfig(nodeType);
+                    if (config.AllowAddingInMenu)
                     {
-                        Command = new CreateNodeCommand()
+                        ui.AddCommand(new ContextMenuItem()
                         {
-                            NodeType = nodeType,
-                            DiagramViewModel = diagram,
-                        }
-                    });
+                            Title = "Create " + Container.GetNodeConfig(nodeType).Name,
+                            Command = new CreateNodeCommand()
+                            {
+                                NodeType = nodeType,
+                                DiagramViewModel = diagram,
+                            }
+                        });
+                        
+                    }
+                   
                 }
-                foreach (var item in filter.GetAllowedDiagramItems())
+                foreach (var item in filter.GetAllowedDiagramItems().OfType<GenericNode>().OrderBy(p=>p.Name))
                 {
                     ui.AddCommand(new ContextMenuItem()
                     {
-                        Title = "Show/" + item.Name,
+                        Title = "Show/" + item.Config.Name + "/" + item.Name,
                         Command = new ShowCommand() { Node = item, Filter = filter, Position = evt.MousePosition }
                     });
                 }

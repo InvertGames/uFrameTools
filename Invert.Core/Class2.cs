@@ -436,19 +436,21 @@ namespace Invert.Core
         }
 
         public static BackgroundTask ExecuteInBackground<TCommand>(TCommand command)
-            where TCommand : ICommand
+            where TCommand : IBackgroundCommand
         {
+            SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));
 
             var cmd = new BackgroundTaskCommand()
                 {
-                    Action = () =>
+                    Command = command,
+                    Action = (c) =>
                     {
-                        SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));
-                        SignalEvent<IExecuteCommand<TCommand>>(_ => _.Execute(command));
-                        SignalEvent<ICommandExecuted>(_ => _.CommandExecuted(command));
+                       
+                        SignalEvent<IExecuteCommand<TCommand>>(_ => _.Execute((TCommand)c));
+                       
                     }
                 };
-
+            SignalEvent<ICommandExecuted>(_ => _.CommandExecuted(command));
             SignalEvent<IExecuteCommand<BackgroundTaskCommand>>(m=>
             {
                 m.Execute(cmd);

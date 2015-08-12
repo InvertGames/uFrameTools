@@ -78,7 +78,6 @@ namespace Invert.Core.GraphDesigner.Unity
         void Progress(float progress, string message);
     }
 
-   
     public class UnityPlatformPreferences : IPlatformPreferences
     {
         public bool GetBool(string name, bool def)

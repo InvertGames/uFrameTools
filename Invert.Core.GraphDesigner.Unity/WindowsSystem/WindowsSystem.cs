@@ -34,7 +34,7 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
                     window.ShowPopup();
                     break;
                 case WindowType.FocusPopup:
-                    window.ShowAsDropDown(new Rect(finalPosition,Vector2.one),finalSize );
+                    window.ShowAsDropDown(new Rect(finalPosition.x, finalPosition.y,1f,1f),finalSize );
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("type", type, null);
@@ -43,7 +43,7 @@ namespace Invert.Core.GraphDesigner.Unity.WindowsPlugin
             window.minSize = minSize ?? finalSize;
             window.maxSize = maxSize ?? finalSize;
 
-            window.position = new Rect(finalSize, finalPosition);
+            window.position = new Rect(finalSize.x, finalSize.y, finalPosition.x, finalPosition.y);
             window.Focus();
             window.Repaint();
 

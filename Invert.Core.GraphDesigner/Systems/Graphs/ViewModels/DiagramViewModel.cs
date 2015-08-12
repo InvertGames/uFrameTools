@@ -192,7 +192,7 @@ namespace Invert.Core.GraphDesigner
         public void Load()
         {
             GraphItems.Clear();
-            GraphItems.Add(InspectorViewModel);
+            //GraphItems.Add(InspectorViewModel);
             var connectors = new List<ConnectorViewModel>();
             if (GraphData == null)
             {

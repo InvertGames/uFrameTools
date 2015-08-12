@@ -27,6 +27,12 @@ namespace Invert.Core
     public interface ICommand
     {
         string Title { get; }
+        
+    }
+
+    public interface IBackgroundCommand : ICommand
+    {
+        BackgroundWorker Worker { get; set; }
     }
 
     public abstract class CorePlugin : ICorePlugin

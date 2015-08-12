@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ using MessageType = Invert.Core.GraphDesigner.Unity.WindowsPlugin.MessageType;
 
 namespace Invert.Core.GraphDesigner.Unity.LogSystem
 {
-    public class LogSystem : DiagramPlugin, ILogEvents, IExecuteCommand<InfiniteLoopCommand>
+    public class LogSystem : DiagramPlugin, ILogEvents, IExecuteCommand<InfiniteLoopCommand>//, ICommandProgressEvent
     {
         public static IRepository Repository { get; set; }
 
@@ -26,15 +27,15 @@ namespace Invert.Core.GraphDesigner.Unity.LogSystem
             var msg = Repository.Create<LogMessage>();
             msg.Message = message;
             msg.MessageType = type;
-            Repository.Add(msg);
-            Repository.Commit();       
+            //Repository.Add(msg);
+            //Repository.Commit();       
         }
 
         public void Log<T>(T message) where T : LogMessage, new()
         {
             var msg = Repository.Create<T>();
-            Repository.Add(msg);
-            Repository.Commit();    
+           // Repository.Add(msg);
+           // Repository.Commit();    
         }
 
 
@@ -61,12 +62,18 @@ namespace Invert.Core.GraphDesigner.Unity.LogSystem
                 Thread.Sleep(1000);
             }
         }
+
+        public void Progress(ICommand command, string message, float progress)
+        {
+            Log(message,MessageType.Info);
+        }
     }
 
-    public class InfiniteLoopCommand : ICommand
+    public class InfiniteLoopCommand : ICommand, IBackgroundCommand
     {
         public string Title { get; private set; }
 
+        public BackgroundWorker Worker { get; set; }
     }
 
 }

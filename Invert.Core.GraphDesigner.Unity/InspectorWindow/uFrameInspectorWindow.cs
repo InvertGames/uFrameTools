@@ -17,6 +17,7 @@ public class uFrameInspectorWindow : EditorWindow {
     public void OnGUI()
     {
         Instance = this;
+        InvertApplication.SignalEvent<IDrawExplorer>(_=>_.DrawExplorer());
         InvertApplication.SignalEvent<IDrawInspector>(_=>_.DrawInspector());
     }
 }

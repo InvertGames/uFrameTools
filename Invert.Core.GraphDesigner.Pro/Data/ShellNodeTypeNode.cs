@@ -1151,6 +1151,7 @@ public class ShellNodeConfigDrawer : DiagramNodeDrawer<ShellNodeConfigViewModel>
                 ViewModel.DiagramViewModel.DeselectAll();
                 ViewModel.Select();
                 item.ViewModelObject.Select();
+                InvertApplication.SignalEvent < IGraphSelectionEvents>(_=>_.SelectionChanged(item.ViewModelObject));
             });
         }
     }
