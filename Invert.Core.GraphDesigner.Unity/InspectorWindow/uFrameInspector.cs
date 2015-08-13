@@ -30,6 +30,8 @@ public class InspectorPlugin : DiagramPlugin
     , IWorkspaceChanged
 {
     private bool _graphsOpen;
+    private static GUIStyle _item5;
+    private static GUIStyle _item4;
 
     public override void Initialize(UFrameContainer container)
     {
@@ -71,7 +73,7 @@ public class InspectorPlugin : DiagramPlugin
         Items =
             WorkspaceService.CurrentWorkspace.Graphs.SelectMany(p => p.NodeItems.OrderBy(x=>x.Name))
                 .OfType<GenericNode>()
-                .GroupBy(p => p.Config.Name)
+                .GroupBy(p => p.Graph.Name)
                 .OrderBy(p => p.Key).ToArray();
 
         
@@ -168,7 +170,7 @@ public class InspectorPlugin : DiagramPlugin
                
 
                         var selected = Selected != null && Selected.Identifier == node.Identifier;
-                        if (GUILayout.Button(node.Name,selected ? ElementDesignerStyles.ItemStyle : ElementDesignerStyles.Item6))
+                        if (GUILayout.Button(node.Name, selected ? Item5 : Item4))
                         {
                             Selected = node;
                             UpdateSelection(null);
@@ -180,7 +182,48 @@ public class InspectorPlugin : DiagramPlugin
             } EditorGUI.indentLevel--;
         }
     }
+    public static GUIStyle Item4
+    {
+        get
+        {
+            if (_item4
+                == null)
+                _item4 = new GUIStyle
+                {
+                    normal = { background = ElementDesignerStyles.GetSkinTexture("Item4"), textColor = Color.white },
+                    active = { background = ElementDesignerStyles.GetSkinTexture("EventButton"), textColor = Color.white },
+                    stretchHeight = true,
+                    stretchWidth = true,
+                    fontSize = 12,
+                    fixedHeight = 20f,
+                    padding = new RectOffset(5, 0, 0, 0),
+                    alignment = TextAnchor.MiddleLeft
+                }.WithFont("Verdana", 12);
 
+            return _item4;
+        }
+    }
+    public static GUIStyle Item5
+    {
+        get
+        {
+            if (_item5
+                == null)
+                _item5= new GUIStyle
+                {
+                    normal = { background = ElementDesignerStyles.GetSkinTexture("Item1"), textColor = Color.white },
+                    active = { background = ElementDesignerStyles.GetSkinTexture("EventButton"), textColor = Color.white },
+                    stretchHeight = true,
+                    stretchWidth = true,
+                    padding = new RectOffset(5,0,0,0),
+                    fontSize = 12,
+                    fixedHeight = 20f,
+                    alignment = TextAnchor.MiddleLeft
+                }.WithFont("Verdana", 12);
+
+            return _item5;
+        }
+    }
     public void WorkspaceChanged(Workspace workspace)
     {
         UpdateItems();

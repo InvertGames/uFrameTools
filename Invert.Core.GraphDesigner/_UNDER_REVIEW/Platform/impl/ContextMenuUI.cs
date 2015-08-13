@@ -10,9 +10,8 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (string.IsNullOrEmpty(_title))
-                    return Command.Title;
-                return _title;
+            
+                return _title ?? Command.GetType().Name;
             }
             set { _title = value; }
         }

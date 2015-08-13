@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Systems\Compiling\Class1.cs" />
+    <Compile Include="Systems\Connections\ConnectionSystem.cs" />
     <Compile Include="Systems\Nodes\NodeSystem.cs" />
     <Compile Include="Systems\Validation\ValidationSystem.cs" />
     <Compile Include="Systems\Workspaces\Workspace.cs" />

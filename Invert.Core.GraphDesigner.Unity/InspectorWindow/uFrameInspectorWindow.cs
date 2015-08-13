@@ -1,8 +1,11 @@
 ﻿using Invert.Core;
 using Invert.Core.GraphDesigner;
 using UnityEditor;
+using UnityEngine;
 
 public class uFrameInspectorWindow : EditorWindow {
+    private Vector2 _scrollPosition;
+
     [MenuItem("uFrame/Inspector #&i")]
     internal static void ShowWindow()
     {
@@ -17,7 +20,10 @@ public class uFrameInspectorWindow : EditorWindow {
     public void OnGUI()
     {
         Instance = this;
+        _scrollPosition = GUILayout.BeginScrollView(_scrollPosition);
+        InvertApplication.SignalEvent<IDrawInspector>(_ => _.DrawInspector());
         InvertApplication.SignalEvent<IDrawExplorer>(_=>_.DrawExplorer());
-        InvertApplication.SignalEvent<IDrawInspector>(_=>_.DrawInspector());
+
+        GUILayout.EndScrollView();
     }
 }
