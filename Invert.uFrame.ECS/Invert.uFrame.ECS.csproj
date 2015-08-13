@@ -70,9 +70,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers.designer.cs">
       <Link>Drawers.designer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ActionLibraryNodeDrawer.cs">
-      <Link>ActionLibraryNodeDrawer.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ActionNodeDrawer.cs">
       <Link>ActionNodeDrawer.cs</Link>
     </Compile>
@@ -82,14 +79,8 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ColorNodeDrawer.cs">
       <Link>ColorNodeDrawer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentGroupNodeDrawer.cs">
-      <Link>ComponentGroupNodeDrawer.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentNodeDrawer.cs">
       <Link>ComponentNodeDrawer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentsNodeDrawer.cs">
-      <Link>ComponentsNodeDrawer.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ContextNodeDrawer.cs">
       <Link>ContextNodeDrawer.cs</Link>
@@ -148,9 +139,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\SystemNodeDrawer.cs">
       <Link>SystemNodeDrawer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\TimerNodeDrawer.cs">
-      <Link>TimerNodeDrawer.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\UserMethodNodeDrawer.cs">
       <Link>UserMethodNodeDrawer.cs</Link>
     </Compile>
@@ -169,15 +157,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs.designer.cs">
       <Link>Graphs.designer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\ActionLibraryGraph.cs">
-      <Link>ActionLibraryGraph.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\ComponentsGraph.cs">
-      <Link>ComponentsGraph.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\LibraryGraph.cs">
-      <Link>LibraryGraph.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\ModuleGraph.cs">
       <Link>ModuleGraph.cs</Link>
     </Compile>
@@ -186,9 +165,6 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes.designer.cs">
       <Link>Nodes.designer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ActionLibraryNode.cs">
-      <Link>ActionLibraryNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ActionNode.cs">
       <Link>ActionNode.cs</Link>
@@ -199,14 +175,8 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ColorNode.cs">
       <Link>ColorNode.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentGroupNode.cs">
-      <Link>ComponentGroupNode.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentNode.cs">
       <Link>ComponentNode.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentsNode.cs">
-      <Link>ComponentsNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ContextNode.cs">
       <Link>ContextNode.cs</Link>
@@ -268,9 +238,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\SystemNode.cs">
       <Link>SystemNode.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\TimerNode.cs">
-      <Link>TimerNode.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\UserMethodNode.cs">
       <Link>UserMethodNode.cs</Link>
     </Compile>
@@ -298,17 +265,11 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\ComponentsReference.cs">
       <Link>ComponentsReference.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\EventsReference.cs">
-      <Link>EventsReference.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\MappingsReference.cs">
       <Link>MappingsReference.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\SelectReference.cs">
       <Link>SelectReference.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\SignalsReference.cs">
-      <Link>SignalsReference.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots.designer.cs">
       <Link>Slots.designer.cs</Link>
@@ -322,9 +283,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Event.cs">
       <Link>Event.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Filter.cs">
-      <Link>Filter.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\FilterBy.cs">
       <Link>FilterBy.cs</Link>
     </Compile>
@@ -337,20 +295,11 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Variable.cs">
       <Link>Variable.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\VariableInput.cs">
-      <Link>VariableInput.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\VariableOutput.cs">
-      <Link>VariableOutput.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Variables.cs">
       <Link>Variables.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels.designer.cs">
       <Link>ViewModels.designer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ActionLibraryNodeViewModel.cs">
-      <Link>ActionLibraryNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ActionNodeViewModel.cs">
       <Link>ActionNodeViewModel.cs</Link>
@@ -361,14 +310,8 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ColorNodeViewModel.cs">
       <Link>ColorNodeViewModel.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentGroupNodeViewModel.cs">
-      <Link>ComponentGroupNodeViewModel.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentNodeViewModel.cs">
       <Link>ComponentNodeViewModel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentsNodeViewModel.cs">
-      <Link>ComponentsNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ContextNodeViewModel.cs">
       <Link>ContextNodeViewModel.cs</Link>
@@ -426,9 +369,6 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\SystemNodeViewModel.cs">
       <Link>SystemNodeViewModel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\TimerNodeViewModel.cs">
-      <Link>TimerNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\UserMethodNodeViewModel.cs">
       <Link>UserMethodNodeViewModel.cs</Link>
