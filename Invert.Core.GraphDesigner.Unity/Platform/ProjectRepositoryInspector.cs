@@ -137,7 +137,7 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
                     ShowArrow = true
                 }))
                 {
-                    InvertGraphEditor.NavigateTo(item.Identifier); 
+                    //InvertGraphEditor.NavigateTo(item.Identifier); 
                 }
             }
         }
@@ -200,7 +200,7 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
                         ShowArrow = true
                     }))
                     {
-                        InvertGraphEditor.NavigateTo(change.ItemIdentifier);
+                        //InvertGraphEditor.NavigateTo(change.ItemIdentifier);
                     }
                 }
             }

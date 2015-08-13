@@ -51,10 +51,10 @@ namespace Invert.Core.GraphDesigner
 
             InvertGraphEditor.WindowManager.InitTypeListWindow(typesList.ToArray(), (selected) =>
             {
-                InvertGraphEditor.ExecuteCommand((diagram) =>
+                InvertApplication.Execute(new LambdaCommand(() =>
                 {
                     viewModelItemData.RelatedType = selected.Name;
-                });
+                }));
             });
         }
 

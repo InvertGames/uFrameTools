@@ -292,14 +292,12 @@ namespace Invert.Core.GraphDesigner
 
                 platform.DoButton(rect.Scale(scale), string.Empty, style, () =>
                 {
-                    InvertGraphEditor.ExecuteCommand((item) =>
+                    InvertApplication.Execute(new LambdaCommand(() =>
                     {
                         ViewModel.IsCollapsed = !ViewModel.IsCollapsed;
                         Dirty = true;
-                    }, false);
+                    }) );
                 });
-
-
             }
 
 
@@ -349,7 +347,11 @@ namespace Invert.Core.GraphDesigner
                         platform.DoButton(new Rect(rect.x + rect.width + 5, rect.y, 75, 25).Scale(Scale), "Auto Fix", null,
                             () =>
                             {
-                                InvertGraphEditor.ExecuteCommand(new SimpleEditorCommand<DesignerWindow>(_=> { keyValuePair.AutoFix(); }));
+                                InvertApplication.Execute(new LambdaCommand(() =>
+                                {
+                                    keyValuePair.AutoFix();
+                                }));
+                                
                             });
                     }
                     hasErrors = true;

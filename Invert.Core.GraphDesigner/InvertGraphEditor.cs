@@ -249,36 +249,36 @@ namespace Invert.Core.GraphDesigner
             KeyBindings = Container.ResolveAll<IKeyBinding>().Concat(commandKeyBindings).ToArray();
         }
 
-        public static void ExecuteCommand(IEditorCommand action)
-        {
-            ExecuteCommand(DesignerWindow, action);
-        }
+        //public static void ExecuteCommand(IEditorCommand action)
+        //{
+        //    ExecuteCommand(DesignerWindow, action);
+        //}
 
-        public static void ExecuteCommand(Action<DiagramViewModel> action, bool recordUndo = false)
-        {
-            ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action), recordUndo);
-        }
-
-
-        private static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command, bool recordUndo = true)
-        {
-            var objs = handler.ContextObjects.ToArray();
-            if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
-            {
-                // TODO 2.0 Record Undo
-                //DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.GraphData, command.Name);
-            }
-
-            command.Execute(handler);
+        //public static void ExecuteCommand(Action<DiagramViewModel> action, bool recordUndo = false)
+        //{
+        //    ExecuteCommand(DesignerWindow, new SimpleEditorCommand<DiagramViewModel>(action), recordUndo);
+        //}
 
 
-            if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
-            {
-                DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.GraphData);
-            }
-            Container.Resolve<IRepository>().Commit();
-            //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
-        }
+        //private static void ExecuteCommand(this ICommandHandler handler, IEditorCommand command, bool recordUndo = true)
+        //{
+        //    var objs = handler.ContextObjects.ToArray();
+        //    if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
+        //    {
+        //        // TODO 2.0 Record Undo
+        //        //DesignerWindow.DiagramViewModel.CurrentRepository.RecordUndo(DesignerWindow.DiagramViewModel.GraphData, command.Name);
+        //    }
+
+        //    command.Execute(handler);
+
+
+        //    if (recordUndo && DesignerWindow != null && DesignerWindow.DiagramViewModel != null)
+        //    {
+        //        DesignerWindow.DiagramViewModel.CurrentRepository.MarkDirty(DesignerWindow.DiagramViewModel.GraphData);
+        //    }
+        //    Container.Resolve<IRepository>().Commit();
+        //    //CurrentProject.MarkDirty(CurrentProject.CurrentGraph);
+        //}
 
         public static IEnumerable<OutputGenerator> GetAllCodeGenerators(IGraphConfiguration graphConfiguration, IDataRecord[] items, bool includeDisabled = false)
         {
@@ -683,14 +683,6 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        public static void NavigateTo(string identifier)
-        {
-            if (CurrentDiagramViewModel == null) return;
-            ExecuteCommand(_ =>
-            {
-                _.NavigateTo(identifier);
-            });
-        }
     }
 
     public class RegisteredTemplateGeneratorsFactory : DesignerGeneratorFactory<IDataRecord>

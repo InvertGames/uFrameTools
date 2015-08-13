@@ -638,7 +638,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void CtrlClicked()
         {
-            InvertGraphEditor.ExecuteCommand((diagram) =>
+            InvertApplication.Execute(() =>
             {
                 var fileGenerator = this.CodeGenerators.OfType<CodeGenerator>().FirstOrDefault(p => !p.IsDesignerFile);
                 if (fileGenerator != null)
@@ -653,7 +653,7 @@ namespace Invert.Core.GraphDesigner
 
         public void CtrlShiftClicked()
         {
-            InvertGraphEditor.ExecuteCommand((diagram) =>
+            InvertApplication.Execute(() =>
             {
                 var fileGenerator = this.CodeGenerators.OfType<CodeGenerator>().LastOrDefault(p => !p.IsDesignerFile);
                 if (fileGenerator != null)

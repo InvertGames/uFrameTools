@@ -43,5 +43,10 @@ namespace Invert.Core.GraphDesigner
         public IEditorCommand AddCommand { get; set; }
         public NodeConfigBase NodeConfig { get; set; }
         public NodeConfigSectionBase SectionConfig { get; set; }
+
+        public void Add()
+        {
+            // TODO 2.0 Is this really used?
+        }
     }
 }

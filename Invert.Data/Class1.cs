@@ -440,7 +440,7 @@ namespace Invert.Data
                     if (item.Value.Changed)
                     {
                         var json = InvertJsonExtensions.SerializeObject(item.Value);
-                        File.WriteAllText(filename, json.ToString());
+                        File.WriteAllText(filename, json.ToString(true));
                     }
                     item.Value.Changed = false;
                 }

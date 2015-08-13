@@ -96,13 +96,10 @@ namespace Invert.Core.GraphDesigner
                 platform.DoButton(new Rect(x, rect.y + 20 - (item.Value.y / 2), item.Value.x, item.Value.y), first ? item.Key.Name : "< " + item.Key.Name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle,
                     () =>
                     {
-                        InvertGraphEditor.ExecuteCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
+                        InvertApplication.Execute(new LambdaCommand(() =>
                         {
-                            //DiagramViewModel.NavigateTo(item1.Key.Identifier);
                             DiagramViewModel.GraphData.PopToFilter(item1.Key);
-
                         }));
-
                     });
                 x += item.Value.x + 15;
                 first = false;
@@ -154,49 +151,49 @@ namespace Invert.Core.GraphDesigner
             DrawErrors();
             DrawHelp();
         }
-        //TODO move this to platform specific operation
-#if UNITY_DLL
-        public bool HandleKeyEvent(Event evt, ModifierKeyState keyStates)
-        {
-            var bindings = InvertGraphEditor.KeyBindings;
-            foreach (var keyBinding in bindings)
-            {
-                if (keyBinding.Key != evt.keyCode)
-                {
-                    continue;
-                }
-                if (keyBinding.RequireAlt && !keyStates.Alt)
-                {
-                    continue;
-                }
-                if (keyBinding.RequireShift && !keyStates.Shift)
-                {
-                    continue;
-                }
-                if (keyBinding.RequireControl && !keyStates.Ctrl)
-                {
-                    continue;
-                }
+//        //TODO move this to platform specific operation
+//#if UNITY_DLL
+//        public bool HandleKeyEvent(Event evt, ModifierKeyState keyStates)
+//        {
+//            var bindings = InvertGraphEditor.KeyBindings;
+//            foreach (var keyBinding in bindings)
+//            {
+//                if (keyBinding.Key != evt.keyCode)
+//                {
+//                    continue;
+//                }
+//                if (keyBinding.RequireAlt && !keyStates.Alt)
+//                {
+//                    continue;
+//                }
+//                if (keyBinding.RequireShift && !keyStates.Shift)
+//                {
+//                    continue;
+//                }
+//                if (keyBinding.RequireControl && !keyStates.Ctrl)
+//                {
+//                    continue;
+//                }
 
-                var command = keyBinding.Command;
-                if (command != null)
-                {
-                    if (command.CanExecute(InvertGraphEditor.DesignerWindow) == null)
-                    {
-                        InvertGraphEditor.ExecuteCommand(command);
-                    }
-                    else
-                    {
-                        return false;
-                    }
+//                var command = keyBinding.Command;
+//                if (command != null)
+//                {
+//                    if (command.CanExecute(InvertGraphEditor.DesignerWindow) == null)
+//                    {
+//                        InvertGraphEditor.ExecuteCommand(command);
+//                    }
+//                    else
+//                    {
+//                        return false;
+//                    }
 
-                    return true;
-                }
-                return false;
-            }
-            return false;
-        }
-#endif
+//                    return true;
+//                }
+//                return false;
+//            }
+//            return false;
+//        }
+//#endif
         public override void OnMouseDoubleClick(MouseEvent mouseEvent)
         {
            

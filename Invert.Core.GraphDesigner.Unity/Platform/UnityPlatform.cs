@@ -588,7 +588,10 @@ namespace Invert.Core.GraphDesigner.Unity
                     }
                     if (Event.current.isKey && Event.current.keyCode == KeyCode.Return)
                     {
-                        InvertGraphEditor.ExecuteCommand(new SimpleEditorCommand<DiagramViewModel>(_=>{}));
+                        InvertApplication.Execute(() =>
+                        {
+                            
+                        });
                     }
                 }
                 else if (d.InspectorType == InspectorType.TypeSelection)
@@ -599,13 +602,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     if (GUILayout.Button((string)d.CachedValue))
                     {
                         d.NodeViewModel.Select();
-                        InvertGraphEditor.ExecuteCommand(new SelectItemTypeCommand()
-                        {
-                            IncludePrimitives = true,
-                            PrimitiveOnly = false,
-                            AllowNone = false,
-                            
-                        });
+                        // TODO 2.0 Open Selection?
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -693,7 +690,11 @@ namespace Invert.Core.GraphDesigner.Unity
                 d.CachedValue = EditorGUILayout.EnumPopup(d.Name, (Enum)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    InvertGraphEditor.ExecuteCommand(_ => d.Setter(d.CachedValue));
+                    InvertApplication.Execute(() =>
+                    {
+                        d.Setter(d.CachedValue);
+                    });
+                    
                 }
             }
             else if (d.Type == typeof(Type))

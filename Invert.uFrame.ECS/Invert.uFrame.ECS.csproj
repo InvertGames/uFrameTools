@@ -115,9 +115,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ModuleNodeDrawer.cs">
       <Link>ModuleNodeDrawer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\PublishNodeDrawer.cs">
-      <Link>PublishNodeDrawer.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\SequenceItemNodeDrawer.cs">
       <Link>SequenceItemNodeDrawer.cs</Link>
     </Compile>
@@ -156,6 +153,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs.designer.cs">
       <Link>Graphs.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\LibraryGraph.cs">
+      <Link>LibraryGraph.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\ModuleGraph.cs">
       <Link>ModuleGraph.cs</Link>
@@ -214,9 +214,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ModuleNode.cs">
       <Link>ModuleNode.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\PublishNode.cs">
-      <Link>PublishNode.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\SequenceItemNode.cs">
       <Link>SequenceItemNode.cs</Link>
     </Compile>
@@ -274,18 +271,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots.designer.cs">
       <Link>Slots.designer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Component.cs">
-      <Link>Component.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Each.cs">
-      <Link>Each.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Event.cs">
-      <Link>Event.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\FilterBy.cs">
-      <Link>FilterBy.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Timer.cs">
       <Link>Timer.cs</Link>
     </Compile>
@@ -294,9 +279,6 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Variable.cs">
       <Link>Variable.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Variables.cs">
-      <Link>Variables.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels.designer.cs">
       <Link>ViewModels.designer.cs</Link>
@@ -345,9 +327,6 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ModuleNodeViewModel.cs">
       <Link>ModuleNodeViewModel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\PublishNodeViewModel.cs">
-      <Link>PublishNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\SequenceItemNodeViewModel.cs">
       <Link>SequenceItemNodeViewModel.cs</Link>

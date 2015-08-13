@@ -48,7 +48,7 @@ namespace Invert.Core.GraphDesigner
           
         }
 
-        public ICommandHandler Handler { get; set; }
+ 
         public void GoBottom()
         {
                 

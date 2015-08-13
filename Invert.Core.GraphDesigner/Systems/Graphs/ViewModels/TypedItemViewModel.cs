@@ -60,5 +60,17 @@ namespace Invert.Core.GraphDesigner
         {
             get { return RelatedType; }
         }
+
+        public void ShowSelectionListWindow()
+        {
+            // TODO 2.0 Typed Item Selection Window
+            // This was in the drawer re-implement
+
+            //if (!this.ItemViewModel.Enabled) return;
+            //if (TypedItemViewModel.Data.Precompiled) return;
+            //var commandName = ViewModelObject.DataObject.GetType().Name.Replace("Data", "") + "TypeSelection";
+
+            //var command = InvertGraphEditor.Container.Resolve<IEditorCommand>(commandName);
+        }
     }
 }

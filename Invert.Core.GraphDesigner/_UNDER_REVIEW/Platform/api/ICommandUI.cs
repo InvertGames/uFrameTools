@@ -22,7 +22,7 @@ namespace Invert.Core.GraphDesigner
         public void Show(MouseEvent evt, params object[] objects)
         {
             var ui = InvertApplication.Container.Resolve<ContextMenuUI>();
-            ui.Handler = InvertGraphEditor.DesignerWindow;
+            
             foreach (var item in objects)
             {
                 var item1 = item;

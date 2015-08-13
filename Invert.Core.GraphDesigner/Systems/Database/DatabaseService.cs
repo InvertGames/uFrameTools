@@ -139,7 +139,6 @@ namespace Invert.Core.GraphDesigner
                 graphConfig.IsCurrent = graphConfig == configuration;
             }
             InvertApplication.Container = null;
-            InvertGraphEditor.DesignerWindow.DiagramDrawer = null;
         }
 
         public void QueryToolbarCommands(ToolbarUI ui)

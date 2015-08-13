@@ -78,7 +78,7 @@
     <Compile Include="_UNDER_REVIEW\Data\impl\ConnectionData.cs" />
     <Compile Include="_UNDER_REVIEW\Data\api\NodeColor.cs" />
     <Compile Include="_UNDER_REVIEW\Data\impl\BaseClassReference.cs" />
-    <Compile Include="_UNDER_REVIEW\Windows\DesignerWindow.cs" />
+    <Compile Include="Systems\GraphUI\DesignerWindow.cs" />
     <Compile Include="Systems\Documentation\DocumentationDefaultProvider.cs" />
     <Compile Include="Systems\Documentation\DocumentationPage.cs" />
     <Compile Include="Systems\Graphs\Drawers\api\Drawer.cs" />

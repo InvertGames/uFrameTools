@@ -1100,14 +1100,14 @@ public class ShellNodeConfigDrawer : DiagramNodeDrawer<ShellNodeConfigViewModel>
 #if UNITY_DLL
         var ctxMenu = new UnityEditor.GenericMenu();
         ctxMenu.AddItem(new GUIContent("New " + name), false,
-            () => { InvertGraphEditor.ExecuteCommand(_ => { addItem(); }); });
+            () => { InvertApplication.Execute(() => { addItem(); }); });
         ctxMenu.AddSeparator("");
         var nodeConfigSection =
             NodeViewModel.DiagramViewModel.CurrentRepository.AllOf<TItem>();
         foreach (var item in nodeConfigSection)
         {
             ctxMenu.AddItem(new GUIContent(item.Name), false,
-                () => { InvertGraphEditor.ExecuteCommand(_ => { addPointer(item); }); });
+                () => { InvertApplication.Execute(() => { addPointer(item); }); });
         }
         ctxMenu.ShowAsContext();
 #else

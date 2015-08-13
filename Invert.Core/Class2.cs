@@ -425,7 +425,10 @@ namespace Invert.Core
             var m = manager as EventManager<TEvents>;
             m.Signal(action);
         }
-
+        public static void Execute(Action action)
+        {
+            Execute(new LambdaCommand(action));
+        }
         public static void Execute<TCommand>(TCommand command) where TCommand : ICommand
         {
         
