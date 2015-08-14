@@ -70,8 +70,8 @@ namespace Invert.Core.GraphDesigner.Unity
             }
             else
             {
-                if (InvertGraphEditor.Platform != null)
-                    InvertGraphEditor.Platform.Progress(0f, string.Empty);
+                //if (InvertGraphEditor.Platform != null)
+                //    InvertGraphEditor.Platform.Progress(0f, string.Empty);
             }
 
             InvertApplication.SignalEvent<IDrawUFrameWindow>(_ => _.Draw(Screen.width + 1, Screen.height, _scrollPosition, 1f));
@@ -87,7 +87,6 @@ namespace Invert.Core.GraphDesigner.Unity
         public void Repaint()
         {
             ElementsDesigner.Instance.Repaint();
-            InvertApplication.Log("Repainting");
         }
         private MouseEvent _event;
 

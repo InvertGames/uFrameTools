@@ -58,9 +58,9 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
     }
 
     [GenerateMethod("Get{0}SelectionCommand", TemplateLocation.Both, true)]
-    public virtual Invert.Core.GraphDesigner.SelectItemTypeCommand GetSelectionCommand()
+    public virtual Invert.Core.GraphDesigner.SelectTypeCommand GetSelectionCommand()
     {
-        Ctx._("return new SelectItemTypeCommand() {{ IncludePrimitives = true, AllowNone = false }}");
+        Ctx._("return new SelectTypeCommand() {{ IncludePrimitives = true, AllowNone = false }}");
         return null;
     }
 
@@ -97,13 +97,13 @@ public class ShellPluginTemplate : DiagramPlugin, IClassTemplate<ShellPluginNode
         if (!Ctx.IsDesignerFile) return;
         Ctx.CurrentMethodAttribute.CallBase = false;
         var method = Ctx.CurrentMethod;
-        foreach (var item in Ctx.Data.Graph.NodeItems.OfType<ShellChildItemTypeNode>())
-        {
-            if (!item["Typed"]) continue;
-            method._(
-                "container.RegisterInstance<IEditorCommand>(Get{0}SelectionCommand(), typeof({1}).Name + \"TypeSelection\");", item.Name, item.ClassName);
+        //foreach (var item in Ctx.Data.Graph.NodeItems.OfType<ShellChildItemTypeNode>())
+        //{
+        //    if (!item["Typed"]) continue;
+        //    method._(
+        //        "container.RegisterInstance<IEditorCommand>(Get{0}SelectionCommand(), typeof({1}).Name + \"TypeSelection\");", item.Name, item.ClassName);
 
-        }
+        //}
         foreach (var itemType in Ctx.Data.Graph.NodeItems.OfType<IShellNode>().Where(p => p.IsValid))
         {
             if (itemType is ShellNodeTypeNode) continue;

@@ -63,6 +63,13 @@ namespace Invert.Core.GraphDesigner
 
         public void ShowSelectionListWindow()
         {
+            InvertApplication.Execute(new SelectTypeCommand()
+            {
+                PrimitiveOnly = false,
+                AllowNone = false,
+                IncludePrimitives = true,
+                ItemViewModel = this,
+            });
             // TODO 2.0 Typed Item Selection Window
             // This was in the drawer re-implement
 

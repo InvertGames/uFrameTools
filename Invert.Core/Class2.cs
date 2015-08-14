@@ -334,7 +334,7 @@ namespace Invert.Core
                 if (diagramPlugin.Enabled)
                 {
 
-              
+                    diagramPlugin.Container = Container;
                     diagramPlugin.Initialize(Container);
                 }
                     

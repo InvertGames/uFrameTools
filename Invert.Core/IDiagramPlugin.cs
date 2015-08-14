@@ -11,6 +11,7 @@ namespace Invert.Core
         string PackageName { get; }
         bool Required { get; }
         bool Ignore { get; }
+        UFrameContainer Container { get; set; }
         void Initialize(UFrameContainer container);
         void Loaded(UFrameContainer container);
         
@@ -37,7 +38,7 @@ namespace Invert.Core
 
     public abstract class CorePlugin : ICorePlugin
     {
-        public void Execute<TCommand>(TCommand command) where TCommand : IExecuteCommand<TCommand>, ICommand
+        public void Execute<TCommand>(TCommand command) where TCommand :  ICommand
         {
             InvertApplication.Execute(command);
         }

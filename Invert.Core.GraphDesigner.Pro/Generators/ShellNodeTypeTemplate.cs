@@ -748,9 +748,9 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
     }
 
     [GenerateMethod("Get{0}SelectionCommand", TemplateLocation.Both, true)]
-    public virtual Invert.Core.GraphDesigner.SelectItemTypeCommand GetSelectionCommand()
+    public virtual Invert.Core.GraphDesigner.SelectTypeCommand GetSelectionCommand()
     {
-        Ctx._("return new SelectItemTypeCommand() {{ IncludePrimitives = true, AllowNone = false }}");
+        Ctx._("return new SelectTypeCommand() {{ IncludePrimitives = true, AllowNone = false }}");
         return null;
     }
 
@@ -788,13 +788,13 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
         Ctx.CurrentMethodAttribute.CallBase = false;
         var method = Ctx.CurrentMethod;
 
-        foreach (var plugin in Ctx.Data.Repository.AllOf<ShellPluginNode>())
-        {
-            //foreach (var item in Ctx.Data.Project.NodeItems.OfType<ShellNodeConfig>().Where(p => p.IsGraphType))
-            //{
-                Ctx._("container.RegisterInstance<IDocumentationProvider>(new {0}DocumentationProvider(), \"{0}\")",plugin.Name);
-            //}
-        }
+        //foreach (var plugin in Ctx.Data.Repository.AllOf<ShellPluginNode>())
+        //{
+        //    //foreach (var item in Ctx.Data.Project.NodeItems.OfType<ShellNodeConfig>().Where(p => p.IsGraphType))
+        //    //{
+        //        Ctx._("container.RegisterInstance<IDocumentationProvider>(new {0}DocumentationProvider(), \"{0}\")",plugin.Name);
+        //    //}
+        //}
         
         //foreach (var item in Ctx.Data.Graph.NodeItems.OfType<ShellChildItemTypeNode>())
         //{
@@ -807,9 +807,8 @@ public class ShellConfigPluginTemplate : DiagramPlugin, IClassTemplate<ShellPlug
 
             if (itemType.IsTyped)
             {
-                if (itemType.SectionType == ShellNodeConfigSectionType.ChildItems)
-                method._(
-               "container.RegisterInstance<IEditorCommand>(Get{0}SelectionCommand(), typeof({1}).Name + \"TypeSelection\");", itemType.Name, itemType.ClassName);
+                //if (itemType.SectionType == ShellNodeConfigSectionType.ChildItems)
+                //method._("container.RegisterInstance<IEditorCommand>(Get{0}SelectionCommand(), typeof({1}).Name + \"TypeSelection\");", itemType.Name, itemType.ClassName);
 
                 //if (itemType.IsCustom)
                 //{

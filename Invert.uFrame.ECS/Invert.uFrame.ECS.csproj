@@ -88,6 +88,9 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\CustomActionNodeDrawer.cs">
       <Link>CustomActionNodeDrawer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\DataNodeDrawer.cs">
+      <Link>DataNodeDrawer.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\EntityNodeDrawer.cs">
       <Link>EntityNodeDrawer.cs</Link>
     </Compile>
@@ -154,6 +157,9 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs.designer.cs">
       <Link>Graphs.designer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\DataGraph.cs">
+      <Link>DataGraph.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\LibraryGraph.cs">
       <Link>LibraryGraph.cs</Link>
     </Compile>
@@ -183,6 +189,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\CustomActionNode.cs">
       <Link>CustomActionNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\DataNode.cs">
+      <Link>DataNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\EntityNode.cs">
       <Link>EntityNode.cs</Link>
@@ -300,6 +309,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\CustomActionNodeViewModel.cs">
       <Link>CustomActionNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\DataNodeViewModel.cs">
+      <Link>DataNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\EntityNodeViewModel.cs">
       <Link>EntityNodeViewModel.cs</Link>

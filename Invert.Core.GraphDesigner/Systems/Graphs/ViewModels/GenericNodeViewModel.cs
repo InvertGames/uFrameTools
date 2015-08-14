@@ -169,19 +169,12 @@ namespace Invert.Core.GraphDesigner
                 //{
                 //    header.IsNewLine = true;
                 //}
-                if (section1.AddCommandType != null)
+
+                header.AddCommand =section1.AllowAdding ? new LambdaCommand(() =>
                 {
-                    header.AddCommand = Activator.CreateInstance(section.AddCommandType) as IEditorCommand;
-                }
-                else
-                {
-                    header.AddCommand = section1.AllowAdding
-                    ? new SimpleEditorCommand<DiagramNodeViewModel>((vm) =>
-                    {
-                        OnAdd(section, section1, vm);
-                    })
-                    : null;
-                }
+                    OnAdd(section, section1, this);
+                }) : null; 
+                
                 
                 ContentItems.Add(header);
             }

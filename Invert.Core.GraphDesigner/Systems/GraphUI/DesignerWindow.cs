@@ -34,10 +34,7 @@ namespace Invert.Core.GraphDesigner
 
         private bool _drawToolbar = true;
 
-
-
         private WorkspaceService _workspaceService;
-
 
         public Toolbars Toolbars
         {
@@ -201,6 +198,7 @@ namespace Invert.Core.GraphDesigner
 
         public void RefreshContent()
         {
+            if (Workspace.CurrentGraph == null) return;
             LoadDiagram(Workspace.CurrentGraph);
             if (DiagramDrawer != null)
             {
@@ -289,7 +287,7 @@ namespace Invert.Core.GraphDesigner
                 DiagramDrawer.Bounds = new Rect(0f, 0f, diagramRect.width, diagramRect.height);
                 DiagramDrawer.Draw(drawer, 1f);
                 InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.ProcessInput());
-                InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.AfterDrawGraph(diagramRect));
+                InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.AfterDrawGraph(DiagramDrawer.Bounds));
             }
             return false;
         }

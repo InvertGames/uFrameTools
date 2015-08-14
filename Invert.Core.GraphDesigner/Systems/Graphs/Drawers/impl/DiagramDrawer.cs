@@ -459,7 +459,7 @@ namespace Invert.Core.GraphDesigner
 
         public void ShowItemContextMenu(MouseEvent mouseEvent)
         {
-            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, DiagramViewModel.SelectedNodeItems));
+            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, DiagramViewModel.SelectedNodeItem));
         }
 
         protected override void DataContextChanged()

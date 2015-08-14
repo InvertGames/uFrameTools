@@ -385,7 +385,7 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
 
     public IEnumerable<ShellNodeConfig> SubNodes
     {
-        get { return this.FilterNodes().OfType<ShellNodeConfig>(); }
+        get { return this.FilterNodes().OfType<ShellNodeConfig>().Where(p=>p != this); }
     }
 }
 
@@ -498,7 +498,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
         var sectionViewModel = new GenericItemHeaderViewModel()
         {
             Name = item.Name,
-            AddCommand = item.AllowAdding ? new SimpleEditorCommand<DiagramNodeViewModel>(_ => { }) : null,
+            AddCommand = item.AllowAdding ? new LambdaCommand(()=>{}) : null,
             DataObject = dataObject,
             NodeViewModel = this,
             AllowConnections = true,

@@ -87,7 +87,6 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             Message = message;
             Percentage = progress / 100f;
-           
         }
 
  

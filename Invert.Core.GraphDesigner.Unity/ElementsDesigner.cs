@@ -22,9 +22,6 @@ namespace Invert.Core.GraphDesigner.Unity
             window.Repaint();
             Instance = window;
         }
-
-
-
         public void InfoBox(string message, MessageType type = MessageType.Info)
         {
             EditorGUI.HelpBox(new Rect(15, 30, 300, 30), message, type);
