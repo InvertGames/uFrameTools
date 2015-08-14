@@ -1,3 +1,5 @@
+using System.Linq;
+using Invert.Data;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -8,6 +10,8 @@ namespace Invert.Core.GraphDesigner
         public override string Name { get; set; }
         public bool IsInput { get; set; }
         public bool IsOutput { get; set; }
+
+        public bool AllowSelection { get; set; }
 
         public override ConnectorViewModel InputConnector
         {
@@ -25,5 +29,46 @@ namespace Invert.Core.GraphDesigner
                 return base.OutputConnector;
             }
         }
+
+        public GenericSlot ReferenceItem
+        {
+            get { return DataObject as GenericSlot; }
+        }
+        public string SelectedItemName
+        {
+            get
+            {
+                if (ReferenceItem != null)
+                {
+                    var source = ReferenceItem.InputFrom<IDiagramNodeItem>();
+                    if (source != null)
+                    {
+                        return source.Name;
+                    }
+                }
+                return "-- Select Item --";
+            }
+        }
+
+        public void SelectItem()
+        {
+            InvertGraphEditor.WindowManager.InitItemWindow(ReferenceItem.GetAllowed().ToArray(), _ =>
+            {
+                InvertApplication.Execute(new LambdaCommand(() =>
+                {
+                    if (IsInput)
+                    {
+                        ReferenceItem.SetInput(_);
+                    }
+                    else
+                    {
+                        ReferenceItem.SetOutput(_);
+                    }
+                   
+                }));
+            });
+        }
     }
-}
+
+   
+;}

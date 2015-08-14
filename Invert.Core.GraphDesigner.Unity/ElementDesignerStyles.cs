@@ -831,10 +831,11 @@ namespace Invert.Common
                 if (_eventSmallButtonStyle == null)
                     _eventSmallButtonStyle = new GUIStyle
                     {
-                        normal = { background = GetSkinTexture("EventButton"), textColor = Color.white },
+                        normal = { background = GetSkinTexture("EventButton"), textColor = new Color(01f,1f,1f,0.7f) },
                         active = { background = CommandBarClosedStyle.normal.background },
-                        fixedHeight = 20,
-                        padding = new RectOffset(0, 0, 5, 5)
+                       alignment = TextAnchor.MiddleCenter,
+                       fontSize = 10
+                        
                     };
 
                 return _eventSmallButtonStyle;

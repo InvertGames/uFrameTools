@@ -317,7 +317,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DoButton(Rect scale, string label, object style, Action action, Action rightClick = null)
         {
-            var s = style == null ? EditorStyles.miniButton : (GUIStyle)style;
+            var s = style == null ? ElementDesignerStyles.EventSmallButtonStyle : (GUIStyle)style;
        
             if (GUI.Button(scale, label, s))
             {
