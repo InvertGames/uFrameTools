@@ -82,9 +82,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentNodeDrawer.cs">
       <Link>ComponentNodeDrawer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ContextNodeDrawer.cs">
-      <Link>ContextNodeDrawer.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\CustomActionNodeDrawer.cs">
       <Link>CustomActionNodeDrawer.cs</Link>
     </Compile>
@@ -100,17 +97,14 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\FloatNodeDrawer.cs">
       <Link>FloatNodeDrawer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\GroupNodeDrawer.cs">
+      <Link>GroupNodeDrawer.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\HandlerNodeDrawer.cs">
       <Link>HandlerNodeDrawer.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\IntNodeDrawer.cs">
       <Link>IntNodeDrawer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ItemTypesNodeDrawer.cs">
-      <Link>ItemTypesNodeDrawer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\LibraryNodeDrawer.cs">
-      <Link>LibraryNodeDrawer.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\LiteralNodeDrawer.cs">
       <Link>LiteralNodeDrawer.cs</Link>
@@ -160,9 +154,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\DataGraph.cs">
       <Link>DataGraph.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\LibraryGraph.cs">
-      <Link>LibraryGraph.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\ModuleGraph.cs">
       <Link>ModuleGraph.cs</Link>
     </Compile>
@@ -184,9 +175,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentNode.cs">
       <Link>ComponentNode.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ContextNode.cs">
-      <Link>ContextNode.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\CustomActionNode.cs">
       <Link>CustomActionNode.cs</Link>
     </Compile>
@@ -202,6 +190,9 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\FloatNode.cs">
       <Link>FloatNode.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\GroupNode.cs">
+      <Link>GroupNode.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\HandlerNode.cs">
       <Link>HandlerNode.cs</Link>
     </Compile>
@@ -210,12 +201,6 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\IntNode.cs">
       <Link>IntNode.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ItemTypesNode.cs">
-      <Link>ItemTypesNode.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\LibraryNode.cs">
-      <Link>LibraryNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\LiteralNode.cs">
       <Link>LiteralNode.cs</Link>
@@ -274,8 +259,11 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\MappingsReference.cs">
       <Link>MappingsReference.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\SelectReference.cs">
-      <Link>SelectReference.cs</Link>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\RequireReference.cs">
+      <Link>RequireReference.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\ScopeReference.cs">
+      <Link>ScopeReference.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots.designer.cs">
       <Link>Slots.designer.cs</Link>
@@ -304,9 +292,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentNodeViewModel.cs">
       <Link>ComponentNodeViewModel.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ContextNodeViewModel.cs">
-      <Link>ContextNodeViewModel.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\CustomActionNodeViewModel.cs">
       <Link>CustomActionNodeViewModel.cs</Link>
     </Compile>
@@ -322,17 +307,14 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\FloatNodeViewModel.cs">
       <Link>FloatNodeViewModel.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\GroupNodeViewModel.cs">
+      <Link>GroupNodeViewModel.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\HandlerNodeViewModel.cs">
       <Link>HandlerNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\IntNodeViewModel.cs">
       <Link>IntNodeViewModel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ItemTypesNodeViewModel.cs">
-      <Link>ItemTypesNodeViewModel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\LibraryNodeViewModel.cs">
-      <Link>LibraryNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\LiteralNodeViewModel.cs">
       <Link>LiteralNodeViewModel.cs</Link>

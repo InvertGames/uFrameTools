@@ -16,7 +16,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
 
     public override bool IsCollapsed
     {
-        get { return !GraphItem.PersistedItems.Any(); }
+        get { return false; }
         set { base.IsCollapsed = value; }
     }
 
