@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Commands
 {
-    class LoginCommand : ICommand
+    public class LoginCommand : ICommand
     {
         public string Title
         {

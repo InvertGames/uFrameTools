@@ -3,32 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Invert.Data;
+using Invert.Json;
 
 namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Data
 {
     public class UFramePackageDescriptor : IDataRecord 
     {
-
+        [JsonProperty]
         public string Id { get; set; }
-        
+
+        [JsonProperty]
         public string Title { get; set; }
-        
+        [JsonProperty]
+
         public string Description { get; set; }
+[JsonProperty]
 
         public UFramePackageManagementType ManagementType { get; set; }
+[JsonProperty]
 
         public string ProjectIconUrl { get; set; }
 
-
 //        public string Code; // done using based on Title            
-//        
 //        public string Slug { get; set; }
-        
-        public IList<UFramePackageRevisionDescriptor> Revisions { get; set; }
+        [JsonProperty]
+        public List<string> RevisionIds { get; set; }
+
+        [JsonProperty]
 
         public string RepositoryUrl { get; set; }
+[JsonProperty]
         
         public bool IsPublic { get; set; }
+[JsonProperty]
         
         public PackageState State { get; set; }
 

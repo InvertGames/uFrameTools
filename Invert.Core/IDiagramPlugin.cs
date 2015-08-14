@@ -31,7 +31,7 @@ namespace Invert.Core
 
     public abstract class CorePlugin : ICorePlugin
     {
-        public void Execute<TCommand>(TCommand command) where TCommand : IExecuteCommand<TCommand>, ICommand
+        public void Execute<TCommand>(TCommand command) where TCommand :  ICommand
         {
             InvertApplication.Execute(command);
         }

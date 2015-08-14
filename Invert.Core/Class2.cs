@@ -443,9 +443,7 @@ namespace Invert.Core
                 {
                     Action = () =>
                     {
-                        SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));
-                        SignalEvent<IExecuteCommand<TCommand>>(_ => _.Execute(command));
-                        SignalEvent<ICommandExecuted>(_ => _.CommandExecuted(command));
+                        Execute(command);
                     }
                 };
 
