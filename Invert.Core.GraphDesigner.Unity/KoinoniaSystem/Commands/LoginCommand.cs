@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
 namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Commands
 {
-    public class LoginCommand : ICommand
+    public class LoginCommand : IBackgroundCommand
     {
         public string Title
         {
@@ -15,6 +16,7 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Commands
         public string Username { get; set; }
         public string Password { get; set; }
 
+        public BackgroundWorker Worker { get; set; }
     }
 
 
