@@ -260,10 +260,13 @@ namespace Invert.Core.GraphDesigner
                 fieldViewModel.InspectorType = attribute.InspectorType;
                 fieldViewModel.Type = property.PropertyType;
                 fieldViewModel.CustomDrawerType = attribute.CustomDrawerType;
+                fieldViewModel.CachedValue = fieldViewModel.Getter();
                 viewModel.Add(fieldViewModel);
 
             }
         }
+
+        
     }
 
 }

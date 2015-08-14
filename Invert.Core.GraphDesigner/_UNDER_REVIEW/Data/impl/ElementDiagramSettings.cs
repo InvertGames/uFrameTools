@@ -156,7 +156,7 @@ public class ElementDiagramSettings : IJsonObject
 
     public int SnapSize
     {
-        get { return _snapSize; }
+        get { return 12; }
         set { _snapSize = value; }
     }
 

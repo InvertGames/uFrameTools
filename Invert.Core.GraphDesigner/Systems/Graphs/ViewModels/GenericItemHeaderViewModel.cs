@@ -40,8 +40,13 @@ namespace Invert.Core.GraphDesigner
         public override Vector2 Position { get; set; }
         public override string Name { get; set; }
         public GraphItemViewModel NodeViewModel { get; set; }
-        public IEditorCommand AddCommand { get; set; }
+        public ICommand AddCommand { get; set; }
         public NodeConfigBase NodeConfig { get; set; }
         public NodeConfigSectionBase SectionConfig { get; set; }
+
+        public void Add()
+        {
+            InvertApplication.Execute(AddCommand);
+        }
     }
 }

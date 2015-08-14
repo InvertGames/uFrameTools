@@ -14,12 +14,10 @@ public class UnityWindowManager : IWindowManager
         ElementItemTypesWindow.InitTypeListWindow("Choose Type", typesInfoList, (selected) =>
         {
             EditorWindow.GetWindow<ElementItemTypesWindow>().Close();
-            InvertGraphEditor.ExecuteCommand(_ =>
+            InvertApplication.Execute(() =>
             {
                 action(selected);
-            }, true);
-          
-          
+            });
         });
     }
     public void InitItemWindow<TItem>(IEnumerable<TItem> items, Action<TItem> action, bool allowNone = false)
@@ -27,7 +25,7 @@ public class UnityWindowManager : IWindowManager
     {
         ItemSelectionWindow.Init("Select Item",items.Cast<IItem>(), (item) =>
         {
-            InvertGraphEditor.ExecuteCommand(_ =>
+            InvertApplication.Execute(() =>
             {
                 action((TItem)item);
             });

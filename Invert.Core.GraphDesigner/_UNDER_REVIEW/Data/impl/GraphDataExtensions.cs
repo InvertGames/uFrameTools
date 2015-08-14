@@ -164,6 +164,7 @@ namespace Invert.Core.GraphDesigner
         }
         public static IEnumerable<FilterItem> FilterItems(this IDiagramFilter filter)
         {
+            if (!FilterExtensions.AllowedFilterNodes.ContainsKey(filter.GetType())) yield break;
             var found = false;
             foreach (FilterItem p in filter.Repository.All<FilterItem>())
             {
@@ -174,7 +175,7 @@ namespace Invert.Core.GraphDesigner
                 if (p.FilterId == filter.Identifier) yield return p;
                 
             }
-            if (!found && filter is IDiagramNode)
+            if (!found && filter is IDiagramNode && FilterExtensions.AllowedFilterNodes.ContainsKey(filter.GetType()))
             {
                 var filterItem = filter.Repository.Create<FilterItem>();
                 filterItem.FilterId = filter.Identifier;

@@ -171,11 +171,10 @@ namespace Invert.Core.GraphDesigner
             base.OnMouseUp(e);
             if (CurrentConnection != null)
             {
-                
-                InvertGraphEditor.ExecuteCommand((v) =>
+                InvertApplication.Execute(new LambdaCommand(() =>
                 {
                     CurrentConnection.Apply(CurrentConnection);
-                },true);
+                }));
             }
             else
             {

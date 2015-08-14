@@ -78,7 +78,6 @@ namespace Invert.Core.GraphDesigner.Unity
         void Progress(float progress, string message);
     }
 
-   
     public class UnityPlatformPreferences : IPlatformPreferences
     {
         public bool GetBool(string name, bool def)
@@ -318,7 +317,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DoButton(Rect scale, string label, object style, Action action, Action rightClick = null)
         {
-            var s = style == null ? EditorStyles.miniButton : (GUIStyle)style;
+            var s = style == null ? ElementDesignerStyles.EventSmallButtonStyle : (GUIStyle)style;
        
             if (GUI.Button(scale, label, s))
             {
@@ -589,7 +588,10 @@ namespace Invert.Core.GraphDesigner.Unity
                     }
                     if (Event.current.isKey && Event.current.keyCode == KeyCode.Return)
                     {
-                        InvertGraphEditor.ExecuteCommand(new SimpleEditorCommand<DiagramViewModel>(_=>{}));
+                        InvertApplication.Execute(() =>
+                        {
+                            
+                        });
                     }
                 }
                 else if (d.InspectorType == InspectorType.TypeSelection)
@@ -600,13 +602,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     if (GUILayout.Button((string)d.CachedValue))
                     {
                         d.NodeViewModel.Select();
-                        InvertGraphEditor.ExecuteCommand(new SelectItemTypeCommand()
-                        {
-                            IncludePrimitives = true,
-                            PrimitiveOnly = false,
-                            AllowNone = false,
-                            
-                        });
+                        // TODO 2.0 Open Selection?
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -694,7 +690,11 @@ namespace Invert.Core.GraphDesigner.Unity
                 d.CachedValue = EditorGUILayout.EnumPopup(d.Name, (Enum)d.CachedValue);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    InvertGraphEditor.ExecuteCommand(_ => d.Setter(d.CachedValue));
+                    InvertApplication.Execute(() =>
+                    {
+                        d.Setter(d.CachedValue);
+                    });
+                    
                 }
             }
             else if (d.Type == typeof(Type))

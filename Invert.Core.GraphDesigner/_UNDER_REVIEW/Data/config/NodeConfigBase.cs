@@ -217,6 +217,7 @@ namespace Invert.Core.GraphDesigner
         private Dictionary<PropertyInfo, Slot> _slots;
         private List<GraphItemConfiguration> _graphItemConfigurations;
         private List<Func<OutputGenerator>> _outputGenerators;
+        private bool _allowAddingInMenu = true;
 
         public IEnumerable<NodeConfigSectionBase> Sections
         {
@@ -264,6 +265,12 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _outputGenerators ?? (_outputGenerators = new List<Func<OutputGenerator>>()); }
             set { _outputGenerators = value; }
+        }
+
+        public bool AllowAddingInMenu
+        {
+            get { return _allowAddingInMenu; }
+            set { _allowAddingInMenu = value; }
         }
 
         public void AddOutputGenerator(Func<OutputGenerator> action)

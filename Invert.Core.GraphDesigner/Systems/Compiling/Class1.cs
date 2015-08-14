@@ -26,6 +26,26 @@ namespace Invert.Core.GraphDesigner
         {
             InvertApplication.SignalEvent<ITaskHandler>(_ => { _.BeginTask(Generate()); });
         }
+
+        public IEnumerable<IDataRecord> Items
+        {
+            get
+            {
+                var workspace = InvertApplication.Container.Resolve<WorkspaceService>();
+                foreach (var item in workspace.CurrentWorkspace.Graphs)
+                {
+                    yield return item;
+                    foreach (var node in item.NodeItems)
+                    {
+                         yield return node;
+                        foreach (var child in node.PersistedItems)
+                            yield return child;
+                    }
+                       
+                }
+                
+            }
+        } 
         public IEnumerator Generate()
         {
 
@@ -33,7 +53,7 @@ namespace Invert.Core.GraphDesigner
             var repository = InvertGraphEditor.Container.Resolve<IRepository>();
             repository.Commit();
             var config = InvertGraphEditor.Container.Resolve<IGraphConfiguration>();
-            var items = repository.AllOf<IDataRecord>().ToArray();
+            var items = Items.Distinct().ToArray();
 
             yield return
                 new TaskProgress(0f, "Refactoring");

@@ -96,13 +96,10 @@ namespace Invert.Core.GraphDesigner
                 platform.DoButton(new Rect(x, rect.y + 20 - (item.Value.y / 2), item.Value.x, item.Value.y), first ? item.Key.Name : "< " + item.Key.Name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle,
                     () =>
                     {
-                        InvertGraphEditor.ExecuteCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
+                        InvertApplication.Execute(new LambdaCommand(() =>
                         {
-                            //DiagramViewModel.NavigateTo(item1.Key.Identifier);
                             DiagramViewModel.GraphData.PopToFilter(item1.Key);
-
                         }));
-
                     });
                 x += item.Value.x + 15;
                 first = false;
@@ -154,49 +151,49 @@ namespace Invert.Core.GraphDesigner
             DrawErrors();
             DrawHelp();
         }
-        //TODO move this to platform specific operation
-#if UNITY_DLL
-        public bool HandleKeyEvent(Event evt, ModifierKeyState keyStates)
-        {
-            var bindings = InvertGraphEditor.KeyBindings;
-            foreach (var keyBinding in bindings)
-            {
-                if (keyBinding.Key != evt.keyCode)
-                {
-                    continue;
-                }
-                if (keyBinding.RequireAlt && !keyStates.Alt)
-                {
-                    continue;
-                }
-                if (keyBinding.RequireShift && !keyStates.Shift)
-                {
-                    continue;
-                }
-                if (keyBinding.RequireControl && !keyStates.Ctrl)
-                {
-                    continue;
-                }
+//        //TODO move this to platform specific operation
+//#if UNITY_DLL
+//        public bool HandleKeyEvent(Event evt, ModifierKeyState keyStates)
+//        {
+//            var bindings = InvertGraphEditor.KeyBindings;
+//            foreach (var keyBinding in bindings)
+//            {
+//                if (keyBinding.Key != evt.keyCode)
+//                {
+//                    continue;
+//                }
+//                if (keyBinding.RequireAlt && !keyStates.Alt)
+//                {
+//                    continue;
+//                }
+//                if (keyBinding.RequireShift && !keyStates.Shift)
+//                {
+//                    continue;
+//                }
+//                if (keyBinding.RequireControl && !keyStates.Ctrl)
+//                {
+//                    continue;
+//                }
 
-                var command = keyBinding.Command;
-                if (command != null)
-                {
-                    if (command.CanExecute(InvertGraphEditor.DesignerWindow) == null)
-                    {
-                        InvertGraphEditor.ExecuteCommand(command);
-                    }
-                    else
-                    {
-                        return false;
-                    }
+//                var command = keyBinding.Command;
+//                if (command != null)
+//                {
+//                    if (command.CanExecute(InvertGraphEditor.DesignerWindow) == null)
+//                    {
+//                        InvertGraphEditor.ExecuteCommand(command);
+//                    }
+//                    else
+//                    {
+//                        return false;
+//                    }
 
-                    return true;
-                }
-                return false;
-            }
-            return false;
-        }
-#endif
+//                    return true;
+//                }
+//                return false;
+//            }
+//            return false;
+//        }
+//#endif
         public override void OnMouseDoubleClick(MouseEvent mouseEvent)
         {
            
@@ -399,27 +396,7 @@ namespace Invert.Core.GraphDesigner
             IDrawer item = DrawersAtMouse.OfType<ConnectorDrawer>().FirstOrDefault();
             if (item != null)
             {
-                // TODO 2.0: Recreate connectors context menu
                 InvertApplication.SignalEvent<IShowContextMenu>(_=>_.Show(mouseEvent,item.ViewModelObject));
-
-                //var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>(item.ViewModelObject, true, typeof(IDiagramNodeItemCommand));
-
-                //var connector = item.ViewModelObject as ConnectorViewModel;
-
-                //var connections =
-                //    DiagramViewModel.GraphItems.OfType<ConnectionViewModel>()
-                //        .Where(p => p.ConnectorA == connector || p.ConnectorB == connector).ToArray();
-
-                //foreach (var connection in connections)
-                //{
-                //    ConnectionViewModel connection1 = connection;
-                //    menu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel model)
-                //    {
-                //        InvertGraphEditor.ExecuteCommand((v) => { connection1.Remove(connection1); }, true);
-                //    }, "Disconnect: " + connection.Name));
-                //}
-                ////a.ShowAsContext();
-                //menu.Go();
                 return;
             }
             item = DrawersAtMouse.OfType<ItemDrawer>().FirstOrDefault();
@@ -439,8 +416,6 @@ namespace Invert.Core.GraphDesigner
                 ShowContextMenu(mouseEvent);
                 return;
             }
-
-
             ShowAddNewContextMenu(mouseEvent);
         }
 
@@ -474,7 +449,7 @@ namespace Invert.Core.GraphDesigner
 
         public void ShowAddNewContextMenu(MouseEvent mouseEvent)
         {
-            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, ViewModelObject));
+            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, DiagramViewModel));
         }
 
         public void ShowContextMenu(MouseEvent mouseEvent)
@@ -484,7 +459,7 @@ namespace Invert.Core.GraphDesigner
 
         public void ShowItemContextMenu(MouseEvent mouseEvent)
         {
-            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, DiagramViewModel.SelectedNodeItems));
+            InvertApplication.SignalEvent<IShowContextMenu>(_ => _.Show(mouseEvent, DiagramViewModel.SelectedNodeItem));
         }
 
         protected override void DataContextChanged()
@@ -693,11 +668,11 @@ namespace Invert.Core.GraphDesigner
         {
             base.Draw(platform, scale);
 
-            if (ViewModel.IsDirty)
-            {
+            //if (ViewModel.IsDirty)
+            //{
                 Refresh(platform);
-                ViewModel.IsDirty = false;
-            }
+              //  ViewModel.IsDirty = false;
+            //}
             if (ViewModel.Visible)
             {
                 var targetBounds = ViewModel.TargetViewModel.Bounds;

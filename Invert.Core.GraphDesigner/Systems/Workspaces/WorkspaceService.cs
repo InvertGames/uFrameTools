@@ -112,9 +112,10 @@ namespace Invert.Core.GraphDesigner
 
         public void QueryToolbarCommands(ToolbarUI ui)
         {
+
             ui.AddCommand(new ToolbarItem()
             {
-                Title = CurrentWorkspace.Name,
+                Title = CurrentWorkspace == null ? "--Choose Workspace--" : CurrentWorkspace.Name,
                 IsDropdown = true,
                 Command = new SelectWorkspaceCommand(),
                 Position = ToolbarPosition.Left
@@ -134,6 +135,7 @@ namespace Invert.Core.GraphDesigner
             var workspace = Repository.Create<Workspace>();
             workspace.Name = command.Name;
             Repository.Commit();
+            command.Result = workspace;
         }
     }
 
@@ -144,6 +146,7 @@ namespace Invert.Core.GraphDesigner
     public class CreateWorkspaceCommand : Command
     {
         public string Name { get; set; }
+        public Workspace Result { get; set; }
     }
     public class OpenGraphCommand : Command
     {

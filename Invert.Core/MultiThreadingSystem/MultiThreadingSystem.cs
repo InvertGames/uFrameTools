@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -23,30 +25,46 @@ namespace Invert.Core
 
         public void Execute(BackgroundTaskCommand command)
         {
-            Action task = () =>
+            BackgroundWorker worker = new BackgroundWorker()
             {
-                try
-                {
-                    command.Action();
-                }
-                catch (ThreadAbortException ex)
-                {
-                }
+                WorkerSupportsCancellation = true,
+                WorkerReportsProgress = true
             };
+            InvertApplication.Log("Creating background task");
+            worker.DoWork += (sender, args) =>
+            {
+               
+                InvertApplication.Log("Executing background task");
+                var bgCommand = args.Argument as BackgroundTaskCommand;
+               
+                if (bgCommand != null)
+                {
+                    bgCommand.Command.Worker = sender as BackgroundWorker;
+                    bgCommand.Action(bgCommand.Command);
+                }
+                   
 
-            var thread = new Thread(new ThreadStart(task));
-            var bgTask = new BackgroundTask(thread);
-            thread.Start();
+              
 
-            command.Task = bgTask;
+            };
+            worker.ProgressChanged += (sender, args) =>
+            {
+                InvertApplication.Log("PROGRESS");
+                InvertApplication.SignalEvent<ICommandProgressEvent>(_=>_.Progress(null,args.UserState.ToString(),args.ProgressPercentage));
+            };
+            command.Task = new BackgroundTask(worker);
+            worker.RunWorkerAsync(command);
+           
+       
         }
     }
 
     public class BackgroundTaskCommand : ICommand
     {
         public string Title { get; private set; }
-        public Action Action { get; set; }
+        public Action<IBackgroundCommand> Action { get; set; }
         public BackgroundTask Task { get; set; }
+        public IBackgroundCommand Command { get; set; }
     }
 
 
@@ -57,25 +75,26 @@ namespace Invert.Core
 
     public class BackgroundTask
     {
-        public Thread Thread { get; set; }
+        public BackgroundWorker Worker { get; set; }
 
-        public BackgroundTask(Thread thread)
+        public BackgroundTask(BackgroundWorker worker)
         {
-            Thread = thread;
+            Worker = worker;
         }
 
         public void Cancel()
         {
-            Thread.Abort();
+            Worker.CancelAsync();
+            Worker.Dispose();
         }
 
         public bool IsRunning
         {
-            get { return Thread.IsAlive; }
+            get { return Worker.IsBusy; }
         }
 
     }
-
+  
 }
 
 

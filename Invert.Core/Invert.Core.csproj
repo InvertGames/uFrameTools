@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Class1.cs" />
     <Compile Include="Class2.cs" />
+    <Compile Include="CoreSystem.cs" />
     <Compile Include="GraphTypeInfo.cs" />
     <Compile Include="IAssetManager.cs" />
     <Compile Include="IDiagramPlugin.cs" />

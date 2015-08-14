@@ -58,20 +58,20 @@ public class QuickAccessWindowViewModel : IWindow
 
     public void ItemSelected(QuickAccessItem item)
     {
-        InvertGraphEditor.ExecuteCommand(_ =>
+        InvertApplication.Execute(new LambdaCommand(() =>
         {
             QuickLaunchItems[SelectedIndex].Action(QuickLaunchItems[SelectedIndex].Item);
-        });
+        }));
         InvertApplication.SignalEvent<IWindowsEvents>(i=>i.WindowRequestCloseWithViewModel(this));
     }
 
 
     public void Execute()
     {
-        InvertGraphEditor.ExecuteCommand(_ =>
+        InvertApplication.Execute(new LambdaCommand(() =>
         {
             QuickLaunchItems[SelectedIndex].Action(QuickLaunchItems[SelectedIndex].Item);
-        });
+        }));
         InvertApplication.SignalEvent<IWindowsEvents>(i => i.WindowRequestCloseWithViewModel(this));
     }
 
@@ -91,10 +91,12 @@ public class QuickAccessWindowViewModel : IWindow
     public void Execute(QuickAccessItem item)
     {
         var x = item.Item;
-        InvertGraphEditor.ExecuteCommand(_ =>
+        var z = item;
+        InvertApplication.Execute(new LambdaCommand(() =>
         {
-            item.Action(x);
-        });
+            z.Action(x);
+        }));
+
         InvertApplication.SignalEvent<IWindowsEvents>(i => i.WindowRequestCloseWithViewModel(this));
     }
 }

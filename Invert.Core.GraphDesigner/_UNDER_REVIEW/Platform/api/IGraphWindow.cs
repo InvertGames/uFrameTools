@@ -2,7 +2,7 @@ using Invert.Core.GraphDesigner;
 
 namespace Invert.Core.GraphDesigner
 {
-    public interface IGraphWindow : ICommandHandler
+    public interface IGraphWindow
     {
         DiagramViewModel DiagramViewModel { get; }
         float Scale { get; set; }

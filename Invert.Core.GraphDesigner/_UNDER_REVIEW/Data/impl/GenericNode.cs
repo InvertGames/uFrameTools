@@ -131,6 +131,49 @@ namespace Invert.Core.GraphDesigner
             
            return a != b;
         }
+
+        public virtual void SetInput(IGraphItem item)
+        {
+            if (!AllowMultipleInputs)
+            {
+                foreach (var input in Inputs)
+                    Repository.Remove(input);
+
+            }
+            if (!AllowMultipleOutputs)
+            {
+                foreach (var output in Outputs)
+                    Repository.Remove(output);
+            }
+
+            
+            var cd = Repository.Create<ConnectionData>();
+            cd.InputIdentifier = Identifier;
+            cd.OutputIdentifier = item.Identifier;
+        }
+        public virtual void SetOutput(IGraphItem item)
+        {
+            if (!AllowMultipleInputs)
+            {
+                foreach (var input in Inputs)
+                    Repository.Remove(input);
+
+            }
+            if (!AllowMultipleOutputs)
+            {
+                foreach (var output in Outputs)
+                    Repository.Remove(output);
+            }
+
+
+            var cd = Repository.Create<ConnectionData>();
+            cd.InputIdentifier = item.Identifier;
+            cd.OutputIdentifier = Identifier;
+        }
+        public virtual IEnumerable<IGraphItem> GetAllowed()
+        {
+            return Repository.AllOf<IGraphItem>();
+        }
     }
 
     public class GeneratorProperty : Attribute

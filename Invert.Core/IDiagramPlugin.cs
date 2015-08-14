@@ -11,6 +11,7 @@ namespace Invert.Core
         string PackageName { get; }
         bool Required { get; }
         bool Ignore { get; }
+        UFrameContainer Container { get; set; }
         void Initialize(UFrameContainer container);
         void Loaded(UFrameContainer container);
         
@@ -26,7 +27,13 @@ namespace Invert.Core
     }
     public interface ICommand
     {
-        string Title { get; }
+    
+        
+    }
+
+    public interface IBackgroundCommand : ICommand
+    {
+        BackgroundWorker Worker { get; set; }
     }
 
     public abstract class CorePlugin : ICorePlugin

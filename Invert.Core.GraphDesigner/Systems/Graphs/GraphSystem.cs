@@ -29,6 +29,19 @@ public class GraphSystem : DiagramPlugin
             }
             
         }
+        var diagram = obj as DiagramViewModel;
+        if (diagram != null)
+        {
+            ui.AddCommand(new ContextMenuItem()
+            {
+                Title = "Delete This Graph",
+                Group = "Remove",
+                Command =  new LambdaCommand(() =>
+                {
+                    Container.Resolve<IRepository>().Remove(diagram.DataObject as IDataRecord);
+                })
+            });
+        }
     }
 
     public void QueryToolbarCommands(ToolbarUI ui)

@@ -74,7 +74,8 @@ namespace Invert.Core.GraphDesigner
                 {
                     var vm = this.ViewModel.NodeViewModel as GraphItemViewModel;
                     vm.Select();
-                    InvertGraphEditor.ExecuteCommand(ViewModel.AddCommand);
+                    ViewModel.Add();
+                    //InvertGraphEditor.ExecuteCommand(ViewModel.AddCommand);
                 });
                
             }

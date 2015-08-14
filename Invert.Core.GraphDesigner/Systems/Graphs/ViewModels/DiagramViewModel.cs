@@ -42,7 +42,8 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return Settings.SnapSize * Scale;
+                //Settings.SnapSize* Scale;
+                return 12f;//
             }
         }
         public ElementDiagramSettings Settings
@@ -192,7 +193,7 @@ namespace Invert.Core.GraphDesigner
         public void Load()
         {
             GraphItems.Clear();
-            GraphItems.Add(InspectorViewModel);
+            //GraphItems.Add(InspectorViewModel);
             var connectors = new List<ConnectorViewModel>();
             if (GraphData == null)
             {
@@ -529,14 +530,13 @@ namespace Invert.Core.GraphDesigner
             var items = SelectedNodeItems.OfType<ItemViewModel>().Where(p => p.IsEditing).ToArray();
             if (items.Length > 0)
             {
-                InvertGraphEditor.ExecuteCommand(_ =>
+                InvertApplication.Execute(() =>
                 {
                     foreach (var item in items)
                     {
                         item.EndEditing();
 
                     }
-
                 });
             }
 
@@ -568,19 +568,20 @@ namespace Invert.Core.GraphDesigner
         }
 
       
-        public void UpgradeProject()
-        {
-            InvertGraphEditor.ExecuteCommand((n) =>
-            {
-                Process15Uprade();
-            });
+        //public void UpgradeProject()
+        //{
+        //    InvertApplication
+        //    InvertGraphEditor.ExecuteCommand((n) =>
+        //    {
+        //        Process15Uprade();
+        //    });
 
-        }
+        //}
 
-        public void Process15Uprade()
-        {
+        //public void Process15Uprade()
+        //{
 
-        }
+        //}
 
         public void AddNode(IDiagramNode newNodeData)
         {
@@ -684,6 +685,11 @@ namespace Invert.Core.GraphDesigner
             {
 
             });
+        }
+
+        public void UpgradeProject()
+        {
+            
         }
     }
 }

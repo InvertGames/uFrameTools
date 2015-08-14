@@ -473,10 +473,8 @@ namespace Invert.Core.GraphDesigner
             Container.RegisterFilterNode<TNodeType, TNode>();
             return this;
         }
-        public NodeConfigSection<TNode> TypedSection<TChildItem>(string header, SelectItemTypeCommand selectTypeCommand) where TChildItem : ITypedItem
+        public NodeConfigSection<TNode> TypedSection<TChildItem>(string header, SelectTypeCommand selectTypeCommand) where TChildItem : ITypedItem
         {
-
-            Container.RegisterInstance<IEditorCommand>(selectTypeCommand, typeof(TChildItem).Name + "TypeSelection");
             return Section<TChildItem>(header);
         }
         public NodeGeneratorConfig<TNode> GetGeneratorConfig<TCodeGenerator>() where TCodeGenerator : CodeGenerator

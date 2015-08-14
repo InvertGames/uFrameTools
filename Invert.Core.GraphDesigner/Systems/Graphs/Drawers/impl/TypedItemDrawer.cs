@@ -53,15 +53,9 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void OptionClicked()
         {
-            if (!this.ItemViewModel.Enabled) return;
-            if (TypedItemViewModel.Data.Precompiled) return;
-            var commandName = ViewModelObject.DataObject.GetType().Name.Replace("Data", "") + "TypeSelection";
-
-            var command = InvertGraphEditor.Container.Resolve<IEditorCommand>(commandName);
+           
             TypedItemViewModel.Select();
-            if (command == null) return;
-
-            InvertGraphEditor.ExecuteCommand(command);
+            TypedItemViewModel.ShowSelectionListWindow();
         }
 
         public override void Draw(IPlatformDrawer platform, float scale)

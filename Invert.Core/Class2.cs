@@ -334,7 +334,7 @@ namespace Invert.Core
                 if (diagramPlugin.Enabled)
                 {
 
-              
+                    diagramPlugin.Container = Container;
                     diagramPlugin.Initialize(Container);
                 }
                     
@@ -425,7 +425,10 @@ namespace Invert.Core
             var m = manager as EventManager<TEvents>;
             m.Signal(action);
         }
-
+        public static void Execute(Action action)
+        {
+            Execute(new LambdaCommand(action));
+        }
         public static void Execute<TCommand>(TCommand command) where TCommand : ICommand
         {
         
@@ -436,17 +439,21 @@ namespace Invert.Core
         }
 
         public static BackgroundTask ExecuteInBackground<TCommand>(TCommand command)
-            where TCommand : ICommand
+            where TCommand : IBackgroundCommand
         {
+            SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));
 
             var cmd = new BackgroundTaskCommand()
                 {
-                    Action = () =>
+                    Command = command,
+                    Action = (c) =>
                     {
-                        Execute(command);
+                       
+                        SignalEvent<IExecuteCommand<TCommand>>(_ => _.Execute((TCommand)c));
+                       
                     }
                 };
-
+            SignalEvent<ICommandExecuted>(_ => _.CommandExecuted(command));
             SignalEvent<IExecuteCommand<BackgroundTaskCommand>>(m=>
             {
                 m.Execute(cmd);
