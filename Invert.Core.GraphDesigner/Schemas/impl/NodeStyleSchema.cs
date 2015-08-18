@@ -124,7 +124,7 @@ namespace Invert.Core.GraphDesigner.Schemas.impl
             };
 
 
-            if (ImagePool.ContainsKey(item) && ImagePool[item].Equals(null)) ImagePool.Remove(item);
+            if (ImagePool.ContainsKey(item) && ((Equals(ImagePool[item], null)) || ImagePool[item].Equals(null))) ImagePool.Remove(item);
 
             if (!ImagePool.ContainsKey(item))
             {
@@ -142,8 +142,7 @@ namespace Invert.Core.GraphDesigner.Schemas.impl
                 Color = color,
             };
 
-            if (ImagePool.ContainsKey(item) && ImagePool[item].Equals(null)) ImagePool.Remove(item);
-
+            if (ImagePool.ContainsKey(item) && ((Equals(ImagePool[item], null)) || ImagePool[item].Equals(null))) ImagePool.Remove(item);
             if (!ImagePool.ContainsKey(item))
             {
                 ImagePool.Add(item, ConstructIcon(iconName, color));
