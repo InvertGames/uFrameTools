@@ -47,6 +47,8 @@
   <ItemGroup>
     <Compile Include="Systems\Compiling\Class1.cs" />
     <Compile Include="Systems\Connections\ConnectionSystem.cs" />
+    <Compile Include="Systems\Graphs\Drawers\Schemas\impl\BreadcrumbsStyleSchema.cs" />
+    <Compile Include="Systems\Graphs\ViewModels\GraphDesignerNavigationViewModel.cs" />
     <Compile Include="Systems\Nodes\NodeSystem.cs" />
     <Compile Include="Systems\TypesSystem\TypesSystem.cs" />
     <Compile Include="Systems\Validation\ValidationSystem.cs" />
@@ -65,6 +67,7 @@
     <Compile Include="Systems\Graphs\ViewModels\DesignerViewModel.cs" />
     <Compile Include="Systems\Graphs\ViewModels\IGraphSelectionEvents.cs" />
     <Compile Include="Systems\Graphs\ViewModels\TabViewModel.cs" />
+    <Compile Include="Systems\Graphs\Drawers\Schemas\api\IBreadcrumbsStyleSchema.cs" />
     <Compile Include="_UNDER_REVIEW\Windows\Area.cs" />
     <Compile Include="_UNDER_REVIEW\Windows\AreaLayout.cs" />
     <Compile Include="Code\CodeTemplates\api\ITemplate.cs" />

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-
+using System.Security.AccessControl;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -79,31 +79,96 @@ namespace Invert.Core.GraphDesigner
 
         public void DrawBreadcrumbs(IPlatformDrawer platform,  float y)
         {
-            var rect = new Rect(0, y, Bounds.width, 40f);
-            var color = new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.8f, InvertGraphEditor.Settings.BackgroundColor.g * 0.8f, InvertGraphEditor.Settings.BackgroundColor.b * 0.8f, 1f);
+            var breadcrumbsRect = new Rect(0, y, Bounds.width, 25f);
 
-            platform.DrawRect(rect, color);
-            var lineRect = new Rect(rect);
-            lineRect.height = 2;
-            lineRect.y = y + 38f;
-            platform.DrawRect(lineRect, new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.6f, InvertGraphEditor.Settings.BackgroundColor.g * 0.6f, InvertGraphEditor.Settings.BackgroundColor.b * 0.6f, 1f));
-            var x = 15f;
-            var first = true;
-            if (_cachedPaths != null)
-            foreach (var item in _cachedPaths)
+            //var color = new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.8f, InvertGraphEditor.Settings.BackgroundColor.g * 0.8f, InvertGraphEditor.Settings.BackgroundColor.b * 0.8f, 1f);
+            //platform.DrawRect(rect, color);
+            
+//            var lineRect = new Rect(rect);
+//            lineRect.height = 2;
+//            lineRect.y = y + 38f;
+//            platform.DrawRect(lineRect, new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.6f, InvertGraphEditor.Settings.BackgroundColor.g * 0.6f, InvertGraphEditor.Settings.BackgroundColor.b * 0.6f, 1f));
+//            
+//            
+//            var first = true;
+//            if (_cachedPaths != null)
+//            foreach (var item in _cachedPaths)
+//            {
+//                var item1 = item;
+//                platform.DoButton(new Rect(x, rect.y + 20 - (item.Value.y / 2), item.Value.x, item.Value.y), first ? item.Key.Name : "< " + item.Key.Name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle,
+//                    () =>
+//                    {
+//                        InvertApplication.Execute(new LambdaCommand(() =>
+//                        {
+//                            DiagramViewModel.GraphData.PopToFilter(item1.Key);
+//                        }));
+//                    });
+//                x += item.Value.x + 15;
+//                first = false;
+//            }
+
+
+            var x = 1f;
+
+            var styles = DiagramViewModel.NavigationViewModel.BreadcrumbsStyle;
+            var iconsTine = new Color(1, 1, 1, 0.5f);
+
+            foreach (var usitem in DiagramViewModel.NavigationViewModel.Breadcrubs)
             {
-                var item1 = item;
-                platform.DoButton(new Rect(x, rect.y + 20 - (item.Value.y / 2), item.Value.x, item.Value.y), first ? item.Key.Name : "< " + item.Key.Name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle,
-                    () =>
-                    {
-                        InvertApplication.Execute(new LambdaCommand(() =>
-                        {
-                            DiagramViewModel.GraphData.PopToFilter(item1.Key);
-                        }));
-                    });
-                x += item.Value.x + 15;
-                first = false;
+                var item = usitem;
+                var textSize = platform.CalculateSize(usitem.Title, CachedStyles.BreadcrumbTitleStyle);
+                float buttonContentPadding = 5;
+                float buttonIconsPadding= 5;
+                bool useSpecIcon = !string.IsNullOrEmpty(item.SpecializedIcon);
+                var buttonWidth = textSize.x + buttonContentPadding*2;
+                if (!string.IsNullOrEmpty(item.Icon)) buttonWidth += buttonIconsPadding + 16;
+                if (useSpecIcon) buttonWidth += buttonIconsPadding + 16;
+                var buttonRect = new Rect()
+                    .AlignAndScale(breadcrumbsRect)
+                    .WithWidth(buttonWidth)
+                    .PadSides(0)
+                    .Translate(x, 0);
+
+
+                var icon1Rect = new Rect()
+                    .WithSize(16, 16)
+                    .AlignTopRight(buttonRect)
+                    .AlignHorisonallyByCenter(buttonRect)
+                    .Translate(-buttonContentPadding, 0);
+
+                var icon2Rect = new Rect()
+                    .WithSize(16, 16)
+                    .Align(buttonRect)
+                    .AlignHorisonallyByCenter(buttonRect)
+                    .Translate(buttonContentPadding, 0);
+
+                var textRect = new Rect()
+                    .WithSize(textSize.x, textSize.y)
+                    .Align(useSpecIcon ? icon2Rect : buttonRect)
+                    .AlignHorisonallyByCenter(buttonRect)
+                    .Translate(useSpecIcon ? buttonIconsPadding + 16 : buttonContentPadding, 0);
+
+                var dotRect = new Rect()
+                    .WithSize(16, 16)
+                    .RightOf(buttonRect)
+                    .AlignHorisonallyByCenter(buttonRect);
+
+
+                platform.DoButton(buttonRect, "", item.State == NavigationItemState.Current ? CachedStyles.BreadcrumbBoxActiveStyle : CachedStyles.BreadcrumbBoxStyle, item.NavigationAction);
+                platform.DrawLabel(textRect, item.Title, CachedStyles.BreadcrumbTitleStyle, DrawingAlignment.MiddleCenter);
+                platform.DrawImage(icon1Rect, styles.GetIcon(item.Icon,iconsTine), true);
+                if (useSpecIcon) platform.DrawImage(icon2Rect, styles.GetIcon(item.SpecializedIcon, iconsTine), true);
+
+                if (item.State != NavigationItemState.Current)
+                {
+                    platform.DrawImage(dotRect, styles.GetIcon("DotIcon", iconsTine), true);
+                }
+
+                x += buttonRect.width + 16;
+
+
             }
+
         }
 
         public override void Draw(IPlatformDrawer platform, float scale)
@@ -425,9 +490,12 @@ namespace Invert.Core.GraphDesigner
             // Eventually it will all be viewmodels
             if (DiagramViewModel == null) return;
             Dictionary<IDiagramFilter, Vector2> dictionary = new Dictionary<IDiagramFilter, Vector2>();
+            
             var first = true;
             foreach (var filter in new [] {DiagramViewModel.GraphData.RootFilter}.Concat(this.DiagramViewModel.GraphData.GetFilterPath()).Reverse())
             {
+
+
                 var name = first ? filter.Name : "< " + filter.Name;
                 dictionary.Add(filter, platform.CalculateSize(name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle));
                 first = false;
@@ -577,6 +645,9 @@ namespace Invert.Core.GraphDesigner
         }
 #endif
     }
+
+
+
 
     public class InspectorDrawer : Drawer<InspectorViewModel>
     {

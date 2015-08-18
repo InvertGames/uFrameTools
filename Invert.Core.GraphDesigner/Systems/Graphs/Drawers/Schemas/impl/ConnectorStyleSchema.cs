@@ -26,6 +26,8 @@ namespace Invert.Core.GraphDesigner
                 Tint = tint
             };
 
+
+            if (TexturesCache.ContainsKey(item) && ((Equals(TexturesCache[item], null)) || TexturesCache[item].Equals(null))) TexturesCache.Remove(item);
             if (!TexturesCache.ContainsKey(item))
             {
                 TexturesCache.Add(item, ConstructTexture(side, direction, connected, tint));

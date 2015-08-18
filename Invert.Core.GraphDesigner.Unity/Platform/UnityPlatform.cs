@@ -436,7 +436,6 @@ namespace Invert.Core.GraphDesigner.Unity
             var color = new Color(InvertGraphEditor.Settings.BackgroundColor.r*0.8f,
                 InvertGraphEditor.Settings.BackgroundColor.g*0.8f, InvertGraphEditor.Settings.BackgroundColor.b*0.8f);
             EditorGUI.DrawRect(tabsRect, color);
-
             if (designerWindow != null && designerWindow.Designer != null)
             {
                 GUILayout.BeginArea(tabsRect);
@@ -796,6 +795,12 @@ namespace Invert.Core.GraphDesigner.Unity
                     return EditorStyles.largeLabel;
                 case InvertStyles.Tag1:
                     return ElementDesignerStyles.Tag1;
+                case InvertStyles.BreadcrumbBoxStyle:
+                    return ElementDesignerStyles.BreadcrumbBoxStyle;            
+                case InvertStyles.BreadcrumbBoxActiveStyle:
+                    return ElementDesignerStyles.BreadcrumbBoxActiveStyle;
+                case InvertStyles.BreadcrumbTitleStyle:
+                    return ElementDesignerStyles.BreadcrumbTitleStyle;
                 case InvertStyles.NodeBackground:
                     return ElementDesignerStyles.NodeBackground;           
                 case InvertStyles.NodeBackgroundBorderless:
@@ -925,6 +930,18 @@ namespace Invert.Core.GraphDesigner.Unity
                     break;
                 case ConnectorStyle.Circle:
                     return ElementDesignerStyles.ConnectorStyleSchemaCircle;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("name", name, null);
+            }
+        }
+
+        public IBreadcrumbsStyleSchema GetBreadcrumbStyleSchema(BreadcrumbsStyle name)
+        {
+            switch (name)
+            {
+                case BreadcrumbsStyle.Default:
+                    return ElementDesignerStyles.DefaultBreadcrumbsStyleSchema;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("name", name, null);

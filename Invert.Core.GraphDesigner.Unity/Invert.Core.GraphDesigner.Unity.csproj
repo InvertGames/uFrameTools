@@ -84,6 +84,7 @@
     <Compile Include="InspectorWindow\uFrameInspector.cs" />
     <Compile Include="InspectorWindow\uFrameInspectorWindow.cs" />
     <Compile Include="Platform\CompilationProgress.cs" />
+    <Compile Include="Schemas\UnityBreadcrumbsStyleSchema.cs" />
     <Compile Include="Schemas\UnityConnectorStyleSchema.cs" />
     <Compile Include="Schemas\UnityNodeStyleSchema.cs" />
     <Compile Include="TaskSystem.cs" />

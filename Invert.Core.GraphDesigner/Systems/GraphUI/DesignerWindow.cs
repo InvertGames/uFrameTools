@@ -126,7 +126,7 @@ namespace Invert.Core.GraphDesigner
             {
                 var toolbarTopRect = new Rect(0, 0, width, 18);
                 var tabsRect = new Rect(0, toolbarTopRect.height, width, 31);
-                var breadCrumbsRect = new Rect(0, tabsRect.y + tabsRect.height, width, 40);
+                var breadCrumbsRect = new Rect(0, tabsRect.y + tabsRect.height, width, 26);
 
                 diagramRect = new Rect(0f, breadCrumbsRect.y + breadCrumbsRect.height, width,
                     height - ((toolbarTopRect.height * 2)) - breadCrumbsRect.height - 20 - 32);
@@ -137,6 +137,7 @@ namespace Invert.Core.GraphDesigner
                 Drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Left);
                 //drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Right);
                 Drawer.DoTabs(tabsRect, this); DiagramRect = diagramRect;
+                
                 if (DiagramDrawer != null)
                 {
                     DiagramDrawer.DrawBreadcrumbs(Drawer, breadCrumbsRect.y);

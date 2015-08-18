@@ -74,6 +74,12 @@ namespace Invert.Core.GraphDesigner
 
         INodeStyleSchema GetNodeStyleSchema(NodeStyle name);
         IConnectorStyleSchema GetConnectorStyleSchema(ConnectorStyle name);
+        IBreadcrumbsStyleSchema GetBreadcrumbStyleSchema(BreadcrumbsStyle name);
+    }
+
+    public enum BreadcrumbsStyle
+    {
+        Default
     }
 
     public enum ConnectorStyle
@@ -246,6 +252,10 @@ namespace Invert.Core.GraphDesigner
         private static INodeStyleSchema _nodeStyleSchemaMinimalistic;
         private static INodeStyleSchema _nodeStyleSchemaBold;
         private static object _nodeBackgroundBorderless;
+        private static object _breadcrumbTitleStyle;
+        private static object _breadcrumbBoxStyle;
+        private static object _breadcrumbBoxActiveStyle;
+        private static IBreadcrumbsStyleSchema _defaultBreadcrumbsStyleSchema;
 
         public static object Item1
         {
@@ -460,6 +470,30 @@ namespace Invert.Core.GraphDesigner
             get { return _nodeStyleSchemaBold ?? (_nodeStyleSchemaBold = InvertGraphEditor.StyleProvider.GetNodeStyleSchema(NodeStyle.Bold)); }
             set { _nodeStyleSchemaBold = value; }
         }
+
+        public static IBreadcrumbsStyleSchema DefaultBreadcrumbsStyleSchema
+        {
+            get { return _defaultBreadcrumbsStyleSchema ?? (_defaultBreadcrumbsStyleSchema = InvertGraphEditor.StyleProvider.GetBreadcrumbStyleSchema(BreadcrumbsStyle.Default)); }
+            set { _defaultBreadcrumbsStyleSchema = value; }
+        }
+
+        public static object BreadcrumbTitleStyle
+        {
+            get { return _breadcrumbTitleStyle ?? (_breadcrumbTitleStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.BreadcrumbTitleStyle)); }
+            set { _breadcrumbTitleStyle = value; }
+        }
+
+        public static object BreadcrumbBoxStyle
+        {
+            get { return _breadcrumbBoxStyle ?? (_breadcrumbBoxStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.BreadcrumbBoxStyle) ); }
+            set { _breadcrumbBoxStyle = value; }
+        }      
+        
+        public static object BreadcrumbBoxActiveStyle
+        {
+            get { return _breadcrumbBoxActiveStyle ?? (_breadcrumbBoxActiveStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.BreadcrumbBoxActiveStyle)); }
+            set { _breadcrumbBoxActiveStyle = value; }
+        }
     }
 
     public interface IDebugWindowEvents
@@ -522,7 +556,10 @@ namespace Invert.Core.GraphDesigner
         ToolbarButton,
         ToolbarButtonDown,
         GraphTitleLabel,
-        NodeBackgroundBorderless
+        NodeBackgroundBorderless,
+        BreadcrumbBoxStyle,
+        BreadcrumbTitleStyle,
+        BreadcrumbBoxActiveStyle
     }
 
  

@@ -15,6 +15,7 @@ namespace Invert.Core.GraphDesigner
         private IEnumerable<IDiagramContextCommand> _diagramContextCommands;
         private ModelCollection<GraphItemViewModel> _inspectorItems = new ModelCollection<GraphItemViewModel>();
         private InspectorViewModel _inspectorViewModel;
+        private GraphDesignerNavigationViewModel _navigationViewModel;
 
         public IEnumerable<ErrorInfo> Issues
         {
@@ -46,6 +47,7 @@ namespace Invert.Core.GraphDesigner
                 return 12f;//
             }
         }
+
         public ElementDiagramSettings Settings
         {
             get { return GraphData.Settings; }
@@ -240,6 +242,20 @@ namespace Invert.Core.GraphDesigner
                 vm.GetConnectors(vm.Connectors);
                 connectors.AddRange(vm.Connectors);
             }
+
+            NavigationViewModel.Refresh();
+
+
+//            foreach (var filter in new[] { GraphData.RootFilter }.Concat(this.GraphData.GetFilterPath()))
+//            {
+//
+//
+//                var name = first ? filter.Name : "< " + filter.Name;
+//                dictionary.Add(filter, platform.CalculateSize(name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle));
+//                first = false;
+//            }
+
+
             RefreshConnectors(connectors);
             
         }
@@ -251,6 +267,15 @@ namespace Invert.Core.GraphDesigner
                 DiagramViewModel = this
             }); }
             set { _inspectorViewModel = value; }
+        }    
+        
+        public GraphDesignerNavigationViewModel NavigationViewModel
+        {
+            get { return _navigationViewModel ?? (_navigationViewModel = new GraphDesignerNavigationViewModel()
+            {
+                DiagramViewModel = this
+            }); }
+            set { _navigationViewModel = value; }
         }
 
         public void RefreshConnectors()

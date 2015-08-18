@@ -118,6 +118,10 @@ namespace Invert.Common
         private static INodeStyleSchema _nodeStyleSchemaMinimalistic;
         private static INodeStyleSchema _nodeStyleSchemaBold;
         private static GUIStyle _nodeBackgroundBorderless;
+        private static GUIStyle _breadcrumbBoxStyle;
+        private static GUIStyle _breadcrumbTitleStyle;
+        private static GUIStyle _breadcrumbBoxActiveStyle;
+        private static IBreadcrumbsStyleSchema _defaultBreadcrumbsStyleSchema;
 
         public static GUIStyle AddButtonStyle
         {
@@ -1400,6 +1404,43 @@ namespace Invert.Common
             }
         }
 
+        public static GUIStyle BreadcrumbTitleStyle
+        {
+            get
+            {
+                return _breadcrumbTitleStyle ?? (_breadcrumbTitleStyle = new GUIStyle()
+                {
+                    fontSize = 13
+                }).WithAllStates(new Color(0.8f, 0.8f, 0.8f));
+            }
+        }
+
+
+        public static GUIStyle BreadcrumbBoxStyle
+        {
+            get
+            {
+                return _breadcrumbBoxStyle ?? (_breadcrumbBoxStyle = new GUIStyle()
+                {
+                    border = new RectOffset(10, 10, 10, 10)
+                }).WithAllStates("Box21", Color.clear);
+            }
+            set { _breadcrumbBoxStyle = value; }
+        }   
+     
+        public static GUIStyle BreadcrumbBoxActiveStyle
+        {
+            get
+            {
+                return _breadcrumbBoxActiveStyle ?? (_breadcrumbBoxActiveStyle = new GUIStyle()
+                {
+                    border = new RectOffset(10, 10, 10, 10)
+                }).WithAllStates("Box21Active", Color.clear);
+            }
+            set { _breadcrumbBoxActiveStyle = value; }
+        }   
+
+
         public static GUIStyle SceneViewBar
         {
             get
@@ -1790,10 +1831,12 @@ namespace Invert.Common
                 ); }
         }
 
-        
-       
 
-        
+        public static IBreadcrumbsStyleSchema DefaultBreadcrumbsStyleSchema
+        {
+            get { return _defaultBreadcrumbsStyleSchema ?? (_defaultBreadcrumbsStyleSchema = new UnityBreadcrumbsStyleSchema()); }
+            set { _defaultBreadcrumbsStyleSchema = value; }
+        }
 
         public static INodeStyleSchema BaseNodeStyleSchema
         {
