@@ -89,6 +89,7 @@ namespace Invert.Core.GraphDesigner
                         }
                     });
                 }
+                ui.AddSeparator();
                 ui.AddCommand(new ContextMenuItem()
                 {
                     Title = "Create New Workspace",

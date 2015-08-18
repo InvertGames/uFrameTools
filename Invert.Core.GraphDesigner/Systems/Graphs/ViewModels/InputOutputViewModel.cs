@@ -6,12 +6,29 @@ namespace Invert.Core.GraphDesigner
 {
     public class InputOutputViewModel : GraphItemViewModel
     {
+        private bool _allowSelection;
         public override Vector2 Position { get; set; }
         public override string Name { get; set; }
         public bool IsInput { get; set; }
         public bool IsOutput { get; set; }
+        protected override void DataObjectChanged()
+        {
+            base.DataObjectChanged();
+            if (ReferenceItem != null)
+            {
+                AllowSelection = ReferenceItem.AllowSelection;
+            }
+        }
 
-        public bool AllowSelection { get; set; }
+        public bool AllowSelection
+        {
+            get
+            {
+                
+                return _allowSelection;
+            }
+            set { _allowSelection = value; }
+        }
 
         public override ConnectorViewModel InputConnector
         {
@@ -25,7 +42,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (!IsOutput) return null;
+                if (!IsOutput || AllowSelection) return null;
                 return base.OutputConnector;
             }
         }

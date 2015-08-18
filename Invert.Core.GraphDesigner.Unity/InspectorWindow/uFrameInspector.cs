@@ -126,7 +126,6 @@ public class InspectorPlugin : DiagramPlugin
 
     public void RecordInserted(IDataRecord record)
     {
-        InvertApplication.Log("Inserted");
         UpdateItems(); 
         if (uFrameInspectorWindow.Instance != null)
             uFrameInspectorWindow.Instance.Repaint();
@@ -134,7 +133,6 @@ public class InspectorPlugin : DiagramPlugin
 
     public void RecordRemoved(IDataRecord record)
     {
-        InvertApplication.Log("Removed");
         UpdateItems(); if (uFrameInspectorWindow.Instance != null)
             uFrameInspectorWindow.Instance.Repaint();
     }

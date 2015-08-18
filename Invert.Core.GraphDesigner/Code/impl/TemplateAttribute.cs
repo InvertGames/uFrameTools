@@ -690,7 +690,7 @@ namespace Invert.Core.GraphDesigner
             foreach (var attribute in Attributes)
             {
                 ctx.CurrentMember.CustomAttributes.Add(
-                    new CodeAttributeDeclaration(new CodeTypeReference(typeof (Attribute))));
+                    new CodeAttributeDeclaration(new CodeTypeReference(attribute)));
             }
         }
     }
@@ -710,7 +710,7 @@ namespace Invert.Core.GraphDesigner
         {
             //base.Apply(ctx);
             ctx.CurrentProperty.GetStatements._if("{0} == null", Field.Name).TrueStatements
-                .Add(new CodeAssignStatement(new CodeSnippetExpression(string.Format("{0}", Field.Name)), new CodeObjectCreateExpression(Field.Type)) );
+                .Add(new CodeAssignStatement(new CodeSnippetExpression(string.Format("{0}", Field.Name)), DefaultExpression == null ? (CodeExpression) new CodeObjectCreateExpression(Field.Type) : new CodeSnippetExpression(DefaultExpression)) );
             ctx.CurrentProperty.GetStatements._("return {0}", Field.Name);
             if (!ReadOnly)
             ctx.CurrentProperty.SetStatements._("{0} = value", Field.Name);

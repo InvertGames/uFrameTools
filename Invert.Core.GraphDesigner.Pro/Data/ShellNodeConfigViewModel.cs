@@ -9,6 +9,24 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
     {
     }
 
+    public override INodeStyleSchema StyleSchema
+    {
+        get
+        {
+
+            switch (GraphItem.NodeStyle)
+            {
+                case NodeStyle.Normal:
+                    return NormalStyleSchema;
+                case NodeStyle.Minimalistic:
+                    return MinimalisticStyleSchema;
+                case NodeStyle.Bold:
+                    return BoldStyleSchema;
+            }
+            return base.StyleSchema;
+        }
+    }
+
     public override NodeColor Color
     {
         get { return GraphItem.Color; }
@@ -146,6 +164,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
             Node = GraphItem,
             Name = "New Input",
             IsNewRow = true,
+           
         });
 
     }

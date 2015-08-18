@@ -174,6 +174,11 @@ namespace Invert.Core.GraphDesigner
         {
             return Repository.AllOf<IGraphItem>();
         }
+
+        public virtual bool AllowSelection
+        {
+            get { return false; }
+        }
     }
 
     public class GeneratorProperty : Attribute
@@ -676,9 +681,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _sourceIdentifier; }
             set {
-                _sourceIdentifier = value;
-                this.Changed("SourceIdentifier", _sourceIdentifier, value);
-                Changed = true;
+                this.Changed("SourceIdentifier",ref _sourceIdentifier, value);
             }
         }
         [Browsable(false)]
@@ -738,7 +741,7 @@ namespace Invert.Core.GraphDesigner
             Repository.Remove(this);
         }
 
-        public void RecordRemoved(IDataRecord record)
+        public override void RecordRemoved(IDataRecord record)
         {
             if (record.Identifier == this.SourceIdentifier)
             {

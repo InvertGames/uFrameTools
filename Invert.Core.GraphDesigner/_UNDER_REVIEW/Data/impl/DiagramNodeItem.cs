@@ -138,7 +138,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
         get { return _nodeId; }
         set {
             _nodeId = value;
-            this.Changed("NodeId", _nodeId, value);
+            this.Changed("NodeId", ref _nodeId, value);
         }
     }
 
@@ -188,10 +188,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
             {
                 _name = value;
             }
-            this.Changed("Name", oldName, value);
-            // TODO 2.0 Change Tracking
-            //if (!string.IsNullOrEmpty(NodeId))
-            //Node.TrackChange(new NameChange(this,oldName, _name));
+            this.Changed("Name", ref oldName, value);
         }
     }
 

@@ -6,6 +6,7 @@ using Invert.Json;
 public class ShellNodeConfigInput : ShellNodeConfigItem, IShellSlotType
 {
     private bool _allowMultiple;
+    private bool _allowSelection;
 
     public bool IsOutput
     {
@@ -15,15 +16,14 @@ public class ShellNodeConfigInput : ShellNodeConfigItem, IShellSlotType
 
         }
     }
-
+    
     [JsonProperty, InspectorProperty]
     public bool AllowMultiple
     {
         get { return _allowMultiple; }
         set
         {
-            _allowMultiple = value;
-            this.Changed("AllowMultiple", _allowMultiple, value);
+            this.Changed("AllowMultiple",ref _allowMultiple, value);
         }
     }
 
@@ -43,5 +43,9 @@ public class ShellNodeConfigInput : ShellNodeConfigItem, IShellSlotType
     }
 
     [InspectorProperty, JsonProperty]
-    public bool AllowSelection { get; set; }
+    public bool AllowSelection
+    {
+        get { return _allowSelection; }
+        set { this.Changed("AllowSelection",ref _allowSelection, value); }
+    }
 }

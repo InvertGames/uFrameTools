@@ -84,6 +84,31 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public virtual NodeStyle NodeStyle
+        {
+            get
+            {
+                return NodeStyle.Normal;
+            }
+        }
+
+        public override INodeStyleSchema StyleSchema
+        {
+            get
+            {
+
+                switch (NodeStyle)
+                {
+                    case NodeStyle.Normal:
+                        return NormalStyleSchema;
+                    case NodeStyle.Minimalistic:
+                        return MinimalisticStyleSchema;
+                    case NodeStyle.Bold:
+                        return BoldStyleSchema;
+                }
+                return base.StyleSchema;
+            }
+        }
         //public override Func<IDiagramNodeItem, IDiagramNodeItem, bool> InputValidator
         //{
         //    get { return GraphItem.ValidateInput; }
@@ -324,6 +349,7 @@ namespace Invert.Core.GraphDesigner
             }
             ContentItems.Add(header);
             ApplyOutputConfiguration(inputConfig, header.DataObject as IGraphItem, header.OutputConnector,  true);
+            if (header.InputConnector != null)
             header.OutputConnector.Configuration = inputConfig;
             
         }
@@ -365,7 +391,7 @@ namespace Invert.Core.GraphDesigner
                 header.Name = g.Title;
             }
             ApplyInputConfiguration(inputConfig, g,header.InputConnector, true);
-
+            if (header.InputConnector != null)
             header.InputConnector.Configuration = inputConfig;
         }
 

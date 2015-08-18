@@ -1,4 +1,5 @@
 using System.CodeDom;
+using System.Collections.Generic;
 using System.IO;
 using Invert.Core.GraphDesigner;
 
@@ -21,7 +22,7 @@ public class ShellSlotItemTemplate : GenericSlot, IClassTemplate<IShellSlotType>
     {
         get
         {
-            Ctx._("return {0}", Ctx.Data.AllowMultipleInputs ? "true" : "false");
+            Ctx._("return {0}", Ctx.Data.AllowMultiple && Ctx.Data is ShellNodeConfigInput ? "true" : "false");
             return base.AllowMultipleInputs;
         }
     }
@@ -30,11 +31,19 @@ public class ShellSlotItemTemplate : GenericSlot, IClassTemplate<IShellSlotType>
     {
         get
         {
-            Ctx._("return {0}", Ctx.Data.AllowMultipleOutputs ? "true" : "false");
+            Ctx._("return {0}", Ctx.Data.AllowMultiple && Ctx.Data is ShellNodeConfigOutput ? "true" : "false");
             return base.AllowMultipleOutputs;
         }
     }
-
+    [GenerateProperty(TemplateLocation.DesignerFile)]
+    public override bool AllowSelection
+    {
+        get
+        {
+            Ctx._("return {0}", Ctx.Data.AllowSelection ? "true" : "false");
+            return false;
+        }
+    }
     public string OutputPath
     {
         get { return Path.Combine("Editor", "Slots"); }
@@ -43,6 +52,12 @@ public class ShellSlotItemTemplate : GenericSlot, IClassTemplate<IShellSlotType>
     public bool CanGenerate
     {
         get { return true; }
+    }
+    [GenerateMethod(CallBase = false)]
+    public override IEnumerable<IGraphItem> GetAllowed()
+    {
+        Ctx._(string.Format("return Repository.AllOf<{0}>().OfType<IGraphItem>();", Ctx.Data.ReferenceClassName));
+        yield break;
     }
 
     public void TemplateSetup()

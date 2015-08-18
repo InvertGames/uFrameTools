@@ -193,8 +193,25 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        [JsonProperty]
-        public string Name { get; set; }
+        //[JsonProperty]
+        public string Name
+        {
+            get
+            {
+                if (Repository != null)
+                {
+                    return RootFilter.Name;
+                }
+                return this.GetType().Name;
+            }
+            set
+            {
+                if (Repository != null)
+                {
+                    RootFilter.Name = value;
+                }
+            }
+        }
 
 #else
     public string SystemPath
@@ -260,8 +277,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _rootFilterId; }
             set {
-                _rootFilterId = value;
-                this.Changed("RootFilterId", _rootFilterId, value);
+                this.Changed("RootFilterId", ref _rootFilterId, value);
             }
         }
 
@@ -773,8 +789,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _graphId; }
             set {
-                _graphId = value;
-                this.Changed("GraphId", _graphId, value);
+                this.Changed("GraphId",ref  _graphId, value);
             }
         }
 
@@ -783,8 +798,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _filterId; }
             set {
-                _filterId = value;
-                this.Changed("FilterId", _filterId, value);
+                this.Changed("FilterId",ref _filterId, value);
             }
         }
 
@@ -803,8 +817,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _index; }
             set {
-                _index = value;
-                this.Changed("Index", _index, value);
+                this.Changed("Index", ref _index, value);
             }
         }
 

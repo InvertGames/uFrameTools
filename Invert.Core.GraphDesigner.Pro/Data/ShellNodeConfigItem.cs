@@ -9,16 +9,39 @@ using Invert.Json;
 public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, IClassTypeNode
 {
     [JsonProperty, InspectorProperty]
-    public int Row { get; set; }
-    [JsonProperty, InspectorProperty]
-    public int Column { get; set; }
-    [JsonProperty, InspectorProperty]
-    public int ColumnSpan { get; set; }
-    [JsonProperty, InspectorProperty]
-    public bool IsNewRow { get; set; }
+    public int Row
+    {
+        get { return _row; }
+        set { this.Changed("Row", ref _row, value); }
+    }
 
-    [JsonProperty,InspectorProperty(InspectorType.TextArea)]
-    public string Comments { get; set; }
+    [JsonProperty, InspectorProperty]
+    public int Column
+    {
+        get { return _column; }
+        set { this.Changed("Column", ref _column, value); }
+    }
+
+    [JsonProperty, InspectorProperty]
+    public int ColumnSpan
+    {
+        get { return _columnSpan; }
+        set { this.Changed("ColumnSpan", ref _columnSpan, value); }
+    }
+
+    [JsonProperty, InspectorProperty]
+    public bool IsNewRow
+    {
+        get { return _isNewRow; }
+        set { this.Changed("IsNewRow", ref _isNewRow, value); }
+    }
+
+    [JsonProperty, InspectorProperty(InspectorType.TextArea)]
+    public string Comments
+    {
+        get { return _comments; }
+        set { this.Changed("Comments", ref _comments, value); }
+    }
 
     [InspectorProperty,JsonProperty]
     public override string Name
@@ -29,6 +52,11 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
 
     private string _typeName;
     private SectionVisibility _visibility;
+    private int _row;
+    private bool _isNewRow;
+    private int _column;
+    private int _columnSpan;
+    private string _comments;
 
 
     //[InspectorProperty, JsonProperty]
@@ -57,8 +85,8 @@ public class ShellNodeConfigItem : GenericNodeChildItem, IShellNodeConfigItem, I
         get { return _visibility; }
         set
         {
-            _visibility = value;
-            this.Changed("Visibility", _visibility, value);
+            
+            this.Changed("Visibility",ref _visibility, value);
         }
     }
 

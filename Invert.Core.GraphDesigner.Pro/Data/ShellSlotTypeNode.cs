@@ -8,8 +8,8 @@ public interface IShellSlotType : IShellNodeConfigItem
 {
     bool IsOutput { get; set; }
     bool AllowMultiple { get; set; }
-    string ReferenceClassName { get; }
    
+    bool AllowSelection { get; set; }
 }
 public class ShellSlotTypeNode : ShellNode, IReferenceNode
 {

@@ -12,8 +12,7 @@ public class ShellInheritableNode : GenericInheritableNode, IShellNode
     {
         get { return _baseIdentifier; }
         set {
-            _baseIdentifier = value;
-            this.Changed("BaseIdentifier", _baseIdentifier, value);
+            this.Changed("BaseIdentifier",ref _baseIdentifier, value);
         }
     }
 

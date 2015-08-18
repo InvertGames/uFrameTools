@@ -24,8 +24,8 @@ namespace Invert.Core.GraphDesigner
             get { return _parentIdentifier; }
             set
             {
-                _parentIdentifier = value;
-                this.Changed("ParentIdentifier",_parentIdentifier,value);
+                
+                this.Changed("ParentIdentifier",ref _parentIdentifier,value);
             }
         }
 
@@ -289,8 +289,8 @@ namespace Invert.Core.GraphDesigner
         public string GraphId
         {
             get { return _graphId; }
-            set { _graphId = value;
-            this.Changed("GraphId", _graphId, value);
+            set {
+                this.Changed("GraphId", ref  _graphId, value);
             }
         }
 
@@ -418,10 +418,8 @@ namespace Invert.Core.GraphDesigner
             }
             set
             {
-                var previous = _name;
                 if (value == null) return;
-                _name = Regex.Replace(value, "[^a-zA-Z0-9_.]+", "");
-                this.Changed("Name", previous, value);
+                this.Changed("Name", ref  _name, Regex.Replace(value, "[^a-zA-Z0-9_.]+", ""));
             }
         }
 

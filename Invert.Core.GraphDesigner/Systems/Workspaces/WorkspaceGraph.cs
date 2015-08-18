@@ -13,8 +13,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _graphId; }
             set {
-                _graphId = value;
-                this.Changed("GraphId", _graphId, value);
+                this.Changed("GraphId",ref _graphId, value);
             }
         }
 
@@ -23,8 +22,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _workspaceId; }
             set {
-                _workspaceId = value;
-                this.Changed("WorkspaceId", _workspaceId, value);
+                this.Changed("WorkspaceId", ref _workspaceId, value);
             }
         }
 

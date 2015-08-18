@@ -15,8 +15,7 @@ public class ShellNodeConfigSectionPointer : GenericReferenceItem<ShellNodeConfi
         get { return _row; }
         set
         {
-            _row = value;
-            this.Changed("Row", _row, value);
+            this.Changed("Row", ref _row, value);
         }
     }
 
@@ -26,8 +25,7 @@ public class ShellNodeConfigSectionPointer : GenericReferenceItem<ShellNodeConfi
         get { return _column; }
         set
         {
-            _column = value;
-            this.Changed("Column", _column, value);
+            this.Changed("Column", ref _column, value);
         }
     }
 
@@ -37,8 +35,7 @@ public class ShellNodeConfigSectionPointer : GenericReferenceItem<ShellNodeConfi
         get { return _visibility; }
         set
         {
-            _visibility = value;
-            this.Changed("Visibility",_visibility,value);
+            this.Changed("Visibility",ref _visibility,value);
         }
     }
 

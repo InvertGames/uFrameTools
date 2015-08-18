@@ -18,8 +18,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _sectionType; }
         set
         {
-            _sectionType = value;
-            this.Changed("SectionType", _sectionType, value);
+       
+            this.Changed("SectionType",ref _sectionType, value);
         }
     }
 
@@ -29,8 +29,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _isTyped; }
         set
         {
-            _isTyped = value;
-            this.Changed("IsTyped", _isTyped, value);
+        
+            this.Changed("IsTyped", ref _isTyped, value);
         }
     }
 
@@ -47,8 +47,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         }
         set
         {
-            _allowAdding = value;
-            this.Changed("AllowAdding", _allowAdding, value);
+ 
+            this.Changed("AllowAdding", ref _allowAdding, value);
         }
     }
 
@@ -71,8 +71,7 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _isEditable; }
         set
         {
-            _isEditable = value;
-            this.Changed("IsEditable", _isEditable, value);
+            this.Changed("IsEditable", ref _isEditable, value);
         }
     }
 
@@ -82,8 +81,8 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _allowDuplicates; }
         set
         {
-            _allowDuplicates = value;
-            this.Changed("AllowDuplicates", _allowDuplicates, value);
+
+            this.Changed("AllowDuplicates",ref _allowDuplicates, value);
         }
     }
 
@@ -93,8 +92,7 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _isAutomatic; }
         set
         {
-            _isAutomatic = value;
-            this.Changed("IsAutomatic", _isAutomatic, value);
+            this.Changed("IsAutomatic", ref _isAutomatic, value);
         }
     }
 
@@ -104,8 +102,7 @@ public class ShellNodeConfigSection : ShellNodeConfigItem
         get { return _hasPredefinedOptions; }
         set
         {
-            _hasPredefinedOptions = value;
-            this.Changed("HasPredefinedOptions", _hasPredefinedOptions, value);
+            this.Changed("HasPredefinedOptions", ref _hasPredefinedOptions, value);
         }
     }
 }

@@ -22,8 +22,8 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _collapsed; }
             set {
-                _collapsed = value;
-                this.Changed("Collapsed", _collapsed, value);
+              
+                this.Changed("Collapsed",ref _collapsed, value);
             }
         }
 
@@ -32,8 +32,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _nodeId; }
             set {
-                _nodeId = value;
-                this.Changed("NodeId", _nodeId, value);
+                this.Changed("NodeId",ref _nodeId, value);
             }
         }
 
@@ -42,8 +41,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _filterId; }
             set {
-                this.Changed("FilterId", _filterId, value);
-                _filterId = value;
+                this.Changed("FilterId", ref _filterId, value);
             }
         }
 

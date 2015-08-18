@@ -1,9 +1,12 @@
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
+using Invert.Data;
 using Invert.IOC;
+using Invert.Json;
 
 [TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}Node")]
 public class ShellNodeTypeTemplate : GenericNode, IClassTemplate<ShellNodeTypeNode>
@@ -305,6 +308,15 @@ public class ShellNodeConfigViewModelTemplate : GenericNodeViewModel<GenericNode
         }
 
     }
+    [GenerateProperty]
+    public override NodeStyle NodeStyle
+    {
+        get
+        {
+            Ctx._("return Invert.Core.GraphDesigner.NodeStyle.{0}", Enum.GetName(typeof(NodeStyle), Ctx.Data.NodeStyle));
+            return NodeStyle.Normal;
+        }
+    }
 
     public TemplateContext<ShellNodeConfig> Ctx { get; set; }
 
@@ -410,7 +422,9 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
         Ctx.AddIterator("PossibleReferenceItems", _ => _.Sections.Where(p => p.SectionType == ShellNodeConfigSectionType.ReferenceItems));
         Ctx.AddIterator("ReferenceSectionItems", _ => _.Sections.Where(p => p.SectionType == ShellNodeConfigSectionType.ReferenceItems));
         Ctx.AddIterator("SectionItems", _ => _.Sections.Where(p => p.SectionType == ShellNodeConfigSectionType.ChildItems));
+        Ctx.AddIterator("InputSlotId", _ => _.InputSlots);
         Ctx.AddIterator("InputSlot", _ => _.InputSlots);
+        Ctx.AddIterator("OutputSlotId", _ => _.OutputSlots);
         Ctx.AddIterator("OutputSlot", _ => _.OutputSlots);
         Ctx.AddCondition("AllowMultipleOutputs", _ => !_.Inheritable);
         Ctx.AddCondition("ClassName", _ => Ctx.Data.IsClass);
@@ -520,6 +534,8 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
     {
         get { return null; }
     }
+    [GenerateProperty, WithLazyField(DefaultExpression = "Guid.NewGuid().ToString()"), WithNameFormat("{0}InputSlotId"), WithAttributes(typeof(JsonProperty))]
+    public virtual string InputSlotId { get; set; }
 
     [GenerateProperty("{0}InputSlot")]
     public virtual GenericReferenceItem InputSlot
@@ -540,14 +556,21 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
             attribute.Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Row)));
             attribute.Arguments.Add(new CodeAttributeArgument("IsNewRow", new CodePrimitiveExpression(item.IsNewRow)));
 
-            Ctx._if("{0} == null", field.Name)
-                .TrueStatements._("{0} = new {1}() {{ Repository = Repository, Node = this }}", field.Name, item.ClassName);
-            Ctx._("return {0}", field.Name);
+            Ctx._if("Repository == null", field.Name).TrueStatements._("return null");
+            Ctx._if("{0} != null", field.Name).TrueStatements._("return {0}", field.Name);
+
+            Ctx._("return {0} ?? ({0} = new {1}() {{ Repository = Repository, Node = this, Identifier = {2}InputSlotId }})", field.Name, item.ClassName, Ctx.Item.Name.Clean());
+            //Ctx._("{0}.Node = this", field.Name);
+
+            //Ctx._("return {0}", field.Name);
             return null;
         }
-        set { Ctx._("_{0} = value", Ctx.Item.Name.Clean()); }
+        //set { Ctx._("if (value != null) {0}InputSlotId = value.Identifier", Ctx.Item.Name.Clean()); }
 
     }
+
+    [GenerateProperty, WithLazyField(DefaultExpression = "Guid.NewGuid().ToString()"), WithNameFormat("{0}OutputSlotId"), WithAttributes(typeof(JsonProperty))]
+    public virtual string OutputSlotId { get; set; }
 
     [GenerateProperty("{0}OutputSlot")]
     public virtual GenericReferenceItem OutputSlot
@@ -565,14 +588,29 @@ public class ShellNodeConfigTemplate : GenericNode, IClassTemplate<ShellNodeConf
             attribute.Arguments.Add(new CodeAttributeArgument("OrderIndex", new CodePrimitiveExpression(item.Row)));
             attribute.Arguments.Add(new CodeAttributeArgument("IsNewRow", new CodePrimitiveExpression(item.IsNewRow)));
 
-            Ctx._if("{0} == null", field.Name)
-           .TrueStatements._("{0} = new {1}() {{ Repository = Repository, Node = this }}", field.Name, item.ClassName);
+            Ctx._if("Repository == null", field.Name).TrueStatements._("return null");
+            Ctx._if("{0} != null", field.Name).TrueStatements._("return {0}", field.Name);
 
-            Ctx._("return {0}", field.Name);
+            Ctx._("return {0} ?? ({0} = new {1}() {{ Repository = Repository, Node = this, Identifier = {2}OutputSlotId }})", field.Name, item.ClassName, Ctx.Item.Name.Clean());
             return null;
         }
-        set { Ctx._("_{0} = value", Ctx.Item.Name.Clean()); }
+        //set { Ctx._("if (value != null) {0}OutputSlotId = value.Identifier", Ctx.Item.Name.Clean()); }
     }
+
+    //[GenerateMethod]
+    //public override void RecordRemoved(IDataRecord record)
+    //{
+    //    foreach (var item in Ctx.Data.InputSlots)
+    //    {
+    //        Ctx._if("record.Identifier = {0}InputSlotId", item.Name )
+    //            .TrueStatements._("Repository.Remove(this)");
+    //    }
+    //    foreach (var item in Ctx.Data.OutputSlots)
+    //    {
+    //        Ctx._if("record.Identifier = {0}OutputSlotId", item.Name)
+    //            .TrueStatements._("Repository.Remove(this)");
+    //    }
+    //}
 
 }
 

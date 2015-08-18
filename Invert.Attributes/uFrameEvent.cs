@@ -129,6 +129,15 @@ namespace uFrame.Attributes
 
     }
 
+    public class uFrameEventMapping : Attribute
+    {
+        public string Title { get; set; }
+
+        public uFrameEventMapping(string title)
+        {
+            Title = title;
+        }
+    }
     public class uFrameCategory : Attribute
     {
         public string[] Title { get; set; }

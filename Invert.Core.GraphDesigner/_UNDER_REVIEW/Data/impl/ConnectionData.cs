@@ -29,8 +29,7 @@ namespace Invert.Core.GraphDesigner
             get { return _outputIdentifier; }
             set
             {
-                _outputIdentifier = value;
-                this.Changed("OutputIdentifier", _outputIdentifier, value);
+                this.Changed("OutputIdentifier",ref  _outputIdentifier, value);
             }
         }
 
@@ -40,8 +39,8 @@ namespace Invert.Core.GraphDesigner
             get { return _inputIdentifier; }
             set
             {
-                _inputIdentifier = value;
-                this.Changed("InputIdentifier",_inputIdentifier, value);
+                
+                this.Changed("InputIdentifier",ref _inputIdentifier, value);
             }
         }
 

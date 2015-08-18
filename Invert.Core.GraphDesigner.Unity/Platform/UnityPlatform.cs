@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using Invert.Common;
@@ -138,10 +139,10 @@ namespace Invert.Core.GraphDesigner.Unity
     
     public class UnityContextMenu : ContextMenuUI
     {
-        public override void AddSeparator(string empty)
+        public override void AddSeparator()
         {
-            base.AddSeparator(empty);
-            
+            base.AddSeparator();
+            Commands.Add(new ContextMenuItem() {Title = string.Empty});
         }
 
         public void CreateMenuItems(GenericMenu genericMenu)
@@ -579,14 +580,16 @@ namespace Invert.Core.GraphDesigner.Unity
                 if (GUILayout.Button(d.Label + ": " + text,ElementDesignerStyles.ButtonStyle))
                 {
                     var type = d.Type;
-                    //var nodeItem = d.ViewModel.NodeViewModel.DataObject as IDiagramNodeItem;
-                    // TODO 2.0 Genericize GetAny to pass "Type"
-                    //var items = InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository..Where(p => type.IsAssignableFrom(p.GetType()));
-                    //InvertGraphEditor.WindowManager.InitItemWindow(items, (i) =>
-                    //{
-
-                    //    d.Setter(i);
-                    //},true);
+                    var items = InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.AllOf<IGraphItem>().Where(p => type.IsAssignableFrom(p.GetType()));
+                    InvertGraphEditor.WindowManager.InitItemWindow(items, (i) =>
+                    {
+                        var x = i;
+                        InvertApplication.Execute(() =>
+                        {
+                            d.Setter(x);
+                        });
+                        
+                    },true);
 
                 }
                 //GUILayout.EndHorizontal();

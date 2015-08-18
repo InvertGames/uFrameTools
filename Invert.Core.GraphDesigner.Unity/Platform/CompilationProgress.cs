@@ -14,7 +14,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             ListenFor<IDesignerWindowEvents>();
             ListenFor<ITaskProgressHandler>();
-            
+            Percentage = 0f;
         }
 
         public void ProcessInput()

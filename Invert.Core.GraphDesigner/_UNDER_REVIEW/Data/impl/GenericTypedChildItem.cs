@@ -31,8 +31,8 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
         get { return _type; }
         set
         {
-            _type = value;
-            this.Changed("RelatedType", _type, value);
+            
+            this.Changed("RelatedType", ref _type, value);
         }
     }
 

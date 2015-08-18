@@ -71,8 +71,17 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _color; }
         set
         {
-            _color = value;
-            this.Changed("Color", _color, value);
+        
+            this.Changed("Color",ref _color, value);
+        }
+    }
+    [InspectorProperty, JsonProperty]
+    public NodeStyle NodeStyle
+    {
+        get { return _nodeStyle; }
+        set
+        {
+            this.Changed("NodeStyle", ref _nodeStyle, value);
         }
     }
 
@@ -82,8 +91,8 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _inheritable; }
         set
         {
-            _inheritable = value;
-            this.Changed("Inheritable", _inheritable, value);
+     
+            this.Changed("Inheritable",ref _inheritable, value);
         }
     }
 
@@ -93,14 +102,15 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _isClass; }
         set
         {
-            _isClass = value;
-            this.Changed("IsClass", _isClass, value);
+    
+            this.Changed("IsClass", ref _isClass, value);
         }
     }
 
     private SectionVisibility _visibility;
     private int _column;
     private int _row;
+    private NodeStyle _nodeStyle;
 
     [InspectorProperty, JsonProperty]
     public int Row
@@ -108,8 +118,7 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _row; }
         set
         {
-            _row = value;
-            this.Changed("Row", _row, value);
+            this.Changed("Row", ref _row, value);
         }
     }
 
@@ -119,8 +128,8 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _column; }
         set
         {
-            _column = value;
-            this.Changed("Column", _column, value);
+     
+            this.Changed("Column", ref _column, value);
         }
     }
 
@@ -130,8 +139,7 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return _visibility; }
         set
         {
-            _visibility = value;
-            this.Changed("Visibility", _visibility, value);
+            this.Changed("Visibility",ref _visibility, value);
         }
     }
 

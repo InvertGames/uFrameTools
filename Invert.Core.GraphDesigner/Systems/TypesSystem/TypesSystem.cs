@@ -62,6 +62,18 @@ namespace Invert.Core.GraphDesigner
                     });
                 }
             }
+            var nodeItem = obj as ItemViewModel;
+            if (nodeItem != null)
+            {
+                ui.AddCommand(new ContextMenuItem()
+                {
+                    Title = "Delete",
+                    Command = new DeleteCommand()
+                    {
+                        Item = nodeItem.DataObject as IDataRecord
+                    }
+                });
+            }
         }
 
 

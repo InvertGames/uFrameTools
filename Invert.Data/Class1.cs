@@ -12,6 +12,7 @@ namespace Invert.Data
         void Add(IDataRecord obj);
         TObjectType Create<TObjectType>() where TObjectType : class,IDataRecord, new();
         TObjectType GetSingle<TObjectType>(string identifier) where TObjectType : class,IDataRecord, new();
+        
         TObjectType GetById<TObjectType>(string identifier);
         IEnumerable<TObjectType> All<TObjectType>() where TObjectType : class,IDataRecord;
         void Commit();
@@ -27,6 +28,8 @@ namespace Invert.Data
         string GetUniqueName(string s);
         void Signal<TEventType>(Action<TEventType> perform);
         void AddListener<TEventType>(TEventType instance);
+
+        TObjectType GetSingleLazy<TObjectType>(ref string keyProperty, Action<TObjectType> created) where TObjectType : class,IDataRecord, new();
     }
 
     public interface IDataRecord
@@ -38,14 +41,19 @@ namespace Invert.Data
 
     public static class DataRecordPropertyChangedExtensions
     {
-        public static void Changed(this IDataRecord record, string propertyName,object previousValue, object nextValue)
+
+
+        public static void Changed<TType>(this IDataRecord record, string propertyName,ref TType beforeValue, TType value)
         {
-            record.Changed = true;
-            if (record.Repository != null && previousValue != nextValue)
+            record.Changed = true; 
+            var before = beforeValue;
+            var after = value;
+            beforeValue = after;
+            if (record.Repository != null && !object.Equals(before, after))
             {
-                record.Repository.Signal<IDataRecordPropertyChanged>(_ => _.PropertyChanged(record, propertyName, previousValue, nextValue));
+                record.Repository.Signal<IDataRecordPropertyChanged>(_ => _.PropertyChanged(record, propertyName, before, after));
             }
-            
+
         }
     }
     public interface IDataRecordPropertyChanged
@@ -156,6 +164,29 @@ namespace Invert.Data
             if (string.IsNullOrEmpty(identifier)) return default(TObjectType);
             var repo = GetRepositoryFor(typeof(TObjectType));
             return repo.GetSingle(identifier) as TObjectType;
+        }
+
+        public TObjectType GetSingleLazy<TObjectType>( ref string keyProperty, Action<TObjectType> created) where TObjectType : class, IDataRecord, new()
+        {
+            var repo = GetRepositoryFor(typeof(TObjectType));
+            // Try and grab the item
+            var item = string.IsNullOrEmpty(keyProperty) ? null : repo.GetSingle(keyProperty) as TObjectType;
+            // If we found one return it
+            if (item != null) return item;
+            // Otherwise create it
+            item = new TObjectType()
+            {
+                Identifier = Guid.NewGuid().ToString(),
+                Repository = this
+            };
+            // Set the ForeignKey field
+            keyProperty = item.Identifier;
+            item.Changed = true;
+            // Ensure its added to the repository
+            repo.Add(item);
+            if (created != null) 
+                created(item);
+            return item;
         }
 
         public TObjectType GetById<TObjectType>(string identifier)

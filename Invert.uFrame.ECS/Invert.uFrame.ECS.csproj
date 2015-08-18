@@ -112,6 +112,12 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ModuleNodeDrawer.cs">
       <Link>ModuleNodeDrawer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\PropertyChangedNodeDrawer.cs">
+      <Link>PropertyChangedNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\PropertyNodeDrawer.cs">
+      <Link>PropertyNodeDrawer.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\SequenceItemNodeDrawer.cs">
       <Link>SequenceItemNodeDrawer.cs</Link>
     </Compile>
@@ -193,20 +199,50 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\GroupNode.cs">
       <Link>GroupNode.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\HandlerIn.cs">
+      <Link>HandlerIn.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\HandlerNode.cs">
       <Link>HandlerNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\HanlderNode.cs">
       <Link>HanlderNode.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\IFilterInput.cs">
+      <Link>IFilterInput.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\IHandlerCodeWriter.cs">
+      <Link>IHandlerCodeWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\IHandlerCodeWriterFor.cs">
+      <Link>IHandlerCodeWriterFor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\IHandlerNodeVisitor.cs">
+      <Link>IHandlerNodeVisitor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\IMappingsConnectable.cs">
+      <Link>IMappingsConnectable.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\IntNode.cs">
       <Link>IntNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ISequenceNode.cs">
+      <Link>ISequenceNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ISetupCodeWriter.cs">
+      <Link>ISetupCodeWriter.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\LiteralNode.cs">
       <Link>LiteralNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ModuleNode.cs">
       <Link>ModuleNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\PropertyChangedNode.cs">
+      <Link>PropertyChangedNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\PropertyNode.cs">
+      <Link>PropertyNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\SequenceItemNode.cs">
       <Link>SequenceItemNode.cs</Link>
@@ -262,11 +298,23 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\RequireReference.cs">
       <Link>RequireReference.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Sections\ScopeReference.cs">
-      <Link>ScopeReference.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots.designer.cs">
       <Link>Slots.designer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Get.cs">
+      <Link>Get.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Property.cs">
+      <Link>Property.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Set.cs">
+      <Link>Set.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Source.cs">
+      <Link>Source.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\SourceObject.cs">
+      <Link>SourceObject.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Timer.cs">
       <Link>Timer.cs</Link>
@@ -321,6 +369,12 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ModuleNodeViewModel.cs">
       <Link>ModuleNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\PropertyChangedNodeViewModel.cs">
+      <Link>PropertyChangedNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\PropertyNodeViewModel.cs">
+      <Link>PropertyNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\SequenceItemNodeViewModel.cs">
       <Link>SequenceItemNodeViewModel.cs</Link>
