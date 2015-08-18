@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Commands
 {
-    public class RunQueuedOperations : IBackgroundCommand
+    public class RunQueuedOperationsCommand : IBackgroundCommand
     {
         public BackgroundWorker Worker { get; set; }
     }

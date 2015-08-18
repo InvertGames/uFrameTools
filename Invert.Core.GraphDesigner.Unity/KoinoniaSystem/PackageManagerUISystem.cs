@@ -479,8 +479,8 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem
 
         void OnGUI()
         {
-            if(Package!=null)
-            InvertApplication.SignalEvent<IDrawPackageControlPanel>(_ => _.DrawControlPanel(new Rect(0, 0, Screen.width, Screen.height),Package));
+            //if(Package!=null)
+            //InvertApplication.SignalEvent<IDrawPackageControlPanel>(_ => _.DrawControlPanel(new Rect(0, 0, Screen.width, Screen.height),Package));
         }
 
         void Update()
