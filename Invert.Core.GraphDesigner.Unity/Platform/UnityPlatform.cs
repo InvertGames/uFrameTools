@@ -259,6 +259,8 @@ namespace Invert.Core.GraphDesigner.Unity
             Handles.DrawPolyLine(lines.Select(x => new Vector3(x.x, x.y, 0f)).ToArray());
         }
 
+       
+
         public void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent,
             Color color, float width)
         {
@@ -335,6 +337,25 @@ namespace Invert.Core.GraphDesigner.Unity
             }
         }
 
+        public void DoButton(Rect scale, string label, object style, Action<Vector2> action, Action<Vector2> rightClick = null)
+        {
+            var s = style == null ? ElementDesignerStyles.EventSmallButtonStyle : (GUIStyle)style;
+
+            if (GUI.Button(scale, label, s))
+            {
+                var mousePos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition) - new Vector2(0, 22);
+                if (Event.current.button == 0)
+                {
+                    action(mousePos);
+                }
+                else
+                {
+                    if (rightClick != null)
+                        rightClick(mousePos);
+                }
+            }
+        }
+   
  
         public void DrawWarning(Rect rect, string key)
         {

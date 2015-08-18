@@ -55,5 +55,8 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Data
         }
 
         public bool Changed { get; set; }
+
+        [JsonProperty]
+        public DateTime CacheExpireTime { get; set; }
     }
 }

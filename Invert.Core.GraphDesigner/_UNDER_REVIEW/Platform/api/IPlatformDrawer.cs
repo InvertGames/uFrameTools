@@ -29,6 +29,7 @@ namespace Invert.Core.GraphDesigner
         Vector2 CalculateImageSize(string imageName);
 
         void DoButton(Rect scale, string label, object style, Action action, Action rightClick = null);
+        void DoButton(Rect scale, string label, object style, Action<Vector2> action, Action<Vector2> rightClick = null);
 
         void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent, Color color, float width);
 

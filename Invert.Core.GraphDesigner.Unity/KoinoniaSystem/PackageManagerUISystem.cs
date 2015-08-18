@@ -3,19 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Invert.Common;
+using Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Classes;
 using Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Commands;
 using Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Data;
 using Invert.Core.GraphDesigner.Unity.KoinoniaSystem.ViewModels;
+using Invert.IOC;
 using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem
 {
 
-    public class PackageManagerUISystem : DiagramPlugin, IDrawPackageManager
+    public class PackageManagerUISystem : DiagramPlugin, IDrawPackageManager, IDrawPackagePage, IDrawPackageControlPanel
     {
         private IPlatformDrawer _platformDrawer;
         private KoinoniaSystem _koinoniaSystem;
+
+        [InspectorProperty]
+        public string Username { get; set; }
+
+        [InspectorProperty]
+        public string Password { get; set; }
 
         public IPlatformDrawer PlatformDrawer
         {
@@ -30,14 +38,40 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem
         }
 
 
+        public GUIStyle ProjectPageDescriptionStyle
+        {
+            get
+            {
+                return _projectPageDescriptionStyle ?? (_projectPageDescriptionStyle = new GUIStyle()
+                {
+                    wordWrap = true,
+                    alignment = TextAnchor.UpperLeft
+                }.WithAllStates(Color.white).WithFont("Verdana", 14));
+            }
+            set { _projectPageDescriptionStyle = value; }
+        }
+
+
         [MenuItem("uFrame Dev/Package Manager")]
         public static void OpenPackageManagerWindow()
         {
+            var c = InvertApplication.Container;
             var packageManagerWindow = EditorWindow.GetWindow<PackageManagerWindow>();
             packageManagerWindow.minSize = packageManagerWindow.maxSize = new Vector2(800, 600);
             packageManagerWindow.Show();
             packageManagerWindow.Repaint();
             packageManagerWindow.Focus();
+        }    
+        
+        public static void OpenPackageControlPanelWindow(Rect position, UFramePackageDescriptor package)
+        {
+            var packageControlPanel = EditorWindow.CreateInstance<PackageControlPanel>();
+            packageControlPanel.minSize = packageControlPanel.maxSize = new Vector2(200, 200);
+            packageControlPanel.Package = package;
+            Debug.Log("Showing at position "+position.x+" , "+position.y);
+            packageControlPanel.ShowAsDropDown(position ,new Vector2(200, 200));
+            packageControlPanel.Repaint();
+            packageControlPanel.Focus();
         }
 
         public static Dictionary<string, Texture> ImageCache
@@ -125,103 +159,56 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem
                 return;
             }
 
-            if (KoinoniaSystem.AuthorizationState == AuthorizationState.Unauthorized)
+            if (!KoinoniaSystem.IsRemoteServerAvailable)
             {
-                DrawLoginScreen(bounds);
+                GUILayout.Label("Cannot reach Koinonia servers...");
+                if (GUILayout.Button("Retry")) KoinoniaSystem.UpdateAvailability();
+                return;
             }
-            else
-            {
-                DrawPackageManagerScreen(bounds);
-            }
-        }
 
-        public string Username { get; set; }
-        public string Password { get; set; }
+            if (KoinoniaSystem.AuthorizationState == AuthorizationState.Unauthorized) DrawLoginScreen(bounds);
+            else DrawPackageManagerScreen(bounds);
+        }
 
         private void DrawPackageManagerScreen(Rect bounds)
         {
-            if (SelectedPackageId == null)
-            {
-                DrawPreviewScreen(bounds);
-            }
-            else
-            {
-                DrawPackagePage(bounds,SelectedPackage);
-            }
+
+            var projectListBounds = new Rect(bounds) { width = 200 };
+            var rightSizeBounds = new Rect(projectListBounds) { width = bounds.width - projectListBounds.width, x = projectListBounds.xMax };
+
+            DrawPackageList(projectListBounds);
+
+            if (KoinoniaSystem.SelectedPackage == null) DrawPreviewScreen(rightSizeBounds);
+            else Signal<IDrawPackagePage>(_ => _.DrawPackagePage(rightSizeBounds, KoinoniaSystem.SelectedPackage));
+
         }
 
-        private void DrawPackagePage(Rect bounds, UFramePackageDescriptor package)
+        private void DrawPackageList(Rect projectListBounds)
         {
-            var imageBounds = new Rect(bounds.x + 5, bounds.y + 5, 150, 150);
-            var titleBounds = new Rect(imageBounds)
+            var buttonBounds = new Rect(projectListBounds)
             {
-                x = imageBounds.xMax + 5,
-                width = bounds.width - imageBounds.width - 10,
-                height = 20
-            };
-            var descriptionBounds = new Rect(titleBounds)
-            {
-                y = titleBounds.yMax + 10,
-                height = 120,
-                width = 400
+                height = 20,
             };
 
-            var backButtonRect = new Rect(descriptionBounds)
+            foreach (var package in KoinoniaSystem.InstalledPackagesDescriptors)
             {
-                y = descriptionBounds.yMax + 20,
-                height = 30,
-                width = 100
-            };
-
-            GUI.DrawTexture(imageBounds, GetImage(package.ProjectIconUrl), ScaleMode.ScaleToFit, true);
-            GUI.Label(titleBounds, package.Title, ProjectPreviewTitleStyle);
-            GUI.Label(descriptionBounds, package.Description, ProjectPageDescriptionStyle);
-
-            if (GUI.Button(backButtonRect, "Back"))
-            {
-                SelectedPackageId = null;
+                var bounds = buttonBounds;
+                PlatformDrawer.DoButton(buttonBounds, string.Format("{0}", package.Title), ElementDesignerStyles.ButtonStyle,
+                    x => SelectPackage(package.Id), x => OpenPackageControlPanelWindow(new Rect(x.x,x.y,bounds.width,bounds.height), package));
+                buttonBounds = new Rect(buttonBounds) { y = buttonBounds.yMax };
             }
-
-            var revButtonRect = new Rect(backButtonRect)
-            {
-                x = backButtonRect.xMax + 5,
-                width = 200
-            };
-
-            foreach (var revision in KoinoniaSystem.GetPackageRevisions(package.Id))
-            {
-
-                if (GUI.Button(revButtonRect, string.Format("Install {1} {0}", revision.VersionTag,package.Title)))
-                {
-                    Debug.Log("Will download revision from "+ revision.SnapshotUri);
-                }
-
-                revButtonRect = new Rect(revButtonRect)
-                {
-                    y = revButtonRect.yMax
-                };
-            }
-
-
         }
 
-        public GUIStyle ProjectPageDescriptionStyle
-        {
-            get { return _projectPageDescriptionStyle ?? (_projectPageDescriptionStyle = new GUIStyle()
-            {
-                wordWrap = true,
-                alignment = TextAnchor.UpperLeft
-                
-            }.WithAllStates(Color.white).WithFont("Verdana",14)); }
-            set { _projectPageDescriptionStyle = value; }
-        }
 
         private void DrawPreviewScreen(Rect bounds)
         {
-            var packages = KoinoniaSystem.Previews.Take(6).ToArray();
+            if (!KoinoniaSystem.FrontPagePackages.Any())
+            {
+                GUILayout.Label("No packages found...");
+            }
 
+            var packages = KoinoniaSystem.FrontPagePackages.Take(6).ToArray();
             var previewItemBounds = new Rect(bounds.x + 5, bounds.y + 5, 160, 200);
-
             for (int i = 0; i < packages.Count()/3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -233,33 +220,19 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem
                     {
                         x = previewItemBounds.x + previewItemBounds.width + 10
                     };
-
                 }
-
                 previewItemBounds = new Rect(previewItemBounds)
                 {
                     y = previewItemBounds.y + previewItemBounds.height + 10,
                     x = bounds.x + 5
                 };
-
             }
-
         }
 
         private void SelectPackage(string id)
         {
-            SelectedPackageId = id;
+            InvertApplication.ExecuteInBackground(new SelectPackageCommand() { Id = id });
         }
-
-        public string SelectedPackageId { get; set; }
-
-        public UFramePackageDescriptor SelectedPackage
-        {
-            get { return KoinoniaSystem.Packages.FirstOrDefault(p => p.Id == SelectedPackageId); }
-        }
-
-
-
 
         private float rot = 0;
         private GUIStyle _messageStyle;
@@ -361,7 +334,7 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem
             GUILayout.EndArea();
         }
 
-        private void DrawPackagePreview(Rect bounds, UFramePackagePreviewDescriptor descriptor, Action leftClick = null, Action rightClick= null)
+        private void DrawPackagePreview(Rect bounds, UFramePackageDescriptor descriptor, Action leftClick = null, Action rightClick= null)
         {
             var borderRect = new Rect(bounds);
             var previewImageRect = new Rect(borderRect)
@@ -395,27 +368,102 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem
             }
 
 
-            GUI.DrawTexture(previewImageRect,GetImage(descriptor.ProjectPreviewIconUrl),ScaleMode.ScaleToFit,true );
-            GUI.Label(latestVersionRect,descriptor.LatestPublicVersionTag,ProjectPreviewVersionStyle);
+            GUI.DrawTexture(previewImageRect,GetImage(descriptor.ProjectIconUrl),ScaleMode.ScaleToFit,true );
+            //GUI.Label(latestVersionRect,descriptor.LatestPublicVersionTag,ProjectPreviewVersionStyle);
             GUI.Label(titleRect,descriptor.Title,ProjectPreviewTitleStyle);
 
 
-           
+        }
+
+        public void DrawPackagePage(Rect bounds, UFramePackageDescriptor package)
+        {
+
+            var imageBounds = new Rect(bounds.x + 5, bounds.y + 5, 150, 150);
+            var titleBounds = new Rect(imageBounds)
+            {
+                x = imageBounds.xMax + 5,
+                width = bounds.width - imageBounds.width - 10,
+                height = 20
+            };
+            var descriptionBounds = new Rect(titleBounds)
+            {
+                y = titleBounds.yMax + 10,
+                height = 120,
+                width = 400
+            };
+
+            var backButtonRect = new Rect(descriptionBounds)
+            {
+                y = descriptionBounds.yMax + 20,
+                height = 30,
+                width = 100
+            };
+
+            GUI.DrawTexture(imageBounds, GetImage(package.ProjectIconUrl), ScaleMode.ScaleToFit, true);
+            GUI.Label(titleBounds, package.Title, ProjectPreviewTitleStyle);
+            GUI.Label(descriptionBounds, package.Description, ProjectPageDescriptionStyle);
+
+            if (GUI.Button(backButtonRect, "Back"))
+            {
+                InvertApplication.ExecuteInBackground(new SelectPackageCommand() {Id = null});
+            }
+
+            var revButtonRect = new Rect(backButtonRect)
+            {
+                x = backButtonRect.xMax + 5,
+                width = 200
+            };
+
+            foreach (var revision in KoinoniaSystem.SelectedPackageRevisions)
+            {
+
+                if (GUI.Button(revButtonRect, string.Format("Install {1} {0}", revision.VersionTag, package.Title)))
+                {
+                    InvertApplication.ExecuteInBackground(new QueueRevisionForInstallCommand()
+                    {
+                        PackageDescriptor = package,
+                        RevisionDescriptor = revision
+                    });
+                    //Debug.Log("Will download revision from "+ revision.SnapshotUri);
+                }
+
+                revButtonRect = new Rect(revButtonRect)
+                {
+                    y = revButtonRect.yMax
+                };
+            }
+
 
         }
 
+        public void DrawControlPanel(Rect bounds, UFramePackage package)
+        {
+            if (GUI.Button(bounds, "Uninstall"))
+            {
+                InvertApplication.ExecuteInBackground(new QueueRevisionForUninstallCommand()
+                {
+                    Package = package
+                });
+            }
+        }
     }
 
-    public interface IDrawPackageManager
-    {
-        void DrawPackageManager(Rect bounds);
-    }
+
 
     public class PackageManagerWindow : EditorWindow
     {
+        private UFrameContainer _container;
+
         void OnGUI()
         {
+            Container = InvertApplication.Container;
             InvertApplication.SignalEvent<IDrawPackageManager>(_=>_.DrawPackageManager(new Rect(0,0,Screen.width,Screen.height)));
+        }
+
+        public UFrameContainer Container
+        {
+            get { return _container ?? (_container = InvertApplication.Container); }
+            set { _container = value; }
         }
 
         void Update()
@@ -424,5 +472,38 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem
         }
     }
 
+    public class PackageControlPanel : EditorWindow
+    {
+
+        public UFramePackageDescriptor Package { get; set; }
+
+        void OnGUI()
+        {
+            if(Package!=null)
+            InvertApplication.SignalEvent<IDrawPackageControlPanel>(_ => _.DrawControlPanel(new Rect(0, 0, Screen.width, Screen.height),Package));
+        }
+
+        void Update()
+        {
+            Repaint();
+        }
+
+    }
+
+
+    public interface IDrawPackagePage
+    {
+        void DrawPackagePage(Rect bounds, UFramePackageDescriptor package);
+    }
+
+    public interface IDrawPackageControlPanel
+    {
+        void DrawControlPanel(Rect bounds, UFramePackage package);
+    }
+
+    public interface IDrawPackageManager
+    {
+        void DrawPackageManager(Rect bounds);
+    }
 
 }

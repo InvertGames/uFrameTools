@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Classes
 {
@@ -15,7 +13,7 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Classes
         void Install();
         void Update();
         void Uninstall();
-
+        void OnLoaded();
         bool NeedsInstall();
         bool NeedsUpdate();
     }
@@ -29,12 +27,7 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Classes
         {
             get
             {
-                if (_id == string.Empty)
-                {
-
-                    _id = GetGuidFromAttribute();
-                }
-                return _id;
+                return _id ?? (_id = GetGuidFromAttribute());
             }
             set { _id = value; }
         }
@@ -63,6 +56,11 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Classes
                 return attribute.Version;
             }
             return null;
+        }
+
+        public virtual void OnLoaded()
+        {
+           
         }
 
         public virtual void Install()

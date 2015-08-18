@@ -35,8 +35,13 @@ namespace Invert.Json
             if (type == typeof(float)) return node.AsFloat;
             if (type == typeof(double)) return node.AsDouble;
 
-            //if none of above works, check for collection
+            //if
+            if (type == typeof(DateTime))
+            {
+                return DateTime.Parse(node.Value);
+            }
 
+            //if none of above works, check for collection
             if (typeof(IList).IsAssignableFrom(type)) // collection detected
             {
                 var jsonArray = node as JSONArray;
@@ -106,6 +111,14 @@ namespace Invert.Json
                 return node;
             }
 
+            //if
+            if (objectType == typeof(DateTime))
+            {
+                var t = (DateTime)target;
+                return new JSONData(t.ToString());
+            }
+
+
             if (typeof(IList).IsAssignableFrom(objectType)) // collection detected
             {
 
@@ -163,7 +176,7 @@ namespace Invert.Json
             if (type == typeof(int)) node = new JSONData((int)value);
             else if (type == typeof(Vector2)) node = new JSONClass() { AsVector2 = (Vector2)value };
             else if (type == typeof(Vector3)) node = new JSONClass() { AsVector3 = (Vector3)value };
-            else if (type == typeof(string)) node = new JSONData((string)value);
+            else if (type == typeof(string)) node = new JSONData((string)value, true);
             else if (type == typeof(bool)) node = new JSONData((bool)value);
             else if (type == typeof(float)) node = new JSONData((float)value);
             else if (type == typeof(double)) node = new JSONData((double)value);

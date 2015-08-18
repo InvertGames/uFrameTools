@@ -54,9 +54,11 @@ namespace Invert.Core
             };
             command.Task = new BackgroundTask(worker);
             worker.RunWorkerAsync(command);
-           
        
         }
+
+
+
     }
 
     public class BackgroundTaskCommand : ICommand
