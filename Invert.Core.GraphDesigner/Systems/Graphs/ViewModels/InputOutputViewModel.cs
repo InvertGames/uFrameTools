@@ -55,13 +55,11 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+
                 if (ReferenceItem != null)
                 {
-                    var source = ReferenceItem.InputFrom<IDiagramNodeItem>();
-                    if (source != null)
-                    {
-                        return source.Name;
-                    }
+                    return ReferenceItem.SelectedDisplayName;
+             
                 }
                 return "-- Select Item --";
             }

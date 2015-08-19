@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Invert.Data;
 using Invert.Json;
 using UnityEngine;
 
@@ -178,6 +177,19 @@ namespace Invert.Core.GraphDesigner
         public virtual bool AllowSelection
         {
             get { return false; }
+        }
+
+        public virtual string SelectedDisplayName
+        {
+            get
+            {  
+                var source = this.InputFrom<IDiagramNodeItem>();
+                if (source != null)
+                {
+                    return source.Name;
+                }
+                return "...";
+            }
         }
     }
 
@@ -645,107 +657,6 @@ namespace Invert.Core.GraphDesigner
                     return (TSourceType)sourceItem;
                 }
                 return null;
-            }
-        }
-    }
-
-    public class GenericReferenceItem : GenericSlot, ITypedItem, IDataRecordRemoved
-    {
-        private string _sourceIdentifier;
-        [Browsable(false)]
-        public override string Label
-        {
-            get { return SourceItemObject.Name + ": " + base.Label; }
-        }
-
-        public override string Name
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(base.Name))
-                {
-                    return base.Name;
-                }
-                if (SourceItemObject == null)
-                {
-                    return "Missing";
-                }
-                return SourceItemObject.Name;
-            }
-            set { base.Name = value;
-                
-            }
-        }
-        [JsonProperty]
-        public string SourceIdentifier
-        {
-            get { return _sourceIdentifier; }
-            set {
-                this.Changed("SourceIdentifier",ref _sourceIdentifier, value);
-            }
-        }
-        [Browsable(false)]
-        public virtual IDiagramNodeItem SourceItemObject
-        {
-            get
-            {
-                return Repository.GetById<IDiagramNodeItem>(SourceIdentifier);
-            }
-        }
-
-        public override void Deserialize(JSONClass cls)
-        {
-            base.Deserialize(cls);
-            SourceIdentifier = cls["SourceIdentifier"].Value;
-        }
-
-        public override void Serialize(JSONClass cls)
-        {
-            base.Serialize(cls);
-            if (!string.IsNullOrEmpty(SourceIdentifier))
-                cls.Add("SourceIdentifier", SourceIdentifier);
-        }
-
-        public string RelatedType
-        {
-            get
-            {
-                var source = SourceItemObject;
-                if (source == null)
-                {
-                    return "Missing";
-                }
-                var classItem = source as IClassTypeNode;
-                if (classItem != null)
-                {
-                    return classItem.ClassName;
-                }
-                return source.Name;
-            }
-            set
-            {
-                
-            }
-        }
-
-        public string RelatedTypeName
-        {
-            get
-            {
-                return RelatedType;
-            }
-        }
-
-        public void RemoveType()
-        {
-            Repository.Remove(this);
-        }
-
-        public override void RecordRemoved(IDataRecord record)
-        {
-            if (record.Identifier == this.SourceIdentifier)
-            {
-                Repository.Remove(this);
             }
         }
     }
