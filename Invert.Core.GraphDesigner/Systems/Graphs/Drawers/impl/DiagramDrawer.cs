@@ -77,9 +77,101 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+
+        public void DrawTabs(IPlatformDrawer platform, Rect tabsRect)
+        {
+            var designerWindow = DiagramViewModel.NavigationViewModel.DesignerWindow;
+            if (designerWindow != null && designerWindow.Designer != null)
+            {
+                var x = 1f;
+                foreach (var tab in DiagramViewModel.NavigationViewModel.Tabs.ToArray())
+                {
+                    if (tab == null) continue;
+                    if (tab.Title == null)
+                        continue;
+
+                    var textSize = platform.CalculateSize(tab.Title, CachedStyles.TabTitleStyle);
+                    
+                    var buttonRect=  new Rect()
+                        .AlignAndScale(tabsRect)
+                        .WithWidth(Math.Max(textSize.x + 21 + 16,60))
+                        .Translate(x,0);
+
+                    var buttonBoxRect = new Rect().AlignAndScale(buttonRect)
+                        .WithWidth(textSize.x + 10);
+                    
+                    var textRect = new Rect()
+                        .AlignAndScale(buttonRect)
+                        .Pad(7, 0, 7, 0);
+
+                    var closeButton = new Rect()
+                        .WithSize(16, 16)
+                        .AlignTopRight(buttonRect)
+                        .AlignHorisonallyByCenter(buttonRect)
+                        .Translate(-7,1);
+                    
+
+                    platform.DrawStretchBox(buttonRect,tab.State == NavigationItemState.Current ? CachedStyles.TabBoxActiveStyle : CachedStyles.TabBoxStyle,10);
+
+                    platform.DrawLabel(textRect,tab.Title,CachedStyles.TabTitleStyle);
+
+                    var tab1 = tab;
+                    platform.DoButton(buttonBoxRect,"",CachedStyles.ClearItemStyle, m =>
+                    {
+                        if (tab1.NavigationAction != null) tab1.NavigationAction(m);
+                    }, m =>
+                    {
+                        if (tab1.NavigationActionSecondary != null) tab1.NavigationActionSecondary(m);
+                    });
+
+                    platform.DoButton(closeButton,"",CachedStyles.TabCloseButton, m =>
+                    {
+                        if (tab1.CloseAction != null) tab1.CloseAction(m);
+                    });
+
+//                    if (GUILayout.Button(tab.Name,
+//                        isCurrent
+//                            ? ElementDesignerStyles.TabBoxStyle
+//                            : ElementDesignerStyles.TabBoxActiveStyle,GUILayout.MinWidth(150)))
+//                    {
+//                        var projectService = InvertGraphEditor.Container.Resolve<WorkspaceService>();
+//                   
+//                        if (Event.current.button == 1)
+//                        {
+//                         
+//                           var isLastGraph = projectService.CurrentWorkspace.Graphs.Count() <= 1;
+//
+//                           if (!isLastGraph)
+//                            {
+//                                var tab1 = tab;
+//                                projectService.Repository.RemoveAll<WorkspaceGraph>(p=>p.WorkspaceId == projectService.CurrentWorkspace.Identifier && p.GraphId == tab1.Identifier);
+//                                var lastGraph = projectService.CurrentWorkspace.Graphs.LastOrDefault();
+//                                if (isCurrent && lastGraph != null)
+//                                {
+//                                    designerWindow.SwitchDiagram(lastGraph);
+//                                }
+//                            
+//                            }
+//                        }
+//                        else
+//                        {
+//                            designerWindow.SwitchDiagram(projectService.CurrentWorkspace.Graphs.FirstOrDefault(p => p.Identifier == tab.Identifier));    
+//                        }
+//                        
+//                    }
+//
+//                    var butRect = GUILayoutUtility.GetLastRect();
+                    x += buttonRect.width+2;
+                }
+             //   GUILayout.FlexibleSpace();
+             //   GUILayout.EndHorizontal();
+             //   GUILayout.EndArea();
+            }
+        }
+
         public void DrawBreadcrumbs(IPlatformDrawer platform,  float y)
         {
-            var breadcrumbsRect = new Rect(0, y, Bounds.width, 25f);
+            var breadcrumbsRect = new Rect(0, y, Bounds.width, 30f);
 
             //var color = new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.8f, InvertGraphEditor.Settings.BackgroundColor.g * 0.8f, InvertGraphEditor.Settings.BackgroundColor.b * 0.8f, 1f);
             //platform.DrawRect(rect, color);
@@ -113,22 +205,22 @@ namespace Invert.Core.GraphDesigner
             var styles = DiagramViewModel.NavigationViewModel.BreadcrumbsStyle;
             var iconsTine = new Color(1, 1, 1, 0.5f);
 
-            foreach (var usitem in DiagramViewModel.NavigationViewModel.Breadcrubs)
+            foreach (var usitem in DiagramViewModel.NavigationViewModel.Breadcrubs.ToArray())
             {
                 var item = usitem;
                 var textSize = platform.CalculateSize(usitem.Title, CachedStyles.BreadcrumbTitleStyle);
                 float buttonContentPadding = 5;
                 float buttonIconsPadding= 5;
                 bool useSpecIcon = !string.IsNullOrEmpty(item.SpecializedIcon);
-                var buttonWidth = textSize.x + buttonContentPadding*2;
+                var buttonWidth = textSize.x + buttonContentPadding*2 + 8;
                 if (!string.IsNullOrEmpty(item.Icon)) buttonWidth += buttonIconsPadding + 16;
                 if (useSpecIcon) buttonWidth += buttonIconsPadding + 16;
+               
                 var buttonRect = new Rect()
                     .AlignAndScale(breadcrumbsRect)
                     .WithWidth(buttonWidth)
-                    .PadSides(0)
+                    .PadSides(3)
                     .Translate(x, 0);
-
 
                 var icon1Rect = new Rect()
                     .WithSize(16, 16)
@@ -146,26 +238,22 @@ namespace Invert.Core.GraphDesigner
                     .WithSize(textSize.x, textSize.y)
                     .Align(useSpecIcon ? icon2Rect : buttonRect)
                     .AlignHorisonallyByCenter(buttonRect)
-                    .Translate(useSpecIcon ? buttonIconsPadding + 16 : buttonContentPadding, 0);
+                    .Translate(useSpecIcon ? buttonIconsPadding + 16 : buttonContentPadding, -1);
 
                 var dotRect = new Rect()
                     .WithSize(16, 16)
                     .RightOf(buttonRect)
-                    .AlignHorisonallyByCenter(buttonRect);
-
+                    .AlignHorisonallyByCenter(buttonRect)
+                    .Translate(-3,0);
 
                 platform.DoButton(buttonRect, "", item.State == NavigationItemState.Current ? CachedStyles.BreadcrumbBoxActiveStyle : CachedStyles.BreadcrumbBoxStyle, item.NavigationAction);
                 platform.DrawLabel(textRect, item.Title, CachedStyles.BreadcrumbTitleStyle, DrawingAlignment.MiddleCenter);
                 platform.DrawImage(icon1Rect, styles.GetIcon(item.Icon,iconsTine), true);
+
                 if (useSpecIcon) platform.DrawImage(icon2Rect, styles.GetIcon(item.SpecializedIcon, iconsTine), true);
+                if (item.State != NavigationItemState.Current) platform.DrawImage(dotRect, styles.GetIcon("DotIcon", iconsTine), true);
 
-                if (item.State != NavigationItemState.Current)
-                {
-                    platform.DrawImage(dotRect, styles.GetIcon("DotIcon", iconsTine), true);
-                }
-
-                x += buttonRect.width + 16;
-
+                x += buttonRect.width + 16 - 6;
 
             }
 

@@ -81,7 +81,7 @@ namespace Invert.Core.GraphDesigner
 
         public static Rect PadSides(this Rect source, float padding)
         {
-            return new Rect(source.x + padding, source.y + padding, source.width - padding, source.height - padding);
+            return new Rect(source.x + padding, source.y + padding, source.width - padding*2, source.height - padding*2);
         }
 
         public static Rect AlignTopRight(this Rect source, Rect target)

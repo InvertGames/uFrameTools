@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -256,6 +257,10 @@ namespace Invert.Core.GraphDesigner
         private static object _breadcrumbBoxStyle;
         private static object _breadcrumbBoxActiveStyle;
         private static IBreadcrumbsStyleSchema _defaultBreadcrumbsStyleSchema;
+        private static object _tabBoxStyle;
+        private static object _tabBoxActiveStyle;
+        private static object _tabTitleStyle;
+        private static object _tabCloseButton;
 
         public static object Item1
         {
@@ -483,6 +488,30 @@ namespace Invert.Core.GraphDesigner
             set { _breadcrumbTitleStyle = value; }
         }
 
+        public static object TabBoxStyle
+        {
+            get { return _tabBoxStyle ?? (_tabBoxStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.TabBox)); }
+            set { _tabBoxStyle = value; }
+        }
+
+        public static object TabBoxActiveStyle
+        {
+            get { return _tabBoxActiveStyle ?? (_tabBoxActiveStyle = InvertGraphEditor.StyleProvider.GetStyle((InvertStyles.TabBoxActive))); }
+            set { _tabBoxActiveStyle = value; }
+        }
+
+        public static object TabTitleStyle
+        {
+            get { return _tabTitleStyle ?? (_tabTitleStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.TabTitle)); }
+            set { _tabTitleStyle = value; }
+        }
+
+        public static object TabCloseButton
+        {
+            get { return _tabCloseButton ?? (_tabCloseButton = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.TabCloseButton)); }
+            set { _tabCloseButton = value; }
+        }
+
         public static object BreadcrumbBoxStyle
         {
             get { return _breadcrumbBoxStyle ?? (_breadcrumbBoxStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.BreadcrumbBoxStyle) ); }
@@ -559,7 +588,11 @@ namespace Invert.Core.GraphDesigner
         NodeBackgroundBorderless,
         BreadcrumbBoxStyle,
         BreadcrumbTitleStyle,
-        BreadcrumbBoxActiveStyle
+        BreadcrumbBoxActiveStyle,
+        TabTitle,
+        TabBoxActive,
+        TabBox,
+        TabCloseButton
     }
 
  

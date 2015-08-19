@@ -801,6 +801,14 @@ namespace Invert.Core.GraphDesigner.Unity
                     return ElementDesignerStyles.BreadcrumbBoxActiveStyle;
                 case InvertStyles.BreadcrumbTitleStyle:
                     return ElementDesignerStyles.BreadcrumbTitleStyle;
+                case InvertStyles.TabBox:
+                    return ElementDesignerStyles.TabBoxStyle;
+                case InvertStyles.TabCloseButton:
+                    return ElementDesignerStyles.TabCloseButtonStyle;
+                case InvertStyles.TabBoxActive:
+                    return ElementDesignerStyles.TabBoxActiveStyle;
+                case InvertStyles.TabTitle:
+                    return ElementDesignerStyles.TabTitleStyle;
                 case InvertStyles.NodeBackground:
                     return ElementDesignerStyles.NodeBackground;           
                 case InvertStyles.NodeBackgroundBorderless:

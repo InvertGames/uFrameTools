@@ -122,6 +122,9 @@ namespace Invert.Common
         private static GUIStyle _breadcrumbTitleStyle;
         private static GUIStyle _breadcrumbBoxActiveStyle;
         private static IBreadcrumbsStyleSchema _defaultBreadcrumbsStyleSchema;
+        private static GUIStyle _tabBoxStyle;
+        private static GUIStyle _tabBoxActiveStyle;
+        private static GUIStyle _tabTitleStyle;
 
         public static GUIStyle AddButtonStyle
         {
@@ -155,7 +158,21 @@ namespace Invert.Common
                 return _tabStyle;
             }
             set { _tabStyle = value; }
-        }        public static GUIStyle TabInActiveStyle
+        }       
+        
+        public static GUIStyle TabCloseButtonStyle
+        {
+            get
+            {
+                if (_tabStyle == null)
+                    _tabStyle = new GUIStyle().WithAllStates("CloseIcon", Color.clear);
+                return _tabStyle;
+            }
+            set { _tabStyle = value; }
+        }       
+        
+        
+        public static GUIStyle TabInActiveStyle
         {
             get
             {
@@ -1415,6 +1432,37 @@ namespace Invert.Common
             }
         }
 
+        public static GUIStyle TabBoxStyle
+        {
+            get { 
+                return _tabBoxStyle ?? (_tabBoxStyle = new GUIStyle()
+                {
+                    border = new RectOffset(11, 11, 11, 11),
+                }).WithAllStates("TabBox", new Color(1,1,1,0.8f));
+            }
+            set { _tabBoxStyle = value; }
+        }
+
+        public static GUIStyle TabTitleStyle
+        {
+            get {
+                return _tabTitleStyle ?? (_tabTitleStyle = new GUIStyle()
+                {
+                    fontSize = 13
+                }).WithAllStates(new Color(1f,1f,1f,0.8f));
+            }
+            set { _tabTitleStyle = value; }
+        }
+
+        public static GUIStyle TabBoxActiveStyle
+        {
+            get { return _tabBoxActiveStyle ?? (_tabBoxActiveStyle = new GUIStyle()
+            {
+                border = new RectOffset(11, 11, 11, 11),
+            }).WithAllStates("TabBoxActive", new Color(1, 1, 1, 0.8f));
+            }
+            set { _tabBoxActiveStyle = value; }
+        }
 
         public static GUIStyle BreadcrumbBoxStyle
         {

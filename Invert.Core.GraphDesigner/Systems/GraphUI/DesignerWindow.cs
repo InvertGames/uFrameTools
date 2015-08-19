@@ -28,7 +28,8 @@ namespace Invert.Core.GraphDesigner
     public class DesignerWindow : DiagramPlugin,
         IGraphWindow,
         IDrawUFrameWindow,
-        ICommandExecuted
+        ICommandExecuted,
+        INodeItemEvents
     {
         private DesignerViewModel _designerViewModel;
 
@@ -126,7 +127,7 @@ namespace Invert.Core.GraphDesigner
             {
                 var toolbarTopRect = new Rect(0, 0, width, 18);
                 var tabsRect = new Rect(0, toolbarTopRect.height, width, 31);
-                var breadCrumbsRect = new Rect(0, tabsRect.y + tabsRect.height, width, 26);
+                var breadCrumbsRect = new Rect(0, tabsRect.y + tabsRect.height, width, 30);
 
                 diagramRect = new Rect(0f, breadCrumbsRect.y + breadCrumbsRect.height, width,
                     height - ((toolbarTopRect.height * 2)) - breadCrumbsRect.height - 20 - 32);
@@ -136,7 +137,10 @@ namespace Invert.Core.GraphDesigner
                 Drawer.DrawStretchBox(toolbarTopRect, CachedStyles.Toolbar, 0f);
                 Drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Left);
                 //drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Right);
-                Drawer.DoTabs(tabsRect, this); DiagramRect = diagramRect;
+                
+                DiagramDrawer.DrawTabs(Drawer,tabsRect);
+                //Drawer.DoTabs(Drawer,tabsRect, this); 
+                DiagramRect = diagramRect;
                 
                 if (DiagramDrawer != null)
                 {
@@ -156,7 +160,6 @@ namespace Invert.Core.GraphDesigner
                 DiagramRect = diagramRect;
                 DrawDiagram(Drawer, scrollPosition, scale, diagramRect);
             }
-
             
             InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.DrawComplete());
         }
@@ -202,6 +205,14 @@ namespace Invert.Core.GraphDesigner
             if (Workspace == null) return;
             if (Workspace.CurrentGraph == null) return;
             LoadDiagram(Workspace.CurrentGraph);
+
+            if (DiagramViewModel != null)
+            {
+                //TODO Micah, please check if it is valid to refresh it here
+                //Doing this on Load does not handle shit like renaming
+                DiagramViewModel.NavigationViewModel.Refresh();
+            }
+            
             if (DiagramDrawer != null)
             {
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
@@ -307,6 +318,11 @@ namespace Invert.Core.GraphDesigner
                     Workspace.Save();
                 }
             }
+        }
+
+        public void Renamed(IDiagramNodeItem nodeItem, string editText, string name)
+        {
+            RefreshContent();
         }
     }
 }
