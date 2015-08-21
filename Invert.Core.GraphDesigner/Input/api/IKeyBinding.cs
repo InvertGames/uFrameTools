@@ -19,4 +19,8 @@ namespace Invert.Core.GraphDesigner
         Type CommandType { get; }
         IEditorCommand Command { get; }
     }
+    public interface IKeyboardEvent
+    {
+        bool KeyEvent(KeyCode keyCode, ModifierKeyState state);
+    }
 }

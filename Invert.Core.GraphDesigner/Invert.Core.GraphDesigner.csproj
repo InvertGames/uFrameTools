@@ -52,6 +52,7 @@
     <Compile Include="Systems\Graphs\ViewModels\GraphDesignerNavigationViewModel.cs" />
     <Compile Include="Systems\Nodes\NodeSystem.cs" />
     <Compile Include="Systems\TypesSystem\TypesSystem.cs" />
+    <Compile Include="Systems\UndoSystem\UndoSystem.cs" />
     <Compile Include="Systems\Validation\ValidationSystem.cs" />
     <Compile Include="Systems\Workspaces\Workspace.cs" />
     <Compile Include="Systems\Graphs\FilterItem.cs" />
