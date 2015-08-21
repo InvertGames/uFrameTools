@@ -8,7 +8,7 @@ namespace Invert.Json
     public static class InvertJsonExtensions
     {
 
-
+        
 
         public static T DeserializeObject<T>(string json)
         {
@@ -71,24 +71,27 @@ namespace Invert.Json
             var jsonClass = node as JSONClass;
             if (jsonClass == null) return null;
 
-            var poco = System.Activator.CreateInstance(type);
+            var poco = DeserializeExistingObject(Activator.CreateInstance(type), jsonClass);
 
-            var properties = type.GetProperties();
+            return poco;
+        }
+
+        public static object DeserializeExistingObject(object poco, JSONClass jsonClass)
+        {
+            
+
+            var properties = poco.GetType().GetProperties();
             foreach (var propertyInfo in properties)
             {
-                if (propertyInfo.IsDefined(typeof(JsonProperty), true) || propertyInfo.Name == "Identifier")
+                if (propertyInfo.IsDefined(typeof (JsonProperty), true) || propertyInfo.Name == "Identifier")
                 {
                     if (jsonClass[propertyInfo.Name] != null)
                     {
                         var deserializedObject = DeserializeObject(propertyInfo.PropertyType, jsonClass[propertyInfo.Name]);
                         propertyInfo.SetValue(poco, deserializedObject, null);
                     }
-                  
-
                 }
-              
             }
-
             return poco;
         }
 

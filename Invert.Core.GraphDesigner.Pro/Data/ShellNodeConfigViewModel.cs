@@ -136,7 +136,7 @@ public class ShellNodeConfigViewModel : GenericNodeViewModel<ShellNodeConfig>
         var sectionViewModel = new GenericItemHeaderViewModel()
         {
             Name = item.Name,
-            AddCommand = item.AllowAdding ? new LambdaCommand(()=>{}) : null,
+            AddCommand = item.AllowAdding ? new LambdaCommand("",()=>{}) : null,
             DataObject = dataObject,
             NodeViewModel = this,
             AllowConnections = true,

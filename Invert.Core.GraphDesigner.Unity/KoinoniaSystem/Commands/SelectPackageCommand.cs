@@ -10,5 +10,6 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Commands
     {
         public string Id { get; set; }
         public BackgroundWorker Worker { get; set; }
+        public string Title { get; set; }
     }
 }

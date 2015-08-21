@@ -55,7 +55,7 @@ namespace Invert.Core.GraphDesigner
                     {
                         Title = item1.Name,
                         Group = item.Group,
-                        Command = new LambdaCommand(() =>
+                        Command = new LambdaCommand("Change Type", () =>
                         {
                             typedItem.RelatedType = item1.Name;
                         })
@@ -70,6 +70,7 @@ namespace Invert.Core.GraphDesigner
                     Title = "Delete",
                     Command = new DeleteCommand()
                     {
+                        Title = "Delete Item",
                         Item = nodeItem.DataObject as IDataRecord
                     }
                 });

@@ -22,7 +22,12 @@ public class uFrameInspectorWindow : EditorWindow {
         Instance = this;
         _scrollPosition = GUILayout.BeginScrollView(_scrollPosition);
         InvertApplication.SignalEvent<IDrawInspector>(_ => _.DrawInspector());
-        InvertApplication.SignalEvent<IDrawExplorer>(_=>_.DrawExplorer());
+        var x = 0;
+        InvertApplication.SignalEvent<IDrawExplorer>(_ =>
+        {
+            InvertApplication.Log(_.GetType().FullName + _.GetHashCode());
+            _.DrawExplorer();
+        });
 
         GUILayout.EndScrollView();
     }

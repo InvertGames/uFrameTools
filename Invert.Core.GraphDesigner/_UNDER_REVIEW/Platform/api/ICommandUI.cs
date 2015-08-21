@@ -34,7 +34,13 @@ namespace Invert.Core.GraphDesigner
 
     public class Command : ICommand
     {
-        public string Title { get; set; }
+        private string _title;
+
+        public string Title
+        {
+            get { return _title ?? (_title = this.GetType().Name.Replace("Command",string.Empty)); }
+            set { _title = value; }
+        }
     }
     public class CreateNodeCommand : Command
     {

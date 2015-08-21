@@ -32,7 +32,7 @@ namespace Invert.Core.GraphDesigner
                      ui.AddCommand(new ContextMenuItem()
                         {
                             Title = string.Format("Remove {0}",connection1.Name),
-                            Command = new LambdaCommand(()=> { connection1.Remove(connection1); })
+                            Command = new LambdaCommand("Remove Connection", ()=> { connection1.Remove(connection1); })
                         });
              
                 }

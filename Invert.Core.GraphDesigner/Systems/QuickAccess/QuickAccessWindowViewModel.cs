@@ -58,7 +58,7 @@ public class QuickAccessWindowViewModel : IWindow
 
     public void ItemSelected(QuickAccessItem item)
     {
-        InvertApplication.Execute(new LambdaCommand(() =>
+        InvertApplication.Execute(new LambdaCommand("Select Item", () =>
         {
             QuickLaunchItems[SelectedIndex].Action(QuickLaunchItems[SelectedIndex].Item);
         }));
@@ -68,7 +68,7 @@ public class QuickAccessWindowViewModel : IWindow
 
     public void Execute()
     {
-        InvertApplication.Execute(new LambdaCommand(() =>
+        InvertApplication.Execute(new LambdaCommand("Select Item", () =>
         {
             QuickLaunchItems[SelectedIndex].Action(QuickLaunchItems[SelectedIndex].Item);
         }));
@@ -92,7 +92,7 @@ public class QuickAccessWindowViewModel : IWindow
     {
         var x = item.Item;
         var z = item;
-        InvertApplication.Execute(new LambdaCommand(() =>
+        InvertApplication.Execute(new LambdaCommand("Select Item", () =>
         {
             z.Action(x);
         }));

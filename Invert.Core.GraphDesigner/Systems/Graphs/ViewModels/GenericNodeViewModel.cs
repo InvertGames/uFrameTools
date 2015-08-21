@@ -195,7 +195,7 @@ namespace Invert.Core.GraphDesigner
                 //    header.IsNewLine = true;
                 //}
 
-                header.AddCommand =section1.AllowAdding ? new LambdaCommand(() =>
+                header.AddCommand =section1.AllowAdding ? new LambdaCommand("Add Item",() =>
                 {
                     OnAdd(section, section1, this);
                 }) : null; 

@@ -46,6 +46,7 @@ namespace Invert.Core.GraphDesigner
                 
             }
         } 
+
         public IEnumerator Generate()
         {
 
@@ -54,14 +55,16 @@ namespace Invert.Core.GraphDesigner
             repository.Commit();
             var config = InvertGraphEditor.Container.Resolve<IGraphConfiguration>();
             var items = Items.Distinct().ToArray();
-
-            yield return
+            foreach (var item in items.OfType<IDiagramNodeItem>())
+            {
+                InvertApplication.Log(item.Name);
+            }
+            yield return 
                 new TaskProgress(0f, "Refactoring");
 
             // Grab all the file generators
             var fileGenerators = InvertGraphEditor.GetAllFileGenerators(config, items).ToArray();
             var length = 100f / (fileGenerators.Length + 1);
-
             var index = 0;
 
             foreach (var codeFileGenerator in fileGenerators)

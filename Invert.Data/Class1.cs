@@ -42,19 +42,33 @@ namespace Invert.Data
     public static class DataRecordPropertyChangedExtensions
     {
 
+        public static TType Copy<TType>(this TType record) where TType : class, IDataRecord
+        {
+            var result = InvertJsonExtensions.DeserializeObject<TType>((string)InvertJsonExtensions.SerializeObject(record).ToString()) as TType;
+            result.Identifier = Guid.NewGuid().ToString();
+            return result;
+        }
 
         public static void Changed<TType>(this IDataRecord record, string propertyName,ref TType beforeValue, TType value)
         {
             record.Changed = true; 
             var before = beforeValue;
             var after = value;
+            if (record.Repository != null && !object.Equals(before, after))
+            {
+                record.Repository.Signal<IDataRecordPropertyBeforeChange>(_ => _.BeforePropertyChanged(record, propertyName, before, after));
+            }
             beforeValue = after;
             if (record.Repository != null && !object.Equals(before, after))
             {
                 record.Repository.Signal<IDataRecordPropertyChanged>(_ => _.PropertyChanged(record, propertyName, before, after));
             }
-
         }
+    }
+
+    public interface IDataRecordPropertyBeforeChange
+    {
+        void BeforePropertyChanged(IDataRecord record, string name, object previousValue, object nextValue);
     }
     public interface IDataRecordPropertyChanged
     {
@@ -93,6 +107,7 @@ namespace Invert.Data
         {
             get { return _listeners ?? (_listeners = new Dictionary<Type, List<object>>()); }
             set { _listeners = value; }
+        
         }
 
         public void AddListener<TEventType>(TEventType instance)
@@ -440,6 +455,9 @@ namespace Invert.Data
 
         public void Add(IDataRecord o)
         {
+            if (Removed.Contains(o.Identifier))
+                Removed.Remove(o.Identifier);
+
             o.Changed = true;
             if (string.IsNullOrEmpty(o.Identifier))
             {

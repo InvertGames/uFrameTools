@@ -30,6 +30,7 @@ namespace Invert.Core.GraphDesigner
     public class DatabaseService : DiagramPlugin, 
         IDataRecordInserted, 
         IDataRecordRemoved, 
+        IDataRecordPropertyBeforeChange,
         IDataRecordPropertyChanged,
         IChangeDatabase,
         IToolbarQuery,
@@ -86,6 +87,7 @@ namespace Invert.Core.GraphDesigner
                 typeDatabase.AddListener<IDataRecordInserted>(this);
                 typeDatabase.AddListener<IDataRecordRemoved>(this);
                 typeDatabase.AddListener<IDataRecordPropertyChanged>(this);
+                typeDatabase.AddListener<IDataRecordPropertyBeforeChange>(this);
             }
             else
             {
@@ -108,8 +110,6 @@ namespace Invert.Core.GraphDesigner
             {
                 if (_ != this) _.RecordInserted(record);
             });
-            if (record.Repository != null)
-            record.Repository.Commit();
         }
 
         public void RecordRemoved(IDataRecord record)
@@ -118,8 +118,6 @@ namespace Invert.Core.GraphDesigner
             {
                 if (_ != this) _.RecordRemoved(record);
             }); 
-            if (record.Repository != null)
-                record.Repository.Commit();
         }
 
         public void PropertyChanged(IDataRecord record, string name, object previousValue, object nextValue)
@@ -128,10 +126,14 @@ namespace Invert.Core.GraphDesigner
             {
                 if (_ != this) _.PropertyChanged(record, name, previousValue, nextValue);
             });
-            if (record.Repository != null)
-                record.Repository.Commit();
         }
-
+        public void BeforePropertyChanged(IDataRecord record, string name, object previousValue, object nextValue)
+        {
+            InvertApplication.SignalEvent<IDataRecordPropertyBeforeChange>(_ =>
+            {
+                if (_ != this) _.BeforePropertyChanged(record, name, previousValue, nextValue);
+            });
+        }
         public void ChangeDatabase(IGraphConfiguration configuration)
         {
             foreach (var graphConfig in InvertGraphEditor.Container.ResolveAll<IGraphConfiguration>())

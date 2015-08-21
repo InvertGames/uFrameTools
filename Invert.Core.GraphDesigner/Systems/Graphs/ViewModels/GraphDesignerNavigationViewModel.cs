@@ -65,26 +65,19 @@ namespace Invert.Core.GraphDesigner
                     Title = tab.Title,
                     NavigationAction = x =>
                     {
-                        DesignerWindow.SwitchDiagram(WorkspaceService.CurrentWorkspace.Graphs.FirstOrDefault(p => p.Identifier == tab.Identifier));    
+                        InvertApplication.Execute(new LambdaCommand("Change Current Graph", () =>
+                        {
+                            DesignerWindow.SwitchDiagram(WorkspaceService.CurrentWorkspace.Graphs.FirstOrDefault(p => p.Identifier == tab.Identifier));
+                        }));
+                        
+
                     },
                     CloseAction = x =>
                     {
-                        var isLastGraph = WorkspaceService.CurrentWorkspace.Graphs.Count() <= 1;
-                        
-                        if (!isLastGraph)
+                        InvertApplication.Execute(new LambdaCommand("Close Graph", () =>
                         {
-                            var tab1 = tab;
-                            WorkspaceService.Repository.RemoveAll<WorkspaceGraph>(p => p.WorkspaceId == WorkspaceService.CurrentWorkspace.Identifier && p.GraphId == tab1.Identifier);
-                            var lastGraph = WorkspaceService.CurrentWorkspace.Graphs.LastOrDefault();
-                            if ((DesignerWindow.Workspace != null && 
-                                DesignerWindow.Workspace.CurrentGraph != null && 
-                                tab.Identifier == DesignerWindow.Workspace.CurrentGraph.Identifier) && 
-                                lastGraph != null)
-                            {
-                                DesignerWindow.SwitchDiagram(lastGraph);
-                            }
-                                                    
-                        }
+                            this.DiagramViewModel.CurrentRepository.RemoveAll<WorkspaceGraph>(p=>p.GraphId == tab.Identifier);
+                        } ));
                     }
                 };
 
@@ -113,7 +106,7 @@ namespace Invert.Core.GraphDesigner
                     State = DiagramViewModel.GraphData != null && DiagramViewModel.GraphData.CurrentFilter == filter ? NavigationItemState.Current : NavigationItemState.Regular,
                     NavigationAction = x =>
                     {
-                        InvertApplication.Execute(new LambdaCommand(() => { DiagramViewModel.GraphData.PopToFilter(filter); }));
+                        InvertApplication.Execute(new LambdaCommand("Back", () => { DiagramViewModel.GraphData.PopToFilter(filter); }));
                     }       
                 };
 

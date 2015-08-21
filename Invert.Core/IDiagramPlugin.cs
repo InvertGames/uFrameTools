@@ -27,8 +27,7 @@ namespace Invert.Core
     }
     public interface ICommand
     {
-    
-        
+        string Title { get; set; }
     }
 
     public interface IBackgroundCommand : ICommand
@@ -38,6 +37,8 @@ namespace Invert.Core
 
     public abstract class CorePlugin : ICorePlugin
     {
+        private UFrameContainer _container;
+
         public void Execute<TCommand>(TCommand command) where TCommand :  ICommand
         {
             InvertApplication.Execute(command);
@@ -76,7 +77,11 @@ namespace Invert.Core
             Container = container;
         }
 
-        public UFrameContainer Container { get; set; }
+        public UFrameContainer Container
+        {
+            get { return InvertApplication.Container; }
+            set { _container = value; }
+        }
 
         public abstract void Loaded(UFrameContainer container);
     }

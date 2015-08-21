@@ -172,6 +172,7 @@ namespace Invert.Core.GraphDesigner
         public void DrawBreadcrumbs(IPlatformDrawer platform,  float y)
         {
             var breadcrumbsRect = new Rect(0, y, Bounds.width, 30f);
+            platform.DrawRect(breadcrumbsRect, InvertGraphEditor.Settings.BackgroundColor);
 
             //var color = new Color(InvertGraphEditor.Settings.BackgroundColor.r * 0.8f, InvertGraphEditor.Settings.BackgroundColor.g * 0.8f, InvertGraphEditor.Settings.BackgroundColor.b * 0.8f, 1f);
             //platform.DrawRect(rect, color);

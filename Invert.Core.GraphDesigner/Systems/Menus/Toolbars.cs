@@ -23,7 +23,6 @@ namespace Invert.Core.GraphDesigner
             
            
         }
-
         public void CommandExecuted(ICommand command)
         {
             RefreshToolbar();

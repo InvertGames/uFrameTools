@@ -11,6 +11,7 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Commands
     {
         public BackgroundWorker Worker { get; set; }
         public UFramePackage Package { get; set; }
+        public string Title { get; set; }
     }
 
 }

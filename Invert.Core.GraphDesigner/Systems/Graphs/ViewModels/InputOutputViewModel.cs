@@ -69,7 +69,7 @@ namespace Invert.Core.GraphDesigner
         {
             InvertGraphEditor.WindowManager.InitItemWindow(ReferenceItem.GetAllowed().ToArray(), _ =>
             {
-                InvertApplication.Execute(new LambdaCommand(() =>
+                InvertApplication.Execute(new LambdaCommand("Set Item", () =>
                 {
                     if (IsInput)
                     {

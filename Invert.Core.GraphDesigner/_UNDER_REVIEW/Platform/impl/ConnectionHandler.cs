@@ -171,7 +171,7 @@ namespace Invert.Core.GraphDesigner
             base.OnMouseUp(e);
             if (CurrentConnection != null)
             {
-                InvertApplication.Execute(new LambdaCommand(() =>
+                InvertApplication.Execute(new LambdaCommand("Create Connection",() =>
                 {
                     CurrentConnection.Apply(CurrentConnection);
                 }));

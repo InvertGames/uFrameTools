@@ -11,6 +11,10 @@ namespace Invert.Core.GraphDesigner.Unity.KoinoniaSystem.Commands
         public string Title
         {
             get { return "Login to Invert Empire"; }
+            set
+            {
+                
+            }
         }
 
         public string Username { get; set; }

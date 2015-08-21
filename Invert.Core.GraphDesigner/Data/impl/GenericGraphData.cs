@@ -18,7 +18,6 @@ public class GenericGraphData<T> : InvertGraph where T : IDiagramFilter, new()
         var item = Repository.Create<FilterItem>();
         item.NodeId = filterItem.Identifier;
         item.FilterId = filterItem.Identifier;
-        Repository.Commit();
         return filterItem;
     }
 }

@@ -322,9 +322,6 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Set.cs">
       <Link>Set.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Source.cs">
-      <Link>Source.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\SourceObject.cs">
       <Link>SourceObject.cs</Link>
     </Compile>

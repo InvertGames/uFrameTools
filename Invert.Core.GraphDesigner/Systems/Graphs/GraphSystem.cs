@@ -36,7 +36,7 @@ public class GraphSystem : DiagramPlugin
             {
                 Title = "Delete This Graph",
                 Group = "Remove",
-                Command =  new LambdaCommand(() =>
+                Command =  new LambdaCommand("Delete Graph", () =>
                 {
                     Container.Resolve<IRepository>().Remove(diagram.DataObject as IDataRecord);
                 })
@@ -75,8 +75,11 @@ public class GraphSystem : DiagramPlugin
         var importableGraphs = repo.AllOf<IGraphData>().Where(p => !workspaceGraphs.Contains(p.Identifier));
         InvertGraphEditor.WindowManager.InitItemWindow(importableGraphs, _ =>
         {
-            workspaceService.CurrentWorkspace.AddGraph(_);
-            repo.Commit();
+            InvertApplication.Execute(new LambdaCommand("Add Graph", () =>
+            {
+                workspaceService.CurrentWorkspace.AddGraph(_);
+            }));
+      
         });
     }
 
@@ -89,7 +92,7 @@ public class GraphSystem : DiagramPlugin
         graph.Name = command.Name;
         workspaceService.CurrentWorkspace.AddGraph(graph);
         workspaceService.CurrentWorkspace.CurrentGraphId = graph.Identifier;
-        repo.Commit();
+       
     }
 }
 public class CreateGraphCommand : Command

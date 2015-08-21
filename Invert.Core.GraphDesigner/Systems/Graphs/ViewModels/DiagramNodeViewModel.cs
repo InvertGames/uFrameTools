@@ -71,7 +71,7 @@ namespace Invert.Core.GraphDesigner
                     Setter = (v) =>
                     {
                         property1.SetValue(GraphItem, v, null);
-                      
+
                     }
                 };
                 ContentItems.Add(vm);
@@ -210,7 +210,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (!DiagramViewModel.FilterItems.ContainsKey(GraphItemObject.Identifier)) return new Vector2(45,45);
+                if (!DiagramViewModel.FilterItems.ContainsKey(GraphItemObject.Identifier)) return new Vector2(45, 45);
                 return DiagramViewModel.FilterItems[GraphItemObject.Identifier].Position;
             }
             set
@@ -264,9 +264,9 @@ namespace Invert.Core.GraphDesigner
                         item.OutputConnector.ConnectorFor = this;
 
                     }
-                        
-                    
-                    
+
+
+
                 }
             }
 
@@ -291,7 +291,7 @@ namespace Invert.Core.GraphDesigner
                     if (!DiagramViewModel.FilterItems.ContainsKey(GraphItemObject.Identifier)) return false;
                     return DiagramViewModel.FilterItems[GraphItemObject.Identifier].Collapsed;
                 }
-                    
+
                 return true;
 
             }
@@ -347,7 +347,7 @@ namespace Invert.Core.GraphDesigner
                 if (value == false)
                     EndEditing();
                 GraphItemObject.IsEditing = value;
-                
+
             }
         }
 
@@ -365,7 +365,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return GraphItemObject.SubTitle; 
+                return GraphItemObject.SubTitle;
             }
         }
 
@@ -387,7 +387,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return "Header3";  
+                return "Header3";
             }
         }
 
@@ -449,7 +449,7 @@ namespace Invert.Core.GraphDesigner
                         return new Color32(56, 56, 57, 255);
                         break;
                     case NodeColor.Blue:
-                        return new Color32(115 , 110 , 180, 255);
+                        return new Color32(115, 110, 180, 255);
                         break;
                     case NodeColor.LightGray:
                         return new Color32(87, 101, 108, 255);
@@ -539,14 +539,20 @@ namespace Invert.Core.GraphDesigner
         public void EndEditing()
         {
             if (!IsEditable) return;
-
             if (string.IsNullOrEmpty(GraphItemObject.Name))
             {
                 GraphItemObject.Name = "RenameMe";
             }
-            else if (!IsEditing) return;
+            
+            if (!IsEditing) return;
+            var n = GraphItemObject.Name;
+            GraphItemObject.Name = "_";
 
-            GraphItemObject.EndEditing();
+            InvertApplication.Execute(new LambdaCommand("Rename Item", () =>
+            {
+                GraphItemObject.Rename(n);
+                GraphItemObject.EndEditing();
+            }));
             InvertApplication.SignalEvent<INodeItemEvents>(_ => _.Renamed(GraphItemObject, editText, GraphItemObject.Name));
             Dirty = true;
         }
@@ -563,7 +569,7 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 return InvertGraphEditor.GetAllCodeGenerators(InvertGraphEditor.Container.Resolve<IGraphConfiguration>(),
-                    new IDataRecord[] {GraphItemObject});
+                    new IDataRecord[] { GraphItemObject });
             }
         }
 
@@ -658,7 +664,7 @@ namespace Invert.Core.GraphDesigner
                 var fileGenerator = this.CodeGenerators.OfType<CodeGenerator>().LastOrDefault(p => !p.IsDesignerFile);
                 if (fileGenerator != null)
                 {
-                 
+
                     InvertGraphEditor.Platform.OpenScriptFile("Assets" + fileGenerator.UnityPath);
 
                 }
@@ -729,8 +735,8 @@ namespace Invert.Core.GraphDesigner
                     Getter = () => property1.GetValue(data, null),
                     Setter = (v) =>
                     {
-                  
-                            property1.SetValue(data, v, null);
+
+                        property1.SetValue(data, v, null);
 
                     }
                 };

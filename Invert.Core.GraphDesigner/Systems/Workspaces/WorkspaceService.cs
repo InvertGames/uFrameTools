@@ -135,7 +135,6 @@ namespace Invert.Core.GraphDesigner
         {
             var workspace = Repository.Create<Workspace>();
             workspace.Name = command.Name;
-            Repository.Commit();
             command.Result = workspace;
         }
     }

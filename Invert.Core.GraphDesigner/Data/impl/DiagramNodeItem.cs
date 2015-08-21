@@ -16,6 +16,11 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
         get { return Node.Name; }
     }
 
+    public override string ToString()
+    {
+        return Name;
+    }
+
     public virtual string SearchTag { get { return Name; } }
 
     string IGraphItem.Label

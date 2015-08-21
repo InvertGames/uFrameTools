@@ -73,7 +73,6 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-
         public void Execute(CreateNodeCommand command)
         {
 

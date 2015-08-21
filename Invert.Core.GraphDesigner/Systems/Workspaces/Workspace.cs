@@ -62,7 +62,7 @@ namespace Invert.Core.GraphDesigner
 
         public void Save()
         {
-            Repository.Commit();
+            //Repository.Commit();
         }
 
         public IGraphData CreateGraph(Type to)
@@ -74,8 +74,6 @@ namespace Invert.Core.GraphDesigner
             var workspaceGraph = Repository.Create<WorkspaceGraph>();
             workspaceGraph.GraphId = graph.Identifier;
             workspaceGraph.WorkspaceId = this.Identifier;
-
-            Repository.Commit();
             return graph;
         }
 

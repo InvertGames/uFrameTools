@@ -122,7 +122,7 @@ namespace Invert.Core.GraphDesigner
             DiagramDrawer.IsEditingField = false;
             if (Drawer == null) return;
             Rect diagramRect = new Rect();
-
+            if (Drawer == null) InvertApplication.Log("DRAWER IS NULl");
             if (DrawToolbar)
             {
                 var toolbarTopRect = new Rect(0, 0, width, 18);
@@ -137,13 +137,14 @@ namespace Invert.Core.GraphDesigner
                 Drawer.DrawStretchBox(toolbarTopRect, CachedStyles.Toolbar, 0f);
                 Drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Left);
                 //drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Right);
-                
-                DiagramDrawer.DrawTabs(Drawer,tabsRect);
+                Drawer.DrawRect(tabsRect, InvertGraphEditor.Settings.GridLinesColor);
+            
                 //Drawer.DoTabs(Drawer,tabsRect, this); 
                 DiagramRect = diagramRect;
-                
+
                 if (DiagramDrawer != null)
                 {
+                    DiagramDrawer.DrawTabs(Drawer, tabsRect);
                     DiagramDrawer.DrawBreadcrumbs(Drawer, breadCrumbsRect.y);
                 }
 
@@ -310,13 +311,6 @@ namespace Invert.Core.GraphDesigner
             if (DiagramDrawer != null)
             {
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
-            }
-            if (Workspace != null)
-            {
-                if (Workspace.CurrentGraph != null)
-                {
-                    Workspace.Save();
-                }
             }
         }
 

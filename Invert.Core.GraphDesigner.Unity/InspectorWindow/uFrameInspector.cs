@@ -150,6 +150,7 @@ public class InspectorPlugin : DiagramPlugin
         if (WorkspaceService == null) return;
         if (WorkspaceService.CurrentWorkspace == null) return;
         if (Items == null) UpdateItems();
+        
         if (GUIHelpers.DoToolbarEx("Explorer"))
         {
             

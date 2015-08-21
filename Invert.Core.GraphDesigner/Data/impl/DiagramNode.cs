@@ -53,6 +53,10 @@ namespace Invert.Core.GraphDesigner
     /// </summary>
     public abstract class DiagramNode : IDiagramNode, IDiagramFilter, IDataRecordRemoved
     {
+        public override string ToString()
+        {
+            return Name;
+        }
 
         public IEnumerable<ConnectionData> Inputs
         {

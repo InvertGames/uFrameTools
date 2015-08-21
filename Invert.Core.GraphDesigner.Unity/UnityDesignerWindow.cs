@@ -220,7 +220,15 @@ namespace Invert.Core.GraphDesigner.Unity
             var evt = Event.current;
             if (evt != null && evt.isKey && evt.type == EventType.KeyUp)
             {
-                Signal<IKeyboardEvent>(_ => _.KeyEvent(evt.keyCode, mouse.ModifierKeyStates));
+                Signal<IKeyboardEvent>(_ =>
+                {
+                    if (_.KeyEvent(evt.keyCode, mouse.ModifierKeyStates))
+                    {
+                        evt.Use();
+                    }
+
+                });
+
             }
         }
 

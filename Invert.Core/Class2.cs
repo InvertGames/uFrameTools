@@ -194,7 +194,7 @@ namespace Invert.Core
                 yield return type;
             if (includeAbstract)
             {
-                foreach (var assembly in CachedAssemblies)
+                foreach (var assembly in CachedAssemblies.Distinct())
                 {
                     //if (!assembly.FullName.StartsWith("Invert")) continue;
                     foreach (var t in assembly
@@ -208,7 +208,7 @@ namespace Invert.Core
             else
             {
                 var items = new List<Type>();
-                foreach (var assembly in CachedAssemblies)
+                foreach (var assembly in CachedAssemblies.Distinct())
                 {
                     //if (!assembly.FullName.StartsWith("Invert")) continue;
                     try
@@ -427,7 +427,7 @@ namespace Invert.Core
         }
         public static void Execute(Action action)
         {
-            Execute(new LambdaCommand(action));
+            Execute(new LambdaCommand("Unknown Command", action));
         }
         public static void Execute<TCommand>(TCommand command) where TCommand : ICommand
         {
