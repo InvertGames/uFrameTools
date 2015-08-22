@@ -226,12 +226,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         public IRepository Repository { get; set; }
-        public override void Initialize(UFrameContainer container)
-        {
-            base.Initialize(container); 
-            InvertApplication.Log("Initialized Twice?");
-        }
-
+ 
         public void CommandExecuted(ICommand command)
         {
             if (command is UndoCommand || command is RedoCommand) return;
@@ -246,12 +241,6 @@ namespace Invert.Core.GraphDesigner
                 Repository.Commit();
             }
         }
-
-        public UndoSystem()
-        {
-            Debug.Log(this.GetHashCode());
-        }
-
 
         public void Execute(TestyCommand command)
         {
