@@ -21,7 +21,7 @@ namespace Invert.Core.GraphDesigner
         void CloseGraph(OpenGraph tab);
 
         //Dictionary<string, string> GetProjectDiagrams();
-        IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null);
+        IGraphData CreateNewDiagram(Type diagramType, IGraphFilter defaultFilter = null);
 
         bool GetSetting(string key, bool def = true);
 
@@ -168,7 +168,7 @@ namespace Invert.Core.GraphDesigner
         /// <summary>
         /// A wrapper of the current graphs current filter.
         /// </summary>
-        public IDiagramFilter CurrentFilter
+        public IGraphFilter CurrentFilter
         {
             get
             {
@@ -355,7 +355,7 @@ namespace Invert.Core.GraphDesigner
         /// <param name="diagramType">The type of diagram to create.</param>
         /// <param name="defaultFilter">The root node or the root filter to use.</param>
         /// <returns>The created graph.</returns>
-        public virtual IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null)
+        public virtual IGraphData CreateNewDiagram(Type diagramType, IGraphFilter defaultFilter = null)
         {
             var graph = Activator.CreateInstance(diagramType) as InvertGraph;
             // Create a unique name

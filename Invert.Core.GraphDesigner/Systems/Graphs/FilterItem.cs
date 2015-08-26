@@ -4,7 +4,17 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class FilterItem : IDataRecord , IDataRecordRemoved
+    public interface IFilterItem : IDataRecord
+    {
+        bool Collapsed { get; set; }
+        string NodeId { get; set; }
+        string FilterId { get; set; }
+        IDiagramNode Node { get; }
+        IGraphFilter Filter { get; }
+        Vector2 Position { get; set; }
+    }
+
+    public class FilterItem : IDataRecordRemoved, IFilterItem
     {
         private bool _collapsed;
         private string _nodeId;
@@ -52,11 +62,11 @@ namespace Invert.Core.GraphDesigner
                 return Repository.GetById<IDiagramNode>(NodeId);
             }
         }
-        public IDiagramFilter Filter
+        public IGraphFilter Filter
         {
             get
             {
-                return Repository.GetById<IDiagramFilter>(FilterId);
+                return Repository.GetById<IGraphFilter>(FilterId);
             }
         }
 

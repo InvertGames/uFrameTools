@@ -124,7 +124,7 @@ public class DocumentationWindow : EditorWindow
     private Vector2 _scrollPosition;
     private DiagramDrawer drawer;
 
-    private List<DiagramNode> _screenshots;
+    private List<GraphNode> _screenshots;
     private int _currentScreenshotIndex = 0;
     private bool _capturing = false;
     private bool _exitOnComplete = false;
@@ -149,7 +149,7 @@ public class DocumentationWindow : EditorWindow
         //window.drawer = window.DiagramDrawer();
         window.ShowPopup();
         var repository = InvertGraphEditor.DesignerWindow.DiagramViewModel.CurrentRepository;
-        window._screenshots = repository.AllOf<DiagramNode>().ToList();
+        window._screenshots = repository.AllOf<GraphNode>().ToList();
         window._capturing = true;
         window._exitOnComplete = true;
         window.NextScreenshot();
@@ -161,7 +161,7 @@ public class DocumentationWindow : EditorWindow
             if (GUILayout.Button("Generate Documentation"))
             {
                 var repository = InvertGraphEditor.DesignerWindow.DiagramViewModel.CurrentRepository;
-                _screenshots = repository.AllOf<DiagramNode>().ToList();
+                _screenshots = repository.AllOf<GraphNode>().ToList();
                 _capturing = true;
                 NextScreenshot();
             }
@@ -224,7 +224,7 @@ public class DocumentationWindow : EditorWindow
         Repaint();
     }
 
-    private DiagramDrawer DiagramDrawer(DiagramNode node)
+    private DiagramDrawer DiagramDrawer(GraphNode node)
     {
         var window = InvertGraphEditor.DesignerWindow as ElementsDesigner;
 

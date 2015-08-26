@@ -289,7 +289,7 @@ namespace Invert.Core.GraphDesigner
         void PushIndent();
         void PopIndent();
         void LinkToNode(IDiagramNodeItem node, string text = null);
-        void NodeImage(DiagramNode node);
+        void NodeImage(GraphNode node);
         void Paragraph(string text, params object[] args);
         void Break();
         void Lines( params string[] lines);

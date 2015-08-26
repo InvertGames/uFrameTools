@@ -68,9 +68,9 @@ namespace Invert.Core.GraphDesigner
                     Debug.Log("Set Root filter id to " + CurrentGraph.RootFilterId);
 
                 }
-                if (result is DiagramNode)
+                if (result is GraphNode)
                 {
-                    CurrentNode = result as DiagramNode;
+                    CurrentNode = result as GraphNode;
                     CurrentNode.GraphId = CurrentGraph.Identifier;
 
                 }
@@ -145,7 +145,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public DiagramNode CurrentNode { get; set; }
+        public GraphNode CurrentNode { get; set; }
 
         public InvertGraph CurrentGraph { get; set; }
 

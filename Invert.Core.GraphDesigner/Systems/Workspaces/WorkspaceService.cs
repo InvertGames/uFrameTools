@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Invert.Core.GraphDesigner;
 using Invert.Data;
@@ -36,7 +37,7 @@ namespace Invert.Core.GraphDesigner
             Repository = container.Resolve<IRepository>();
         }
     }
-    public class WorkspaceService : RepoService, 
+    public class WorkspaceService : RepoService,
         IRemoveWorkspace,
         IContextMenuQuery,
         IToolbarQuery,
@@ -47,13 +48,13 @@ namespace Invert.Core.GraphDesigner
     {
         public IEnumerable<Workspace> Workspaces
         {
-            get { return Repository.All<Workspace>(); }
+            get { return Repository.AllOf<Workspace>(); }
         }
 
- 
+
         public void RemoveWorkspace(string name)
         {
-            RemoveWorkspace(Workspaces.FirstOrDefault(p=>p.Name == name));
+            RemoveWorkspace(Workspaces.FirstOrDefault(p => p.Name == name));
         }
 
         public void RemoveWorkspace(Workspace workspace)
@@ -69,8 +70,19 @@ namespace Invert.Core.GraphDesigner
             {
                 CurrentWorkspace = Workspaces.FirstOrDefault(p => p.Identifier == InvertGraphEditor.Prefs.GetString("LastLoadedWorkspace", string.Empty));
             }
+            Configurations = container.ResolveAll<WorkspaceConfiguration>().ToDictionary(p => p.WorkspaceType);
+
         }
 
+        public WorkspaceConfiguration CurrentConfiguration
+        {
+            get
+            {
+                if (Configurations == null || CurrentWorkspace == null) return null;
+                return Configurations[CurrentWorkspace.GetType()];
+            }
+        }
+        public Dictionary<Type, WorkspaceConfiguration> Configurations { get; set; }
 
 
         public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
@@ -89,15 +101,29 @@ namespace Invert.Core.GraphDesigner
                         }
                     });
                 }
-                ui.AddSeparator();
-                ui.AddCommand(new ContextMenuItem()
+                if (Configurations != null)
                 {
-                    Title = "Create New Workspace",
-                    Command = new CreateWorkspaceCommand()
+                    ui.AddSeparator();
+                    foreach (var item in Configurations)
                     {
-                        Name = "My Workspace"
+                        var title = item.Value.Title ?? item.Key.Name;
+                        ui.AddCommand(new ContextMenuItem()
+                        {
+                            Title = string.Format("Create New {0} Workspace", title),
+                            Command = new CreateWorkspaceCommand()
+                            {
+                                Name = string.Format("New {0} Workspace", title),
+                                Title = string.Format("New {0} Workspace", title),
+
+                                WorkspaceType = item.Key,
+                            }
+                        });
                     }
-                });
+                }
+               
+               
+               
+              
             }
         }
 
@@ -108,7 +134,7 @@ namespace Invert.Core.GraphDesigner
 
         public void Execute(SelectGraphCommand command)
         {
-            Signal<IShowContextMenu>(_=>_.Show(null, command));
+            Signal<IShowContextMenu>(_ => _.Show(null, command));
         }
 
         public void QueryToolbarCommands(ToolbarUI ui)
@@ -133,9 +159,14 @@ namespace Invert.Core.GraphDesigner
 
         public void Execute(CreateWorkspaceCommand command)
         {
-            var workspace = Repository.Create<Workspace>();
+            var workspace = Activator.CreateInstance(command.WorkspaceType) as Workspace;
             workspace.Name = command.Name;
             command.Result = workspace;
+            Repository.Add(workspace);
+            Execute(new OpenWorkspaceCommand()
+            {
+                Workspace = workspace
+            });
         }
     }
 
@@ -147,10 +178,76 @@ namespace Invert.Core.GraphDesigner
     {
         public string Name { get; set; }
         public Workspace Result { get; set; }
+        public Type WorkspaceType { get; set; }
     }
     public class OpenGraphCommand : Command
     {
-        
+
     }
 
+    public class WorkspaceConfiguration
+    {
+        private List<WorkspaceGraphConfiguration> _graphTypes;
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public Type WorkspaceType { get; set; }
+
+        public List<WorkspaceGraphConfiguration> GraphTypes
+        {
+            get { return _graphTypes ?? (_graphTypes = new List<WorkspaceGraphConfiguration>()); }
+            set { _graphTypes = value; }
+        }
+
+        public WorkspaceConfiguration(Type workspaceType, string title)
+            : this(workspaceType, title, null)
+        {
+        }
+
+        public WorkspaceConfiguration(Type workspaceType, string title, string description)
+        {
+            WorkspaceType = workspaceType;
+            Title = title;
+            Description = description;
+        }
+
+        public WorkspaceConfiguration(List<WorkspaceGraphConfiguration> graphTypes, string title, string description, Type workspaceType)
+        {
+            _graphTypes = graphTypes;
+            Title = title;
+            Description = description;
+            WorkspaceType = workspaceType;
+        }
+
+        public WorkspaceConfiguration WithGraph<TGraphType>(string title, string description = null)
+        {
+            GraphTypes.Add(new WorkspaceGraphConfiguration()
+            {
+                Title = title,
+                Description = description,
+                GraphType = typeof(TGraphType)
+            });
+            return this;
+        }
+    }
+
+    public static class ConfigurationExtensions
+    {
+        public static WorkspaceConfiguration AddWorkspaceConfig<TWorkspaceType>(this IUFrameContainer container, string title, string description = null)
+        {
+            var config = new WorkspaceConfiguration(typeof(TWorkspaceType), title, description);
+            container.RegisterInstance(config, typeof(TWorkspaceType).Name);
+            return config;
+        }
+
+        public static WorkspaceConfiguration WorkspaceConfig<TWorkspaceType>(this IUFrameContainer container)
+        {
+            return container.Resolve<WorkspaceConfiguration>(typeof(TWorkspaceType).Name);
+        }
+    }
+    public class WorkspaceGraphConfiguration
+    {
+        public Type GraphType { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+    }
 }

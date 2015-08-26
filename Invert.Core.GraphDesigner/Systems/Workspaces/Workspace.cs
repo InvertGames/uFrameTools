@@ -38,7 +38,11 @@ namespace Invert.Core.GraphDesigner
 
         public IGraphData CurrentGraph
         {
-            get { return Repository.GetById<IGraphData>(CurrentGraphId); }
+            get
+            {
+                if (string.IsNullOrEmpty(CurrentGraphId)) return null;
+                return Repository.GetById<IGraphData>(CurrentGraphId);
+            }
             set { CurrentGraphId = value.Identifier; }
         }
 

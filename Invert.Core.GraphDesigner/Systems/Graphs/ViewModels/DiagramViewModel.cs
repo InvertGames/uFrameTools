@@ -191,7 +191,7 @@ namespace Invert.Core.GraphDesigner
                 item.IsDirty = true;
             }
         }
-        public Dictionary<string, FilterItem> FilterItems { get; set; }
+        public Dictionary<string, IFilterItem> FilterItems { get; set; }
         public void Load()
         {
             GraphItems.Clear();
@@ -205,8 +205,8 @@ namespace Invert.Core.GraphDesigner
             {
                 Debug.Log("Filter null");
             }
-            Dictionary<string, FilterItem> dictionary = new Dictionary<string, FilterItem>();
-            foreach (var item in GraphData.CurrentFilter.FilterItems())
+            var dictionary = new Dictionary<string, IFilterItem>();
+            foreach (var item in GraphData.CurrentFilter.FilterItems)
             {
                 if (dictionary.ContainsKey(item.NodeId))
                 {
@@ -218,7 +218,7 @@ namespace Invert.Core.GraphDesigner
                 
             FilterItems = dictionary;
             
-            CurrentNodes = GraphData.CurrentFilter.FilterNodes().Distinct().ToArray();
+            CurrentNodes = GraphData.CurrentFilter.FilterNodes.Distinct().ToArray();
 
             foreach (var item in CurrentNodes)
             {
@@ -360,6 +360,7 @@ namespace Invert.Core.GraphDesigner
                 if (startConnector == null || endConnector == null) continue;
 
                 var vm = endConnector.ConnectorFor.DataObject as IDiagramNodeItem;
+                
 
                 startConnector.HasConnections = true;
                 endConnector.HasConnections = true;
@@ -368,7 +369,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     ConnectorA = endConnector,
                     ConnectorB = startConnector,
-                    Color = vm != null ? GetColor(vm) : Color.white,
+                    Color = startConnector.Color,
                     Remove = (a) =>
                     {
                         GraphData.RemoveConnection(a.ConnectorB.DataObject as IConnectable, a.ConnectorA.DataObject as IConnectable);
@@ -499,7 +500,7 @@ namespace Invert.Core.GraphDesigner
                 else
                 {
                     
-                    GraphData.PushFilter(SelectedNode.GraphItemObject as IDiagramFilter);
+                    GraphData.PushFilter(SelectedNode.GraphItemObject as IGraphFilter);
                     GraphData.UpdateLinks();
                 }
             }

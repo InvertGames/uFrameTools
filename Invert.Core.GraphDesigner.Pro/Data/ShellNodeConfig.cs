@@ -13,6 +13,7 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
         get { return true; }
     }
 
+ 
     private string _nodeLabel;
     private NodeColor _color;
     private bool _inheritable;
@@ -194,6 +195,6 @@ public class ShellNodeConfig : ShellInheritableNode, IShellNodeTypeClass, IDocum
 
     public IEnumerable<ShellNodeConfig> SubNodes
     {
-        get { return this.FilterNodes().OfType<ShellNodeConfig>().Where(p=>p != this); }
+        get { return this.FilterNodes.OfType<ShellNodeConfig>().Where(p=>p != this); }
     }
 }

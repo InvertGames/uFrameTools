@@ -79,7 +79,7 @@ public class ProjectRepository : DefaultProjectRepository, IProjectRepository, I
     /// <param name="diagramType">The type of diagram to create.</param>
     /// <param name="defaultFilter">The filter or root node to use for this diagram.  Leave null if you want to use the default (if you don't know just pass null)</param>
     /// <returns>The newly created UnityGraphData scriptable object wrapper with the internal graph as the diagramType specified.</returns>
-    public override IGraphData CreateNewDiagram(Type diagramType, IDiagramFilter defaultFilter = null)
+    public override IGraphData CreateNewDiagram(Type diagramType, IGraphFilter defaultFilter = null)
     {
         // Go ahead and select this project asset
         Selection.activeObject = this;

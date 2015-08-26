@@ -13,7 +13,7 @@ namespace Invert.Core.GraphDesigner
         {
             //if (node.ExportGraphType == null) return "This node is not exportable.";
             if (node.IsLocal) return "Node must be external to import it.";
-            if (node.GraphItemObject is IDiagramFilter) return null;
+            if (node.GraphItemObject is IGraphFilter) return null;
             return "Node must be a filter to export it.";
         }
     }

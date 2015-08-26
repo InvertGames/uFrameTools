@@ -16,7 +16,7 @@ namespace Invert.Core.GraphDesigner
         string Version { get; set; }
 
         // Filters
-        IDiagramFilter RootFilter { get; set; }
+        IGraphFilter RootFilter { get; set; }
 
         bool Errors { get; set; }
         Exception Error { get; set; }
@@ -24,7 +24,7 @@ namespace Invert.Core.GraphDesigner
         bool Precompiled { get; set; }
 
         string Directory { get;  }
-        IDiagramFilter[] FilterStack { get; set; }
+        IGraphFilter[] FilterStack { get; set; }
 
 
         //IEnumerable<ConnectionData> Connections { get; }
@@ -35,14 +35,14 @@ namespace Invert.Core.GraphDesigner
         void ClearInput(IConnectable input); 
        // void SetProject(IProjectRepository value);
         void DeserializeFromJson(JSONNode graphData);
-        IDiagramFilter CreateDefaultFilter();
+        IGraphFilter CreateDefaultFilter();
         JSONNode Serialize();
         void Deserialize(string jsonData);
         void CleanUpDuplicates();
      
         void TrackChange(IChangeData data);
-        void PushFilter(IDiagramFilter filter);
-        void PopToFilter(IDiagramFilter filter1);
+        void PushFilter(IGraphFilter filter);
+        void PopToFilter(IGraphFilter filter1);
         void PopToFilterById( string filterId);
         void PopFilter();
     }

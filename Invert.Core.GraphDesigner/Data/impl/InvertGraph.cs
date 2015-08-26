@@ -21,12 +21,12 @@ namespace Invert.Core.GraphDesigner
 
         //private FilterState _filterState = new FilterState();
 
-        private IDiagramFilter _rootFilter;
+        private IGraphFilter _rootFilter;
         private bool _errors;
         private List<ConnectionData> _connections;
         private string _ns;
         private List<IChangeData> _changeData;
-        private IDiagramFilter[] _filterStack;
+        private IGraphFilter[] _filterStack;
         private string _rootFilterId;
 
 #if !UNITY_DLL
@@ -95,7 +95,7 @@ namespace Invert.Core.GraphDesigner
             set { _positionData = value; }
         }
 
-        public IDiagramFilter[] FilterStack
+        public IGraphFilter[] FilterStack
         {
             get
             {
@@ -108,7 +108,7 @@ namespace Invert.Core.GraphDesigner
             set { _filterStack = value; }
         }
 
-        public void PushFilter(IDiagramFilter filter)
+        public void PushFilter(IGraphFilter filter)
         {
             var filterStack = Repository.Create<FilterStackItem>();
             filterStack.GraphId = this.Identifier;
@@ -126,21 +126,27 @@ namespace Invert.Core.GraphDesigner
 
             _filterStack = null;
         }
-        public void PopToFilter(IDiagramFilter filter1)
+        public void PopToFilter(IGraphFilter filter1)
         {
             if (filter1 == null)
             {
-                filter1 = FilterStack.First();
+
+                Repository.RemoveAll<FilterStackItem>(p => p.GraphId == this.Identifier && p.FilterId != RootFilterId);
+
             }
-            foreach (var item in FilterStack)
+            else
             {
-                if (item != filter1)
+                foreach (var item in FilterStack)
                 {
-                    InvertApplication.Log(string.Format("Removing filter {0}", item.Name));
-                    var item1 = item;
-                    Repository.RemoveAll<FilterStackItem>(p => p.GraphId == this.Identifier && p.FilterId == item1.Identifier);
+                    if (item != filter1)
+                    {
+                        InvertApplication.Log(string.Format("Removing filter {0}", item.Name));
+                        var item1 = item;
+                        Repository.RemoveAll<FilterStackItem>(p => p.GraphId == this.Identifier && p.FilterId == item1.Identifier);
+                    }
                 }
             }
+          
             // Reset the lazy filter stack
             _filterStack = null;
         }
@@ -150,7 +156,7 @@ namespace Invert.Core.GraphDesigner
             PopToFilter(FilterStack.FirstOrDefault(p => p.Identifier == filterId));
         }
 
-        public IDiagramFilter CurrentFilter
+        public IGraphFilter CurrentFilter
         {
             get
             {
@@ -281,7 +287,7 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public virtual IDiagramFilter RootFilter
+        public virtual IGraphFilter RootFilter
         {
             get
             {
@@ -292,7 +298,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 if (!string.IsNullOrEmpty(RootFilterId))
                 {
-                    _rootFilter = Repository.GetById<IDiagramFilter>(RootFilterId);
+                    _rootFilter = Repository.GetById<IGraphFilter>(RootFilterId);
                     var asNode = _rootFilter as IDiagramNode;
                     if (asNode != null)
                     {
@@ -460,7 +466,7 @@ namespace Invert.Core.GraphDesigner
             ChangeData.RemoveAll(p => !p.IsValid);
         }
 
-        public virtual IDiagramFilter CreateDefaultFilter()
+        public virtual IGraphFilter CreateDefaultFilter()
         {
             return null;
         }
@@ -705,7 +711,7 @@ namespace Invert.Core.GraphDesigner
 
             if (jsonNode["RootNode"] is JSONClass)
             {
-                RootFilter = jsonNode["RootNode"].DeserializeObject() as IDiagramFilter;
+                RootFilter = jsonNode["RootNode"].DeserializeObject() as IGraphFilter;
                 var node = RootFilter as IDiagramNode;
                 if (node != null)
                 {
@@ -807,9 +813,9 @@ namespace Invert.Core.GraphDesigner
             get { return Repository.GetById<IGraphData>(GraphId); }
         }
 
-        public IDiagramFilter Filter
+        public IGraphFilter Filter
         {
-            get { return Repository.GetById<IDiagramFilter>(FilterId); }
+            get { return Repository.GetById<IGraphFilter>(FilterId); }
         }
 
         [JsonProperty]

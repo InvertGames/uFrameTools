@@ -499,7 +499,7 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
     }
 
-    public void NodeImage(DiagramNode node)
+    public void NodeImage(GraphNode node)
     {
 
     }

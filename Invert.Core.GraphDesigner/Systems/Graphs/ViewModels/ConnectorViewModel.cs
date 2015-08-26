@@ -13,6 +13,18 @@ namespace Invert.Core.GraphDesigner
             //Strategy = strategy;
         }
 
+        public Color Color
+        {
+            get
+            {
+                return Data.Color;
+            }
+        }
+
+        public IConnectable Data
+        {
+            get { return DataObject as IConnectable; }
+        }
         //public IConnectionStrategy Strategy { get; set; }
 
         public override Vector2 Position { get; set; }

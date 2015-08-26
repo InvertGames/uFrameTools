@@ -76,7 +76,7 @@ namespace Invert.Core.GraphDesigner
             _.Title(Name);
         }
 
-        public T DoNamedNodeStep<T>(IDocumentationBuilder builder, string requiredName, IDiagramFilter requiredFilter = null,
+        public T DoNamedNodeStep<T>(IDocumentationBuilder builder, string requiredName, IGraphFilter requiredFilter = null,
             Action<IDocumentationBuilder> stepContent = null) where T : GenericNode
         {
             
@@ -332,7 +332,7 @@ namespace Invert.Core.GraphDesigner
             });
             return currentProject;
         }
-        public TutorialStep SaveAndCompile(DiagramNode node)
+        public TutorialStep SaveAndCompile(GraphNode node)
         {
             return new TutorialStep("Save & Compile the project.", () =>
             {
@@ -346,7 +346,7 @@ namespace Invert.Core.GraphDesigner
                 return null;
             });
         }
-        public string EnsureCodeInEditableFile(DiagramNode elementNode, string filenameSearchText, string codeSearchText)
+        public string EnsureCodeInEditableFile(GraphNode elementNode, string filenameSearchText, string codeSearchText)
         {
             var firstOrDefault = elementNode.GetCodeGeneratorsForNode(InvertApplication.Container.Resolve<IGraphConfiguration>())
                 .FirstOrDefault(p => !p.AlwaysRegenerate && (p.Filename.Contains(filenameSearchText) || p.Filename == filenameSearchText));

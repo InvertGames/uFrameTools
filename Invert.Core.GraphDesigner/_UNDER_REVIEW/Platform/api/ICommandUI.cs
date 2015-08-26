@@ -45,7 +45,9 @@ namespace Invert.Core.GraphDesigner
     public class CreateNodeCommand : Command
     {
         public Type NodeType { get; set; }
-        public DiagramViewModel DiagramViewModel { get; set; }
+        public MouseEvent LastMouseEvent { get; set; }
+        public IGraphData GraphData { get; set; }
+        public Vector2 Position { get; set; }
     }
     
     public class RenameCommand : Command
@@ -60,13 +62,13 @@ namespace Invert.Core.GraphDesigner
     public class HideCommand : Command
     {
         public IDiagramNode Node { get; set; }
-        public IDiagramFilter Filter { get; set; }
+        public IGraphFilter Filter { get; set; }
     }
 
     public class ShowCommand : Command
     {
         public IDiagramNode Node { get; set; }
-        public IDiagramFilter Filter { get; set; }
+        public IGraphFilter Filter { get; set; }
         public Vector2 Position { get; set; }
     }
     public interface IShowContextMenu

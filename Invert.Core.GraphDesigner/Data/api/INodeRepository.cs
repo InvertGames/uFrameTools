@@ -23,7 +23,7 @@ namespace Invert.Core.GraphDesigner
 
         void AddNode(IDiagramNode data);
         void RemoveNode(IDiagramNode node, bool removePositionData = true);
-        IDiagramFilter CurrentFilter { get; }
+        IGraphFilter CurrentFilter { get; }
         FilterPositionData PositionData { get; set; }
         string Namespace { get; set; }
         void RemoveItem(IDiagramNodeItem nodeItem);

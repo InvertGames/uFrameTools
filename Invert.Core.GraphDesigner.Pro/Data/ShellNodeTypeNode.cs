@@ -158,4 +158,5 @@ public class ShellNodeTypeNode : ShellInheritableNode, IShellNode, IShellConnect
         get { return this.Repository.AllOf<IShellNode>(); }
     }
 
+   
 }
