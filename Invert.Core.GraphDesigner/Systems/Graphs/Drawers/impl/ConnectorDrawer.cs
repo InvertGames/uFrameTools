@@ -27,15 +27,35 @@ namespace Invert.Core.GraphDesigner
         }
 
 
+
+        //TODO HACK: This hack is for the sake of performance, it updates the texture everytime vm setup is changed is changed
+        //It is localized and spreads around the next set of fields + Texture property
+        public ConnectorSide _oldSide;
+        public ConnectorDirection _oldDirection;
+        public bool _oldFilled;
+        public Color _oldColor;
         public object _texture;
 
         public object Texture
         {
             get
             {
+                var filled = ViewModel.HasConnections || ViewModel.IsMouseOver;
 
-                return _texture != null && !_texture.Equals(null) ? _texture : (_texture =  ViewModel.StyleSchema.GetTexture(ViewModel.Side, ViewModel.Direction,
-                    ViewModel.HasConnections || ViewModel.IsMouseOver,ViewModel.TintColor));
+                if (_texture == null || _texture.Equals(null) || ViewModel.Side != _oldSide ||
+                    ViewModel.Direction != _oldDirection || ViewModel.Color != _oldColor || filled != _oldFilled)
+                {
+                    _texture = ViewModel.StyleSchema.GetTexture(ViewModel.Side, ViewModel.Direction,
+                   ViewModel.HasConnections || ViewModel.IsMouseOver, ViewModel.TintColor);
+
+                    _oldFilled = filled;
+                    _oldDirection = ViewModel.Direction;
+                    _oldColor = ViewModel.Color;
+                    _oldSide = ViewModel.Side;
+
+                }
+                  return _texture;
+
 
 //
 //                if (ViewModel.HasConnections || ViewModel.IsMouseOver)
@@ -113,8 +133,8 @@ namespace Invert.Core.GraphDesigner
 
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
+            _texture = null;
             base.Refresh(platform, position, hardRefresh);
-
         }
 
         public override Rect Bounds
