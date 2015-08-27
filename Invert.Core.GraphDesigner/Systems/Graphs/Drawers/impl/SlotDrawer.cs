@@ -55,14 +55,14 @@ namespace Invert.Core.GraphDesigner
         public override void Refresh(IPlatformDrawer platform, Vector2 position, bool hardRefresh = true)
         {
             base.Refresh(platform, position, hardRefresh);
-            var size = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle);
+            var size = platform.CalculateTextSize(ViewModel.Name, CachedStyles.HeaderStyle);
             if (ViewModel.InputConnector != null)
             ViewModel.InputConnector.AlwaysVisible = true;
             if (ViewModel.OutputConnector != null)
                 ViewModel.OutputConnector.AlwaysVisible = true;
 
             _labelWidth = 80f;
-            _selectionWidth = platform.CalculateSize(IOViewmModel.SelectedItemName, CachedStyles.HeaderStyle).x + 45;
+            _selectionWidth = platform.CalculateTextSize(IOViewmModel.SelectedItemName, CachedStyles.HeaderStyle).x + 45;
 
             if (IOViewmModel.AllowSelection)
             {

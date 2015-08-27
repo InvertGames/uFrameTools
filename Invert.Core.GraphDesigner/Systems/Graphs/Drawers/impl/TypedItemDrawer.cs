@@ -25,8 +25,8 @@ namespace Invert.Core.GraphDesigner
             {
                 _cachedItemName = TypedItemViewModel.Name;
                 _cachedTypeName = TypedItemViewModel.RelatedType;
-                _nameSize = platform.CalculateSize(_cachedItemName, CachedStyles.ClearItemStyle);
-                _typeSize = platform.CalculateSize(_cachedTypeName, CachedStyles.ItemTextEditingStyle);
+                _nameSize = platform.CalculateTextSize(_cachedItemName, CachedStyles.ClearItemStyle);
+                _typeSize = platform.CalculateTextSize(_cachedTypeName, CachedStyles.ItemTextEditingStyle);
             }
             
 

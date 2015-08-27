@@ -39,8 +39,6 @@ namespace Invert.Core.GraphDesigner
         }
 
 
-
-
         public DesignerWindow DesignerWindow
         {
             get

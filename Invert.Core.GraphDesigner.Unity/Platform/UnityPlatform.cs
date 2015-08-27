@@ -230,13 +230,15 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 style = EditorStyles.toolbarDropDown;
             }
-         
-                
-                
-            if (GUILayout.Button(new GUIContent(command.Title), style))
+
+            
+            var guiContent = new GUIContent(command.Title);
+            if (GUILayout.Button(guiContent, style))
             {
                 InvertApplication.Execute(command.Command);
             }
+            InvertGraphEditor.PlatformDrawer.SetTooltipForRect(GUILayoutUtility.GetLastRect(),command.Description);
+            
             GUI.enabled = true;
         }
     }
@@ -251,17 +253,39 @@ namespace Invert.Core.GraphDesigner.Unity
             set { _styles = value; }
         }
 
-        // TODO I HATE the vector3 conversion
-   
-
+        // TODO DRAWER Eliminate Vector3 convertion
         public void DrawPolyLine(Vector2[] lines, Color color)
         {
             Handles.color = color;
-            Handles.DrawPolyLine(lines.Select(x => new Vector3(x.x, x.y, 0f)).ToArray());
+            Handles.DrawPolyLine(lines.Select(x => new Vector3(x.x, x.y, 0)).ToArray()); 
         }
 
-       
+        public void DrawLine(Vector3[] lines, Color color)
+        {
+            Handles.color = color;
+            Handles.DrawPolyLine(lines); 
+        }
 
+        private string currentTooltip;
+        
+        public void SetTooltipForRect(Rect rect, string tooltip)
+        {
+            bool isMouseOver = rect.Contains(Event.current.mousePosition);
+            if (isMouseOver) currentTooltip = tooltip;
+        }
+
+        public string GetTooltip()
+        {
+            return currentTooltip;
+        }
+
+        public void ClearTooltip()
+        {
+            currentTooltip = null;
+        }
+
+
+        // TODO DRAWER Beziers with texture
         public void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent,
             Color color, float width)
         {
@@ -269,12 +293,18 @@ namespace Invert.Core.GraphDesigner.Unity
             Handles.DrawBezier(startPosition, endPosition, startTangent, endTangent, color, null, width);
         }
 
-
-        public Vector2 CalculateSize(string text, object tag1)
+        // TODO DRAWER Add Scale parameter
+        public Vector2 CalculateTextSize(string text, object styleObject)
         {
-            var style = ((GUIStyle) tag1);
-            //return text.Length * ()
+            var style = ((GUIStyle) styleObject);
             return style.CalcSize(new GUIContent(text));
+        }
+
+        // TODO DRAWER Add Scale parameter
+        public float CalculateTextHeight(string text, object styleObject, float width)
+        {
+            var style = (GUIStyle) styleObject;
+            return style.CalcHeight(new GUIContent(text), width);
         }
 
         public Vector2 CalculateImageSize(string imageName)
@@ -287,14 +317,17 @@ namespace Invert.Core.GraphDesigner.Unity
             return Vector2.zero;
         }
 
-
+        // TODO DRAWER Add tooltip parameter
         public void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
         {
-            var s = (GUIStyle)style;
-            s.alignment = ((TextAnchor)(int)alignment);
-            GUI.Label(rect, label, s);
+            var guiStyle = (GUIStyle)style;
+            var oldAlignment = guiStyle.alignment;
+            guiStyle.alignment = ((TextAnchor)(int)alignment);
+            GUI.Label(rect, label, guiStyle);
+            guiStyle.alignment = oldAlignment;
         }
 
+        // TODO DRAWER Add tooltip parameter | Change the way it is done and separate icon from icon
         public void DrawLabelWithIcon(Rect rect, string label, string iconName, object style,
       DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
         {
@@ -302,42 +335,63 @@ namespace Invert.Core.GraphDesigner.Unity
             s.alignment = ((TextAnchor)(int)alignment);
             //GUI.Label(rect, label, s);
             GUI.Label(rect, new GUIContent(label,ElementDesignerStyles.GetSkinTexture(iconName)), s);
-
         }
+
 
         public void DrawStretchBox(Rect scale, object nodeBackground, float offset)
         {
-            ElementDesignerStyles.DrawExpandableBox(scale, (GUIStyle)nodeBackground,
-                string.Empty, offset);
+            DrawExpandableBox(scale, nodeBackground , string.Empty, offset);
         }
 
+        
         public void DrawStretchBox(Rect scale, object nodeBackground, Rect offset)
         {
-            ElementDesignerStyles.DrawExpandableBox(scale, (GUIStyle)nodeBackground,
-               string.Empty, new RectOffset(Mathf.RoundToInt(offset.x), Mathf.RoundToInt(offset.y), Mathf.RoundToInt(offset.width), Mathf.RoundToInt(offset.height)));
-
+            //var rectOffset = new RectOffset(Mathf.RoundToInt(offset.x), Mathf.RoundToInt(offset.y), Mathf.RoundToInt(offset.width), Mathf.RoundToInt(offset.height));
+            
+            var rectOffset = new RectOffset((int)offset.x, (int)offset.y, (int)offset.width, (int)offset.height);
+            
+            DrawExpandableBox(scale, (GUIStyle)nodeBackground,
+               string.Empty, rectOffset);
         }
 
+        public void DrawExpandableBox(Rect rect, object style, string text, float offset = 12)
+        {
+            var guiStyle = (GUIStyle)style;
+            var oldBorder = guiStyle.border;
+            guiStyle.border = new RectOffset(
+                (int)(offset),
+                (int)(offset),
+                (int)(offset),
+                (int)(offset));
+            GUI.Box(rect, text, guiStyle);
+            guiStyle.border = oldBorder;
+        }
+
+        public void DrawExpandableBox(Rect rect, object style, string text, RectOffset offset)
+        {
+            var guiStyle = (GUIStyle)style;
+            var oldBorder = guiStyle.border;
+            GUI.Box(rect, text, guiStyle);
+            guiStyle.border = oldBorder;
+        }
+
+        //TODO DRAWER introduce Tooptip parameter
         public void DoButton(Rect scale, string label, object style, Action action, Action rightClick = null)
         {
             var s = style == null ? ElementDesignerStyles.EventSmallButtonStyle : (GUIStyle)style;
        
             if (GUI.Button(scale, label, s))
             {
-                if (Event.current.button == 0)
-                {
-                    action();
-                }
+                if (Event.current.button == 0) action();
                 else
                 {
                     if (rightClick != null)
                     rightClick();
                 }
-                    
-           
             }
         }
 
+        //TODO DRAWER introduce tooltip param
         public void DoButton(Rect scale, string label, object style, Action<Vector2> action, Action<Vector2> rightClick = null)
         {
             var s = style == null ? ElementDesignerStyles.EventSmallButtonStyle : (GUIStyle)style;
@@ -345,10 +399,7 @@ namespace Invert.Core.GraphDesigner.Unity
             if (GUI.Button(scale, label, s))
             {
                 var mousePos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition) - new Vector2(0, 22);
-                if (Event.current.button == 0)
-                {
-                    action(mousePos);
-                }
+                if (Event.current.button == 0) action(mousePos); 
                 else
                 {
                     if (rightClick != null)
@@ -356,11 +407,20 @@ namespace Invert.Core.GraphDesigner.Unity
                 }
             }
         }
-   
- 
+
         public void DrawWarning(Rect rect, string key)
         {
             EditorGUI.HelpBox(rect, key, MessageType.Warning);
+        }
+
+        public void DrawError(Rect rect, string key)
+        {
+            EditorGUI.HelpBox(rect, key, MessageType.Error);
+        }
+
+        public void DrawInfo(Rect rect, string key)
+        {
+            EditorGUI.HelpBox(rect, key, MessageType.Info);
         }
 
         public void DrawImage(Rect bounds, string texture, bool b)
@@ -373,6 +433,7 @@ namespace Invert.Core.GraphDesigner.Unity
             GUI.DrawTexture(bounds, texture as Texture2D, ScaleMode.ScaleToFit, true);
         }
 
+        //TODO DRAWER Introduce tooltip parameter
         public void DrawPropertyField(PropertyFieldViewModel fieldViewModel, float scale)
         {
             //base.Draw(scale);
@@ -382,17 +443,17 @@ namespace Invert.Core.GraphDesigner.Unity
             GUILayout.EndArea();
         }
 
+ 
+
         public void EndRender()
         {
-            EditorGUI.FocusTextInControl("EditingField");
-            
+            EditorGUI.FocusTextInControl("EditingField");            
         }
 
         public void DrawRect(Rect boundsRect, Color color)
         {
             EditorGUI.DrawRect(boundsRect,color);
         }
-
 
         public void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale, object image)
         {
@@ -411,7 +472,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 adjustedBounds = new Rect(boxRect.x, boxRect.y, boxRect.width, (boxRect.height)*scale);
                 DrawStretchBox(adjustedBounds,
                      backgroundStyle,
-                     new Rect(Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(20 * scale), Mathf.RoundToInt(35 * scale), Mathf.RoundToInt(22 * scale))
+                     new Rect(20 * scale, 20 * scale, 35 * scale, 22 * scale)
                 );
             }
         }
@@ -484,6 +545,15 @@ namespace Invert.Core.GraphDesigner.Unity
             }
         }
 
+        public void DisableInput()
+        {
+            GUI.enabled = false;
+        }
+
+        public void EnableInput()
+        {
+            GUI.enabled = true;
+        }
 
         public void BeginRender(object sender, MouseEvent mouseEvent)
         {
@@ -531,12 +601,9 @@ namespace Invert.Core.GraphDesigner.Unity
             //if (DiagramDrawer.IsEditingField)
             //{
                 //GUI.FocusControl("EditingField");
-
-              
             //}
             //else
             //{
-
             //}
         }
 
@@ -591,6 +658,9 @@ namespace Invert.Core.GraphDesigner.Unity
                     },true);
 
                 }
+                SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+
+
                 //GUILayout.EndHorizontal();
                 return;
             }
@@ -601,6 +671,8 @@ namespace Invert.Core.GraphDesigner.Unity
                 if (d.InspectorType == InspectorType.TextArea)
                 {
                     EditorGUILayout.LabelField(d.Name);
+                    SetTooltipForRect(GUILayoutUtility.GetLastRect(),d.InspectorTip);
+                    
 
                     EditorGUI.BeginChangeCheck();
                     d.CachedValue = EditorGUILayout.TextArea((string)d.CachedValue, GUILayout.Height(50));
@@ -627,6 +699,9 @@ namespace Invert.Core.GraphDesigner.Unity
                         d.NodeViewModel.Select();
                         // TODO 2.0 Open Selection?
                     }
+                    SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+                    
+
                     GUILayout.EndHorizontal();
                 }
 
@@ -634,6 +709,8 @@ namespace Invert.Core.GraphDesigner.Unity
                 {
                     EditorGUI.BeginChangeCheck();
                     d.CachedValue = EditorGUILayout.TextField(d.Name, (string)d.CachedValue);
+                    SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+                    
                     if (EditorGUI.EndChangeCheck())
                     {
                         d.Setter(d.CachedValue);
@@ -645,6 +722,8 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.IntField(d.Name, (int)d.CachedValue);
+                SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     d.Setter(d.CachedValue);
@@ -654,6 +733,8 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.FloatField(d.Name, (float)d.CachedValue);
+                SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     d.Setter(d.CachedValue);
@@ -663,6 +744,8 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.Vector2Field(d.Name, (Vector3)d.CachedValue);
+                SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     d.Setter(d.CachedValue);
@@ -673,6 +756,8 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.Vector3Field(d.Name, (Vector3)d.CachedValue);
+                SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     d.Setter(d.CachedValue);
@@ -683,6 +768,8 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.ColorField(d.Name, (Color)d.CachedValue);
+                SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     d.Setter(d.CachedValue);
@@ -693,6 +780,8 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.Vector4Field(d.Name, (Vector4)d.CachedValue);
+                SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     d.Setter(d.CachedValue);
@@ -702,6 +791,8 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.Toggle(d.Name, (bool)d.CachedValue);
+                SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     d.Setter(d.CachedValue);
@@ -711,6 +802,8 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 EditorGUI.BeginChangeCheck();
                 d.CachedValue = EditorGUILayout.EnumPopup(d.Name, (Enum)d.CachedValue);
+                SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     InvertApplication.Execute(() =>
@@ -727,15 +820,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
 
         }
-        public void DrawError(Rect rect, string key)
-        {
-            EditorGUI.HelpBox(rect, key, MessageType.Error);
-        }
-        public void DrawInfo(Rect rect, string key)
-        {
-            EditorGUI.HelpBox(rect, key, MessageType.Info);
-        }
-
+     
         public void DrawConnector(float scale, ConnectorViewModel viewModel)
         {
 
@@ -800,7 +885,21 @@ namespace Invert.Core.GraphDesigner.Unity
                 case InvertStyles.BreadcrumbBoxActiveStyle:
                     return ElementDesignerStyles.BreadcrumbBoxActiveStyle;
                 case InvertStyles.BreadcrumbTitleStyle:
-                    return ElementDesignerStyles.BreadcrumbTitleStyle;
+                    return ElementDesignerStyles.BreadcrumbTitleStyle;                
+                case InvertStyles.WizardBox:
+                    return ElementDesignerStyles.WizardBoxStyle;      
+                case InvertStyles.WizardSubBox:
+                    return ElementDesignerStyles.WizardSubBoxStyle;          
+                case InvertStyles.WizardActionButton:
+                    return ElementDesignerStyles.WizardActionButtonStyle;
+                case InvertStyles.WizardActionTitle:
+                    return ElementDesignerStyles.WizardActionTitleStyle;     
+                case InvertStyles.WizardSubBoxTitle:
+                    return ElementDesignerStyles.WizardSubBoxTitleStyle;
+                case InvertStyles.TooltipBox:
+                    return ElementDesignerStyles.TooltipBoxStyle;
+                case InvertStyles.WizardListItemBox:
+                    return ElementDesignerStyles.WizardListItemBoxStyle;
                 case InvertStyles.TabBox:
                     return ElementDesignerStyles.TabBoxStyle;
                 case InvertStyles.TabCloseButton:

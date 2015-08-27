@@ -27,6 +27,11 @@ namespace Invert.Core.GraphDesigner.Unity
             
         }
 
+        public void AfterDrawDesignerWindow(Rect windowRect)
+        {
+
+        }
+
         public void AfterDrawGraph(Rect diagramRect)
         {
             if (Percentage > 1.0f)

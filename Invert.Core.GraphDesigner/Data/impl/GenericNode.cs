@@ -217,6 +217,7 @@ namespace Invert.Core.GraphDesigner
 
         public Type CustomDrawerType { get; set; }
 
+        public string InspectorTip { get; set; }
 
         public InspectorProperty(Type customDrawerType)
         {
@@ -226,6 +227,11 @@ namespace Invert.Core.GraphDesigner
         public InspectorProperty()
         {
             InspectorType = InspectorType.Auto;
+        }     
+        
+        public InspectorProperty(string tip)
+        {
+            InspectorTip = tip;
         }
 
         public InspectorProperty(InspectorType inspectorType)

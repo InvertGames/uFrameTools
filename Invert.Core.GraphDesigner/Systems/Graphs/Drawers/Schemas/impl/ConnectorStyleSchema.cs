@@ -27,10 +27,11 @@ namespace Invert.Core.GraphDesigner
             };
 
 
-            if (TexturesCache.ContainsKey(item) && ((Equals(TexturesCache[item], null)) || TexturesCache[item].Equals(null))) TexturesCache.Remove(item);
-            if (!TexturesCache.ContainsKey(item))
+
+
+            if (!TexturesCache.ContainsKey(item) || TexturesCache[item].Equals(null))
             {
-                TexturesCache.Add(item, ConstructTexture(side, direction, connected, tint));
+                TexturesCache[item] = ConstructTexture(side, direction, connected, tint);
             }
 
             return TexturesCache[item];

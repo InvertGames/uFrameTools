@@ -90,7 +90,7 @@ namespace Invert.Core.GraphDesigner
                     if (tab.Title == null)
                         continue;
 
-                    var textSize = platform.CalculateSize(tab.Title, CachedStyles.TabTitleStyle);
+                    var textSize = platform.CalculateTextSize(tab.Title, CachedStyles.TabTitleStyle);
                     
                     var buttonRect=  new Rect()
                         .AlignAndScale(tabsRect)
@@ -209,7 +209,7 @@ namespace Invert.Core.GraphDesigner
             foreach (var usitem in DiagramViewModel.NavigationViewModel.Breadcrubs.ToArray())
             {
                 var item = usitem;
-                var textSize = platform.CalculateSize(usitem.Title, CachedStyles.BreadcrumbTitleStyle);
+                var textSize = platform.CalculateTextSize(usitem.Title, CachedStyles.BreadcrumbTitleStyle);
                 float buttonContentPadding = 5;
                 float buttonIconsPadding= 5;
                 bool useSpecIcon = !string.IsNullOrEmpty(item.SpecializedIcon);
@@ -289,6 +289,8 @@ namespace Invert.Core.GraphDesigner
                     handler.Draw(platform, scale);
             }
             // Draw all of our drawers
+
+           
             foreach (var drawer in _cachedChildren)
             {
                 if (drawer.Dirty)
@@ -380,7 +382,9 @@ namespace Invert.Core.GraphDesigner
             {
                
             }
+
             DiagramViewModel.Navigate();
+
             Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
             Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
      
@@ -586,7 +590,7 @@ namespace Invert.Core.GraphDesigner
 
 
                 var name = first ? filter.Name : "< " + filter.Name;
-                dictionary.Add(filter, platform.CalculateSize(name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle));
+                dictionary.Add(filter, platform.CalculateTextSize(name, first ? CachedStyles.GraphTitleLabel : CachedStyles.ItemTextEditingStyle));
                 first = false;
             }
                 

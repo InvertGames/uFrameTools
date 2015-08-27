@@ -1495,6 +1495,13 @@ public static class uFrameHelpStyles
         return style;
     }
 
+    public static GUIStyle WithHoveredState(this GUIStyle style, string textureName, Color textColor)
+    {
+        var state = new GUIStyleState() { background = !string.IsNullOrEmpty(textureName) ? ElementDesignerStyles.GetSkinTexture(textureName) : null, textColor = textColor };
+        style.hover = style.onHover = state;
+        return style;
+    }
+
     public static GUIStyle WithAllStates(this GUIStyle style, Texture2D texture, Color textColor)
     {
         var state = new GUIStyleState() { background = texture, textColor = textColor };

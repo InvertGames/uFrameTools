@@ -173,12 +173,12 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                var maxLengthItem = InvertGraphEditor.PlatformDrawer.CalculateSize(ViewModel.FullLabel, CachedStyles.DefaultLabelLarge);
+                var maxLengthItem = InvertGraphEditor.PlatformDrawer.CalculateTextSize(ViewModel.FullLabel, CachedStyles.DefaultLabelLarge);
                 if (ViewModel.IsCollapsed)
                 {
                     foreach (var item in ViewModel.Items)
                     {
-                        var newSize = InvertGraphEditor.PlatformDrawer.CalculateSize(item.FullLabel, CachedStyles.DefaultLabelLarge);
+                        var newSize = InvertGraphEditor.PlatformDrawer.CalculateTextSize(item.FullLabel, CachedStyles.DefaultLabelLarge);
 
                         if (maxLengthItem.x < newSize.x)
                         {
@@ -188,7 +188,7 @@ namespace Invert.Core.GraphDesigner
                 }
                 if (ViewModel.ShowSubtitle)
                 {
-                    var subTitle = InvertGraphEditor.PlatformDrawer.CalculateSize(ViewModel.SubTitle, CachedStyles.DefaultLabelLarge);
+                    var subTitle = InvertGraphEditor.PlatformDrawer.CalculateTextSize(ViewModel.SubTitle, CachedStyles.DefaultLabelLarge);
                     if (subTitle.x > maxLengthItem.x)
                     {
                         maxLengthItem = subTitle;
@@ -257,7 +257,7 @@ namespace Invert.Core.GraphDesigner
 
             
 
-            var width = platform.CalculateSize(_cachedTag, CachedStyles.Tag1).x;
+            var width = platform.CalculateTextSize(_cachedTag, CachedStyles.Tag1).x;
             var labelRect =
                 new Rect((Bounds.x + (Bounds.width / 2)) - (width / 2), Bounds.y - (16f), width, 15f).Scale(Scale);
             if (!string.IsNullOrEmpty(_cachedTag))
@@ -338,7 +338,7 @@ namespace Invert.Core.GraphDesigner
                 for (int index = 0; index < _cachedIssues.Length; index++)
                 {
                     var keyValuePair = _cachedIssues[index];
-                    var w = platform.CalculateSize(keyValuePair.Message, CachedStyles.DefaultLabel).x;//EditorStyles.label.CalcSize(new GUIContent(keyValuePair.Key)).x);
+                    var w = platform.CalculateTextSize(keyValuePair.Message, CachedStyles.DefaultLabel).x;//EditorStyles.label.CalcSize(new GUIContent(keyValuePair.Key)).x);
                     var x = (Bounds.x + (Bounds.width / 2f)) - (w / 2f);
                     var rect = new Rect(x, (Bounds.y + Bounds.height + 18) + (40f * (index)), w + 20f, 40);
                     platform.DrawWarning(rect, keyValuePair.Message);
@@ -560,7 +560,7 @@ namespace Invert.Core.GraphDesigner
 
             var startY = ViewModel.Position.y;
             // Now lets stretch all the content drawers to the maximum width
-            var minWidth = Math.Max(120f, platform.CalculateSize(_cachedTag, CachedStyles.Tag1).x);
+            var minWidth = Math.Max(120f, platform.CalculateTextSize(_cachedTag, CachedStyles.Tag1).x);
             var height = LayoutChildren(platform, startY, ref minWidth, hardRefresh);
 
             _cachedLabel = ViewModel.Label;

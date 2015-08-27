@@ -9,12 +9,26 @@ namespace Invert.Core.GraphDesigner
         private object _textStyle;
         private object _backgroundStyle;
         private INodeStyleSchema _styleSchema;
+        private object _iconImage;
+        private object _headerImage;
 
 
         public virtual INodeStyleSchema StyleSchema
         {
             get { return _styleSchema; }
             set { _styleSchema = value; }
+        }
+
+        public virtual object IconImage
+        {
+            get { return _iconImage != null && !_iconImage.Equals(null) ? _iconImage : (_iconImage = StyleSchema.GetIconImage(NodeViewModel.IconName, NodeViewModel.IconTint)); }
+            set { _iconImage = value; }
+        }
+
+        public virtual object HeaderImage
+        {
+            get { return _headerImage != null && !_iconImage.Equals(null) ? _headerImage : (_headerImage = StyleSchema.GetHeaderImage(!NodeViewModel.IsCollapsed, NodeViewModel.HeaderColor, NodeViewModel.HeaderBaseImage)); }
+            set { _headerImage = value; }
         }
 
         public object BackgroundStyle
@@ -38,12 +52,13 @@ namespace Invert.Core.GraphDesigner
         {
             base.Refresh(platform, position, hardRefresh);
 
-
-            TextSize = platform.CalculateSize(NodeViewModel.Label, StyleSchema.TitleStyleObject); //.CalcSize(new GUIContent(NodeViewModel.Label)));
+            TextSize = platform.CalculateTextSize(NodeViewModel.Label, StyleSchema.TitleStyleObject); //.CalcSize(new GUIContent(NodeViewModel.Label)));
+            
             Vector2 subTitleSize = Vector2.zero; 
+            
             if (StyleSchema.ShowSubtitle)
             {
-                subTitleSize = platform.CalculateSize(NodeViewModel.SubTitle, StyleSchema.SubTitleStyleObject);
+                subTitleSize = platform.CalculateTextSize(NodeViewModel.SubTitle, StyleSchema.SubTitleStyleObject);
             }
 
             var padding = StyleSchema.HeaderPadding;
@@ -94,7 +109,7 @@ namespace Invert.Core.GraphDesigner
                 Bounds.width + headerPadding.left + headerPadding.right + headerPadding.left -6,
                 Bounds.height+0 + (NodeViewModel.IsCollapsed ? 9 : -2));
 
-            var image = StyleSchema.GetHeaderImage(!NodeViewModel.IsCollapsed, NodeViewModel.HeaderColor, NodeViewModel.HeaderBaseImage);
+            var image = HeaderImage;
 
                 platform.DrawNodeHeader(
                     headerBounds, 
@@ -114,7 +129,7 @@ namespace Invert.Core.GraphDesigner
                 Bounds.width-padding.right-padding.left-(StyleSchema.ShowIcon ? 16 : 0), //Subtract icon size if shown
                 Bounds.height-padding.top-padding.bottom);
 
-            var titleSize = platform.CalculateSize(NodeViewModel.Label, StyleSchema.TitleStyleObject);
+            var titleSize = platform.CalculateTextSize(NodeViewModel.Label, StyleSchema.TitleStyleObject);
 
             var subtitleBound = new Rect(Bounds.x + padding.left+0, Bounds.y + padding.top + titleSize.y + 0, Bounds.width-padding.right, Bounds.height-padding.top);
 
@@ -171,7 +186,7 @@ namespace Invert.Core.GraphDesigner
                     var iconsize = platform.CalculateImageSize(NodeViewModel.IconName);
                     var size = iconsize.y > Bounds.y ? Bounds.y : iconsize.y;
                     var imageBounds = new Rect(Bounds.xMax - padding.right - size, Bounds.y + ((Bounds.height / 2f) - (size / 2f)), size, size);
-                    platform.DrawImage(imageBounds.Scale(scale), StyleSchema.GetIconImage(NodeViewModel.IconName,NodeViewModel.IconTint), true);
+                    platform.DrawImage(imageBounds.Scale(scale), IconImage, true);
                 }
 
                 //GUI.Label(textBounds.Scale(scale), NodeViewModel.Label ?? string.Empty, titleStyle);

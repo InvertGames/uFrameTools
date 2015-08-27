@@ -13,7 +13,6 @@ namespace Invert.Core
         void InitItemWindow<TItem>(IEnumerable<TItem> items, Action<TItem> action, bool allowNone = false)
             where TItem : IItem;
 
-
         void ShowHelpWindow(string helpProviderName, Type graphItemType);
     }
 }

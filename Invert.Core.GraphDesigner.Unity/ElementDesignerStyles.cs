@@ -125,6 +125,13 @@ namespace Invert.Common
         private static GUIStyle _tabBoxStyle;
         private static GUIStyle _tabBoxActiveStyle;
         private static GUIStyle _tabTitleStyle;
+        private static GUIStyle _wizardBoxStyle;
+        private static GUIStyle _wizardSubBoxStyle;
+        private static GUIStyle _wizardActionButtonStyle;
+        private static GUIStyle _wizardActionTitleStyle;
+        private static GUIStyle _wizardSubBoxTitleStyle;
+        private static GUIStyle _tooltipBoxStyle;
+        private static GUIStyle _wizardListItemBoxStyle;
 
         public static GUIStyle AddButtonStyle
         {
@@ -430,10 +437,10 @@ namespace Invert.Common
                             textColor = textColor
                         },
                         active = { background = GetSkinTexture("EventButton"), textColor = textColor },
-                        hover = { background = GetSkinTexture("CommandBar"), textColor = textColor },
+                        hover = { background = GetSkinTexture("CommandBar_Hover"), textColor = textColor },
                         onHover =
                         {
-                            background = GetSkinTexture("CommandBar"),
+                            background = GetSkinTexture("CommandBar_Hover"),
                             textColor = textColor
                         },
                         onFocused = { background = GetSkinTexture("EventButton"), textColor = textColor },
@@ -1427,6 +1434,7 @@ namespace Invert.Common
             {
                 return _breadcrumbTitleStyle ?? (_breadcrumbTitleStyle = new GUIStyle()
                 {
+                    wordWrap = true,
                     fontSize = 13
                 }).WithAllStates(new Color(0.8f, 0.8f, 0.8f));
             }
@@ -1470,8 +1478,9 @@ namespace Invert.Common
             {
                 return _breadcrumbBoxStyle ?? (_breadcrumbBoxStyle = new GUIStyle()
                 {
+                    alignment = TextAnchor.MiddleCenter,
                     border = new RectOffset(10, 10, 10, 10)
-                }).WithAllStates("Box21", Color.clear);
+                }).WithAllStates("Box21", Color.white);
             }
             set { _breadcrumbBoxStyle = value; }
         }   
@@ -1784,6 +1793,74 @@ namespace Invert.Common
             }
         }
 
+        public static GUIStyle WizardBoxStyle
+        {
+            get { return _wizardBoxStyle ?? (_wizardBoxStyle = new GUIStyle()
+            {
+                border = new RectOffset(4,4,4,4)
+            }).WithAllStates("Box31",Color.white); }
+            set { _wizardBoxStyle = value; }
+        }      
+
+        public static GUIStyle TooltipBoxStyle
+        {
+            get
+            {
+                return _tooltipBoxStyle ?? (_tooltipBoxStyle = new GUIStyle()
+            {
+                border = new RectOffset(4,4,4,4)
+            }).WithAllStates("Box34",Color.white); }
+            set { _tooltipBoxStyle = value; }
+        }      
+        
+        public static GUIStyle WizardSubBoxStyle
+        {
+            get
+            {
+                return _wizardSubBoxStyle ?? (_wizardSubBoxStyle = new GUIStyle()
+            {
+                border = new RectOffset(4,4,4,4)
+            }).WithAllStates("Box32",Color.white); }
+            set { _wizardSubBoxStyle = value; }
+        }       
+        
+        public static GUIStyle WizardActionButtonStyle
+        {
+            get
+            {
+                return _wizardActionButtonStyle ?? (_wizardActionButtonStyle = new GUIStyle()
+            {
+                border = new RectOffset(15,15,15,15)
+                
+            }).WithAllStates("Box33",Color.white)
+            .WithHoveredState("Box33_Hovered",Color.white);}
+            set { _wizardActionButtonStyle = value; }
+        }
+
+        public static GUIStyle WizardSubBoxTitleStyle
+        {
+            get
+            {
+                if (_wizardSubBoxTitleStyle == null)
+                    _wizardSubBoxTitleStyle = new GUIStyle
+                    {
+                        normal = { textColor = new Color(0.95f, 0.95f, 9.95f) },
+                        fontStyle = FontStyle.Bold
+                        //fontStyle = FontStyle.Bold
+                    }.WithFont("Verdana",16);
+                return _wizardSubBoxTitleStyle;
+            }
+        }
+
+        public static GUIStyle WizardListItemBoxStyle
+        {
+            get { return _wizardListItemBoxStyle ?? (_wizardListItemBoxStyle = new GUIStyle()
+            {
+                border = new RectOffset(2,2,2,2)
+            }.WithAllStates("Box35",Color.white)); }
+            set { _wizardListItemBoxStyle = value; }
+        }
+
         public static GUIStyle ViewBarTitleStyle
         {
             get
@@ -1800,6 +1877,8 @@ namespace Invert.Common
                 return _viewBarTitleStyle;
             }
         }
+
+      
 
         public static GUIStyle ViewModelHeaderEditingStyle
         {
@@ -1949,6 +2028,17 @@ namespace Invert.Common
             }
         }
 
+        public static GUIStyle WizardActionTitleStyle
+        {
+            get { return _wizardActionTitleStyle ?? (_wizardActionTitleStyle = new GUIStyle()
+            {
+                wordWrap = true,
+                alignment = TextAnchor.LowerCenter
+            }).WithFont("Verdana",12)
+            .WithAllStates(new Color(0.8f,0.8f,0.8f)); }
+            set { _wizardActionTitleStyle = value; }
+        }
+
         public static GUIStyle CreateHeader(string texture, Color color)
         {
             return new GUIStyle
@@ -1972,13 +2062,14 @@ namespace Invert.Common
 
         public static void DrawExpandableBox(Rect rect, GUIStyle style, string text, float offset = 12)
         {
+            var oldBorder = style.border;
             style.border = new RectOffset(
                 Mathf.RoundToInt(offset),
                 Mathf.RoundToInt(offset),
                 Mathf.RoundToInt(offset),
                 Mathf.RoundToInt(offset));
-
             GUI.Box(rect, text, style);
+            style.border = oldBorder;
         }
 
         public static void DrawExpandableBox(Rect rect, GUIStyle style, string text, RectOffset offset)

@@ -203,7 +203,8 @@ namespace Invert.Core.GraphDesigner
             {
                 Title = "Testy ",
                 Command = new TestyCommand(),
-                Position = ToolbarPosition.Right
+                Position = ToolbarPosition.Right,
+                Description = "Y u no works?"
             });
 
         }
@@ -211,7 +212,7 @@ namespace Invert.Core.GraphDesigner
         public void CommandExecuting(ICommand command)
         {
             if (command is UndoCommand) return;
-            InvertApplication.Log(command.GetType().Name);
+            //InvertApplication.Log(command.GetType().Name);
             CurrentUndoGroupId = DateTime.Now.Hour.ToString() + DateTime.Now.Minute + DateTime.Now.Second.ToString();
             CurrentName = command.Title;
             UndoItems.Clear();

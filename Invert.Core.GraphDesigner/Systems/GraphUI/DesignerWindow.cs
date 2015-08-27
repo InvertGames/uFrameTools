@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Invert.Core.GraphDesigner.Systems.GraphUI;
+using Invert.Core.GraphDesigner.Systems.GraphUI.api;
+using Invert.Core.GraphDesigner.Systems.Wizards.api;
 using Invert.IOC;
+using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -11,6 +16,8 @@ namespace Invert.Core.GraphDesigner
 
         void BeforeDrawGraph(Rect diagramRect);
 
+        void AfterDrawDesignerWindow(Rect windowRect);
+
         void DrawComplete();
 
         void ProcessInput();
@@ -20,6 +27,7 @@ namespace Invert.Core.GraphDesigner
     {
         void DoInspector(IProjectRepository target);
     }
+
     public interface IDrawUFrameWindow
     {
         void Draw(float width, float height, Vector2 scrollPosition, float scale);
@@ -117,12 +125,17 @@ namespace Invert.Core.GraphDesigner
             InvertGraphEditor.DesignerWindow = this;
         }
 
+        private bool _shouldProcessInputFromDiagram = true;
+
         public void Draw( float width, float height, Vector2 scrollPosition, float scale)
         {
             DiagramDrawer.IsEditingField = false;
-            if (Drawer == null) return;
-            Rect diagramRect = new Rect();
-            if (Drawer == null) InvertApplication.Log("DRAWER IS NULl");
+            if (Drawer == null)
+            {
+                InvertApplication.Log("DRAWER IS NULL");
+                return;
+            }
+            var diagramRect = new Rect();
             if (DrawToolbar)
             {
                 var toolbarTopRect = new Rect(0, 0, width, 18);
@@ -134,24 +147,68 @@ namespace Invert.Core.GraphDesigner
                 var toolbarBottomRect = new Rect(0f, diagramRect.y + diagramRect.height, width,
                     toolbarTopRect.height);
 
+
+                List<DesignerWindowModalContent> modalItems = new List<DesignerWindowModalContent>();
+                Signal<IQueryDesignerWindowModalContent>(_ => _.QueryDesignerWindowModalContent(modalItems));
+
+                _shouldProcessInputFromDiagram = !modalItems.Any();
+
                 Drawer.DrawStretchBox(toolbarTopRect, CachedStyles.Toolbar, 0f);
+      
                 Drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Left);
                 //drawer.DoToolbar(toolbarTopRect, this, ToolbarPosition.Right);
+                
                 Drawer.DrawRect(tabsRect, InvertGraphEditor.Settings.GridLinesColor);
             
                 //Drawer.DoTabs(Drawer,tabsRect, this); 
                 DiagramRect = diagramRect;
+
+                if (!_shouldProcessInputFromDiagram) Drawer.DisableInput();
 
                 if (DiagramDrawer != null)
                 {
                     DiagramDrawer.DrawTabs(Drawer, tabsRect);
                     DiagramDrawer.DrawBreadcrumbs(Drawer, breadCrumbsRect.y);
                 }
-
                 DiagramRect = diagramRect;
-
                 Drawer.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
-                DrawDiagram(Drawer, scrollPosition, scale, diagramRect);
+
+
+                DrawDiagram(Drawer, scrollPosition, scale, diagramRect); //UNCOMMENT THIS LINE TO MAKE DIAGRAM DRAW AGAIN
+
+                if (!_shouldProcessInputFromDiagram) Drawer.EnableInput();
+              
+                
+
+                if (modalItems.Any())
+                {
+                    var modalBackgroundRect = new Rect().Cover(breadCrumbsRect, tabsRect, diagramRect);
+                    var modalContentRect = new Rect().WithSize(800, 600).CenterInsideOf(modalBackgroundRect);
+                    var activeModal = modalItems.OrderBy(i => i.ZIndex).Last();
+                    
+                    Drawer.DrawRect(modalBackgroundRect, new Color(0, 0, 0, 0.8f));
+                    Drawer.DisableInput();
+                    
+                    foreach (var source in modalItems.OrderBy(i => i.ZIndex).Except(new []{activeModal}))
+                    {
+                        source.Drawer(modalContentRect);
+                    }
+                    
+                    Drawer.EnableInput();
+                    
+                    activeModal.Drawer(modalContentRect);
+                }
+                
+                //Signal<IDrawDatabasesWizard>(_ => _.DrawDatabasesWizard(Drawer, wizardWindowRect));
+
+                DrawToolip(toolbarTopRect);
+
+
+                //(GUIStyle)"RL Element";
+
+                //GUI.Box(Rect.MinMaxRect(rect.xMin + 1f, rect.yMin, rect.xMax - 3f, rect.yMax), string.Empty);
+                //LayerControllerView.s_Styles.elementBackground.Draw(rect, false, selected, selected, focused);
+
                 Drawer.DoToolbar(toolbarBottomRect, this, ToolbarPosition.BottomLeft);
                 //drawer.DoToolbar(toolbarBottomRect, this, ToolbarPosition.BottomRight);
             }
@@ -162,7 +219,29 @@ namespace Invert.Core.GraphDesigner
                 DrawDiagram(Drawer, scrollPosition, scale, diagramRect);
             }
             
+            InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.AfterDrawDesignerWindow(new Rect(0,0,width,height)));
             InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.DrawComplete());
+        }
+
+        private void DrawToolip(Rect alignmentRect)
+        {
+            var tooltip = Drawer.GetTooltip();
+            if (!string.IsNullOrEmpty(tooltip))
+            {
+                var tooltipHeight = Drawer.CalculateTextHeight(tooltip, CachedStyles.BreadcrumbTitleStyle, 350);
+
+                var infoRect = new Rect().WithSize(350, Math.Max(80, tooltipHeight + 60)).AlignTopRight(alignmentRect).Below(alignmentRect).Pad(0, 15, 15, 0);
+
+                var imageRect =
+                    new Rect().WithSize(41, 41).AlignTopRight(infoRect).AlignHorisonallyByCenter(infoRect).Translate(-15, 0);
+
+                Drawer.DrawStretchBox(infoRect, CachedStyles.TooltipBoxStyle, 13);
+                Drawer.DrawLabel(infoRect.Pad(15, 15, 15 + 41 + 15, 30), tooltip, CachedStyles.BreadcrumbTitleStyle,
+                    DrawingAlignment.MiddleLeft);
+                Drawer.DrawImage(imageRect, "InfoIcon", true);
+
+            }
+            Drawer.ClearTooltip();
         }
 
         public void LoadDiagram(IGraphData diagram)
@@ -198,6 +277,7 @@ namespace Invert.Core.GraphDesigner
             }
             else
             {
+
             }
         }
 
@@ -229,8 +309,15 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+
+        private CachedLineItem[] _cachedLines;
+        private Vector2 _cachedScroll; 
+
         private bool DrawDiagram(IPlatformDrawer drawer, Vector2 scrollPosition, float scale, Rect diagramRect)
         {
+
+
+
             if (DiagramDrawer == null)
             {
                 if (Workspace != null)
@@ -244,63 +331,79 @@ namespace Invert.Core.GraphDesigner
 
             if (DiagramDrawer != null && DiagramViewModel != null && InvertGraphEditor.Settings.UseGrid)
             {
-                var softColor = InvertGraphEditor.Settings.GridLinesColor;
-                var hardColor = InvertGraphEditor.Settings.GridLinesColorSecondary;
-                var x = -scrollPosition.x;
 
-                var every10 = 0;
-
-                while (x < DiagramRect.x + DiagramRect.width + scrollPosition.x)
+                if (_cachedLines == null || _cachedScroll != scrollPosition)
                 {
-                    var color = softColor;
-                    if (every10 == 10)
-                    {
-                        color = hardColor;
-                        every10 = 0;
-                    }
-                    if (x > diagramRect.x)
-                    {
-                        drawer.DrawPolyLine(
-                            new[]
-                            {
-                                new Vector2(x, diagramRect.y),
-                                new Vector2(x, diagramRect.x + diagramRect.height + scrollPosition.y + 85)
-                            }, color);
-                    }
 
-                    x += DiagramViewModel.Settings.SnapSize * scale;
-                    every10++;
+                    var lines = new List<CachedLineItem>();
+
+                    var softColor = InvertGraphEditor.Settings.GridLinesColor;
+                    var hardColor = InvertGraphEditor.Settings.GridLinesColorSecondary;
+                    var x = -scrollPosition.x;
+
+                    var every10 = 0;
+
+                    while (x < DiagramRect.x + DiagramRect.width + scrollPosition.x)
+                    {
+                        var color = softColor;
+                        if (every10 == 10)
+                        {
+                            color = hardColor;
+                            every10 = 0;
+                        }
+                        if (x > diagramRect.x)
+                        {
+                            lines.Add(new CachedLineItem()
+                            {
+                                Lines = new []{new Vector3(x, diagramRect.y),new Vector3(x, diagramRect.x + diagramRect.height + scrollPosition.y + 85)},
+                                Color = color
+                            });
+                        }
+
+                        x += DiagramViewModel.Settings.SnapSize * scale;
+                        every10++;
+                    }
+                    var y = -scrollPosition.y + 80;
+                    every10 = 10;
+                    while (y < DiagramRect.y + DiagramRect.height + scrollPosition.y)
+                    {
+                        var color = softColor;
+                        if (every10 == 10)
+                        {
+                            color = hardColor;
+                            every10 = 0;
+                        }
+                        if (y > diagramRect.y)
+                        {
+
+                            lines.Add(new CachedLineItem()
+                            {
+                                Lines = new []{new Vector3(diagramRect.x, y),new Vector3(diagramRect.x + diagramRect.width + scrollPosition.x, y)},
+                                Color = color
+                            });
+                        }
+
+                        y += DiagramViewModel.Settings.SnapSize * scale;
+                        every10++;
+                    }
+                    _cachedLines = lines.ToArray();
+
                 }
-                var y = -scrollPosition.y;
-                every10 = 0;
-                while (y < DiagramRect.y + DiagramRect.height + scrollPosition.y)
+
+                for (int i = 0; i < _cachedLines.Length; i++)
                 {
-                    var color = softColor;
-                    if (every10 == 10)
-                    {
-                        color = hardColor;
-                        every10 = 0;
-                    }
-                    if (y > diagramRect.y)
-                    {
-                        drawer.DrawPolyLine(
-                            new[]
-                            {
-                                new Vector2(diagramRect.x, y), new Vector2(diagramRect.x + diagramRect.width + scrollPosition.x, y)
-                            }, color);
-                    }
-
-                    y += DiagramViewModel.Settings.SnapSize * scale;
-                    every10++;
+                    Drawer.DrawLine(_cachedLines[i].Lines,_cachedLines[i].Color);
                 }
+
             }
             if (DiagramDrawer != null)
             {
-
                 InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.BeforeDrawGraph(diagramRect));
                 DiagramDrawer.Bounds = new Rect(0f, 0f, diagramRect.width, diagramRect.height);
+
                 DiagramDrawer.Draw(drawer, 1f);
-                InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.ProcessInput());
+                
+                if(_shouldProcessInputFromDiagram) InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.ProcessInput());
                 InvertApplication.SignalEvent<IDesignerWindowEvents>(_ => _.AfterDrawGraph(DiagramDrawer.Bounds));
             }
             return false;
@@ -318,5 +421,11 @@ namespace Invert.Core.GraphDesigner
         {
             RefreshContent();
         }
+    }
+
+    internal struct CachedLineItem
+    {
+        public Vector3[] Lines{ get; set; } 
+        public Color Color { get; set; }
     }
 }

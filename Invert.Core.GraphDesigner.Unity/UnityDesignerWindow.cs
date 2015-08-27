@@ -33,6 +33,11 @@ namespace Invert.Core.GraphDesigner.Unity
             _scrollPosition = GUI.BeginScrollView(diagramRect, _scrollPosition, DesignerWindow.DiagramViewModel.DiagramBounds);
         }
 
+        public void AfterDrawDesignerWindow(Rect windowRect)
+        {
+            
+        }
+
         public void DrawComplete()
         {
           

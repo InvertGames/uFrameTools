@@ -13,21 +13,20 @@ namespace Invert.Core.GraphDesigner
 
     public interface ICreateDatabase
     {
-        IGraphConfiguration CreateDatabase(string name, string codePath);
+        IGraphConfiguration CreateDatabase( string name, string codePath);
     }
 
     public class ChangeDatabaseCommand : Command
     {
        
-
-    
     }
 
     public class SaveCommand : Command
     {
         
     }
-    public class DatabaseService : DiagramPlugin, 
+
+    public class DatabaseService : DiagramPlugin,  
         IDataRecordInserted, 
         IDataRecordRemoved, 
         IDataRecordPropertyBeforeChange,

@@ -26,13 +26,16 @@ namespace Invert.Core.GraphDesigner
             get { return 16; }
         }
 
+
+        public object _texture;
+
         public object Texture
         {
             get
             {
 
-                return ViewModel.StyleSchema.GetTexture(ViewModel.Side, ViewModel.Direction,
-                    ViewModel.HasConnections || ViewModel.IsMouseOver,ViewModel.TintColor);
+                return _texture != null && !_texture.Equals(null) ? _texture : (_texture =  ViewModel.StyleSchema.GetTexture(ViewModel.Side, ViewModel.Direction,
+                    ViewModel.HasConnections || ViewModel.IsMouseOver,ViewModel.TintColor));
 
 //
 //                if (ViewModel.HasConnections || ViewModel.IsMouseOver)

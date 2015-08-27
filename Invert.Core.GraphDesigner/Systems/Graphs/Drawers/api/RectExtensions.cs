@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -29,10 +30,12 @@ namespace Invert.Core.GraphDesigner
                 Mathf.RoundToInt(r.top*scale), Mathf.RoundToInt(r.bottom*scale));
         }
 
+
         public static Rect Add(this Rect source, Rect add)
         {
             return new Rect(source.x + add.x, source.y + add.y, source.width + add.width, source.height + add.height);
         }
+        
         public static GUIStyle Scale(this GUIStyle style, float scale)
         {
             var s = new GUIStyle(style);
@@ -125,6 +128,87 @@ namespace Invert.Core.GraphDesigner
         public static Rect AlignVertically(this Rect source, Rect target)
         {
             return new Rect(target.x, source.y, source.width, source.height);
+        }
+
+        public static Rect CenterInsideOf(this Rect source, Rect target)
+        {
+            var y = target.y + (target.height - source.height) / 2;
+            var x = target.x + (target.width - source.width) / 2;
+            return new Rect(x, y, source.width, source.height);      
+        }
+
+        public static Rect LeftHalf(this Rect source)
+        {
+            return new Rect(source.x, source.y, source.width/2, source.height);
+        }
+
+        public static Rect RightHalf(this Rect source)
+        {
+            return new Rect(source.x+source.width/2, source.y, source.width/2, source.height);
+        }
+
+        public static Rect TopHalf(this Rect source)
+        {
+            return new Rect(source.x,source.y,source.width,source.height/2);
+        }
+
+        public static Rect BottomHalf(this Rect source)
+        {
+            return new Rect(source.x, source.y + source.height/2, source.width, source.height/2);
+        }
+        public static Rect Clip(this Rect source, Rect target)
+        {
+            var x = source.x;
+            if (source.x < target.x) x = target.x;
+            if (source.x > target.xMax) x = target.xMax;
+
+            var y = source.y;
+            if (source.y < target.y) y = target.y;
+            if (source.y > target.yMax) y = target.yMax;
+
+            var width = source.width;
+            if (x + source.width > target.xMax) width = target.xMax - source.x;
+
+            var height = source.height;
+            if (y + source.height > target.yMax) height = target.yMax - source.y;
+
+            return new Rect(x,y,width,height);
+        }
+
+        public static Rect InnerAlignWithBottomRight(this Rect source, Rect target)
+        {
+            return new Rect(target.xMax - source.width,target.yMax - source.height, source.width, source.height);
+        }    
+        
+        public static Rect InnerAlignWithBottomLeft(this Rect source, Rect target)
+        {
+            return new Rect(target.x, target.yMax - source.height, source.width, source.height);
+        }
+
+        public static Rect LeftOf(this Rect source, Rect target)
+        {
+            return new Rect(target.x-source.width,source.y,source.width,source.height);
+        }
+
+        public static Rect Above(this Rect source, Rect target)
+        {
+            return new Rect(source.x,target.y- source.height,source.width,source.height);
+        }
+        
+        public static Rect AboveAll(this Rect source, Rect target, int i)
+        {
+            return new Rect(source.x,target.y- source.height*i,source.width,source.height);
+        }
+
+        public static Rect Cover(this Rect source, params Rect[] targets)
+        {
+            var x = targets.Min(t => t.x);
+            var y = targets.Min(t => t.y);
+            var width = targets.Max(t => t.xMax - x);
+            var height= targets.Max(t => t.yMax - y);
+
+            return new Rect(x, y, width, height);
+
         }
 
 

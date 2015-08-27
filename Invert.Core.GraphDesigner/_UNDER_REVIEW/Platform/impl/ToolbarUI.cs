@@ -9,6 +9,7 @@ namespace Invert.Core.GraphDesigner
         public int Order { get; set; }
         public bool IsDropdown { get; set; }
         public string Title { get; set; }
+        public string Description { get; set; }
     }
     public class ToolbarUI
     {

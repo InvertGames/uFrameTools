@@ -25,11 +25,14 @@ namespace Invert.Core.GraphDesigner
         void BeginRender(object sender, MouseEvent mouseEvent);
 
         //void DrawConnector(float scale, ConnectorViewModel viewModel);
-        Vector2 CalculateSize(string text, object tag1);
-       
+        Vector2 CalculateTextSize(string text, object styleObject);
+        
+        float CalculateTextHeight(string text, object styleObject, float width);
+        
         Vector2 CalculateImageSize(string imageName);
 
         void DoButton(Rect scale, string label, object style, Action action, Action rightClick = null);
+        
         void DoButton(Rect scale, string label, object style, Action<Vector2> action, Action<Vector2> rightClick = null);
 
         void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent, Color color, float width);
@@ -39,11 +42,20 @@ namespace Invert.Core.GraphDesigner
         void DrawColumns(Rect rect, params Action<Rect>[] columns);
 
         void DrawImage(Rect bounds, string texture, bool b);
+        
         void DrawImage(Rect bounds, object texture, bool b);
 
         void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft);
         
         void DrawPolyLine(Vector2[] lines, Color color);
+
+        void DrawLine(Vector3[] lines, Color color);
+        
+        void SetTooltipForRect(Rect rect, string tooltip);
+        
+        string GetTooltip();
+
+        void ClearTooltip();
 
         void DrawPropertyField(PropertyFieldViewModel propertyFieldDrawer, float scale);
 
@@ -60,6 +72,10 @@ namespace Invert.Core.GraphDesigner
         void DoToolbar(Rect toolbarTopRect, DesignerWindow designerWindow, ToolbarPosition position);
 
         void DoTabs(Rect tabsRect, DesignerWindow designerWindow);
+
+        void DisableInput();
+
+        void EnableInput();
 
         void EndRender();
         //Rect GetRect(object style);
@@ -261,6 +277,13 @@ namespace Invert.Core.GraphDesigner
         private static object _tabBoxActiveStyle;
         private static object _tabTitleStyle;
         private static object _tabCloseButton;
+        private static object _wizardBoxStyle;
+        private static object _wizardSubBoxStyle;
+        private static object _wizardActionButtonStyle;
+        private static object _wizardActionTitleStyle;
+        private static object _wizardSubBoxTitleStyle;
+        private static object _tooltipBoxStyle;
+        private static object _wizardListItemBoxStyle;
 
         public static object Item1
         {
@@ -435,7 +458,7 @@ namespace Invert.Core.GraphDesigner
         public static object ToolbarButtonDrop
         {
             get { return _toolbarButtonDrop ?? (_toolbarButtonDrop = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.ToolbarButtonDown)); }
-        }        
+        }
         public static object HeaderTitleStyle
         {
             get { return _toolbarButtonDrop ?? (_toolbarButtonDrop = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.HeaderTitleStyle)); }
@@ -444,10 +467,21 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _toolbarButtonDrop ?? (_toolbarButtonDrop = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.HeaderSubTitleStyle)); }
         }
-
+        public static object WizardBoxStyle
+        {
+            get { return _wizardBoxStyle ?? (_wizardBoxStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.WizardBox)); }
+        }
+                
+        public static object WizardSubBoxStyle
+        {
+            get { return _wizardSubBoxStyle ?? (_wizardSubBoxStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.WizardSubBox)); }
+        }        
         
-
-
+        public static object WizardActionButtonStyle
+        {
+            get { return _wizardActionButtonStyle ?? (_wizardActionButtonStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.WizardActionButton)); }
+        }
+        
         public static IConnectorStyleSchema ConnectorStyleSchemaTriangle
         {
             get { return _connectorStyleSchemaTriangle ?? (_connectorStyleSchemaTriangle = InvertGraphEditor.StyleProvider.GetConnectorStyleSchema(ConnectorStyle.Triangle)); }
@@ -523,6 +557,30 @@ namespace Invert.Core.GraphDesigner
             get { return _breadcrumbBoxActiveStyle ?? (_breadcrumbBoxActiveStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.BreadcrumbBoxActiveStyle)); }
             set { _breadcrumbBoxActiveStyle = value; }
         }
+
+        public static object WizardActionTitleStyle
+        {
+            get { return _wizardActionTitleStyle ?? (_wizardActionTitleStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.WizardActionTitle)); ; }
+            set { _wizardActionTitleStyle = value; }
+        }    
+        
+        public static object WizardSubBoxTitleStyle
+        {
+            get { return _wizardSubBoxTitleStyle ?? (_wizardSubBoxTitleStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.WizardSubBoxTitle)); ; }
+            set { _wizardSubBoxTitleStyle = value; }
+        }
+
+        public static object TooltipBoxStyle
+        {
+            get { return _tooltipBoxStyle ?? (_tooltipBoxStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.TooltipBox)); }
+            set { _tooltipBoxStyle = value; }
+        }
+
+        public static object WizardListItemBoxStyle
+        {
+            get { return _wizardListItemBoxStyle ?? (_wizardListItemBoxStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.WizardListItemBox)); }
+            set { _wizardListItemBoxStyle = value; }
+        }
     }
 
     public interface IDebugWindowEvents
@@ -592,7 +650,14 @@ namespace Invert.Core.GraphDesigner
         TabTitle,
         TabBoxActive,
         TabBox,
-        TabCloseButton
+        TabCloseButton,
+        WizardBox,
+        WizardSubBox,
+        WizardActionButton,
+        WizardActionTitle,
+        WizardSubBoxTitle,
+        TooltipBox,
+        WizardListItemBox
     }
 
  

@@ -125,7 +125,7 @@ namespace Invert.Core.GraphDesigner
             if (hardRefresh)
             {
                 _cachedFlags = Flags.Where(p => p.IsChecked(ViewModelObject.DataObject)).ToArray();
-                _textSize = platform.CalculateSize(CachedName, CachedStyles.ItemTextEditingStyle);// TextStyle.CalcSize(new GUIContent(ItemViewModel.Name));
+                _textSize = platform.CalculateTextSize(CachedName, CachedStyles.ItemTextEditingStyle);// TextStyle.CalcSize(new GUIContent(ItemViewModel.Name));
             }
             var flagWidth = 4f;
 

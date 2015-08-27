@@ -17,7 +17,7 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform, position, hardRefresh);
 
 
-            var width = platform.CalculateSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 45;
+            var width = platform.CalculateTextSize(ViewModel.Name, CachedStyles.HeaderStyle).x + 45;
             //ElementDesignerStyles.HeaderStyle.CalcSize(new GUIContent(ViewModel.Name)).x + 20);
 
             Bounds = new Rect(position.x, position.y, width, 25);

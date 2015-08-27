@@ -12,6 +12,8 @@ namespace Invert.Core.GraphDesigner
         public Action<object> Setter { get; set; }
         public override bool IsEditing { get; set; }
         public object CachedValue { get; set; }
+        public string InspectorTip { get; set; }
+
 
         public PropertyFieldViewModel()
         {
