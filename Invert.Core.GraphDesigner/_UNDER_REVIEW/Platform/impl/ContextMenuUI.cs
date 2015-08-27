@@ -20,6 +20,7 @@ namespace Invert.Core.GraphDesigner
         public ICommand Command { get; set; }
         public string Group { get; set; }
         public object Order { get; set; }
+        public bool Checked { get; set; }
     }
     public class ContextMenuUI
     {

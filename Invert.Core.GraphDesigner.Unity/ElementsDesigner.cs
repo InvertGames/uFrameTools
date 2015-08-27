@@ -53,11 +53,15 @@ namespace Invert.Core.GraphDesigner.Unity
             IsFocused = false;
         }
 
+        public void OnInspectorUpdate()
+        {
+            Repaint();
+        }
         public void Update()
         {
             Instance = this;
             InvertApplication.SignalEvent <IUpdate>(_=>_.Update());
-            Repaint();
+            
         }
 
 

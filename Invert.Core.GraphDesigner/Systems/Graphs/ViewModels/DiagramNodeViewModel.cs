@@ -622,7 +622,7 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-
+      
         public void BeginEditing()
         {
             if (!IsEditable) return;

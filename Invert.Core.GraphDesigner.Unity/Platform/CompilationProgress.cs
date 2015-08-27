@@ -35,9 +35,9 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void AfterDrawGraph(Rect diagramRect)
         {
-            if (Percentage >= 1.0f)
+            if (Percentage >= 0.99f)
             {
-                Percentage = 1.0f;
+                Percentage = 0f;
             }
             if (Percentage > 0.0f && Percentage < 1.0f)
             {

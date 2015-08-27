@@ -26,12 +26,15 @@ namespace Invert.Core.GraphDesigner {
             });
             WorkspaceService.CurrentWorkspace.CurrentGraphId = graph.Identifier;
             var filterPath = nodeCommand.Node.FilterPath().ToArray();
+           
+            
+            graph.PopToFilter(graph.RootFilter);
             foreach (var item in filterPath)
             {
-                InvertApplication.Log(item.Name);
+                if (item == graph.RootFilter) continue;
+                graph.PushFilter(item);
             }
-            InvertApplication.Log("Popping");
-            graph.PopToFilter(graph.RootFilter);
+            nodeCommand.Node.IsSelected = true;
         }
 
         public override void Loaded(UFrameContainer container)

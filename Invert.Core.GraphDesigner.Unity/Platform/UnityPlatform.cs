@@ -157,7 +157,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 foreach (var editorCommand in group.OrderBy(p => p.Order))
                 {
                     ICommand command = editorCommand.Command;
-                    genericMenu.AddItem(new GUIContent(editorCommand.Title),false, () =>
+                    genericMenu.AddItem(new GUIContent(editorCommand.Title),editorCommand.Checked, () =>
                     {
                         InvertApplication.Execute(command);
                     } );

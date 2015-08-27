@@ -18,6 +18,17 @@ namespace Invert.Core.GraphDesigner
             {
                 AllowSelection = ReferenceItem.AllowSelection;
             }
+
+            if (ReferenceItem != null)
+            {
+                SelectedItemName = ReferenceItem.SelectedDisplayName;
+
+            }
+            else
+            {
+                SelectedItemName = "-- Select Item --";
+            }
+            
         }
 
         public bool AllowSelection
@@ -51,19 +62,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return DataObject as GenericSlot; }
         }
-        public string SelectedItemName
-        {
-            get
-            {
-
-                if (ReferenceItem != null)
-                {
-                    return ReferenceItem.SelectedDisplayName;
-             
-                }
-                return "-- Select Item --";
-            }
-        }
+        public string SelectedItemName { get; set; }
 
         public void SelectItem()
         {
