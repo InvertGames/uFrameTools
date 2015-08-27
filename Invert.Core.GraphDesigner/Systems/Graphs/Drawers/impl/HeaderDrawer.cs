@@ -27,7 +27,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual object HeaderImage
         {
-            get { return _headerImage != null && !_iconImage.Equals(null) ? _headerImage : (_headerImage = StyleSchema.GetHeaderImage(!NodeViewModel.IsCollapsed, NodeViewModel.HeaderColor, NodeViewModel.HeaderBaseImage)); }
+            get { return _headerImage != null && !_headerImage.Equals(null) ? _headerImage : (_headerImage = StyleSchema.GetHeaderImage(!NodeViewModel.IsCollapsed, NodeViewModel.HeaderColor, NodeViewModel.HeaderBaseImage)); }
             set { _headerImage = value; }
         }
 

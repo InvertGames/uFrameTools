@@ -104,13 +104,7 @@ namespace Invert.Core.GraphDesigner
         public void QueryToolbarCommands(ToolbarUI ui)
         {
 
-            ui.AddCommand(new ToolbarItem()
-            {
-                Title = CurrentWorkspace == null ? "--Choose Workspace--" : CurrentWorkspace.Name,
-                IsDropdown = true,
-                Command = new SelectWorkspaceCommand(),
-                Position = ToolbarPosition.Left
-            });
+        
         }
 
         public void Execute(OpenWorkspaceCommand command)
@@ -148,6 +142,7 @@ namespace Invert.Core.GraphDesigner
     }
     public class CreateWorkspaceCommand : Command
     {
+        [InspectorProperty]
         public string Name { get; set; }
         public Workspace Result { get; set; }
         public Type WorkspaceType { get; set; }

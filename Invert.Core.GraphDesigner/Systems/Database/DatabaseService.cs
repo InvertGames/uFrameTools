@@ -146,8 +146,9 @@ namespace Invert.Core.GraphDesigner
         {
             ui.AddCommand(new ToolbarItem()
             {
-                Title = CurrentConfiguration == null ? "Change Database" : CurrentConfiguration.Title,
+                Title = CurrentConfiguration == null ? "Change Database" : "Database: " + CurrentConfiguration.Title,
                 Command = new ChangeDatabaseCommand(),
+                Position = ToolbarPosition.BottomLeft,
                 Order = -1
             });
             ui.AddCommand(new ToolbarItem()

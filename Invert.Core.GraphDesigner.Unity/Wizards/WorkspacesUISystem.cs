@@ -35,19 +35,23 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
 
         public void QueryWorkspacesActions(List<ActionItem> items)
         {
-            items.Add(new ActionItem()
+            foreach (var item in WorkspaceService.Configurations)
             {
-                Title = "Create Empty Workspace",
-                Description = "Create an empty workspace without any graphs. Suitable, if you are going to start from scratch.",
-                Command = new CreateEmptyWorkspaceCommand()
-            });
+                items.Add(new ActionItem()
+                {
+                    Title = string.Format("Create {0} Workspace", item.Value.Title),
+                    Description = item.Value.Description,
+                    Command = new CreateWorkspaceCommand()
+                    {
+                        Name = string.Format("New{0}Workspace", item.Value.Title),
+                        WorkspaceType = item.Key
+                    }
+                });
 
-            items.Add(new ActionItem()
-            {
-                Title = "Create ECS Workspace",
-                Description = "Create a workspace with Data and Behaviour graphs. Use this option for a quick start on ECS.",
-                Command = new CreateECSWorkspaceCommand()
-            });
+              
+            }
+           
+           
         }
 
         public void QueryWorkspacesListItems(List<WorkspacesListItem> items)
@@ -138,16 +142,12 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
         public void QueryToolbarCommands(ToolbarUI ui)
         {
 
-        }
-
-        public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
-        {
-            var selectProject = obj as SelectWorkspaceCommand;
-            if (selectProject != null)
+            if (WorkspaceService.Workspaces.Count() < 8)
             {
+           
                 foreach (var item in WorkspaceService.Workspaces)
                 {
-                    ui.AddCommand(new ContextMenuItem()
+                    ui.AddCommand(new ToolbarItem()
                     {
                         Title = item.Name,
                         Checked = item == WorkspaceService.CurrentWorkspace,
@@ -157,34 +157,73 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
                         }
                     });
                 }
-                if (WorkspaceService.Configurations != null)
+                ui.AddCommand(new ToolbarItem()
                 {
-                    ui.AddSeparator();
-                    foreach (var item in WorkspaceService.Configurations)
+                    Command = new LambdaCommand("Workspaces", () => EnableWizard = true),
+                    Title = "..."
+                });
+            }
+            else
+            {
+                ui.AddCommand(new ToolbarItem()
+                {
+                    Title = WorkspaceService.CurrentWorkspace == null ? "--Choose Workspace--" : WorkspaceService.CurrentWorkspace.Name,
+                    IsDropdown = true,
+                    Command = new SelectWorkspaceCommand(),
+                    Position = ToolbarPosition.Left
+                });
+            }
+        }
+
+        public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
+        {
+            if (WorkspaceService.Workspaces.Count() >= 8)
+            {
+                var selectProject = obj as SelectWorkspaceCommand;
+                if (selectProject != null)
+                {
+                    foreach (var item in WorkspaceService.Workspaces)
                     {
-                        var title = item.Value.Title ?? item.Key.Name;
                         ui.AddCommand(new ContextMenuItem()
                         {
-                            Title = string.Format("Create New {0} Workspace", title),
-                            Command = new CreateWorkspaceCommand()
+                            Title = item.Name,
+                            Checked = item == WorkspaceService.CurrentWorkspace,
+                            Command = new OpenWorkspaceCommand()
                             {
-                                Name = string.Format("New {0} Workspace", title),
-                                Title = string.Format("New {0} Workspace", title),
-                                WorkspaceType = item.Key,
+                                Workspace = item
                             }
                         });
                     }
+                    //if (WorkspaceService.Configurations != null)
+                    //{
+                    //    ui.AddSeparator();
+                    //    foreach (var item in WorkspaceService.Configurations)
+                    //    {
+                    //        var title = item.Value.Title ?? item.Key.Name;
+                    //        ui.AddCommand(new ContextMenuItem()
+                    //        {
+                    //            Title = string.Format("Create New {0} Workspace", title),
+                    //            Command = new CreateWorkspaceCommand()
+                    //            {
+                    //                Name = string.Format("New {0} Workspace", title),
+                    //                Title = string.Format("New {0} Workspace", title),
+                    //                WorkspaceType = item.Key,
+                    //            }
+                    //        });
+                    //    }
+                    //}
+                    ui.AddSeparator();
+                    ui.AddCommand(new ContextMenuItem()
+                    {
+                        Command = new LambdaCommand("Manage Workspaces", () => EnableWizard = true),
+                        Title = "Manage"
+                    });
+
+
+
                 }
-                ui.AddSeparator();
-                ui.AddCommand(new ContextMenuItem()
-                {
-                    Command = new LambdaCommand("Manage Workspaces", () => EnableWizard = true),
-                    Title = "Manage"
-                });
-
-
-
             }
+           
         }
     }
 

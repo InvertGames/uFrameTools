@@ -165,9 +165,6 @@ public class InspectorPlugin : DiagramPlugin
                     {
                         EditorGUILayout.BeginHorizontal();
                         GUILayout.Space(EditorGUI.indentLevel * 15f);
-         
-               
-
                         var selected = Selected != null && Selected.Identifier == node.Identifier;
                         if (GUILayout.Button(node.Name, selected ? Item5 : Item4))
                         {

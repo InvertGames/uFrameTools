@@ -202,9 +202,10 @@ namespace Invert.Core.GraphDesigner
             {
                 ui.AddCommand(new ToolbarItem()
                 {
-                    Title = "Undo " + undoItem.Name,
+                    Title = "Undo",
                     Command = new UndoCommand(),
-                    Position = ToolbarPosition.BottomLeft
+                    Position = ToolbarPosition.Right,
+                    Order = -2
                 });
             }
             var redoItem = repo.All<RedoItem>().LastOrDefault();
@@ -212,9 +213,10 @@ namespace Invert.Core.GraphDesigner
             {
                 ui.AddCommand(new ToolbarItem()
                 {
-                    Title = "Redo " + redoItem.Name,
+                    Title = "Redo",
                     Command = new RedoCommand(),
-                    Position = ToolbarPosition.BottomLeft,
+                    Position = ToolbarPosition.Right,
+                    Order = -1
 
                 });
             }

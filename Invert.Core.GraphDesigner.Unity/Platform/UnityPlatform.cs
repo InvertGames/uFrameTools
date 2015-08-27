@@ -230,7 +230,11 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 style = EditorStyles.toolbarDropDown;
             }
-
+            if (command.Checked)
+            {
+                style = new GUIStyle(EditorStyles.toolbarButton);
+                style.normal.background = style.active.background;
+            }
             
             var guiContent = new GUIContent(command.Title);
             if (GUILayout.Button(guiContent, style))
