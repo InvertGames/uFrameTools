@@ -19,7 +19,8 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
         IDrawDatabasesList, 
         IQueryDatabasesActions, 
         IQueryDatabasesListItems,
-        IToolbarQuery
+        IToolbarQuery,
+        IContextMenuQuery
     {
 
         private DatabaseService _databaseService;
@@ -155,13 +156,41 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
 
         public void QueryToolbarCommands(ToolbarUI ui)
         {
-            ui.AddCommand(new ToolbarItem()
+            //ui.AddCommand(new ToolbarItem()
+            //{
+            //    Command = new LambdaCommand("Manage Databases",()=>EnableWizard = true),
+            //    Description = "Open database management dialog.",
+            //    Position = ToolbarPosition.Left,
+            //    Title = "Manage Databases"
+            //});
+        }
+
+        public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
+        {
+            if (obj is ChangeDatabaseCommand)
             {
-                Command = new LambdaCommand("Manage Databases",()=>EnableWizard = true),
-                Description = "Open database management dialog.",
-                Position = ToolbarPosition.Left,
-                Title = "Manage Databases"
-            });
+                var databaseService = InvertApplication.Container.Resolve<DatabaseService>();
+                foreach (var item in databaseService.Configurations.Values)
+                {
+                    var item1 = item;
+                    ui.AddCommand(new ContextMenuItem()
+                    {
+                        Title = item.Title,
+                        Checked = databaseService.CurrentConfiguration == item,
+                        Command = new LambdaCommand("Change Database", () =>
+                        {
+                            Signal<IChangeDatabase>(cd => cd.ChangeDatabase(item1));
+                        })
+                    });
+                }
+                ui.AddSeparator();
+                ui.AddCommand(new ContextMenuItem()
+                {
+                    Title = "Manage",
+                    Command = new LambdaCommand("Manage Databases", () => EnableWizard = true),
+                    
+                });
+            }
         }
     }
 

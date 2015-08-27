@@ -160,16 +160,14 @@ namespace Invert.Core.GraphDesigner
 
         public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
         {
-            
+          
         }
 
         public void Execute(ChangeDatabaseCommand command)
         {
-            var databaseService = InvertApplication.Container.Resolve<DatabaseService>();
-            InvertGraphEditor.WindowManager.InitItemWindow(databaseService.Configurations.Values, _ =>
-            {
-                Signal<IChangeDatabase>(cd => cd.ChangeDatabase(_));
-            });
+            Signal<IShowContextMenu>(_=>_.Show(null,command));
+
+            
         }
 
         public void Execute(SaveCommand command)

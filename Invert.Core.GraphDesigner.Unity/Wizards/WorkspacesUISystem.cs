@@ -9,12 +9,13 @@ using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Systems.GraphUI
 {
-    public class WorkspacesUISystem : DiagramPlugin, 
-        IQueryWorkspacesActions, 
-        IQueryWorkspacesListItems, 
-        IDrawWorkspacesList, 
+    public class WorkspacesUISystem : DiagramPlugin,
+        IQueryWorkspacesActions,
+        IQueryWorkspacesListItems,
+        IDrawWorkspacesList,
         IQueryDesignerWindowModalContent,
-        IToolbarQuery
+        IToolbarQuery,
+        IContextMenuQuery
     {
         private WorkspaceService _workspaceService;
 
@@ -39,8 +40,8 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
                 Title = "Create Empty Workspace",
                 Description = "Create an empty workspace without any graphs. Suitable, if you are going to start from scratch.",
                 Command = new CreateEmptyWorkspaceCommand()
-            });  
-            
+            });
+
             items.Add(new ActionItem()
             {
                 Title = "Create ECS Workspace",
@@ -71,7 +72,7 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
 
             foreach (var db in items)
             {
-
+                var workspace = db;
                 platform.DrawStretchBox(unpaddedItemRect, CachedStyles.WizardListItemBoxStyle, 2);
                 var itemRect = unpaddedItemRect.PadSides(15);
                 var titleRect = itemRect.WithHeight(40);
@@ -86,9 +87,13 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
                 var configButton = openButton.LeftOf(openButton).Translate(-2, 0);
                 var deleteButton = configButton.LeftOf(configButton).Translate(-2, 0);
 
-                platform.DoButton(openButton, "Open", ElementDesignerStyles.ButtonStyle, () => { /* OPEN WORKSPACE */});
+                platform.DoButton(openButton, "Open", ElementDesignerStyles.ButtonStyle, () =>
+                {
+                    Execute(new OpenWorkspaceCommand() { Workspace = workspace.Workspace });
+                    EnableWizard = false;
+                });
                 platform.DoButton(configButton, "Config", ElementDesignerStyles.ButtonStyle, () => { /* CONFIG WORKSPACE */ });
-                platform.DoButton(deleteButton, "Remove", ElementDesignerStyles.ButtonStyle, () => { /* REMOVE WORKSPACE */});
+                platform.DoButton(deleteButton, "Remove", ElementDesignerStyles.ButtonStyle, () => { Execute(new RemoveWorkspaceCommand() { Workspace = workspace.Workspace }); });
                 //platform.DoButton(showButton, "Show In Explorer", ElementDesignerStyles.ButtonStyle, () => { });
 
 
@@ -97,14 +102,14 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
             }
         }
 
-        public void DrawWorkspacesWizard( Rect bounds)
+        public void DrawWorkspacesWizard(Rect bounds)
         {
             var actions = new List<ActionItem>();
             var items = new List<WorkspacesListItem>();
             var databasesActionsBounds = bounds.LeftHalf().TopHalf().PadSides(2);
             var databasesListBounds = bounds.RightHalf().PadSides(2);
             var databasesActionInspectorBounds = bounds.LeftHalf().BottomHalf().PadSides(2);
-            var closeButtonBounds = new Rect().WithSize(80,30).InnerAlignWithBottomRight(databasesListBounds.PadSides(15));
+            var closeButtonBounds = new Rect().WithSize(80, 30).InnerAlignWithBottomRight(databasesListBounds.PadSides(15));
 
             Signal<IQueryWorkspacesActions>(_ => _.QueryWorkspacesActions(actions));
             Signal<IQueryWorkspacesListItems>(_ => _.QueryWorkspacesListItems(items));
@@ -112,7 +117,7 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
             Signal<IDrawActionDialog>(_ => _.DrawActionDialog(Drawer, databasesActionInspectorBounds, SelectedAction, () => SelectedAction = null));
             Signal<IDrawWorkspacesList>(_ => _.DrawWorkspacesList(Drawer, databasesListBounds, items));
 
-            Drawer.DoButton(closeButtonBounds,"Close",ElementDesignerStyles.ButtonStyle,()=>EnableWizard = false);
+            Drawer.DoButton(closeButtonBounds, "Close", ElementDesignerStyles.ButtonStyle, () => EnableWizard = false);
 
         }
 
@@ -123,22 +128,63 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
         public void QueryDesignerWindowModalContent(List<DesignerWindowModalContent> content)
         {
             if (EnableWizard)
-            content.Add(new DesignerWindowModalContent()
-            {
-                Drawer = DrawWorkspacesWizard,
-                ZIndex = 1
-            });
+                content.Add(new DesignerWindowModalContent()
+                {
+                    Drawer = DrawWorkspacesWizard,
+                    ZIndex = 1
+                });
         }
 
         public void QueryToolbarCommands(ToolbarUI ui)
         {
-            ui.AddCommand(new ToolbarItem()
+
+        }
+
+        public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
+        {
+            var selectProject = obj as SelectWorkspaceCommand;
+            if (selectProject != null)
             {
-                Command = new LambdaCommand("Manage Workspaces", () => EnableWizard = true),
-                Description = "Open workspace management dialog.",
-                Position = ToolbarPosition.Left,
-                Title = "Manage Workspaces"
-            });
+                foreach (var item in WorkspaceService.Workspaces)
+                {
+                    ui.AddCommand(new ContextMenuItem()
+                    {
+                        Title = item.Name,
+                        Checked = item == WorkspaceService.CurrentWorkspace,
+                        Command = new OpenWorkspaceCommand()
+                        {
+                            Workspace = item
+                        }
+                    });
+                }
+                if (WorkspaceService.Configurations != null)
+                {
+                    ui.AddSeparator();
+                    foreach (var item in WorkspaceService.Configurations)
+                    {
+                        var title = item.Value.Title ?? item.Key.Name;
+                        ui.AddCommand(new ContextMenuItem()
+                        {
+                            Title = string.Format("Create New {0} Workspace", title),
+                            Command = new CreateWorkspaceCommand()
+                            {
+                                Name = string.Format("New {0} Workspace", title),
+                                Title = string.Format("New {0} Workspace", title),
+                                WorkspaceType = item.Key,
+                            }
+                        });
+                    }
+                }
+                ui.AddSeparator();
+                ui.AddCommand(new ContextMenuItem()
+                {
+                    Command = new LambdaCommand("Manage Workspaces", () => EnableWizard = true),
+                    Title = "Manage"
+                });
+
+
+
+            }
         }
     }
 

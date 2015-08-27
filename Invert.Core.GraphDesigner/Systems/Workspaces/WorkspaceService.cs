@@ -44,7 +44,8 @@ namespace Invert.Core.GraphDesigner
         IExecuteCommand<SelectWorkspaceCommand>,
         IExecuteCommand<SelectGraphCommand>,
         IExecuteCommand<OpenWorkspaceCommand>,
-        IExecuteCommand<CreateWorkspaceCommand>
+        IExecuteCommand<CreateWorkspaceCommand>,
+        IExecuteCommand<RemoveWorkspaceCommand>
     {
         public IEnumerable<Workspace> Workspaces
         {
@@ -87,44 +88,7 @@ namespace Invert.Core.GraphDesigner
 
         public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
         {
-            var selectProject = obj as SelectWorkspaceCommand;
-            if (selectProject != null)
-            {
-                foreach (var item in Workspaces)
-                {
-                    ui.AddCommand(new ContextMenuItem()
-                    {
-                        Title = item.Name,
-                        Command = new OpenWorkspaceCommand()
-                        {
-                            Workspace = item
-                        }
-                    });
-                }
-                if (Configurations != null)
-                {
-                    ui.AddSeparator();
-                    foreach (var item in Configurations)
-                    {
-                        var title = item.Value.Title ?? item.Key.Name;
-                        ui.AddCommand(new ContextMenuItem()
-                        {
-                            Title = string.Format("Create New {0} Workspace", title),
-                            Command = new CreateWorkspaceCommand()
-                            {
-                                Name = string.Format("New {0} Workspace", title),
-                                Title = string.Format("New {0} Workspace", title),
-
-                                WorkspaceType = item.Key,
-                            }
-                        });
-                    }
-                }
-               
-               
-               
-              
-            }
+           
         }
 
         public void Execute(SelectWorkspaceCommand command)
@@ -168,8 +132,16 @@ namespace Invert.Core.GraphDesigner
                 Workspace = workspace
             });
         }
-    }
 
+        public void Execute(RemoveWorkspaceCommand command)
+        {
+            Repository.Remove(command.Workspace);
+        }
+    }
+    public class RemoveWorkspaceCommand : Command
+    {
+        public Workspace Workspace { get; set; }
+    }
     public class OpenWorkspaceCommand : Command
     {
         public Workspace Workspace { get; set; }
