@@ -13,7 +13,7 @@ public class FilterPositionData : IJsonObject
         set { _positions = value; }
     }
     
-    public bool HasPosition(IDiagramFilter filter, IDiagramNode node)
+    public bool HasPosition(IGraphFilter filter, IDiagramNode node)
     {
         if (Positions.ContainsKey(filter.Identifier))
         {
@@ -22,7 +22,7 @@ public class FilterPositionData : IJsonObject
         }
         return false;
     }
-    public Vector2 this[IDiagramFilter filter, IDiagramNode node]
+    public Vector2 this[IGraphFilter filter, IDiagramNode node]
     {
         get
         {
@@ -46,7 +46,7 @@ public class FilterPositionData : IJsonObject
             Positions[filter.Identifier][node] = value;
         }
     }
-    public Vector2 this[IDiagramFilter filter, string node]
+    public Vector2 this[IGraphFilter filter, string node]
     {
         get
         {
@@ -91,7 +91,7 @@ public class FilterPositionData : IJsonObject
         }
     }
 
-    public void Remove(IDiagramFilter currentFilter, string identifier)
+    public void Remove(IGraphFilter currentFilter, string identifier)
     {
         Positions[currentFilter.Identifier].Remove(identifier);
     }

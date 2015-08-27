@@ -56,10 +56,6 @@ namespace Invert.Core.GraphDesigner
             repository.Commit();
             var config = InvertGraphEditor.Container.Resolve<IGraphConfiguration>();
             var items = Items.Distinct().ToArray();
-            foreach (var item in items.OfType<IDiagramNodeItem>())
-            {
-                InvertApplication.Log(item.Name);
-            }
             yield return 
                 new TaskProgress(0f, "Refactoring");
 

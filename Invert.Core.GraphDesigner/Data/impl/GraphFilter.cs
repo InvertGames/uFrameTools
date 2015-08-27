@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Invert.Data;
 using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
 {
   
-    public class DiagramFilter : IDiagramFilter, IJsonObject
+    public class GraphFilter : IGraphFilter, IJsonObject
     {
         private Type[] _allowedTypes;
 
@@ -54,6 +55,13 @@ namespace Invert.Core.GraphDesigner
         {
             get { return false; }
         }
+
+        public IEnumerable<IDiagramNode> FilterNodes
+        {
+            get { yield break; }
+        }
+
+        public IEnumerable<IFilterItem> FilterItems { get; private set; }
 
         public string InfoLabel { get; private set; }
 

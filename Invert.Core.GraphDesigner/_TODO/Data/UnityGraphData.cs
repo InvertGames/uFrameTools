@@ -83,7 +83,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
 
     }
 
-    public IDiagramFilter[] FilterStack { get; set; }
+    public IGraphFilter[] FilterStack { get; set; }
 
     public IEnumerable<IGraphItem> AllGraphItems
     {
@@ -149,12 +149,12 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         Graph.TrackChange(data);
     }
 
-    public void PushFilter(IDiagramFilter filter)
+    public void PushFilter(IGraphFilter filter)
     {
         
     }
 
-    public void PopToFilter(IDiagramFilter filter1)
+    public void PopToFilter(IGraphFilter filter1)
     {
       
     }
@@ -169,7 +169,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         
     }
 
-    public IDiagramFilter CurrentFilter
+    public IGraphFilter CurrentFilter
     {
         get { return Graph.CurrentFilter; }
     }
@@ -238,13 +238,13 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
     }
 
 
-    public virtual IDiagramFilter RootFilter
+    public virtual IGraphFilter RootFilter
     {
         set { Graph.RootFilter = value; }
         get { return Graph.RootFilter; }
     }
 
-    public virtual IDiagramFilter CreateDefaultFilter()
+    public virtual IGraphFilter CreateDefaultFilter()
     {
         return Graph.CreateDefaultFilter();
     }

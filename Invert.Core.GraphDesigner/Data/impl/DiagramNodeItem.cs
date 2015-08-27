@@ -147,9 +147,9 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
         }
     }
 
-    public DiagramNode Node
+    public GraphNode Node
     {
-        get { return Repository.GetById<DiagramNode>(NodeId); }
+        get { return Repository.GetById<GraphNode>(NodeId); }
         set
         {
             if (value != null) NodeId = value.Identifier;
@@ -355,6 +355,11 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
         get { return true; }
     }
 
+    public virtual Color Color
+    {
+        get { return Color.white; }
+    }
+
     public virtual bool CanOutputTo(IConnectable input)
     {
         if (!AllowMultipleOutputs && this.Outputs.Any())
@@ -391,6 +396,25 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
     public virtual void OnConnectedFromOutput(IConnectable output)
     {
 
+    }
+    public virtual TType InputFrom<TType>()
+    {
+        return Inputs.Select(p => p.Output).OfType<TType>().FirstOrDefault();
+    }
+
+    public virtual IEnumerable<TType> InputsFrom<TType>()
+    {
+        return Inputs.Select(p => p.Output).OfType<TType>();
+    }
+
+    public virtual IEnumerable<TType> OutputsTo<TType>()
+    {
+        return Outputs.Select(p => p.Input).OfType<TType>();
+    }
+
+    public virtual TType OutputTo<TType>()
+    {
+        return Outputs.Select(p => p.Input).OfType<TType>().FirstOrDefault();
     }
 
     public virtual void RecordRemoved(IDataRecord record)

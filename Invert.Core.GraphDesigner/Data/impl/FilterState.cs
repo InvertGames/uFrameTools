@@ -8,7 +8,7 @@ using Invert.Json;
 [Serializable]
 public class FilterState : IJsonObject {
     [NonSerialized]
-    private Stack<IDiagramFilter> _filterStack = new Stack<IDiagramFilter>();
+    private Stack<IGraphFilter> _filterStack = new Stack<IGraphFilter>();
 
  
     //// Filters
@@ -21,24 +21,24 @@ public class FilterState : IJsonObject {
     //    }
     //}
 
-    public Stack<IDiagramFilter> FilterStack
+    public Stack<IGraphFilter> FilterStack
     {
         get
         {
-            return _filterStack ?? (_filterStack = new Stack<IDiagramFilter>());
+            return _filterStack ?? (_filterStack = new Stack<IGraphFilter>());
         }
         set { _filterStack = value; }
     }
 
     public List<string> _persistedFilterStack = new List<string>();
 
-    public void FilterPushed(IDiagramFilter filter)
+    public void FilterPushed(IGraphFilter filter)
     {
         if (!_persistedFilterStack.Contains(filter.Identifier))
             _persistedFilterStack.Add(filter.Identifier);
     }
 
-    public void FilterPoped(IDiagramFilter pop)
+    public void FilterPoped(IGraphFilter pop)
     {
         _persistedFilterStack.Remove(pop.Identifier);
     }

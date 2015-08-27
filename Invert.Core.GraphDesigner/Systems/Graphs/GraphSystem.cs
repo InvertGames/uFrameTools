@@ -3,6 +3,7 @@ using System.Linq;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Data;
+using Invert.IOC;
 
 public class GraphSystem : DiagramPlugin
     , IContextMenuQuery
@@ -11,19 +12,28 @@ public class GraphSystem : DiagramPlugin
     , IExecuteCommand<CreateGraphCommand>
     , IExecuteCommand<AddGraphToWorkspace>
 {
+    public override void Loaded(UFrameContainer container)
+    {
+        base.Loaded(container);
+        WorkspaceService = container.Resolve<WorkspaceService>();
+    }
+
+    public WorkspaceService WorkspaceService { get; set; }
+
     public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
     {
         if (obj is CreateGraphMenuCommand)
         {
-            foreach (var item in Container.Mappings.Where(p=>p.From == typeof(IGraphData)))
+            var config = WorkspaceService.CurrentConfiguration;
+            foreach (var item in config.GraphTypes)
             {
                 ui.AddCommand(new ContextMenuItem()
                 {
-                    Title = item.Name,
+                    Title = item.Title ?? item.GraphType.Name,
                     Command = new CreateGraphCommand()
                     {
-                        GraphType = item.To,
-                        Name = "New" + item.To.Name
+                        GraphType = item.GraphType,
+                        Name = "New" + item.GraphType.Name
                     }
                 });
             }

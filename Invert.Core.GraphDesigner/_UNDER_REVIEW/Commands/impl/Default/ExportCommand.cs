@@ -11,7 +11,7 @@ namespace Invert.Core.GraphDesigner
             var diagramViewModel = node.DiagramViewModel;
             var nodeData = node.GraphItemObject as IDiagramNode;
             var repository = diagramViewModel.CurrentRepository;
-            var filter = nodeData as IDiagramFilter;
+            var filter = nodeData as IGraphFilter;
             // TODO fix up exporting
             //repository.ExportNode(node.ExportGraphType,diagramViewModel.DiagramData,node.DataObject as IDiagramNode,true);
 
@@ -20,7 +20,7 @@ namespace Invert.Core.GraphDesigner
         public override string CanPerform(DiagramNodeViewModel node)
         {
             if (!node.IsLocal) return "Node must be local to export it.";
-            if (node.GraphItemObject is IDiagramFilter) return null;
+            if (node.GraphItemObject is IGraphFilter) return null;
             if (node.ExportGraphType == null) return null;
             return "Node must be a filter to export it.";
         }

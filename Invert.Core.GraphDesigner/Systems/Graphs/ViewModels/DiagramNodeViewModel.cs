@@ -577,24 +577,24 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                var filter = GraphItemObject as IDiagramFilter;
+                var filter = GraphItemObject as IGraphFilter;
                 if (filter == null)
                 {
                     return false;
                 }
-                return filter.FilterItems().Any();
+                return filter.FilterItems.Any();
             }
         }
         public IEnumerable<IDiagramNode> ContainedItems
         {
             get
             {
-                var filter = GraphItemObject as IDiagramFilter;
+                var filter = GraphItemObject as IGraphFilter;
                 if (filter == null)
                 {
                     yield break;
                 }
-                foreach (var item in filter.FilterNodes())
+                foreach (var item in filter.FilterNodes)
                 {
                     yield return item;
                 }

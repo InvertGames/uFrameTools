@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Invert.Core.GraphDesigner;
 using Invert.Data;
 using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
 {
+    public interface IConnectableProvider : IDataRecord
+    {
+        IEnumerable<IConnectable> Connectables { get; }
+    }
     public class ConnectionData : IJsonObject, IDataRecord, IDataRecordRemoved
     {
 
@@ -48,12 +53,40 @@ namespace Invert.Core.GraphDesigner
 
         public IConnectable Output
         {
-            get { return Repository.GetById<IConnectable>(OutputIdentifier); }
+            get
+            {
+                foreach (var item in Repository.AllOf<IConnectableProvider>())
+                {
+                   
+                    foreach (var child in item.Connectables)
+                    {
+                        if (child.Identifier == OutputIdentifier)
+                        {
+                            return child;
+                        }
+                    }
+                }
+                return Repository.GetById<IConnectable>(OutputIdentifier);
+            }
         }
 
         public IConnectable Input
         {
-            get { return Repository.GetById<IConnectable>(InputIdentifier); }
+            get
+            {
+                foreach (var item in Repository.AllOf<IConnectableProvider>())
+                {
+                    
+                    foreach (var child in item.Connectables)
+                    {
+                        if (child.Identifier == InputIdentifier)
+                        {
+                            return child;
+                        }
+                    }
+                }
+                return Repository.GetById<IConnectable>(InputIdentifier);
+            }
         }
 
         public void Remove()

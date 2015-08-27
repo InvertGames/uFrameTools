@@ -1,6 +1,6 @@
 namespace Invert.Core.GraphDesigner
 {
-    public class NodeHelpCommand : EditorCommand<DiagramNode>, IDiagramNodeCommand
+    public class NodeHelpCommand : EditorCommand<GraphNode>, IDiagramNodeCommand
     {
         public override string Name
         {
@@ -12,13 +12,13 @@ namespace Invert.Core.GraphDesigner
             get { return "Help and Documentation"; }
         }
 
-        public override void Perform(DiagramNode node)
+        public override void Perform(GraphNode node)
         {
             // TODO 2.0 This was confusing
             //InvertGraphEditor.WindowManager.ShowHelpWindow(node.Project.CurrentGraph.RootFilter.GetType().Name, node.GetType());
         }
 
-        public override string CanPerform(DiagramNode node)
+        public override string CanPerform(GraphNode node)
         {
             if (node == null)
             {

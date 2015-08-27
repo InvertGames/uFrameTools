@@ -1,9 +1,10 @@
+using Invert.Data;
 using Invert.IOC;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
-    public class CompilationProgress : DiagramPlugin, IDesignerWindowEvents, ITaskProgressHandler
+    public class CompilationProgress : DiagramPlugin, IDesignerWindowEvents, ITaskProgressHandler, ICompileEvents
     {
         public override bool Required
         {
@@ -34,7 +35,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void AfterDrawGraph(Rect diagramRect)
         {
-            if (Percentage > 1.0f)
+            if (Percentage >= 1.0f)
             {
                 Percentage = 1.0f;
             }
@@ -94,6 +95,25 @@ namespace Invert.Core.GraphDesigner.Unity
             Percentage = progress / 100f;
         }
 
- 
+
+        public void PreCompile(IGraphConfiguration configuration, IDataRecord[] compilingRecords)
+        {
+            
+        }
+
+        public void PostCompile(IGraphConfiguration configuration, IDataRecord[] compilingRecords)
+        {
+            Percentage = 0f;
+        }
+
+        public void FileGenerated(CodeFileGenerator generator)
+        {
+       
+        }
+
+        public void FileSkipped(CodeFileGenerator codeFileGenerator)
+        {
+           
+        }
     }
 }

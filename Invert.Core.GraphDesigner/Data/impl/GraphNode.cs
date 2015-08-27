@@ -51,8 +51,60 @@ namespace Invert.Core.GraphDesigner
     /// <summary>
     /// The base data class for all diagram nodes.
     /// </summary>
-    public abstract class DiagramNode : IDiagramNode, IDiagramFilter, IDataRecordRemoved
+    public abstract class GraphNode : IDiagramNode, IGraphFilter, IDataRecordRemoved
     {
+        public virtual TType InputFrom<TType>()
+        {
+            return this.InputsFrom<TType>().FirstOrDefault();
+        }
+
+        public virtual IEnumerable<TType> InputsFrom<TType>()
+        {
+            var filterItem = this as IFilterItem;
+            if (filterItem != null)
+            {
+                foreach (var item in Inputs)
+                {
+                    var outId = item.OutputIdentifier;
+                    var output = filterItem.Filter.AllGraphItems().FirstOrDefault(p => p is TType && p.Identifier == outId);
+
+                    if (output != null)
+                    {
+                        yield return (TType)output;
+                    }
+                }
+            }
+
+            foreach (var item in Inputs.Select(p => p.Output).OfType<TType>())
+                yield return item;
+        }
+
+        public virtual IEnumerable<TType> OutputsTo<TType>()
+        {
+            var filterItem = this as IFilterItem;
+            if (filterItem != null)
+            {
+                foreach (var item in Outputs)
+                {
+                    var inputIdentifier = item.InputIdentifier;
+                    var input = filterItem.Filter.AllGraphItems().FirstOrDefault(p => p is TType && p.Identifier == inputIdentifier);
+
+                    if (input != null)
+                    {
+                        yield return (TType)input;
+                    }
+                }
+            }
+
+            foreach (var item in Outputs.Select(p => p.Input).OfType<TType>())
+                yield return item;
+        }
+
+        public virtual TType OutputTo<TType>()
+        {
+            return this.OutputsTo<TType>().FirstOrDefault();
+        }
+
         public override string ToString()
         {
             return Name;
@@ -105,6 +157,11 @@ namespace Invert.Core.GraphDesigner
         public virtual bool AllowMultipleOutputs
         {
             get { return true; }
+        }
+
+        public virtual Color Color
+        {
+            get { return Color.white; }
         }
 
         public virtual void OnConnectionApplied(IConnectable output, IConnectable input)
@@ -245,7 +302,7 @@ namespace Invert.Core.GraphDesigner
         {
             var jsonNode = new JSONClass();
             Serialize(jsonNode);
-            var copy = Activator.CreateInstance(this.GetType()) as DiagramNode;
+            var copy = Activator.CreateInstance(this.GetType()) as GraphNode;
             copy.Deserialize(jsonNode);
             copy._identifier = null;
             return copy;
@@ -432,6 +489,50 @@ namespace Invert.Core.GraphDesigner
             get { return false; }
         }
 
+        public virtual IEnumerable<IDiagramNode> FilterNodes
+        {
+            get
+            {
+                foreach (var item in this.Repository.All<FilterItem>().Where(p => p.FilterId == Identifier))
+                {
+                    var node = item.Node;
+                    if (node == null)
+                    {
+                        this.Repository.Remove(item);
+                        InvertApplication.Log(string.Format("Filter item node is null {0}, Cleaning..", item.NodeId));
+                        continue;
+                    }
+                    //if (item == null) continue;
+                    yield return node;
+                }
+            }
+        }
+
+        public virtual  IEnumerable<IFilterItem> FilterItems
+        {
+            get
+            {
+                if (!FilterExtensions.AllowedFilterNodes.ContainsKey(GetType())) yield break;
+                var found = false;
+                foreach (FilterItem p in Repository.All<FilterItem>())
+                {
+                    if (p.FilterId == Identifier && p.NodeId == Identifier)
+                    {
+                        found = true;
+                    }
+                    if (p.FilterId == Identifier) yield return p;
+
+                }
+                if (!found && FilterExtensions.AllowedFilterNodes.ContainsKey(GetType()))
+                {
+                    var filterItem = Repository.Create<FilterItem>();
+                    filterItem.FilterId = Identifier;
+                    filterItem.NodeId = Identifier;
+                    yield return filterItem;
+                }
+            }
+        }
+
         public virtual string Namespace
         {
             get
@@ -453,7 +554,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         [Browsable(false)]
-        public virtual DiagramNode Node
+        public virtual GraphNode Node
         {
             get
             {
@@ -469,17 +570,6 @@ namespace Invert.Core.GraphDesigner
             get;
             set;
         }
-
-        public Rect Position
-        {
-            get
-            {
-                return _position;
-            }
-            set { _position = value; }
-        }
-
-
 
 
         public string Group
@@ -503,7 +593,7 @@ namespace Invert.Core.GraphDesigner
         [Browsable(false)]
         public string Title { get { return Name; } }
 
-        protected DiagramNode()
+        protected GraphNode()
         {
             IsNewNode = true;
         }

@@ -212,7 +212,7 @@ namespace Invert.Core.GraphDesigner
     //    }
     //}
 
-    public class PullFromCommand : EditorCommand<DiagramNode>,  IDiagramNodeCommand
+    public class PullFromCommand : EditorCommand<GraphNode>,  IDiagramNodeCommand
     {
         public override string Group
         {
@@ -239,7 +239,7 @@ namespace Invert.Core.GraphDesigner
             get { return false; }
         }
 
-        public override void Perform(DiagramNode node)
+        public override void Perform(GraphNode node)
         {
             // TODO 2.0 Rewrite pull from
             //var sourceDiagram = node.Graph;
@@ -302,13 +302,13 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        protected virtual void Process(DiagramNode node, IGraphData sourceDiagram, IGraphData targetDiagram)
+        protected virtual void Process(GraphNode node, IGraphData sourceDiagram, IGraphData targetDiagram)
         {
             sourceDiagram.RemoveNode(node, false);
             targetDiagram.AddNode(node);
         }
 
-        public override string CanPerform(DiagramNode node)
+        public override string CanPerform(GraphNode node)
         {
             if (node == null) return "Invalid input";
             if (node.Graph.Identifier == InvertGraphEditor.CurrentDiagramViewModel.GraphData.Identifier)

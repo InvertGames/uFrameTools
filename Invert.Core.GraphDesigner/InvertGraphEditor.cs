@@ -501,9 +501,9 @@ namespace Invert.Core.GraphDesigner
         public static void OrganizeFilters()
         {
             var filterTypes = Container.RelationshipMappings.Where(
-               p => typeof(IDiagramFilter).IsAssignableFrom(p.From) && p.To == typeof(IDiagramNode));
+               p => typeof(IGraphFilter).IsAssignableFrom(p.From) && p.To == typeof(IDiagramNode));
             var filterTypeItems = Container.RelationshipMappings.Where(
-                p => typeof(IDiagramFilter).IsAssignableFrom(p.From) && p.To == typeof(IDiagramNodeItem));
+                p => typeof(IGraphFilter).IsAssignableFrom(p.From) && p.To == typeof(IDiagramNodeItem));
 
             foreach (var filterMapping in filterTypes)
             {

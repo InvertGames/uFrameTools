@@ -54,7 +54,8 @@ namespace Invert.Core.GraphDesigner
                             Command = new CreateNodeCommand()
                             {
                                 NodeType = nodeType,
-                                DiagramViewModel = diagram,
+                                GraphData = diagram.GraphData,
+                                Position = diagram.LastMouseEvent.MouseDownPosition
                             }
                         });
                         
@@ -79,7 +80,25 @@ namespace Invert.Core.GraphDesigner
             var node = Activator.CreateInstance(command.NodeType) as IDiagramNode;
             var repository = Container.Resolve<IRepository>();
             repository.Add(node);
-            command.DiagramViewModel.AddNode(node, command.DiagramViewModel.LastMouseEvent.MouseDownPosition);
+            
+            node.GraphId = command.GraphData.Identifier;
+            
+            if (string.IsNullOrEmpty(node.Name))
+                node.Name =
+                    repository.GetUniqueName("New" + node.GetType().Name.Replace("Data", ""));
+       
+            var filterItem = node as IFilterItem;
+            if (filterItem != null)
+            {
+                filterItem.FilterId = command.GraphData.CurrentFilter.Identifier;
+                filterItem.Position = command.Position;
+            }
+            else
+            {
+                command.GraphData.CurrentFilter.ShowInFilter(node, command.Position);
+            }
+            
+            
 
         }
 

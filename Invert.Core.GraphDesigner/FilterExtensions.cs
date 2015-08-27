@@ -6,12 +6,12 @@ namespace Invert.Core.GraphDesigner
 {
     public static class FilterExtensions
     {
-        public static IEnumerable<IDiagramNode> GetContainingNodesInProject(this IDiagramFilter filter, IProjectRepository repository)
+        public static IEnumerable<IDiagramNode> GetContainingNodesInProject(this IGraphFilter filter, IProjectRepository repository)
         {
             return GetContainerNodesInProjectInternal(filter, repository).Distinct();
         }
 
-        private static IEnumerable<IDiagramNode> GetContainerNodesInProjectInternal(IDiagramFilter filter, IProjectRepository repository)
+        private static IEnumerable<IDiagramNode> GetContainerNodesInProjectInternal(IGraphFilter filter, IProjectRepository repository)
         {
             foreach (var item in repository.Graphs)
             {
@@ -32,10 +32,6 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
-        public static IEnumerable<IDiagramNode> GetContainingNodes(this IDiagramFilter filter)
-        {
-            return filter.FilterNodes();
-        }
 
         //public static IEnumerable<IDiagramNode> GetParentNodes(this IDiagramNode node)
         //{
@@ -61,7 +57,20 @@ namespace Invert.Core.GraphDesigner
         //        }
         //    }
         //}
-        public static bool IsAllowed(this IDiagramFilter filter, object item, Type t)
+
+        public static IEnumerable<IGraphItem> AllGraphItems(this IGraphFilter filter)
+        {
+            foreach (var item in filter.FilterNodes)
+            {
+                yield return item;
+                foreach (var child in item.GraphItems)
+                {
+                    yield return child;
+                }
+            }
+        }
+
+        public static bool IsAllowed(this IGraphFilter filter, object item, Type t)
         {
 
             if (filter == item) return true;
@@ -76,7 +85,7 @@ namespace Invert.Core.GraphDesigner
             // return InvertGraphEditor.AllowedFilterNodes[filter.GetType()].Contains(t);
         }
 
-        public static bool IsItemAllowed(this IDiagramFilter filter, object item, Type t)
+        public static bool IsItemAllowed(this IGraphFilter filter, object item, Type t)
         {
             return true;
             //return uFrameEditor.AllowedFilterItems[filter.GetType()].Contains(t);

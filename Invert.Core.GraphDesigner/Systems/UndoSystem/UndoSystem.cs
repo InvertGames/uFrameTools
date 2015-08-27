@@ -98,47 +98,56 @@ namespace Invert.Core.GraphDesigner
             var undoGroup = Repository.All<UndoItem>().GroupBy(p=>p.Group).LastOrDefault();
             if (undoGroup == null) return;
             IsUndoRedo = true;
-            foreach (var undoItem in undoGroup)
+            try
             {
-                // Create redo item
-                var redoItem = new RedoItem();
-                redoItem.Data = undoItem.Data;
-                redoItem.Group = undoItem.Group;
-                redoItem.DataRecordId = undoItem.DataRecordId;
-                redoItem.Name = undoItem.Name;
-                redoItem.Time = undoItem.Time;
-                redoItem.Type = undoItem.Type;
-                redoItem.RecordType = undoItem.RecordType;
-                redoItem.UndoData = InvertJsonExtensions.SerializeObject(undoItem).ToString();
+                foreach (var undoItem in undoGroup)
+                {
+                    // Create redo item
+                    var redoItem = new RedoItem();
+                    redoItem.Data = undoItem.Data;
+                    redoItem.Group = undoItem.Group;
+                    redoItem.DataRecordId = undoItem.DataRecordId;
+                    redoItem.Name = undoItem.Name;
+                    redoItem.Time = undoItem.Time;
+                    redoItem.Type = undoItem.Type;
+                    redoItem.RecordType = undoItem.RecordType;
+                    redoItem.UndoData = InvertJsonExtensions.SerializeObject(undoItem).ToString();
 
-                if (undoItem.Type == UndoType.Inserted)
-                {
-                    var record = Repository.GetById<IDataRecord>(undoItem.DataRecordId);
-                    redoItem.Data = InvertJsonExtensions.SerializeObject(record).ToString();
-                    Repository.Remove(record);
-                    redoItem.Type = UndoType.Removed;
-                }
-                else if (undoItem.Type == UndoType.Removed)
-                {
-                    
-                    var obj = InvertJsonExtensions.DeserializeObject(Type.GetType(undoItem.RecordType), JSON.Parse(undoItem.Data).AsObject) as IDataRecord;
-                    Repository.Add(obj);
-                    redoItem.Type = UndoType.Inserted;
-                    redoItem.Data = InvertJsonExtensions.SerializeObject(obj).ToString();
-                }
-                else 
-                {
-                    var record = Repository.GetById<IDataRecord>(undoItem.DataRecordId);
-                    // We don't want to signal any events on deserialization
-                    record.Repository = null;
-                    redoItem.Data = InvertJsonExtensions.SerializeObject(record).ToString();
-                    InvertJsonExtensions.DeserializeExistingObject(record, JSON.Parse(undoItem.Data).AsObject);
-                    record.Changed = true;
-                    record.Repository = Repository;
+                    if (undoItem.Type == UndoType.Inserted)
+                    {
+                        var record = Repository.GetById<IDataRecord>(undoItem.DataRecordId);
+                        redoItem.Data = InvertJsonExtensions.SerializeObject(record).ToString();
+                        Repository.Remove(record);
+                        redoItem.Type = UndoType.Removed;
+                    }
+                    else if (undoItem.Type == UndoType.Removed)
+                    {
 
+                        var obj =
+                            InvertJsonExtensions.DeserializeObject(Type.GetType(undoItem.RecordType),
+                                JSON.Parse(undoItem.Data).AsObject) as IDataRecord;
+                        Repository.Add(obj);
+                        redoItem.Type = UndoType.Inserted;
+                        redoItem.Data = InvertJsonExtensions.SerializeObject(obj).ToString();
+                    }
+                    else
+                    {
+                        var record = Repository.GetById<IDataRecord>(undoItem.DataRecordId);
+                        // We don't want to signal any events on deserialization
+                        record.Repository = null;
+                        redoItem.Data = InvertJsonExtensions.SerializeObject(record).ToString();
+                        InvertJsonExtensions.DeserializeExistingObject(record, JSON.Parse(undoItem.Data).AsObject);
+                        record.Changed = true;
+                        record.Repository = Repository;
+
+                    }
+                    Repository.Remove(undoItem);
+                    Repository.Add(redoItem);
                 }
-                Repository.Remove(undoItem);
-                Repository.Add(redoItem);
+            }
+            catch (Exception ex)
+            {
+                // If we don't catch the exception IsUndoRedo won't be set back to fals causing cascading issues
             }
             IsUndoRedo = false;
         }
@@ -195,24 +204,28 @@ namespace Invert.Core.GraphDesigner
                 {
                     Title = "Undo " + undoItem.Name,
                     Command = new UndoCommand(),
-                    Position = ToolbarPosition.BottomRight
+                    Position = ToolbarPosition.BottomLeft
                 });
-              
             }
-            ui.AddCommand(new ToolbarItem()
+            var redoItem = repo.All<RedoItem>().LastOrDefault();
+            if (redoItem != null)
             {
-                Title = "Testy ",
-                Command = new TestyCommand(),
-                Position = ToolbarPosition.Right,
-                Description = "Y u no works?"
-            });
+                ui.AddCommand(new ToolbarItem()
+                {
+                    Title = "Redo " + redoItem.Name,
+                    Command = new RedoCommand(),
+                    Position = ToolbarPosition.BottomLeft,
+
+                });
+            }
+      
 
         }
 
         public void CommandExecuting(ICommand command)
         {
             if (command is UndoCommand) return;
-            //InvertApplication.Log(command.GetType().Name);
+            InvertApplication.Log(command.GetType().Name);
             CurrentUndoGroupId = DateTime.Now.Hour.ToString() + DateTime.Now.Minute + DateTime.Now.Second.ToString();
             CurrentName = command.Title;
             UndoItems.Clear();
@@ -227,12 +240,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         public IRepository Repository { get; set; }
-        public override void Initialize(UFrameContainer container)
-        {
-            base.Initialize(container); 
-            InvertApplication.Log("Initialized Twice?");
-        }
-
+ 
         public void CommandExecuted(ICommand command)
         {
             if (command is UndoCommand || command is RedoCommand) return;
@@ -247,12 +255,6 @@ namespace Invert.Core.GraphDesigner
                 Repository.Commit();
             }
         }
-
-        public UndoSystem()
-        {
-            Debug.Log(this.GetHashCode());
-        }
-
 
         public void Execute(TestyCommand command)
         {

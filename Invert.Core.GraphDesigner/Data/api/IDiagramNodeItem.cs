@@ -19,7 +19,7 @@ namespace Invert.Core.GraphDesigner
         string Highlighter { get; }
         string FullLabel { get; }
         bool IsSelectable { get;}
-        DiagramNode Node { get; set; }
+        GraphNode Node { get; set; }
         [Browsable(false)]
         DataBag DataBag { get; set; }
         

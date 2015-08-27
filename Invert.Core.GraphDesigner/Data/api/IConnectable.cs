@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -15,6 +16,7 @@ namespace Invert.Core.GraphDesigner
 
         bool AllowMultipleInputs { get; }
         bool AllowMultipleOutputs { get; }
+        Color Color { get; }
 
         //void OnConnectionApplied(IConnectable output, IConnectable input);
         bool CanOutputTo(IConnectable input);
@@ -24,6 +26,12 @@ namespace Invert.Core.GraphDesigner
         void OnInputConnectionRemoved(IConnectable output);
         void OnConnectedToInput(IConnectable input);
         void OnConnectedFromOutput(IConnectable output);
+
+        TType InputFrom<TType>();
+        IEnumerable<TType> InputsFrom<TType>();
+        IEnumerable<TType> OutputsTo<TType>();
+        TType OutputTo<TType>();
+
     }
 
     public static class ConnectableExtensions
@@ -41,25 +49,31 @@ namespace Invert.Core.GraphDesigner
         {
             return node.Node.Repository.AllOf<ITypedItem>().OfType<TType>().FirstOrDefault(p => p.RelatedType == node.Identifier);
         }
-        public static IEnumerable<TType> InputsFrom<TType>(this IConnectable connectable)
-            where TType : IGraphItem
-        {
-            return connectable.Inputs.Select(p => p.Output).OfType<TType>();
-        }
-        public static TType InputFrom<TType>(this IConnectable connectable)
-            where TType : IGraphItem
-        {
-            return connectable.Inputs.Select(p => p.Output).OfType<TType>().FirstOrDefault();
-        }
-        public static IEnumerable<TType> OutputsTo<TType>(this IConnectable connectable)
-            where TType : IGraphItem
-        {
-            return connectable.Outputs.Select(p => p.Input).OfType<TType>();
-        }
-        public static TType OutputTo<TType>(this IConnectable connectable)
-            where TType : IGraphItem
-        {
-            return connectable.Outputs.Select(p => p.Input).OfType<TType>().FirstOrDefault();
-        }
+
+        //public static IEnumerable<TType> InputsFrom<TType>(this IConnectable connectable)
+        //    where TType : IGraphItem
+        //{
+        //    return connectable.Inputs.Select(p => p.Output).OfType<TType>();
+        //}
+        //public static TType InputFrom<TType>(this IConnectable connectable)
+        //    where TType : IGraphItem
+        //{
+        //    return connectable.Inputs.Select(p => p.Output).OfType<TType>().FirstOrDefault();
+        //}
+
+
+        //public static IEnumerable<TType> OutputsTo<TType>(this IConnectable connectable)
+        //    where TType : IGraphItem
+        //{
+        //    return connectable.Outputs.Select(p => p.Input).OfType<TType>();
+        //}
+        //public static TType OutputTo<TType>(this IConnectable connectable)
+        //    where TType : IGraphItem
+        //{
+        //    return connectable.Outputs.Select(p => p.Input).OfType<TType>().FirstOrDefault();
+        //}
+
+
+
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Invert.Core.GraphDesigner;
 using Invert.Json;
 
-public class MissingNodeData : DiagramNode
+public class MissingNodeData : GraphNode
 {
     public JSONClass _CachedData;
     public override void Deserialize(JSONClass cls)

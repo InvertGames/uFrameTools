@@ -140,7 +140,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         }
 
-        public void NodeImage(DiagramNode node)
+        public void NodeImage(GraphNode node)
         {
 
         }

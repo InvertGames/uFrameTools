@@ -17,7 +17,7 @@ namespace Invert.Core.GraphDesigner
         private IDrawer _nodeDrawerAtMouse;
         private SelectionRectHandler _selectionRectHandler;
         private IDrawer[] _cachedChildren = new IDrawer[] { };
-        private Dictionary<IDiagramFilter, Vector2> _cachedPaths;
+        private Dictionary<IGraphFilter, Vector2> _cachedPaths;
 
 
         public static float Scale
@@ -582,7 +582,7 @@ namespace Invert.Core.GraphDesigner
             base.Refresh(platform, position, hardRefresh);
             // Eventually it will all be viewmodels
             if (DiagramViewModel == null) return;
-            Dictionary<IDiagramFilter, Vector2> dictionary = new Dictionary<IDiagramFilter, Vector2>();
+            Dictionary<IGraphFilter, Vector2> dictionary = new Dictionary<IGraphFilter, Vector2>();
             
             var first = true;
             foreach (var filter in new [] {DiagramViewModel.GraphData.RootFilter}.Concat(this.DiagramViewModel.GraphData.GetFilterPath()).Reverse())

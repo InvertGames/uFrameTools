@@ -301,7 +301,7 @@ namespace Invert.Core.GraphDesigner
                         {
                             var item = selected as GenericNodeChildItem;
                             DiagramViewModel.CurrentRepository.Add(item);
-                            item.Node = vm.GraphItemObject as DiagramNode;
+                            item.Node = vm.GraphItemObject as GraphNode;
 
                             if (section1.OnAdd != null)
                                 section1.OnAdd(item);
@@ -318,7 +318,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     var item = Activator.CreateInstance(section1.SourceType) as GenericNodeChildItem;
                     DiagramViewModel.CurrentRepository.Add(item);
-                    item.Node = vm.GraphItemObject as DiagramNode;
+                    item.Node = vm.GraphItemObject as GraphNode;
                     item.Name = item.Repository.GetUniqueName(section1.Name);
                     item.IsEditing = true;
                     OnAdd(section1, item);
