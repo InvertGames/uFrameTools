@@ -230,7 +230,8 @@ namespace Invert.Core.GraphDesigner
             {
                 var tooltipHeight = Drawer.CalculateTextHeight(tooltip, CachedStyles.BreadcrumbTitleStyle, 350);
 
-                var infoRect = new Rect().WithSize(350, Math.Max(80, tooltipHeight + 60)).AlignTopRight(alignmentRect).Below(alignmentRect).Pad(0, 15, 15, 0);
+                var infoRect = 
+                    new Rect().WithSize(350, Math.Max(80, tooltipHeight + 60)).AlignTopRight(alignmentRect).Below(alignmentRect).Pad(0, 15, 15, 0);
 
                 var imageRect =
                     new Rect().WithSize(41, 41).AlignTopRight(infoRect).AlignHorisonallyByCenter(infoRect).Translate(-15, 0);

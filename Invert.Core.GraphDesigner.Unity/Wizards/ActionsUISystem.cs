@@ -24,11 +24,12 @@ namespace Invert.Core.GraphDesigner.Unity.Wizards
 
             bounds = bounds.PadSides(15);
 
-            var descriptionHeight = platform.CalculateTextSize(item.Description, CachedStyles.BreadcrumbTitleStyle);
+            var descriptionHeight = string.IsNullOrEmpty(item.Description) ? 0 : platform.CalculateTextHeight(item.Description, CachedStyles.BreadcrumbTitleStyle, bounds.width) + 60;
 
             var headerRect = bounds.WithHeight(40);
             var iconRect = bounds.WithSize(41, 41);
-            var descriptionRect = headerRect.Below(headerRect).WithHeight(descriptionHeight.y + 80);
+            
+            var descriptionRect = headerRect.Below(headerRect).WithHeight(descriptionHeight);
             var inspectorRect = bounds.Below(descriptionRect).Clip(bounds);
             var executeButtonRect = new Rect()
                 .WithSize(100, 30)
@@ -54,7 +55,7 @@ namespace Invert.Core.GraphDesigner.Unity.Wizards
                 platform.DoButton(executeButtonRect.InnerAlignWithBottomLeft(bounds), "Cancel", ElementDesignerStyles.ButtonStyle, cancel);
             }
 
-            platform.DoButton(executeButtonRect, "Create", ElementDesignerStyles.ButtonStyle, () =>
+            platform.DoButton(executeButtonRect, string.IsNullOrEmpty(item.Verb) ? "Create" : item.Verb, ElementDesignerStyles.ButtonStyle, () =>
             {
                 InvertApplication.Execute(item.Command);
             });

@@ -25,6 +25,7 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
         }
 
         private IPlatformDrawer _drawer;
+        private Vector2 _scrollPos;
 
         public IPlatformDrawer Drawer
         {
@@ -60,6 +61,8 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
         public void DrawWorkspacesList(IPlatformDrawer platform, Rect bounds, List<WorkspacesListItem> items)
         {
             platform.DrawStretchBox(bounds, CachedStyles.WizardSubBoxStyle, 13);
+
+            var scrollBounds = bounds.Translate(15, 0).Pad(0, 0, 15, 0);
             bounds = bounds.PadSides(15);
 
 
@@ -69,7 +72,12 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
 
             var unpaddedItemRect = bounds.Below(headerRect).WithHeight(100);
 
-            foreach (var db in items)
+            var workspaces = items.ToArray();
+         
+            var position = scrollBounds.Below(headerRect).Clip(scrollBounds).Pad(0, 0, 0, 55);
+            var usedRect = position.Pad(0, 0, 15, 0).WithHeight((unpaddedItemRect.height + 1) * workspaces.Length);
+            _scrollPos = GUI.BeginScrollView(position, _scrollPos, usedRect);
+            foreach (var db in workspaces)
             {
 
                 platform.DrawStretchBox(unpaddedItemRect, CachedStyles.WizardListItemBoxStyle, 2);
@@ -87,7 +95,8 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
                 var deleteButton = configButton.LeftOf(configButton).Translate(-2, 0);
 
                 platform.DoButton(openButton, "Open", ElementDesignerStyles.ButtonStyle, () => { /* OPEN WORKSPACE */});
-                platform.DoButton(configButton, "Config", ElementDesignerStyles.ButtonStyle, () => { /* CONFIG WORKSPACE */ });
+                var db1 = db;
+                platform.DoButton(configButton, "Config", ElementDesignerStyles.ButtonStyle,()=>InvokeConfigFor(db1));
                 platform.DoButton(deleteButton, "Remove", ElementDesignerStyles.ButtonStyle, () => { /* REMOVE WORKSPACE */});
                 //platform.DoButton(showButton, "Show In Explorer", ElementDesignerStyles.ButtonStyle, () => { });
 
@@ -95,6 +104,23 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
                 unpaddedItemRect = unpaddedItemRect.Below(unpaddedItemRect).Translate(0, 1);
 
             }
+
+            GUI.EndScrollView(true);
+
+        }
+
+        private void InvokeConfigFor(WorkspacesListItem db)
+        {
+            SelectedAction = new ActionItem()
+            {
+                Command = new ConfigureWorkspaceCommand()
+                {
+                    Name = db.Workspace.Title
+                },
+                Description = "Configuration",
+                Title = db.Workspace.Title,
+                Verb = "Apply"
+            };
         }
 
         public void DrawWorkspacesWizard( Rect bounds)
@@ -140,6 +166,15 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
                 Title = "Manage Workspaces"
             });
         }
+    }
+
+    public class ConfigureWorkspaceCommand : ICommand
+    {
+        public string Title { get; set; }
+
+        [InspectorProperty]
+        public string Name { get; set; }
+
     }
 
     public class CreateECSWorkspaceCommand : ICommand
