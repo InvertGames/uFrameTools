@@ -55,13 +55,13 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void OnInspectorUpdate()
         {
-            Repaint();
+         
         }
         public void Update()
         {
             Instance = this;
             InvertApplication.SignalEvent <IUpdate>(_=>_.Update());
-            
+            Repaint();
         }
 
 

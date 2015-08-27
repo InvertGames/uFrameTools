@@ -27,9 +27,9 @@ namespace Invert.Core.GraphDesigner
             };
 
 
-
-
-            if (!TexturesCache.ContainsKey(item) || TexturesCache[item].Equals(null))
+            object value = null;
+            TexturesCache.TryGetValue(item, out value);
+            if (value == null || value.Equals(null))
             {
                 TexturesCache[item] = ConstructTexture(side, direction, connected, tint);
             }
