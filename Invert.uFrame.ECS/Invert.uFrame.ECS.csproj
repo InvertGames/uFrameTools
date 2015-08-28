@@ -313,17 +313,8 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots.designer.cs">
       <Link>Slots.designer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Get.cs">
-      <Link>Get.cs</Link>
-    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Property.cs">
       <Link>Property.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Set.cs">
-      <Link>Set.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\SourceObject.cs">
-      <Link>SourceObject.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Timer.cs">
       <Link>Timer.cs</Link>

@@ -53,6 +53,25 @@ namespace Invert.Core.GraphDesigner
     /// </summary>
     public abstract class GraphNode : IDiagramNode, IGraphFilter, IDataRecordRemoved
     {
+        public virtual IEnumerable<IFilterItem> FilterLocations
+        {
+            get { return Repository.AllOf<IFilterItem>().Where(p => p.NodeId == this.Identifier); }
+        }
+
+        public virtual IFilterItem FilterLocation
+        {
+            get { return FilterLocations.FirstOrDefault(); }
+        }
+
+        public virtual IGraphFilter Filter
+        {
+            get
+            {
+                var fl = FilterLocation;
+                if (fl == null) return null;
+                return fl.Filter;
+            }
+        }
         public virtual TType InputFrom<TType>()
         {
             return this.InputsFrom<TType>().FirstOrDefault();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Invert.Core.GraphDesigner;
+using Invert.Core.GraphDesigner.Systems;
 using Invert.Data;
 using Invert.IOC;
 
@@ -37,6 +38,17 @@ namespace Invert.Core.GraphDesigner
             Repository = container.Resolve<IRepository>();
         }
     }
+    public class ConfigureWorkspaceCommand : ICommand
+    {
+        public string Title { get; set; }
+
+        [InspectorProperty]
+        public string Name { get; set; }
+
+        public Workspace Workspace { get; set; }
+
+    }
+
     public class WorkspaceService : RepoService,
         IRemoveWorkspace,
         IContextMenuQuery,
@@ -45,7 +57,8 @@ namespace Invert.Core.GraphDesigner
         IExecuteCommand<SelectGraphCommand>,
         IExecuteCommand<OpenWorkspaceCommand>,
         IExecuteCommand<CreateWorkspaceCommand>,
-        IExecuteCommand<RemoveWorkspaceCommand>
+        IExecuteCommand<RemoveWorkspaceCommand>,
+        IExecuteCommand<ConfigureWorkspaceCommand>
     {
         public IEnumerable<Workspace> Workspaces
         {
@@ -130,6 +143,12 @@ namespace Invert.Core.GraphDesigner
         public void Execute(RemoveWorkspaceCommand command)
         {
             Repository.Remove(command.Workspace);
+        }
+
+        public void Execute(ConfigureWorkspaceCommand command)
+        {
+            command.Workspace.Name = command.Name;
+            Signal<INotify>(_=>_.Notify("Workspace configured!",NotificationIcon.Info));
         }
     }
     public class RemoveWorkspaceCommand : Command

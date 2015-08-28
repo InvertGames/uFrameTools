@@ -25,6 +25,7 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
 
         private DatabaseService _databaseService;
         private IPlatformDrawer _drawer;
+        private Vector2 _scrollPos;
 
         public DatabaseService DatabaseService
         {
@@ -67,16 +68,26 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
         {
 
             Drawer.DrawStretchBox(bounds, CachedStyles.WizardSubBoxStyle, 13);
+            
+            var scrollBounds = bounds.Translate(15,0).Pad(0,0,15,0);
+            
             bounds = bounds.PadSides(15);
 
 
             var headerRect = bounds.WithHeight(40);
-
+             
             Drawer.DrawLabel(headerRect, "Databases", CachedStyles.WizardSubBoxTitleStyle, DrawingAlignment.TopCenter);
 
             var unpaddedItemRect = bounds.Below(headerRect).WithHeight(150);
 
-            foreach (var db in items)
+            var databasesListItems = items.ToArray();
+         
+            var position = scrollBounds.Below(headerRect).Clip(scrollBounds).Pad(0, 0, 0, 55);
+            var usedRect = position.Pad(0, 0, 15, 0).WithHeight((unpaddedItemRect.height + 1)*databasesListItems.Length);
+            
+            _scrollPos = GUI.BeginScrollView(position, _scrollPos, usedRect);
+
+            foreach (var db in databasesListItems)
             {
 
                 Drawer.DrawStretchBox(unpaddedItemRect,CachedStyles.WizardListItemBoxStyle,2);
@@ -105,11 +116,10 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
                 Drawer.DoButton(configButton, "Config", ElementDesignerStyles.ButtonStyle, () => { /* CONFIG DATABASE */ });
                 Drawer.DoButton(showButton, "Show In Explorer", ElementDesignerStyles.ButtonStyle, () => { /* SHOW DATABASE IN EXPLORER */ });
 
-
                 unpaddedItemRect = unpaddedItemRect.Below(unpaddedItemRect).Translate(0,1);
 
             }
-
+            GUI.EndScrollView(true);
         }
 
         #endregion

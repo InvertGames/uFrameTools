@@ -25,13 +25,14 @@ namespace Invert.Core.GraphDesigner.Unity.Wizards
             }
             set { _items = value; }
         }
-
-        public static void Init(Vector2 position)
+        [MenuItem("uFrame/Databases")]
+        public static void Init()
         {
-            var window = ScriptableObject.CreateInstance<DatabaseListWindow>();
-            window.ShowAsDropDown(new Rect(position.x,position.y,1,1),new Vector2(400,600));
+            var window = GetWindow<DatabaseListWindow>();
+
             window.Repaint();
-            window.Focus();
+            window.Show();
+
         }
 
         void OnGUI()

@@ -110,7 +110,7 @@ namespace Invert.Core.GraphDesigner
                         endTan*scale, shadowCol,  (i + 1)*5);
 
             platform.DrawBezier(_startPos * scale, _endPos * scale, startTan * scale,
-                endTan*scale, ViewModel.CurrentColor,  3);
+                endTan*scale, ViewModel.CurrentColor,  5);
         }
     }
 }

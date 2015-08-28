@@ -107,7 +107,7 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    public class SelectionFor<TFor, TValue> : GenericSlot where TValue : InputSelectionValue, new() where TFor : class,IDiagramNodeItem
+    public class SelectionFor<TFor, TValue> : GenericSlot where TValue : InputSelectionValue, new() where TFor : class,IDataRecord
     {
         public override bool AllowMultipleInputs
         {
@@ -121,7 +121,19 @@ namespace Invert.Core.GraphDesigner
 
         public TFor Item
         {
-            get { return this.InputFrom<TFor>() ?? SelectedItem; }
+            get
+            {
+                if (typeof (IConnectable).IsAssignableFrom(typeof (TFor)))
+                {
+                    return this.InputFrom<TFor>() ?? SelectedItem;
+                }
+                return SelectedItem;
+            }
+        }
+
+        public override bool AllowInputs
+        {
+            get { return typeof (IConnectable).IsAssignableFrom(typeof(TFor)); }
         }
 
         public override bool AllowSelection
@@ -150,12 +162,24 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                if (Item == null) return "...";
-                return Item.Name;
+                
+                var item = Item;
+                if (item == null) return "...";
+               
+                return ItemDisplayName(item);
             }
         }
 
-        public override void SetInput(IGraphItem item)
+        public virtual string ItemDisplayName(TFor item)
+        {
+            var xItem = item as IDiagramNodeItem;
+            if (xItem != null)
+            {
+                return xItem.Name;
+            }
+            return item.Identifier;
+        }
+        public override void SetInput(IDataRecord item)
         {
             base.SetInput(item);
             var selected = SelectedValue;
@@ -215,5 +239,7 @@ namespace Invert.Core.GraphDesigner
         
         
     }
+
+
     
 }

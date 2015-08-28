@@ -132,7 +132,7 @@ namespace Invert.Core.GraphDesigner
            return a != b;
         }
 
-        public virtual void SetInput(IGraphItem item)
+        public virtual void SetInput(IDataRecord item)
         {
             if (!AllowMultipleInputs)
             {
@@ -151,7 +151,7 @@ namespace Invert.Core.GraphDesigner
             cd.InputIdentifier = Identifier;
             cd.OutputIdentifier = item.Identifier;
         }
-        public virtual void SetOutput(IGraphItem item)
+        public virtual void SetOutput(IDataRecord item)
         {
             if (!AllowMultipleInputs)
             {
