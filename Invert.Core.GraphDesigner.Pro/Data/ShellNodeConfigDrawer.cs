@@ -18,25 +18,26 @@ public class ShellNodeConfigDrawer : DiagramNodeDrawer<ShellNodeConfigViewModel>
         if (IsSelected)
         {
             var selectedChild = Children.Skip(1).FirstOrDefault(p => p.IsSelected);
-            var width = 75f;
+            var width = 85f;
             var buttonHeight = 25;
             var toolbarRect = new Rect(this.Bounds.x - width - 4, this.Bounds.y + 8, width, selectedChild == null ? (buttonHeight *3) + 20 : (buttonHeight *4) + 20);
 
-            platform.DrawStretchBox(toolbarRect, CachedStyles.Item3, 12f);
+            platform.DrawStretchBox(toolbarRect, CachedStyles.WizardSubBoxStyle, 12f);
             toolbarRect.y += 10;
+
             var x = toolbarRect.x;
             var y = toolbarRect.y;
 
             if (selectedChild != null)
             {
-                platform.DoButton(new Rect(x,y,toolbarRect.width,buttonHeight),"Remove",CachedStyles.Item2,
+                platform.DoButton(new Rect(x,y,toolbarRect.width,buttonHeight),"Remove",CachedStyles.WizardListItemBoxStyle,
                     () =>
                     {
                         NodeViewModel.RemoveSelected();
                     });
                 y += buttonHeight;
             }
-            platform.DoButton(new Rect(x, y, toolbarRect.width, buttonHeight), "+ Add Section", CachedStyles.Item2,
+            platform.DoButton(new Rect(x, y, toolbarRect.width, buttonHeight), "+ Add Section", CachedStyles.WizardListItemBoxStyle,
                 () =>
                 {
                     ShowAddPointerMenu<ShellNodeConfigSection>("Section", () =>
@@ -45,7 +46,7 @@ public class ShellNodeConfigDrawer : DiagramNodeDrawer<ShellNodeConfigViewModel>
                     }, _ => { NodeViewModel.AddSectionPointer(_); });
                 });
             y += buttonHeight;
-            platform.DoButton(new Rect(x, y, toolbarRect.width, buttonHeight), "+ Input", CachedStyles.Item2,
+            platform.DoButton(new Rect(x, y, toolbarRect.width, buttonHeight), "+ Input", CachedStyles.WizardListItemBoxStyle,
                 () =>
                 {
                     ShowAddPointerMenu<ShellNodeConfigInput>("Input", () =>
@@ -54,7 +55,7 @@ public class ShellNodeConfigDrawer : DiagramNodeDrawer<ShellNodeConfigViewModel>
                     }, _ => { NodeViewModel.AddInputPointer(_); });
                 });
             y += buttonHeight;
-            platform.DoButton(new Rect(x, y, toolbarRect.width, buttonHeight), "+ Output", CachedStyles.Item2,
+            platform.DoButton(new Rect(x, y, toolbarRect.width, buttonHeight), "+ Output", CachedStyles.WizardListItemBoxStyle,
                 () =>
                 {
                     ShowAddPointerMenu<ShellNodeConfigOutput>("Output", () =>

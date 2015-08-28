@@ -100,6 +100,14 @@ namespace Invert.Core.GraphDesigner
             return new Rect(source.x, y, source.width, source.height);
         }
 
+        public static Rect AlignVerticallyByCenter(this Rect source, Rect target)
+        {
+
+            var x = target.x + (target.width- source.width)/2;
+
+            return new Rect(x, source.y, source.width, source.height);
+        }
+
         public static Rect Translate(this Rect source, float x, float y)
         {
             return new Rect(source.x + x, source.y + y, source.width, source.height);
@@ -183,6 +191,13 @@ namespace Invert.Core.GraphDesigner
         public static Rect InnerAlignWithBottomLeft(this Rect source, Rect target)
         {
             return new Rect(target.x, target.yMax - source.height, source.width, source.height);
+        }
+
+        public static Rect InnerAlignWithBottomCenter(this Rect source, Rect target)
+        {
+            var rect = source.AlignVerticallyByCenter(target);
+            rect.y = target.yMax - rect.height;
+            return rect;
         }
 
         public static Rect LeftOf(this Rect source, Rect target)

@@ -151,7 +151,11 @@ namespace Invert.Core.GraphDesigner
                 List<DesignerWindowModalContent> modalItems = new List<DesignerWindowModalContent>();
                 Signal<IQueryDesignerWindowModalContent>(_ => _.QueryDesignerWindowModalContent(modalItems));
 
-                _shouldProcessInputFromDiagram = !modalItems.Any();
+                List<DesignerWindowOverlayContent> overlayItems = new List<DesignerWindowOverlayContent>();
+                Signal<IQueryDesignerWindowOverlayContent>(_ => _.QueryDesignerWindowOverlayContent(overlayItems));
+
+                //Disable diagram input if any modal content presents or if mouse is over overlay content
+                _shouldProcessInputFromDiagram = !modalItems.Any() && overlayItems.All(i=>!i.Drawer.CalculateBounds(diagramRect).Contains(Event.current.mousePosition));
 
                 Drawer.DrawStretchBox(toolbarTopRect, CachedStyles.Toolbar, 0f);
       
@@ -162,23 +166,54 @@ namespace Invert.Core.GraphDesigner
             
                 //Drawer.DoTabs(Drawer,tabsRect, this); 
                 DiagramRect = diagramRect;
-
-                if (!_shouldProcessInputFromDiagram) Drawer.DisableInput();
-
-                if (DiagramDrawer != null)
-                {
-                    DiagramDrawer.DrawTabs(Drawer, tabsRect);
-                    DiagramDrawer.DrawBreadcrumbs(Drawer, breadCrumbsRect.y);
-                }
-                DiagramRect = diagramRect;
-                Drawer.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
-
-
-                DrawDiagram(Drawer, scrollPosition, scale, diagramRect); //UNCOMMENT THIS LINE TO MAKE DIAGRAM DRAW AGAIN
-
-                if (!_shouldProcessInputFromDiagram) Drawer.EnableInput();
-              
                 
+                /* 
+                 * DRAW DIAGRAM 
+                 * Using GUI.color hack to avoid transparent diagram on disabled input (Thanks Unity :( )
+                 */
+                var colorCache = GUI.color;
+                if (!_shouldProcessInputFromDiagram)
+                {
+                    Drawer.DisableInput();
+                    GUI.color = new Color(GUI.color.r, GUI.color.g, GUI.color.b, GUI.color.a * 2);
+                }
+                    if (DiagramDrawer != null)
+                    {
+                        DiagramDrawer.DrawTabs(Drawer, tabsRect);
+                        DiagramDrawer.DrawBreadcrumbs(Drawer, breadCrumbsRect.y);
+                    }
+                    DiagramRect = diagramRect;
+                
+                    Drawer.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
+                
+                    DrawDiagram(Drawer, scrollPosition, scale, diagramRect);
+                if (!_shouldProcessInputFromDiagram)
+                {
+                    GUI.color = colorCache;
+                    Drawer.EnableInput();
+                }
+
+                /*
+                 * DRAW OVERLAY CONTENT
+                 */
+
+                if (modalItems.Any()) Drawer.DisableInput();
+
+                foreach (var item in overlayItems)
+                {
+                    var bounds = item.Drawer.CalculateBounds(diagramRect);
+                    colorCache = GUI.color;
+                    if (!bounds.Contains(Event.current.mousePosition))
+                        GUI.color = new Color(colorCache.r, colorCache.g, colorCache.b, colorCache.a/4);
+                    item.Drawer.Draw(bounds);
+                    GUI.color = colorCache;
+                }
+
+                Drawer.EnableInput();
+
+                /*
+                 * DRAW MODAL CONTENT
+                 */
 
                 if (modalItems.Any())
                 {
@@ -186,7 +221,6 @@ namespace Invert.Core.GraphDesigner
                     var modalContentRect = new Rect().WithSize(800, 600).CenterInsideOf(modalBackgroundRect);
                     var activeModal = modalItems.OrderBy(i => i.ZIndex).Last();
                     
-                    Drawer.DrawRect(modalBackgroundRect, new Color(0, 0, 0, 0.8f));
                     Drawer.DisableInput();
                     
                     foreach (var source in modalItems.OrderBy(i => i.ZIndex).Except(new []{activeModal}))
@@ -195,19 +229,14 @@ namespace Invert.Core.GraphDesigner
                     }
                     
                     Drawer.EnableInput();
-                    
+
+                    Drawer.DrawRect(modalBackgroundRect, new Color(0, 0, 0, 0.8f));
+
                     activeModal.Drawer(modalContentRect);
                 }
                 
-                //Signal<IDrawDatabasesWizard>(_ => _.DrawDatabasesWizard(Drawer, wizardWindowRect));
 
                 DrawToolip(toolbarTopRect);
-
-
-                //(GUIStyle)"RL Element";
-
-                //GUI.Box(Rect.MinMaxRect(rect.xMin + 1f, rect.yMin, rect.xMax - 3f, rect.yMax), string.Empty);
-                //LayerControllerView.s_Styles.elementBackground.Draw(rect, false, selected, selected, focused);
 
                 Drawer.DoToolbar(toolbarBottomRect, this, ToolbarPosition.BottomLeft);
                 //drawer.DoToolbar(toolbarBottomRect, this, ToolbarPosition.BottomRight);

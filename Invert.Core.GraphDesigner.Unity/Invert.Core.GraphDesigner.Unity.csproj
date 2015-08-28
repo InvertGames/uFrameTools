@@ -51,6 +51,7 @@
     <Compile Include="ConsoleSystem\ConsoleDrawer.cs" />
     <Compile Include="Notifications\DesignerNotificationSystem.cs" />
     <Compile Include="ValidationSystem\ValidationSystem.cs" />
+    <Compile Include="Overlays\DebugPanelUISystem.cs" />
     <Compile Include="Wizards\ActionsUISystem.cs" />
     <Compile Include="Wizards\DatabasesUISystem.cs" />
     <Compile Include="IKeyboardEvent.cs" />

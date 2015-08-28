@@ -1856,6 +1856,9 @@ namespace Invert.Common
         {
             get { return _wizardListItemBoxStyle ?? (_wizardListItemBoxStyle = new GUIStyle()
             {
+                fontSize = 9,
+                padding = new RectOffset(5,0,0,0),
+                alignment = TextAnchor.MiddleLeft,
                 border = new RectOffset(2,2,2,2)
             }.WithAllStates("Box35",Color.white)); }
             set { _wizardListItemBoxStyle = value; }
