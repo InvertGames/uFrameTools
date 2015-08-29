@@ -47,9 +47,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionExplorerUISystem.cs" />
     <Compile Include="ConsoleSystem\ConsoleViewModel.cs" />
     <Compile Include="ConsoleSystem\ConsoleDrawer.cs" />
+    <Compile Include="GraphTreeWindow.cs" />
     <Compile Include="Notifications\DesignerNotificationSystem.cs" />
+    <Compile Include="QuickAccessUISystem.cs" />
+    <Compile Include="TreeViewUISystem.cs" />
     <Compile Include="ValidationSystem\ValidationSystem.cs" />
     <Compile Include="Overlays\DebugPanelUISystem.cs" />
     <Compile Include="Wizards\ActionsUISystem.cs" />
@@ -142,6 +146,7 @@
     <Compile Include="WindowsSystem\WindowType.cs" />
     <Compile Include="WindowsSystem\WindowViewModel.cs" />
     <Compile Include="Wizards\Examples.cs" />
+    <Compile Include="Wizards\GraphManagementUISystem.cs" />
     <Compile Include="Wizards\WorkspacesUISystem.cs" />
   </ItemGroup>
   <ItemGroup>

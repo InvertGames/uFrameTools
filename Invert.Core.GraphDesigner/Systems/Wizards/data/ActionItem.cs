@@ -1,4 +1,4 @@
-namespace Invert.Core.GraphDesigner.Systems.GraphUI.api
+namespace Invert.Core.GraphDesigner
 {
     public class ActionItem
     {

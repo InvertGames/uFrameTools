@@ -51,7 +51,7 @@ namespace Invert.Core.GraphDesigner
     /// <summary>
     /// The base data class for all diagram nodes.
     /// </summary>
-    public abstract class GraphNode : IDiagramNode, IGraphFilter, IDataRecordRemoved
+    public abstract class GraphNode : IDiagramNode, IGraphFilter, IDataRecordRemoved, ITreeItem
     {
         public virtual IEnumerable<IFilterItem> FilterLocations
         {
@@ -250,6 +250,7 @@ namespace Invert.Core.GraphDesigner
         private Rect _position;
         private string _graphId;
         private bool _isSelected;
+        private bool _expanded;
 
         public IEnumerable<FlagItem> Flags
         {
@@ -840,6 +841,26 @@ namespace Invert.Core.GraphDesigner
             if (record.Identifier == GraphId)
                 Repository.Remove(this);
 
+        }
+
+        public IItem ParentItem
+        {
+            get { return this.Graph; }
+        }
+
+        public IEnumerable<IItem> Children
+        {
+            get { return PersistedItems.OfType<IItem>().Except(new []{this}); }
+        }
+
+        [JsonProperty]
+        public bool Expanded
+        {
+            get { return _expanded; }
+            set
+            {
+                this.Changed("Expanded", ref _expanded, value);
+            }
         }
     }
 

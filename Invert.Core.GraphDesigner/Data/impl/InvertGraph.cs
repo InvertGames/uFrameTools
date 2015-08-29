@@ -9,7 +9,7 @@ using System.Linq;
 using UnityEngine;
 namespace Invert.Core.GraphDesigner
 {
-    public class InvertGraph : IGraphData, IItem, IJsonTypeResolver, IDataRecordRemoved
+    public class InvertGraph : IGraphData, IItem, IJsonTypeResolver, IDataRecordRemoved, ITreeItem
     {
         private FilterPositionData _positionData;
 
@@ -28,6 +28,7 @@ namespace Invert.Core.GraphDesigner
         private List<IChangeData> _changeData;
         private IGraphFilter[] _filterStack;
         private string _rootFilterId;
+        private bool _expanded;
 
 #if !UNITY_DLL
     public FileInfo GraphFileInfo { get; set; }
@@ -774,6 +775,26 @@ namespace Invert.Core.GraphDesigner
             if (CurrentFilter == record)
             {
                 PopFilter();
+            }
+        }
+
+        public IItem ParentItem
+        {
+            get { return null; }
+        }
+
+        public IEnumerable<IItem> Children
+        {
+            get { return NodeItems.OfType<IItem>(); }
+        }
+
+        [JsonProperty]
+        public bool Expanded
+        {
+            get { return _expanded; }
+            set
+            {
+                this.Changed("Expanded", ref _expanded, value);
             }
         }
     }

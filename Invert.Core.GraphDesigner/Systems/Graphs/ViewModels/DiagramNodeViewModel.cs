@@ -91,34 +91,6 @@ namespace Invert.Core.GraphDesigner
             get { return (TData)GraphItemObject; }
         }
     }
-    public interface ITreeItemContainer
-    {
-        List<TreeItemViewModel> Children { get; }
-    }
-
-
-    public class TreeViewModel : ViewModel, ITreeItemContainer
-    {
-        private List<TreeItemViewModel> _treeItems;
-
-        public List<TreeItemViewModel> Children
-        {
-            get { return _treeItems ?? (_treeItems = new List<TreeItemViewModel>()); }
-            set { _treeItems = value; }
-        }
-
-    }
-
-    public class TreeItemViewModel : ViewModel<IItem>, ITreeItemContainer
-    {
-        private List<TreeItemViewModel> _treeItems;
-
-        public List<TreeItemViewModel> Children
-        {
-            get { return _treeItems ?? (_treeItems = new List<TreeItemViewModel>()); }
-            set { _treeItems = value; }
-        }
-    }
 
     public abstract class DiagramNodeViewModel : GraphItemViewModel
     {

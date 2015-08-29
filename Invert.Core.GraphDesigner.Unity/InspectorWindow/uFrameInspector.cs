@@ -151,32 +151,32 @@ public class InspectorPlugin : DiagramPlugin
         if (WorkspaceService.CurrentWorkspace == null) return;
         if (Items == null) UpdateItems();
         
-        if (GUIHelpers.DoToolbarEx("Explorer"))
-        {
-            
-            EditorGUI.indentLevel++;
-            foreach (var group in Items)
-            {
-                //EditorPrefs.SetBool(group.Key, EditorGUILayout.Foldout(EditorPrefs.GetBool(group.Key), group.Key));
-                if (GUIHelpers.DoToolbarEx(group.Key) ) //EditorPrefs.GetBool(group.Key))
-                {
-                    EditorGUI.indentLevel++;
-                    foreach (var node in group)
-                    {
-                        EditorGUILayout.BeginHorizontal();
-                        GUILayout.Space(EditorGUI.indentLevel * 15f);
-                        var selected = Selected != null && Selected.Identifier == node.Identifier;
-                        if (GUILayout.Button(node.Name, selected ? Item5 : Item4))
-                        {
-                            Selected = node;
-                            UpdateSelection(null);
-                        } EditorGUILayout.EndHorizontal();
-                    }
-                    EditorGUI.indentLevel--;
-                }
-
-            } EditorGUI.indentLevel--;
-        }
+//        if (GUIHelpers.DoToolbarEx("Explorer"))
+//        {
+//            
+//            EditorGUI.indentLevel++;
+//            foreach (var group in Items)
+//            {
+//                //EditorPrefs.SetBool(group.Key, EditorGUILayout.Foldout(EditorPrefs.GetBool(group.Key), group.Key));
+//                if (GUIHelpers.DoToolbarEx(group.Key) ) //EditorPrefs.GetBool(group.Key))
+//                {
+//                    EditorGUI.indentLevel++;
+//                    foreach (var node in group)
+//                    {
+//                        EditorGUILayout.BeginHorizontal();
+//                        GUILayout.Space(EditorGUI.indentLevel * 15f);
+//                        var selected = Selected != null && Selected.Identifier == node.Identifier;
+//                        if (GUILayout.Button(node.Name, selected ? Item5 : Item4))
+//                        {
+//                            Selected = node;
+//                            UpdateSelection(null);
+//                        } EditorGUILayout.EndHorizontal();
+//                    }
+//                    EditorGUI.indentLevel--;
+//                }
+//
+//            } EditorGUI.indentLevel--;
+//        }
     }
     public static GUIStyle Item4
     {

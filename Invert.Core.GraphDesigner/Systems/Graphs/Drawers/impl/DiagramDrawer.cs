@@ -163,9 +163,19 @@ namespace Invert.Core.GraphDesigner
 //                    var butRect = GUILayoutUtility.GetLastRect();
                     x += buttonRect.width+2;
                 }
-             //   GUILayout.FlexibleSpace();
-             //   GUILayout.EndHorizontal();
-             //   GUILayout.EndArea();
+
+                var newTabButtonRect =
+                    new Rect().WithSize(27, 27).Align(tabsRect).AlignHorisonallyByCenter(tabsRect).Translate(x+2, 0);
+
+                platform.SetTooltipForRect(newTabButtonRect,"Create or import new graphs");
+
+                platform.DoButton(newTabButtonRect,"",CachedStyles.WizardSubBoxStyle,()=>{ InvertApplication.SignalEvent<INewTabRequested>(_=>_.NewTabRequested());});
+                platform.DrawImage(newTabButtonRect.PadSides(6),"PlusIcon_Micro",true);
+
+
+                //   GUILayout.FlexibleSpace();
+                //   GUILayout.EndHorizontal();
+                //   GUILayout.EndArea();
             }
         }
 
@@ -257,6 +267,8 @@ namespace Invert.Core.GraphDesigner
                 x += buttonRect.width + 16 - 6;
 
             }
+
+
 
         }
 

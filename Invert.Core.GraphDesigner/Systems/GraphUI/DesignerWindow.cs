@@ -203,7 +203,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     var bounds = item.Drawer.CalculateBounds(diagramRect);
                     colorCache = GUI.color;
-                    if (!bounds.Contains(Event.current.mousePosition))
+                    if (!bounds.Contains(Event.current.mousePosition) && !item.DisableTransparency)
                         GUI.color = new Color(colorCache.r, colorCache.g, colorCache.b, colorCache.a/4);
                     item.Drawer.Draw(bounds);
                     GUI.color = colorCache;
@@ -285,6 +285,7 @@ namespace Invert.Core.GraphDesigner
                 DiagramDrawer.Dirty = true;
                 //DiagramDrawer.Data.ApplyFilter();
                 DiagramDrawer.Refresh(InvertGraphEditor.PlatformDrawer);
+            
             }
             catch (Exception ex)
             {
@@ -342,10 +343,12 @@ namespace Invert.Core.GraphDesigner
 
         private CachedLineItem[] _cachedLines;
         private Vector2 _cachedScroll; 
-
+        private Vector2 _cachedScreen; 
+        
         private bool DrawDiagram(IPlatformDrawer drawer, Vector2 scrollPosition, float scale, Rect diagramRect)
         {
 
+                var screen = new Vector2(Screen.width, Screen.height);
 
 
             if (DiagramDrawer == null)
@@ -361,8 +364,7 @@ namespace Invert.Core.GraphDesigner
 
             if (DiagramDrawer != null && DiagramViewModel != null && InvertGraphEditor.Settings.UseGrid)
             {
-
-                if (_cachedLines == null || _cachedScroll != scrollPosition)
+                if (_cachedLines == null || _cachedScroll != scrollPosition || _cachedScreen != screen)
                 {
 
                     var lines = new List<CachedLineItem>();
@@ -417,7 +419,8 @@ namespace Invert.Core.GraphDesigner
                         every10++;
                     }
                     _cachedLines = lines.ToArray();
-
+                    _cachedScreen = screen;
+                    _cachedScroll = scrollPosition;
                 }
 
                 for (int i = 0; i < _cachedLines.Length; i++)

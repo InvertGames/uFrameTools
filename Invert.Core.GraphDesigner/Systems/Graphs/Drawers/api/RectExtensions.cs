@@ -94,7 +94,6 @@ namespace Invert.Core.GraphDesigner
 
         public static Rect AlignHorisonallyByCenter(this Rect source, Rect target)
         {
-
             var y = target.y + (target.height - source.height)/2;
 
             return new Rect(source.x, y, source.width, source.height);
@@ -102,9 +101,7 @@ namespace Invert.Core.GraphDesigner
 
         public static Rect AlignVerticallyByCenter(this Rect source, Rect target)
         {
-
             var x = target.x + (target.width- source.width)/2;
-
             return new Rect(x, source.y, source.width, source.height);
         }
 
@@ -221,9 +218,15 @@ namespace Invert.Core.GraphDesigner
             var y = targets.Min(t => t.y);
             var width = targets.Max(t => t.xMax - x);
             var height= targets.Max(t => t.yMax - y);
-
             return new Rect(x, y, width, height);
 
+   
+
+        }
+
+        public static Rect StretchedVerticallyAlong(this Rect source, Rect target)
+        {
+            return new Rect(source.x, source.y, source.width, target.yMax - source.y);
         }
 
 

@@ -19,7 +19,7 @@ namespace Invert.Core.GraphDesigner
                 Command = new SaveAndCompileCommand(),
                 Title = "Save & Compile",
                 Position = ToolbarPosition.Right,
-                Description = "Start code generation process. This generates C# code based on the nodes and items in the diagram. Start code generation process. This generates C# code based on the nodes and items in the diagram."
+                Description = "Start code generation process. This generates C# code based on the nodes and items in the diagram."
             });
         }
 
