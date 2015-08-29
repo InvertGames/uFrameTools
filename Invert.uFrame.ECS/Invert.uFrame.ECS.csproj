@@ -94,6 +94,12 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ColorNodeDrawer.cs">
       <Link>ColorNodeDrawer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentCreatedNodeDrawer.cs">
+      <Link>ComponentCreatedNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentDestroyedNodeDrawer.cs">
+      <Link>ComponentDestroyedNodeDrawer.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentNodeDrawer.cs">
       <Link>ComponentNodeDrawer.cs</Link>
     </Compile>
@@ -216,6 +222,12 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ColorNode.cs">
       <Link>ColorNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentCreatedNode.cs">
+      <Link>ComponentCreatedNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentDestroyedNode.cs">
+      <Link>ComponentDestroyedNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentNode.cs">
       <Link>ComponentNode.cs</Link>
@@ -390,6 +402,12 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ColorNodeViewModel.cs">
       <Link>ColorNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentCreatedNodeViewModel.cs">
+      <Link>ComponentCreatedNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentDestroyedNodeViewModel.cs">
+      <Link>ComponentDestroyedNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentNodeViewModel.cs">
       <Link>ComponentNodeViewModel.cs</Link>

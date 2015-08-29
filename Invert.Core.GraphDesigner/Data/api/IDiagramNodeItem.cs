@@ -67,7 +67,7 @@ namespace Invert.Core.GraphDesigner
                 return ((Identifier != null ? Identifier.GetHashCode() : 0)*397) ^ (Message != null ? Message.GetHashCode() : 0);
             }
         }
-
+        public IDataRecord Record { get; set; }
         public string Identifier { get; set; }
         public string Message { get; set; }
         public Action AutoFix { get; set; }
@@ -76,6 +76,21 @@ namespace Invert.Core.GraphDesigner
 
     public static class ErrorInfoExtensions
     {
+        public static ErrorInfo AddError(this List<ErrorInfo> list, string message, IDataRecord record,
+        Action autoFix = null)
+        {
+            var error = new ErrorInfo()
+            {
+                Message = message,
+                Record = record,
+                Identifier = record.Identifier,
+                AutoFix = autoFix,
+                Siverity = ValidatorType.Error
+            };
+            if (!list.Any(p => p.Equals(error)))
+                list.Add(error);
+            return error;
+        }
         public static ErrorInfo AddError(this List<ErrorInfo> list, string message, string identifier = null,
             Action autoFix = null)
         {
