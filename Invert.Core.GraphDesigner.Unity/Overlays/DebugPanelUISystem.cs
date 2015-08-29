@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Invert.Common;
 using Invert.Core.GraphDesigner.Systems.GraphUI;
+using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity
@@ -20,10 +21,14 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void QueryDesignerWindowOverlayContent(List<DesignerWindowOverlayContent> content)
         {
-            content.Add(new DesignerWindowOverlayContent()
+            if (EditorApplication.isPaused)
             {
-                Drawer  = this
-            });
+                content.Add(new DesignerWindowOverlayContent()
+                {
+                    Drawer = this
+                });
+            }
+            
         }
 
         public void Draw(Rect bouds)
@@ -60,12 +65,13 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DoContinue()
         {
-            Debug.Log("Continue");
+            
+            Execute(new ContinueCommand());
         }
 
         public void DoStep()
         {
-            Debug.Log("Step");
+            Execute(new StepCommand());
         }
 
 

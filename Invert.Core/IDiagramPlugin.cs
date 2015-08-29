@@ -1,8 +1,16 @@
 ﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
 using Invert.IOC;
 
 namespace Invert.Core
 {
+    public static class StringExtensions
+    {
+        public static string PrettyLabel(this string label)
+        {
+            return Regex.Replace(label, @"[^\w\s]|_", "");
+        }
+    }
     public interface ICorePlugin
     {
         string Title { get; }

@@ -1,52 +1,71 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Invert.Data;
+using Invert.IOC;
 using JetBrains.Annotations;
 
 namespace Invert.Core.GraphDesigner
 {
     public class ValidationSystem : DiagramPlugin, 
-        //IDataRecordPropertyChanged, 
+        IDataRecordPropertyChanged, 
         //ICommandProgressEvent,
-        IExecuteCommand<ValidateDatabaseCommand>
+        IExecuteCommand<ValidateDatabaseCommand>,
+        IDataRecordInserted,
+        ICommandExecuted
     {
+
         public bool shouldRestart = false;
-        public void PropertyChanged(IDataRecord record, string name, object previousValue, object nextValue)
+        private List<IDiagramNode> _itemsToValidate;
+
+        public override void Loaded(UFrameContainer container)
         {
-            DoValidation();
+            base.Loaded(container);
+
+            Signal<ITaskHandler>(_ => _.BeginBackgroundTask(ValidateGraph()));
+          
         }
 
-        private void DoValidation()
+        public List<IDiagramNode> ItemsToValidate
         {
-            if (ValidationTask != null)
+            get { return _itemsToValidate ?? (_itemsToValidate = new List<IDiagramNode>()); }
+            set { _itemsToValidate = value; }
+        }
+
+        public IEnumerator ValidateGraph()
+        {
+            var items = Container.Resolve<IRepository>().AllOf<IDiagramNode>();
+           // var total = 100f / items.Length;
+            foreach(var item in items)
             {
-               
-                ValidationTask.Cancel();
                 
-                ValidationTask = null;
+                yield return new TaskProgress("Validating " + item.Name, 98f);
+                ValidateNode(item);
             }
-            ValidationTask = InvertApplication.ExecuteInBackground(new ValidateDatabaseCommand()
-            {
-                FullPath = Container.Resolve<IGraphConfiguration>().FullPath,
-               
-                Task = ValidationTask,
-               
-            });
-            ValidationTask.Worker.RunWorkerCompleted += (sender, args) =>
-            {
-                ValidationTask = null;
-                if (shouldRestart)
-                {
-                    shouldRestart = false;
-                    DoValidation();
-                }
-                InvertApplication.Log("Task complete");
-            };
+        }
+        public void PropertyChanged(IDataRecord record, string name, object previousValue, object nextValue)
+        {
+            QueueValidate(record);
+        }
+
+        private void ValidateNode(IDiagramNode node)
+        {
+            var list = new List<ErrorInfo>();
+            
+            node.Validate(list);
+            
+            //foreach (var item in node.PersistedItems)
+            //{
+            //    item.Validate(list);
+            //}
+
+            node.Errors = list.ToArray();
             
         }
+
 
         public BackgroundTask ValidationTask { get; set; }
 
@@ -70,6 +89,46 @@ namespace Invert.Core.GraphDesigner
                 item.Validate(list);
             }
         }
+
+
+        public void CommandExecuted(ICommand command)
+        {
+            if (command is SaveAndCompileCommand) return;
+            if (ShouldRevalidate)
+            Signal<ITaskHandler>(_ => _.BeginBackgroundTask(ValidateGraph()));
+
+            ItemsToValidate.Clear();
+            ShouldRevalidate = false;
+        }
+
+        public void RecordInserted(IDataRecord record)
+        {
+            QueueValidate(record);
+        }
+
+        private void QueueValidate(IDataRecord record)
+        {
+          
+            var node = record as IDiagramNode;
+            if (node != null)
+            {
+                ItemsToValidate.Add(node); ShouldRevalidate = true;
+            }
+            else
+            {
+                var nodeItem = record as IDiagramNodeItem;
+                if (nodeItem != null)
+                {
+                    ShouldRevalidate = true;
+                    node = nodeItem.Node;
+                    if (node != null)
+                    ItemsToValidate.Add(node);
+                }
+            }
+                
+        }
+
+        public bool ShouldRevalidate { get; set; }
     }
 
     public class ValidateDatabaseCommand : Command, IBackgroundCommand

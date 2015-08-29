@@ -311,10 +311,10 @@ namespace Invert.Core.GraphDesigner
         /// <param name="errors"></param>
         public virtual void Validate(List<ErrorInfo> errors)
         {
-            foreach (var child in this.PersistedItems)
-            {
-                child.Validate(errors);
-            }
+            //foreach (var child in this.PersistedItems)
+            //{
+            //    child.Validate(errors);
+            //}
 
         }
 
@@ -611,7 +611,7 @@ namespace Invert.Core.GraphDesigner
         [Browsable(false)]
         public virtual string SubTitle { get { return string.Empty; } }
         [Browsable(false)]
-        public string Title { get { return Name; } }
+        public virtual string Title { get { return Name; } }
 
         protected GraphNode()
         {
@@ -835,6 +835,8 @@ namespace Invert.Core.GraphDesigner
             foreach (var item in PersistedItems)
                 item.Document(docs);
         }
+
+        public ErrorInfo[] Errors { get; set; }
 
         public virtual void RecordRemoved(IDataRecord record)
         {

@@ -73,6 +73,21 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ActionNodeDrawer.cs">
       <Link>ActionNodeDrawer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\AllFalseNodeDrawer.cs">
+      <Link>Expressions\AllFalseNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\AllTrueNodeDrawer.cs">
+      <Link>Expressions\AllTrueNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\AnyFalseNodeDrawer.cs">
+      <Link>Expressions\AnyFalseNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\AnyTrueNodeDrawer.cs">
+      <Link>Expressions\AnyTrueNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\BoolExpressionNodeDrawer.cs">
+      <Link>Expressions\BoolExpressionNodeDrawer.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\BoolNodeDrawer.cs">
       <Link>BoolNodeDrawer.cs</Link>
     </Compile>
@@ -81,6 +96,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ComponentNodeDrawer.cs">
       <Link>ComponentNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ConditionNodeDrawer.cs">
+      <Link>Expressions\ConditionNodeDrawer.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\CustomActionNodeDrawer.cs">
       <Link>CustomActionNodeDrawer.cs</Link>
@@ -178,6 +196,21 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ActionNode.cs">
       <Link>ActionNode.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\AllFalseNode.cs">
+      <Link>Expressions\AllFalseNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\AllTrueNode.cs">
+      <Link>Expressions\AllTrueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\AnyFalseNode.cs">
+      <Link>Expressions\AnyFalseNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\AnyTrueNode.cs">
+      <Link>Expressions\AnyTrueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\BoolExpressionNode.cs">
+      <Link>Expressions\BoolExpressionNode.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\BoolNode.cs">
       <Link>BoolNode.cs</Link>
     </Compile>
@@ -186,6 +219,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ComponentNode.cs">
       <Link>ComponentNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ConditionNode.cs">
+      <Link>Expressions\ConditionNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\CustomActionNode.cs">
       <Link>CustomActionNode.cs</Link>
@@ -313,6 +349,9 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots.designer.cs">
       <Link>Slots.designer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Expressions.cs">
+      <Link>Expressions\Expressions.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Property.cs">
       <Link>Property.cs</Link>
     </Compile>
@@ -331,6 +370,21 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ActionNodeViewModel.cs">
       <Link>ActionNodeViewModel.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\AllFalseNodeViewModel.cs">
+      <Link>Expressions\AllFalseNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\AllTrueNodeViewModel.cs">
+      <Link>Expressions\AllTrueNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\AnyFalseNodeViewModel.cs">
+      <Link>Expressions\AnyFalseNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\AnyTrueNodeViewModel.cs">
+      <Link>Expressions\AnyTrueNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\BoolExpressionNodeViewModel.cs">
+      <Link>Expressions\BoolExpressionNodeViewModel.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\BoolNodeViewModel.cs">
       <Link>BoolNodeViewModel.cs</Link>
     </Compile>
@@ -339,6 +393,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ComponentNodeViewModel.cs">
       <Link>ComponentNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ConditionNodeViewModel.cs">
+      <Link>Expressions\ConditionNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\CustomActionNodeViewModel.cs">
       <Link>CustomActionNodeViewModel.cs</Link>

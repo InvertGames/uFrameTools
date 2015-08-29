@@ -86,6 +86,7 @@ namespace Invert.Core
     public interface ITaskHandler
     {
          void BeginTask(IEnumerator task);
+         void BeginBackgroundTask(IEnumerator task);
     }
     public class TaskProgress
     {

@@ -302,11 +302,7 @@ namespace Invert.Core.GraphDesigner
 
 
             DrawChildren(platform, scale);
-            bool hasErrors = _cachedIssues != null && _cachedIssues.Length > 0;
-
-
-
-     
+            bool hasErrors = ViewModel.Issues != null && ViewModel.Issues.Length > 0;
             if (hasErrors)
             {
                 platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter6, 20);
@@ -332,12 +328,12 @@ namespace Invert.Core.GraphDesigner
             {
                 platform.DrawStretchBox(boxRect, CachedStyles.BoxHighlighter5, 20);
             }
-            
-            if (ViewModel.IsSelected && _cachedIssues != null)
+
+            if ( ViewModel.Issues != null)
             {
-                for (int index = 0; index < _cachedIssues.Length; index++)
+                for (int index = 0; index < ViewModel.Issues.Length; index++)
                 {
-                    var keyValuePair = _cachedIssues[index];
+                    var keyValuePair = ViewModel.Issues[index];
                     var w = platform.CalculateTextSize(keyValuePair.Message, CachedStyles.DefaultLabel).x;//EditorStyles.label.CalcSize(new GUIContent(keyValuePair.Key)).x);
                     var x = (Bounds.x + (Bounds.width / 2f)) - (w / 2f);
                     var rect = new Rect(x, (Bounds.y + Bounds.height + 18) + (40f * (index)), w + 20f, 40);

@@ -577,12 +577,9 @@ namespace Invert.Core.GraphDesigner
             get { yield break; }
         }
 
-        public virtual IEnumerable<ErrorInfo> Issues
+        public virtual ErrorInfo[] Issues
         {
-            get
-            {
-                yield break;
-            }
+            get { return GraphItemObject.Errors; }
         }
 
         public IEditorCommand ToggleNode { get; set; }

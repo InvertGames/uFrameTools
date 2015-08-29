@@ -628,7 +628,7 @@ namespace Invert.Core.GraphDesigner
         public WithField()
         {
         }
-
+        public bool ManualSetter { get; set; }
 
         public WithField(string defaultExpression)
         {
@@ -654,6 +654,7 @@ namespace Invert.Core.GraphDesigner
         protected virtual void Apply(TemplateContext ctx)
         {
             ctx.CurrentProperty.GetStatements._("return {0}", Field.Name);
+            if (!ManualSetter)
             ctx.CurrentProperty.SetStatements._("{0} = value", Field.Name);
             if (DefaultExpression != null)
                 Field.InitExpression = new CodeSnippetExpression(DefaultExpression);

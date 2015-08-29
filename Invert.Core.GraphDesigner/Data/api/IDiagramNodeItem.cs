@@ -42,7 +42,7 @@ namespace Invert.Core.GraphDesigner
         void NodeItemAdded(IDiagramNodeItem data);
         void Validate(List<ErrorInfo> info);
         void Document(IDocumentationBuilder docs);
-       
+        ErrorInfo[] Errors { get; set; }
     }
 
     public class ErrorInfo

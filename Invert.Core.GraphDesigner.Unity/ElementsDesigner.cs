@@ -64,7 +64,7 @@ namespace Invert.Core.GraphDesigner.Unity
         }
         public void Update()
         {
-            if (!EditorApplication.isPlaying)
+            if (!EditorApplication.isPlaying || EditorApplication.isPaused)
             {
                 Instance = this;
                 InvertApplication.SignalEvent<IUpdate>(_ => _.Update());

@@ -68,9 +68,9 @@ namespace Invert.Core.GraphDesigner
             get { return NodeConfig.Name; }
         }
 
-        public override IEnumerable<ErrorInfo> Issues
+        public override ErrorInfo[] Issues
         {
-            get { return GraphItem.Validate(); }
+            get { return GraphItem.Errors; }
         }
         
         public override NodeColor Color

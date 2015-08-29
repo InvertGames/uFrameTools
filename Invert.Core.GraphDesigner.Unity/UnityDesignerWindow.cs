@@ -70,13 +70,11 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             if (EditorApplication.isCompiling)
             {
-                if (InvertGraphEditor.Platform != null)
-                    InvertGraphEditor.Platform.Progress(99f, "Waiting on compiler...");
+                InvertApplication.SignalEvent<ITaskProgressEvent>(_=>_.Progress(99f,"Waiting On Unity...", true));
             }
             else
             {
-                //if (InvertGraphEditor.Platform != null)
-                //    InvertGraphEditor.Platform.Progress(0f, string.Empty);
+                
             }
 
             InvertApplication.SignalEvent<IDrawUFrameWindow>(_ => _.Draw(Screen.width + 1, Screen.height, _scrollPosition, 1f));

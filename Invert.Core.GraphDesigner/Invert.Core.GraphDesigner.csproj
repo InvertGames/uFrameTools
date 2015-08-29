@@ -48,6 +48,8 @@
     <Compile Include="Data\impl\GenericReferenceItem.cs" />
     <Compile Include="Systems\Compiling\Class1.cs" />
     <Compile Include="Systems\Connections\ConnectionSystem.cs" />
+    <Compile Include="Systems\DebugSystem\ContinueCommand.cs" />
+    <Compile Include="Systems\DebugSystem\StepCommand.cs" />
     <Compile Include="Systems\Graphs\Drawers\Schemas\impl\BreadcrumbsStyleSchema.cs" />
     <Compile Include="Systems\Graphs\ViewModels\GraphDesignerNavigationViewModel.cs" />
     <Compile Include="Systems\GraphUI\IQueryDesignerWindowModalContent.cs" />

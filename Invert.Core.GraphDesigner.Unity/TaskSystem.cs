@@ -3,6 +3,10 @@ using UnityEditor;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
+    public interface ITaskProgressEvent
+    {
+        void Progress(float progress, string message, bool modal);
+    }
     public class TaskSystem : DiagramPlugin, IUpdate, ITaskHandler
     {
         private int fpsCount = 0;
@@ -13,19 +17,18 @@ namespace Invert.Core.GraphDesigner.Unity
             {
                 if (!Task.MoveNext())
                 {
+
+                    Signal<ITaskProgressEvent>(_ => _.Progress(0f, string.Empty, IsModal));
+        
                     Task = null;
-                    Signal<IRepaintWindow>(_=>_.Repaint());
-                    
                 }
                 else
                 {
                     var current = Task.Current as TaskProgress;
                     if (current != null)
                     {
-                        InvertGraphEditor.Platform.Progress(current.Percentage, current.Message);
+                        Signal<ITaskProgressEvent>(_ => _.Progress(current.Percentage, current.Message, IsModal));
                     }
-
-                    Signal<IRepaintWindow>(_ => _.Repaint());
                 }
                 return;
             }
@@ -35,9 +38,16 @@ namespace Invert.Core.GraphDesigner.Unity
 
             
         }
-
+        public bool IsModal { get; set; }
         public void BeginTask(IEnumerator task)
         {
+            Task = task;
+            IsModal = true;
+        }
+
+        public void BeginBackgroundTask(IEnumerator task)
+        {
+            IsModal = false;
             Task = task;
         }
     }

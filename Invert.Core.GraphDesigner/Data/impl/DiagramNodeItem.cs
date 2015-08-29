@@ -302,6 +302,8 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
         docs.Title3(Name);
     }
 
+    public ErrorInfo[] Errors { get; set; }
+
     public IGraphData Graph
     {
         get { return this.Node.Graph; }
