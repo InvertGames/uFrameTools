@@ -73,6 +73,7 @@ namespace Invert.Core.GraphDesigner
         public bool Changed { get; set; }
 
         public string Title { get; set; }
+        public string Description { get; set; }
 
         [JsonProperty]
         public string CodeOutputPath
