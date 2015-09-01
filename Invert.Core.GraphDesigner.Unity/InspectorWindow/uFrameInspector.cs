@@ -69,7 +69,8 @@ public class InspectorPlugin : DiagramPlugin
     public void UpdateItems()
     {
         if (WorkspaceService == null) return;
-        
+        if (WorkspaceService.CurrentWorkspace == null) return;
+
         Items =
             WorkspaceService.CurrentWorkspace.Graphs.SelectMany(p => p.NodeItems.OrderBy(x=>x.Name))
                 .OfType<GenericNode>()

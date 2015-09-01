@@ -30,6 +30,7 @@ namespace Invert.Data
         void AddListener<TEventType>(TEventType instance);
 
         TObjectType GetSingleLazy<TObjectType>(ref string keyProperty, Action<TObjectType> created) where TObjectType : class,IDataRecord, new();
+        TObjectType GetSingle<TObjectType>() where TObjectType : class, IDataRecord, new();
     }
 
     public interface IDataRecord
@@ -173,7 +174,11 @@ namespace Invert.Data
             repo.Add(obj);
             return obj;
         }
-
+        public TObjectType GetSingle<TObjectType>() where TObjectType : class, IDataRecord, new()
+        {
+            var repo = GetRepositoryFor(typeof(TObjectType));
+            return repo.GetAll().FirstOrDefault() as TObjectType;
+        }
         public TObjectType GetSingle<TObjectType>(string identifier) where TObjectType : class, IDataRecord, new()
         {
             if (string.IsNullOrEmpty(identifier)) return default(TObjectType);
@@ -350,11 +355,11 @@ namespace Invert.Data
                     {
                      
                         break;
-                    }
+                    } 
                 }
                 if (type == null)
                 {
-                    throw new Exception(string.Format("Database didn't load entirely, {0} type not found",fullname));
+                    throw new Exception(string.Format("Database didn't load entirely, {0} type not found, delete or rename folder {1}",fullname,item.FullName));
                     continue;
                 }
                 yield return CreateRepository(repository,type);

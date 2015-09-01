@@ -48,8 +48,9 @@ namespace Invert.Core.GraphDesigner
         }
         public void PropertyChanged(IDataRecord record, string name, object previousValue, object nextValue)
         {
+            if (name == "Selected") return;
             QueueValidate(record);
-        }
+        } 
 
         private void ValidateNode(IDiagramNode node)
         {

@@ -9,6 +9,7 @@ using Invert.Core.GraphDesigner.Systems.GraphUI.api;
 using Invert.Core.GraphDesigner.Unity;
 using Invert.Core.GraphDesigner.Unity.InspectorWindow;
 using Invert.Core.GraphDesigner.Unity.Wizards;
+using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Systems.GraphUI
@@ -26,6 +27,7 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
         private DatabaseService _databaseService;
         private IPlatformDrawer _drawer;
         private Vector2 _scrollPos;
+        private bool _enableWizard;
 
         public DatabaseService DatabaseService
         {
@@ -106,15 +108,29 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
 
                 Drawer.DoButton(openButton,"Open",ElementDesignerStyles.ButtonStyle, () =>
                 {
-                    /* OPEN DATABASE */
-
-                    Signal<INotify>(_=>_.Notify("Hello, World!",NotificationIcon.Info));
-
-                    //DatabaseListWindow.Init(new Vector2(Screen.currentResolution.width / 2 - 200, Screen.currentResolution.height/2- 300));
-
+                    Signal<IChangeDatabase>(_=>_.ChangeDatabase(db.GraphConfiguration));
                 });
-                Drawer.DoButton(configButton, "Config", ElementDesignerStyles.ButtonStyle, () => { /* CONFIG DATABASE */ });
-                Drawer.DoButton(showButton, "Show In Explorer", ElementDesignerStyles.ButtonStyle, () => { /* SHOW DATABASE IN EXPLORER */ });
+                var db1 = db;
+                Drawer.DoButton(configButton, "Config", ElementDesignerStyles.ButtonStyle, () =>
+                {
+                    SelectedItem = new ActionItem()
+                    {
+                        Command = new EditDatabaseCommand()
+                        {
+                            Namespace = db1.GraphConfiguration.Namespace,
+                            CodePath = db1.GraphConfiguration.CodeOutputPath,
+                            Configuration = db1.GraphConfiguration as uFrameDatabaseConfig
+                        },
+
+                        Description = "Configuration",
+                        Title = string.Format("Configure {0}", db1.GraphConfiguration.Title),
+                        Verb = "Apply"
+                    };
+                });
+                Drawer.DoButton(showButton, "Show In Explorer", ElementDesignerStyles.ButtonStyle, () =>
+                {
+                    EditorUtility.RevealInFinder(db1.GraphConfiguration.FullPath);
+                });
 
                 unpaddedItemRect = unpaddedItemRect.Below(unpaddedItemRect).Translate(0,1);
 
@@ -152,7 +168,18 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
 
         #endregion
 
-        public bool EnableWizard { get; set; }
+        public bool EnableWizard
+        {
+            get
+            {
+                if (DatabaseService.CurrentConfiguration == null)
+                {
+                    return true;
+                }
+                return _enableWizard;
+            }
+            set { _enableWizard = value; }
+        }
 
         public void QueryDesignerWindowModalContent(List<DesignerWindowModalContent> content)
         {
@@ -204,19 +231,5 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
         }
     }
 
-    public class CreateDatabaseCommand : ICommand
-    {
-
-        public string Title { get; set; }
-
-        [InspectorProperty("A namespace to be used for all the generated classes.")]
-        public string Namespace { get; set; }
-
-        [InspectorProperty("A path for the generated code output.")]
-        public string CodePath { get; set; }
-
-        [InspectorProperty("A unique name for the database.")]
-        public string Name { get; set; }
-
-    }
+   
 }

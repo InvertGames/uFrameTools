@@ -483,6 +483,9 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DoToolbar(Rect toolbarTopRect, DesignerWindow designerWindow, ToolbarPosition position)
         {
+            if (designerWindow == null) throw new ArgumentNullException("designerWindow");
+        
+            if (designerWindow.Toolbar == null) throw new ArgumentNullException("designerWindow.Toolbar");
             GUILayout.BeginArea(toolbarTopRect);
             if (toolbarTopRect.y > 20)
             {

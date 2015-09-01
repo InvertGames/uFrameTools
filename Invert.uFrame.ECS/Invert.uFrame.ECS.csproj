@@ -190,6 +190,9 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\DataGraph.cs">
       <Link>DataGraph.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\HandlerGraph.cs">
+      <Link>HandlerGraph.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Graphs\ModuleGraph.cs">
       <Link>ModuleGraph.cs</Link>
     </Compile>
@@ -363,9 +366,6 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Expressions.cs">
       <Link>Expressions\Expressions.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Property.cs">
-      <Link>Property.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Slots\Timer.cs">
       <Link>Timer.cs</Link>

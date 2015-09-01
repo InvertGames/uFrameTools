@@ -23,7 +23,7 @@ namespace Invert.Core.GraphDesigner
             ui.AddCommand(new ToolbarItem()
             {
                 Command = new Import16Command(),
-                Position = ToolbarPosition.BottomLeft,
+                Position = ToolbarPosition.BottomRight,
                 Title = "Upgrade 1.6 Graph"
             });
         }

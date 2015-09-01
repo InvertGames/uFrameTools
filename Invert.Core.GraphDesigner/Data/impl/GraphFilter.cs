@@ -63,6 +63,11 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerable<IFilterItem> FilterItems { get; private set; }
 
+        public bool AllowExternalNodes
+        {
+            get { return true; }
+        }
+
         public string InfoLabel { get; private set; }
 
         public FilterCollapsedDictionary CollapsedValues

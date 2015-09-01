@@ -432,11 +432,19 @@ namespace Invert.Core
         }
         public static void Execute<TCommand>(TCommand command) where TCommand : ICommand
         {
-        
             SignalEvent<ICommandExecuting>(_ => _.CommandExecuting(command));
-            SignalEvent<IExecuteCommand<TCommand>>(_ => _.Execute(command));
+            try
+            {
+                SignalEvent<IExecuteCommand<TCommand>>(_ => _.Execute(command));
+            }
+            catch (Exception ex)
+            {
+                SignalEvent<INotify>(_=>_.Notify(ex.Message,NotificationIcon.Error));
+#if DEBUG
+                LogException(ex);
+#endif
+            }
             SignalEvent<ICommandExecuted>(_ => _.CommandExecuted(command));
-        
         }
 
         public static BackgroundTask ExecuteInBackground<TCommand>(TCommand command)

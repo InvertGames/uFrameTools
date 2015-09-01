@@ -62,14 +62,20 @@ namespace Invert.Core.GraphDesigner
                     }
                    
                 }
-                foreach (var item in filter.GetAllowedDiagramItems().OfType<GenericNode>().OrderBy(p=>p.Name))
+            
+                if (filter.AllowExternalNodes)
                 {
-                    ui.AddCommand(new ContextMenuItem()
+                    ui.AddSeparator();
+                    foreach (var item in filter.GetAllowedDiagramItems().OfType<GenericNode>().OrderBy(p => p.Name))
                     {
-                        Title = "Show/" + item.Config.Name + "/" + item.Name,
-                        Command = new ShowCommand() { Node = item, Filter = filter, Position = evt.MousePosition }
-                    });
+                        ui.AddCommand(new ContextMenuItem()
+                        {
+                            Title = "Show/" + item.Config.Name + "/" + item.Name,
+                            Command = new ShowCommand() { Node = item, Filter = filter, Position = evt.MousePosition }
+                        });
+                    }
                 }
+                
             }
 
         }

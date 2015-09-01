@@ -72,8 +72,8 @@ namespace Assets.UnderConstruction.Editor
             if (TreeModel == null) return;
             var window = new Rect(0, 0, this.position.width, this.position.height);
 
-            var searcbarRect = window.WithHeight(50).Pad(15,15,75,30);
-            var listRect = window.Below(searcbarRect).Clip(window).PadSides(15);
+            var searcbarRect = window.WithHeight(50).Pad(5,5,55,10);
+            var listRect = window.Below(searcbarRect).Clip(window).PadSides(5);
             var searchIconRect = new Rect().WithSize(31, 31).AlignHorisonallyByCenter(searcbarRect).RightOf(searcbarRect).Translate(10, 0);
 
             PlatformDrawer.DrawImage(searchIconRect,"SearchIcon",true);

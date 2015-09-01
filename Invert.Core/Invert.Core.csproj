@@ -60,8 +60,10 @@
     <Compile Include="IAssetManager.cs" />
     <Compile Include="IDiagramPlugin.cs" />
     <Compile Include="IItem.cs" />
+    <Compile Include="INotify.cs" />
     <Compile Include="ITreeItem.cs" />
     <Compile Include="MultiThreadingSystem\MultiThreadingSystem.cs" />
+    <Compile Include="NotificationIcon.cs" />
     <Compile Include="ProjectInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

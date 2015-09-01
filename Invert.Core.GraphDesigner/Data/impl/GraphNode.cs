@@ -553,6 +553,11 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public virtual bool AllowExternalNodes
+        {
+            get { return true; }
+        }
+
         public virtual string Namespace
         {
             get

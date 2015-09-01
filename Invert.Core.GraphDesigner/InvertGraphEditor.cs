@@ -308,7 +308,7 @@ namespace Invert.Core.GraphDesigner
                             // TODO Had to remove this?
                             //if (!codeGenerator.IsEnabled(prsteroject)) continue;
 
-                            codeGenerator.AssetDirectory = graphConfiguration.CodeOutputSystemPath;
+                            codeGenerator.AssetDirectory = graphConfiguration.CodeOutputPath;
                             //codeGenerator.Settings = settings;
                             if (codeGenerator.ObjectData == null)
                                 codeGenerator.ObjectData = item;
@@ -447,7 +447,7 @@ namespace Invert.Core.GraphDesigner
             if (items == null) throw new ArgumentNullException("items");
 
             var codeGenerators = GetAllCodeGenerators(config, items, includeDisabled).ToArray();
-            var groups = codeGenerators.GroupBy(p => Path.Combine(config.CodeOutputSystemPath, p.Filename)).Distinct();
+            var groups = codeGenerators.GroupBy(p => Path.Combine(config.CodeOutputPath, p.Filename)).Distinct();
             foreach (var @group in groups)
             {
                 var generator = new CodeFileGenerator(config.Namespace)
@@ -752,7 +752,7 @@ namespace Invert.Core.GraphDesigner
                 template.IsDesignerFile = true;
 
                 //template.AssetDirectory = graphItem.Graph.Project.SystemDirectory;
-                template.AssetDirectory = config.CodeOutputSystemPath;
+                template.AssetDirectory = config.CodeOutputPath;
 
                 if (template.IsValid())
                 {
@@ -766,7 +766,7 @@ namespace Invert.Core.GraphDesigner
                 var template = Activator.CreateInstance(templateType) as CodeGenerator;
                 template.ObjectData = graphItem;
                 template.IsDesignerFile = false;
-                template.AssetDirectory = config.CodeOutputSystemPath;
+                template.AssetDirectory = config.CodeOutputPath;
 
 
                 if (template.IsValid())

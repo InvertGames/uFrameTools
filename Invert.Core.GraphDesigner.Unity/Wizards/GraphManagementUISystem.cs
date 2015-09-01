@@ -16,6 +16,7 @@ namespace Assets.UnderConstruction.Editor
         private WorkspaceService _workspaceService;
         private IPlatformDrawer _platformDrawer;
         private Vector2 _scrollPos;
+        private bool _enableGraphManagementhWizard;
 
         public void ToggleGraphManagementWizard()
         {
@@ -34,11 +35,20 @@ namespace Assets.UnderConstruction.Editor
             set { _platformDrawer = value; }
         }
 
-        protected bool EnableGrapManagementhWizard { get; set; }
+        protected bool EnableGraphManagementhWizard
+        {
+            get
+            {
+                if (WorkspaceService.CurrentWorkspace != null && WorkspaceService.CurrentWorkspace.CurrentGraph == null)
+                    return true;
+                return _enableGraphManagementhWizard;
+            }
+            set { _enableGraphManagementhWizard = value; }
+        }
 
         public void QueryDesignerWindowModalContent(List<DesignerWindowModalContent> content)
         {
-            if (EnableGrapManagementhWizard)
+            if (EnableGraphManagementhWizard)
             {
                 content.Add(new DesignerWindowModalContent()
                 {
@@ -51,7 +61,7 @@ namespace Assets.UnderConstruction.Editor
                         }
                         catch (Exception ex)
                         {
-                            EnableGrapManagementhWizard = false;
+                            EnableGraphManagementhWizard = false;
                             Debug.LogError(ex);
                         }
                     }
@@ -82,7 +92,7 @@ namespace Assets.UnderConstruction.Editor
             }
 
             var closeButtonBounds = new Rect().WithSize(80, 30).InnerAlignWithBottomRight(listRect.PadSides(15));
-            PlatformDrawer.DoButton(closeButtonBounds, "Close", ElementDesignerStyles.ButtonStyle, () => EnableGrapManagementhWizard = false);
+            PlatformDrawer.DoButton(closeButtonBounds, "Close", ElementDesignerStyles.ButtonStyle, () => EnableGraphManagementhWizard = false);
         }
 
         public ActionItem SelectedAction { get; set; }
@@ -179,7 +189,7 @@ namespace Assets.UnderConstruction.Editor
 
         public void NewTabRequested()
         {
-            EnableGrapManagementhWizard = true;
+            EnableGraphManagementhWizard = true;
         }
     }
     

@@ -12,5 +12,6 @@ namespace Invert.Core.GraphDesigner
         bool UseStraightLines { get; }
         IEnumerable<IDiagramNode> FilterNodes { get; }
         IEnumerable<IFilterItem> FilterItems { get; }
+        bool AllowExternalNodes { get; }
     }
 }

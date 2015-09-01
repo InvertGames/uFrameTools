@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Invert.Data;
 using Invert.IOC;
+using Invert.Json;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -11,11 +15,45 @@ namespace Invert.Core.GraphDesigner
         void ChangeDatabase(IGraphConfiguration configuration);
     }
 
-    public interface ICreateDatabase
-    {
-        IGraphConfiguration CreateDatabase( string name, string codePath);
-    }
 
+    public class EditDatabaseCommand : Command
+    {
+        
+        public uFrameDatabaseConfig Configuration { get; set; }
+
+        [InspectorProperty("A namespace to be used for all the generated classes.")]
+        public string Namespace { get; set; }
+
+        [InspectorProperty("A path for the generated code output.")]
+        public string CodePath { get; set; }
+
+
+    }
+    public class CreateDatabaseCommand : Command
+    {
+        private string _ns;
+
+        [InspectorProperty("A unique name for the database.")]
+        public string Name { get; set; }
+
+        [InspectorProperty("A namespace to be used for all the generated classes.")]
+        public string Namespace
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_ns))
+                    return Name;
+                return _ns;
+            }
+            set { _ns = value; }
+        }
+
+        [InspectorProperty("A path for the generated code output. This is relative to the assets folder.")]
+        public string CodePath { get; set; }
+
+     
+
+    }
     public class ChangeDatabaseCommand : Command
     {
        
@@ -26,6 +64,38 @@ namespace Invert.Core.GraphDesigner
         
     }
 
+    public class uFrameDatabaseConfig : IDataRecord, IGraphConfiguration
+    {
+        private string _codeOutputPath;
+        private string _ns;
+        public IRepository Repository { get; set; }
+        public string Identifier { get; set; }
+        public bool Changed { get; set; }
+
+        public string Title { get; set; }
+
+        [JsonProperty]
+        public string CodeOutputPath
+        {
+            get { return _codeOutputPath; }
+            set { this.Changed("CodeOutputPath", ref _codeOutputPath, value); }
+        }
+
+        [JsonProperty]
+        public string Namespace
+        {
+            get { return _ns; }
+            set { this.Changed("Namespace", ref _ns, value); }
+        }
+
+        public string Group { get { return Title; } }
+        public string SearchTag { get { return Title; } }
+        
+ //       [JsonProperty]
+        public bool IsCurrent { get; set; }
+        public string FullPath { get; set; }
+        public IRepository Database { get; set; }
+    }
     public class DatabaseService : DiagramPlugin,  
         IDataRecordInserted, 
         IDataRecordRemoved, 
@@ -35,10 +105,13 @@ namespace Invert.Core.GraphDesigner
         IToolbarQuery,
         IContextMenuQuery,
         IExecuteCommand<ChangeDatabaseCommand>,
-        IExecuteCommand<SaveCommand>
+        IExecuteCommand<SaveCommand>,
+        IExecuteCommand<CreateDatabaseCommand>,
+        IExecuteCommand<EditDatabaseCommand>
     {
+        private Dictionary<string, uFrameDatabaseConfig> _configurations;
 
-        public IGraphConfiguration CurrentConfiguration { get; set; }
+        public uFrameDatabaseConfig CurrentConfiguration { get; set; }
 
         // Important make sure we intialize very late so that other plugins can register graph configurations
         public override decimal LoadPriority
@@ -51,42 +124,56 @@ namespace Invert.Core.GraphDesigner
             get { return true; }
         }
 
+        public string CurrentDatabaseIdentifier
+        {
+            get { return InvertGraphEditor.Prefs.GetString("CurrentDatabaseIdentifier", string.Empty); }
+            set {InvertGraphEditor.Prefs.SetString("CurrentDatabaseIdentifier",value); }
+        }
+
+        
+
         public override void Initialize(UFrameContainer container)
         {
             base.Initialize(container);
- 
-            // Get all the configurations
-            Configurations = container.Instances
-                .Where(p => p.Base == typeof(IGraphConfiguration))
-                .ToDictionary(p => p.Name, v => v.Instance as IGraphConfiguration);
-
-            CurrentConfiguration = Configurations.Values.FirstOrDefault(p => p.IsCurrent) ??
-                                   Configurations.Values.FirstOrDefault();
-
-            if (CurrentConfiguration == null)
+            var path = DbRootPath;
+            var dbDirectories = Directory.GetDirectories(path,"*.db",SearchOption.AllDirectories);
+            foreach (var item in dbDirectories)
             {
-                InvertApplication.Log("Database not found, creating one now.");
-                var createDatabase = InvertApplication.Container.Resolve<ICreateDatabase>();
-                if (createDatabase != null)
-                {
-                    CurrentConfiguration = createDatabase.CreateDatabase("uFrameDB", "Code");
-                }
-                else
-                {
-                    InvertApplication.Log("A plugin the creates a default database is not available.  Please implement ICreateDatabase to provide this feature.");
-                }
+                var db = new TypeDatabase(new JsonRepositoryFactory(item));
+                var config = GetConfig(db, Path.GetFileNameWithoutExtension(item));
+                config.FullPath = item;
+                container.RegisterInstance<IGraphConfiguration>(config, config.Identifier);
             }
+           
+            CurrentConfiguration = Configurations.ContainsKey(CurrentDatabaseIdentifier)
+                ? Configurations[CurrentDatabaseIdentifier]
+                : Configurations.Values.FirstOrDefault();
+
+
+            //if (CurrentConfiguration == null)
+            //{
+            //    InvertApplication.Log("Database not found, creating one now.");
+            //    var createDatabase = InvertApplication.Container.Resolve<ICreateDatabase>();
+            //    if (createDatabase != null)
+            //    {
+            //        CurrentConfiguration = createDatabase.CreateDatabase("uFrameDB", "Code");
+            //    }
+            //    else
+            //    {
+            //        InvertApplication.Log("A plugin the creates a default database is not available.  Please implement ICreateDatabase to provide this feature.");
+            //    }
+            //}
             if (CurrentConfiguration != null)
             {
                 container.RegisterInstance<IGraphConfiguration>(CurrentConfiguration);
-                var typeDatabase = new TypeDatabase(new JsonRepositoryFactory(CurrentConfiguration.FullPath));
-                container.RegisterInstance<IRepository>(typeDatabase);
+           
+                container.RegisterInstance<IRepository>(CurrentConfiguration.Database);
                 
                 //var typeDatabase = container.Resolve<IRepository>();
-                typeDatabase.AddListener<IDataRecordInserted>(this);
-                typeDatabase.AddListener<IDataRecordRemoved>(this);
-                typeDatabase.AddListener<IDataRecordPropertyChanged>(this);
-                typeDatabase.AddListener<IDataRecordPropertyBeforeChange>(this);
+                CurrentConfiguration.Database.AddListener<IDataRecordInserted>(this);
+                CurrentConfiguration.Database.AddListener<IDataRecordRemoved>(this);
+                CurrentConfiguration.Database.AddListener<IDataRecordPropertyChanged>(this);
+                CurrentConfiguration.Database.AddListener<IDataRecordPropertyBeforeChange>(this);
             }
             else
             {
@@ -95,13 +182,48 @@ namespace Invert.Core.GraphDesigner
            
         }
 
+        private static string DbRootPath
+        {
+            get
+            {
+                var path = Application.dataPath;
+                if (path.EndsWith("Assets"))
+                {
+                    path = Application.dataPath.Substring(0, Application.dataPath.Length - 6);
+                }
+                return path;
+            }
+        }
+
+        private uFrameDatabaseConfig GetConfig(TypeDatabase db, string title)
+        {
+            var config = db.GetSingle<uFrameDatabaseConfig>();
+
+            if (config == null)
+            {
+                config = db.Create<uFrameDatabaseConfig>();
+                config.CodeOutputPath = "Code";
+                config.Namespace = title;
+                db.Commit();
+            }
+            config.Database = db;
+            config.Title = title;
+
+            Configurations.Add(config.Identifier, config);
+            return config;
+        }
+
         public override void Loaded(UFrameContainer container)
         {
             base.Loaded(container);
            
         }
 
-        public Dictionary<string, IGraphConfiguration> Configurations { get; set; }
+        public Dictionary<string, uFrameDatabaseConfig> Configurations
+        {
+            get { return _configurations ?? (_configurations = new Dictionary<string, uFrameDatabaseConfig>()); }
+            set { _configurations = value; }
+        }
 
         public void RecordInserted(IDataRecord record)
         {
@@ -135,10 +257,8 @@ namespace Invert.Core.GraphDesigner
         }
         public void ChangeDatabase(IGraphConfiguration configuration)
         {
-            foreach (var graphConfig in InvertGraphEditor.Container.ResolveAll<IGraphConfiguration>())
-            {
-                graphConfig.IsCurrent = graphConfig == configuration;
-            }
+            var configRecord = configuration as IDataRecord;
+            if (configRecord != null) CurrentDatabaseIdentifier = configRecord.Identifier;
             InvertApplication.Container = null;
         }
 
@@ -174,6 +294,33 @@ namespace Invert.Core.GraphDesigner
         public void Execute(SaveCommand command)
         {
             Container.Resolve<IRepository>().Commit();
+        }
+
+        public void Execute(CreateDatabaseCommand command)
+        {
+            if (Directory.Exists(command.Name))
+            {
+                throw new Exception(string.Format("Database {0} already exists.", command.Name));
+            }
+            var dbDir = Directory.CreateDirectory(Path.Combine(DbRootPath, command.Name + ".db"));
+            var db = new TypeDatabase(new JsonRepositoryFactory(dbDir.FullName));
+            var config = GetConfig(db, command.Name);
+            config.Namespace = command.Namespace;
+            config.Title = command.Name;
+            config.CodeOutputPath = command.CodePath;
+            config.Namespace = command.Namespace ?? config.Namespace;
+            config.FullPath = dbDir.FullName;
+            config.Database = db;
+            db.Commit();
+            CurrentDatabaseIdentifier = config.Identifier;
+            InvertApplication.Container = null;
+        }
+
+        public void Execute(EditDatabaseCommand command)
+        {
+            command.Configuration.Namespace = command.Namespace;
+            command.Configuration.CodeOutputPath = command.CodePath;
+            command.Configuration.Database.Commit();
         }
     }
 }

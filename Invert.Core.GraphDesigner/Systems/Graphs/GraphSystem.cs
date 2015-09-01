@@ -42,6 +42,7 @@ public class GraphSystem : DiagramPlugin
         var diagram = obj as DiagramViewModel;
         if (diagram != null)
         {
+            ui.AddSeparator();
             ui.AddCommand(new ContextMenuItem()
             {
                 Title = "Delete This Graph",
@@ -56,13 +57,13 @@ public class GraphSystem : DiagramPlugin
 
     public void QueryToolbarCommands(ToolbarUI ui)
     {
-        ui.AddCommand(new ToolbarItem()
-        {
-            Title = "Create Graph",
-            Position = ToolbarPosition.BottomRight,
-            Command = new CreateGraphMenuCommand(),
-            Order = -1
-        });
+        //ui.AddCommand(new ToolbarItem()
+        //{
+        //    Title = "Create Graph",
+        //    Position = ToolbarPosition.BottomRight,
+        //    Command = new CreateGraphMenuCommand(),
+        //    Order = -1
+        //});
 
         ui.AddCommand(new ToolbarItem()
         {

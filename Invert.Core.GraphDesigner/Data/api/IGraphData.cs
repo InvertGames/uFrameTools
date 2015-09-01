@@ -49,7 +49,7 @@ namespace Invert.Core.GraphDesigner
 
     public interface IGraphConfiguration : IItem
     {
-        string CodeOutputSystemPath { get;  }
+        string CodeOutputPath { get;  }
         string Namespace { get; set; }
         bool IsCurrent { get; set; }
         string FullPath { get;  }
@@ -57,14 +57,14 @@ namespace Invert.Core.GraphDesigner
 
     public class GraphConfiguration : IGraphConfiguration
     {
-        public GraphConfiguration(string codeOutputSystemPath, string ns)
+        public GraphConfiguration(string codeOutputPath, string ns)
         {
-            CodeOutputSystemPath = codeOutputSystemPath;
+            CodeOutputPath = codeOutputPath;
             Namespace = ns;
             IsCurrent = true;
         }
 
-        public string CodeOutputSystemPath { get; set; }
+        public string CodeOutputPath { get; set; }
         public string Namespace { get; set; }
         public bool IsCurrent { get; set; }
         public string FullPath { get; set; }

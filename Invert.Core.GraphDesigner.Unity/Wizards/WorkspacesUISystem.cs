@@ -27,6 +27,7 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
 
         private IPlatformDrawer _drawer;
         private Vector2 _scrollPos;
+        private bool _enableWizard;
 
         public IPlatformDrawer Drawer
         {
@@ -155,7 +156,18 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
 
         public ActionItem SelectedAction { get; set; }
 
-        public bool EnableWizard { get; set; }
+        public bool EnableWizard
+        {
+            get
+            {
+                if (WorkspaceService.CurrentWorkspace == null)
+                {
+                    return true;
+                }
+                return _enableWizard;
+            }
+            set { _enableWizard = value; }
+        }
 
         public void QueryDesignerWindowModalContent(List<DesignerWindowModalContent> content)
         {
