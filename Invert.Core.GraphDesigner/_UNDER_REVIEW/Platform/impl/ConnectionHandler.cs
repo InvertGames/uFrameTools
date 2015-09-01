@@ -179,21 +179,8 @@ namespace Invert.Core.GraphDesigner
             else
             {
                 var mouseData = e;
-                InvertApplication.SignalEvent<IWindowsEvents>(_ =>
-                {
-                    _.ShowWindow(
-                        "ConnectionWindowFactory",
-                        "Create Connection",
-                        new QuickAccessWindowViewModel(new QuickAccessContext()
-                        {
-                            ContextType = typeof(IConnectionQuickAccessContext),
-                            MouseData = mouseData,
-                            Data = this
-                        }),
-                        e.MousePosition,
-                        new Vector2(225f, 300f)
-                        );
-                });
+                InvertApplication.SignalEvent<IShowConnectionMenu>(
+                    _ => _.Show(DiagramViewModel, StartConnector, mouseData.MouseUpPosition));
 
                 //var allowedFilterNodes = FilterExtensions.AllowedFilterNodes[this.DiagramViewModel.CurrentRepository.CurrentFilter.GetType()];
                 //var menu = InvertGraphEditor.CreateCommandUI<ContextMenuUI>();
@@ -205,8 +192,8 @@ namespace Invert.Core.GraphDesigner
                 //    var node = Activator.CreateInstance(item) as IDiagramNode;
                 //    node.Graph = this.DiagramViewModel.GraphData;
                 //    var vm = InvertGraphEditor.Container.GetNodeViewModel(node, this.DiagramViewModel) as DiagramNodeViewModel;
-                    
-                    
+
+
                 //    if (vm == null) continue;
                 //    vm.IsCollapsed = false;
                 //    var connectors = new List<ConnectorViewModel>();
@@ -230,7 +217,7 @@ namespace Invert.Core.GraphDesigner
                 //            menu.AddCommand(
                 //             new SimpleEditorCommand<DiagramViewModel>(delegate(DiagramViewModel n)
                 //             {
-                                 
+
 
                 //                 //UnityEditor.EditorWindow.FocusWindowIfItsOpen(typeof (ElementsDesigner));
 

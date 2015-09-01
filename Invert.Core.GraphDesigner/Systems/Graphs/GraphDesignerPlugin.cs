@@ -34,12 +34,24 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
+    public interface IQueryPossibleConnections
+    {
+        void QueryPossibleConnections(List<IItem> items,DiagramViewModel diagramViewModel,
+            ConnectorViewModel startConnector,
+            Vector2 mousePosition);
+    }
+
+    public interface IShowConnectionMenu
+    {
+        void Show(DiagramViewModel diagramViewModel, ConnectorViewModel startConnector,Vector2 position);
+    }
     public class GraphDesignerPlugin : DiagramPlugin, 
         IPrefabNodeProvider, 
         ICommandEvents, 
-        IConnectionEvents, 
-        IQuickAccessEvents,
-        ICommandExecuted
+        IConnectionEvents,
+        ICommandExecuted, 
+        IQueryPossibleConnections,
+        IShowConnectionMenu
     {
         public override decimal LoadPriority
         {
@@ -193,17 +205,12 @@ namespace Invert.Core.GraphDesigner
             
         }
 
-        public void QuickAccessItemsEvents(QuickAccessContext context, List<IItem> items)
-        {
-            if(context.ContextType == typeof(IConnectionQuickAccessContext))
-                items.AddRange(QueryPossibleConnections(context));
-        }
 
-        private static IEnumerable<IItem> QueryPossibleConnections(QuickAccessContext context)
+        public void QueryPossibleConnections(List<IItem> items,DiagramViewModel diagramViewModel,
+            ConnectorViewModel startConnector,
+            Vector2 mousePosition)
         {
-            var connectionHandler = context.Data as ConnectionHandler;
-            if (connectionHandler == null) yield break;
-            var diagramViewModel = connectionHandler.DiagramViewModel;
+    
 
             var currentGraph = InvertApplication.Container.Resolve<WorkspaceService>().CurrentWorkspace.CurrentGraph;
             var allowedFilterNodes = FilterExtensions.AllowedFilterNodes[currentGraph.CurrentFilter.GetType()];
@@ -230,7 +237,7 @@ namespace Invert.Core.GraphDesigner
                 {
                     foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
                     {
-                        var connection = strategy.Connect(diagramViewModel, connectionHandler.StartConnector, connector);
+                        var connection = strategy.Connect(diagramViewModel, startConnector, connector);
                         if (connection == null) continue;
                         var node1 = node;
                         var message = string.Format("Create {0}", name);
@@ -240,16 +247,15 @@ namespace Invert.Core.GraphDesigner
                         }
                         var value = new KeyValuePair<IDiagramNode, ConnectionViewModel>(node1, connection);
 
-                        var qaItem = new QuickAccessItem("Connect", message, message, _ =>
+                        var qaItem = new SelectionMenuItem("Connect", message,() =>
                         {
-                            diagramViewModel.AddNode(value.Key, context.MouseData.MouseUpPosition);
+                            diagramViewModel.AddNode(value.Key, mousePosition);
                             connection.Apply(value.Value as ConnectionViewModel);
                             value.Key.IsSelected = true;
                             value.Key.IsEditing = true;
                             value.Key.Name = "";
                         });
-
-                        yield return qaItem;
+                        items.Add(qaItem);
                     }
                 }
             }
@@ -258,6 +264,17 @@ namespace Invert.Core.GraphDesigner
         public void CommandExecuted(ICommand command)
         {
             InvertGraphEditor.DesignerWindow.RefreshContent();
+        }
+
+        public void Show(DiagramViewModel diagramViewModel,ConnectorViewModel startConnector, Vector2 position)
+        {
+            var selectionMenu = new SelectionMenu();
+            var list = new List<IItem>();
+            
+            Signal<IQueryPossibleConnections>(_ => _.QueryPossibleConnections(list, diagramViewModel, startConnector, position));
+            foreach (var item in list) selectionMenu.AddItem(item);
+
+            Signal((IShowSelectionMenu _) => _.ShowSelectionMenu(selectionMenu, position));
         }
     }
 }

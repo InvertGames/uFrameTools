@@ -25,7 +25,6 @@ public class uFrameInspectorWindow : EditorWindow {
         var x = 0;
         InvertApplication.SignalEvent<IDrawExplorer>(_ =>
         {
-            InvertApplication.Log(_.GetType().FullName + _.GetHashCode());
             _.DrawExplorer();
         });
 

@@ -58,11 +58,12 @@ namespace Assets.UnderConstruction.Editor
         }
 
 
-        [MenuItem("uFrame Dev/Tree View")]
+        [MenuItem("uFrame/Graph Explorer")]
         public static void Init()
         {
             var window = ScriptableObject.CreateInstance<GraphTreeWindow>();
             window.minSize = new Vector2(200,200);
+            window.title = "Graph Explorer";
             window.Show();
             window.Repaint();
             window.Focus();
