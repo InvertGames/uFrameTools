@@ -19,6 +19,7 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
     private TreeViewModel _treeViewModel;
     private WorkspaceService _workspaceService;
 
+
     public WorkspaceService WorkspaceService
     {
         get
@@ -79,6 +80,7 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
     public void DrawTreeView(Rect bounds, TreeViewModel viewModel, Action<Vector2, IItem> itemClicked,
         Action<Vector2, IItem> itemRightClicked = null)
     {
+        var boundY = bounds.height;
         if (Event.current != null && Event.current.isKey && Event.current.rawType == EventType.KeyUp)
         {
             switch (Event.current.keyCode)
@@ -123,19 +125,25 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
         var usedRect = position.Pad(0, 0, 15, 0).WithHeight(25*viewModel.TreeData.Count(s => s.Visible));
 
         PlatformDrawer.DrawStretchBox(position.PadSides(-1),CachedStyles.WizardListItemBoxStyle,10);
+
+      
+
         viewModel.Scroll = GUI.BeginScrollView(position, viewModel.Scroll, usedRect);
 
-
         var itemTemplateRect = bounds.WithHeight(25);
+        bool hasItems = false;
+
         foreach (var treeViewItem in viewModel.TreeData)
         {
             if (!treeViewItem.Visible) continue;
-
+            hasItems = true;
             var data = treeViewItem.Data;
 
             var treeData = data as ITreeItem;
 
             var itemRect = itemTemplateRect.Pad(10*treeViewItem.Indent, 0, 10*treeViewItem.Indent, 0);
+            
+            var localItemY = itemRect.Translate(0, -position.yMin).y;
 
             var imageRect = new Rect().WithSize(16, 16)
                 .Align(itemRect)
@@ -149,10 +157,9 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
 
             if (treeViewItem == viewModel.ScrollTarget)
             {
-                GUI.ScrollTo(labelRect);
+                viewModel.Scroll = new Vector2(0, localItemY-25*5);
                 viewModel.ScrollToItem(null);
             }
-            
 
             if (treeViewItem.Selected)
             {
@@ -192,7 +199,21 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
             itemTemplateRect = itemTemplateRect.Below(itemTemplateRect);
         }
 
+  
+
+
         GUI.EndScrollView();
+
+        if (!hasItems)
+        {
+            var textRect = bounds;
+            var cacheColor = GUI.color;
+            GUI.color = new Color(GUI.color.r, GUI.color.g, GUI.color.b, 0.4f);
+            PlatformDrawer.DrawLabel(textRect, "No Items Found", CachedStyles.WizardSubBoxTitleStyle, DrawingAlignment.MiddleCenter);
+            GUI.color = cacheColor;
+            return;
+        }
+
         if (dirty) viewModel.IsDirty = true;
     }
 
@@ -258,7 +279,7 @@ public class TreeViewModel
 
     public TreeViewItem SelectedItem
     {
-        get { return SelectedIndex != -1 ? TreeData[SelectedIndex] : null; }
+        get { return SelectedIndex > -1 && SelectedIndex < TreeData.Count ? TreeData[SelectedIndex] : null; }
     }
 
     public int SelectedIndex
@@ -485,19 +506,3 @@ public interface IDrawTreeView
 }
 
 
-public class TestItem : IItem
-{
-    public string Title { get; set; }
-    public string Group { get; set; }
-    public string SearchTag { get; set; }
-}
-
-public class TestTreeItem : ITreeItem
-{
-    public string Title { get; set; }
-    public string Group { get; set; }
-    public string SearchTag { get; set; }
-    public IItem ParentItem { get; set; }
-    public IEnumerable<IItem> Children { get; set; }
-    public bool Expanded { get; set; }
-}

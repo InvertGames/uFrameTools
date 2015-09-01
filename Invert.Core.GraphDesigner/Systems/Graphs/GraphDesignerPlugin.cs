@@ -193,12 +193,13 @@ namespace Invert.Core.GraphDesigner
             
         }
 
-        public void QuickAccessItemsEvents(QuickAccessContext context, List<IEnumerable<QuickAccessItem>> items)
+        public void QuickAccessItemsEvents(QuickAccessContext context, List<IItem> items)
         {
-            items.Add(QueryPossibleConnections(context));
+            if(context.ContextType == typeof(IConnectionQuickAccessContext))
+                items.AddRange(QueryPossibleConnections(context));
         }
 
-        private static IEnumerable<QuickAccessItem> QueryPossibleConnections(QuickAccessContext context)
+        private static IEnumerable<IItem> QueryPossibleConnections(QuickAccessContext context)
         {
             var connectionHandler = context.Data as ConnectionHandler;
             if (connectionHandler == null) yield break;
@@ -239,7 +240,6 @@ namespace Invert.Core.GraphDesigner
                         }
                         var value = new KeyValuePair<IDiagramNode, ConnectionViewModel>(node1, connection);
 
-
                         var qaItem = new QuickAccessItem("Connect", message, message, _ =>
                         {
                             diagramViewModel.AddNode(value.Key, context.MouseData.MouseUpPosition);
@@ -248,6 +248,7 @@ namespace Invert.Core.GraphDesigner
                             value.Key.IsEditing = true;
                             value.Key.Name = "";
                         });
+
                         yield return qaItem;
                     }
                 }

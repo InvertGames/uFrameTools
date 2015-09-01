@@ -284,6 +284,7 @@ namespace Invert.Core.GraphDesigner
         private static object _wizardSubBoxTitleStyle;
         private static object _tooltipBoxStyle;
         private static object _wizardListItemBoxStyle;
+        private static object _searchBarText;
 
         public static object Item1
         {
@@ -404,6 +405,11 @@ namespace Invert.Core.GraphDesigner
         public static object NodeHeader13
         {
             get { return _nodeHeader13 ?? (_nodeHeader13 = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.NodeHeader13)); }
+        }
+   
+        public static object SearchBarText
+        {
+            get { return _searchBarText ?? (_searchBarText = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.SearchBarText)); }
         }
 
 
@@ -657,7 +663,8 @@ namespace Invert.Core.GraphDesigner
         WizardActionTitle,
         WizardSubBoxTitle,
         TooltipBox,
-        WizardListItemBox
+        WizardListItemBox,
+        SearchBarText
     }
 
  

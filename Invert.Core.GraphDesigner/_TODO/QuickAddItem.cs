@@ -27,5 +27,7 @@ namespace Invert.Core.GraphDesigner
             get { return _searchTag ?? Group + Title; }
             set { _searchTag = value; }
         }
+
+        public string Description { get; set; }
     }
 }

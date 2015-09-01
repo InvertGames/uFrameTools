@@ -8,8 +8,9 @@ namespace Invert.Core.GraphDesigner.Unity
         , IDrawDesignerWindow
         , IDesignerWindowLostFocus
         , IInputPanningHandler
-        , IRepaintWindow,
-        ICommandExecuted
+        , IRepaintWindow
+        , ICommandExecuted
+        
     {
         private DesignerWindow _designerWindow;
         private Vector2 _scrollPosition;
@@ -47,6 +48,11 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             HandleInput(MouseEvent);
             HandlePanning();
+        }
+
+        public void ProcessKeyboardInput()
+        {
+            
         }
 
         public void HandlePanning(Vector2 delta)
@@ -116,82 +122,73 @@ namespace Invert.Core.GraphDesigner.Unity
         public Vector2 PanStartPosition { get; set; }
         private void HandleInput(MouseEvent mouse)
         {
+
             var e = Event.current;
             if (e == null)
             {
                 return;
             }
             if (DesignerWindow == null) return;
+
             MouseEvent.DefaultHandler = DesignerWindow.DiagramDrawer;
-            var handler = MouseEvent.CurrentHandler;
-            if (handler == null)
-            {
-                MouseEvent = null;
-     
-                InvertApplication.Log("Handler is null");
-                return;
-            }
-            if (e.type == EventType.MouseDown)
-            {
-                mouse.MouseDownPosition = mouse.MousePosition;
-                mouse.IsMouseDown = true;
-                mouse.MouseButton = e.button;
-                handler.OnMouseDown(mouse);
-                if (e.button == 1)
-                {
-                    e.Use();
-                    handler.OnRightClick(mouse);
-                }
 
-                if (e.clickCount > 1)
+                var handler = MouseEvent.CurrentHandler;
+                if (handler == null)
                 {
-                    handler.OnMouseDoubleClick(mouse);
-                }
+                    MouseEvent = null;
 
-                LastMouseDownEvent = e;
-            }
-            if (e.rawType == EventType.MouseUp)
-            {
-                mouse.MouseUpPosition = mouse.MousePosition;
-                mouse.IsMouseDown = false;
-                handler.OnMouseUp(mouse);
-            }
-            else if (e.rawType == EventType.KeyDown)
-            {
-            }
-            else
-            {
-                var mp = (e.mousePosition);// * (1f / 1f /* Scale */);
-
-                mouse.MousePosition = mp;
-                mouse.MousePositionDelta = mouse.MousePosition - mouse.LastMousePosition;
-                mouse.MousePositionDeltaSnapped = mouse.MousePosition.Snap(12f * 1f /* Scale */) - mouse.LastMousePosition.Snap(12f * 1f);
-                handler.OnMouseMove(mouse);
-                mouse.LastMousePosition = mp;
-                if (e.type == EventType.MouseMove)
-                {
-                    e.Use();
-                    //Signal<IRepaintWindow>(_=>_.Repaint());
-                    //Repaint();
-                }
-            }
-
-            LastEvent = Event.current;
-            if (DiagramDrawer.IsEditingField)
-            {
-                // TODO 2.0 Get this out of here
-                if (LastEvent.keyCode == KeyCode.Return)
-                {
-                    var selectedGraphItem = DesignerWindow.DiagramViewModel.SelectedGraphItem;
-                    DesignerWindow.DiagramViewModel.DeselectAll();
-                    if (selectedGraphItem != null)
-                    {
-                        selectedGraphItem.Select();
-                    }
+                    InvertApplication.Log("Handler is null");
                     return;
                 }
-                return;
-            }
+
+                if (e.type == EventType.MouseDown)
+                {
+                    mouse.MouseDownPosition = mouse.MousePosition;
+                    mouse.IsMouseDown = true;
+                    mouse.MouseButton = e.button;
+
+                    if (e.button == 1)
+                    {
+                        e.Use();
+                        handler.OnRightClick(mouse);
+                    }
+                    else if (e.clickCount > 1)
+                    {
+                        handler.OnMouseDoubleClick(mouse);
+                    }
+                    else
+                    {
+                        handler.OnMouseDown(mouse);
+                    }
+
+                    LastMouseDownEvent = e;
+                }
+                if (e.rawType == EventType.MouseUp)
+                {
+                    mouse.MouseUpPosition = mouse.MousePosition;
+                    mouse.IsMouseDown = false;
+                    handler.OnMouseUp(mouse);
+                }
+                else if (e.rawType == EventType.KeyDown)
+                {
+                }
+                else
+                {
+                    var mp = (e.mousePosition); // * (1f / 1f /* Scale */);
+
+                    mouse.MousePosition = mp;
+                    mouse.MousePositionDelta = mouse.MousePosition - mouse.LastMousePosition;
+                    mouse.MousePositionDeltaSnapped = mouse.MousePosition.Snap(12f*1f /* Scale */) -
+                                                      mouse.LastMousePosition.Snap(12f*1f);
+                    handler.OnMouseMove(mouse);
+                    mouse.LastMousePosition = mp;
+                    if (e.type == EventType.MouseMove)
+                    {
+                        e.Use();
+                        //Signal<IRepaintWindow>(_=>_.Repaint());
+                        //Repaint();
+                    }
+                }
 
             if (LastEvent != null)
             {
@@ -219,6 +216,25 @@ namespace Invert.Core.GraphDesigner.Unity
                 }
                 // Debug.Log(string.Format("Shift: {0}, Alt: {1}, Ctrl: {2}",ModifierKeyStates.Shift,ModifierKeyStates.Alt,ModifierKeyStates.Ctrl));
             }
+
+            LastEvent = Event.current;
+            
+            if (DiagramDrawer.IsEditingField)
+            {
+                // TODO 2.0 Get this out of here
+                if (LastEvent.keyCode == KeyCode.Return)
+                {
+                    var selectedGraphItem = DesignerWindow.DiagramViewModel.SelectedGraphItem;
+                    DesignerWindow.DiagramViewModel.DeselectAll();
+                    if (selectedGraphItem != null)
+                    {
+                        selectedGraphItem.Select();
+                    }
+                    return;
+                }
+                return;
+            }
+
 
             var evt = Event.current;
             if (evt != null && evt.isKey && evt.type == EventType.KeyUp)
@@ -256,7 +272,6 @@ namespace Invert.Core.GraphDesigner.Unity
         public void CommandExecuted(ICommand command)
         {
             MouseEvent = null;
-            
         }
     }
 

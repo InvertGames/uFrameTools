@@ -27,21 +27,21 @@ public class QuickAccessWindowViewModel : IWindow
     public void UpdateSearch()
     {
         QuickLaunchItems.Clear();
-        var launchItems = new List<IEnumerable<QuickAccessItem>>();
+        var launchItems = new List<IItem>();
 
         InvertApplication.SignalEvent<IQuickAccessEvents>(_ => _.QuickAccessItemsEvents(_context, launchItems));
         
-        foreach (var item in launchItems.SelectMany(p => p))
-        {
-            if (item.Title.Contains(SearchText))
-            {
-                QuickLaunchItems.Add(item);
-            }
-            //if (QuickLaunchItems.Count >= 10)
-            //{
-            //    break;
-            //}
-        }
+//        foreach (var item in launchItems.SelectMany(p => p))
+//        {
+//            if (item.Title.Contains(SearchText))
+//            {
+//                QuickLaunchItems.Add(item);
+//            }
+//            //if (QuickLaunchItems.Count >= 10)
+//            //{
+//            //    break;
+//            //}
+//        }
         GroupedLaunchItems = QuickLaunchItems.GroupBy(p => p.Group).ToArray();
 
     }

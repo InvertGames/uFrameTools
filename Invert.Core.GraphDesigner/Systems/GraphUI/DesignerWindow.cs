@@ -171,27 +171,21 @@ namespace Invert.Core.GraphDesigner
                  * DRAW DIAGRAM 
                  * Using GUI.color hack to avoid transparent diagram on disabled input (Thanks Unity :( )
                  */
-                var colorCache = GUI.color;
-                if (!_shouldProcessInputFromDiagram)
-                {
-                    Drawer.DisableInput();
-                    GUI.color = new Color(GUI.color.r, GUI.color.g, GUI.color.b, GUI.color.a * 2);
-                }
+
+                if (!_shouldProcessInputFromDiagram) Drawer.DisableInput();
+                    
                     if (DiagramDrawer != null)
                     {
                         DiagramDrawer.DrawTabs(Drawer, tabsRect);
                         DiagramDrawer.DrawBreadcrumbs(Drawer, breadCrumbsRect.y);
                     }
+                    Drawer.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
+
                     DiagramRect = diagramRect;
                 
-                    Drawer.DrawRect(diagramRect, InvertGraphEditor.Settings.BackgroundColor);
-                
-                    DrawDiagram(Drawer, scrollPosition, scale, diagramRect);
-                if (!_shouldProcessInputFromDiagram)
-                {
-                    GUI.color = colorCache;
-                    Drawer.EnableInput();
-                }
+                    DrawDiagram(Drawer, scrollPosition, scale, diagramRect); 
+            
+                Drawer.EnableInput();
 
                 /*
                  * DRAW OVERLAY CONTENT
@@ -202,10 +196,14 @@ namespace Invert.Core.GraphDesigner
                 foreach (var item in overlayItems)
                 {
                     var bounds = item.Drawer.CalculateBounds(diagramRect);
-                    colorCache = GUI.color;
-                    if (!bounds.Contains(Event.current.mousePosition) && !item.DisableTransparency)
-                        GUI.color = new Color(colorCache.r, colorCache.g, colorCache.b, colorCache.a/4);
-                    item.Drawer.Draw(bounds);
+                    var isMouseOver = bounds.Contains(Event.current.mousePosition);
+
+                    var colorCache = GUI.color;
+
+                    if (!isMouseOver && !item.DisableTransparency) GUI.color = new Color(colorCache.r, colorCache.g, colorCache.b, colorCache.a/4);
+                    
+                        item.Drawer.Draw(bounds);
+
                     GUI.color = colorCache;
                 }
 

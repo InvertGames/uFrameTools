@@ -46,6 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\impl\GenericReferenceItem.cs" />
+    <Compile Include="SelectionMenu.cs" />
+    <Compile Include="SelectionMenuCategory.cs" />
+    <Compile Include="SelectionMenuItem.cs" />
     <Compile Include="Systems\Compiling\Class1.cs" />
     <Compile Include="Systems\Connections\ConnectionSystem.cs" />
     <Compile Include="Systems\DebugSystem\ContinueCommand.cs" />
@@ -55,6 +58,7 @@
     <Compile Include="Systems\GraphUI\IQueryDesignerWindowModalContent.cs" />
     <Compile Include="Systems\INewTabRequested.cs" />
     <Compile Include="Systems\INotify.cs" />
+    <Compile Include="Systems\IShowSelectionMenu.cs" />
     <Compile Include="Systems\NavigationSystem\NavigationSystem.cs" />
     <Compile Include="Systems\Nodes\NodeSystem.cs" />
     <Compile Include="Systems\TypesSystem\TypesSystem.cs" />

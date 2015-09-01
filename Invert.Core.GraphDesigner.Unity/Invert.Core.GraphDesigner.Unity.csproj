@@ -47,7 +47,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionExplorerUISystem.cs" />
     <Compile Include="ConsoleSystem\ConsoleViewModel.cs" />
     <Compile Include="ConsoleSystem\ConsoleDrawer.cs" />
     <Compile Include="GraphTreeWindow.cs" />

@@ -22,6 +22,8 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
     }
 
     public virtual string SearchTag { get { return Name; } }
+    
+    public string Description { get; set; }
 
     string IGraphItem.Label
     {

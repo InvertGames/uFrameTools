@@ -1,65 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
-using System.Text;
-using Invert.Core;
-using Invert.Core.GraphDesigner;
+using Invert.Common;
 using Invert.Core.GraphDesigner.Systems.GraphUI;
 using UnityEditor;
 using UnityEngine;
 
-namespace Assets.UnderConstruction.Editor
+namespace Invert.Core.GraphDesigner.Unity
 {
     public class QuickAccessUISystem : DiagramPlugin,
         IQueryDesignerWindowOverlayContent, 
         IOverlayDrawer, 
-        IEnableQuickAccess, 
-        IDisableQuickAccess, 
-        IUpdateQuickAccess
+        IShowSelectionMenu, 
+        IHideSelectionMenu
     {
-        private TreeViewModel _treeModel;
+
+        public const int QuickAccessWidth = 300;
+        public const int QuickAccessHeigth = 500;
+
         private IPlatformDrawer _platrformDrawer;
         private bool _focusNeeded;
 
         public Vector2? RequestPosition {get; set; }
-        public QuickAccessContext Context { get; set; }
         public bool EnableContent { get; set; }
-        public TreeViewModel TreeModel
+        public TreeViewModel TreeModel { get; set; }
+        public string SearchCriteria { get; set; }
+        
+        public IPlatformDrawer PlatformDrawer
         {
-            get { return _treeModel ?? (_treeModel = ConstructViewModel(Context)); }
-            set { _treeModel = value; }
+            get { return _platrformDrawer ?? (_platrformDrawer = InvertApplication.Container.Resolve<IPlatformDrawer>()); }
+            set { _platrformDrawer = value; }
         }
-
-
-        public void QueryDesignerWindowOverlayContent(List<DesignerWindowOverlayContent> content)
-        {
-            if (EnableContent)
-            content.Add(new DesignerWindowOverlayContent()
-            {
-                Drawer = this,
-                DisableTransparency = true
-            });
-        }
+       
 
         public void Draw(Rect bouds)
         {
 
+            if (TreeModel == null) return;
+
             HandleInput(bouds);
 
-            if (!EnableContent) return;
+            if (!EnableContent ) return;
 
-            if(TreeModel.IsDirty) TreeModel.Refresh();
+            var searcbarRect = bouds.WithHeight(30).PadSides(5);
+            var listRect = bouds.Below(searcbarRect).WithHeight(300).PadSides(5);
+            var searchIconRect = new Rect().WithSize(30, 30).InnerAlignWithBottomRight(searcbarRect).AlignHorisonallyByCenter(searcbarRect).PadSides(10);
+            var descriptionRect = bouds.Below(listRect).Clip(bouds).PadSides(5);
 
-            var searcbarRect = bouds.WithHeight(50).Pad(15, 15, 60, 30);
-            var listRect = bouds.Below(searcbarRect).Clip(bouds).PadSides(15).Translate(0,-7);
-            var searchIconRect = new Rect().WithSize(17, 17).AlignHorisonallyByCenter(searcbarRect).RightOf(searcbarRect).Translate(10, 0);
-
-            PlatformDrawer.DrawImage(searchIconRect, "SearchIcon", true);
-
-            GUI.SetNextControlName("QuickAccess_Search");
+            GUI.SetNextControlName("SelectionMenu_Search");
             EditorGUI.BeginChangeCheck();
-            SearchCriteria = GUI.TextField(searcbarRect, SearchCriteria ?? "");
+            SearchCriteria = GUI.TextField(searcbarRect, SearchCriteria ?? "",ElementDesignerStyles.SearchBarTextStyle);
+            PlatformDrawer.DrawImage(searchIconRect, "SearchIcon", true);
             if (EditorGUI.EndChangeCheck())
             {
                 if (string.IsNullOrEmpty(SearchCriteria))
@@ -70,17 +61,33 @@ namespace Assets.UnderConstruction.Editor
                 {
                     TreeModel.Predicate = i => i.Title.Contains(SearchCriteria);
                 }
+                TreeModel.IsDirty = true;
             }
+
+            if (TreeModel.IsDirty) TreeModel.Refresh();
 
             InvertApplication.SignalEvent<IDrawTreeView>(_ =>
             {
                 _.DrawTreeView(listRect, TreeModel, (m, i) => { SelectItem(i); });
             });
 
+            if (TreeModel == null) return;
 
-            if(_focusNeeded)
-                GUI.FocusControl("QuickAccess_Search");
- 
+            var selectedItem = TreeModel.SelectedData as IItem;
+            if (selectedItem != null)
+            {
+                var titleRect = descriptionRect.WithHeight(40).PadSides(10);
+                var desctTextRect = descriptionRect.Below(titleRect).Clip(descriptionRect).PadSides(10);
+                PlatformDrawer.DrawStretchBox(descriptionRect,CachedStyles.WizardSubBoxStyle,10);
+                PlatformDrawer.DrawLabel(titleRect, selectedItem.Title, CachedStyles.WizardActionTitleStyle, DrawingAlignment.TopLeft);
+                PlatformDrawer.DrawLabel(desctTextRect, selectedItem.Description ?? "Please add description to the item", CachedStyles.WizardActionTitleStyle,DrawingAlignment.TopLeft);
+            }
+
+            if (_focusNeeded)
+            {
+                GUI.FocusControl("SelectionMenu_Search");
+                _focusNeeded = false;
+            }
         }
 
         private void HandleInput(Rect rect)
@@ -90,7 +97,7 @@ namespace Assets.UnderConstruction.Editor
 
             if (evt.isMouse && !rect.Contains(evt.mousePosition))
             {
-                DisableQuickAcess();
+                HideSelection();
                 return;
             }
 
@@ -98,90 +105,63 @@ namespace Assets.UnderConstruction.Editor
             {
                 switch (evt.keyCode)
                 {
-                        case KeyCode.Escape:
-                            DisableQuickAcess();
+                    case KeyCode.Escape:
+                        HideSelection();
                         break;
                 }
             }
             
         }
 
-        public string SearchCriteria { get; set; }
-
-        public IPlatformDrawer PlatformDrawer
-        {
-            get { return _platrformDrawer ?? (_platrformDrawer = InvertApplication.Container.Resolve<IPlatformDrawer>()); }
-            set { _platrformDrawer = value; }
-        }
-
-        public const int QuickAccessWidth = 300;
-        public const int QuickAccessHeigth = 300;
-
         public Rect CalculateBounds(Rect diagramRect)
         {
             if (RequestPosition.HasValue) return new Rect().WithSize(QuickAccessWidth, QuickAccessHeigth).WithOrigin(RequestPosition.Value.x, RequestPosition.Value.y);
-
             return new Rect().WithSize(QuickAccessWidth, QuickAccessHeigth).CenterInsideOf(diagramRect);
         }
 
-        [MenuItem("uFrame/Quick Shot &z")]
-        public static void OpenQuickAccess()
+        public void ShowSelectionMenu(SelectionMenu menu, Vector2? position = null, bool useWindow = false)
         {
-            InvertApplication.SignalEvent<IEnableQuickAccess>(_=>_.EnableQuickAccess(new QuickAccessContext()
-            {
-                ContextType = typeof(IInsertQuickAccessContext)
-            }));
-        }
-
-        public void EnableQuickAccess(QuickAccessContext context, Vector2? position = null)
-        {
-            RequestPosition = position;
-            Context = context;
-            TreeModel = null;
+            TreeModel = ConstructViewModel(menu);
+            SearchCriteria = null;
             EnableContent = true;
+            RequestPosition = position;
             _focusNeeded = true;
         }
 
-        public void DisableQuickAcess()
+        public void HideSelection()
         {
             RequestPosition = null;
-            Context = null;
             TreeModel = null;
             SearchCriteria = null;
             EnableContent = false;
         }
 
-        public void UpdateQuickAcess(QuickAccessContext context)
-        {
-            Context = context;
-            TreeModel = null;
-        }
-
         public void SelectItem(IItem i)
         {
-            var item = i as QuickAccessItem;
-            if (item == null) return;
+            var item = i as SelectionMenuItem;
+            if (item == null || item.Action == null) return;
+            Execute(new LambdaCommand("",item.Action));
+            HideSelection();
+       }
 
-            InvertApplication.Execute(new LambdaCommand("Select Item", () =>
-            {
-                item.Action(item.Item);
-            }));
-
-            DisableQuickAcess();
-        }
-
-        protected TreeViewModel ConstructViewModel(QuickAccessContext context)
+        protected TreeViewModel ConstructViewModel(SelectionMenu items)
         {
-            var result = new TreeViewModel();
-            var items = new List<IEnumerable<QuickAccessItem>>();
-            Signal<IQuickAccessEvents>(_ => _.QuickAccessItemsEvents(context, items));
-            result.Data = items.SelectMany(i => i).OfType<IItem>().ToList();
-            result.Submit = SelectItem;
-            
-
-
+            var result = new TreeViewModel
+            {
+                Data = items.Items,
+                Submit = SelectItem
+            };
             return result;
         }
 
+        public void QueryDesignerWindowOverlayContent(List<DesignerWindowOverlayContent> content)
+        {
+            if (EnableContent)
+                content.Add(new DesignerWindowOverlayContent()
+                {
+                    Drawer = this,
+                    DisableTransparency = true
+                });
+        }
     }
 }

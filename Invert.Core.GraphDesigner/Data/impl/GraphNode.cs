@@ -604,6 +604,9 @@ namespace Invert.Core.GraphDesigner
 
         [Browsable(false)]
         public string SearchTag { get { return Name; } }
+
+        public string Description { get; set; }
+
         [Browsable(false)]
         public virtual bool ShouldRenameRefactor { get { return true; } }
 

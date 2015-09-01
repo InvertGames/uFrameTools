@@ -5,6 +5,8 @@ namespace Invert.Core
         string Title { get; }
         string Group { get; }
         string SearchTag { get; }
+        string Description { get; set; }
+
     }
 
     public class DefaultItem : IItem
@@ -19,5 +21,8 @@ namespace Invert.Core
         public string Title { get; set; }
         public string Group { get; set; }
         public string SearchTag { get; set; }
+        public string Description { get; set; }
     }
+
+
 }

@@ -395,6 +395,8 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         get { return this.name; }
     }
 
+    public string Description { get; set; }
+
 
     public void DeserializeFromJson(JSONNode graphData)
     {

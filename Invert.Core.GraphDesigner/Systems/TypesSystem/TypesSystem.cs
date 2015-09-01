@@ -80,10 +80,50 @@ namespace Invert.Core.GraphDesigner
 
         public void Execute(SelectTypeCommand command)
         {
-            InvertGraphEditor.WindowManager.InitItemWindow(GetRelatedTypes(command).ToArray(),_=>
+            
+            var menu = new SelectionMenu();
+            var types = GetRelatedTypes(command).ToArray();
+
+            if (command.AllowNone)
             {
-                command.ItemViewModel.RelatedType = _.Name;
-            },command.AllowNone);
+                menu.AddItem(new SelectionMenuItem("", "None", () =>
+                {
+                    command.ItemViewModel.RelatedType = null;
+                }));
+            }
+
+            var categories = types.Where(_=>!string.IsNullOrEmpty(_.Group)).Select(_ => _.Group).Distinct().Select(_ => new SelectionMenuCategory()
+            {
+                Title = _
+            });
+
+            foreach (var category in categories)
+            {
+                menu.AddItem(category);
+                var category1 = category;
+                foreach (var type in types.Where(_=>_.Group == category1.Title))
+                {
+                    var type1 = type;
+                    menu.AddItem(new SelectionMenuItem(type, () =>
+                    {
+                        command.ItemViewModel.RelatedType = type1.Name;
+                    }),category);
+                }
+            }
+
+            foreach (var source in types.Where(_=>string.IsNullOrEmpty(_.Group)))
+            {
+                var type1 = source;
+                menu.AddItem(new SelectionMenuItem(type1, () =>
+                {
+                    command.ItemViewModel.RelatedType = type1.Name;
+                }));
+            }
+
+            Signal<IShowSelectionMenu>(_=>_.ShowSelectionMenu(menu));
+//
+//
+//            InvertGraphEditor.WindowManager.InitItemWindow(types.ToArray(),,command.AllowNone);
         }
         public virtual IEnumerable<GraphTypeInfo> GetRelatedTypes(SelectTypeCommand command)
         {

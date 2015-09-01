@@ -4,8 +4,11 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using Invert.Common;
+using Mono.CSharp;
 using UnityEditor;
 using UnityEngine;
+using Enum = System.Enum;
+using Event = UnityEngine.Event;
 
 namespace Invert.Core.GraphDesigner.Unity
 {
@@ -554,12 +557,16 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DisableInput()
         {
+            if (!GUI.enabled) return;
+            GUI.color = new Color(GUI.color.r, GUI.color.g, GUI.color.b, GUI.color.a*2);
             GUI.enabled = false;
         }
 
         public void EnableInput()
         {
+            if (GUI.enabled) return;
             GUI.enabled = true;
+            GUI.color = new Color(GUI.color.r, GUI.color.g, GUI.color.b, GUI.color.a/2);
         }
 
         public void BeginRender(object sender, MouseEvent mouseEvent)
@@ -639,6 +646,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public virtual void DrawInspector(PropertyFieldViewModel d)
         {
+            var colorCache = GUI.color;
             GUI.color = Color.white;
             if (d.InspectorType == InspectorType.GraphItems)
             {
@@ -653,21 +661,35 @@ namespace Invert.Core.GraphDesigner.Unity
                 if (GUILayout.Button(d.Label + ": " + text,ElementDesignerStyles.ButtonStyle))
                 {
                     var type = d.Type;
+
                     var items = InvertGraphEditor.CurrentDiagramViewModel.CurrentRepository.AllOf<IGraphItem>().Where(p => type.IsAssignableFrom(p.GetType()));
-                    InvertGraphEditor.WindowManager.InitItemWindow(items, (i) =>
+
+                    var menu = new SelectionMenu();
+
+                    foreach (var graphItem in items)
                     {
-                        var x = i;
-                        InvertApplication.Execute(() =>
+                        menu.AddItem(new SelectionMenuItem(graphItem, () =>
                         {
-                            d.Setter(x);
-                        });
-                        
-                    },true);
+                            InvertApplication.Execute(() =>
+                            {
+                                d.Setter(graphItem);
+                            });
+                        }));
+                    }
+
+                    InvertApplication.SignalEvent<IShowSelectionMenu>(_=>_.ShowSelectionMenu(menu));
+
+
+
+//
+//                    InvertGraphEditor.WindowManager.InitItemWindow(items, 
+//                        
+//                    },true);
 
                 }
                 SetTooltipForRect(GUILayoutUtility.GetLastRect(), d.InspectorTip);
 
-
+                GUI.color = colorCache;
                 //GUILayout.EndHorizontal();
                 return;
             }
@@ -825,6 +847,7 @@ namespace Invert.Core.GraphDesigner.Unity
                 //InvertGraphEditor.WindowManager.InitTypeListWindow();
             }
 
+            GUI.color = colorCache;
 
         }
      
@@ -908,7 +931,9 @@ namespace Invert.Core.GraphDesigner.Unity
                 case InvertStyles.WizardListItemBox:
                     return ElementDesignerStyles.WizardListItemBoxStyle;
                 case InvertStyles.TabBox:
-                    return ElementDesignerStyles.TabBoxStyle;
+                    return ElementDesignerStyles.TabBoxStyle;       
+                case InvertStyles.SearchBarText:
+                    return ElementDesignerStyles.SearchBarTextStyle;
                 case InvertStyles.TabCloseButton:
                     return ElementDesignerStyles.TabCloseButtonStyle;
                 case InvertStyles.TabBoxActive:

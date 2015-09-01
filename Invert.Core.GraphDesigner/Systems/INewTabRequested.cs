@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
 {
@@ -16,18 +15,9 @@ namespace Invert.Core.GraphDesigner
         void QueryGraphsAction(List<ActionItem> items);
     }
 
-    public interface IEnableQuickAccess
+    public interface IHideSelectionMenu
     {
-        void EnableQuickAccess(QuickAccessContext context, Vector2? position = null);
+        void HideSelection();
     }
 
-    public interface IDisableQuickAccess
-    {
-        void DisableQuickAcess();
-    }
-
-    public interface IUpdateQuickAccess
-    {
-        void UpdateQuickAcess(QuickAccessContext context);
-    }
 }
