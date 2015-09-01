@@ -100,5 +100,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return Name; }
         }
+
+        public string Description { get; set; }
     }
 }

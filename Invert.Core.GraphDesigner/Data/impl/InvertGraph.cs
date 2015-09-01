@@ -349,6 +349,8 @@ namespace Invert.Core.GraphDesigner
             }
         }
 
+        public string Description { get; set; }
+
         public bool CodeGenDisabled { get; set; }
 
         public IRepository Repository { get; set; }

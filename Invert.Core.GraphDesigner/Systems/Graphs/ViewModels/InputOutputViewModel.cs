@@ -66,21 +66,32 @@ namespace Invert.Core.GraphDesigner
 
         public void SelectItem()
         {
-            InvertGraphEditor.WindowManager.InitItemWindow(ReferenceItem.GetAllowed().ToArray(), _ =>
+
+            var menu = new SelectionMenu();
+            menu.ConvertAndAdd(ReferenceItem.GetAllowed().OfType<IItem>(), _ =>
             {
-                InvertApplication.Execute(new LambdaCommand("Set Item", () =>
+                var item = _ as IDataRecord;
+                if (item == null) return;
+                if (IsInput)
                 {
-                    if (IsInput)
-                    {
-                        ReferenceItem.SetInput(_);
-                    }
-                    else
-                    {
-                        ReferenceItem.SetOutput(_);
-                    }
-                   
-                }));
+                    ReferenceItem.SetInput(item);
+                }
+                else
+                {
+                    ReferenceItem.SetOutput(item);
+                }
             });
+
+            InvertApplication.SignalEvent<IShowSelectionMenu>(_=>_.ShowSelectionMenu(menu));
+
+//            InvertGraphEditor.WindowManager.InitItemWindow(ReferenceItem.GetAllowed().ToArray(), _ =>
+//            {
+//                InvertApplication.Execute(new LambdaCommand("Set Item", () =>
+//                {
+//                    
+//                   
+//                }));
+//            });
         }
     }
 

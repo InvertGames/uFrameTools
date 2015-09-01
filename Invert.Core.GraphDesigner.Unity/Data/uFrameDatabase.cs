@@ -73,6 +73,7 @@ namespace Invert.Core.GraphDesigner.Unity
         }
 
         public string SearchTag { get; set; }
+        public string Description { get; set; }
     }
 
     public class Save : ElementsDiagramToolbarCommand

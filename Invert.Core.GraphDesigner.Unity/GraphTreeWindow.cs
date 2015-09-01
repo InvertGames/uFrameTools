@@ -38,7 +38,8 @@ namespace Assets.UnderConstruction.Editor
         {
             get { return _treeModel ?? (_treeModel = GraphData == null ? null : new TreeViewModel()
             {
-                Data = new[] { GraphData as IItem }.ToList()
+                Data = new[] { GraphData as IItem }.ToList(),
+                Submit = TryNavigateToItem
             }); }
             set { _treeModel = value; }
         }
@@ -115,6 +116,8 @@ namespace Assets.UnderConstruction.Editor
 
         private void TryNavigateToItem(IItem item)
         {
+            if(InvertGraphEditor.CurrentDiagramViewModel != null)
+                InvertGraphEditor.CurrentDiagramViewModel.NothingSelected();
 
             var itemAsNode = item as IDiagramNodeItem;
             if(itemAsNode !=null ){

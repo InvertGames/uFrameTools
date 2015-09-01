@@ -1,5 +1,6 @@
 using Invert.Common.UI;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Invert.Core.GraphDesigner;
 using Invert.Core.GraphDesigner.Unity.Schemas;
@@ -132,6 +133,7 @@ namespace Invert.Common
         private static GUIStyle _wizardSubBoxTitleStyle;
         private static GUIStyle _tooltipBoxStyle;
         private static GUIStyle _wizardListItemBoxStyle;
+        private static GUIStyle _searchBarText;
 
         public static GUIStyle AddButtonStyle
         {
@@ -2040,6 +2042,15 @@ namespace Invert.Common
             }).WithFont("Verdana",12)
             .WithAllStates(new Color(0.8f,0.8f,0.8f)); }
             set { _wizardActionTitleStyle = value; }
+        }
+
+        public static GUIStyle SearchBarTextStyle
+        {
+            get { return _searchBarText ?? (_searchBarText = new GUIStyle(GUI.skin.textField)
+            {
+                alignment = TextAnchor.MiddleLeft
+            }).WithFont("Verdana",13); }
+            set { _searchBarText = value; }
         }
 
         public static GUIStyle CreateHeader(string texture, Color color)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Data;
@@ -64,7 +65,7 @@ public class QuickAccessWindowPlugin : DiagramPlugin, IQuickAccessEvents
 
     public UFrameContainer Container { get; set; }
 
-    public void QuickAccessItemsEvents(QuickAccessContext context, List<IEnumerable<QuickAccessItem>> items)
+    public void QuickAccessItemsEvents(QuickAccessContext context, List<IItem> items)
     {
         
     }
@@ -72,8 +73,9 @@ public class QuickAccessWindowPlugin : DiagramPlugin, IQuickAccessEvents
 
 public interface IQuickAccessEvents
 {
-    void QuickAccessItemsEvents(QuickAccessContext context, List<IEnumerable<QuickAccessItem>> items);
+    void QuickAccessItemsEvents(QuickAccessContext context, List<IItem> items);
 }
+
 
 public interface IQuickAccessContext
 {
@@ -85,10 +87,47 @@ public interface IInsertQuickAccessContext
     
 }
 
+public interface ISelectTypeQuickAccessContext
+{
+    
+}
+
 public interface IConnectionQuickAccessContext
 {
     
 }
+
+
+public class QuickAccessCategory : ITreeItem
+{
+    private List<IItem> _childItems;
+
+    public string Title { get; set; }
+    public string Group { get; set; }
+    public string SearchTag { get; set; }
+    public string Description { get; set; }
+    public IItem ParentItem { get; private set; }
+
+    public IEnumerable<IItem> Children
+    {
+        get { return ChildItems; }
+    }
+
+    public List<IItem> ChildItems
+    {
+        get { return _childItems ?? (_childItems = new List<IItem>()); }
+        private set { _childItems = value; }
+    }
+
+    public bool Expanded { get; set; }
+
+    public void Add(IItem item)
+    {
+        ChildItems.Add(item);
+    }
+
+}
+
 public class QuickAccessItem : IItem
 {
 
@@ -122,11 +161,15 @@ public class QuickAccessItem : IItem
     public string Title { get; set; }
     public string Group { get; set; }
     public string SearchTag { get; set; }
+    public string Description { get; set; }
+    public string Icon { get; set; }
+    public string Color { get; set; }
     public object Item { get; set; }
 }
 
 public class QuickAccessContext
 {
+
     public MouseEvent MouseData;
     public Type ContextType;
     public object Data;

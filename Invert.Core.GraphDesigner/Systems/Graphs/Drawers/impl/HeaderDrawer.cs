@@ -69,8 +69,8 @@ namespace Invert.Core.GraphDesigner
 
             if (StyleSchema.ShowIcon && NodeViewModel.IconName != null)
             {
-                var iconBounds = platform.CalculateImageSize(NodeViewModel.IconName);
-                width += iconBounds.x;
+                var iconBounds = IconBounds ?? (IconBounds = platform.CalculateImageSize(NodeViewModel.IconName));
+                width += iconBounds.Value.x;
 //                if (height - Padding.y*2 < iconBounds.y)
 //                {
 //                    height = iconBounds.y + Padding.y*2;
@@ -89,6 +89,8 @@ namespace Invert.Core.GraphDesigner
             cb.width += 4;
             ViewModelObject.ConnectorBounds = cb;
         }
+
+        public Vector2? IconBounds { get; set; }
 
         public Vector2 TextSize { get; set; }
 
@@ -183,8 +185,8 @@ namespace Invert.Core.GraphDesigner
 
                 if (StyleSchema.ShowIcon && !string.IsNullOrEmpty(NodeViewModel.IconName))
                 {
-                    var iconsize = platform.CalculateImageSize(NodeViewModel.IconName);
-                    var size = iconsize.y > Bounds.y ? Bounds.y : iconsize.y;
+                    var iconsize = IconBounds ?? (IconBounds = platform.CalculateImageSize(NodeViewModel.IconName));
+                    var size = iconsize.Value.y > Bounds.y ? Bounds.y : iconsize.Value.y;
                     var imageBounds = new Rect(Bounds.xMax - padding.right - size, Bounds.y + ((Bounds.height / 2f) - (size / 2f)), size, size);
                     platform.DrawImage(imageBounds.Scale(scale), IconImage, true);
                 }

@@ -27,4 +27,6 @@ public class GraphTypeInfo : IItem
     {
         get { return Name + Label; }
     }
+
+    public string Description { get; set; }
 }
