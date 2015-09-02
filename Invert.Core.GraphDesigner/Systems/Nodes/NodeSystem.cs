@@ -6,13 +6,18 @@ using Invert.Data;
 
 namespace Invert.Core.GraphDesigner
 {
+    public class PullNodeCommand : Command
+    {
+        public GraphNode Node { get; set; }
+    }
     public class NodeSystem : DiagramPlugin,
         IContextMenuQuery,
         IExecuteCommand<CreateNodeCommand>,
         IExecuteCommand<RenameCommand>,
         IExecuteCommand<DeleteCommand>,
         IExecuteCommand<ShowCommand>,
-        IExecuteCommand<HideCommand>
+        IExecuteCommand<HideCommand>,
+        IExecuteCommand<PullNodeCommand>
     {
 
         public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
@@ -35,6 +40,15 @@ namespace Invert.Core.GraphDesigner
                     Title = "Delete",
                     Command = new DeleteCommand() { Item = diagramNode.GraphItemObject as Invert.Data.IDataRecord }
                 });
+                if (diagramNode.IsExternal)
+                {
+                    ui.AddCommand(new ContextMenuItem()
+                    {
+                        Title = "Pull",
+                        Command = new PullNodeCommand() { Node = diagramNode.GraphItemObject as GraphNode }
+                    });
+                }
+                
             }
             InvertApplication.Log(obj.GetType().Name);
             var diagram = obj as DiagramViewModel;
@@ -126,6 +140,22 @@ namespace Invert.Core.GraphDesigner
         public void Execute(HideCommand command)
         {
             command.Filter.HideInFilter(command.Node);
+        }
+
+        public void Execute(PullNodeCommand command)
+        {
+            var workspaceService = Container.Resolve<WorkspaceService>();
+            if (workspaceService != null && workspaceService.CurrentWorkspace != null)
+            {
+                command.Node.GraphId = workspaceService.CurrentWorkspace.CurrentGraphId;
+                foreach (var item in command.Node.FilterNodes)
+                {
+                    if (item == command.Node) continue;
+                    item.GraphId = workspaceService.CurrentWorkspace.CurrentGraphId;
+                }
+                
+            }
+            
         }
     }
 }

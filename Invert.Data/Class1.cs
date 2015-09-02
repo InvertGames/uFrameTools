@@ -359,7 +359,7 @@ namespace Invert.Data
                 }
                 if (type == null)
                 {
-                    throw new Exception(string.Format("Database didn't load entirely, {0} type not found, delete or rename folder {1}",fullname,item.FullName));
+                    //throw new Exception(string.Format("Database didn't load entirely, {0} type not found, delete or rename folder {1}",fullname,item.FullName));
                     continue;
                 }
                 yield return CreateRepository(repository,type);
