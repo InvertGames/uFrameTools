@@ -36,7 +36,7 @@ namespace Invert.Core.GraphDesigner
 
     public interface IQueryPossibleConnections
     {
-        void QueryPossibleConnections(List<IItem> items,DiagramViewModel diagramViewModel,
+        void QueryPossibleConnections(SelectionMenu menu,DiagramViewModel diagramViewModel,
             ConnectorViewModel startConnector,
             Vector2 mousePosition);
     }
@@ -206,7 +206,7 @@ namespace Invert.Core.GraphDesigner
         }
 
 
-        public void QueryPossibleConnections(List<IItem> items,DiagramViewModel diagramViewModel,
+        public void QueryPossibleConnections(SelectionMenu menu,DiagramViewModel diagramViewModel,
             ConnectorViewModel startConnector,
             Vector2 mousePosition)
         {
@@ -255,7 +255,7 @@ namespace Invert.Core.GraphDesigner
                             value.Key.IsEditing = true;
                             value.Key.Name = "";
                         });
-                        items.Add(qaItem);
+                        menu.AddItem(qaItem);
                     }
                 }
             }
@@ -269,11 +269,7 @@ namespace Invert.Core.GraphDesigner
         public void Show(DiagramViewModel diagramViewModel,ConnectorViewModel startConnector, Vector2 position)
         {
             var selectionMenu = new SelectionMenu();
-            var list = new List<IItem>();
-            
-            Signal<IQueryPossibleConnections>(_ => _.QueryPossibleConnections(list, diagramViewModel, startConnector, position));
-            foreach (var item in list) selectionMenu.AddItem(item);
-
+            Signal<IQueryPossibleConnections>(_ => _.QueryPossibleConnections(selectionMenu, diagramViewModel, startConnector, position));
             Signal((IShowSelectionMenu _) => _.ShowSelectionMenu(selectionMenu, position));
         }
     }
