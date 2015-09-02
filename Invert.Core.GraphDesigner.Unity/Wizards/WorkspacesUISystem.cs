@@ -150,7 +150,17 @@ namespace Invert.Core.GraphDesigner.Systems.GraphUI
             Signal<IDrawActionDialog>(_ => _.DrawActionDialog(Drawer, databasesActionInspectorBounds, SelectedAction, () => SelectedAction = null));
             Signal<IDrawWorkspacesList>(_ => _.DrawWorkspacesList(Drawer, databasesListBounds, items));
 
-            Drawer.DoButton(closeButtonBounds, "Close", ElementDesignerStyles.ButtonStyle, () => EnableWizard = false);
+            Drawer.DoButton(closeButtonBounds, "Close", ElementDesignerStyles.ButtonStyle, () =>
+            {
+                if (WorkspaceService.CurrentWorkspace == null)
+                {
+                    Signal<INotify>(_ => _.Notify("You need to select or create a Workspace!", NotificationIcon.Info));
+                }
+                else
+                {
+                    EnableWizard = false;
+                }
+            });
 
         }
 

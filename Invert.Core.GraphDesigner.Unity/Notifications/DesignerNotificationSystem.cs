@@ -33,7 +33,7 @@ namespace Invert.Core.GraphDesigner.Unity.Notifications
             set { _platformDrawer = value; }
         }
 
-        public void Notify(string message, string icon)
+        public void Notify(string message, string icon, int time = 5000)
         {
             var index = Enumerable.Range(0, 10).First(i => Items.All(n => n.Index != i));
 
@@ -42,7 +42,8 @@ namespace Invert.Core.GraphDesigner.Unity.Notifications
                 AnimatedX = 0,
                 Icon = StyleProvider.GetImage(icon),
                 Message = message,
-                TimeLeft = 5000,
+                TimeLeft = time,
+                Time = time,
                 Index = index
             };
             Items.Add(notificationItem);
@@ -51,7 +52,7 @@ namespace Invert.Core.GraphDesigner.Unity.Notifications
             //Add notification item to the queue
         }
 
-        public void Notify(string message, NotificationIcon icon)
+        public void Notify(string message, NotificationIcon icon, int time = 5000)
         {
             string iconCode = "InfoIcon";
             switch (icon)
@@ -99,10 +100,18 @@ namespace Invert.Core.GraphDesigner.Unity.Notifications
 
                 var unpaddedItemRect = firstUnpaddedItemRect.AboveAll(firstUnpaddedItemRect, item.Index);
 
-                if (item.TimeLeft > 4600) item.AnimatedX = Mathf.Lerp(400, 0, (5000 - item.TimeLeft) / 400);
-                else if (item.TimeLeft < 400) item.AnimatedX = Mathf.Lerp(400, 0, item.TimeLeft/400);
-                else item.AnimatedX = 0;
-
+                if (item.Time > 0)
+                {
+                    if (item.TimeLeft > item.Time - 400)
+                        item.AnimatedX = Mathf.Lerp(400, 0, (item.Time - item.TimeLeft)/400);
+                    else if (item.TimeLeft < 400) item.AnimatedX = Mathf.Lerp(400, 0, item.TimeLeft/400);
+                    else item.AnimatedX = 0;
+                }
+                else
+                {
+                    //TODO 2.0 Make tutorial notifications
+                }
+                
                 var paddedItemRect = unpaddedItemRect.WithOrigin(unpaddedItemRect.x+item.AnimatedX, unpaddedItemRect.y).PadSides(15);
 
                 PlatformDrawer.DrawStretchBox(paddedItemRect,CachedStyles.TooltipBoxStyle,14);
@@ -135,6 +144,7 @@ namespace Invert.Core.GraphDesigner.Unity.Notifications
             public float AnimatedX { get; set; }
             public float TimeLeft { get; set; }
             public int Index { get; set; }
+            public int Time { get; set; }
         }
     
     }
