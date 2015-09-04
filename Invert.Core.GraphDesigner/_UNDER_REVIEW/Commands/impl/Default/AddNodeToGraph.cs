@@ -304,8 +304,7 @@ namespace Invert.Core.GraphDesigner
 
         protected virtual void Process(GraphNode node, IGraphData sourceDiagram, IGraphData targetDiagram)
         {
-            sourceDiagram.RemoveNode(node, false);
-            targetDiagram.AddNode(node);
+       
         }
 
         public override string CanPerform(GraphNode node)

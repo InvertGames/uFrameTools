@@ -29,6 +29,7 @@ namespace Invert.Core.GraphDesigner
         private IGraphFilter[] _filterStack;
         private string _rootFilterId;
         private bool _expanded;
+        private uFrameDatabaseConfig _config;
 
 #if !UNITY_DLL
     public FileInfo GraphFileInfo { get; set; }
@@ -362,17 +363,18 @@ namespace Invert.Core.GraphDesigner
             set { _nodes = value; }
         }
 
+        public uFrameDatabaseConfig Config
+        {
+            get { return _config ?? (_config = Repository.GetSingle<uFrameDatabaseConfig>()); }
+        }
+
         public string Namespace
         {
             get
             {
-                if (_ns == null && Project != null)
-                {
-                    return Project.Namespace;
-                }
-                return _ns;
+                return Config.Namespace;
             }
-            set { _ns = value; }
+            set { }
         }
 
         public bool Errors
@@ -389,10 +391,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                var proj = Project as DefaultProjectRepository;
-
-                var graph = proj.Graphs.FirstOrDefault(p => p.Identifier == this.Identifier);
-                return UnityEditor.AssetDatabase.GetAssetPath(graph as ScriptableObject);
+                throw new NotImplementedException();
             }
         }
 
@@ -453,21 +452,6 @@ namespace Invert.Core.GraphDesigner
             return Validate();
         }
 
-        public void TrackChange(IChangeData data)
-        {
-            if (Project != null)
-                Project.TrackChange(data);
-            var existing = ChangeData.FirstOrDefault(p => p.Item == data.Item && p.GetType() == data.GetType());
-            if (existing != null)
-            {
-                existing.Update(data);
-            }
-            else
-            {
-                ChangeData.Add(data);
-            }
-            ChangeData.RemoveAll(p => !p.IsValid);
-        }
 
         public virtual IGraphFilter CreateDefaultFilter()
         {
@@ -478,41 +462,15 @@ namespace Invert.Core.GraphDesigner
         {
 
         }
-
+        [Obsolete]
         public void AddNode(IDiagramNode data)
         {
-            data.GraphId = this.Identifier;
-            TrackChange(new GraphItemAdded()
-            {
-                Item = data,
-                ItemIdentifier = data.Identifier
-            });
-            Nodes.Add(data);
+           
         }
-
+        [Obsolete]
         public void RemoveNode(IDiagramNode node, bool removePositionData = true)
         {
-            if (node == RootFilter) return;
-            //foreach (var item in Nodes)
-            //{
-            //    if (item.Locations.Keys.Contains(item.Identifier))
-            //    {
-            //        item.Locations.Remove(item.Identifier);
-            //    }
-            //}
-            if (removePositionData)
-            {
-                foreach (var item in PositionData.Positions)
-                {
-                    item.Value.Remove(node.Identifier);
-                }
-            }
-            TrackChange(new GraphItemRemoved()
-              {
-                  Item = node,
-                  ItemIdentifier = node.Identifier
-              });
-            Nodes.Remove(node);
+            
         }
 
 
@@ -587,31 +545,11 @@ namespace Invert.Core.GraphDesigner
             //        ConnectedItems.RemoveAll(p => p.InputIdentifier == input.Identifier);
         }
 
-        public IProjectRepository Project { get; set; }
+       
 
         public bool Precompiled { get; set; }
 
-        public void SetProject(IProjectRepository project)
-        {
-            //Project = project;
-            //foreach (var item in NodeItems)
-            //{
-            //    item.Graph = this;
-            //}
-            //foreach (var item in ConnectedItems)
-            //{
-            //    item.Graph = this;
-            //    item.Input = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.InputIdentifier) as IConnectable;
-            //    item.Output = project.AllGraphItems.FirstOrDefault(p => p.Identifier == item.OutputIdentifier) as IConnectable;
-            //}
-            //foreach (var item in ChangeData)
-            //{
-            //    item.Item = AllGraphItems.OfType<IDiagramNodeItem>().FirstOrDefault(p => p.Identifier == item.ItemIdentifier);
-            //}
-            //ChangeData.RemoveAll(p => p.Item == null);
-            //ConnectedItems.RemoveAll(p => p.Output == null || p.Input == null);
-            //this.Prepare();
-        }
+
 
         public JSONNode Serialize()
         {
@@ -754,10 +692,6 @@ namespace Invert.Core.GraphDesigner
             {
                 ChangeData.Clear();
                 ChangeData.AddRange(jsonNode["Changes"].AsArray.DeserializeObjectArray<IChangeData>());
-            }
-            if (Project != null)
-            {
-                SetProject(Project);
             }
         }
 

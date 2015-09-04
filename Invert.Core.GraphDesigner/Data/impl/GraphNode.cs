@@ -402,7 +402,7 @@ namespace Invert.Core.GraphDesigner
         //}
         [Browsable(false)]
         public string FullLabel { get { return Name; } }
-        [Browsable(false)]
+        [InspectorProperty]
         public virtual string FullName
         {
             get
@@ -412,7 +412,7 @@ namespace Invert.Core.GraphDesigner
 
                 return Name;
             }
-            set { throw new NotImplementedException(); }
+            set { }
         }
 
   
@@ -558,6 +558,7 @@ namespace Invert.Core.GraphDesigner
             get { return true; }
         }
 
+        [InspectorProperty]
         public virtual string Namespace
         {
             get
@@ -610,11 +611,6 @@ namespace Invert.Core.GraphDesigner
         [Browsable(false)]
         public virtual bool ShouldRenameRefactor { get { return true; } }
 
-        public void TrackChange(IChangeData data)
-        {
-            if (Graph != null)
-                Graph.TrackChange(data);
-        }
 
         [Browsable(false)]
         public virtual string SubTitle { get { return string.Empty; } }
@@ -688,16 +684,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void NodeItemRemoved(IDiagramNodeItem diagramNodeItem)
         {
-            if (diagramNodeItem.Node == this)
-            {
-                TrackChange(new GraphItemRemoved()
-                {
-                    Item = diagramNodeItem,
-                    ItemIdentifier = diagramNodeItem.Identifier
-                });
-            }
-            DataBag[diagramNodeItem.Identifier] = null;
-            
+
 
         }
 
@@ -708,14 +695,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void NodeItemAdded(IDiagramNodeItem data)
         {
-            if (data.Node == this)
-            {
-                TrackChange(new GraphItemAdded()
-                {
-                    Item = data,
-                    ItemIdentifier = data.Identifier
-                });
-            }
+   
         }
 
 

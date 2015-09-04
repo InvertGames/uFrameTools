@@ -92,8 +92,8 @@ namespace Invert.Core.GraphDesigner
     }
 
     public class CustomInputOutputStrategy<TOutput, TInput> : DefaultConnectionStrategy<TOutput, TInput>
-        where TOutput : IGraphItem
-        where TInput : IGraphItem
+        where TOutput : IConnectable
+        where TInput : IConnectable
     {
         public NodeConfigSectionBase Configuration { get; set; }
 
@@ -106,8 +106,11 @@ namespace Invert.Core.GraphDesigner
 
         protected override bool CanConnect(TOutput output, TInput input)
         {
-
-            return base.CanConnect(output, input);
+            if (output.CanOutputTo(input) && input.CanInputFrom(output))
+            {
+                return base.CanConnect(output, input);
+            }
+            return false;
         }
 
         public override Color ConnectionColor

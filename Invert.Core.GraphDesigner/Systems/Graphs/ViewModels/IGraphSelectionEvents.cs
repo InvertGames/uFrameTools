@@ -4,4 +4,9 @@ namespace Invert.Core.GraphDesigner
     {
         void SelectionChanged(GraphItemViewModel selected);
     }
+
+    public interface INothingSelectedEvent
+    {
+        void NothingSelected();
+    }
 }

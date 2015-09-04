@@ -266,6 +266,12 @@ namespace Invert.Core.GraphDesigner
                 yield return item;
             }
         }
+
+        public virtual bool IsAssignableTo(ITypeInfo info)
+        {
+            return info.FullName == FullName;
+        }
+
         public override void MoveItemDown(IDiagramNodeItem nodeItem)
         {
             base.MoveItemDown(nodeItem);

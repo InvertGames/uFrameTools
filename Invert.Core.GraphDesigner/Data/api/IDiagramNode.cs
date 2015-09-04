@@ -215,7 +215,7 @@ namespace Invert.Core.GraphDesigner
     public interface IDiagramNode : IDiagramNodeItem
     {
 
-        void TrackChange(IChangeData data);
+    
         string SubTitle { get; }
 
         /// <summary>

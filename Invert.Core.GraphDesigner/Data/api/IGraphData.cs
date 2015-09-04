@@ -40,7 +40,6 @@ namespace Invert.Core.GraphDesigner
         void Deserialize(string jsonData);
         void CleanUpDuplicates();
      
-        void TrackChange(IChangeData data);
         void PushFilter(IGraphFilter filter);
         void PopToFilter(IGraphFilter filter1);
         void PopToFilterById( string filterId);

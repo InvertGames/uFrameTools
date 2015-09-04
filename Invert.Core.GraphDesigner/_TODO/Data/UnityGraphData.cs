@@ -144,11 +144,6 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         return Validate();
     }
 
-    public void TrackChange(IChangeData data)
-    {
-        Graph.TrackChange(data);
-    }
-
     public void PushFilter(IGraphFilter filter)
     {
         
@@ -274,16 +269,7 @@ public class UnityGraphData: ScriptableObject, IGraphData, ISerializationCallbac
         Graph.Initialize();
     }
 
-    public void AddNode(IDiagramNode data)
-    {
-        Graph.AddNode(data);
-    }
-
-    public void RemoveNode(IDiagramNode node, bool removePositionData = true)
-    {
-        Graph.RemoveNode(node);
-    }
-
+    
     public void OnBeforeSerialize()
     {
         return;

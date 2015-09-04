@@ -541,6 +541,7 @@ namespace Invert.Core.GraphDesigner
             {
                 item.EndEditing();
             }
+            InvertApplication.SignalEvent<INothingSelectedEvent>(_ => _.NothingSelected());
 #if UNITY_DLL
             UnityEngine.GUI.FocusControl("");
 #endif
@@ -567,6 +568,7 @@ namespace Invert.Core.GraphDesigner
             }
 
             DeselectAll();
+          
             //InvertGraphEditor.ExecuteCommand(_ => { });
         }
 

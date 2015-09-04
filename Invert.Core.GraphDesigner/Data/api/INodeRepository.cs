@@ -21,8 +21,6 @@ namespace Invert.Core.GraphDesigner
         // Settings
         ElementDiagramSettings Settings { get; }
 
-        void AddNode(IDiagramNode data);
-        void RemoveNode(IDiagramNode node, bool removePositionData = true);
         IGraphFilter CurrentFilter { get; }
         FilterPositionData PositionData { get; set; }
         string Namespace { get; set; }

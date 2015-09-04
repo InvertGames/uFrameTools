@@ -309,7 +309,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
 
-            CurrentGraph.AddNode(data);
+            //CurrentGraph.AddNode(data);
             InvalidateCache();
         }
 
@@ -377,8 +377,7 @@ namespace Invert.Core.GraphDesigner
             // Add this graph to the project and do any loading necessary
             AddGraph(graph);
             InvalidateCache();
-            // Set the project on the graph
-            graph.SetProject(this);
+   
             // Go ahead and save this project
             Save();
 
@@ -489,7 +488,7 @@ namespace Invert.Core.GraphDesigner
             {
                 RemoveItem(item);
             }
-            CurrentGraph.RemoveNode(node);
+            
             foreach (var item in NodeItems.ToArray())
             {
                 item.NodeRemoved(node);

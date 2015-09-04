@@ -27,6 +27,7 @@ public class InspectorPlugin : DiagramPlugin
     , IDataRecordInserted
     , IDataRecordRemoved
     , IGraphSelectionEvents
+    , INothingSelectedEvent
     , IWorkspaceChanged
 {
     private bool _graphsOpen;
@@ -92,7 +93,10 @@ public class InspectorPlugin : DiagramPlugin
     public virtual IEnumerable<PropertyFieldViewModel> GetInspectorOptions(DiagramViewModel diagramViewModel)
     {
         var dataObject = this.Selected;
-        if (dataObject == null) yield break;
+        if (dataObject == null)
+        {
+            dataObject = diagramViewModel.GraphData;
+        }
         foreach (var item in dataObject.GetPropertiesWithAttribute<InspectorProperty>())
         {
             var property = item.Key;
@@ -226,5 +230,10 @@ public class InspectorPlugin : DiagramPlugin
         UpdateItems();
         Selected = null;
         UpdateSelection(null);
+    }
+
+    public void NothingSelected()
+    {
+        UpdateSelection(InvertGraphEditor.CurrentDiagramViewModel);
     }
 }

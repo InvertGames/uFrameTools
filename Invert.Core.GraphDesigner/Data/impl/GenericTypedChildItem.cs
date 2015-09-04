@@ -11,6 +11,7 @@ public interface ITypeInfo
     string TypeName { get; }
     string FullName { get; }
     IEnumerable<IMemberInfo> GetMembers();
+    bool IsAssignableTo(ITypeInfo info);
 }
 
 public interface IMemberInfo
@@ -67,6 +68,16 @@ public class SystemTypeInfo : ITypeInfo
         {
             yield return new DefaultMemberInfo() { MemberName = item.Name, MemberType = new SystemTypeInfo(item.PropertyType) };
         }
+    }
+
+    public bool IsAssignableTo(ITypeInfo info)
+    {
+        var systemInfo = info as SystemTypeInfo;
+        if (systemInfo != null)
+        {
+            return systemInfo.SystemType.IsAssignableFrom(SystemType);
+        }
+        return info.FullName == FullName;
     }
 }
 public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, ISerializeablePropertyData, IDataRecordRemoved, IMemberInfo
