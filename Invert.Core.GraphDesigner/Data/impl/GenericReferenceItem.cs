@@ -197,7 +197,7 @@ namespace Invert.Core.GraphDesigner
 
         }
 
-        public override IEnumerable<IGraphItem> GetAllowed()
+        public override IEnumerable<IDataRecord> GetAllowed()
         {
             yield break;
         }

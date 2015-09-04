@@ -33,6 +33,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                if (ConnectorFor == null) return "ConnetorFor is null";
                 var item = ConnectorFor.DataObject as IDiagramNodeItem;
                 if (item != null && item.Node != item)
                 {

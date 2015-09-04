@@ -302,9 +302,10 @@ public class ShellNodeConfigViewModelTemplate : GenericNodeViewModel<GenericNode
             }
             else
             {
-                Ctx.SetBaseTypeArgument(Ctx.Data.ClassName);
+               // Ctx.SetType(Ctx.Data.ClassName + "ViewModel");
             }
-
+            
+            
         }
 
     }

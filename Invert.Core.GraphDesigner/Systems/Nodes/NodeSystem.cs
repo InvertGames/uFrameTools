@@ -17,7 +17,8 @@ namespace Invert.Core.GraphDesigner
         IExecuteCommand<DeleteCommand>,
         IExecuteCommand<ShowCommand>,
         IExecuteCommand<HideCommand>,
-        IExecuteCommand<PullNodeCommand>
+        IExecuteCommand<PullNodeCommand>,
+        IOnMouseUpEvent
     {
 
         public void QueryContextMenu(ContextMenuUI ui, MouseEvent evt, object obj)
@@ -156,6 +157,11 @@ namespace Invert.Core.GraphDesigner
                 
             }
             
+        }
+
+        public void OnMouseUp(Drawer drawer, MouseEvent mouseEvent)
+        {
+            Container.Resolve<IRepository>().Commit();
         }
     }
 }

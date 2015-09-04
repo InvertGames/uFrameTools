@@ -70,6 +70,9 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers.designer.cs">
       <Link>Drawers.designer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ActionGroupNodeDrawer.cs">
+      <Link>ActionGroupNodeDrawer.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\ActionNodeDrawer.cs">
       <Link>ActionNodeDrawer.cs</Link>
     </Compile>
@@ -114,6 +117,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\EntityNodeDrawer.cs">
       <Link>EntityNodeDrawer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\EnumValueNodeDrawer.cs">
+      <Link>EnumValueNodeDrawer.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Drawers\EventNodeDrawer.cs">
       <Link>EventNodeDrawer.cs</Link>
@@ -199,6 +205,9 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes.designer.cs">
       <Link>Nodes.designer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ActionGroupNode.cs">
+      <Link>ActionGroupNode.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\ActionNode.cs">
       <Link>ActionNode.cs</Link>
     </Compile>
@@ -243,6 +252,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\EntityNode.cs">
       <Link>EntityNode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\EnumValueNode.cs">
+      <Link>EnumValueNode.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\Nodes\EventNode.cs">
       <Link>EventNode.cs</Link>
@@ -364,6 +376,9 @@
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels.designer.cs">
       <Link>ViewModels.designer.cs</Link>
     </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ActionGroupNodeViewModel.cs">
+      <Link>ActionGroupNodeViewModel.cs</Link>
+    </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\ActionNodeViewModel.cs">
       <Link>ActionNodeViewModel.cs</Link>
     </Compile>
@@ -408,6 +423,9 @@
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\EntityNodeViewModel.cs">
       <Link>EntityNodeViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\EnumValueNodeViewModel.cs">
+      <Link>EnumValueNodeViewModel.cs</Link>
     </Compile>
     <Compile Include="..\..\Assets\uFrameECS\Editor\Editor\ViewModels\EventNodeViewModel.cs">
       <Link>EventNodeViewModel.cs</Link>

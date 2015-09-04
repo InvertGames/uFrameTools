@@ -49,16 +49,22 @@ namespace Invert.Core.GraphDesigner
         {
             if (IsUndoRedo) return;
             if (CurrentUndoGroupId == null || record is UndoItem || record is RedoItem) return;
-
-            var undoItem = new UndoItem();
-            undoItem.Time = DateTime.Now;
-            undoItem.Group = CurrentUndoGroupId;
-            undoItem.DataRecordId = record.Identifier;
-            undoItem.Data = InvertJsonExtensions.SerializeObject(record).ToString();
-            undoItem.RecordType = record.GetType().AssemblyQualifiedName;
-            undoItem.Type = UndoType.Changed;
-            undoItem.Name = CurrentName;
-            UndoItems.Add(undoItem);  
+            try
+            {
+                var undoItem = new UndoItem();
+                undoItem.Time = DateTime.Now;
+                undoItem.Group = CurrentUndoGroupId;
+                undoItem.DataRecordId = record.Identifier;
+                undoItem.Data = InvertJsonExtensions.SerializeObject(record).ToString();
+                undoItem.RecordType = record.GetType().AssemblyQualifiedName;
+                undoItem.Type = UndoType.Changed;
+                undoItem.Name = CurrentName;
+                UndoItems.Add(undoItem);
+            }
+            catch (Exception ex)
+            {
+                
+            }
         }
 
         public void RecordInserted(IDataRecord record)

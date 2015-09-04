@@ -241,10 +241,10 @@ namespace Invert.Core.GraphDesigner
                         if (connection == null) continue;
                         var node1 = node;
                         var message = string.Format("Create {0}", name);
-                        if (!string.IsNullOrEmpty(connector.Name))
-                        {
-                            message += string.Format(" and connect to {0}", connector.Name);
-                        }
+                        //if (!string.IsNullOrEmpty(connector.Name))
+                        //{
+                        //    message += string.Format(" and connect to {0}", connector.Name);
+                        //}
                         var value = new KeyValuePair<IDiagramNode, ConnectionViewModel>(node1, connection);
 
                         var qaItem = new SelectionMenuItem("Connect", message,() =>

@@ -170,9 +170,9 @@ namespace Invert.Core.GraphDesigner
             cd.InputIdentifier = item.Identifier;
             cd.OutputIdentifier = Identifier;
         }
-        public virtual IEnumerable<IGraphItem> GetAllowed()
+        public virtual IEnumerable<IDataRecord> GetAllowed()
         {
-            return Repository.AllOf<IGraphItem>();
+            return Repository.AllOf<IDataRecord>();
         }
 
         public virtual bool AllowSelection
@@ -249,8 +249,23 @@ namespace Invert.Core.GraphDesigner
         GraphItems
     }
     [Browsable(false)]
-    public partial class GenericNode : GraphNode, IConnectable
+    public partial class GenericNode : GraphNode, IConnectable, ITypeInfo
     {
+        public virtual string TypeName
+        {
+            get
+            {
+                return Name;
+            }
+        }
+
+        public virtual IEnumerable<IMemberInfo> GetMembers()
+        {
+            foreach (var item in PersistedItems.OfType<IMemberInfo>())
+            {
+                yield return item;
+            }
+        }
         public override void MoveItemDown(IDiagramNodeItem nodeItem)
         {
             base.MoveItemDown(nodeItem);
@@ -724,6 +739,7 @@ namespace Invert.Core.GraphDesigner
     {
         
         private string _name1;
+        private Type _type;
 
         public override string FullName
         {
@@ -746,8 +762,26 @@ namespace Invert.Core.GraphDesigner
             get { return Name; }
             set { Name = value; }
         }
-        
-        
+
+        public Type Type
+        {
+            get { return _type ?? (_type = InvertApplication.FindTypeByName(Name)); }
+            set { _type = value; }
+        }
+
+        public override IEnumerable<IMemberInfo> GetMembers()
+        {
+            foreach (var item in new SystemTypeInfo(Type).GetMembers())
+            {
+                yield return item;
+            }
+        }
+
+        public override void Validate(List<ErrorInfo> errors)
+        {
+            base.Validate(errors);
+           
+        }
     }
 
     public class TypeReferenceNodeViewModel : DiagramNodeViewModel<TypeReferenceNode>

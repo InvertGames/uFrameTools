@@ -1,12 +1,75 @@
 using System;
 using System.CodeDom;
+using System.Collections.Generic;
 using System.Linq;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Data;
 using Invert.Json;
+public interface ITypeInfo
+{
+    string TypeName { get; }
+    string FullName { get; }
+    IEnumerable<IMemberInfo> GetMembers();
+}
 
-public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, ISerializeablePropertyData, IDataRecordRemoved
+public interface IMemberInfo
+{
+    string MemberName { get;  }
+    ITypeInfo MemberType { get; }
+}
+
+public class DefaultMemberInfo : IMemberInfo
+{
+    public string MemberName { get; set; }
+    public ITypeInfo MemberType { get; set; }
+}
+
+public class SystemTypeInfo : ITypeInfo
+{
+    public Type SystemType { get; set; }
+    public ITypeInfo Other { get; set; }
+    public SystemTypeInfo(Type systemType)
+    {
+        SystemType = systemType;
+    }
+
+    public SystemTypeInfo(Type systemType, ITypeInfo other)
+    {
+        SystemType = systemType;
+        Other = other;
+    }
+
+    public string TypeName
+    {
+        get { return SystemType.Name; }
+    }
+
+    public string FullName
+    {
+        get { return SystemType.FullName; }
+    }
+
+    public virtual IEnumerable<IMemberInfo> GetMembers()
+    {
+        if (Other != null)
+        {
+            foreach (var item in Other.GetMembers())
+            {
+                yield return item;
+            }
+        }
+        foreach (var item in SystemType.GetFields())
+        {
+            yield return new DefaultMemberInfo() { MemberName = item.Name, MemberType = new SystemTypeInfo(item.FieldType) };
+        }
+        foreach (var item in SystemType.GetProperties())
+        {
+            yield return new DefaultMemberInfo() { MemberName = item.Name, MemberType = new SystemTypeInfo(item.PropertyType) };
+        }
+    }
+}
+public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, ISerializeablePropertyData, IDataRecordRemoved, IMemberInfo
 {
     protected string _type = string.Empty;
 
@@ -31,7 +94,7 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
         get { return _type; }
         set
         {
-            
+
             this.Changed("RelatedType", ref _type, value);
         }
     }
@@ -56,7 +119,7 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
             if (relatedNode != null)
                 return relatedNode.Name;
 
-            return string.IsNullOrEmpty(RelatedType) ?  DefaultTypeName : RelatedType;
+            return string.IsNullOrEmpty(RelatedType) ? DefaultTypeName : RelatedType;
         }
     }
 
@@ -65,7 +128,7 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
         get
         {
 
-            var result =  this.OutputTo<IClassTypeNode>();
+            var result = this.OutputTo<IClassTypeNode>();
             if (result == null)
             {
                 return this.Repository.AllOf<IClassTypeNode>().FirstOrDefault(p => p.Identifier == RelatedType) as IClassTypeNode;
@@ -141,11 +204,26 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
 
     }
 
-    public void RecordRemoved(IDataRecord record)
+    public override void RecordRemoved(IDataRecord record)
     {
         if (RelatedType == record.Identifier)
         {
             RemoveType();
         }
+    }
+
+    public virtual string MemberName { get { return this.Name; } }
+    public virtual ITypeInfo MemberType
+    {
+        get
+        {
+            var relatedNode = this.OutputTo<ITypeInfo>();
+            if (relatedNode != null)
+            {
+                return relatedNode;
+            }
+            return new SystemTypeInfo(InvertApplication.FindTypeByNameExternal(RelatedType));
+        }
+     
     }
 }

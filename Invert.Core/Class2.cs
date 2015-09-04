@@ -259,6 +259,8 @@ namespace Invert.Core
                     foreach (var item in assembly.GetTypes())
                     {
                         if (item.Name == name)
+                            return item;    
+                        if (item.FullName == name)
                             return item;
                     }
                 }
@@ -281,6 +283,8 @@ namespace Invert.Core
                     foreach (var item in assembly.GetTypes())
                     {
                         if (item.Name == name)
+                            return item;
+                        if (item.FullName == name)
                             return item;
                     }
                 }

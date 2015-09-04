@@ -2,6 +2,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using Invert.Core.GraphDesigner;
+using Invert.Data;
 
 [TemplateClass(TemplateLocation.Both, ClassNameFormat = "{0}")]
 public class ShellSlotItemTemplate : GenericSlot, IClassTemplate<IShellSlotType>
@@ -54,9 +55,9 @@ public class ShellSlotItemTemplate : GenericSlot, IClassTemplate<IShellSlotType>
         get { return true; }
     }
     [GenerateMethod(CallBase = false)]
-    public override IEnumerable<IGraphItem> GetAllowed()
+    public override IEnumerable<IDataRecord> GetAllowed()
     {
-        Ctx._(string.Format("return Repository.AllOf<{0}>().OfType<IGraphItem>();", Ctx.Data.ReferenceClassName));
+        Ctx._(string.Format("return Repository.AllOf<{0}>().OfType<IDataRecord>();", Ctx.Data.ReferenceClassName));
         yield break;
     }
 

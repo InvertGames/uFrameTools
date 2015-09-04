@@ -227,7 +227,7 @@ namespace Invert.Core.GraphDesigner
 
         public static WorkspaceConfiguration WorkspaceConfig<TWorkspaceType>(this IUFrameContainer container)
         {
-            return container.Resolve<WorkspaceConfiguration>(typeof(TWorkspaceType).Name);
+            return container.Resolve<WorkspaceConfiguration>(typeof(TWorkspaceType).Name) ?? container.AddWorkspaceConfig<TWorkspaceType>(typeof(TWorkspaceType).Name);
         }
     }
     public class WorkspaceGraphConfiguration

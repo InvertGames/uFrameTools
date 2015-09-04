@@ -6,11 +6,28 @@ using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
 {
+    public interface ICompilationMode
+    {
+        
+    }
+
+    public enum CompilationMode
+    {
+        OnlyWhenActive,
+        Always
+    }
     public class Workspace : IDataRecord, IDataRecordRemoved, IItem
     {
         private string _name;
         private string _currentGraphId;
 
+        public virtual CompilationMode CompilationMode
+        {
+            get
+            {
+                return CompilationMode.OnlyWhenActive;
+            }
+        }
         [JsonProperty]
         public string Identifier { get; set; }
 

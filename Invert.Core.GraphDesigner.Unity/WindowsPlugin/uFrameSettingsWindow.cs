@@ -88,7 +88,7 @@ public class uFrameSettingsWindow : EditorWindow
         //if (GUIHelpers.DoToolbarEx("Plugins - Enabled"))
         //{
             foreach (
-                var plugin in InvertApplication.Plugins.Where(p => !p.Required && !p.Ignore).OrderBy(p=>p.LoadPriority))
+                var plugin in InvertApplication.Plugins.OrderBy(p => p.Title)) //.Where(p => !p.Required && !p.Ignore)
             {
                 DoPlugin(plugin);
             }

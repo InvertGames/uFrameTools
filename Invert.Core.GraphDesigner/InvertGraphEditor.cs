@@ -697,7 +697,7 @@ namespace Invert.Core.GraphDesigner
 
         public static void RegisterTemplate<TFor, TTemplate>()
             where TTemplate : class, IClassTemplate<TFor>, new()
-            where TFor : class, IDiagramNodeItem
+            where TFor : class, IDataRecord
         {
             var type = typeof(TemplateClassGenerator<TFor, TTemplate>);
             List<Type> list;

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Invert.Data;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
@@ -31,7 +32,8 @@ namespace Invert.Core.GraphDesigner
         IClassTemplate Template { get; } 
     }
 
-    public class TemplateClassGenerator<TData, TTemplateType> : CodeGenerator, ITemplateClassGenerator where TData : class, IDiagramNodeItem
+    public class TemplateClassGenerator<TData, TTemplateType> : CodeGenerator, ITemplateClassGenerator
+        where TData : class, IDataRecord
         where TTemplateType : class, IClassTemplate<TData>, new()
     {
         private CodeTypeDeclaration _decleration;
@@ -66,7 +68,7 @@ namespace Invert.Core.GraphDesigner
                     return template.OutputPath + ".designer.cs";
                 }
 
-                return Path.Combine(template.OutputPath,ClassName(Data) + ".cs");
+                return Path.Combine(template.OutputPath, ClassName(Data as IDiagramNodeItem) + ".cs");
             }
             set { base.Filename = value; }
         }
@@ -145,10 +147,12 @@ namespace Invert.Core.GraphDesigner
 
         public virtual string ClassName(IDiagramNodeItem node)
         {
+            if (node == null) return string.Empty;
             if (!string.IsNullOrEmpty(ClassNameFormat))
             {
                 return Regex.Replace(string.Format(ClassNameFormat, node.Name), @"[^a-zA-Z0-9_\.]+", "");
             }
+
             var typeNode = node as IClassTypeNode;
             if (typeNode != null)
             {
@@ -159,6 +163,7 @@ namespace Invert.Core.GraphDesigner
 
         public virtual string ClassNameBase(IDiagramNodeItem node)
         {
+            if (node == null) return string.Empty;
             if (IsDesignerFileOnly)
                 return ClassName(node);
 
@@ -205,7 +210,7 @@ namespace Invert.Core.GraphDesigner
             }
             if (IsDesignerFile && Attribute.Location != TemplateLocation.DesignerFile)
             {
-                Decleration.Name = ClassNameBase(Data);
+                Decleration.Name = ClassNameBase(Data as IDiagramNodeItem);
                 if (inheritable != null && inheritable.BaseNode != null)
                 {
 
@@ -214,13 +219,13 @@ namespace Invert.Core.GraphDesigner
                 }
 
             }
-            else
+            else 
             {
-                Decleration.Name = ClassName(Data);
+                Decleration.Name = ClassName(Data as IDiagramNodeItem);
                 if (Attribute.Location != TemplateLocation.DesignerFile)
                 {
                     Decleration.BaseTypes.Clear();
-                    Decleration.BaseTypes.Add(ClassNameBase(Data));
+                    Decleration.BaseTypes.Add(ClassNameBase(Data as IDiagramNodeItem));
                 }
 
             }
@@ -903,11 +908,15 @@ namespace Invert.Core.GraphDesigner
         private CodeStatementCollection _currentStatements;
         private IDiagramNodeItem _item;
         public bool IsDesignerFile { get; set; }
-        public IDiagramNodeItem DataObject { get; set; }
+        public IDataRecord DataObject { get; set; }
 
+        public IDiagramNodeItem NodeItem
+        {
+            get { return DataObject as IDiagramNodeItem; }
+        }
         public IDiagramNodeItem Item
         {
-            get { return _item ?? DataObject; }
+            get { return _item ?? NodeItem; }
             set { _item = value; }
         }
 
