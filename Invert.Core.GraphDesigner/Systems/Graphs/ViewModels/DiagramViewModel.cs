@@ -611,14 +611,14 @@ namespace Invert.Core.GraphDesigner
 
         //}
 
-        public void AddNode(IDiagramNode newNodeData)
+        public FilterItem AddNode(IDiagramNode newNodeData)
         {
-            AddNode(newNodeData, LastMouseEvent.MouseDownPosition);
+            return AddNode(newNodeData, LastMouseEvent.MouseDownPosition);
         }
 
         public MouseEvent LastMouseEvent { get; set; }
 
-        public void AddNode(IDiagramNode newNodeData, Vector2 position)
+        public FilterItem AddNode(IDiagramNode newNodeData, Vector2 position)
         {
             newNodeData.GraphId = GraphData.Identifier;
             CurrentRepository.Add(newNodeData);
@@ -627,7 +627,7 @@ namespace Invert.Core.GraphDesigner
                 newNodeData.Name =
                     CurrentRepository.GetUniqueName("New" + newNodeData.GetType().Name.Replace("Data", ""));
        
-            GraphData.CurrentFilter.ShowInFilter(newNodeData,position);
+            return GraphData.CurrentFilter.ShowInFilter(newNodeData,position);
         }
 
         public IEnumerable<object> ContextObjects

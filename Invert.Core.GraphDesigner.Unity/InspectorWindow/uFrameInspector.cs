@@ -53,17 +53,21 @@ public class InspectorPlugin : DiagramPlugin
 
     public void DrawInspector()
     {
-      
-    
-        if (Fields == null) return;
-        if (GUIHelpers.DoToolbarEx("Properties"))
+        if (Groups == null) return;
+        foreach (var group in Groups)
         {
-            foreach (var item in Fields)
+            if (GUIHelpers.DoToolbarEx(group.Key))
             {
-                var d = InvertGraphEditor.PlatformDrawer as UnityDrawer;
-                d.DrawInspector(item);
+                foreach (var item in group)
+                {
+                    var d = InvertGraphEditor.PlatformDrawer as UnityDrawer;
+                    d.DrawInspector(item);
+                }
             }
+            
         }
+        
+       
      
     }
 
@@ -90,44 +94,40 @@ public class InspectorPlugin : DiagramPlugin
         if (uFrameInspectorWindow.Instance != null)
             uFrameInspectorWindow.Instance.Repaint();
     }
-    public virtual IEnumerable<PropertyFieldViewModel> GetInspectorOptions(DiagramViewModel diagramViewModel)
+    public virtual IEnumerable<PropertyFieldViewModel> GetInspectorOptions(object obj)
     {
-        var dataObject = this.Selected;
-        if (dataObject == null)
-        {
-            dataObject = diagramViewModel.GraphData;
-        }
-        foreach (var item in dataObject.GetPropertiesWithAttribute<InspectorProperty>())
+        if (obj == null) yield break;
+        foreach (var item in obj.GetPropertiesWithAttribute<InspectorProperty>())
         {
             var property = item.Key;
             var attribute = item.Value;
             var fieldViewModel = new PropertyFieldViewModel()
             {
                 Name = property.Name,
-                
-
             };
-            fieldViewModel.Getter = () => property.GetValue(dataObject, null);
-            fieldViewModel.Setter = _ => property.SetValue(dataObject, _, null);
+            fieldViewModel.Getter = () => property.GetValue(obj, null);
+            fieldViewModel.Setter = _ => property.SetValue(obj, _, null);
             fieldViewModel.InspectorType = attribute.InspectorType;
             fieldViewModel.Type = property.PropertyType;
-            fieldViewModel.DiagramViewModel = diagramViewModel;
+            fieldViewModel.DataObject = obj;
             fieldViewModel.CustomDrawerType = attribute.CustomDrawerType;
             fieldViewModel.CachedValue = fieldViewModel.Getter();
             yield return fieldViewModel;
         }
     }
-    private void UpdateSelection(DiagramViewModel diagramViewModel)
+    private void UpdateSelection()
     {
+        Groups = Selected.SelectMany(x => GetInspectorOptions(x)).GroupBy(p=>p.DataObject.GetType().Name).ToArray();
         
-        Fields = GetInspectorOptions(diagramViewModel).ToArray();
+
         if (uFrameInspectorWindow.Instance != null)
             uFrameInspectorWindow.Instance.Repaint();
     }
 
-    public PropertyFieldViewModel[] Fields { get; set; }
+    public IGrouping<string, PropertyFieldViewModel>[] Groups { get; set; }
 
-    public IDataRecord Selected { get; set; }
+
+    public IDataRecord[] Selected { get; set; }
 
     public void RecordInserted(IDataRecord record)
     {
@@ -144,11 +144,31 @@ public class InspectorPlugin : DiagramPlugin
 
     public void SelectionChanged(GraphItemViewModel selected)
     {
-        Selected = selected.DataObject as IDataRecord;
-        if (Selected != null)
-        UpdateSelection(selected.DiagramViewModel);
+        SelectItem(selected.DataObject as IDataRecord);
     }
 
+    public void SelectItem(IDataRecord item)
+    {
+        var list = new List<IDataRecord>();
+
+        if (WorkspaceService != null)
+        {
+            if (WorkspaceService.CurrentWorkspace != null)
+            {
+                list.Add(WorkspaceService.CurrentWorkspace);
+                if (WorkspaceService.CurrentWorkspace.CurrentGraph != null)
+                {
+                    list.Add(WorkspaceService.CurrentWorkspace.CurrentGraph);
+                }
+            }
+        }
+        if (item != null)
+        {
+            list.Add(item);
+        }
+        Selected = list.ToArray();
+        UpdateSelection();
+    }
     public void DrawExplorer()
     {
         if (Repository == null) return;
@@ -227,13 +247,11 @@ public class InspectorPlugin : DiagramPlugin
     }
     public void WorkspaceChanged(Workspace workspace)
     {
-        UpdateItems();
-        Selected = null;
-        UpdateSelection(null);
+        SelectItem(null);
     }
 
     public void NothingSelected()
     {
-        UpdateSelection(InvertGraphEditor.CurrentDiagramViewModel);
+        SelectItem(null);
     }
 }

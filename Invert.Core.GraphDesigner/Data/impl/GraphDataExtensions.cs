@@ -9,20 +9,22 @@ namespace Invert.Core.GraphDesigner
 {
     public static class GraphDataExtensions
     {
-        public static void ShowInFilter(this IGraphFilter filter, IDiagramNode node, Vector2 position, bool collapsed = false)
+        public static FilterItem ShowInFilter(this IGraphFilter filter, IDiagramNode node, Vector2 position, bool collapsed = false)
         {
-            filter.Repository.Add(new FilterItem()
+            var filterItem = new FilterItem()
             {
                 FilterId = filter.Identifier,
                 NodeId = node.Identifier,
                 Position = position,
                 Collapsed = collapsed
-            });
+            };
+            filter.Repository.Add(filterItem);
             var filterNode = filter as IDiagramNode;
             if (filterNode != null)
             {
                 filterNode.NodeAddedInFilter(node);
             }
+            return filterItem;
         }
         public static void HideInFilter(this IGraphFilter filter, IDiagramNode node)
         {

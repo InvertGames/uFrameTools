@@ -367,7 +367,7 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _config ?? (_config = Repository.GetSingle<uFrameDatabaseConfig>()); }
         }
-
+        [InspectorProperty]
         public string Namespace
         {
             get
