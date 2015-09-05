@@ -909,7 +909,9 @@ namespace Invert.Core.GraphDesigner.Unity
                 case InvertStyles.DefaultLabelLarge:
                     return EditorStyles.largeLabel;
                 case InvertStyles.Tag1:
-                    return ElementDesignerStyles.Tag1;
+                    return ElementDesignerStyles.Tag1;         
+                case InvertStyles.ListItemTitleStyle:
+                    return ElementDesignerStyles.ListItemTitleStyle;
                 case InvertStyles.BreadcrumbBoxStyle:
                     return ElementDesignerStyles.BreadcrumbBoxStyle;            
                 case InvertStyles.BreadcrumbBoxActiveStyle:

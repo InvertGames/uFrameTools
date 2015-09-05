@@ -31,7 +31,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void BeforeDrawGraph(Rect diagramRect)
         {
-            _scrollPosition = GUI.BeginScrollView(diagramRect, _scrollPosition, DesignerWindow.DiagramViewModel.DiagramBounds);
+            _scrollPosition = GUI.BeginScrollView(diagramRect, _scrollPosition, DesignerWindow.DiagramViewModel.DiagramBounds.Pad(0,0,15,15));
         }
 
         public void AfterDrawDesignerWindow(Rect windowRect)
@@ -146,7 +146,7 @@ namespace Invert.Core.GraphDesigner.Unity
                     mouse.MouseDownPosition = mouse.MousePosition;
                     mouse.IsMouseDown = true;
                     mouse.MouseButton = e.button;
-
+                    mouse.ContextScroll = _scrollPosition;
                     if (e.button == 1)
                     {
                         e.Use();

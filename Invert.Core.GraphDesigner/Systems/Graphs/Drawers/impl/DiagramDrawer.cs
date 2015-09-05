@@ -398,7 +398,7 @@ namespace Invert.Core.GraphDesigner
             DiagramViewModel.Navigate();
 
             Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
-            Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
+            //Refresh((IPlatformDrawer)InvertGraphEditor.PlatformDrawer);
      
 
         }
