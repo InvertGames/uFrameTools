@@ -251,6 +251,8 @@ namespace Invert.Core.GraphDesigner
     [Browsable(false)]
     public partial class GenericNode : GraphNode, IConnectable, ITypeInfo
     {
+        public ITypeInfo InnerType { get { return null; }}
+
         public virtual string TypeName
         {
             get
@@ -668,6 +670,28 @@ namespace Invert.Core.GraphDesigner
         public static IEnumerable<KeyValuePair<PropertyInfo, ReferenceSection>> GetProxySections(Type nodeType)
         {
             return nodeType.GetPropertiesWithAttribute<ReferenceSection>();
+        }
+
+        public TSlotType GetSlot<TSlotType>(ref TSlotType field, string name, Action<TSlotType> initialize) where TSlotType : GenericSlot, new()
+        {
+            return GetSlot<TSlotType>(ref field, name, null, initialize);
+        }
+
+        public TSlotType GetSlot<TSlotType>(ref TSlotType field, string name, string identifier = null, Action<TSlotType> initialize = null) where TSlotType : GenericSlot, new()
+        {
+            if (field != null) return field;
+            field = new TSlotType()
+            {
+                Node = this,
+                Name = name,
+                Identifier = identifier ?? this.Identifier + ":" + name,
+                Repository = Repository,
+            };
+            if (initialize != null)
+            {
+                initialize(field);
+            }
+            return field;
         }
     }
 

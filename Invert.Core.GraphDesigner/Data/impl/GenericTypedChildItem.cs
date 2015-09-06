@@ -2,12 +2,15 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Invert.Core;
 using Invert.Core.GraphDesigner;
 using Invert.Data;
 using Invert.Json;
 public interface ITypeInfo
 {
+   
+    ITypeInfo InnerType { get; }
     string TypeName { get; }
     string FullName { get; }
     IEnumerable<IMemberInfo> GetMembers();
@@ -26,8 +29,10 @@ public class DefaultMemberInfo : IMemberInfo
     public ITypeInfo MemberType { get; set; }
 }
 
+
 public class SystemTypeInfo : ITypeInfo
 {
+
     public Type SystemType { get; set; }
     public ITypeInfo Other { get; set; }
     public SystemTypeInfo(Type systemType)
@@ -39,6 +44,19 @@ public class SystemTypeInfo : ITypeInfo
     {
         SystemType = systemType;
         Other = other;
+    }
+
+    public ITypeInfo InnerType
+    {
+        get
+        {
+            var genericType = SystemType.GetGenericArguments().FirstOrDefault();
+            if (genericType != null)
+            {
+                return new SystemTypeInfo(genericType);
+            }
+            return null;
+        }
     }
 
     public string TypeName
@@ -60,14 +78,19 @@ public class SystemTypeInfo : ITypeInfo
                 yield return item;
             }
         }
-        foreach (var item in SystemType.GetFields())
+        if (SystemType != null)
         {
-            yield return new DefaultMemberInfo() { MemberName = item.Name, MemberType = new SystemTypeInfo(item.FieldType) };
+            foreach (var item in SystemType.GetFields(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (item == null) continue;
+                yield return new DefaultMemberInfo() { MemberName = item.Name, MemberType = new SystemTypeInfo(item.FieldType) };
+            }
+            foreach (var item in SystemType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                yield return new DefaultMemberInfo() { MemberName = item.Name, MemberType = new SystemTypeInfo(item.PropertyType) };
+            }
         }
-        foreach (var item in SystemType.GetProperties())
-        {
-            yield return new DefaultMemberInfo() { MemberName = item.Name, MemberType = new SystemTypeInfo(item.PropertyType) };
-        }
+        
     }
 
     public bool IsAssignableTo(ITypeInfo info)
@@ -228,12 +251,12 @@ public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, I
     {
         get
         {
-            var relatedNode = this.OutputTo<ITypeInfo>();
+            var relatedNode = this.RelatedTypeNode as ITypeInfo;
             if (relatedNode != null)
             {
                 return relatedNode;
             }
-            return new SystemTypeInfo(InvertApplication.FindTypeByNameExternal(RelatedType));
+            return new SystemTypeInfo(InvertApplication.FindTypeByName(RelatedType));
         }
      
     }

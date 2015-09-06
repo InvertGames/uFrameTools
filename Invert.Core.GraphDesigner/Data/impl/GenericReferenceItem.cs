@@ -119,14 +119,14 @@ namespace Invert.Core.GraphDesigner
             get { return false; }
         }
 
-        public TFor Item
+        public virtual TFor Item
         {
             get
             {
-                if (typeof (IConnectable).IsAssignableFrom(typeof (TFor)))
-                {
+                //if (typeof (IConnectable).IsAssignableFrom(typeof (TFor)))
+                //{
                     return this.InputFrom<TFor>() ?? SelectedItem;
-                }
+                //}
                 return SelectedItem;
             }
         }
@@ -138,7 +138,7 @@ namespace Invert.Core.GraphDesigner
 
         public override bool AllowSelection
         {
-            get { return true; }
+            get { return this.InputFrom<TFor>() == null; }
         }
 
         protected virtual TFor SelectedItem

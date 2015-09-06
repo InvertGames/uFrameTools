@@ -37,12 +37,14 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerator ValidateGraph()
         {
-            var items = Container.Resolve<IRepository>().AllOf<IDiagramNode>();
-           // var total = 100f / items.Length;
-            foreach(var item in items)
+            var ws = Container.Resolve<WorkspaceService>();
+            if (ws == null || ws.CurrentWorkspace == null || ws.CurrentWorkspace.CurrentGraph == null) yield break;
+            var items =  ws.CurrentWorkspace.CurrentGraph.NodeItems.ToArray();
+            var total = 100f / items.Length;
+            for (int index = 0; index < items.Length; index++)
             {
-                
-                yield return new TaskProgress("Validating " + item.Name, 98f);
+                var item = items[index];
+                yield return new TaskProgress("Validating " + item.Name, index * total);
                 ValidateNode(item);
             }
         }
