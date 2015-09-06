@@ -3,15 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Invert.Data;
+using UnityEditor;
 
 namespace Invert.Core.GraphDesigner
 {
+ 
     public class CompilingSystem : DiagramPlugin
         , IToolbarQuery
         , IExecuteCommand<SaveAndCompileCommand>
+       
     {
+   
         public void QueryToolbarCommands(ToolbarUI ui)
         {
             ui.AddCommand(new ToolbarItem()
@@ -20,7 +25,8 @@ namespace Invert.Core.GraphDesigner
                 Title = "Save & Compile",
                 Position = ToolbarPosition.Right,
                 Description = "Start code generation process. This generates C# code based on the nodes and items in the diagram."
-            });
+            });     
+          
         }
 
         public void Execute(SaveAndCompileCommand command)
@@ -111,6 +117,8 @@ namespace Invert.Core.GraphDesigner
                 InvertGraphEditor.Platform.RefreshAssets();
 #endif
         }
+
+        
     }
     /// <summary>
     /// Events that are fired during the compilation process.
