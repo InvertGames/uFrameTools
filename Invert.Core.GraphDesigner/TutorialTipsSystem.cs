@@ -60,7 +60,7 @@ namespace Invert.Core.GraphDesigner
                 }
             });
 
-            Signal<INotify>(_ => _.NotifyWithActions(message, NotificationIcon.Info, items));
+            Signal<INotify>(_ => _.NotifyWithActions(message, NotificationIcon.Info, items.ToArray()));
         }
     }
 

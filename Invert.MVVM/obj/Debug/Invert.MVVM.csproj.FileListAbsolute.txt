@@ -20,5 +20,4 @@ C:\Invert\uFrameGit\uFrameTools\Invert.MVVM\bin\Debug\Invert.MVVM.dll
 C:\Invert\uFrameGit\uFrameTools\Invert.MVVM\bin\Debug\Invert.MVVM.pdb
 C:\Invert\uFrameGit\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.dll
 C:\Invert\uFrameGit\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.pdb
-C:\Invert\uFrameGit\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.csprojResolveAssemblyReference.cache
 D:\Invert\uFrameGit\uFrameTools\Invert.MVVM\obj\Debug\Invert.MVVM.csprojResolveAssemblyReference.cache
