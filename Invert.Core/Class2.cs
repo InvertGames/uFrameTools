@@ -443,7 +443,17 @@ namespace Invert.Core
             }
             catch (Exception ex)
             {
-                SignalEvent<INotify>(_=>_.Notify(ex.Message,NotificationIcon.Error));
+                SignalEvent<INotify>(_=>_.NotifyWithActions(ex.Message,NotificationIcon.Error,new NotifyActionItem()
+                {
+                    Title = "More...",
+                    Action = () =>
+                    {
+                        SignalEvent<IShowExceptionDetails>(__ => __.ShowExceptionDetails(new Problem()
+                        {
+                            Exception = ex
+                        }));
+                    }
+                }));
 #if DEBUG
                 LogException(ex);
 #endif
@@ -592,6 +602,11 @@ namespace Invert.Core
         }
     }
 
+    public interface IShowExceptionDetails
+    {
+        void ShowExceptionDetails(Problem problem);
+    }
+
     public interface ICommandExecuted
     {
         void CommandExecuted(ICommand command);
@@ -600,5 +615,18 @@ namespace Invert.Core
     public interface ICommandExecuting
     {
         void CommandExecuting(ICommand command);
+    }
+
+    public class Problem
+    {
+        private StackTrace _stackTrace;
+        public Exception Exception { get; set; }
+        public IItem Source { get; set; }
+
+        public StackTrace StackTrace
+        {
+            get { return _stackTrace ?? (Exception == null ? null : _stackTrace = new StackTrace(Exception)); }
+            set { _stackTrace = value; }
+        }
     }
 }

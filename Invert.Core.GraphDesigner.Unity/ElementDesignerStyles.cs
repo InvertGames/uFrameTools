@@ -1833,8 +1833,8 @@ namespace Invert.Common
             {
                 return _wizardActionButtonStyle ?? (_wizardActionButtonStyle = new GUIStyle()
             {
-                border = new RectOffset(10,10,10,10)
-                
+                border = new RectOffset(10,10,10,10),
+                alignment = TextAnchor.MiddleCenter
             }).WithAllStates("Box33",Color.white)
             .WithHoveredState("Box33_Hovered",Color.white);}
             set { _wizardActionButtonStyle = value; }

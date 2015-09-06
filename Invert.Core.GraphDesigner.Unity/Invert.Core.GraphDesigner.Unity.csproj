@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="ConsoleSystem\ConsoleViewModel.cs" />
     <Compile Include="ConsoleSystem\ConsoleDrawer.cs" />
+    <Compile Include="ProblemUISystem.cs" />
     <Compile Include="GraphTreeWindow.cs" />
     <Compile Include="Notifications\DesignerNotificationSystem.cs" />
     <Compile Include="QuickAccessUISystem.cs" />

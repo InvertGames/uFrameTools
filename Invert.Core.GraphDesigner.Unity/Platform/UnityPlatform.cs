@@ -20,6 +20,11 @@ namespace Invert.Core.GraphDesigner.Unity
             AssetDatabase.OpenAsset(scriptAsset);
         }
 
+        public void OpenLink(string link)
+        {
+            Application.OpenURL(link);
+        }
+
         public string GetAssetPath(object graphData)
         {
             return AssetDatabase.GetAssetPath(graphData as UnityEngine.Object);

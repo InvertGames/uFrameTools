@@ -188,6 +188,11 @@ namespace Invert.Core.GraphDesigner
         public static Rect InnerAlignWithBottomLeft(this Rect source, Rect target)
         {
             return new Rect(target.x, target.yMax - source.height, source.width, source.height);
+        }    
+        
+        public static Rect InnerAlignWithUpperRight(this Rect source, Rect target)
+        {
+            return new Rect(target.xMax - source.width, target.y, source.width, source.height);
         }
 
         public static Rect InnerAlignWithBottomCenter(this Rect source, Rect target)
@@ -227,6 +232,11 @@ namespace Invert.Core.GraphDesigner
         public static Rect StretchedVerticallyAlong(this Rect source, Rect target)
         {
             return new Rect(source.x, source.y, source.width, target.yMax - source.y);
+        }
+
+        public static Rect AddHeight(this Rect source, int height)
+        {
+            return new Rect(source.x, source.y, source.width, source.height + height);
         }
 
 
