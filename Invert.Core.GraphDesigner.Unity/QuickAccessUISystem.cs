@@ -115,7 +115,16 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public Rect CalculateBounds(Rect diagramRect)
         {
-            if (RequestPosition.HasValue) return new Rect().WithSize(QuickAccessWidth, QuickAccessHeigth).WithOrigin(RequestPosition.Value.x, RequestPosition.Value.y);
+            if (RequestPosition.HasValue)
+            {
+
+                var selectedItem = TreeModel.SelectedData as IItem;
+
+                var rect = new Rect().WithSize(QuickAccessWidth, selectedItem == null ? QuickAccessHeigth - 200 : QuickAccessHeigth).WithOrigin(RequestPosition.Value.x, RequestPosition.Value.y);
+                if (rect.yMax > diagramRect.yMax) rect = rect.WithOrigin(rect.x, diagramRect.yMax - rect.height - 15 );
+                if (rect.xMax > diagramRect.xMax) rect = rect.WithOrigin(diagramRect.xMax - rect.width - 15, rect.y);
+                return rect;
+            }
             return new Rect().WithSize(QuickAccessWidth, QuickAccessHeigth).CenterInsideOf(diagramRect);
         }
 

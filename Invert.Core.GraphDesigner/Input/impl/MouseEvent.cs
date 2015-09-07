@@ -47,6 +47,8 @@ namespace Invert.Core.GraphDesigner
 
         public Vector2 MouseUpPosition { get; set; }
 
+        public Vector2 ContextScroll { get; set; }
+
         public bool NoBubble { get; set; }
         public Vector2 MousePositionDeltaSnapped { get; set; }
 

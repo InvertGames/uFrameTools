@@ -77,6 +77,13 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
 //
 //    }
 
+
+
+    public int ItemHeight
+    {
+        get { return 17; }
+    }
+
     public void DrawTreeView(Rect bounds, TreeViewModel viewModel, Action<Vector2, IItem> itemClicked,
         Action<Vector2, IItem> itemRightClicked = null)
     {
@@ -122,15 +129,15 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
         //   PlatformDrawer.DrawLabel(new Rect().WithSize(100,100).InnerAlignWithBottomRight(bounds),"Total height: {0}, Total Items: {1}");
         var dirty = false;
         var position = bounds;
-        var usedRect = position.Pad(0, 0, 15, 0).WithHeight(25*viewModel.TreeData.Count(s => s.Visible));
+        var usedRect = position.WithWidth(Math.Max(bounds.width, PlatformDrawer.CalculateTextSize(viewModel.LargestString,CachedStyles.ListItemTitleStyle).x+5*viewModel.MaxIdentLevel)).Pad(0, 0, 15, 0).WithHeight(ItemHeight * viewModel.TreeData.Count(s => s.Visible));
 
         PlatformDrawer.DrawStretchBox(position.PadSides(-1),CachedStyles.WizardListItemBoxStyle,10);
 
-      
+        
 
         viewModel.Scroll = GUI.BeginScrollView(position, viewModel.Scroll, usedRect);
 
-        var itemTemplateRect = bounds.WithHeight(25);
+        var itemTemplateRect = bounds.WithHeight(ItemHeight);
         bool hasItems = false;
 
         foreach (var treeViewItem in viewModel.TreeData)
@@ -141,11 +148,11 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
 
             var treeData = data as ITreeItem;
 
-            var itemRect = itemTemplateRect.Pad(10*treeViewItem.Indent, 0, 10*treeViewItem.Indent, 0);
+            var itemRect = itemTemplateRect.Pad(5*treeViewItem.Indent, 0, 5*treeViewItem.Indent, 0);
             
             var localItemY = itemRect.Translate(0, -position.yMin).y;
 
-            var imageRect = new Rect().WithSize(16, 16)
+            var imageRect = new Rect().WithSize(12, 12)
                 .Align(itemRect)
                 .AlignHorisonallyByCenter(itemRect)
                 .Translate(5, 0);
@@ -157,7 +164,7 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
 
             if (treeViewItem == viewModel.ScrollTarget)
             {
-                viewModel.Scroll = new Vector2(0, localItemY-25*5);
+                viewModel.Scroll = new Vector2(0, localItemY - ItemHeight * 5);
                 viewModel.ScrollToItem(null);
             }
 
@@ -166,7 +173,7 @@ public class TreeViewUISystem : DiagramPlugin, IDrawTreeView, IQueryDesignerWind
                 PlatformDrawer.DrawStretchBox(itemRect, CachedStyles.WizardSubBoxStyle, 14);
             }
 
-            PlatformDrawer.DrawLabel(labelRect, treeViewItem.Data.Title, CachedStyles.BreadcrumbTitleStyle);
+            PlatformDrawer.DrawLabel(labelRect, treeViewItem.Data.Title, CachedStyles.ListItemTitleStyle);
             PlatformDrawer.DrawImage(imageRect, treeViewItem.Icon, true);
 
 
@@ -372,12 +379,15 @@ public class TreeViewModel
         TreeData.Clear();
         foreach (var items in Data)
         {
+         
             ExtractItems(TreeData, items, null, 0);
         }
     }
 
     public void Refresh()
     {
+        LargestString = "";
+        MaxIdentLevel = 0;
         if (Predicate == null)
         {
             foreach (var item in TreeData)
@@ -388,6 +398,8 @@ public class TreeViewModel
                 item.Icon = treeData == null || !treeData.Children.Any() ? "DotIcon" : treeData.Expanded ? "MinusIcon_Micro" : "PlusIcon_Micro";
                 item.Highlighted = false;
                 item.Selected = SelectedIndex == item.Index;
+                if (data.Title.Length > LargestString.Length) LargestString = data.Title;
+                if (item.Visible && item.Indent > MaxIdentLevel) MaxIdentLevel = item.Indent;
             }
         }
         else
@@ -424,6 +436,10 @@ public class TreeViewModel
                 }
 
                 item.Icon = treeData == null ? "DotIcon" : treeData.Expanded ? "MinusIcon_Micro" : "PlusIcon_Micro";
+
+                if (data.Title.Length > LargestString.Length) LargestString = data.Title;
+                if (item.Visible && item.Indent > MaxIdentLevel) MaxIdentLevel = item.Indent;
+
             }
         }
         IsDirty = false;
@@ -438,6 +454,7 @@ public class TreeViewModel
             Parent = parent,
             Indent = ident
         };
+ 
         items.Add(treeViewItem);
 
         var treeItem = data as ITreeItem;
@@ -454,6 +471,9 @@ public class TreeViewModel
             }
         }
     }
+
+    public int MaxIdentLevel { get; set; }
+    public string LargestString { get; set; }
 
     public void InvokeSubmit()
     {

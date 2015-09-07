@@ -134,6 +134,7 @@ namespace Invert.Common
         private static GUIStyle _tooltipBoxStyle;
         private static GUIStyle _wizardListItemBoxStyle;
         private static GUIStyle _searchBarText;
+        private static GUIStyle _listItemTitleStyle;
 
         public static GUIStyle AddButtonStyle
         {
@@ -2053,6 +2054,19 @@ namespace Invert.Common
             set { _searchBarText = value; }
         }
 
+        public static GUIStyle ListItemTitleStyle
+        {
+            get
+            {
+                return _listItemTitleStyle ?? (_listItemTitleStyle = new GUIStyle()
+                {
+                    wordWrap = true,
+                    alignment = TextAnchor.LowerCenter
+                }).WithFont("Verdana", 11)
+                    .WithAllStates(new Color(0.8f, 0.8f, 0.8f));
+            }
+            set { _listItemTitleStyle = value; }
+        }
         public static GUIStyle CreateHeader(string texture, Color color)
         {
             return new GUIStyle

@@ -285,6 +285,7 @@ namespace Invert.Core.GraphDesigner
         private static object _tooltipBoxStyle;
         private static object _wizardListItemBoxStyle;
         private static object _searchBarText;
+        private static object _listItemTitleStyle;
 
         public static object Item1
         {
@@ -526,6 +527,12 @@ namespace Invert.Core.GraphDesigner
         {
             get { return _breadcrumbTitleStyle ?? (_breadcrumbTitleStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.BreadcrumbTitleStyle)); }
             set { _breadcrumbTitleStyle = value; }
+        }      
+        
+        public static object ListItemTitleStyle
+        {
+            get { return _listItemTitleStyle ?? (_listItemTitleStyle = InvertGraphEditor.StyleProvider.GetStyle(InvertStyles.ListItemTitleStyle)); }
+            set { _listItemTitleStyle = value; }
         }
 
         public static object TabBoxStyle
@@ -664,7 +671,8 @@ namespace Invert.Core.GraphDesigner
         WizardSubBoxTitle,
         TooltipBox,
         WizardListItemBox,
-        SearchBarText
+        SearchBarText,
+        ListItemTitleStyle
     }
 
  
