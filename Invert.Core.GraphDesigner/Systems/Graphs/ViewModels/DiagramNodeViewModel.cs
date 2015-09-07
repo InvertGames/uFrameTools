@@ -119,13 +119,10 @@ namespace Invert.Core.GraphDesigner
             {
                 this.IsCollapsed = !IsCollapsed;
             });
-
+            IsExternal = GraphItemObject.Graph.Identifier != DiagramViewModel.GraphData.Identifier;
         }
 
-        public bool IsExternal
-        {
-            get { return GraphItemObject.Graph.Identifier != DiagramViewModel.GraphData.Identifier; }
-        }
+        public bool IsExternal { get; set; }
         public string TagsString
         {
             get { return string.Join(" | ", Tags.ToArray()); }

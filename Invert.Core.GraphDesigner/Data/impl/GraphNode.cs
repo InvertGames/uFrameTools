@@ -251,6 +251,7 @@ namespace Invert.Core.GraphDesigner
         private string _graphId;
         private bool _isSelected;
         private bool _expanded;
+        private IGraphData _graph;
 
         public IEnumerable<FlagItem> Flags
         {
@@ -372,6 +373,7 @@ namespace Invert.Core.GraphDesigner
             get { return _graphId; }
             set {
                 this.Changed("GraphId", ref  _graphId, value);
+                _graph = null;
             }
         }
 
@@ -383,7 +385,7 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 if (string.IsNullOrEmpty(GraphId)) return null;
-                return Repository.GetById<IGraphData>(GraphId);
+                return _graph ?? (_graph = Repository.GetById<IGraphData>(GraphId));
             }
             set
             {

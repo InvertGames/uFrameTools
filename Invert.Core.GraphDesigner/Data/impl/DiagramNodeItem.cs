@@ -119,6 +119,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
 
     private Rect _position;
     private string _nodeId;
+    private GraphNode _node;
 
     public abstract string FullLabel { get; }
 
@@ -144,14 +145,14 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
     {
         get { return _nodeId; }
         set {
-            _nodeId = value;
             this.Changed("NodeId", ref _nodeId, value);
+            _node = null;
         }
     }
 
     public GraphNode Node
     {
-        get { return Repository.GetById<GraphNode>(NodeId); }
+        get { return _node ?? (_node = Repository.GetById<GraphNode>(NodeId)); }
         set
         {
             if (value != null) NodeId = value.Identifier;
