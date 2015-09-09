@@ -96,6 +96,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
+                if (IsCurrentFilter)return BoldStyleSchema;
 
                 switch (NodeStyle)
                 {
