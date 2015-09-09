@@ -94,6 +94,7 @@
     <Compile Include="Systems\Graphs\ViewModels\IGraphSelectionEvents.cs" />
     <Compile Include="Systems\Graphs\ViewModels\TabViewModel.cs" />
     <Compile Include="Systems\Graphs\Drawers\Schemas\api\IBreadcrumbsStyleSchema.cs" />
+    <Compile Include="TutorialTipsSystem.cs" />
     <Compile Include="_UNDER_REVIEW\Windows\Area.cs" />
     <Compile Include="_UNDER_REVIEW\Windows\AreaLayout.cs" />
     <Compile Include="Code\CodeTemplates\api\ITemplate.cs" />
