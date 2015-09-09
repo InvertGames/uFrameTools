@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 
 namespace Invert.Core.GraphDesigner
-{ 
+{
     public interface ICommandUI
     {
         void AddCommand(ICommand command);
@@ -16,17 +16,17 @@ namespace Invert.Core.GraphDesigner
         void GoBottom();
     }
 
-    public class ContextMenus : DiagramPlugin, 
+    public class ContextMenus : DiagramPlugin,
         IShowContextMenu
     {
         public void Show(MouseEvent evt, params object[] objects)
         {
             var ui = InvertApplication.Container.Resolve<ContextMenuUI>();
-            
+
             foreach (var item in objects)
             {
                 var item1 = item;
-                Signal<IContextMenuQuery>(_ => _.QueryContextMenu(ui,evt, item1));
+                Signal<IContextMenuQuery>(_ => _.QueryContextMenu(ui, evt, item1));
             }
             ui.Go();
         }
@@ -38,7 +38,7 @@ namespace Invert.Core.GraphDesigner
 
         public string Title
         {
-            get { return _title ?? (_title = this.GetType().Name.Replace("Command",string.Empty)); }
+            get { return _title ?? (_title = this.GetType().Name.Replace("Command", string.Empty)); }
             set { _title = value; }
         }
     }
@@ -49,12 +49,19 @@ namespace Invert.Core.GraphDesigner
         public IGraphData GraphData { get; set; }
         public Vector2 Position { get; set; }
     }
-    
+
     public class RenameCommand : Command
     {
         public DiagramNodeViewModel ViewModel { get; set; }
     }
-     public class DeleteCommand : Command
+
+    public class ApplyRenameCommand : Command
+    {
+        public IDiagramNode Item { get; set; }
+        public string Old { get; set; }
+        public string Name { get; set; }
+    }
+    public class DeleteCommand : Command, IFileSyncCommand
     {
         public Invert.Data.IDataRecord Item { get; set; }
     }

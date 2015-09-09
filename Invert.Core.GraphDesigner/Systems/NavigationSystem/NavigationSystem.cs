@@ -17,6 +17,7 @@ namespace Invert.Core.GraphDesigner {
     {
         public void Execute(NavigateToNodeCommand nodeCommand)
         {
+
             var graph = nodeCommand.Node.Graph;
 
             var workspace = WorkspaceService.Workspaces.FirstOrDefault(p => p.Graphs.Any(x => x.Identifier == graph.Identifier));

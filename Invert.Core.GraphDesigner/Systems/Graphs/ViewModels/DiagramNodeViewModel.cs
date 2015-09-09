@@ -340,10 +340,17 @@ namespace Invert.Core.GraphDesigner
 
         public override string Name
         {
-            get { return GraphItemObject.Name; }
+            get
+            {
+                if (IsEditing)
+                {
+                    return editText;
+                }
+                return GraphItemObject.Name;
+            }
             set
             {
-                GraphItemObject.Name = value;
+                Rename(value);
                 OnPropertyChanged("Name");
             }
         }
@@ -500,29 +507,16 @@ namespace Invert.Core.GraphDesigner
 
         public void Rename(string newText)
         {
-
-            GraphItemObject.Rename(newText);
+            editText = newText;
 
         }
 
         public void EndEditing()
         {
             if (!IsEditable) return;
-            if (string.IsNullOrEmpty(GraphItemObject.Name))
-            {
-                GraphItemObject.Name = "RenameMe";
-            }
-            
             if (!IsEditing) return;
-            var n = GraphItemObject.Name;
-            GraphItemObject.Name = "_";
+            InvertApplication.Execute(new ApplyRenameCommand() {Item = GraphItemObject, Name = editText, Old = GraphItemObject.Name});
 
-            InvertApplication.Execute(new LambdaCommand("Rename Item", () =>
-            {
-                GraphItemObject.Rename(n);
-                GraphItemObject.EndEditing();
-            }));
-            InvertApplication.SignalEvent<INodeItemEvents>(_ => _.Renamed(GraphItemObject, editText, GraphItemObject.Name));
             Dirty = true;
         }
 
@@ -592,7 +586,7 @@ namespace Invert.Core.GraphDesigner
         public void BeginEditing()
         {
             if (!IsEditable) return;
-            editText = Name;
+            editText = GraphItemObject.Name;
             GraphItemObject.BeginEditing();
 
         }

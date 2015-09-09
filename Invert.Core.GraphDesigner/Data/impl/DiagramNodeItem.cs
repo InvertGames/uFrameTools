@@ -156,6 +156,7 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
         set
         {
             if (value != null) NodeId = value.Identifier;
+            _node = value;
         }
     }
 

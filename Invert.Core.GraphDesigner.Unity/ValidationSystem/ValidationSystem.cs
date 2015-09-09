@@ -5,8 +5,5 @@ using System.Text;
 
 namespace Invert.Core.GraphDesigner.Unity.ValidationSystem
 {
-    public class ValidationSystem : DiagramPlugin
-    {
-
-    }
+   
 }

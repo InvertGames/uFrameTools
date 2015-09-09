@@ -6,7 +6,7 @@ using Invert.Data;
 
 namespace Invert.Core.GraphDesigner
 {
-    public class PullNodeCommand : Command
+    public class PullNodeCommand : Command, IFileSyncCommand
     {
         public GraphNode Node { get; set; }
     }
@@ -18,6 +18,7 @@ namespace Invert.Core.GraphDesigner
         IExecuteCommand<ShowCommand>,
         IExecuteCommand<HideCommand>,
         IExecuteCommand<PullNodeCommand>,
+        IExecuteCommand<ApplyRenameCommand>,
         IOnMouseUpEvent
     {
 
@@ -162,6 +163,17 @@ namespace Invert.Core.GraphDesigner
         public void OnMouseUp(Drawer drawer, MouseEvent mouseEvent)
         {
             Container.Resolve<IRepository>().Commit();
+        }
+
+        public void Execute(ApplyRenameCommand command)
+        {
+            if (string.IsNullOrEmpty(command.Item.Name))
+            {
+                command.Item.Name = "RenameMe";
+            }
+            
+            command.Item.Rename(command.Name);
+            command.Item.EndEditing();
         }
     }
 }

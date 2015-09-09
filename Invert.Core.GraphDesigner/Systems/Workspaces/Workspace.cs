@@ -20,6 +20,7 @@ namespace Invert.Core.GraphDesigner
     {
         private string _name;
         private string _currentGraphId;
+        private IGraphData _currentGraph;
 
         public virtual CompilationMode CompilationMode
         {
@@ -50,6 +51,7 @@ namespace Invert.Core.GraphDesigner
             get { return _currentGraphId; }
             set {
                 this.Changed("CurrentGraphId", ref _currentGraphId, value);
+                _currentGraph = null;
             }
         }
 
@@ -58,9 +60,13 @@ namespace Invert.Core.GraphDesigner
             get
             {
                 if (string.IsNullOrEmpty(CurrentGraphId)) return null;
-                return Repository.GetById<IGraphData>(CurrentGraphId);
+                return _currentGraph ?? (_currentGraph = Repository.GetById<IGraphData>(CurrentGraphId));
             }
-            set { CurrentGraphId = value.Identifier; }
+            set
+            {
+                CurrentGraphId = value.Identifier;
+                _currentGraph = value;
+            }
         }
 
         public IEnumerable<IGraphData> Graphs

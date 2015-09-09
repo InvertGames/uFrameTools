@@ -75,7 +75,7 @@ namespace Invert.Core.GraphDesigner
         }
         public IEnumerable<GraphItemViewModel> SelectedGraphItems
         {
-            get { return AllViewModels.Where(p => p.IsSelected); }
+            get { return AllViewModels.Where(p=>p.IsSelected); }
         }
 
         public void NavigateTo(IDiagramNode node)
@@ -528,19 +528,36 @@ namespace Invert.Core.GraphDesigner
             {
                 InspectorViewModel.TargetViewModel = null;
             }
-            foreach (var item in AllViewModels.OfType<ItemViewModel>())
+        
+            foreach (var item in AllViewModels.ToArray())
             {
-                item.EndEditing();
-            }
-            foreach (var item in SelectedGraphItems)
-            {
+                var ivm = item as ItemViewModel;
+                if (ivm != null)
+                {
+                    if (ivm.IsEditing)
+                    {
+                        ivm.EndEditing();
+                        break;
+                    }
+                    
+                }
+                var nvm = item as DiagramNodeViewModel;
+                if (nvm != null)
+                {
+                    if (nvm.IsEditing)
+                    {
+                        nvm.EndEditing();
+                        break;
+                    }
+
+                }
+
+
+                if (item.IsSelected)
                 item.IsSelected = false;
             }
 
-            foreach (var item in GraphItems.OfType<DiagramNodeViewModel>())
-            {
-                item.EndEditing();
-            }
+
             InvertApplication.SignalEvent<INothingSelectedEvent>(_ => _.NothingSelected());
 #if UNITY_DLL
             UnityEngine.GUI.FocusControl("");

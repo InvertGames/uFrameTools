@@ -134,18 +134,18 @@ namespace Invert.Core.GraphDesigner
 
         public virtual void SetInput(IDataRecord item)
         {
-            if (!AllowMultipleInputs)
+            if (!AllowMultipleInputs || item == null)
             {
                 foreach (var input in Inputs)
                     Repository.Remove(input);
 
             }
-            if (!AllowMultipleOutputs)
+            if (!AllowMultipleOutputs || item == null)
             {
                 foreach (var output in Outputs)
                     Repository.Remove(output);
             }
-
+            if (item == null) return;
             
             var cd = Repository.Create<ConnectionData>();
             cd.InputIdentifier = Identifier;

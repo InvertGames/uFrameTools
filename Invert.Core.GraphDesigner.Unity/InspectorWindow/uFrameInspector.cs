@@ -12,7 +12,11 @@ using UnityEngine;
 
 public interface IDrawInspector
 {
-    void DrawInspector();
+    void DrawInspector(Rect rect);
+}
+public interface IDrawErrorsList
+{
+    void DrawErrors(Rect rect);
 }
 
 public interface IDrawExplorer
@@ -51,8 +55,9 @@ public class InspectorPlugin : DiagramPlugin
 
     public IRepository Repository { get; set; }
 
-    public void DrawInspector()
+    public void DrawInspector(Rect rect)
     {
+     
         if (Groups == null) return;
         foreach (var group in Groups)
         {
@@ -64,9 +69,8 @@ public class InspectorPlugin : DiagramPlugin
                     d.DrawInspector(item);
                 }
             }
-            
         }
-        
+
        
      
     }
@@ -253,5 +257,56 @@ public class InspectorPlugin : DiagramPlugin
     public void NothingSelected()
     {
         SelectItem(null);
+    }
+}
+
+
+
+public class ErrorsPlugin : DiagramPlugin
+    , IDrawErrorsList
+    , INodeValidated
+{
+    private List<ErrorInfo> _errorInfo = new List<ErrorInfo>();
+
+    public List<ErrorInfo> ErrorInfo
+    {
+        get { return _errorInfo; }
+        set { _errorInfo = value; }
+    }
+
+    public void DrawErrors(Rect rect)
+    {
+        if (InvertGraphEditor.PlatformDrawer == null) return;
+       // var itemRect = new Rect(0f, 0f, rect.width, 25);
+        foreach (var item in ErrorInfo)
+        {
+            var item1 = item;
+            if (GUIHelpers.DoTriggerButton(new UFStyle(item.Message, ElementDesignerStyles.EventButtonLargeStyle)))
+            {
+                InvertApplication.Log("YUP");
+                var node = item1.Record as IDiagramNode;
+                if (node != null)
+                    Execute(new NavigateToNodeCommand()
+                    {
+                        Node = node
+                    });
+            }
+           
+            //InvertGraphEditor.PlatformDrawer.DoButton(itemRect.Pad(25f,0f,0f,0f),item.Message,CachedStyles.DefaultLabel, () =>
+            //{
+               
+            //});
+            //itemRect.y += 26;
+            //var lineRect = itemRect;
+            //lineRect.height -= 24;
+            //InvertGraphEditor.PlatformDrawer.DrawRect(lineRect,new Color(0f,0f,0f,0.3f));
+        }
+    
+    }
+
+    public void NodeValidated(IDiagramNode node)
+    {
+        ErrorInfo.Clear();
+        Signal<IQueryErrors>(_=>_.QueryErrors(ErrorInfo));
     }
 }

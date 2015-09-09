@@ -659,15 +659,6 @@ namespace Invert.Core.GraphDesigner
         public virtual bool EndEditing()
         {
             IsEditing = false;
-            // TODO 2.0: Double check
-            if (EnsureUniqueNames)
-            {
-                if (Graph.NodeItems.Count(p => p.Name == Name) > 1)
-                {
-                    Name = OldName;
-                    return false;
-                }
-            }
             return true;
         }
 

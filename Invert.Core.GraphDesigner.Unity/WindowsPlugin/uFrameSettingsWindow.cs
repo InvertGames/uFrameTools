@@ -88,8 +88,12 @@ public class uFrameSettingsWindow : EditorWindow
         //if (GUIHelpers.DoToolbarEx("Plugins - Enabled"))
         //{
             foreach (
-                var plugin in InvertApplication.Plugins.OrderBy(p => p.Title)) //.Where(p => !p.Required && !p.Ignore)
+                var plugin in InvertApplication.Plugins.OrderBy(p => p.LoadTime + p.InitializeTime)) //.Where(p => !p.Required && !p.Ignore)
             {
+                var totalLoadTime = (plugin.InitializeTime);
+
+                EditorGUILayout.LabelField("Initializing Time", string.Format("{0} Seconds {1} Milliseconds" ,totalLoadTime.Seconds,totalLoadTime.Milliseconds));
+                EditorGUILayout.LabelField("Load Time", string.Format("{0} Seconds {1} Milliseconds" ,plugin.LoadTime.Seconds,plugin.LoadTime.Milliseconds));
                 DoPlugin(plugin);
             }
         //}
@@ -135,8 +139,9 @@ public class uFrameSettingsWindow : EditorWindow
 
         if (GUIHelpers.DoToolbarEx(plugin.Title))
         {
-            EditorGUI.BeginChangeCheck();
 
+            EditorGUI.BeginChangeCheck();
+            
             plugin.Enabled = GUILayout.Toggle(plugin.Enabled, "Enabled");
             if (EditorGUI.EndChangeCheck())
             {

@@ -50,6 +50,7 @@
     <Compile Include="SelectionMenuCategory.cs" />
     <Compile Include="SelectionMenuItem.cs" />
     <Compile Include="Systems\Compiling\Class1.cs" />
+    <Compile Include="Systems\Compiling\CodeFileSyncSystem.cs" />
     <Compile Include="Systems\Connections\ConnectionSystem.cs" />
     <Compile Include="Systems\DebugSystem\ContinueCommand.cs" />
     <Compile Include="Systems\DebugSystem\StepCommand.cs" />

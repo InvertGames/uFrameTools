@@ -1,3 +1,4 @@
+using System;
 using Invert.IOC;
 
 namespace Invert.Core.GraphDesigner
@@ -14,7 +15,16 @@ namespace Invert.Core.GraphDesigner
         {
             base.Loaded(container);
             ToolbarUI = container.Resolve<ToolbarUI>();
-            Signal<IToolbarQuery>(_=>_.QueryToolbarCommands(ToolbarUI));
+            Signal<IToolbarQuery>(_ =>
+            {
+                var time = DateTime.Now;
+                _.QueryToolbarCommands(ToolbarUI);
+                var totalTime = DateTime.Now.Subtract(time);
+                InvertApplication.Log(_.GetType().Name + totalTime.TotalSeconds);
+            }
+               
+                
+                );
         }
 
         public ToolbarUI ToolbarUI { get; set; }

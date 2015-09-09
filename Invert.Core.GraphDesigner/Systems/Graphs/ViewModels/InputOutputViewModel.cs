@@ -68,6 +68,10 @@ namespace Invert.Core.GraphDesigner
         {
 
             var menu = new SelectionMenu();
+            menu.AddItem(new SelectionMenuItem(string.Empty,"[None]", () =>
+            {
+                ReferenceItem.SetInput(null);
+            }));
             menu.ConvertAndAdd(ReferenceItem.GetAllowed().OfType<IItem>(), _ =>
             {
                 var item = _ as IDataRecord;

@@ -210,15 +210,15 @@ public class uFrameHelp : EditorWindow, IDocumentationBuilder, ICommandEvents, I
 
     public void OnGUI()
     {
-        if (disposer == null)
-        {
-            disposer = InvertApplication.ListenFor<ICommandEvents>(this);
-        }
+        //if (disposer == null)
+        //{
+        //    disposer = InvertApplication.ListenFor<ICommandEvents>(this);
+        //}
 
-        if (disposer2 == null)
-        {
-            disposer2 = InvertApplication.ListenFor<INodeItemEvents>(this);
-        }
+        //if (disposer2 == null)
+        //{
+        //    disposer2 = InvertApplication.ListenFor<INodeItemEvents>(this);
+        //}
         GUIHelpers.IsInsepctor = false;
         // DrawTitleBar("uFrame Help");
 

@@ -47,7 +47,7 @@ public class GraphSystem : DiagramPlugin
             {
                 Title = "Delete This Graph",
                 Group = "Remove",
-                Command =  new LambdaCommand("Delete Graph", () =>
+                Command =  new LambdaFileSyncCommand("Delete Graph", () =>
                 {
                     Container.Resolve<IRepository>().Remove(diagram.DataObject as IDataRecord);
                 })

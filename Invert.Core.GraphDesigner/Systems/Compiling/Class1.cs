@@ -10,7 +10,25 @@ using UnityEditor;
 
 namespace Invert.Core.GraphDesigner
 {
- 
+    /// <summary>
+    /// Add this to any command that might cause any output paths to change
+    /// </summary>
+    public interface IFileSyncCommand
+    {
+        
+    }
+
+    public class LambdaFileSyncCommand : LambdaCommand, IFileSyncCommand
+    {
+        public LambdaFileSyncCommand(string title, Action action) : base(title, action)
+        {
+        }
+    }
+    public interface IQueryErrors
+    {
+        void QueryErrors(List<ErrorInfo> errorInfo);
+    }
+
     public class CompilingSystem : DiagramPlugin
         , IToolbarQuery
         , IExecuteCommand<SaveAndCompileCommand>
@@ -36,24 +54,25 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerable<IDataRecord> GetItems(IRepository repository)
         {
-            yield return repository.AllOf<uFrameDatabaseConfig>().FirstOrDefault();
-            var workspaceSvc = InvertApplication.Container.Resolve<WorkspaceService>();
-            foreach (var workspace in workspaceSvc.Workspaces)
-            {
-                if (workspace.CompilationMode == CompilationMode.OnlyWhenActive &&
-                    workspace != workspaceSvc.CurrentWorkspace) continue;
-                yield return workspace;
-                foreach (var item in workspace.Graphs)
-                {
-                    yield return item;
-                    foreach (var node in item.NodeItems)
-                    {
-                        yield return node;
-                        foreach (var child in node.PersistedItems)
-                            yield return child;
-                    }
-                }
-            }
+            return repository.AllOf<IDataRecord>();
+            //yield return repository.AllOf<uFrameDatabaseConfig>().FirstOrDefault();
+            //var workspaceSvc = InvertApplication.Container.Resolve<WorkspaceService>();
+            //foreach (var workspace in workspaceSvc.Workspaces)
+            //{
+            //    if (workspace.CompilationMode == CompilationMode.OnlyWhenActive &&
+            //        workspace != workspaceSvc.CurrentWorkspace) continue;
+            //    yield return workspace;
+            //    foreach (var item in workspace.Graphs)
+            //    {
+            //        yield return item;
+            //        foreach (var node in item.NodeItems)
+            //        {
+            //            yield return node;
+            //            foreach (var child in node.PersistedItems)
+            //                yield return child;
+            //        }
+            //    }
+            //}
         }
 
         public IEnumerator Generate()
@@ -118,7 +137,8 @@ namespace Invert.Core.GraphDesigner
 #endif
         }
 
-        
+
+      
     }
     /// <summary>
     /// Events that are fired during the compilation process.

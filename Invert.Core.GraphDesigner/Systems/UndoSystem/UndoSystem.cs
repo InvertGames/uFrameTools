@@ -13,7 +13,7 @@ namespace Invert.Core.GraphDesigner
     public class UndoCommand : Command
     {
 
-    } 
+    }
 
     public class RedoCommand : Command
     {
@@ -22,7 +22,7 @@ namespace Invert.Core.GraphDesigner
 
     public class TestyCommand : Command
     {
-        
+
     }
     public class UndoSystem : DiagramPlugin,
         IDataRecordPropertyBeforeChange,
@@ -63,7 +63,7 @@ namespace Invert.Core.GraphDesigner
             }
             catch (Exception ex)
             {
-                
+
             }
         }
 
@@ -101,7 +101,7 @@ namespace Invert.Core.GraphDesigner
         public void Execute(UndoCommand command)
         {
             Repository = Container.Resolve<IRepository>();
-            var undoGroup = Repository.All<UndoItem>().GroupBy(p=>p.Group).LastOrDefault();
+            var undoGroup = Repository.All<UndoItem>().GroupBy(p => p.Group).LastOrDefault();
             if (undoGroup == null) return;
             IsUndoRedo = true;
             try
@@ -156,30 +156,31 @@ namespace Invert.Core.GraphDesigner
                 // If we don't catch the exception IsUndoRedo won't be set back to fals causing cascading issues
             }
             IsUndoRedo = false;
+            Repository.Commit();
         }
 
         public void Execute(RedoCommand command)
         {
             IsUndoRedo = true;
             Repository = Container.Resolve<IRepository>();
-            var redoGroup = Repository.All<RedoItem>().GroupBy(p=>p.Group).LastOrDefault();
+            var redoGroup = Repository.All<RedoItem>().GroupBy(p => p.Group).LastOrDefault();
             if (redoGroup == null) return;
             foreach (var redoItem in redoGroup)
             {
-                 // Create redo item
-                var undoItem = InvertJsonExtensions.DeserializeObject(typeof (UndoItem), JSON.Parse(redoItem.UndoData)) as UndoItem;
-                
+                // Create redo item
+                var undoItem = InvertJsonExtensions.DeserializeObject(typeof(UndoItem), JSON.Parse(redoItem.UndoData)) as UndoItem;
+
 
                 if (redoItem.Type == UndoType.Inserted)
                 {
                     var record = Repository.GetById<IDataRecord>(redoItem.DataRecordId);
-                    
+
                     Repository.Remove(record);
-                    
+
                 }
                 else if (redoItem.Type == UndoType.Removed)
                 {
-                    
+
                     var obj = InvertJsonExtensions.DeserializeObject(Type.GetType(redoItem.RecordType), JSON.Parse(redoItem.Data).AsObject) as IDataRecord;
                     Repository.Add(obj);
                 }
@@ -197,6 +198,7 @@ namespace Invert.Core.GraphDesigner
                 Repository.Add(undoItem);
             }
             IsUndoRedo = false;
+            Repository.Commit();
 
         }
 
@@ -226,14 +228,14 @@ namespace Invert.Core.GraphDesigner
 
                 });
             }
-      
+
 
         }
 
         public void CommandExecuting(ICommand command)
         {
             if (command is UndoCommand) return;
-  
+
             CurrentUndoGroupId = DateTime.Now.Hour.ToString() + DateTime.Now.Minute + DateTime.Now.Second.ToString();
             CurrentName = command.Title;
             UndoItems.Clear();
@@ -248,7 +250,7 @@ namespace Invert.Core.GraphDesigner
         }
 
         public IRepository Repository { get; set; }
- 
+
         public void CommandExecuted(ICommand command)
         {
             if (command is UndoCommand || command is RedoCommand) return;
@@ -260,14 +262,19 @@ namespace Invert.Core.GraphDesigner
                     Repository.Add(item);
                 }
                 Repository.RemoveAll<RedoItem>();
-                Repository.Commit();
+               
             }
+            var items = Repository.All<UndoItem>().Reverse();
+            foreach (var item in items.Skip(20))
+                Repository.Remove(item);
+
+            Repository.Commit();
         }
 
         public void Execute(TestyCommand command)
         {
             var sb = new StringBuilder();
-            foreach (var item in InvertApplication.Plugins.OrderBy(p=>p.Title))
+            foreach (var item in InvertApplication.Plugins.OrderBy(p => p.Title))
             {
                 sb.AppendLine(item.Title);
             }
@@ -283,7 +290,7 @@ namespace Invert.Core.GraphDesigner
             }
             if (state.Ctrl && keyCode == KeyCode.Y)
             {
-                InvertApplication.Execute( new RedoCommand());
+                InvertApplication.Execute(new RedoCommand());
                 return true;
             }
             return false;
@@ -373,7 +380,7 @@ namespace Invert.Core.GraphDesigner
 
     public class UndoItem : TransactionItem
     {
-      
+
     }
 
     public class RedoItem : TransactionItem
@@ -383,7 +390,9 @@ namespace Invert.Core.GraphDesigner
         public string UndoData
         {
             get { return _undoData; }
-            set { _undoData = value;
+            set
+            {
+                _undoData = value;
                 Changed = true;
             }
         }

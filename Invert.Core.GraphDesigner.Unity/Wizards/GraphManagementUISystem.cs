@@ -151,14 +151,17 @@ namespace Assets.UnderConstruction.Editor
                 {
                     /* OPEN DATABASE */
 
-                    Signal<INotify>(_=>_.Notify("Hello, World!",NotificationIcon.Info));
-
+                    Execute(new LambdaCommand("Open Graph", () =>
+                    {
+                        WorkspaceService.CurrentWorkspace.CurrentGraphId = db.Identifier;
+                        EnableGraphManagementhWizard = false;
+                    }));
                     //DatabaseListWindow.Init(new Vector2(Screen.currentResolution.width / 2 - 200, Screen.currentResolution.height/2- 300));
 
                 });
-                PlatformDrawer.DoButton(configButton, "Config", ElementDesignerStyles.ButtonStyle, () => { /* CONFIG DATABASE */ });
+                //PlatformDrawer.DoButton(configButton, "Config", ElementDesignerStyles.ButtonStyle, () => { /* CONFIG DATABASE */ });
                 PlatformDrawer.DoButton(deleteButton, "Delete", ElementDesignerStyles.ButtonStyle, () => { /* SHOW DATABASE IN EXPLORER */ });
-                PlatformDrawer.DoButton(exportButton, "Export", ElementDesignerStyles.ButtonStyle, () => { /* SHOW DATABASE IN EXPLORER */ });
+                //PlatformDrawer.DoButton(exportButton, "Export", ElementDesignerStyles.ButtonStyle, () => { /* SHOW DATABASE IN EXPLORER */ });
 
                 unpaddedItemRect = unpaddedItemRect.Below(unpaddedItemRect).Translate(0,1);
 

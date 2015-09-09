@@ -182,6 +182,15 @@ namespace Invert.Core.GraphDesigner
         public override void SetInput(IDataRecord item)
         {
             base.SetInput(item);
+            if (item == null)
+            {
+                if (SelectedValue != null)
+                {
+                    Repository.Remove(SelectedValue);
+                   
+                }
+                return;
+            }
             var selected = SelectedValue;
             if (selected != null)
             {

@@ -9,7 +9,7 @@ public class ShellGraphTypeNode : ShellNode
         base.Validate(errors);
         if (!RootNodeSlot.Outputs.Any())
         {
-            errors.AddError("Root node must be specified.");
+            errors.AddError("Root node must be specified.", this);
         }
     }
 

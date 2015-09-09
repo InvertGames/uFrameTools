@@ -325,35 +325,45 @@ namespace Invert.Core
                 if (pluginInstance == null) continue;
                 container.RegisterInstance(pluginInstance, diagramPlugin.Name, false);
                 container.RegisterInstance(pluginInstance.GetType(), pluginInstance);
-                
-                foreach (var item in diagramPlugin.GetInterfaces())
+                if (pluginInstance.Enabled)
                 {
-                    ListenFor(item, pluginInstance);
+                   
+                    foreach (var item in diagramPlugin.GetInterfaces())
+                    {
+                        ListenFor(item, pluginInstance);
+                    }
                 }
+               
             }
 
             container.InjectAll();
 
             foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority).Where(p=>!p.Ignore))
             {
-                if (diagramPlugin.Enabled)
-                {
-
-                    diagramPlugin.Container = Container;
-                    diagramPlugin.Initialize(Container);
-                }
-                    
+               
+                    if (diagramPlugin.Enabled)
+                    {
+                        var start = DateTime.Now;
+                        diagramPlugin.Container = Container;
+                        diagramPlugin.Initialize(Container);
+                       
+                    }
+                
+               
             }
 
             foreach (var diagramPlugin in Plugins.OrderBy(p => p.LoadPriority).Where(p => !p.Ignore))
             {
+            
+                    if (diagramPlugin.Enabled)
+                    {
+                        var start = DateTime.Now;
+                        container.Inject(diagramPlugin);
+                        diagramPlugin.Loaded(Container); 
+                        diagramPlugin.LoadTime = DateTime.Now.Subtract(start);
+                    }
+                
 
-                if (diagramPlugin.Enabled)
-                {
-                    container.Inject(diagramPlugin);
-                    diagramPlugin.Loaded(Container);
-                }
-                   
             }
             SignalEvent<ISystemResetEvents>(_=>_.SystemRestarted());
         }
@@ -600,5 +610,26 @@ namespace Invert.Core
     public interface ICommandExecuting
     {
         void CommandExecuting(ICommand command);
+    }
+    public class Benchmark : IDisposable
+    {
+        public Benchmark(Action<TimeSpan> action)
+        {
+            Action = action;
+        }
+
+        public DateTime Start;
+        public Action<TimeSpan> Action;
+        public Benchmark()
+        {
+            Start = DateTime.Now;
+
+        }
+
+        public void Dispose()
+        {
+            var ts = DateTime.Now.Subtract(Start);
+            Action(ts);
+        }
     }
 }

@@ -328,7 +328,7 @@ namespace Invert.Core.GraphDesigner
         public static IEnumerable<OutputGenerator> GetCodeGeneratorsForNode(this IDataRecord node, IGraphConfiguration config)
         {
 
-            return GetAllCodeGenerators(null, new[] { node }).Where(p => p.ObjectData == node);
+            return GetAllCodeGenerators(config, new[] { node }).Where(p => p.ObjectData == node);
         }
 
         /// <summary>

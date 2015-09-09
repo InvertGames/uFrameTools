@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using Invert.IOC;
 
@@ -20,6 +21,8 @@ namespace Invert.Core
         bool Required { get; }
         bool Ignore { get; }
         UFrameContainer Container { get; set; }
+        TimeSpan InitializeTime { get; set; }
+        TimeSpan LoadTime { get; set; }
         void Initialize(UFrameContainer container);
         void Loaded(UFrameContainer container);
         
@@ -80,6 +83,9 @@ namespace Invert.Core
 
         public virtual decimal LoadPriority { get { return 1; } }
 
+        public TimeSpan InitializeTime { get; set; }
+        public TimeSpan LoadTime { get; set; }
+        
         public virtual void Initialize(UFrameContainer container)
         {
             Container = container;
