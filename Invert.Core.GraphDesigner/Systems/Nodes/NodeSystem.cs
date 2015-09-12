@@ -101,10 +101,8 @@ namespace Invert.Core.GraphDesigner
 
             var node = Activator.CreateInstance(command.NodeType) as IDiagramNode;
             var repository = Container.Resolve<IRepository>();
-            repository.Add(node);
-            
             node.GraphId = command.GraphData.Identifier;
-            
+            repository.Add(node);
             if (string.IsNullOrEmpty(node.Name))
                 node.Name =
                     repository.GetUniqueName("New" + node.GetType().Name.Replace("Data", ""));

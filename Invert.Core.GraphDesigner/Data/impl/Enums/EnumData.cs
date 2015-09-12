@@ -20,11 +20,16 @@ public class EnumNode : GenericNode , IClassTypeNode
         }
     }
 
+    public override bool IsEnum
+    {
+        get { return true; }
+    }
 }
 
-public class EnumChildItem : GenericNodeChildItem
+public class EnumChildItem : GenericNodeChildItem, IMemberInfo
 {
-    
+    public string MemberName { get { return this.Name; }}
+    public ITypeInfo MemberType { get { return new SystemTypeInfo(typeof(int)); } }
 }
 
 [TemplateClass(TemplateLocation.DesignerFile)]

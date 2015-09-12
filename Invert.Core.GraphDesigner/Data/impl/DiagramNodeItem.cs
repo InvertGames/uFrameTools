@@ -405,22 +405,22 @@ public abstract class DiagramNodeItem : IDiagramNodeItem, IDataRecordRemoved
     }
     public virtual TType InputFrom<TType>()
     {
-        return Inputs.Select(p => p.Output).OfType<TType>().FirstOrDefault();
+        return Inputs.Select(p => p.GetOutput(this.Node as IConnectableProvider)).OfType<TType>().FirstOrDefault();
     }
 
     public virtual IEnumerable<TType> InputsFrom<TType>()
     {
-        return Inputs.Select(p => p.Output).OfType<TType>();
+        return Inputs.Select(p => p.GetOutput(this.Node as IConnectableProvider)).OfType<TType>();
     }
 
     public virtual IEnumerable<TType> OutputsTo<TType>()
     {
-        return Outputs.Select(p => p.Input).OfType<TType>();
+        return Outputs.Select(p => p.GetInput(this.Node as IConnectableProvider)).OfType<TType>();
     }
 
     public virtual TType OutputTo<TType>()
     {
-        return Outputs.Select(p => p.Input).OfType<TType>().FirstOrDefault();
+        return Outputs.Select(p => p.GetInput(this.Node as IConnectableProvider)).OfType<TType>().FirstOrDefault();
     }
 
     public virtual void RecordRemoved(IDataRecord record)

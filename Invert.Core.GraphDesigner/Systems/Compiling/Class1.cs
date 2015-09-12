@@ -34,7 +34,10 @@ namespace Invert.Core.GraphDesigner
         , IExecuteCommand<SaveAndCompileCommand>
        
     {
-   
+        public ValidationSystem ValidationSystem
+        {
+            get { return Container.Resolve<ValidationSystem>(); }
+        }
         public void QueryToolbarCommands(ToolbarUI ui)
         {
             ui.AddCommand(new ToolbarItem()
@@ -77,7 +80,16 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerator Generate()
         {
-
+            var a = ValidationSystem.ValidateDatabase();
+            while (a.MoveNext())
+            {
+                yield return a.Current;
+            }
+            if (ValidationSystem.ErrorNodes.Count > 0)
+            {
+                Signal<INotify>(_=>_.Notify("Please fix all issues before compiling.",NotificationIcon.Error));
+                yield break;
+            }
 
             var repository = InvertGraphEditor.Container.Resolve<IRepository>();
             repository.Commit();

@@ -1,5 +1,6 @@
 using System;
 using System.CodeDom;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +10,9 @@ using Invert.Data;
 using Invert.Json;
 public interface ITypeInfo
 {
-   
+    bool IsArray { get; }
+    bool IsList { get; }
+    bool IsEnum { get; }
     ITypeInfo InnerType { get; }
     string TypeName { get; }
     string FullName { get; }
@@ -46,6 +49,18 @@ public class SystemTypeInfo : ITypeInfo
         Other = other;
     }
 
+    public bool IsArray { get { return SystemType.IsArray; } }
+
+    public bool IsList
+    {
+        get { return typeof (IList).IsAssignableFrom(SystemType); }
+    }
+
+    public bool IsEnum
+    {
+        get { return SystemType.IsEnum; }
+    }
+
     public ITypeInfo InnerType
     {
         get
@@ -80,15 +95,28 @@ public class SystemTypeInfo : ITypeInfo
         }
         if (SystemType != null)
         {
-            foreach (var item in SystemType.GetFields(BindingFlags.Public | BindingFlags.Instance))
+            if (IsEnum)
             {
-                if (item == null) continue;
-                yield return new DefaultMemberInfo() { MemberName = item.Name, MemberType = new SystemTypeInfo(item.FieldType) };
+                foreach (var item in SystemType.GetFields(BindingFlags.Public | BindingFlags.Static))
+                {
+                    if (item == null) continue;
+                    yield return new SystemFieldMemberInfo(item);
+                }
             }
-            foreach (var item in SystemType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            else
             {
-                yield return new DefaultMemberInfo() { MemberName = item.Name, MemberType = new SystemTypeInfo(item.PropertyType) };
+
+                foreach (var item in SystemType.GetFields(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    if (item == null) continue;
+                    yield return new SystemFieldMemberInfo(item);
+                }
+                foreach (var item in SystemType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    yield return new SystemPropertyMemberInfo(item);
+                }
             }
+         
         }
         
     }
@@ -101,6 +129,45 @@ public class SystemTypeInfo : ITypeInfo
             return systemInfo.SystemType.IsAssignableFrom(SystemType);
         }
         return info.FullName == FullName;
+    }
+}
+
+public class SystemFieldMemberInfo : IMemberInfo
+{
+    private FieldInfo FieldInfo;
+
+    public SystemFieldMemberInfo(FieldInfo fieldInfo)
+    {
+        FieldInfo = fieldInfo;
+    }
+
+    public string MemberName { get { return FieldInfo.Name; } }
+
+    public ITypeInfo MemberType
+    {
+        get
+        {
+            return new SystemTypeInfo(FieldInfo.FieldType);
+        }
+    }
+}
+public class SystemPropertyMemberInfo : IMemberInfo
+{
+    private PropertyInfo PropertyInfo;
+
+    public SystemPropertyMemberInfo(PropertyInfo propertyInfo)
+    {
+        PropertyInfo = propertyInfo;
+    }
+
+    public string MemberName { get { return PropertyInfo.Name; } }
+
+    public ITypeInfo MemberType
+    {
+        get
+        {
+            return new SystemTypeInfo(PropertyInfo.PropertyType);
+        }
     }
 }
 public class GenericTypedChildItem : GenericNodeChildItem, IBindableTypedItem, ISerializeablePropertyData, IDataRecordRemoved, IMemberInfo

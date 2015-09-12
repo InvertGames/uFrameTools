@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEditor.Animations;
+using UnityEngine;
 
 namespace Invert.Core.GraphDesigner.Unity.InspectorWindow
 {
@@ -54,7 +55,7 @@ namespace Invert.Core.GraphDesigner.Unity.InspectorWindow
             foreach (var prop in Properties)
             {
 
-                Drawer.DrawInspector(prop);
+                Drawer.DrawInspector(prop,CachedStyles.DefaultLabel as GUIStyle);
             }            
         }
 

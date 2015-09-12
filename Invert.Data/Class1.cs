@@ -33,10 +33,14 @@ namespace Invert.Data
         TObjectType GetSingle<TObjectType>() where TObjectType : class, IDataRecord, new();
     }
 
-    public interface IDataRecord
+    public interface IValueItem
+    {
+        string Identifier { get; set; }
+    }
+    public interface IDataRecord : IValueItem
     {
         IRepository Repository { get; set; }
-        string Identifier { get; set; }
+        
         bool Changed { get; set; }
     }
 

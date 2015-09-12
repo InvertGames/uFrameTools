@@ -17,6 +17,8 @@ namespace Invert.Core.GraphDesigner
         private string _outputIdentifier;
 
         private string _inputIdentifier;
+        private IConnectable _input;
+        private IConnectable _output;
 
         public ConnectionData(string outputIdentifier, string inputIdentifier)
         {
@@ -35,6 +37,7 @@ namespace Invert.Core.GraphDesigner
             set
             {
                 this.Changed("OutputIdentifier",ref  _outputIdentifier, value);
+                _output = null;
             }
         }
 
@@ -46,6 +49,7 @@ namespace Invert.Core.GraphDesigner
             {
                 
                 this.Changed("InputIdentifier",ref _inputIdentifier, value);
+                _input = null;
             }
         }
 
@@ -53,11 +57,19 @@ namespace Invert.Core.GraphDesigner
 
         public IConnectable Output
         {
-            get
+            get { return _output ?? (_output = GetOutput()); }
+        }
+
+        public IConnectable GetOutput(params IConnectableProvider[] ignore)
+        {
+          
+            var result = Repository.GetById<IConnectable>(OutputIdentifier);
+            if (result == null)
             {
                 foreach (var item in Repository.AllOf<IConnectableProvider>())
                 {
-                   
+                    if (item.Identifier == InputIdentifier) continue;
+                    if (ignore.Contains(item)) continue;
                     foreach (var child in item.Connectables)
                     {
                         if (child.Identifier == OutputIdentifier)
@@ -66,17 +78,26 @@ namespace Invert.Core.GraphDesigner
                         }
                     }
                 }
-                return Repository.GetById<IConnectable>(OutputIdentifier);
             }
+            return result;
         }
 
         public IConnectable Input
         {
-            get
+            get {
+                return _input ?? (_input = GetInput());
+            }
+        }
+
+        public IConnectable GetInput(params IConnectableProvider[] ignore)
+        {
+            var result = Repository.GetById<IConnectable>(InputIdentifier);
+            if (result == null)
             {
                 foreach (var item in Repository.AllOf<IConnectableProvider>())
                 {
-                    
+                    if (item.Identifier == OutputIdentifier) continue;
+                    if (ignore.Contains(item)) continue;
                     foreach (var child in item.Connectables)
                     {
                         if (child.Identifier == InputIdentifier)
@@ -85,8 +106,8 @@ namespace Invert.Core.GraphDesigner
                         }
                     }
                 }
-                return Repository.GetById<IConnectable>(InputIdentifier);
             }
+            return result;
         }
 
         public void Remove()

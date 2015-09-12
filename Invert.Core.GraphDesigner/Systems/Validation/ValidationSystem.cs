@@ -51,6 +51,7 @@ namespace Invert.Core.GraphDesigner
 
         public IEnumerator ValidateDatabase()
         {
+            ErrorNodes.Clear();
             var ws = Container.Resolve<DatabaseService>();
             if (ws != null && ws.CurrentConfiguration != null && ws.CurrentConfiguration.Database != null)
             foreach (var item in ws.CurrentConfiguration.Database.AllOf<IDiagramNode>())
@@ -103,6 +104,13 @@ namespace Invert.Core.GraphDesigner
 
         public BackgroundTask ValidationTask { get; set; }
 
+        [InspectorProperty]
+        public bool ConstantValidation
+        {
+            get { return InvertGraphEditor.Prefs.GetBool("uFrame_ConstantValidation",false); }
+            set { InvertGraphEditor.Prefs.SetBool("uFrame_ConstantValidation",value); }
+        }
+
         public void Progress(ICommand command, string message, float progress)
         {
             InvertApplication.Log(message);
@@ -127,6 +135,7 @@ namespace Invert.Core.GraphDesigner
 
         public void CommandExecuted(ICommand command)
         {
+            if (!ConstantValidation) return;
             if (command is SaveAndCompileCommand) return;
             if (ShouldRevalidate)
             Signal<ITaskHandler>(_ => _.BeginBackgroundTask(ValidateGraph()));

@@ -53,9 +53,9 @@ namespace Invert.Core.GraphDesigner
     /// </summary>
     public abstract class GraphNode : IDiagramNode, IGraphFilter, IDataRecordRemoved, ITreeItem
     {
-        public virtual IEnumerable<IFilterItem> FilterLocations
+        public virtual IEnumerable<FilterItem> FilterLocations
         {
-            get { return Repository.AllOf<IFilterItem>().Where(p => p.NodeId == this.Identifier); }
+            get { return Repository.All<FilterItem>().Where(p => p.NodeId == this.Identifier); }
         }
 
         public virtual IFilterItem FilterLocation
@@ -94,7 +94,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
 
-            foreach (var item in Inputs.Select(p => p.Output).OfType<TType>())
+            foreach (var item in Inputs.Select(p => p.GetOutput(this as IConnectableProvider)).OfType<TType>())
                 yield return item;
         }
 
@@ -115,7 +115,7 @@ namespace Invert.Core.GraphDesigner
                 }
             }
 
-            foreach (var item in Outputs.Select(p => p.Input).OfType<TType>())
+            foreach (var item in Outputs.Select(p => p.GetInput(this as IConnectableProvider)).OfType<TType>())
                 yield return item;
         }
 
@@ -390,6 +390,7 @@ namespace Invert.Core.GraphDesigner
             set
             {
                 if (value != null) GraphId = value.Identifier;
+                _graph = value;
             }
         }
         [Obsolete]

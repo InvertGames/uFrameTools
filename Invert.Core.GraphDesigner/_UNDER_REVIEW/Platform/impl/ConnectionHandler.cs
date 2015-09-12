@@ -23,12 +23,11 @@ namespace Invert.Core.GraphDesigner
         {
             StartConnector = startConnector;
             PossibleConnections = new List<ConnectorViewModel>();
-
+            //InvertApplication.Log("YUP YUP YUP");
             foreach (var connector in diagramViewModel.GraphItems.OfType<ConnectorViewModel>())
             {
                 foreach (var strategy in InvertGraphEditor.ConnectionStrategies)
                 {
-
                     if (strategy.Connect(diagramViewModel, StartConnector, connector) != null)
                     {
                         PossibleConnections.Add(connector);

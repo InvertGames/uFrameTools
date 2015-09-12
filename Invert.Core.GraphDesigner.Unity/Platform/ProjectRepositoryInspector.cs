@@ -306,7 +306,7 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
             {
                 item.ViewModel.CachedValue = item.ViewModel.Getter();
                 var unityDrawer = InvertGraphEditor.PlatformDrawer as UnityDrawer;
-                unityDrawer.DrawInspector(item.ViewModel);
+                //unityDrawer.DrawInspector(item.ViewModel);
             }
 
             var drawer = InvertGraphEditor.DesignerWindow.DiagramDrawer;

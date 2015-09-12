@@ -6,31 +6,31 @@ namespace Invert.Core.GraphDesigner
 {
     public static class FilterExtensions
     {
-        public static IEnumerable<IDiagramNode> GetContainingNodesInProject(this IGraphFilter filter, IProjectRepository repository)
-        {
-            return GetContainerNodesInProjectInternal(filter, repository).Distinct();
-        }
+        //public static IEnumerable<IDiagramNode> GetContainingNodesInProject(this IGraphFilter filter, IProjectRepository repository)
+        //{
+        //    return GetContainerNodesInProjectInternal(filter, repository).Distinct();
+        //}
 
-        private static IEnumerable<IDiagramNode> GetContainerNodesInProjectInternal(IGraphFilter filter, IProjectRepository repository)
-        {
-            foreach (var item in repository.Graphs)
-            {
-                var positionData = item.PositionData;
+        //private static IEnumerable<IDiagramNode> GetContainerNodesInProjectInternal(IGraphFilter filter, IProjectRepository repository)
+        //{
+        //    foreach (var item in repository.Graphs)
+        //    {
+        //        var positionData = item.PositionData;
 
-                FilterLocations locations;
-                if (positionData.Positions.TryGetValue(filter.Identifier, out locations))
-                {
-                    foreach (var node in repository.NodeItems)
-                    {
-                        if (node == filter) continue;
-                        if (locations.Keys.Contains(node.Identifier))
-                        {
-                            yield return node;
-                        }
-                    }
-                }
-            }
-        }
+        //        FilterLocations locations;
+        //        if (positionData.Positions.TryGetValue(filter.Identifier, out locations))
+        //        {
+        //            foreach (var node in repository.NodeItems)
+        //            {
+        //                if (node == filter) continue;
+        //                if (locations.Keys.Contains(node.Identifier))
+        //                {
+        //                    yield return node;
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
 
         //public static IEnumerable<IDiagramNode> GetParentNodes(this IDiagramNode node)

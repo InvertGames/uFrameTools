@@ -6,7 +6,6 @@ namespace Invert.Core
         string Group { get; }
         string SearchTag { get; }
         string Description { get; set; }
-
     }
 
     public class DefaultItem : IItem

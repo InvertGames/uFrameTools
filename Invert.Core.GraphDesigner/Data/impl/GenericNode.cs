@@ -251,6 +251,18 @@ namespace Invert.Core.GraphDesigner
     [Browsable(false)]
     public partial class GenericNode : GraphNode, IConnectable, ITypeInfo
     {
+        public virtual bool IsArray { get { return false; } }
+
+        public bool IsList
+        {
+            get { return false; }
+        }
+
+        public virtual bool IsEnum
+        {
+            get { return false; }
+        }
+
         public ITypeInfo InnerType { get { return null; }}
 
         public virtual string TypeName
@@ -672,26 +684,31 @@ namespace Invert.Core.GraphDesigner
             return nodeType.GetPropertiesWithAttribute<ReferenceSection>();
         }
 
-        public TSlotType GetSlot<TSlotType>(ref TSlotType field, string name, Action<TSlotType> initialize) where TSlotType : GenericSlot, new()
+        protected TSlotType GetSlot<TSlotType>(ref TSlotType field, string name, Action<TSlotType> initialize) where TSlotType : GenericSlot, new()
         {
             return GetSlot<TSlotType>(ref field, name, null, initialize);
         }
 
-        public TSlotType GetSlot<TSlotType>(ref TSlotType field, string name, string identifier = null, Action<TSlotType> initialize = null) where TSlotType : GenericSlot, new()
+        protected TSlotType GetSlot<TSlotType>(ref TSlotType field, string name, string identifier = null, Action<TSlotType> initialize = null) where TSlotType : GenericSlot, new()
         {
             if (field != null) return field;
-            field = new TSlotType()
+            field = CreateSlot<TSlotType>(name, identifier);
+            if (initialize != null)
+            {
+                initialize(field);
+            }
+            return field;
+        }
+
+        protected TSlotType CreateSlot<TSlotType>(string name, string identifier = null) where TSlotType : GenericSlot, new()
+        {
+            return new TSlotType()
             {
                 Node = this,
                 Name = name,
                 Identifier = identifier ?? this.Identifier + ":" + name,
                 Repository = Repository,
             };
-            if (initialize != null)
-            {
-                initialize(field);
-            }
-            return field;
         }
     }
 

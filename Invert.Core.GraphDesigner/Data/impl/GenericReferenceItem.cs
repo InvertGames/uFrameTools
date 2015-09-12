@@ -107,7 +107,10 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    public class SelectionFor<TFor, TValue> : GenericSlot where TValue : InputSelectionValue, new() where TFor : class,IDataRecord
+    
+    public class SelectionFor<TFor, TValue> : GenericSlot
+        where TValue : InputSelectionValue, new()
+        where TFor : class, IDataRecord
     {
         public override bool AllowMultipleInputs
         {
@@ -212,7 +215,7 @@ namespace Invert.Core.GraphDesigner
         }
     }
 
-    public class InputSelectionValue : IDataRecord
+    public class InputSelectionValue : IDataRecord,IDataRecordRemoved
     {
         private string _nodeId;
         private string _itemId;
@@ -245,8 +248,12 @@ namespace Invert.Core.GraphDesigner
             set { this.Changed("ValueId", ref _valueId, value); }
         }
 
-        
-        
+
+        public void RecordRemoved(IDataRecord record)
+        {
+            if (NodeId == record.Identifier || ItemId == record.Identifier || ValueId == record.Identifier)
+                Repository.Remove(this);
+        }
     }
 
 

@@ -33,6 +33,7 @@ public class InspectorPlugin : DiagramPlugin
     , IGraphSelectionEvents
     , INothingSelectedEvent
     , IWorkspaceChanged
+    , IToolbarQuery
 {
     private bool _graphsOpen;
     private static GUIStyle _item5;
@@ -66,7 +67,7 @@ public class InspectorPlugin : DiagramPlugin
                 foreach (var item in group)
                 {
                     var d = InvertGraphEditor.PlatformDrawer as UnityDrawer;
-                    d.DrawInspector(item);
+                    d.DrawInspector(item, EditorStyles.label);
                 }
             }
         }
@@ -258,6 +259,30 @@ public class InspectorPlugin : DiagramPlugin
     {
         SelectItem(null);
     }
+    static bool IsWindowOpen<WindowType>() where WindowType : EditorWindow
+    {
+        WindowType[] windows = Resources.FindObjectsOfTypeAll<WindowType>();
+        return windows != null && windows.Length > 0;
+
+    }
+    public void QueryToolbarCommands(ToolbarUI ui)
+    {
+        var isOpen = IsWindowOpen<uFrameInspectorWindow>();
+        ui.AddCommand(new ToolbarItem()
+        {
+            Title = "Inspector/Issues",
+            Checked = isOpen,
+            Position = ToolbarPosition.BottomRight,
+            Command = new LambdaCommand("Show", () =>
+            {
+                var window = EditorWindow.GetWindow<uFrameInspectorWindow>();
+                if (isOpen)
+                {
+                    window.Close();
+                }
+            })
+        }); 
+    }
 }
 
 
@@ -265,42 +290,77 @@ public class InspectorPlugin : DiagramPlugin
 public class ErrorsPlugin : DiagramPlugin
     , IDrawErrorsList
     , INodeValidated
+    , IDataRecordRemoved
 {
     private List<ErrorInfo> _errorInfo = new List<ErrorInfo>();
+    private static GUIStyle _eventButtonStyleSmall;
 
     public List<ErrorInfo> ErrorInfo
     {
         get { return _errorInfo; }
         set { _errorInfo = value; }
     }
+    public static GUIStyle EventButtonStyleSmall
+    {
+        get
+        {
+            var textColor = Color.white;
+            if (_eventButtonStyleSmall == null)
+                _eventButtonStyleSmall = new GUIStyle
+                {
+                    normal = { background = ElementDesignerStyles.GetSkinTexture("EventButton"), textColor = EditorGUIUtility.isProSkin ? Color.white : Color.black },
+                    active = { background = ElementDesignerStyles.CommandBarClosedStyle.normal.background },
+                    stretchHeight = true,
 
+                    fixedHeight = 25,
+                    border = new RectOffset(3, 3, 3, 3),
+
+                    padding = new RectOffset(25, 0, 5, 5)
+                };
+
+            return _eventButtonStyleSmall;
+        }
+    }
     public void DrawErrors(Rect rect)
     {
+        GUIHelpers.IsInsepctor = false;
         if (InvertGraphEditor.PlatformDrawer == null) return;
        // var itemRect = new Rect(0f, 0f, rect.width, 25);
-        foreach (var item in ErrorInfo)
+        if (GUIHelpers.DoToolbarEx("Issues"))
         {
-            var item1 = item;
-            if (GUIHelpers.DoTriggerButton(new UFStyle(item.Message, ElementDesignerStyles.EventButtonLargeStyle)))
+
+            foreach (var item in ErrorInfo)
             {
-                InvertApplication.Log("YUP");
-                var node = item1.Record as IDiagramNode;
+                var item1 = item;
+                var name = string.Empty;
+                var node = item.Record as GraphNode;
                 if (node != null)
-                    Execute(new NavigateToNodeCommand()
-                    {
-                        Node = node
-                    });
+                {
+                    var filter = node.Filter;
+                    if (filter != null)
+                    name = filter.Name + ": ";
+                }
+                if (GUILayout.Button(name + item1.Message,EventButtonStyleSmall))
+                {
+                   
+                    if (node != null)
+                        Execute(new NavigateToNodeCommand()
+                        {
+                            Node = node
+                        });
+                }
+
+                //InvertGraphEditor.PlatformDrawer.DoButton(itemRect.Pad(25f,0f,0f,0f),item.Message,CachedStyles.DefaultLabel, () =>
+                //{
+
+                //});
+                //itemRect.y += 26;
+                //var lineRect = itemRect;
+                //lineRect.height -= 24;
+                //InvertGraphEditor.PlatformDrawer.DrawRect(lineRect,new Color(0f,0f,0f,0.3f));
             }
-           
-            //InvertGraphEditor.PlatformDrawer.DoButton(itemRect.Pad(25f,0f,0f,0f),item.Message,CachedStyles.DefaultLabel, () =>
-            //{
-               
-            //});
-            //itemRect.y += 26;
-            //var lineRect = itemRect;
-            //lineRect.height -= 24;
-            //InvertGraphEditor.PlatformDrawer.DrawRect(lineRect,new Color(0f,0f,0f,0.3f));
         }
+        
     
     }
 
@@ -308,5 +368,10 @@ public class ErrorsPlugin : DiagramPlugin
     {
         ErrorInfo.Clear();
         Signal<IQueryErrors>(_=>_.QueryErrors(ErrorInfo));
+    }
+
+    public void RecordRemoved(IDataRecord record)
+    {
+        ErrorInfo.RemoveAll(p => p.Record.Identifier == record.Identifier);
     }
 }

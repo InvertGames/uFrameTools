@@ -4,7 +4,8 @@ using System.Linq;
 using Invert.IOC;
 
 
-namespace Invert.Core.GraphDesigner {
+namespace Invert.Core.GraphDesigner
+{
 
     public static class Path2
     {
@@ -22,27 +23,28 @@ namespace Invert.Core.GraphDesigner {
     public static class ConfigExtensions
     {
 
-         
+
         public static NodeConfig<TNode> GetNodeConfig<TNode>(this IUFrameContainer container) where TNode : GenericNode, IConnectable
         {
             var config = GetNodeConfig(container, typeof(TNode)) as NodeConfig<TNode>;
-            if (config == null)
-            {
-                var nodeConfig = new NodeConfig<TNode>(container)
-                {
-                    
-                    NodeType = typeof(TNode),
-                };
-                container.RegisterInstance<NodeConfigBase>(nodeConfig, typeof(TNode).Name);
-                //nodeConfig.Section(string.Empty, _ => _.PersistedItems.OfType<GenericConnectionReference>(), false);
-                return nodeConfig;
-            }
+
             return config;
         }
 
         public static NodeConfigBase GetNodeConfig(this IUFrameContainer container, Type nodeType)
         {
-            return container.Resolve<NodeConfigBase>(nodeType.Name);
+            
+            var config = container.Resolve<NodeConfigBase>(nodeType.Name);    
+            if (config == null)
+            {
+                var nodeconfigType = typeof (NodeConfig<>).MakeGenericType(nodeType);
+                var nodeConfig = Activator.CreateInstance(nodeconfigType,container) as NodeConfigBase;
+                nodeConfig.NodeType = nodeType;
+                container.RegisterInstance<NodeConfigBase>(nodeConfig, nodeType.Name);
+                //nodeConfig.Section(string.Empty, _ => _.PersistedItems.OfType<GenericConnectionReference>(), false);
+                return nodeConfig;
+            }
+            return config;
         }
 
         //public static IUFrameContainer ScaffoldNodeChild<TNode, TChildItem>(this IUFrameContainer container, string header = null)
@@ -72,6 +74,6 @@ namespace Invert.Core.GraphDesigner {
 
 
 
-     
+
     }
 }

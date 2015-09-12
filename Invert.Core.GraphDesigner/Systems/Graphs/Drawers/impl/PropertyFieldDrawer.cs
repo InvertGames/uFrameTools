@@ -57,7 +57,8 @@ namespace Invert.Core.GraphDesigner
             {
                
                 var bounds = new Rect(Bounds) {x = position.x, y = position.y};
-                bounds.width *= 2;
+                var labelSize = platform.CalculateTextSize(ViewModel.Name, CachedStyles.HeaderStyle);
+                bounds.width = labelSize.x * 3;
                 if (ViewModel.Type == typeof(Vector2) || ViewModel.Type == typeof(Vector3))// || ViewModel.Type == typeof(Quaternion))
                 {
                     bounds.height *= 2f;
