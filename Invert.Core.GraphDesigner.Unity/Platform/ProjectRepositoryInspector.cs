@@ -21,7 +21,7 @@ using UnityEngine;
 [CustomEditor(typeof(ProjectRepository))]
 public class ProjectRepositoryInspector : Editor , ICommandEvents
 {
-    private TypeMapping[] _generators;
+    private KeyValuePair<Tuple<Type, string>, Type>[] _generators;
     private CodeFileGenerator[] fileGenerators;
     private List<PropertyFieldDrawer> _selectedItemDrawers;
     private List<IDrawer> _generatorDrawers;
@@ -32,9 +32,9 @@ public class ProjectRepositoryInspector : Editor , ICommandEvents
         get { return target as ProjectRepository; }
     }
 
-    public TypeMapping[] CodeGenerators
+    public KeyValuePair<Tuple<Type, string>, Type>[] CodeGenerators
     {
-        get { return _generators ?? (_generators = InvertApplication.Container.Mappings.Where(p => p.From == typeof(DesignerGeneratorFactory)).ToArray()); }
+        get { return _generators ?? (_generators = InvertApplication.Container.Mappings.Where(p => p.Key.Item1 == typeof(DesignerGeneratorFactory)).ToArray()); }
     }
 
     private Action destory;

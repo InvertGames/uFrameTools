@@ -94,8 +94,8 @@ public class ElementDiagramSettingsWindow : EditorWindow
             s.Snap = EditorGUILayout.Toggle("Snap",s.Snap);
          
             var pathStrategies =
-                InvertApplication.Container.Mappings.Where(p => p.From == typeof (ICodePathStrategy)).ToArray();
-            var names = pathStrategies.Select(p => p.Name).ToArray();
+                InvertApplication.Container.Mappings.Where(p => p.Key.Item1 == typeof (ICodePathStrategy)).ToArray();
+            var names = pathStrategies.Select(p => p.Key.Item2).ToArray();
             var selected = Array.IndexOf(names, s.CodePathStrategyName);
             //var types = pathStrategies.Select(p => p.to);
             //EditorGUI.BeginChangeCheck();

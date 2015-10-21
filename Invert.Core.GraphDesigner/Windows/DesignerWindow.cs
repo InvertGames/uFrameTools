@@ -67,15 +67,15 @@ namespace Invert.Core.GraphDesigner
 
             }
             contextMenu.AddSeparator("");
-            foreach (var graphType in InvertGraphEditor.Container.Mappings.Where(p => p.From == typeof(IGraphData)))
+            foreach (var graphType in InvertGraphEditor.Container.Mappings.Where(p => p.Key.Item1 == typeof(IGraphData)))
             {
-                TypeMapping type = graphType;
+                
                 contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>
                 {
-                    var diagram = CurrentProject.CreateNewDiagram(type.To);
+                    var diagram = CurrentProject.CreateNewDiagram(graphType.Value);
                     DiagramDrawer = null;
                     SwitchDiagram(diagram);
-                }, "Create " + type.To.Name));
+                }, "Create " + graphType.Value.Name));
             }
             contextMenu.AddSeparator("");
             contextMenu.AddCommand(new SimpleEditorCommand<DiagramViewModel>(_ =>

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Invert.IOC;
 
+
 namespace Invert.Core
 {
     public interface IDebugLogger
