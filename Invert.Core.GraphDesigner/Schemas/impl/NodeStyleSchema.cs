@@ -107,48 +107,99 @@ namespace Invert.Core.GraphDesigner.Schemas.impl
 
         internal struct IconColorItem
         {
-            public string Name { get; set; }
-            public Color Color { get; set; }
-            public bool Expanded { get; set; }
+            public readonly string Name;
+            public readonly Color Color;
+            public readonly bool Expanded;
+            private readonly int _hashCode;
+
+            public IconColorItem(string name, Color color, bool expanded)
+            {
+                Name = name;
+                Color = color;
+                Expanded = expanded;
+
+                unchecked
+                {
+                    _hashCode = Name.GetHashCode();
+                    _hashCode = (_hashCode * 397) ^ Color.GetHashCode();
+                    _hashCode = (_hashCode * 397) ^ Expanded.GetHashCode();
+                }
+            }
+
+            private sealed class EqualityComparer : IEqualityComparer<IconColorItem>
+            {
+                public bool Equals(IconColorItem x, IconColorItem y)
+                {
+                    return 
+                        x.Name == y.Name && 
+                        x.Expanded == y.Expanded &&
+                        x.Color.r == y.Color.r && 
+                        x.Color.g == y.Color.g &&
+                        x.Color.b == y.Color.b &&
+                        x.Color.a == y.Color.a;
+                }
+
+                public int GetHashCode(IconColorItem obj)
+                {
+                    return obj._hashCode;
+                }
+            }
+
+            private static readonly IEqualityComparer<IconColorItem> _comparerInstance = new EqualityComparer();
+
+            public static IEqualityComparer<IconColorItem> Comparer
+            {
+                get
+                {
+                    return _comparerInstance;
+                }
+            }
         }
 
-        private static Dictionary<IconColorItem, object> ImagePool = new Dictionary<IconColorItem, object>();
+        private static Dictionary<IconColorItem, object> ImagePool = new Dictionary<IconColorItem, object>(IconColorItem.Comparer);
 
         public object GetHeaderImage(bool expanded, Color color = default(Color), string iconName = null)
         {
-            var item = new IconColorItem()
+            var item = new IconColorItem(iconName, color, expanded);
+
+            object image;
+            bool containsImage = ImagePool.TryGetValue(item, out image);
+
+            if (containsImage && (Equals(image, null) || image.Equals(null)))
             {
-                Name = iconName,
-                Color = color,
-                Expanded = expanded
-            };
-
-
-            if (ImagePool.ContainsKey(item) && ((Equals(ImagePool[item], null)) || ImagePool[item].Equals(null))) ImagePool.Remove(item);
-
-            if (!ImagePool.ContainsKey(item))
-            {
-                ImagePool.Add(item, ConstructHeaderImage(expanded, color, iconName));
+                ImagePool.Remove(item);
+                containsImage = false;
             }
 
-            return ImagePool[item];
+            if (!containsImage)
+            {
+                image = ConstructHeaderImage(expanded, color, iconName);
+                ImagePool.Add(item, image);
+            }
+
+            return image;
         }
 
         public object GetIconImage(string iconName, Color color = default(Color))
         {
-            var item = new IconColorItem()
-            {
-                Name = iconName,
-                Color = color,
-            };
+            var item = new IconColorItem(iconName, color, false);
 
-            if (ImagePool.ContainsKey(item) && ((Equals(ImagePool[item], null)) || ImagePool[item].Equals(null))) ImagePool.Remove(item);
-            if (!ImagePool.ContainsKey(item))
+            object image;
+            bool containsImage = ImagePool.TryGetValue(item, out image);
+
+            if (containsImage && (Equals(image, null) || image.Equals(null)))
             {
-                ImagePool.Add(item, ConstructIcon(iconName, color));
+                ImagePool.Remove(item);
+                containsImage = false;
             }
 
-            return ImagePool[item];
+            if (!containsImage)
+            {
+                image = ConstructIcon(iconName, color);
+                ImagePool.Add(item, image);
+            }
+
+            return image;
         }
 
         protected abstract object ConstructHeaderImage(bool expanded, Color color = default(Color), string iconName = null);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Invert.Core;
 using UnityEngine;
 
 namespace Invert.Json
@@ -184,9 +185,13 @@ namespace Invert.Json
             }
             return jsonArray;
         }
+
         public static JSONClass SerializeObject(this IJsonObject obj)
         {
-            var cls = new JSONClass() { { "_CLRType", obj.GetType().AssemblyQualifiedName } };
+            Type objectType = obj.GetType();
+            string typeName = objectType.GetAssemblyQualifiedName();
+
+            var cls = new JSONClass() { { "_CLRType", typeName } };
             obj.Serialize(cls);
             return cls;
         }

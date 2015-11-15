@@ -8,7 +8,7 @@ namespace Invert.Core.GraphDesigner
 {
     public abstract class ConnectorStyleSchema : IConnectorStyleSchema
     {
-        private readonly Dictionary<SideDirectionItem, object> TexturesCache = new Dictionary<SideDirectionItem, object>();
+        private readonly Dictionary<SideDirectionItem, object> TexturesCache = new Dictionary<SideDirectionItem, object>(SideDirectionItem.Comparer);
         protected string _emptyInputIconCode;
         protected string _emptyOutputIconCode;
         protected string _filledInputIconCode;
@@ -18,23 +18,25 @@ namespace Invert.Core.GraphDesigner
 
         public object GetTexture(ConnectorSide side, ConnectorDirection direction, bool connected, Color tint = default(Color))
         {
-            var item = new SideDirectionItem()
-            {
-                Side = side,
-                Direction = direction,
-                IsConnected = connected,
-                Tint = tint
-            };
 
-            if (TexturesCache.ContainsKey(item) && ((Equals(TexturesCache[item], null)) || TexturesCache[item].Equals(null))) TexturesCache.Remove(item);
+            var item = new SideDirectionItem(side, direction, connected, tint);
 
-            if (!TexturesCache.ContainsKey(item))
+            object image;
+            bool containsImage = TexturesCache.TryGetValue(item, out image);
+
+            if (containsImage && (Equals(image, null) || image.Equals(null)))
             {
-                TexturesCache.Add(item, ConstructTexture(side, direction, connected, tint));
+                TexturesCache.Remove(item);
+                containsImage = false;
             }
 
-            return TexturesCache[item];
+            if (!containsImage)
+            {
+                image = ConstructTexture(side, direction, connected, tint);
+                TexturesCache.Add(item, image);
+            }
 
+            return image;
         }
 
         protected abstract object ConstructTexture(ConnectorSide side, ConnectorDirection direction, bool connected, Color tint = default(Color));
@@ -69,10 +71,57 @@ namespace Invert.Core.GraphDesigner
 
         internal struct SideDirectionItem
         {
-            public ConnectorSide Side { get; set; }
-            public ConnectorDirection Direction { get; set; }
-            public bool IsConnected { get; set; }
-            public Color Tint { get; set; }
+            public readonly ConnectorSide Side;
+            public readonly ConnectorDirection Direction;
+            public readonly bool IsConnected;
+            public readonly Color Tint;
+            private readonly int _hashCode;
+
+            public SideDirectionItem(ConnectorSide side, ConnectorDirection direction, bool isConnected, Color tint)
+            {
+                Side = side;
+                Direction = direction;
+                IsConnected = isConnected;
+                Tint = tint;
+
+                unchecked
+                {
+                    _hashCode = (int) Side;
+                    _hashCode = (_hashCode * 397) ^ (int) Direction;
+                    _hashCode = (_hashCode * 397) ^ IsConnected.GetHashCode();
+                    _hashCode = (_hashCode * 397) ^ Tint.GetHashCode();
+                }
+            }
+
+            private sealed class EqualityComparer : IEqualityComparer<SideDirectionItem>
+            {
+                public bool Equals(SideDirectionItem x, SideDirectionItem y)
+                {
+                    return 
+                        x.Side == y.Side && 
+                        x.Direction == y.Direction && 
+                        x.IsConnected == y.IsConnected && 
+                        x.Tint.r == y.Tint.r && 
+                        x.Tint.g == y.Tint.g &&
+                        x.Tint.b == y.Tint.b &&
+                        x.Tint.a == y.Tint.a;
+                }
+
+                public int GetHashCode(SideDirectionItem obj)
+                {
+                    return obj._hashCode;
+                }
+            }
+
+            private static readonly IEqualityComparer<SideDirectionItem> _comparerInstance = new EqualityComparer();
+
+            public static IEqualityComparer<SideDirectionItem> Comparer
+            {
+                get
+                {
+                    return _comparerInstance;
+                }
+            }
         }
     }
 }

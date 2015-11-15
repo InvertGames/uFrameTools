@@ -48,8 +48,7 @@ namespace Invert.Core.GraphDesigner
     
         public bool IsEnabled(IProjectRepository project)
         {
-
-            var customAttribute = this.GetType().GetCustomAttributes(typeof(ShowInSettings), true).OfType<ShowInSettings>().FirstOrDefault();
+            var customAttribute = (ShowInSettings) Attribute.GetCustomAttribute(this.GetType(), typeof(ShowInSettings));
             if (customAttribute == null) return true;
 
             return project.GetSetting(customAttribute.Group, true);
