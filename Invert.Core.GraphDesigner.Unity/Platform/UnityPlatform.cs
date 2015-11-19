@@ -308,6 +308,7 @@ namespace Invert.Core.GraphDesigner.Unity
 
     public class UnityDrawer : IPlatformDrawer
     {
+        private GUIContent _tempGUIContent = new GUIContent();
         private UnityStyleProvider _styles;
 
         public UnityStyleProvider Styles
@@ -316,13 +317,13 @@ namespace Invert.Core.GraphDesigner.Unity
             set { _styles = value; }
         }
 
-        // TODO I HATE the vector3 conversion
-   
-
         public void DrawPolyLine(Vector2[] lines, Color color)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             Handles.color = color;
-            Handles.DrawPolyLine(lines.Select(x => new Vector3(x.x, x.y, 0f)).ToArray());
+            DrawPolyLine2D(lines);
         }
 
         public void DrawBezier(Vector3 startPosition, Vector3 endPosition, Vector3 startTangent, Vector3 endTangent,
@@ -337,7 +338,7 @@ namespace Invert.Core.GraphDesigner.Unity
         {
             var style = ((GUIStyle) tag1);
             //return text.Length * ()
-            return style.CalcSize(new GUIContent(text));
+            return style.CalcSize(TempContent(text));
         }
 
         public Vector2 CalculateImageSize(string imageName)
@@ -353,6 +354,9 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawLabel(Rect rect, string label, object style, DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             var s = (GUIStyle)style;
             s.alignment = ((TextAnchor)(int)alignment);
             GUI.Label(rect, label, s);
@@ -361,21 +365,30 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DrawLabelWithIcon(Rect rect, string label, string iconName, object style,
       DrawingAlignment alignment = DrawingAlignment.MiddleLeft)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             var s = (GUIStyle)style;
             s.alignment = ((TextAnchor)(int)alignment);
             //GUI.Label(rect, label, s);
-            GUI.Label(rect, new GUIContent(label,ElementDesignerStyles.GetSkinTexture(iconName)), s);
+            GUI.Label(rect, TempContent(label,ElementDesignerStyles.GetSkinTexture(iconName), null), s);
 
         }
 
         public void DrawStretchBox(Rect scale, object nodeBackground, float offset)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             ElementDesignerStyles.DrawExpandableBox(scale, (GUIStyle)nodeBackground,
                 string.Empty, offset);
         }
 
         public void DrawStretchBox(Rect scale, object nodeBackground, Rect offset)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             ElementDesignerStyles.DrawExpandableBox(scale, (GUIStyle)nodeBackground,
                string.Empty, new RectOffset(Mathf.RoundToInt(offset.x), Mathf.RoundToInt(offset.y), Mathf.RoundToInt(offset.width), Mathf.RoundToInt(offset.height)));
 
@@ -404,16 +417,25 @@ namespace Invert.Core.GraphDesigner.Unity
  
         public void DrawWarning(Rect rect, string key)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             EditorGUI.HelpBox(rect, key, MessageType.Warning);
         }
 
         public void DrawImage(Rect bounds, string texture, bool b)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             DrawImage(bounds, Styles.Image(texture), b);
         }
 
         public void DrawImage(Rect bounds, object texture, bool b)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             GUI.DrawTexture(bounds, texture as Texture2D, ScaleMode.ScaleToFit, true);
         }
 
@@ -434,12 +456,18 @@ namespace Invert.Core.GraphDesigner.Unity
 
         public void DrawRect(Rect boundsRect, Color color)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             EditorGUI.DrawRect(boundsRect,color);
         }
 
 
         public void DrawNodeHeader(Rect boxRect, object backgroundStyle, bool isCollapsed, float scale, object image)
         {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
             if(image != null) (backgroundStyle as GUIStyle).ForAllStates(image as Texture2D);
 
             Rect adjustedBounds;
@@ -778,6 +806,39 @@ namespace Invert.Core.GraphDesigner.Unity
         public void DrawConnector(float scale, ConnectorViewModel viewModel)
         {
 
+        }
+
+        private static void DrawPolyLine2D(Vector2[] points)
+        {
+            Color color = Handles.color * new Color(1f, 1f, 1f, 0.75f);
+            //HandleUtility.ApplyWireMaterial();
+            GL.PushMatrix();
+            GL.MultMatrix(Handles.matrix);
+            GL.Begin(GL.LINES);
+            GL.Color(color);
+            for (int index = 1; index < points.Length; ++index)
+            {
+              GL.Vertex3(points[index].x, points[index].y, 0f);
+              GL.Vertex3(points[index - 1].x, points[index - 1].y, 0f);
+            }
+            GL.End();
+            GL.PopMatrix();
+        }
+
+        private GUIContent TempContent(string text) {
+            _tempGUIContent.text = text;
+            _tempGUIContent.image = null;
+            _tempGUIContent.tooltip = null;
+
+            return _tempGUIContent;
+        }
+
+        private GUIContent TempContent(string text, Texture image, string tooltip) {
+            _tempGUIContent.text = text;
+            _tempGUIContent.image = image;
+            _tempGUIContent.tooltip = tooltip;
+
+            return _tempGUIContent;
         }
     }
 

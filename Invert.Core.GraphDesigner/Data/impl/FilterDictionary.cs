@@ -3,60 +3,22 @@ using Invert.Json;
 
 namespace Invert.Core.GraphDesigner
 {
-    public abstract class FilterDictionary<TValue> : IJsonObject
+    public abstract class FilterDictionary<TValue> : Dictionary<string, TValue>, IJsonObject
     {
-        private List<string> _keys = new List<string>();
-        private List<TValue> _values = new List<TValue>();
-
         public TValue this[IDiagramNode node]
         {
             get
             {
-                var indexOf = Keys.IndexOf(node.Identifier);
-                if (indexOf > -1)
-                {
-                    return Values[indexOf];
-                }
+                TValue val;
+                if (!TryGetValue(node.Identifier, out val))
+                    return default(TValue);
 
-                return default(TValue);
+                return val;
             }
             set
             {
-                var indexOf = Keys.IndexOf(node.Identifier);
-                if (indexOf > -1)
-                {
-                    Values[indexOf] = value;
-                }
-                else
-                {
-                    Add(node.Identifier, value);
-                }
+                this[node.Identifier] = value;
             }
-        }
-
-        public List<string> Keys
-        {
-            get { return _keys; }
-            set { _keys = value; }
-        }
-
-        public List<TValue> Values
-        {
-            get { return _values; }
-            set { _values = value; }
-        }
-
-        public void Remove(string key)
-        {
-            var index = Keys.IndexOf(key);
-            Keys.RemoveAt(index);
-            Values.RemoveAt(index);
-        }
-
-        protected void Add(string key, TValue value)
-        {
-            Keys.Add(key);
-            Values.Add(value);
         }
 
         public JSONClass Serialize()
@@ -70,11 +32,8 @@ namespace Invert.Core.GraphDesigner
 
         public void Serialize(JSONClass cls)
         {
-            for (int index = 0; index < _keys.Count; index++)
-            {
-                var key = _keys[index];
-                var value = _values[index];
-                cls.Add(key, SerializeValue(value));
+            foreach (KeyValuePair<string, TValue> pair in this) {
+                cls.Add(pair.Key, SerializeValue(pair.Value));
             }
         }
 
@@ -82,8 +41,7 @@ namespace Invert.Core.GraphDesigner
         {
             foreach (KeyValuePair<string, JSONNode> cl in cls)
             {
-            
-                Add(cl.Key,DeserializeValue(cl.Value));
+                Add(cl.Key, DeserializeValue(cl.Value));
             }
         }
 

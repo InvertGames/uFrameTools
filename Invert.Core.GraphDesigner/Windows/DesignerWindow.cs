@@ -293,6 +293,7 @@ namespace Invert.Core.GraphDesigner
                 var softColor = InvertGraphEditor.Settings.GridLinesColor;
                 var hardColor = InvertGraphEditor.Settings.GridLinesColorSecondary;
                 var x = -scrollPosition.x;
+                Vector2[] lineCache = new Vector2[2];
 
                 var every10 = 0;
 
@@ -306,12 +307,9 @@ namespace Invert.Core.GraphDesigner
                     }
                     if (x > diagramRect.x)
                     {
-                        drawer.DrawPolyLine(
-                            new[]
-                            {
-                                new Vector2(x, diagramRect.y),
-                                new Vector2(x, diagramRect.x + diagramRect.height + scrollPosition.y + 85)
-                            }, color);
+                        lineCache[0] = new Vector2(x, diagramRect.y);
+                        lineCache[1] = new Vector2(x, diagramRect.x + diagramRect.height + scrollPosition.y + 85);
+                        drawer.DrawPolyLine(lineCache, color);
                     }
 
 
@@ -330,11 +328,9 @@ namespace Invert.Core.GraphDesigner
                     }
                     if (y > diagramRect.y)
                     {
-                        drawer.DrawPolyLine(
-                            new[]
-                            {
-                                new Vector2(diagramRect.x, y), new Vector2(diagramRect.x + diagramRect.width + scrollPosition.x, y)
-                            }, color);
+                        lineCache[0] = new Vector2(diagramRect.x, y);
+                        lineCache[1] = new Vector2(diagramRect.x + diagramRect.width + scrollPosition.x, y);
+                        drawer.DrawPolyLine(lineCache, color);
                     }
 
 

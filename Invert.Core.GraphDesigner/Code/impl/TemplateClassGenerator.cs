@@ -42,6 +42,8 @@ namespace Invert.Core.GraphDesigner
         private KeyValuePair<MethodInfo, GenerateMethod>[] _templateMethods;
         private KeyValuePair<PropertyInfo, GenerateProperty>[] _templateProperties;
         private List<TemplateMemberResult> _results;
+        private MethodInfo[] _initializeMethods;
+        private TemplateAttribute[] _orderedTemplateAttributes;
         public Predicate<IDiagramNodeItem> ItemFilter { get; set; }
 
         public Type TemplateType
@@ -79,11 +81,17 @@ namespace Invert.Core.GraphDesigner
                 {
                     _templateClass = new TTemplateType();
                     _templateClass.Ctx = TemplateContext;
-
+                    DoTemplateReflectionCache();
                 }
                 return _templateClass;
             }
-            set { _templateClass = value; }
+            set {
+                if (_templateClass == value)
+                    return;
+
+                _templateClass = value;
+                DoTemplateReflectionCache();
+            }
         }
 
         public TemplateContext<TData> TemplateContext
@@ -169,9 +177,7 @@ namespace Invert.Core.GraphDesigner
         {
             get
             {
-                return _templateAttribute ?? (_templateAttribute = typeof(TTemplateType).GetCustomAttributes(typeof(TemplateClass), true)
-                .OfType<TemplateClass>()
-                .FirstOrDefault());
+                return _templateAttribute ?? (_templateAttribute = (TemplateClass) System.Attribute.GetCustomAttribute(typeof(TTemplateType), typeof(TemplateClass)));
             }
         }
 
@@ -271,17 +277,11 @@ namespace Invert.Core.GraphDesigner
             TemplateContext.Iterators.Clear();
             TemplateClass.TemplateSetup();
 
-            foreach (
-                var item in
-                    TemplateClass.GetType()
-                        .GetCustomAttributes(typeof (TemplateAttribute), true)
-                        .OfType<TemplateAttribute>().OrderBy(p=>p.Priority))
-            {
+            foreach (var item in _orderedTemplateAttributes) {
                 item.Modify(TemplateClass,null,TemplateContext);
             }
 
-            var initializeMethods = TemplateClass.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public).Where(p=>p.IsDefined(typeof(TemplateSetup),true)).ToArray();
-            foreach (var item in initializeMethods)
+            foreach (var item in _initializeMethods)
             {
                 item.Invoke(TemplateClass, null);
             }
@@ -330,20 +330,37 @@ namespace Invert.Core.GraphDesigner
 
         public KeyValuePair<MethodInfo, GenerateConstructor>[] TemplateConstructors
         {
-            get { return _templateConstructors ?? (_templateConstructors = TemplateType.GetMethodsWithAttribute<GenerateConstructor>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
+            get { return _templateConstructors ?? (_templateConstructors = TemplateType.GetMethodsWithAttribute<GenerateConstructor>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)); }
             set { _templateConstructors = value; }
         }
 
         public KeyValuePair<MethodInfo, GenerateMethod>[] TemplateMethods
         {
-            get { return _templateMethods ?? (_templateMethods = TemplateType.GetMethodsWithAttribute<GenerateMethod>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
+            get { return _templateMethods ?? (_templateMethods = TemplateType.GetMethodsWithAttribute<GenerateMethod>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)); }
             set { _templateMethods = value; }
         }
 
         public KeyValuePair<PropertyInfo, GenerateProperty>[] TemplateProperties
         {
-            get { return _templateProperties ?? (_templateProperties = TemplateType.GetPropertiesWithAttribute<GenerateProperty>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToArray()); }
+            get { return _templateProperties ?? (_templateProperties = TemplateType.GetPropertiesWithAttribute<GenerateProperty>(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)); }
             set { _templateProperties = value; }
+        }
+
+        private void DoTemplateReflectionCache() {
+            _orderedTemplateAttributes = 
+                _templateClass
+                .GetType()
+                .GetCustomAttributes(typeof(TemplateAttribute), true)
+                .OfType<TemplateAttribute>()
+                .OrderBy(p => p.Priority)
+                .ToArray();
+
+            _initializeMethods = 
+                _templateClass
+                .GetType()
+                .GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                .Where(p => p.IsDefined(typeof(TemplateSetup), true))
+                .ToArray();
         }
     }
 

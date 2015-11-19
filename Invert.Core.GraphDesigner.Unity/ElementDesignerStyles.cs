@@ -1920,7 +1920,7 @@ namespace Invert.Common
 
         public static Texture2D GetSkinTexture(string name)
         {
-            return Resources.Load<Texture2D>(String.Format("{0}/{1}", SkinName, name));
+            return Resources.Load<Texture2D>(SkinName + "/" + name);
         }
 
         //public static void DrawNodeCurve(Rect start, Rect end, Color color, float width, NodeCurvePointStyle startStyle = NodeCurvePointStyle.Circle, NodeCurvePointStyle endStyle = NodeCurvePointStyle.Triangle)

@@ -406,9 +406,35 @@ namespace Invert.Core.GraphDesigner
 
             foreach (var connection in CurrentRepository.Connections)
             {
-                var startConnector = connectors.FirstOrDefault(p => p.Identifier == connection.OutputIdentifier && p.Direction == ConnectorDirection.Output);
-                var endConnector = connectors.FirstOrDefault(p => p.Identifier == connection.InputIdentifier && p.Direction == ConnectorDirection.Input);
+                string connectionOutputIdentifier = connection.OutputIdentifier;
+                string connectionInputIdentifier = connection.InputIdentifier;
+                ConnectorViewModel startConnector = null;
+                ConnectorViewModel endConnector = null;
+                bool isStartConnectorFound = false;
+                bool isEndConnectorFound = false;
 
+                for (int i = 0, n = connectors.Count; i < n; i++) {
+                    ConnectorViewModel connector = connectors[i];
+                    ConnectorDirection connectorDirection = connector.Direction;
+                    string connectorIdentifier = connector.Identifier;
+                    if (!isStartConnectorFound && connectorDirection == ConnectorDirection.Output && connectorIdentifier == connectionOutputIdentifier) {
+                        startConnector = connector;
+                        isStartConnectorFound = true;
+                        if (isEndConnectorFound)
+                            break;
+
+                        continue;
+                    }
+
+                    if (!isEndConnectorFound && connectorDirection == ConnectorDirection.Input && connectorIdentifier == connectionInputIdentifier) {
+                        endConnector = connector;
+                        isEndConnectorFound = true;
+                        if (isStartConnectorFound)
+                            break;
+
+                        continue;
+                    }
+                }
 
                 if (startConnector == null || endConnector == null) continue;
 

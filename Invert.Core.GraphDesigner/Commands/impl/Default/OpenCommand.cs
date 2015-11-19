@@ -36,23 +36,23 @@ namespace Invert.Core.GraphDesigner
         {
             var diagramItem = item as DiagramNodeViewModel;
             if (diagramItem == null) yield break;
-            var generators = diagramItem.CodeGenerators.ToArray();
+            var generators = diagramItem.CodeGenerators;
 
-            foreach (var codeGenerator in generators.Where(p=>!p.AlwaysRegenerate))
+            foreach (var codeGenerator in generators)
             {
-                yield return new UFContextMenuItem()
-                {
-                    Name = "Open/" + codeGenerator.Filename,
-                    Value = codeGenerator
-                };
-            }
-            foreach (var codeGenerator in generators.Where(p => p.AlwaysRegenerate))
-            {
-                yield return new UFContextMenuItem()
-                {
-                    Name = "Open/Designer Files/" + codeGenerator.Filename,
-                    Value = codeGenerator
-                };
+                if (codeGenerator.AlwaysRegenerate) {
+                    yield return new UFContextMenuItem() 
+                    {
+                        Name = "Open/" + codeGenerator.Filename,
+                        Value = codeGenerator
+                    };
+                } else {
+                    yield return new UFContextMenuItem() 
+                    {
+                        Name = "Open/Designer Files/" + codeGenerator.Filename,
+                        Value = codeGenerator
+                    };
+                }
             }
         }
 

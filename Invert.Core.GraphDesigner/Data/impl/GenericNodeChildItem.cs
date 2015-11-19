@@ -26,12 +26,12 @@ namespace Invert.Core.GraphDesigner
         public override void Serialize(JSONClass cls)
         {
             base.Serialize(cls);
-            var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            var properties = this.GetType().GetPropertiesWithAttribute<JsonProperty>();
             foreach (var property in properties)
             {
          
-                if (property.GetCustomAttributes(typeof(JsonProperty), true).Length < 1) continue;
-                this.SerializeProperty(property, cls);
+                this.SerializeProperty(property.Key, cls);
            
             
             }
@@ -40,11 +40,10 @@ namespace Invert.Core.GraphDesigner
         public override void Deserialize(JSONClass cls)
         {
             base.Deserialize(cls);
-            var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var properties = this.GetType().GetPropertiesWithAttribute<JsonProperty>();
             foreach (var property in properties)
             {
-                if (property.GetCustomAttributes(typeof(JsonProperty), true).Length < 1) continue;
-                this.DeserializeProperty(property,cls);
+                this.DeserializeProperty(property.Key,cls);
             }
 
         }

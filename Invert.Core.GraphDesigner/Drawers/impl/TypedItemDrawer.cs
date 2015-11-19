@@ -1,3 +1,4 @@
+using System;
 using Invert.Common;
 using UnityEngine;
 
@@ -27,6 +28,14 @@ namespace Invert.Core.GraphDesigner
                 _cachedTypeName = TypedItemViewModel.RelatedType;
                 _nameSize = platform.CalculateSize(_cachedItemName, CachedStyles.ClearItemStyle);
                 _typeSize = platform.CalculateSize(_cachedTypeName, CachedStyles.ItemTextEditingStyle);
+                _cachedColumnWidths = new[] { _typeSize.x + 5, _nameSize.x };
+
+                Action onOptionClicked = OptionClicked;
+                Action onOptionRightClicked = OptionRightClicked;
+                _cachedColumnActions = new Action<Rect>[] {
+                    _ => platform.DoButton(_, _cachedTypeName, CachedStyles.ClearItemStyle, onOptionClicked, onOptionRightClicked),
+                    null
+                };
             }
             
 
@@ -34,6 +43,8 @@ namespace Invert.Core.GraphDesigner
         }
 
         private Vector2 _typeSize;
+        private float[] _cachedColumnWidths;
+        private Action<Rect>[] _cachedColumnActions;
         private string _cachedTypeName;
         private string _cachedItemName;
 
@@ -68,14 +79,12 @@ namespace Invert.Core.GraphDesigner
         {
            
             DrawBackground(platform,scale);
-            var b = new Rect(Bounds);
+            Rect b = Bounds;
             b.x += 10;
             b.width -= 20;
             //base.Draw(platform, scale);
-            platform.DrawColumns(b.Scale(scale), new float[] { _typeSize.x + 5, _nameSize.x },
-                _ => platform.DoButton(_, _cachedTypeName, CachedStyles.ClearItemStyle, OptionClicked, OptionRightClicked),
-                _=>DrawName(_, platform,scale,DrawingAlignment.MiddleRight)
-                );
+            _cachedColumnActions[1] = _ => DrawName(_, platform, scale, DrawingAlignment.MiddleRight);
+            platform.DrawColumns(b.Scale(scale), _cachedColumnWidths, _cachedColumnActions);
         }
 
         public virtual void OptionRightClicked()
