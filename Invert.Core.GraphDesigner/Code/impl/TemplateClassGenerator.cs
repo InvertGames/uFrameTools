@@ -315,6 +315,19 @@ namespace Invert.Core.GraphDesigner
                     Results.Add(new TemplateMemberResult(this, templateConstructor.Key, templateConstructor.Value, item, Decleration));
                 }
             }
+
+
+            var list = new List<CodeNamespaceImport>();
+            foreach (var item in TemplateContext.Namespace.Imports)
+            {
+                list.Add((CodeNamespaceImport)item);
+            }
+            TemplateContext.Namespace.Imports.Clear();
+            foreach (var item in list.OrderBy(p => p.Namespace))
+            {
+                TemplateContext.Namespace.Imports.Add(item);
+            }
+
         }
 
         public List<TemplateMemberResult> Results

@@ -1991,75 +1991,97 @@ namespace Invert.Common
 
     public static class TexturesExtensions
     {
-
         public static Texture2D CutTextureBottomBorder(this Texture2D texture, int cutSize)
         {
-            var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
-            var pixels = texture.GetPixels32();
-            var markerRow = cutSize;
-
-            Color32[] newPixels = new Color32[texture.width * texture.height];
-
-            for (var row = 0; row < texture.height; row++)
+            try
             {
-                for (int pix = 0; pix < texture.width; pix++)
+                var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
+                var pixels = texture.GetPixels32();
+                var markerRow = cutSize;
+
+                Color32[] newPixels = new Color32[texture.width*texture.height];
+
+                for (var row = 0; row < texture.height; row++)
                 {
-                    if (row > markerRow)
+                    for (int pix = 0; pix < texture.width; pix++)
                     {
-                        newPixels[row * texture.width + pix] = pixels[row * texture.width + pix];
-                    }
-                    else
-                    {
-                        newPixels[row * texture.width + pix] = pixels[markerRow * texture.width + pix];
+                        if (row > markerRow)
+                        {
+                            newPixels[row*texture.width + pix] = pixels[row*texture.width + pix];
+                        }
+                        else
+                        {
+                            newPixels[row*texture.width + pix] = pixels[markerRow*texture.width + pix];
+                        }
                     }
                 }
+
+                newTexture.SetPixels32(newPixels);
+                newTexture.Apply();
+                return newTexture;
             }
-
-            newTexture.SetPixels32(newPixels);
-            newTexture.Apply();
-
-            return newTexture;
+            catch (Exception ex)
+            {
+                Debug.Log(
+                    "Seems like {0} is not readable. Please locate it in the project and set the following import settings:\n" +
+                    "Texture type: Advance\n" +
+                    "Read/Write Enabled: True\n" +
+                    "Generate MipMaps: False\n" +
+                    "Filter: Point.");
+                return texture;
+            }
         }
 
         public static Texture2D Tint(this Texture2D texture, Color color)
         {
-            var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
-            
-            
-            
-            Color[] pixels;
-
             try
             {
-                pixels = texture.GetPixels();
+                var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
+
+
+                Color[] pixels;
+
+                try
+                {
+                    pixels = texture.GetPixels();
+                }
+                catch (Exception ex)
+                {
+                    return texture;
+                }
+
+                Color[] newPixels = new Color[texture.width*texture.height];
+
+                for (var row = 0; row < texture.height; row++)
+                {
+                    for (int pix = 0; pix < texture.width; pix++)
+                    {
+                        var pixel = pixels[row*texture.width + pix];
+                        var r = 1f - pixel.r;
+                        var g = 1f - pixel.g;
+                        var b = 1f - pixel.b;
+                        var a = 1f - pixel.a;
+                        var newPixel = new Color(color.r - r, color.g - g, color.b - b, color.a - a);
+                        newPixels[row*texture.width + pix] = newPixel;
+                    }
+                }
+
+                newTexture.SetPixels(newPixels);
+                newTexture.Apply();
+
+                return newTexture;
             }
             catch (Exception ex)
             {
+                Debug.Log(
+                    "Seems like {0} is not readable. Please locate it in the project and set the following import settings:\n" +
+                    "Texture type: Advance\n" +
+                    "Read/Write Enabled: True\n" +
+                    "Generate MipMaps: False\n" +
+                    "Filter: Point.");
                 return texture;
             }
-
-            Color[] newPixels = new Color[texture.width * texture.height];
-
-            for (var row = 0; row < texture.height; row++)
-            {
-                for (int pix = 0; pix < texture.width; pix++)
-                {
-                    var pixel = pixels[row * texture.width + pix];
-                    var r = 1f - pixel.r;
-                    var g = 1f - pixel.g;
-                    var b = 1f - pixel.b;
-                    var a = 1f - pixel.a;
-                    var newPixel = new Color(color.r - r, color.g - g, color.b - b, color.a - a);
-                    newPixels[row * texture.width + pix] = newPixel;
-                }
-            }
-
-            newTexture.SetPixels(newPixels);
-            newTexture.Apply();
-
-            return newTexture;
         }
-
 
 
         public static Texture2D Rotate90(this Texture2D texture)
@@ -2076,14 +2098,14 @@ namespace Invert.Common
                 return texture;
             }
 
-            Color[] newPixels = new Color[texture.width * texture.height];
+            Color[] newPixels = new Color[texture.width*texture.height];
 
 
             for (var row = 0; row < texture.height; row++)
             {
                 for (var pix = 0; pix < texture.width; pix++)
                 {
-                    var pixel = pixels[row * texture.width + pix];
+                    var pixel = pixels[row*texture.width + pix];
                     newPixels[(pix*texture.height) + row] = pixel;
                 }
             }
@@ -2094,7 +2116,7 @@ namespace Invert.Common
 
             return newTexture;
         }
-        
+
 
         public static Texture2D Rotate90CW(this Texture2D texture)
         {
@@ -2110,14 +2132,14 @@ namespace Invert.Common
                 return texture;
             }
 
-            Color[] newPixels = new Color[texture.width * texture.height];
+            Color[] newPixels = new Color[texture.width*texture.height];
 
 
             for (var row = 0; row < texture.height; row++)
             {
                 for (var pix = 0; pix < texture.width; pix++)
                 {
-                    var pixel = pixels[row * texture.width + pix];
+                    var pixel = pixels[row*texture.width + pix];
                     newPixels[(pix*texture.height) + row] = pixel;
                 }
             }
@@ -2128,7 +2150,7 @@ namespace Invert.Common
 
             return newTexture;
         }
-        
+
         public static Texture2D Rotate180(this Texture2D texture)
         {
             var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
@@ -2143,14 +2165,14 @@ namespace Invert.Common
                 return texture;
             }
 
-            Color[] newPixels = new Color[texture.width * texture.height];
+            Color[] newPixels = new Color[texture.width*texture.height];
 
             for (var row = 0; row < texture.height; row++)
             {
                 for (var pix = 0; pix < texture.width; pix++)
                 {
-                    var pixel = pixels[row * texture.width + pix];
-                    newPixels[((texture.height-row-1) * texture.width) + (texture.width - 1 - pix)] = pixel;
+                    var pixel = pixels[row*texture.width + pix];
+                    newPixels[((texture.height - row - 1)*texture.width) + (texture.width - 1 - pix)] = pixel;
                 }
             }
 
@@ -2160,7 +2182,7 @@ namespace Invert.Common
 
             return newTexture;
         }
-        
+
         public static Texture2D Gradient(this Texture2D texture, Color colorSource, Color colorDestination)
         {
             var newTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false, true);
@@ -2177,20 +2199,19 @@ namespace Invert.Common
 
             var progress = 0f;
 
-            Color[] newPixels = new Color[texture.width * texture.height];
+            Color[] newPixels = new Color[texture.width*texture.height];
 
             for (var row = 0; row < texture.height; row++)
             {
-                progress = (float)row / texture.height;
+                progress = (float) row/texture.height;
                 Color color = Color.Lerp(colorSource, colorDestination, progress);
                 for (int pix = 0; pix < texture.width; pix++)
                 {
-
-                    var pixel = pixels[row * texture.width + pix];
+                    var pixel = pixels[row*texture.width + pix];
 
                     if (pixel.a == 0)
                     {
-                        newPixels[row * texture.width + pix] = pixel; 
+                        newPixels[row*texture.width + pix] = pixel;
                     }
                     else
                     {
@@ -2199,9 +2220,8 @@ namespace Invert.Common
                         var b = 1f - pixel.b;
                         var a = 1f - pixel.a;
                         var newPixel = new Color(color.r - r, color.g - g, color.b - b, color.a - a);
-                        newPixels[row * texture.width + pix] = newPixel; 
+                        newPixels[row*texture.width + pix] = newPixel;
                     }
-       
                 }
             }
 

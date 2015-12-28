@@ -36,6 +36,7 @@ namespace Invert.Core.GraphDesigner
 
         public override string ToString()
         {
+            if (Item == null) return "Unknown item was added";
             return Item.Name + " was added";
         }
     }
@@ -82,7 +83,8 @@ namespace Invert.Core.GraphDesigner
         }
         public override string ToString()
         {
-            return string.Format("{0}: Name {1} Changed to {2}", Item.Label, Old, New);
+
+            return string.Format("{0}: Name {1} Changed to {2}", Item != null ? Item.Label : "Unknown", Old, New);
         }
     }
 
